@@ -8,12 +8,28 @@
 	/*
 		create sqlite database & tables
 	*/
-	function create_database()
+	function create_database($email, $password)
 	{
 		$error = null;
 		try {
 			$file_db = new PDO(sprintf("sqlite:%s", DB_PATH));
-			$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);			
+			$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$file_db->exec('
+				CREATE TABLE IF NOT EXISTS `USER` (
+					`id`	TEXT NOT NULL UNIQUE,
+					`email`	TEXT NOT NULL UNIQUE,
+					`password_hash`	TEXT NOT NULL,
+					PRIMARY KEY(id)
+				);			
+			');
+			$sql = ' INSERT INTO `USER` (`id`, `email`, `password_hash`) VALUES (:id, :email, :password_hash) ';
+			$stmt = $file_db->prepare($sql); 
+			$params = array(
+				":id" => sha1($email),
+				":email" => $email,
+				":password_hash" => password_hash($password, PASSWORD_DEFAULT)
+			);
+			$stmt->execute($params);							
 			$file_db->exec('
 				CREATE TABLE IF NOT EXISTS `SONG` (
 					`id`	TEXT NOT NULL UNIQUE,
@@ -91,7 +107,8 @@ Deny from All
 		return($error);
 	}
 
-	if (isset($_POST["music_path"]))
+	if (
+		isset($_POST["music_path"]) && isset($_POST["email"]) && filter_var($_POST["email"], FILTER_VALIDATE_EMAIL) && isset($_POST["password"]))
 	{
 				
 		header("Content-Type: application/json; charset=utf-8");
@@ -101,7 +118,7 @@ Deny from All
 		if (is_dir($_POST["music_path"])) {		
 			$error_message = create_required_data($_POST["music_path"]);
 			if ($error_message == null) {
-				$error_message = create_database();
+				$error_message = create_database($_POST["email"], $_POST["password"]);
 			}
 		} else {
 			$error_message = sprintf("music path (%s) not found", $_POST["music_path"]);
@@ -190,9 +207,21 @@ Deny from All
 				<form id="f_install" method="post" action="install.php" class="form-horizontal">
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="music_path">Music path: </label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" required id="music_path" name="music_path" placeholder="type your music path" />
-							</div>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" required id="music_path" name="music_path" placeholder="type your music path" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="email">Email: </label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" required id="email" name="email" placeholder="type your email (account username)" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="password">Password: </label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" required id="password" name="password" placeholder="type your password (account password)" />
+						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
