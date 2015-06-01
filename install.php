@@ -19,10 +19,11 @@
 					`id`	TEXT NOT NULL UNIQUE,
 					`email`	TEXT NOT NULL UNIQUE,
 					`password_hash`	TEXT NOT NULL,
+					`last_activity`	TEXT NOT NULL,
 					PRIMARY KEY(id)
 				);			
 			');
-			$sql = ' INSERT INTO `USER` (`id`, `email`, `password_hash`) VALUES (:id, :email, :password_hash) ';
+			$sql = ' INSERT INTO `USER` (`id`, `email`, `password_hash`, `last_activity`) VALUES (:id, :email, :password_hash, CURRENT_TIMESTAMP) ';
 			$stmt = $file_db->prepare($sql); 
 			$params = array(
 				":id" => sha1($email),
@@ -143,7 +144,7 @@ Deny from All
 		<title>spieldose - installation</title>
 		<meta name="description" content="music for the masses">
 		<meta name="author" content="alex">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="assets/bootstrap-3.3.4-dist/css/bootstrap.min.css">
 		<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -236,7 +237,7 @@ Deny from All
 			</div>
 		</div>
 		<script src="assets/js/jquery-2.1.4.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="assets/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
 		<script>
 			$("form#f_install").submit(function(e) {
 				e.preventDefault();
