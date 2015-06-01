@@ -43,10 +43,10 @@ $("a#signout").click(function(e) {
 		if (data.success == true) {
 			location.reload(); 
 		} else {
-			showAlert(data.errorMsg);
+			// TODO
 		}
 	})
 	.fail(function(jqXHR, textStatus, errorThrown) {
-		showAlert("ajax error");
+		// TODO
 	});				
 });
