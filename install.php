@@ -1,9 +1,13 @@
 <?php
 	ob_start();
+	// local filesystem installation path (where this script is located)
 	define("BASE_PATH", sprintf("%s%s", __DIR__, DIRECTORY_SEPARATOR));
-	define("CONFIG_PATH", sprintf("%s%s%s%s", BASE_PATH, "data" , DIRECTORY_SEPARATOR , "configuration.php"));
-	define("HTACCESS_DATA_PATH", sprintf("%s%s%s%s", BASE_PATH, "data" , DIRECTORY_SEPARATOR , ".htaccess"));
-	define("DB_PATH", sprintf("%s%s%s%s", BASE_PATH, "data" , DIRECTORY_SEPARATOR, "spieldose.sqlite3"));	
+	// path for include php libs 
+	define("PHP_INCLUDE_PATH", sprintf("%sinclude", BASE_PATH));
+	// configuration file full path
+	define("CONFIGURATION_FULLPATH", sprintf("%s%s", BASE_PATH, "configuration.php"));
+	// database full path (for connection string)
+	define("SQLITE3_DATABASE_FULLPATH", sprintf("%s%s", BASE_PATH, "spieldose.sqlite3"));	
 
 	/*
 		create sqlite database & tables
@@ -12,7 +16,7 @@
 	{
 		$error = null;
 		try {
-			$file_db = new PDO(sprintf("sqlite:%s", DB_PATH));
+			$file_db = new PDO(sprintf("sqlite:%s", SQLITE3_DATABASE_FULLPATH));
 			$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$file_db->exec('
 				CREATE TABLE IF NOT EXISTS `USER` (
@@ -76,35 +80,21 @@
 	}
 	
 	/*
-		create data path (store sqlite database & configuration file)
+		create configuration file
 	*/
-	function create_required_data($music_path) {
+	function create_configuration($music_path) {
 		$error = null;
-		$data_path = dirname(CONFIG_PATH);
-		if (! file_exists($data_path)) {
-			if (! mkdir ($data_path)) {
-				$error = sprintf("error creating directory %s", $data_path);
-			}			
-		}		
 		$configuration = sprintf('
 <?php
-	define("DB_PATH", "%s");
-	define("MUSIC_PATH", "%s");
+	define("SQLITE3_DATABASE_FULLPATH", "%s");
+	define("PHP_INCLUDE_PATH", "%s");
+	define("MUSIC_PATH", "%s");	
 ?>
 '
-		, DB_PATH, $music_path);
-		if (! file_put_contents(CONFIG_PATH , $configuration)) {										
-			$error = sprintf("error creating configuration file (%s)", CONFIG_PATH); 
+		, SQLITE3_DATABASE_FULLPATH, PHP_INCLUDE_PATH, $music_path);
+		if (! file_put_contents(CONFIGURATION_FULLPATH , $configuration)) {										
+			$error = sprintf("error creating configuration file (%s)", CONFIGURATION_FULLPATH); 
 		}
-		$htaccess = sprintf('
-Order Allow, Deny
-Deny from All
-'
-		);
-		if (! file_put_contents(HTACCESS_DATA_PATH , $htaccess)) {										
-			$error = sprintf("error creating htaccess file (%s)", HTACCESS_DATA_PATH); 
-		}
-		
 		return($error);
 	}
 
@@ -117,7 +107,7 @@ Deny from All
 		$json_response = array();
 		
 		if (is_dir($_POST["music_path"])) {		
-			$error_message = create_required_data($_POST["music_path"]);
+			$error_message = create_configuration($_POST["music_path"]);
 			if ($error_message == null) {
 				$error_message = create_database($_POST["email"], $_POST["password"]);
 			}
@@ -194,12 +184,12 @@ Deny from All
 					</div>				
 				<?php
 			}
-			if ( file_exists(DB_PATH)) {	
+			if ( file_exists(SQLITE3_DATABASE_FULLPATH)) {	
 				$errors = true;			
 		?>				
 					<div role="alert" class="alert alert-danger alert-dismissible fade in">
 						<h4 id="oh-snap!-you-got-an-error!">spieldose database exists<a href="#oh-snap!-you-got-an-error!" class="anchorjs-link"><span class="anchorjs-icon"></span></a></h4>
-						<p>old database file (<?= DB_PATH ?>) found, delete before continue</p>
+						<p>old database file (<?= SQLITE3_DATABASE_FULLPATH ?>) found, delete before continue</p>
 					</div>		
 		<?php			
 			}
@@ -244,7 +234,8 @@ Deny from All
 				$.ajax({
 					url: $(this).attr("action"),
 					method: "post", 
-					data: $(this).serialize()
+					data: $(this).serialize(),
+					dataType : "json"
 				})
 				.done(function(data, textStatus, jqXHR) {
 					var html = '';

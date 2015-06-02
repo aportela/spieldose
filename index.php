@@ -82,6 +82,17 @@
         </div>		
         
         <div id="container">
+
+            <form id="f_search" class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input id="q" name="q" class="typeahead form-control" type="text" placeholder="search...">
+                    </div>
+                </div>
+            </form>
+
+                        
+            
           <div class="album_container">
             <img src="http://userserve-ak.last.fm/serve/174s/74670442.png" alt="album cover">                    
             <div class="album_info">                        
@@ -157,13 +168,6 @@
             <div class="album_info">                        
               <p class="album_name">¿Hay Alguien Ahí?</p>                        
               <p class="album_artist">Los Suaves</p>                    
-            </div>                
-          </div>
-          <div class="album_container">
-            <img src="http://userserve-ak.last.fm/serve/500/98944295/198XAD+cover.jpg" alt="album cover">                    
-            <div class="album_info">                        
-              <p class="album_name">Catching Up With the B Sides</p>                        
-              <p class="album_artist">Iron Maiden</p>                    
             </div>                
           </div>
           <div class="album_container">
@@ -252,12 +256,36 @@
           </div>
           <div class="clearfix"></div>
         </div>
-			<!--
-			<form id="f_signout" method="post" action="api/user/signout.php">
-				<h2 title="<?= $_SESSION["user_id"] ?>">spieldose:: user logged</h2>
-				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign out</button>
-			</form>
-			-->		
+        <div id="sidebar_player">
+          <div id="now_playing_cover">
+            <h2>NOW PLAYING</h2>
+            <div id="now_playing_song_info">
+              <h3><span class="title">Soundtrack to The Rebellion</span><span class="duration">0:00 / 6:00</span></h3>
+              <h4 class="artist">Machinae Supremacy</h4>                    
+            </div>          
+          </div>
+          <ul id="now_playing_list">
+            <li><span class="idx">1</span>Player One<span class="duration">5:39</span></li>
+            <li><span class="idx">2</span>Super Steve<span class="duration">5:37</span></li>
+            <li class="selected"><span class="idx">3</span>Soundtrack to the Rebellion<span class="duration">6:00</span></li>
+          </ul>
+          <audio id="audio" controls preload="none">
+            <!--
+            <source src="horse.ogg" type="audio/ogg">
+            -->
+            <source src="http://static.machinaesupremacy.com/musicfiles/fury/02-machinae_supremacy-soundtrack_to_the_rebellion.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+          <div id="playlist_controls">
+              <i title="repeat all" class="fa fa-refresh fa-lg"></i>
+              <i title="shuffle" class="fa fa-random fa-lg"></i>
+              <i id="crtl_play_previous" title="previous" class="fa fa-backward fa-lg"></i>
+              <i id="crtl_play_next" title="next" class="fa fa-forward fa-lg"></i>
+              <i title="save playlist" class="fa fa-save fa-lg"></i>
+              <i title="mark as loved song" class="fa fa-heart fa-lg"></i>
+              <i title="download song" class="fa fa-download fa-lg"></i>              
+          </div>                  
+        </div>        
 		<?php
 			} else {
 		?>
@@ -276,6 +304,7 @@
 		?>
 		<script src="assets/js/jquery-2.1.4.min.js"></script>
 		<script src="assets/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+    <script src="assets/js/typeahead.bundle.min.js"></script>      
 		<script src="assets/js/spieldose.js"></script>
 	</body>
 </html>

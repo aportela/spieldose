@@ -28,7 +28,7 @@ div#signin_container input, div.alert
 
 /* signin section */
 
-/* sidebar section */
+/* left sidebar (navigation menu) section  */
 /* credit: ishwarkatwe (http://bootsnipp.com/snippets/featured/responsive-navigation-menu) */
 
 .nav-side-menu
@@ -40,7 +40,7 @@ div#signin_container input, div.alert
 	background-color: #2e353d;
 	position: fixed;
 	top: 0px;
-	width: 300px;
+	width: 200px;
 	height: 100%;
 	color: #e1ffff;
 }
@@ -191,14 +191,15 @@ div#signin_container input, div.alert
 	}
 }
 
-/* sidebar section */
+/* left sidebar (navigation menu) section  */
 
 
 /* main container */
 
 div#container
 {
-	padding-left: 300px;
+	padding-left: 200px;
+	padding-right: 300px;
 	background-color: #16171B;
 	width: 100%;
 }
@@ -244,4 +245,214 @@ div.album_container div.album_info p.album_name
 div.album_container div.album_info p.album_artist
 {
 	color: #9B9C9F;
+}
+
+
+/* right sidebar (player & playlist) section  */
+
+div#sidebar_player
+{
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	width: 300px;
+	height: 100%;
+}
+
+div#sidebar_player div#now_playing_cover
+{
+	background: rgba(0, 0, 0, 0) url("http://userserve-ak.last.fm/serve/500/92690831/Deus+Ex+Machinae.jpg") no-repeat scroll 0 0 / 300px 300px;
+	width: 300px;
+	height: 300px;
+}
+
+div#sidebar_player div#now_playing_cover h2
+{
+  background: #16171b;
+  color: #f6f8f8;
+  opacity: 0.8;
+  filter: alpha(opacity=80); /* For IE8 and earlier */
+  font-weight: bold;
+  width: 300px;
+  margin: 0px;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 10px;   
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info
+{
+	opacity: 0.8;
+	filter: alpha(opacity=80); /* For IE8 and earlier */ 
+	background: #16171b;
+	margin-top: 225px;
+	padding: 8px;
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info h3
+{
+	height: 16px;  
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info h3, div#now_playing_song_info h4
+{
+	margin: 0px;  
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info h3 span.title
+{
+	color: #f6f8f8;
+	float: left;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info h3 span.duration
+{
+	color: #9b9c9f;
+	float: right;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+div#sidebar_player div#now_playing_cover div#now_playing_song_info h4.artist
+{
+	clear: both;
+	background: #16171b;
+	color: #9b9c9f;
+	font-size: 14px;
+	font-weight: normal;   
+}
+
+
+div#sidebar_player ul#now_playing_list
+{
+	background: #23282E;
+	width: 300px;
+	padding-left: 0px;
+	margin-bottom: 0px;
+	list-style-type: none;
+}
+
+div#sidebar_player ul#now_playing_list li
+{
+	color: #9b9c9f;
+	line-height: 30px;
+	border-bottom: 1px solid #434E5A;  
+	font-size: 13px;
+	clear: both;  
+	cursor: pointer;
+	padding: 2px 4px;
+	border-left: 3px solid #23282E;
+}
+
+div#sidebar_player ul#now_playing_list li:hover
+{
+	background-color: #4f5b69;
+	-webkit-transition: all 1s ease;
+	-moz-transition: all 1s ease;
+	-o-transition: all 1s ease;
+	-ms-transition: all 1s ease;
+	transition: all 1s ease;  
+	border-left: 3px solid #23282E;
+}
+
+div#sidebar_player ul#now_playing_list li.selected
+{
+	background: #4f5b69;
+	border-left: 3px solid #d19b3d;
+}
+
+div#sidebar_player ul#now_playing_list li span.idx
+{
+	float: left;
+	margin-right: 4px;
+}
+
+div#sidebar_player ul#now_playing_list li span.duration
+{
+	margin-left: 4px;
+  	float: right;
+}
+
+div#sidebar_player div#playlist_controls
+{
+	text-align: center;
+}
+
+div#sidebar_player div#playlist_controls i
+{
+	cursor: pointer;
+	margin: 0px 8px;	
+	
+}
+
+/* right sidebar (player & playlist) section  */
+
+form#f_search
+{
+	padding: 4px 16px;
+}
+	
+span.twitter-typeahead
+{
+	display: block;
+	width: 100%;
+}
+
+div.tt-menu
+{
+	background: #16171B;
+	width: 100%;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+	color: #fff;
+	font-size: 14px;
+	padding: 6px 12px;
+}
+
+div#song_results h3, div#artist_results h3, div#album_results h3
+{
+	font-size: 14px;
+	color: #9b9c9f;
+}
+
+div.tt-menu div.result
+{
+	font-size: 13px;
+	clear: both;
+	background: #24292D;
+	margin-bottom: 2px;
+	padding: 4px;
+}
+
+div.tt-menu div.result img
+{
+	margin: 0px 2px;
+	border: 1px solid #333333;
+	border-radius: 4px;
+	float: left;
+}
+
+div.tt-menu div.result span
+{
+	float: left;	
+	display: block;
+	margin-left: 8px;		
+}
+
+div.tt-menu div.result span.result_song_title, div.tt-menu div.result span.result_artist, div.tt-menu div.result span.result_album
+{
+	color: #fff;
+}
+
+div.tt-menu div.result span.result_artist
+{
+	margin-top: 8px;
+}
+
+div.tt-menu div.result span.result_artist_album, div.tt-menu div.result span.result_song_artist
+{
+	color: #9b9c9f;		
 }

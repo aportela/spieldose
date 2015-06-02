@@ -1,12 +1,13 @@
 <?php
-	require sprintf("%s%sdata%sconfiguration.php", dirname(dirname(__FILE__)), DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR); 
+	defined(SQLITE3_DATABASE_FULLPATH) or
+		require_once sprintf("%s%sconfiguration.php", dirname(dirname(__FILE__)), DIRECTORY_SEPARATOR); 
 	
 	class Database
 	{
 		private $db = null;
 		
 		function __construct() {
-			$this->db = new PDO(sprintf("sqlite:%s", DB_PATH));
+			$this->db = new PDO(sprintf("sqlite:%s", SQLITE3_DATABASE_FULLPATH));
 			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		
