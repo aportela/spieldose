@@ -42,7 +42,7 @@
 	}
 	catch(PDOException $e) {
 		$json_response["success"] = false;
-		$json_response["errorMsg"] = "album search api fatal exception";
+		$json_response["errorMsg"] = "song search api fatal exception";
 		$json_response["debugMsg"] = $e->getMessage();
 	}					
 	ob_clean();
