@@ -151,7 +151,7 @@ $('input#q').typeahead(
 			header: '<div id="song_results"><h3>SONGS</h3>',
 			footer: '</div>',
 	    	suggestion: function(song) {
-				return('<div class="result"><span data-id="' + song.id + '" class="result_song_title">' + song.title + '</span><br /><span class="result_song_artist">' + (song.artistName ? song.artistName : '') + '</span><div class="clearfix"></div></div>');
+				return('<div class="result"><i data-id="' + song.id + '" title="play this song" class="play_song fa fa-play-circle fa-2x"></i> <i data-id="' + song.id + '" title="enqueue this song" class="enqueue_song fa fa-plus fa-2x"></i><span class="result_song_title">' + song.title + '</span><br /><span class="result_song_artist">' + (song.artistName ? song.artistName : '') + '</span><div class="clearfix"></div></div>');
 			}
 	  	}		   
 	},
@@ -179,7 +179,7 @@ $('input#q').typeahead(
 			header: '<div id="album_results"><h3>ALBUMS</h3>',
 			footer: '</div>',
 	    	suggestion: function(album) {
-				return('<div class="result"><img src="http://userserve-ak.last.fm/serve/34s/92459761.jpg" /><span class="result_album">' + album.name + '</span><br /><span class="result_artist_album">' + (album.artistName ? album.artistName : '') + '</span><div class="clearfix"></div></div>');
+				return('<div class="result"><img src="http://userserve-ak.last.fm/serve/34s/92459761.jpg" /><i data-id="' + album.id + '" title="play this album" class="play_album fa fa-play-circle fa-2x"></i><span class="result_album">' + album.name + '</span><br /><span class="result_artist_album">' + (album.artistName ? album.artistName : '') + '</span><div class="clearfix"></div></div>');
 			}
 	  	}		   
 	}	
@@ -187,22 +187,107 @@ $('input#q').typeahead(
 
 /* TYPEAHEAD */
 
-function playSong(id, title, artist) {
-	$("div#now_playing_song_info h3 span.title").text(title);
-	$("div#now_playing_song_info h4.artist").text(artist);
-	var html = '<li class="selected"><span class="idx">1</span>' + title + '<span class="duration">5:39</span></li>';
+// start play song
+function play(id) {
 	$("audio#audio source").attr("src", "api/song/get.php?id=" + id);
 	var audio = $("audio#audio");
 	audio[0].pause();
     audio[0].load();//suspends and restores all audio element
-    audio[0].play();
-	$("ul#now_playing_list").html(html);	
+    audio[0].play();	
 }
 
+// enqueue song into playlist
+function enQueueSong(id, title, artist) {
+	var html = '<li data-id="' + id + '"><span class="idx"></span>' + title + '<span class="duration">0:00</span></li>';
+	$("ul#now_playing_list").append(html);	
+}
+
+// enqueue into playlist & play song 
+function playSong(id, title, artist) {
+	$("div#now_playing_song_info h3 span.title").text(title);
+	$("div#now_playing_song_info h4.artist").text(artist);	
+	$("ul#now_playing_list").html("");
+	enQueueSong(id, title, artist);
+	$("ul#now_playing_list li").addClass("selected");
+	play(id);
+}
+
+// play next playlist song
+function playlistNext() {		
+	var next = $("ul#now_playing_list li.selected").next();
+	if (next.length == 1) {
+		var id = $(next).data("id");
+		if (id) {
+			var actual = $("ul#now_playing_list li.selected");
+			$(actual).removeClass("selected");
+			$(next).addClass("selected");
+			play(id);			
+		} 
+	}	
+}
+
+// play previous playlist song
+function playlistPrev() {		
+	var prev = $("ul#now_playing_list li.selected").prev();
+	if (prev.length == 1) {
+		var id = $(prev).data("id");
+		if (id) {
+			var actual = $("ul#now_playing_list li.selected");
+			$(actual).removeClass("selected");
+			$(prev).addClass("selected");
+			play(id);							
+		}
+	}
+}
+
+$("body").on("click", "i#crtl_play_previous", function(e) {
+	playlistPrev();
+});
+
+$("body").on("click", "i#crtl_play_next", function(e) {
+	playlistNext();
+});
+
 // play search song result
-$("body").on("click", "span.result_song_title", function(e) {
+$("body").on("click", "div.result i.play_song", function(e) {
+	e.preventDefault();	
+	playSong($(this).data("id"), $(this).next().next().text(), $(this).next().next().next().next().text());
+});
+
+// enqueue into playlist search song result
+$("body").on("click", "div.result i.enqueue_song", function(e) {
 	e.preventDefault();
-	playSong($(this).data("id"), $(this).text(), $(this).next().next().text());
+	enQueueSong($(this).data("id"), $(this).next().text(), $(this).next().next().next().text());
+});
+
+// enqueue into playlist search song result
+$("body").on("click", "div.result i.play_album", function(e) {
+	e.preventDefault();
+	var id = $(this).data("id");
+	$.ajax({
+		url: "api/album/get.php?id=" + id,
+		method: "get"
+	})
+	.done(function(data, textStatus, jqXHR) {
+		console.log(data.songs.length);
+		if (data.success == true) {
+			
+			$("ul#now_playing_list").html("");
+			for (var i = 0; i < data.songs.length; i++) {
+				enQueueSong(data.songs[i].id, data.songs[i].title, data.songs[i].artistName);
+			} 
+			if (data.songs.length > 0)
+			{
+				$("ul#now_playing_list li:first").addClass("selected");
+				play(data.songs[0].id);
+			}						
+		} else {
+			// TODO
+		}
+	})
+	.fail(function(jqXHR, textStatus, errorThrown) {
+		// TODO
+	});					
 });
 
 

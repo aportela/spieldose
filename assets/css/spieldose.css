@@ -459,8 +459,24 @@ div.tt-menu div.result span.result_artist_album, div.tt-menu div.result span.res
 	color: #9b9c9f;		
 }
 
+div.tt-menu div.result i.play_song, div.tt-menu div.result i.enqueue_song
+{
+	float: left;
+}
+
 /* TYPEAHEAD */
 
+
+i.play_song, i.enqueue_song, i.play_album
+{
+	cursor: pointer;
+	margin-left: 6px;
+}
+
+table
+{
+	overflow: hidden;
+}
 
 table tbody tr
 {

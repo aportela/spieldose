@@ -278,9 +278,7 @@
             </div>          
           </div>
           <ul id="now_playing_list">
-            <li><span class="idx">1</span>Player One<span class="duration">5:39</span></li>
-            <li><span class="idx">2</span>Super Steve<span class="duration">5:37</span></li>
-            <li class="selected"><span class="idx">3</span>Soundtrack to the Rebellion<span class="duration">6:00</span></li>
+            <li class="selected"><span class="idx">1</span>Soundtrack to the Rebellion<span class="duration">6:00</span></li>
           </ul>
           <audio id="audio" controls preload="none">
             <!--
