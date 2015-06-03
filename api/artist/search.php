@@ -29,7 +29,7 @@
 			$db = new Database();
 			$sql = null;
 			$params = array();
-			$sql_limit = isset($_GET["limit"]) && is_integer($_GET["limit"]) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";		 
+			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";
 			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {
 				$params = array(":q" => '%' . $_GET["q"] . '%');
 				$sql = sprintf(" SELECT ARTIST.id, ARTIST.name, ARTIST.genres FROM ARTIST WHERE ARTIST.name LIKE :q ORDER BY ARTIST.name %s ", $sql_limit);						

@@ -32,7 +32,7 @@
 			$db = new Database();
 			$sql = null;
 			$params = array();
-			$sql_limit = isset($_GET["limit"]) && is_integer($_GET["limit"]) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";		 
+			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";		 
 			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {
 				$params = array(":q" => '%' . $_GET["q"] . '%');
 				$sql = sprintf(" SELECT ALBUM.id, ALBUM.name, ARTIST.id AS artistId, ARTIST.name AS artistName, ALBUM.year, ALBUM.cover FROM ALBUM LEFT JOIN ARTIST ON ARTIST.id = ALBUM.artist_id WHERE ALBUM.name LIKE :q ORDER BY ALBUM.name %s ", $sql_limit);						
