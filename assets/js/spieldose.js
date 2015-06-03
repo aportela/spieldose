@@ -30,6 +30,44 @@ $("form#f_signin").submit(function(e) {
 	});				
 });
 
+// browse by artist link
+$("a#browse_by_artist").click(function(e) {
+	e.preventDefault();
+	$.ajax({
+		url: $(this).attr("href"),
+		method: "post", 
+		data: $(this).serialize()
+	})
+	.done(function(data, textStatus, jqXHR) {
+		if (data.success == true) {
+		} else {
+			// TODO
+		}
+	})
+	.fail(function(jqXHR, textStatus, errorThrown) {
+		// TODO
+	});					
+});
+
+// browse by album link
+$("a#browse_by_album").click(function(e) {
+	e.preventDefault();
+	$.ajax({
+		url: $(this).attr("href"),
+		method: "post", 
+		data: $(this).serialize()
+	})
+	.done(function(data, textStatus, jqXHR) {
+		if (data.success == true) {
+		} else {
+			//showSignInAlert(data.errorMsg);
+		}
+	})
+	.fail(function(jqXHR, textStatus, errorThrown) {
+		//showSignInAlert("ajax error");
+	});					
+});
+
 // signout link
 $("a#signout").click(function(e) {
 	e.preventDefault();
@@ -54,12 +92,13 @@ $("a#signout").click(function(e) {
 
 /* TYPEAHEAD */
 
+
 var artists = new Bloodhound({
-	datumTokenizer: function(artists) {
-		return Bloodhound.tokenizers.whitespace(name);
-	},
+	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	prefetch: "./api/artist/search.php",
 	remote: {
+		cache: false,
 		url: './api/artist/search.php?q=%QUERY&limit=3',
 		wildcard: '%QUERY',
 		filter: function(response) {
@@ -68,14 +107,12 @@ var artists = new Bloodhound({
 	}
 });
 
-artists.initialize();
-
 var albums = new Bloodhound({
-	datumTokenizer: function(artists) {
-		return Bloodhound.tokenizers.whitespace(name);
-	},
+	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	prefetch: './api/album/search.php',
 	remote: {
+		cache: false,
 		url: './api/album/search.php?q=%QUERY&limit=3',
 		wildcard: '%QUERY',
 		filter: function(response) {
@@ -84,14 +121,12 @@ var albums = new Bloodhound({
 	}
 });
 
-albums.initialize();
-
 var songs = new Bloodhound({
-	datumTokenizer: function(songs) {
-		return Bloodhound.tokenizers.whitespace(title);
-	},
+	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	prefetch: './api/song/search.php',
 	remote: {
+		cache: false,
 		url: './api/song/search.php?q=%QUERY&limit=3',
 		wildcard: '%QUERY',
 		filter: function(response) {
@@ -100,17 +135,14 @@ var songs = new Bloodhound({
 	}
 });
 
-songs.initialize();
-
 $('input#q').typeahead(
 	{
-		hint: true,
-		highlight: true,
+		hint: false,
+		highlight: false,
 		minLength: 3,
 	},
 	{
   		name: 'songs',
-		limit: 5,
 		displayKey: function (song) {
 	  		return song.title;
 		},
@@ -119,13 +151,12 @@ $('input#q').typeahead(
 			header: '<div id="song_results"><h3>SONGS</h3>',
 			footer: '</div>',
 	    	suggestion: function(song) {
-				return('<div class="result"><span class="result_song_title">' + song.title + '</span><br /><span class="result_song_artist">' + (song.artistName ? song.artistName : '') + '</span><div class="clearfix"></div></div>');
+				return('<div class="result"><span data-id="' + song.id + '" class="result_song_title">' + song.title + '</span><br /><span class="result_song_artist">' + (song.artistName ? song.artistName : '') + '</span><div class="clearfix"></div></div>');
 			}
 	  	}		   
 	},
 	{
   		name: 'artists',
-		limit: 5,
 		displayKey: function (artist) {
 	  		return artist.name;
 		},
@@ -140,7 +171,6 @@ $('input#q').typeahead(
 	},
 	{
   		name: 'albums',
-		limit: 5,  
 		displayKey: function (album) {
 	  		return album.name;
 		},
@@ -156,3 +186,52 @@ $('input#q').typeahead(
 );
 
 /* TYPEAHEAD */
+
+function playSong(id, title, artist) {
+	$("div#now_playing_song_info h3 span.title").text(title);
+	$("div#now_playing_song_info h4.artist").text(artist);
+	var html = '<li class="selected"><span class="idx">1</span>' + title + '<span class="duration">5:39</span></li>';
+	$("audio#audio source").attr("src", "api/song/get.php?id=" + id);
+	var audio = $("audio#audio");
+	audio[0].pause();
+    audio[0].load();//suspends and restores all audio element
+    audio[0].play();
+	$("ul#now_playing_list").html(html);	
+}
+
+// play search song result
+$("body").on("click", "span.result_song_title", function(e) {
+	e.preventDefault();
+	playSong($(this).data("id"), $(this).text(), $(this).next().next().text());
+});
+
+
+// play song from table random row
+$("body").on("click", "table tbody tr", function(e) {
+	e.preventDefault();
+	playSong($(this).data("id"), $(this).find("td:eq(0)").text(), $(this).find("td:eq(1)").text());
+});
+
+// load random songs at start & fill table
+$.ajax({
+	url: "api/song/search.php?limit=32&order=rnd",
+	method: "post" 
+})
+.done(function(data, textStatus, jqXHR) {
+	if (data.success == true) {
+		var html = "";
+		for (var i = 0; i < data.songs.length; i++) {
+			html += '<tr data-id="' + data.songs[i].id + '">\
+				<td>' + data.songs[i].title + '</td>\
+				<td>' + data.songs[i].artistName + '</td>\
+				<td>' + data.songs[i].albumName + '</td>\
+			</tr>';
+		}
+		$("table tbody").html(html);
+	} else {
+		// TODO
+	}
+})
+.fail(function(jqXHR, textStatus, errorThrown) {
+	// TODO
+});					

@@ -31,12 +31,13 @@
 			$db = new Database();
 			$sql = null;
 			$params = array();
-			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";		 
+			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";
+			$sql_order = isset($_GET["order"]) && $_GET["order"] == "rnd" ? "RANDOM()" : "SONG.title";
 			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {
 				$params = array(":q" => '%' . $_GET["q"] . '%');
-				$sql = sprintf(" SELECT SONG.id, SONG.title, ARTIST.id AS artistId, ARTIST.name AS artistName FROM SONG LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id WHERE SONG.title LIKE :q ORDER BY SONG.title %s ", $sql_limit);
+				$sql = sprintf(" SELECT SONG.id, SONG.title, ARTIST.id AS artistId, ARTIST.name AS artistName, ALBUM.id AS albumId, ALBUM.name AS albumName, SONG.playtime_string AS playtime FROM SONG LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id LEFT JOIN ALBUM ON ALBUM.id = SONG.album_id WHERE SONG.title LIKE :q ORDER BY %s %s ", $sql_order, $sql_limit);
 			} else {
-				$sql = sprintf(" SELECT SONG.id, SONG.title, ARTIST.id AS artistId, ARTIST.name AS artistName FROM SONG LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id ORDER BY SONG.title %s ", $sql_limit);	
+				$sql = sprintf(" SELECT SONG.id, SONG.title, ARTIST.id AS artistId, ARTIST.name AS artistName, ALBUM.id AS albumId, ALBUM.name AS albumName, SONG.playtime_string AS playtime FROM SONG LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id LEFT JOIN ALBUM ON ALBUM.id = SONG.album_id ORDER BY %s %s ", $sql_order, $sql_limit);	
 			}
 			$json_response["songs"] = $db->fetch_all($sql, $params);
 			$db = null;

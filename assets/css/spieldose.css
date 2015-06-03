@@ -418,6 +418,8 @@ div#song_results h3, div#artist_results h3, div#album_results h3
 	color: #9b9c9f;
 }
 
+/* TYPEAHEAD */
+
 div.tt-menu div.result
 {
 	font-size: 13px;
@@ -456,3 +458,24 @@ div.tt-menu div.result span.result_artist_album, div.tt-menu div.result span.res
 {
 	color: #9b9c9f;		
 }
+
+/* TYPEAHEAD */
+
+
+table tbody tr
+{
+	background: #16171B !important;
+	cursor: pointer;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n+1)
+{
+	background: #282E35 !important;	
+}
+
+table tbody tr td {
+	white-space: nowrap;
+	color: #e6e6e6 !important;
+	font-size: 10.5px;
+}
+

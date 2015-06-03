@@ -34,10 +34,10 @@
                           <a href="#"><i class="fa fa-database fa-lg"></i> Browse library<span class="arrow"></span></a>
                         </li>
                         <ul class="sub-menu collapse" id="browse_library">
-                            <li id="browse_by_artist" class="active"><a href="#">by artist</a></li>
+                            <li><a id="browse_by_artist" href="api/artist/search.php">by artist</a></li>
                             <li><a href="#">by genre</a></li>
                             <li><a href="#">by year</a></li>
-                            <li><a href="#">by album</a></li>
+                            <li><a id="browse_by_album" href="api/album/search.php"href="#">by album</a></li>
                             <li><a href="#">by path</a></li>
                             <li><a href="#">by random</a></li>
                         </ul>
@@ -90,9 +90,19 @@
                     </div>
                 </div>
             </form>
-
-                        
-            
+                     
+         <table class="table table-condensed table-striped">
+             <thead>
+                 <tr>
+                     <td>Track</td>
+                     <td>Artist</td>
+                     <td>Album</td>
+                 </tr>
+             </thead>
+             <tbody>                 
+             </tbody>
+         </table>
+          <!--
           <div class="album_container">
             <img src="http://userserve-ak.last.fm/serve/174s/74670442.png" alt="album cover">                    
             <div class="album_info">                        
@@ -255,7 +265,10 @@
             </div>                
           </div>
           <div class="clearfix"></div>
+              
+          -->
         </div>
+        
         <div id="sidebar_player">
           <div id="now_playing_cover">
             <h2>NOW PLAYING</h2>
