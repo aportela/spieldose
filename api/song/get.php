@@ -24,7 +24,7 @@
 				$params = array(":id" => $_GET["id"]);
 				$sql = " SELECT path FROM SONG WHERE id = :id ";
 				$result = $db->fetch($sql, $params);
-				$file_db = null;
+				$db = null;
 				if ($result) {
 					Common::serve_file($result->path);
 				} else {

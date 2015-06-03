@@ -40,7 +40,7 @@
 				$json_response["metadata"] = $db->fetch_all($sql, $params);
 				$sql = " SELECT ALBUM.id, ALBUM.name, ALBUM.year, ALBUM.cover FROM ALBUM WHERE ALBUM.artist_id = :id ORDER BY ALBUM.year, ALBUM.name ";
 				$json_response["albums"] = $db->fetch_all($sql, $params);
-				$file_db = null;
+				$db = null;
 			}				
 		}
 		catch(PDOException $e) {

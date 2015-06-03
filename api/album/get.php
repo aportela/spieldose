@@ -39,7 +39,7 @@
 				$sql = " SELECT SONG.id, SONG.title FROM SONG LEFT JOIN ALBUM ON SONG.album_id = ALBUM.id WHERE ALBUM.id = :id ";
 				$json_response["songs"] = $db->fetch_all($sql, $params);
 				$json_response["success"] = true;
-				$file_db = null;
+				$db = null;
 			}				
 		}
 		catch(PDOException $e) {
