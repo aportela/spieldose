@@ -40,13 +40,18 @@
 					`id`	TEXT NOT NULL UNIQUE,
 					`mb_id`	TEXT,
 					`path`	TEXT NOT NULL UNIQUE,
-					`title`	TEXT,
+					`last_modified_time`	INTEGER NULL,
+					`mime`	TEXT,
+					`bitrate`	TEXT,
+					`tag_track_number`	INTEGER,
+					`tag_part_of_a_set` INTEGER,
+					`tag_title`	TEXT,
 					`artist_id`	TEXT,
 					`album_id`	TEXT,
-					`year`	INTEGER,
-					`playtime_seconds`	INTEGER,
-					`playtime_string` TEXT,
-					`filesize`	INTEGER NOT NULL DEFAULT 0,				
+					`tag_year`	INTEGER,
+					`tag_playtime_seconds`	INTEGER,
+					`tag_playtime_string`	TEXT,				
+					`tag_genre`	TEXT,
 					PRIMARY KEY(id)
 				)
 			');
@@ -54,10 +59,10 @@
 				CREATE TABLE IF NOT EXISTS `ALBUM` (
 					`id`	TEXT NOT NULL UNIQUE,
 					`mb_id`	TEXT,
-					`year`	INTEGER,
-					`name`	TEXT NOT NULL,
+					`tag_year`	INTEGER,
+					`tag_name`	TEXT NOT NULL,
 					`artist_id`	TEXT NOT NULL,
-					`cover`	TEXT,
+					`lastfm_metadata`	TEXT,
 					PRIMARY KEY(id)
 				);
 			');		
@@ -66,12 +71,13 @@
 				CREATE TABLE `ARTIST` (
 					`id`	TEXT NOT NULL UNIQUE,
 					`mb_id`	TEXT,
-					`name`	TEXT NOT NULL UNIQUE,
-					`genres`	TEXT,
+					`tag_name`	TEXT NOT NULL UNIQUE,
+					`lastfm_metadata`	TEXT,
 					PRIMARY KEY(id)
 				);		
 			');
 			$file_db = null;
+			chmod(SQLITE3_DATABASE_FULLPATH, 0666);
 		}
 		catch(PDOException $e) {
 			$error = $e->getMessage(); 
@@ -89,6 +95,7 @@
 	define("SQLITE3_DATABASE_FULLPATH", "%s");
 	define("PHP_INCLUDE_PATH", "%s");
 	define("MUSIC_PATH", "%s");	
+	define("LASTFM_OVERWRITE", true);
 ?>
 '
 		, SQLITE3_DATABASE_FULLPATH, PHP_INCLUDE_PATH, $music_path);
