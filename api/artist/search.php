@@ -7,11 +7,12 @@
 			limit: int (optional)
 		response:
 			success: boolean
-			artists: [ 
+			artists:
+			[ 
 				{
 					id: string
 					name: string
-					genres: string
+					mbId: string
 				}
 			]
 			errorMsg: string (optional)
@@ -30,13 +31,33 @@
 			$sql = null;
 			$params = array();
 			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";
+			$sql_order = isset($_GET["order"]) && $_GET["order"] == "rnd" ? "RANDOM()" : "ARTIST.tag_name";
 			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {
 				$params = array(":q" => '%' . $_GET["q"] . '%');
-				$sql = sprintf(" SELECT ARTIST.id, ARTIST.name, ARTIST.genres FROM ARTIST WHERE ARTIST.name LIKE :q ORDER BY ARTIST.name %s ", $sql_limit);						
+				if (LASTFM_OVERWRITE) {
+					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name, ARTIST.lastfm_metadata FROM ARTIST WHERE ARTIST.tag_name LIKE :q ORDER BY %s %s ", $sql_order, $sql_limit);
+				} else {
+					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name FROM ARTIST WHERE ARTIST.tag_name LIKE :q ORDER BY %s %s ", $sql_order, $sql_limit);					
+				}										
 			} else {
-				$sql = sprintf(" SELECT ARTIST.id, ARTIST.name, ARTIST.genres FROM ARTIST ORDER BY ARTIST.name %s ", $sql_limit);	
+				if (LASTFM_OVERWRITE) {
+					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name, ARTIST.lastfm_metadata FROM ARTIST ORDER BY %s %s ", $sql_order, $sql_limit);
+				} else {
+					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name FROM ARTIST ORDER BY %s %s ", $sql_order, $sql_limit);
+				}	
 			}
 			$json_response["artists"] = $db->fetch_all($sql, $params);
+			if (LASTFM_OVERWRITE) {
+				$total = count($json_response["artists"]);
+				for ($i = 0; $i < $total; $i++) {
+					$json_metadata = $json_response["artists"][$i]->lastfm_metadata;
+					if ($json_metadata) {
+						$metadata = json_decode($json_metadata);
+						$json_response["artists"][$i]->name = $metadata->artist->name;
+					}
+					unset($json_response["artists"][$i]->lastfm_metadata);
+				}
+			}
 			$db = null;
 			$json_response["success"] = true; 
 		}

@@ -7,17 +7,17 @@
 			limit: int (optional)
 		response:
 			success: boolean
-			metadata: {
+			metadata:
+			{
 				id: string
 				name: string
-				genres: string
 			}
-			albums: [
+			albums:
+			[
 				{
 					id: string
 					name: string
 					year: int
-					cover: string					
 				}			
 			] 
 			errorMsg: string (optional)
@@ -36,9 +36,9 @@
 				require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
 				$db = new Database();
 				$params = array(":id" => $_GET["id"]);
-				$sql = " SELECT ARTIST.id, ARTIST.name, ARTIST.genres FROM ARTIST WHERE ARTIST.id = :id ";
+				$sql = " SELECT ARTIST.id, ARTIST.name FROM ARTIST WHERE ARTIST.id = :id ";
 				$json_response["metadata"] = $db->fetch_all($sql, $params);
-				$sql = " SELECT ALBUM.id, ALBUM.name, ALBUM.year, ALBUM.cover FROM ALBUM WHERE ALBUM.artist_id = :id ORDER BY ALBUM.year, ALBUM.name ";
+				$sql = " SELECT ALBUM.id, ALBUM.name, ALBUM.year FROM ALBUM WHERE ALBUM.artist_id = :id ORDER BY ALBUM.year, ALBUM.name ";
 				$json_response["albums"] = $db->fetch_all($sql, $params);
 				$db = null;
 			}				

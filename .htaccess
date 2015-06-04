@@ -1,0 +1,8 @@
+<FilesMatch "spieldose.sqlite3">
+    Order Allow,Deny
+    Deny from All
+</FilesMatch>
+<FilesMatch "configuration.php">
+    Order Allow,Deny
+    Deny from All
+</FilesMatch>
