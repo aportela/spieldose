@@ -79,7 +79,11 @@
 						$json_response["albums"][$i]->artistName = $metadata->artist->name;
 					}
 					unset($json_response["albums"][$i]->artist_lastfm_metadata);	
-					$json_response["albums"][$i]->artist = array("id" => $json_response["albums"][$i]->artistId, "name" => $json_response["albums"][$i]->artistName, "mbId" => $json_response["albums"][$i]->artistMbId);
+					$json_response["albums"][$i]->artist = array(
+						"id" => $json_response["albums"][$i]->artistId, 
+						"name" => $json_response["albums"][$i]->artistName, 
+						"mbId" => $json_response["albums"][$i]->artistMbId
+					);
 					unset($json_response["albums"][$i]->artistId);
 					unset($json_response["albums"][$i]->artistName);
 					unset($json_response["albums"][$i]->artistMbId);
