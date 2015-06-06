@@ -92,7 +92,7 @@ $("a#signout").click(function(e) {
 
 /* TYPEAHEAD */
 
-
+/*
 var artists = new Bloodhound({
 	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -185,6 +185,7 @@ $('input#q').typeahead(
 	}	
 );
 
+*/
 /* TYPEAHEAD */
 
 // start play song
@@ -297,10 +298,11 @@ $("body").on("click", "table tbody tr", function(e) {
 	playSong($(this).data("id"), $(this).find("td:eq(0)").text(), $(this).find("td:eq(1)").text());
 });
 
+/*
 // load random songs at start & fill table
 $.ajax({
-	url: "api/song/search.php?limit=32&order=rnd",
-	method: "post" 
+	url: "api/artist/get.php?id=",
+	method: "get" 
 })
 .done(function(data, textStatus, jqXHR) {
 	if (data.success == true) {
@@ -308,8 +310,7 @@ $.ajax({
 		for (var i = 0; i < data.songs.length; i++) {
 			html += '<tr data-id="' + data.songs[i].id + '">\
 				<td>' + data.songs[i].title + '</td>\
-				<td>' + data.songs[i].artistName + '</td>\
-				<td>' + data.songs[i].albumName + '</td>\
+				<td>' + data.songs[i].artistName + ' - ' + data.songs[i].albumName + '</td>\
 			</tr>';
 		}
 		$("table tbody").html(html);
@@ -320,3 +321,29 @@ $.ajax({
 .fail(function(jqXHR, textStatus, errorThrown) {
 	// TODO
 });					
+
+*/
+
+/*
+$.ajax({
+	url: "api/artist/get.php?id=",
+	method: "get" 
+})
+.done(function(data, textStatus, jqXHR) {
+	if (data.success == true) {
+		$("h1#album_title").text(data.album.name);
+		$("h2#album_artist").text(data.album.artist.name);
+		$("h3#album_year").text(data.album.year);
+		if (data.album.image.length > 3) {
+			$("img#album_cover").attr("src", data.album.image[3].url);
+		}
+		$("div#album_description").text(data.album.about);
+		$("div#album_view").removeClass("hidden");
+	} else {
+		// TODO
+	}
+})
+.fail(function(jqXHR, textStatus, errorThrown) {
+	// TODO
+});					
+*/

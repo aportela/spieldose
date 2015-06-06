@@ -90,13 +90,24 @@
                     </div>
                 </div>
             </form>
+            
+            <div id="album_view" class="hidden">
+                <div class="pull-left" style="width: 50%;">
+                    <img src="#" id="album_cover">
+                </div>                
+                <div class="pull-right" style="width: 50%;">
+                    <h1 id="album_title"><h1>
+                    <h2 id="album_artist"><h2>
+                    <h3 id="album_year"><h3>                    
+                    <div id="album_description" style="font-size: 12px;"></div>                        
+                </div>
+            <div>
                      
          <table class="table table-condensed table-striped">
              <thead>
                  <tr>
                      <td>Track</td>
-                     <td>Artist</td>
-                     <td>Album</td>
+                     <td>Artist / Album</td>
                  </tr>
              </thead>
              <tbody>                 

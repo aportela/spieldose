@@ -1,58 +1,78 @@
 <?php
 	/*
-		api method: api/artist/search.php
+		api method: api/artist/get.php
 		request method: get
 		request params:
-			q: string
-			limit: int (optional)
+			id: string (optional)
+			mbId: string (optional)
 		response:
 			success: boolean
-			metadata:
+			artist:
 			{
 				id: string
+				mbId: string
 				name: string
-			}
-			albums:
-			[
+				bio: string
+				image:
 				{
-					id: string
-					name: string
-					year: int
-				}			
-			] 
-			errorMsg: string (optional)
-			debugMsg: string (optional)
+					small: string
+					medium: string
+					large: string
+					extralarge: string
+					mega: string
+				}
+				albums:
+				[
+					{
+						id: string
+						mbId: string
+						name: string
+						year: int
+						image:
+						{
+							small: string
+							medium: string
+							large: string
+							extralarge: string
+							mega: string
+						}					
+					}
+				]
+			}
+			error: (optional)
+			{
+				msg: string
+				debug: string
+			}
 	*/			
 	ob_start();
 	session_start();
 	$json_response = array();
 	if (isset($_SESSION["user_id"])) {	
 		try {
-			if (isset($_GET["id"]) && strlen($_GET["id"]) > 0)
-			{
-				// configuration file	
+			if ((isset($_GET["id"]) && strlen($_GET["id"]) > 0) || (isset($_GET["mbId"]) && strlen($_GET["mbId"]) > 0)) {
 				require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);		
-				// data access layer class
 				require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
-				$db = new Database();
-				$params = array(":id" => $_GET["id"]);
-				$sql = " SELECT ARTIST.id, ARTIST.name FROM ARTIST WHERE ARTIST.id = :id ";
-				$json_response["metadata"] = $db->fetch_all($sql, $params);
-				$sql = " SELECT ALBUM.id, ALBUM.name, ALBUM.year FROM ALBUM WHERE ALBUM.artist_id = :id ORDER BY ALBUM.year, ALBUM.name ";
-				$json_response["albums"] = $db->fetch_all($sql, $params);
-				$db = null;
+				require_once sprintf("%s%sclass.Artist.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
+				$artist = new Artist(isset($_GET["id"]) ? $_GET["id"]: null, isset($_GET["mbId"]) ? $_GET["mbId"]: null, null);
+				if ($artist->get()) {
+					$json_response["artist"] = $artist;
+					$json_response["success"] = true;					
+				} else {
+					$json_response["success"] = false;
+					$json_response["error"] = array("msg" => "artist not found");
+				}
 			}				
 		}
-		catch(PDOException $e) {
+		catch(Exception $e) {
 			$json_response["success"] = false;
-			$json_response["errorMsg"] = "artist search api fatal exception";
-			$json_response["debugMsg"] = $e->getMessage();
+			$json_response["error"] = array("msg" => "artist metadata api fatal exception", "debug" => $e->getMessage());
 		}
 	} else {
-		http_response_code(401);		
+		http_response_code(401);
 		$json_response["success"] = false;
-		$json_response["errorMsg"] = "unauthorized";		
-	}					
+		$json_response["error"] = array("msg" => "unauthorized");		
+	}						
 	header("Content-Type: application/json; charset=utf-8");
 	echo json_encode($json_response);
 	ob_end_flush();
