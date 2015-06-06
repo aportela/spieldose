@@ -4,7 +4,8 @@
 		request method: get
 		request params:
 			q: string
-			limit: int (optional)
+			sort: string (optional)
+			limit: int (optional)			
 		response:
 			success: boolean
 			artists:
@@ -29,36 +30,35 @@
 			require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
 			$db = new Database();
 			$sql = null;
-			$params = array();
-			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";
-			$sql_order = isset($_GET["order"]) && $_GET["order"] == "rnd" ? "RANDOM()" : "ARTIST.tag_name";
-			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {
-				$params = array(":q" => '%' . $_GET["q"] . '%');
-				if (LASTFM_OVERWRITE) {
-					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name, ARTIST.lastfm_metadata FROM ARTIST WHERE ARTIST.tag_name LIKE :q ORDER BY %s %s ", $sql_order, $sql_limit);
-				} else {
-					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name FROM ARTIST WHERE ARTIST.tag_name LIKE :q ORDER BY %s %s ", $sql_order, $sql_limit);					
-				}										
+			$params = array();			
+			$sql_fields = null;
+			$sql_where = null;
+			if (LASTFM_OVERWRITE) {
+				$sql_fields = " ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name, ARTIST.lastfm_metadata ";
 			} else {
-				if (LASTFM_OVERWRITE) {
-					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name, ARTIST.lastfm_metadata FROM ARTIST ORDER BY %s %s ", $sql_order, $sql_limit);
-				} else {
-					$sql = sprintf(" SELECT ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name FROM ARTIST ORDER BY %s %s ", $sql_order, $sql_limit);
-				}	
+				$sql_fields = " ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name ";
+			}	
+			if (isset($_GET["q"]) && strlen($_GET["q"]) > 0) {												
+				$sql_where = " WHERE ARTIST.tag_name LIKE :q ";
+				$params = array(":q" => '%' . $_GET["q"] . '%');										
 			}
+			$sql_order = isset($_GET["sort"]) && $_GET["sort"] == "rnd" ? "RANDOM()" : "ARTIST.tag_name";
+			$sql_limit = isset($_GET["limit"]) && is_integer(intval($_GET["limit"])) ? sprintf(" LIMIT %d ", $_GET["limit"]) : "";			
+			$sql = sprintf ( " SELECT %s FROM ARTIST %s ORDER BY %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit);
 			$json_response["artists"] = $db->fetch_all($sql, $params);
+			$db = null;
 			if (LASTFM_OVERWRITE) {
 				$total = count($json_response["artists"]);
 				for ($i = 0; $i < $total; $i++) {
 					$json_metadata = $json_response["artists"][$i]->lastfm_metadata;
 					if ($json_metadata) {
 						$metadata = json_decode($json_metadata);
+						$json_response["artists"][$i]->mbId = $metadata->artist->mbid;
 						$json_response["artists"][$i]->name = $metadata->artist->name;
 					}
 					unset($json_response["artists"][$i]->lastfm_metadata);
 				}
-			}
-			$db = null;
+			}			
 			$json_response["success"] = true; 
 		}
 		catch(PDOException $e) {
