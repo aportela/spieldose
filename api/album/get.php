@@ -31,8 +31,10 @@
 			[
 				{
 					id: string
-					title: string
 					mbId: string
+					title: string
+					trackNumber: int
+					playtimeString: string
 					artist: 
 					{
 						id: string
@@ -76,13 +78,13 @@
 				$json_response["metadata"] = $db->fetch($sql, $params);				
 				$json_metadata = $json_response["metadata"]->lastFM;
 				if ($json_metadata) {
-					$metadata = json_decode($json_metadata);
+					$album_metadata = json_decode($json_metadata);
 					if (LASTFM_OVERWRITE) {								
-						$json_response["metadata"]->name = $metadata->album->name;
+						$json_response["metadata"]->name = $album_metadata->album->name;
 					}							
-					$json_response["metadata"]->about = $metadata->album->wiki->content;
+					$json_response["metadata"]->about = $album_metadata->album->wiki->content;
 					$images = array();
-					foreach($metadata->album->image as $image) {
+					foreach($album_metadata->album->image as $image) {
 						$images[] = array("size" => $image->size, "url" => $image->{"#text"});
 					}
 					$json_response["metadata"]->cover = $images;
@@ -90,7 +92,7 @@
 				unset($json_response["metadata"]->lastFM);
 				$json_metadata = $json_response["metadata"]->artist_lastfm_metadata;
 				if ($json_metadata) {
-					$metadata = json_decode($json_metadata);
+					$artist_metadata = json_decode($json_metadata);
 					$json_response["metadata"]->artist = array("id" => $json_response["metadata"]->artistId, "mbId" => $json_response["metadata"]->artistMbId, "name" => $json_response["metadata"]->artistName);
 				} else {
 					$json_response["metadata"]->artist = array("id" => $json_response["metadata"]->artistId, "mbId" => $json_response["metadata"]->artistMbId, "name" => $json_response["metadata"]->artistName);
@@ -99,7 +101,61 @@
 				unset($json_response["metadata"]->artistId);
 				unset($json_response["metadata"]->artistMbId);
 				unset($json_response["metadata"]->artistName);
-				// TODO SONGS
+				$sql_fields = " SONG.id AS id, SONG.mb_id AS mbId, SONG.tag_track_number AS trackNumber, SONG.tag_title AS title, SONG.tag_playtime_string AS playtimeString, ARTIST.id AS artistId, ARTIST.tag_name AS artistName, ARTIST.mb_id AS artistMbId ";
+				$sql = sprintf(" SELECT %s FROM SONG LEFT JOIN ALBUM ON ALBUM.id = SONG.album_id LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id %s ORDER BY SONG.tag_track_number ", $sql_fields, $sql_where);
+				$json_response["songs"] = $db->fetch_all($sql, $params);
+				$total_db_tracks = count($json_response["songs"]);
+				if (LASTFM_OVERWRITE) {
+					$total_album_tracks = count($album_metadata->album->tracks->track);										
+					for ($t = 0; $t < $total_db_tracks; $t++) {
+						for ($i = 0, $found = false; $i < $total_album_tracks && ! $found; $i++) {
+							$mb_id = $json_response["songs"][$t]->mbId;
+							$tag_title = $json_response["songs"][$t]->title;
+							$lastfm_title = $album_metadata->album->tracks->track[$i]->name;
+							$lastfm_mbid = $album_metadata->album->tracks->track[$i]->mbid;
+							$track_number = $json_response["songs"][$t]->trackNumber;
+							if ($mb_id == $lastfm_mbid) {
+								$found = true;
+							}
+							else if ($tag_title == $lastfm_title) {
+								$found = true;
+							} else {
+								if ($track_number == $i) {
+									$found = true;
+								} else {
+									similar_text($tag_title, $lastfm_title, $percent);
+									if ($percent > 85) {
+										$found = true;
+									}	
+								}
+							}
+							if ($found) {
+								$json_response["songs"][$t]->mbId = $album_metadata->album->tracks->track[$i]->mbid;
+								$json_response["songs"][$t]->title = $album_metadata->album->tracks->track[$i]->name;
+								$json_response["songs"][$t]->trackNumber = ($i + 1);
+								$json_response["songs"][$t]->artist = array(
+									"id" => $json_response["songs"][$t]->id, 
+									"name" => $album_metadata->album->tracks->track[$i]->artist->name, 
+									"mbId" => $album_metadata->album->tracks->track[$i]->artist->mbid
+								);								
+							}							
+							unset($json_response["songs"][$t]->artistId); 
+							unset($json_response["songs"][$t]->artistName);
+							unset($json_response["songs"][$t]->artistMbId);							
+						}
+					}
+				} else {
+					for ($t = 0; $t < $total_db_tracks; $t++) {
+						$json_response["songs"][$t]->artist = array(
+							"id" => $json_response["songs"][$t]->artistId, 
+							"name" => $json_response["songs"][$t]->artistName, 
+							"mbId" => $json_response["songs"][$t]->artistMbId
+						);
+						unset($json_response["songs"][$t]->artistId); 
+						unset($json_response["songs"][$t]->artistName);
+						unset($json_response["songs"][$t]->artistMbId);
+					}
+				} 
 				$json_response["success"] = true;
 				$db = null;
 			}				
