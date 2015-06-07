@@ -44,12 +44,25 @@
 		try {				
 			require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);			
 			require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
+			require_once sprintf("%s%sclass.Cache.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
 			require_once sprintf("%s%sclass.Album.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
-			$json_response["albums"] = Album::search(
+			$album_cache = new AlbumCache($_SESSION["user_id"]);
+			$params = array(
 				isset($_GET["q"]) ? $_GET["q"]: null,
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
-			);
+			); 
+			$cache = $album_cache->search($params);
+			if ($cache) {
+				$json_response["albums"] = $cache;
+			} else {
+				$json_response["albums"] = Album::search(
+					isset($_GET["q"]) ? $_GET["q"]: null,
+					isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
+					isset($_GET["sort"]) ? $_GET["sort"]: null
+				);
+				$album_cache->save($params, $json_response["albums"]);
+			}		
 			$json_response["success"] = true; 
 		}
 		catch(Exception $e) {

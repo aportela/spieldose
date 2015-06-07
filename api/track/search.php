@@ -4,7 +4,8 @@
 		request method: get
 		request params:
 			q: string
-			limit: int (optional)
+			limit: int (optional)			
+			sort: string (optional)
 		response:
 			success: boolean
 			tracks: [ 

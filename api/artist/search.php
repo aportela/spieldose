@@ -37,13 +37,26 @@
 	if (isset($_SESSION["user_id"])) {
 		try {				
 			require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);			
-			require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
+			require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
+			require_once sprintf("%s%sclass.Cache.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
 			require_once sprintf("%s%sclass.Artist.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
-			$json_response["artists"] = Artist::search(
+			$artist_cache = new ArtistCache($_SESSION["user_id"]);
+			$params = array(
 				isset($_GET["q"]) ? $_GET["q"]: null,
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
-			);
+			); 
+			$cache = $artist_cache->search($params);
+			if ($cache) {
+				$json_response["artists"] = $cache;
+			} else {				
+				$json_response["artists"] = Artist::search(
+					isset($_GET["q"]) ? $_GET["q"]: null,
+					isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
+					isset($_GET["sort"]) ? $_GET["sort"]: null
+				);				
+				$artist_cache->save($params, $json_response["artists"]);
+			}
 			$json_response["success"] = true; 
 		}
 		catch(Exception $e) {
