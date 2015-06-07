@@ -84,7 +84,7 @@
 							unset($track->album);
 							$tracks[] = $track;
 						}
-						$this->tracks = $tracks;
+						$this->tracks = $tracks;						
 					} else {
 						$this->tracks = array();
 					}
@@ -175,44 +175,47 @@
 					"mbId" => $this->artist->mbId,
 					"name" => $metadata->album->artist
 				);
-				if (isset($this->tracks)) {							
+				if (isset($this->tracks)) {
 					$total_db_tracks = count($this->tracks);
 					$total_lastfm_tracks = isset($metadata->album->tracks->track) ? count($metadata->album->tracks->track) : 0;
 					$tracks = array();
 					$orphan_tracks = array();
-					for ($t = 0; $t < $total_lastfm_tracks; $t++) {
+					if (is_object($metadata->album->tracks) && ! is_array($metadata->album->tracks->track)) {
+						$metadata->album->tracks->track = array($metadata->album->tracks->track);
+					}
+					for ($i = 0; $i < $total_db_tracks; $i++) {					
 						$match_track = null;
-						for ($i = 0, $found = false; $i < $total_db_tracks && ! $found; $i++) {
+						for ($t = 0, $found = false; $t < $total_lastfm_tracks && ! $found; $t++) {						
 							$tag_title = mb_strtolower($this->tracks[$i]->title);
 							$lastfm_title = mb_strtolower($metadata->album->tracks->track[$t]->name); 
 							if (
-								$this->tracks[$i]->mbId == $metadata->album->tracks->track[$t]->mbid || $tag_title == $lastfm_title
+								strlen($this->tracks[$i]->mbId) > 0 && $this->tracks[$i]->mbId == $metadata->album->tracks->track[$t]->mbid || $tag_title == $lastfm_title								
 							) {
-								$match_track = $this->tracks[$i];
+								$match_track = $metadata->album->tracks->track[$t];
 							} else if ($this->tracks[$i]->number == $t + 1) {
 								similar_text($tag_title, $lastfm_title, $percent);
-								if ($percent > 70) {
-									$match_track = $this->tracks[$i];
+								if ($percent > 40) {
+									$match_track = $metadata->album->tracks->track[$t];
 								} 
 							} else {
 								similar_text($tag_title, $lastfm_title, $percent);
 								if ($percent > 90) {
-									$match_track = $this->tracks[$i];
+									$match_track = $metadata->album->tracks->track[$t];
 								}
 							} 
 						}
 						if ($match_track != null) {
 							$track = new Track(
-								$match_track->id,
-								$metadata->album->tracks->track[$t]->mbid,
-								$metadata->album->tracks->track[$t]->name,
+								$this->tracks[$i]->id,
+								$match_track->mbid,
+								$match_track->name,
 								$t + 1,
 								null,
-								$match_track->playtimeString,
+								$this->tracks[$i]->playtimeString,
 								new Artist(
-									$match_track->artist->id,
-									$metadata->album->tracks->track[$t]->artist->mbid,
-									$metadata->album->tracks->track[$t]->artist->name
+									$this->tracks[$i]->artist->id,
+									$match_track->artist->mbid,
+									$match_track->artist->name
 								),
 								new Album(null, null, null)
 							);
@@ -220,20 +223,19 @@
 							unset($track->artist->image);
 							unset($track->artist->albums);
 							unset($track->album);
-							$tracks[] = $track;					
+							$tracks[] = $track;	
 						} else {
-							// TODO
-							/*
 							$track = new Track(
-								$this->tracks[$t]->id,
-								$this->tracks[$t]->mbId,
-								$this->tracks[$t]->number,
-								$this->tracks[$t]->title,
-								$this->tracks[$t]->playtimeString,
+								$this->tracks[$i]->id,
+								$this->tracks[$i]->mbId,
+								$this->tracks[$i]->title,
+								$this->tracks[$i]->number,
+								null,
+								$this->tracks[$i]->playtimeString,
 								new Artist(
-									$this->tracks[$t]->artist->id,
-									$this->tracks[$t]->artist->mbId,
-									$this->tracks[$t]->artist->name
+									$this->tracks[$i]->artist->id,
+									$this->tracks[$i]->artist->mbId,
+									$this->tracks[$i]->artist->name
 								),
 								new Album(null, null, null)
 							);											
@@ -242,18 +244,14 @@
 							unset($track->artist->albums);
 							unset($track->album);
 							$orphan_tracks[] = $track;
-							*/
 						}				
 					}
 					$this->tracks = $tracks;
-					// TODO
-					/*
 					if (count($orphan_tracks) > 0) {
 						foreach($orphan_tracks as $track) {
-							$tracks[] = $track;
+							$this->tracks[] = $track;
 						}	
 					}
-					*/
 				}				
 			}
 		}				

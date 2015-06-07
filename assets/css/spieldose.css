@@ -4,6 +4,7 @@ body
 {
 	margin: 0px;
 	padding: 0px;
+	background: #16171B;
 }
 
 /* defaults */
@@ -207,20 +208,21 @@ div#container
 /* main container */
 
 
-div.album_container
+div.album_container, div.artist_container
 {	
 	float: left;
 	background: #24292D;
 	margin: 16px;
 }
 
-div.album_container img
+div.album_container img, div.artist_container img
 {
 	width: 200px;
 	height: 200px;
+	display: block;
 }
 
-div.album_container div.album_info
+div.album_container div.album_info, div.artist_container div.artist_info
 {
 	width: 200px;
 	padding: 2px 6px;
@@ -228,7 +230,7 @@ div.album_container div.album_info
 	overflow: hidden;
 }
 
-div.album_container div.album_info p
+div.album_container div.album_info p, div.artist_container div.artist_info p
 {
 	margin: 0px;
 	width: 188px;
@@ -242,7 +244,7 @@ div.album_container div.album_info p.album_name
 	font-weight: bold;
 }
 
-div.album_container div.album_info p.album_artist
+div.album_container div.album_info p.album_artist, div.artist_container div.artist_info p.artist_name
 {
 	color: #9B9C9F;
 }
@@ -495,3 +497,18 @@ table tbody tr td {
 	font-size: 10.5px;
 }
 
+
+/* dashboard */
+
+div#random_artists, div#random_albums
+{
+	width: 95%;
+	margin: 16px auto;
+	overflow-x: scroll;
+}
+
+div.album_container
+{
+	cursor: pointer;
+}
+/* dashboard */

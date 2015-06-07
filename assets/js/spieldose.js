@@ -30,16 +30,43 @@ $("form#f_signin").submit(function(e) {
 	});				
 });
 
+function browseArtists(artists) {
+	var html = "";
+	for (var i = 0; i < artists.length; i++) {
+		var image = artists[i].image.length > 2 ?  artists[i].image[2].url : "#";
+		html += '\
+          <div class="artist_container">\
+            <img src="' + image + '" alt="artist image">\
+			<div class="artist_info">\
+            	<p class="artist_name" title="' + artists[i].name + '">' + artists[i].name + '</p>\
+			</div>\
+          </div>\
+		';
+	}
+	html += '\
+		<div class="clearfix"></div>\
+	';	
+	$("div#artists").html(html);
+}
+
+var offset = 0;
+
 // browse by artist link
 $("a#browse_by_artist").click(function(e) {
 	e.preventDefault();
 	$.ajax({
-		url: $(this).attr("href"),
+		url: $(this).attr("href") + "?limit=64&offset=" + offset,
 		method: "post", 
 		data: $(this).serialize()
 	})
 	.done(function(data, textStatus, jqXHR) {
 		if (data.success == true) {
+			/*
+			if (data.artists.length > 0) {
+				browseArtists(data.artists);
+				offset += data.artists.length;			
+			}
+			*/
 		} else {
 			// TODO
 		}
@@ -92,14 +119,14 @@ $("a#signout").click(function(e) {
 
 /* TYPEAHEAD */
 
-/*
 var artists = new Bloodhound({
 	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
-	prefetch: "./api/artist/search.php",
+	
+	//prefetch: "./api/artist/search.php",
 	remote: {
 		cache: false,
-		url: './api/artist/search.php?q=%QUERY&limit=3',
+		url: './api/artist/search.php?q=%QUERY&limit=6&offset=0',
 		wildcard: '%QUERY',
 		filter: function(response) {
 			return(response.artists);
@@ -113,7 +140,7 @@ var albums = new Bloodhound({
 	prefetch: './api/album/search.php',
 	remote: {
 		cache: false,
-		url: './api/album/search.php?q=%QUERY&limit=3',
+		url: './api/album/search.php?q=%QUERY&limit=6&offset=0',
 		wildcard: '%QUERY',
 		filter: function(response) {
 			return(response.albums);
@@ -121,6 +148,7 @@ var albums = new Bloodhound({
 	}
 });
 
+/*
 var songs = new Bloodhound({
 	datumTokenizer: Bloodhound.tokenizers.whitespace,
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -135,12 +163,14 @@ var songs = new Bloodhound({
 	}
 });
 
+*/
 $('input#q').typeahead(
 	{
 		hint: false,
 		highlight: false,
 		minLength: 3,
 	},
+	/*
 	{
   		name: 'songs',
 		displayKey: function (song) {
@@ -155,6 +185,7 @@ $('input#q').typeahead(
 			}
 	  	}		   
 	},
+	*/
 	{
   		name: 'artists',
 		displayKey: function (artist) {
@@ -182,24 +213,33 @@ $('input#q').typeahead(
 				return('<div class="result"><img src="http://userserve-ak.last.fm/serve/34s/92459761.jpg" /><i data-id="' + album.id + '" title="play this album" class="play_album fa fa-play-circle fa-2x"></i><span class="result_album">' + album.name + '</span><br /><span class="result_artist_album">' + (album.artistName ? album.artistName : '') + '</span><div class="clearfix"></div></div>');
 			}
 	  	}		   
-	}	
+	}
 );
 
-*/
+
 /* TYPEAHEAD */
+
+var playlistSongs = [];
 
 // start play song
 function play(id) {
-	$("audio#audio source").attr("src", "api/song/get.php?id=" + id);
+	$("audio#audio source").attr("src", "api/track/get.php?id=" + id);
 	var audio = $("audio#audio");
 	audio[0].pause();
     audio[0].load();//suspends and restores all audio element
     audio[0].play();	
+	for (var i = 0, found = false; i < playlistSongs.length && ! found; i++) {
+		if (playlistSongs[i].id == id) {
+			$("div#now_playing_song_info span.title").text(playlistSongs[i].title);
+			$("div#now_playing_song_info span.duration").text("0:00 / " + playlistSongs[i].playtimeString);
+			$("div#now_playing_song_info h4.artist").text(playlistSongs[i].artist.name);
+		}
+	}
 }
 
 // enqueue song into playlist
-function enQueueSong(id, title, artist) {
-	var html = '<li data-id="' + id + '"><span class="idx"></span>' + title + '<span class="duration">0:00</span></li>';
+function enQueueSong(id, title, artist, playtime, cover) {
+	var html = '<li data-id="' + id + '" data-image="' + cover + '"><span class="idx"></span>' + title + '<span class="duration">' + playtime + '</span></li>';
 	$("ul#now_playing_list").append(html);	
 }
 
@@ -208,7 +248,7 @@ function playSong(id, title, artist) {
 	$("div#now_playing_song_info h3 span.title").text(title);
 	$("div#now_playing_song_info h4.artist").text(artist);	
 	$("ul#now_playing_list").html("");
-	enQueueSong(id, title, artist);
+	enQueueSong(id, title, artist, null, null);
 	$("ul#now_playing_list li").addClass("selected");
 	play(id);
 }
@@ -220,6 +260,8 @@ function playlistNext() {
 		var id = $(next).data("id");
 		if (id) {
 			var actual = $("ul#now_playing_list li.selected");
+			var cover = $("ul#now_playing_list li.selected").data("image");
+			$("div#now_playing_cover").css("background-image", cover);
 			$(actual).removeClass("selected");
 			$(next).addClass("selected");
 			play(id);			
@@ -234,6 +276,8 @@ function playlistPrev() {
 		var id = $(prev).data("id");
 		if (id) {
 			var actual = $("ul#now_playing_list li.selected");
+			var cover = $("ul#now_playing_list li.selected").data("image");
+			$("div#now_playing_cover").css("background-image", cover);			
 			$(actual).removeClass("selected");
 			$(prev).addClass("selected");
 			play(id);							
@@ -258,11 +302,11 @@ $("body").on("click", "div.result i.play_song", function(e) {
 // enqueue into playlist search song result
 $("body").on("click", "div.result i.enqueue_song", function(e) {
 	e.preventDefault();
-	enQueueSong($(this).data("id"), $(this).next().text(), $(this).next().next().next().text());
+	enQueueSong($(this).data("id"), $(this).next().text(), $(this).next().next().next().text(), null, null);
 });
 
 // enqueue into playlist search song result
-$("body").on("click", "div.result i.play_album", function(e) {
+$("body").on("click", "div.result i.play_album, div.album_container", function(e) {
 	e.preventDefault();
 	var id = $(this).data("id");
 	$.ajax({
@@ -270,17 +314,21 @@ $("body").on("click", "div.result i.play_album", function(e) {
 		method: "get"
 	})
 	.done(function(data, textStatus, jqXHR) {
-		console.log(data.songs.length);
 		if (data.success == true) {
-			
 			$("ul#now_playing_list").html("");
-			for (var i = 0; i < data.songs.length; i++) {
-				enQueueSong(data.songs[i].id, data.songs[i].title, data.songs[i].artistName);
+			playlistSongs = data.album.tracks;
+			for (var i = 0; i < data.album.tracks.length; i++) {
+				enQueueSong(data.album.tracks[i].id, data.album.tracks[i].title, data.album.tracks[i].artist.name, data.album.tracks[i].playtimeString, data.album.image.length > 2 ? data.album.image[2].url: null);
 			} 
-			if (data.songs.length > 0)
+			if (data.album.tracks.length > 0)
 			{
 				$("ul#now_playing_list li:first").addClass("selected");
-				play(data.songs[0].id);
+				var cover = $("ul#now_playing_list li.selected").data("image");
+				if (! cover) {
+					cover = "http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png";
+				}
+				$("div#now_playing_cover").css("background", 'rgba(0, 0, 0, 0) url("' + cover + '") no-repeat scroll 0 0 / 300px 300px');				
+				play(data.album.tracks[0].id);
 			}						
 		} else {
 			// TODO
@@ -322,11 +370,10 @@ $.ajax({
 	// TODO
 });					
 
-*/
 
-/*
+
 $.ajax({
-	url: "api/artist/get.php?id=",
+	url: "api/artist/search.php?limit=51221",
 	method: "get" 
 })
 .done(function(data, textStatus, jqXHR) {
@@ -346,4 +393,87 @@ $.ajax({
 .fail(function(jqXHR, textStatus, errorThrown) {
 	// TODO
 });					
+
 */
+
+
+	function putRandomArtists(artists, callback) {
+		var html ="";
+		for (var i = 0; i < artists.length; i++) {
+		var image = artists[i].image.length > 2 ?  artists[i].image[2].url : "http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png";
+		html += '\
+          <div class="artist_container">\
+            <img src="' + image + '" alt="artist image">\
+			<div class="artist_info">\
+            	<p class="artist_name" title="' + artists[i].name + '">' + artists[i].name + '</p>\
+			</div>\
+          </div>\
+		';			
+		}
+		html += '\
+			<div class="clearfix"></div>\
+		';
+		$("div#artists_scroll").css("width", (artists.length * 240) + "px");
+		$("div#artists_scroll").html(html);	
+		callback();
+	}
+	
+	function putRandomAlbums(albums, callback) {
+		var html = "";
+		for (var i = 0; i < albums.length; i++) {
+		var image = albums[i].image.length > 2 ?  albums[i].image[2].url : "http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png";
+		html += '\
+          <div class="album_container" data-id="' + albums[i].id + '">\
+            <img src="' + image + '" alt="album cover">\
+            <div class="album_info">\
+              <p class="album_name">' + albums[i].name + '</p>\
+              <p class="album_artist" title="' + (albums[i].artist.name && albums[i].artist.name.length > 0 ? albums[i].artist.name : "") + '">' + (albums[i].artist.name && albums[i].artist.name.length > 0 ? albums[i].artist.name : "") + '</p>\
+            </div>\
+          </div>\
+		';			
+		}
+		html += '\
+			<div class="clearfix"></div>\
+		';
+		$("div#albums_scroll").css("width", (albums.length * 240) + "px");
+		$("div#albums_scroll").html(html);
+		callback();
+	}
+
+	$.ajax({
+		url: "api/artist/search.php?limit=16&offset=0&sort=rnd",
+		method: "get" 
+	})
+	.done(function(data, textStatus, jqXHR) {
+		if (data.success == true) {
+			putRandomArtists(data.artists, function() {
+
+				$.ajax({
+					url: "api/album/search.php?limit=16&offset=0&sort=rnd",
+					method: "get" 
+				})
+				.done(function(data, textStatus, jqXHR) {
+					if (data.success == true) {
+						putRandomAlbums(data.albums, function() {
+							    $(function()
+							    {
+							    	$('.scroll-pane').jScrollPane();
+							    });
+							
+						});
+					} else {
+						// TODO
+					}
+				})
+				.fail(function(jqXHR, textStatus, errorThrown) {
+					// TODO
+				});					
+				
+			});
+		} else {
+			// TODO
+		}
+	})
+	.fail(function(jqXHR, textStatus, errorThrown) {
+		// TODO
+	});					

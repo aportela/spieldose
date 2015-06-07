@@ -11,6 +11,7 @@
 		<meta name="author" content="alex">
 		<link rel="stylesheet" href="assets/bootstrap-3.3.4-dist/css/bootstrap.min.css">
 		<link href="assets/font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://jscrollpane.kelvinluck.com/style/jquery.jscrollpane.css" >
 		<link rel="stylesheet" href="assets/css/spieldose.css">
 		<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -82,7 +83,6 @@
         </div>		
         
         <div id="container">
-
             <form id="f_search" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-sm-12">
@@ -90,6 +90,8 @@
                     </div>
                 </div>
             </form>
+
+            <!--
             
             <div id="album_view" class="hidden">
                 <div class="pull-left" style="width: 50%;">
@@ -113,7 +115,9 @@
              <tbody>                 
              </tbody>
          </table>
-          <!--
+         
+         -->
+            <!--
           <div class="album_container">
             <img src="http://userserve-ak.last.fm/serve/174s/74670442.png" alt="album cover">                    
             <div class="album_info">                        
@@ -276,9 +280,23 @@
             </div>                
           </div>
           <div class="clearfix"></div>
-              
-          -->
+          -->    
+          
+          <div id="dashboard">
+            <h2>Random artists</h2>          
+            <div id="random_artists" class="scroll-pane">
+                <div id="artists_scroll"></div>
+            </div>    
+            <h2>Random albums</h2>
+            <div id="random_albums" class="scroll-pane">
+                <div id="albums_scroll"></div>
+            </div>    
+          </div>
+          
+          <!--
+        <div id="artists"></div>
         </div>
+        -->
         
         <div id="sidebar_player">
           <div id="now_playing_cover">
@@ -326,7 +344,9 @@
 		?>
 		<script src="assets/js/jquery-2.1.4.min.js"></script>
 		<script src="assets/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
-    <script src="assets/js/typeahead.bundle.min.js"></script>      
+        <script src="assets/js/typeahead.bundle.min.js"></script>
+        <script src="http://jscrollpane.kelvinluck.com/script/jquery.mousewheel.js"></script>
+        <script src="http://jscrollpane.kelvinluck.com/script/jquery.jscrollpane.min.js"></script>                          
 		<script src="assets/js/spieldose.js"></script>
 	</body>
 </html>
