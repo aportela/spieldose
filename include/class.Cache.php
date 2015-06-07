@@ -57,7 +57,11 @@
 			return($this->get_cache("album" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache"));
 		}		
 		public function save ($params, $content) {
-			$this->set_cache("album" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache", $content);
+			if (count($params) == 4 && $params[3] == "rnd") {
+				// don't cache random sort results in search
+			} else {
+				$this->set_cache("album" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache", $content);	
+			}			
 		}
 	}
 
@@ -72,7 +76,11 @@
 			return($this->get_cache("artist" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache"));
 		}		
 		public function save ($params, $content) {
-			$this->set_cache("artist" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache", $content);
+			if (count($params) == 4 && $params[3] == "rnd") {
+				// don't cache random sort results in search
+			} else {
+				$this->set_cache("artist" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache", $content);
+			}
 		}
 	}
 ?>

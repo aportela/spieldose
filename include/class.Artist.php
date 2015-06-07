@@ -89,7 +89,7 @@
 			}							
 		}
 		
-		static function search($q = null, $limit = 32, $sort = null) {
+		static function search($q = null, $limit = 32, $offset = 0, $sort = null) {
 			try {
 				$db = new Database();
 				$sql = null;
@@ -107,8 +107,9 @@
 					$params = array(":q" => '%' . $_GET["q"] . '%');										
 				}
 				$sql_order = $sort && $sort == "rnd" ? "RANDOM()" : "ARTIST.tag_name";
-				$sql_limit = $limit ? sprintf(" LIMIT %d ", $limit) : 32;							
-				$sql = sprintf ( " SELECT %s FROM ARTIST %s ORDER BY %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit);
+				$sql_limit = sprintf(" LIMIT %d ", $limit ? $limit: 32);
+				$sql_offset = sprintf(" OFFSET %d ", $offset && $offset > 0 ? $offset: 0);							
+				$sql = sprintf ( " SELECT %s FROM ARTIST %s ORDER BY %s %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit, $sql_offset);
 				$results = $db->fetch_all($sql, $params);
 				$db = null;
 				$artists = array();

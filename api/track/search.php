@@ -5,6 +5,7 @@
 		request params:
 			q: string
 			limit: int (optional)			
+			offset: int (optional)
 			sort: string (optional)
 		response:
 			success: boolean
@@ -53,6 +54,7 @@
 			$json_response["tracks"] = Track::search(
 				isset($_GET["q"]) ? $_GET["q"]: null,
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
+				isset($_GET["offset"]) ? intval($_GET["offset"]): 32,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
 			);
 			$json_response["success"] = true; 

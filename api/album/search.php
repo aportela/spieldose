@@ -4,7 +4,8 @@
 		request method: get
 		request params:
 			q: string
-			limit: int (optional)			
+			limit: int (optional)
+			offset: int (optional)			
 			sort: string (optional)
 		response:
 			success: boolean
@@ -50,6 +51,7 @@
 			$params = array(
 				isset($_GET["q"]) ? $_GET["q"]: null,
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
+				isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
 			); 
 			$cache = $album_cache->search($params);
@@ -59,6 +61,7 @@
 				$json_response["albums"] = Album::search(
 					isset($_GET["q"]) ? $_GET["q"]: null,
 					isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
+					isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 					isset($_GET["sort"]) ? $_GET["sort"]: null
 				);
 				$album_cache->save($params, $json_response["albums"]);

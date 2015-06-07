@@ -27,7 +27,7 @@
 		function __destruct() {
 		}
 				
-		static function search($q = null, $limit = 32, $sort = null) {
+		static function search($q = null, $limit = 32, $offset = 0, $sort = null) {
 			try {
 				$db = new Database();
 				$sql = null;
