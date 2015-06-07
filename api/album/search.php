@@ -53,8 +53,8 @@
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 				isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
-			); 
-			$cache = $album_cache->search($params);
+			);
+			$cache = USE_CACHE ? $album_cache->search($params) : null;
 			if ($cache) {
 				$json_response["albums"] = $cache;
 			} else {
@@ -64,7 +64,9 @@
 					isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 					isset($_GET["sort"]) ? $_GET["sort"]: null
 				);
-				$album_cache->save($params, $json_response["albums"]);
+				if (USE_CACHE) {
+					$album_cache->save($params, $json_response["albums"]);
+				}
 			}		
 			$json_response["success"] = true; 
 		}

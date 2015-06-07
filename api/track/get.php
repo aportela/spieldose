@@ -22,7 +22,7 @@
 				require_once sprintf("%s%sclass.Common.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
 				$db = new Database();
 				$params = array(":id" => $_GET["id"]);
-				$sql = " SELECT path FROM SONG WHERE id = :id ";
+				$sql = " SELECT path FROM TRACK WHERE id = :id ";
 				$result = $db->fetch($sql, $params);
 				$db = null;
 				if ($result) {

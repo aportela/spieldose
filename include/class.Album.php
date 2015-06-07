@@ -71,14 +71,12 @@
 									$results[$i]->artistMbId,
 									$results[$i]->artistName
 							);
-							unset($artist->bio); 
-							unset($artist->image);
-							unset($artist->albums);
 							$track = new Track(
 								$results[$i]->id,
 								$results[$i]->mbId,
-								$results[$i]->number,
 								$results[$i]->title,
+								$results[$i]->number,
+								null,
 								$results[$i]->playtimeString,
 								$artist,
 								null							
@@ -122,7 +120,7 @@
 				$sql_order = $sort && $sort == "rnd" ? "RANDOM()" : "ALBUM.tag_name";
 				$sql_limit = sprintf(" LIMIT %d ", $limit ? $limit: 32);
 				$sql_offset = sprintf(" OFFSET %d ", $offset && $offset > 0 ? $offset: 0);											
-				$sql = sprintf ( " SELECT %s FROM ALBUM LEFT JOIN ARTIST ON ARTIST.id = ALBUM.artist_id %s ORDER BY %s %s %s " , $sql_fields, $sql_where, $sql_order, $sql_limit);
+				$sql = sprintf ( " SELECT %s FROM ALBUM LEFT JOIN ARTIST ON ARTIST.id = ALBUM.artist_id %s ORDER BY %s %s %s " , $sql_fields, $sql_where, $sql_order, $sql_limit, $sql_offset);
 				$results = $db->fetch_all($sql, $params);
 				$db = null;
 				$albums = array();
@@ -207,8 +205,9 @@
 							$track = new Track(
 								$match_track->id,
 								$metadata->album->tracks->track[$t]->mbid,
-								$t + 1,
 								$metadata->album->tracks->track[$t]->name,
+								$t + 1,
+								null,
 								$match_track->playtimeString,
 								new Artist(
 									$match_track->artist->id,

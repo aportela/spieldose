@@ -96,6 +96,7 @@
 	define("PHP_INCLUDE_PATH", "%s");
 	define("MUSIC_PATH", "%s");	
 	define("LASTFM_OVERWRITE", true);
+	define("USE_CACHE", false);
 ?>
 '
 		, SQLITE3_DATABASE_FULLPATH, PHP_INCLUDE_PATH, $music_path);

@@ -48,7 +48,7 @@
 				isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
 			); 
-			$cache = $artist_cache->search($params);
+			$cache = USE_CACHE ? $artist_cache->search($params) : null;
 			if ($cache) {
 				$json_response["artists"] = $cache;
 			} else {				
@@ -57,8 +57,10 @@
 					isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 					isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 					isset($_GET["sort"]) ? $_GET["sort"]: null
-				);				
-				$artist_cache->save($params, $json_response["artists"]);
+				);			
+				if (USE_CACHE) {	
+					$artist_cache->save($params, $json_response["artists"]);
+				}
 			}
 			$json_response["success"] = true; 
 		}
