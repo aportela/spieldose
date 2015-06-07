@@ -100,6 +100,10 @@
 				$track_number = get_tag_field_value($id3_obj, "track"); 
 				$tag_part_of_a_set = get_tag_field_value($id3_obj, "part_of_a_set");
 				$title = get_tag_field_value($id3_obj, "title");
+				if (strlen($title) < 1) {
+					// for missing title tags use base filename
+					$title = pathinfo($file_path)["filename"];
+				}
 				$artist = get_tag_field_value($id3_obj, "artist");
 				$album = get_tag_field_value($id3_obj, "album");
 				$album_artist = get_tag_field_value($id3_obj, "band");

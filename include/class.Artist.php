@@ -11,7 +11,7 @@
 		public $image;
 		public $albums;
 
-		function __construct($id, $mbId, $name, $bio = null, $image = null, $albums = null) {
+		function __construct($id, $mbId, $name = null, $bio = null, $image = null, $albums = null) {
 			$this->id = $id;
 			$this->mbId = $mbId;
 			$this->name = $name;
@@ -140,18 +140,20 @@
 				
 		function parse_lastfm($lastfm_json) {
 			$metadata = json_decode($lastfm_json);
-			$this->mbId = $metadata->artist->mbid;
-			$this->name = $metadata->artist->name;
-			$this->bio = $metadata->artist->bio->content;
-			$images = array();
-			foreach($metadata->artist->image as $image) {
-				$url = $image->{"#text"};
-				if ($url && strlen($url) > 0) 
-				{
-					$images[] = array("size" => $image->size, "url" => $image->{"#text"});	
+			if ($metadata) {
+				$this->mbId = $metadata->artist->mbid;
+				$this->name = $metadata->artist->name;
+				$this->bio = $metadata->artist->bio->content;
+				$images = array();
+				foreach($metadata->artist->image as $image) {
+					$url = $image->{"#text"};
+					if ($url && strlen($url) > 0) 
+					{
+						$images[] = array("size" => $image->size, "url" => $image->{"#text"});	
+					}
 				}
+				$this->image = $images;				
 			}
-			$this->image = $images;
 		}						
 	}	
 ?>

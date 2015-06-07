@@ -11,15 +11,17 @@
 		public $image;
 		public $about;
 		public $artist;
+		public $tracks;
 
-		function __construct($id, $mbId, $name, $year = null, $image = null, $artist = null, $tracks = null) {
+		function __construct($id, $mbId, $name = null, $year = null, $image = null, $about = null, $artist = null, $tracks = null) {
 			$this->id = $id;
 			$this->mbId = $mbId;
 			$this->name = $name;
-			$this->year = $year;
-			$this->image = (count($image) > 0) ? $image : array();
-			$this->artist = $artist ? $artist : new Artist(null, null, null);
-			$this->tracks = count($tracks) > 0 ? $tracks : array();
+			$this->year = $year;			
+			$this->image = $image && count($image) > 0 ? $image : array();
+			$this->about = $about;
+			$this->artist = $artist ? $artist : new Artist(null, null);
+			$this->tracks = $tracks && count($tracks) > 0 ? $tracks: array();
 		}
 		
 		function __destruct() {
@@ -57,8 +59,8 @@
 						$result->artistName
 					);
 					$this->image = array();
-					$sql_fields = " SONG.id AS id, SONG.mb_id AS mbId, SONG.tag_track_number AS number, SONG.tag_title AS title, SONG.tag_playtime_string AS playtimeString, ARTIST.id AS artistId, ARTIST.tag_name AS artistName, ARTIST.mb_id AS artistMbId ";
-					$sql = sprintf(" SELECT %s FROM SONG LEFT JOIN ALBUM ON ALBUM.id = SONG.album_id LEFT JOIN ARTIST ON ARTIST.id = SONG.artist_id %s ORDER BY SONG.tag_track_number ", $sql_fields, $sql_where);
+					$sql_fields = " TRACK.id AS id, TRACK.mb_id AS mbId, TRACK.tag_number AS number, TRACK.tag_title AS title, TRACK.tag_playtime_string AS playtimeString, ARTIST.id AS artistId, ARTIST.tag_name AS artistName, ARTIST.mb_id AS artistMbId ";
+					$sql = sprintf(" SELECT %s FROM TRACK LEFT JOIN ALBUM ON ALBUM.id = TRACK.album_id LEFT JOIN ARTIST ON ARTIST.id = TRACK.artist_id %s ORDER BY TRACK.tag_number ", $sql_fields, $sql_where);
 					$results = $db->fetch_all($sql, $params);
 					$total_db_tracks = count($results);
 					if ($total_db_tracks > 0) {
@@ -125,40 +127,27 @@
 				$albums = array();
 				$total_results = count($results);
 				for ($i = 0; $i < $total_results; $i++) {
+					$artist = new Artist(
+						$results[$i]->artistId,
+						$results[$i]->artistMbId,
+						$results[$i]->artistName
+					);
+					unset($artist->bio);
+					unset($artist->image);
+					unset($artist->albums);
+					$album = new Album(
+						$results[$i]->id,
+						$results[$i]->mbId,
+						$results[$i]->name,
+						$results[$i]->year,
+						null,
+						$artist
+					);
 					if (LASTFM_OVERWRITE) {
-						$artist = new Artist(
-							$results[$i]->artistId,
-							$results[$i]->mbId,
-							$results[$i]->name
-						);
-						unset($artist->bio);
-						unset($artist->image);
-						unset($artist->albums);
-						$album = new Album(
-							$results[$i]->id,
-							$results[$i]->mbId,
-							$results[$i]->name,
-							$results[$i]->year,
-							null,
-							$artist
-						);
 						$album->parse_lastfm($results[$i]->lastfm_metadata);
-						unset($album->tracks);
-						unset($album->about);
-					} else {
-						$album = new Album(
-							$results[$i]->id,
-							$results[$i]->mbId,
-							$results[$i]->name,
-							new Artist(
-								"",
-								"",
-								""
-							)							
-						);	
-						unset($album->tracks);
-						unset($album->about);						
 					}					
+					unset($album->tracks);
+					unset($album->about);
 					$albums[] = $album;
 				}
 				return($albums);

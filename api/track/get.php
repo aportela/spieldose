@@ -1,6 +1,6 @@
 <?php
 	/*
-		api method: api/song/get
+		api method: api/track/get
 		request method: get
 		request params:
 			id: string

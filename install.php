@@ -36,14 +36,14 @@
 			);
 			$stmt->execute($params);							
 			$file_db->exec('
-				CREATE TABLE IF NOT EXISTS `SONG` (
+				CREATE TABLE IF NOT EXISTS `TRACK` (
 					`id`	TEXT NOT NULL UNIQUE,
 					`mb_id`	TEXT,
 					`path`	TEXT NOT NULL UNIQUE,
 					`last_modified_time`	INTEGER NULL,
 					`mime`	TEXT,
 					`bitrate`	TEXT,
-					`tag_track_number`	INTEGER,
+					`tag_number`	INTEGER,
 					`tag_part_of_a_set` INTEGER,
 					`tag_title`	TEXT,
 					`artist_id`	TEXT,
