@@ -76,6 +76,17 @@
 					PRIMARY KEY(id)
 				);		
 			');
+
+			$file_db->exec('			
+				CREATE TABLE "PLAYED_TRACKS" (
+					`user_id`	TEXT NOT NULL,
+					`track_id`	TEXT NOT NULL,
+					`play_count`	INTEGER DEFAULT 0,
+					`last_play`	INTEGER NOT NULL,
+					PRIMARY KEY(user_id,track_id)
+				)
+			');
+						
 			$file_db = null;
 			chmod(SQLITE3_DATABASE_FULLPATH, 0666);
 		}

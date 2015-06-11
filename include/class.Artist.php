@@ -8,6 +8,7 @@
 		public $mbId;
 		public $name;
 		public $bio;
+		public $tags;
 		public $image;
 		public $albums;
 
@@ -145,6 +146,16 @@
 				$this->mbId = $metadata->artist->mbid;
 				$this->name = $metadata->artist->name;
 				$this->bio = $metadata->artist->bio->content;
+				if (is_object($metadata->artist->tags) && ! is_array($metadata->artist->tags->tag)) {
+					$metadata->artist->tags->tag = array($metadata->artist->tags->tag);
+				}
+				$tags = array();	
+				if (is_object($metadata->artist->tags)) {
+					foreach($metadata->artist->tags->tag as $tag) {
+						$tags[] = $tag->name;
+					}										
+				}
+				$this->tags = $tags;
 				$images = array();
 				foreach($metadata->artist->image as $image) {
 					$url = $image->{"#text"};

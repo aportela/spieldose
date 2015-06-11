@@ -90,12 +90,13 @@
 					}
 					if (LASTFM_OVERWRITE) {
 						$this->parse_lastfm($result->lastfm_metadata);
-					}
+					}					
+					$db = null;
 					return(true);					
 				} else {
+					$db = null;
 					return(false);
 				}
-				$db = null;
 			} catch(PDOException $e) {
 				throw $e;
 			}							
@@ -139,6 +140,7 @@
 						$results[$i]->mbId,
 						$results[$i]->name,
 						$results[$i]->year,
+						null,
 						null,
 						$artist
 					);
@@ -185,6 +187,7 @@
 					}
 					for ($i = 0; $i < $total_db_tracks; $i++) {					
 						$match_track = null;
+						$match_track_idx = null;
 						for ($t = 0, $found = false; $t < $total_lastfm_tracks && ! $found; $t++) {						
 							$tag_title = mb_strtolower($this->tracks[$i]->title);
 							$lastfm_title = mb_strtolower($metadata->album->tracks->track[$t]->name); 
@@ -192,15 +195,18 @@
 								strlen($this->tracks[$i]->mbId) > 0 && $this->tracks[$i]->mbId == $metadata->album->tracks->track[$t]->mbid || $tag_title == $lastfm_title								
 							) {
 								$match_track = $metadata->album->tracks->track[$t];
+								$match_track_idx = $t;
 							} else if ($this->tracks[$i]->number == $t + 1) {
 								similar_text($tag_title, $lastfm_title, $percent);
 								if ($percent > 40) {
 									$match_track = $metadata->album->tracks->track[$t];
+									$match_track_idx = $t;
 								} 
 							} else {
 								similar_text($tag_title, $lastfm_title, $percent);
 								if ($percent > 90) {
 									$match_track = $metadata->album->tracks->track[$t];
+									$match_track_idx = $t;
 								}
 							} 
 						}
@@ -209,7 +215,7 @@
 								$this->tracks[$i]->id,
 								$match_track->mbid,
 								$match_track->name,
-								$t + 1,
+								$match_track_idx + 1,
 								null,
 								$this->tracks[$i]->playtimeString,
 								new Artist(

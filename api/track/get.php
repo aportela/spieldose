@@ -14,20 +14,16 @@
 		try {
 			if (isset($_GET["id"]) && strlen($_GET["id"]) > 0)
 			{
-				// configuration file	
 				require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);		
-				// data access layer class
 				require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
-				// common class
-				require_once sprintf("%s%sclass.Common.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
-				$db = new Database();
-				$params = array(":id" => $_GET["id"]);
-				$sql = " SELECT path FROM TRACK WHERE id = :id ";
-				$result = $db->fetch($sql, $params);
-				$db = null;
-				if ($result) {
-					Common::serve_file($result->path);
+				require_once sprintf("%s%sclass.Track.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
+				$track = new Track(isset($_GET["id"]) ? $_GET["id"]: null, isset($_GET["mbId"]) ? $_GET["mbId"]: null, null);
+				$path = $track->get_path(); 
+				if ($path != null) {
+					$track->update_song_playcount($_SESSION["user_id"]);
+					Track::serve_file($path);
 				} else {
+					$db = null;
 					http_response_code(401);
 					die("<h1>not found<h1>");					
 				}								

@@ -13,6 +13,10 @@
 				mbId: string
 				name: string
 				bio: string
+				tags:
+				[
+					string
+				] 				
 				image:
 				{
 					small: string

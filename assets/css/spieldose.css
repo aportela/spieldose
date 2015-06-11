@@ -2,9 +2,6 @@
 
 body
 {
-	margin: 0px;
-	padding: 0px;
-	background: #16171B;
 }
 
 /* defaults */
@@ -29,486 +26,535 @@ div#signin_container input, div.alert
 
 /* signin section */
 
-/* left sidebar (navigation menu) section  */
-/* credit: ishwarkatwe (http://bootsnipp.com/snippets/featured/responsive-navigation-menu) */
+/* left sidebar (menus) */
 
-.nav-side-menu
+div#sidebar
 {
-	overflow: auto;
-	font-family: verdana;
-	font-size: 12px;
-	font-weight: 200;
-	background-color: #2e353d;
+	width: 80px;
+	height: 100%;
+	display: block;
 	position: fixed;
 	top: 0px;
-	width: 200px;
-	height: 100%;
-	color: #e1ffff;
+	left: 0px;
+	background-color: #181F24;	
 }
 
-.nav-side-menu .brand
+ul#menu
 {
-	background-color: #23282e;
-	line-height: 50px;
-	display: block;
-	text-align: center;
-	font-size: 14px;
-}
-
-.nav-side-menu .toggle-btn
-{
-	display: none;
-}
-
-.nav-side-menu ul, .nav-side-menu li
-{
-	list-style: none;
-	padding: 0px;
-	margin: 0px;
-	line-height: 35px;
-	cursor: pointer;
-}
-
-.nav-side-menu ul :not(collapsed) .arrow:before, .nav-side-menu li :not(collapsed) .arrow:before
-{
-	font-family: FontAwesome;
-	content: "\f078";
-	display: inline-block;
-	padding-left: 10px;
-	padding-right: 10px;
-	vertical-align: middle;
-	float: right;
-}
-
-.nav-side-menu ul .active, .nav-side-menu li .active
-{
-	border-left: 3px solid #d19b3d;
-	background-color: #4f5b69;
-}
-
-.nav-side-menu ul .sub-menu li.active, .nav-side-menu li .sub-menu li.active
-{
-	color: #d19b3d;
-}
-
-.nav-side-menu ul .sub-menu li.active a, .nav-side-menu li .sub-menu li.active a
-{
-	color: #d19b3d;
-}
-
-.nav-side-menu ul .sub-menu li, .nav-side-menu li .sub-menu li
-{
-	background-color: #181c20;
-	border: none;
-	line-height: 28px;
-	border-bottom: 1px solid #23282e;
-	margin-left: 0px;
-}
-
-.nav-side-menu ul .sub-menu li:hover, .nav-side-menu li .sub-menu li:hover
-{
-	background-color: #020203;
-}
-
-.nav-side-menu ul .sub-menu li:before, .nav-side-menu li .sub-menu li:before
-{
-	font-family: FontAwesome;
-	content: "\f105";
-	display: inline-block;
-	padding-left: 10px;
-	padding-right: 10px;
-	vertical-align: middle;
-}
-
-.nav-side-menu li
-{
-	padding-left: 0px;
-	border-left: 3px solid #2e353d;
-	border-bottom: 1px solid #23282e;
-}
-
-.nav-side-menu li a
-{
-	text-decoration: none;
-	color: #e1ffff;
-}
-
-.nav-side-menu li a i
-{
-	padding-left: 10px;
-	width: 20px;
-	padding-right: 20px;
-}
-
-.nav-side-menu li:hover
-{
-	border-left: 3px solid #d19b3d;
-	background-color: #4f5b69;
-	-webkit-transition: all 1s ease;
-	-moz-transition: all 1s ease;
-	-o-transition: all 1s ease;
-	-ms-transition: all 1s ease;
-	transition: all 1s ease;
-}
-
-@media (max-width: 767px)
-{
-	.nav-side-menu
-	{
-		position: relative;
-		width: 100%;
-		margin-bottom: 10px;
-	}
-	
-	.nav-side-menu .toggle-btn
-	{
-		display: block;
-		cursor: pointer;
-		position: absolute;
-		right: 10px;
-		top: 10px;
-		z-index: 10 !important;
-		padding: 3px;
-		background-color: #ffffff;
-		color: #000;
-		width: 40px;
-		text-align: center;
-	}
-	
-	.brand
-	{
-		text-align: left !important;
-		font-size: 22px;
-		padding-left: 20px;
-		line-height: 50px !important;
-	}
-}
-
-@media (min-width: 767px)
-{
-	.nav-side-menu .menu-list .menu-content
-	{
-		display: block;
-	}
-}
-
-/* left sidebar (navigation menu) section  */
-
-
-/* main container */
-
-div#container
-{
-	padding-left: 200px;
-	padding-right: 300px;
-	background-color: #16171B;
-	width: 100%;
-}
-
-/* main container */
-
-
-div.album_container, div.artist_container
-{	
-	float: left;
-	background: #24292D;
-	margin: 16px;
-}
-
-div.album_container img, div.artist_container img
-{
-	width: 200px;
-	height: 200px;
-	display: block;
-}
-
-div.album_container div.album_info, div.artist_container div.artist_info
-{
-	width: 200px;
-	padding: 2px 6px;
-	font-size: 14px;
-	overflow: hidden;
-}
-
-div.album_container div.album_info p, div.artist_container div.artist_info p
-{
-	margin: 0px;
-	width: 188px;
-	overflow: hidden;
-	white-space: nowrap;
-}
-
-div.album_container div.album_info p.album_name
-{
-	color: #F6F8F8;
-	font-weight: bold;
-}
-
-div.album_container div.album_info p.album_artist, div.artist_container div.artist_info p.artist_name
-{
-	color: #9B9C9F;
-}
-
-
-/* right sidebar (player & playlist) section  */
-
-div#sidebar_player
-{
-	position: fixed;
-	top: 0px;
-	right: 0px;
-	width: 300px;
-	height: 100%;
-}
-
-div#sidebar_player div#now_playing_cover
-{
-	background: rgba(0, 0, 0, 0) url("http://userserve-ak.last.fm/serve/500/92690831/Deus+Ex+Machinae.jpg") no-repeat scroll 0 0 / 300px 300px;
-	width: 300px;
-	height: 300px;
-}
-
-div#sidebar_player div#now_playing_cover h2
-{
-  background: #16171b;
-  color: #f6f8f8;
-  opacity: 0.8;
-  filter: alpha(opacity=80); /* For IE8 and earlier */
-  font-weight: bold;
-  width: 300px;
-  margin: 0px;
-  padding: 8px 16px;
-  text-align: center;
-  font-size: 10px;   
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info
-{
-	opacity: 0.8;
-	filter: alpha(opacity=80); /* For IE8 and earlier */ 
-	background: #16171b;
-	margin-top: 225px;
-	padding: 8px;
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info h3
-{
-	height: 16px;  
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info h3, div#now_playing_song_info h4
-{
-	margin: 0px;  
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info h3 span.title
-{
-	color: #f6f8f8;
-	float: left;
-	font-size: 15px;
-	font-weight: normal;
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info h3 span.duration
-{
-	color: #9b9c9f;
-	float: right;
-	font-size: 15px;
-	font-weight: normal;
-}
-
-div#sidebar_player div#now_playing_cover div#now_playing_song_info h4.artist
-{
-	clear: both;
-	background: #16171b;
-	color: #9b9c9f;
-	font-size: 14px;
-	font-weight: normal;   
-}
-
-
-div#sidebar_player ul#now_playing_list
-{
-	background: #23282E;
-	width: 300px;
-	padding-left: 0px;
-	margin-bottom: 0px;
 	list-style-type: none;
+	padding-left: 0px;
+	background-color: #232c32;
 }
 
-div#sidebar_player ul#now_playing_list li
+ul#menu li a
 {
-	color: #9b9c9f;
-	line-height: 30px;
-	border-bottom: 1px solid #434E5A;  
-	font-size: 13px;
-	clear: both;  
-	cursor: pointer;
-	padding: 2px 4px;
-	border-left: 3px solid #23282E;
-}
-
-div#sidebar_player ul#now_playing_list li:hover
-{
-	background-color: #4f5b69;
-	-webkit-transition: all 1s ease;
-	-moz-transition: all 1s ease;
-	-o-transition: all 1s ease;
-	-ms-transition: all 1s ease;
-	transition: all 1s ease;  
-	border-left: 3px solid #23282E;
-}
-
-div#sidebar_player ul#now_playing_list li.selected
-{
-	background: #4f5b69;
-	border-left: 3px solid #d19b3d;
-}
-
-div#sidebar_player ul#now_playing_list li span.idx
-{
-	float: left;
-	margin-right: 4px;
-}
-
-div#sidebar_player ul#now_playing_list li span.duration
-{
-	margin-left: 4px;
-  	float: right;
-}
-
-div#sidebar_player div#playlist_controls
-{
+	border-left: 3px solid #232c32;		
+	display: block;
+	color: #eee;
+	text-decoration: none;
+	font-size: 12px;
 	text-align: center;
+	display: block;
+	width: 80px;
+	height: 40px;
+	overflow: hidden;	
+	position: relative;
 }
 
-div#sidebar_player div#playlist_controls i
+ul#menu li a:hover
 {
-	cursor: pointer;
-	margin: 0px 8px;	
+	background-color: #2c3942;	
+	border-left: 3px solid #d19b3d;	
 	
 }
 
-/* right sidebar (player & playlist) section  */
+ul#menu li a div
+{
+	display: block;
+	width: 77px;
+	height: 80px;
+	position: absolute;
+    -webkit-transition: all 0.1s ease-out;
+    -moz-transition: all 0.1s ease-out;
+    -o-transition: all 0.1s ease-out;
+    transition: all 0.1s ease-out;	
+	top: 0px;	
+}
+
+ul#menu li a:hover div
+{	
+	top: -40px;	
+	background-color: #4f5b69;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-ms-transition: all 0.5s ease;
+	transition: all 0.5s ease;  	
+}
+
+ul#menu li a div i
+{
+	display: block !important;
+	margin-top: 8px;	
+	margin-bottom: 20px;
+}
+
+/* left sidebar (menus) */
+
+/* main block */
+
+div#content
+{
+	background: #F2F4F8;
+	margin-left: 80px;
+}
+
+div.content_with_player
+{
+	margin-right: 300px;	
+}
 
 form#f_search
 {
-	padding: 4px 16px;
-}
-	
-span.twitter-typeahead
-{
-	display: block;
-	width: 100%;
+	margin: 16px;
 }
 
-div.tt-menu
+div#content h1, div#content h2
 {
-	background: #16171B;
-	width: 100%;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-	color: #fff;
-	font-size: 14px;
-	padding: 6px 12px;
+	margin: 16px;
 }
 
-div#song_results h3, div#artist_results h3, div#album_results h3
+div#albums, div#artists
 {
-	font-size: 14px;
-	color: #9b9c9f;
 }
 
-/* TYPEAHEAD */
+/* album item */
 
-div.tt-menu div.result
+div.album_item
 {
-	font-size: 13px;
-	clear: both;
-	background: #24292D;
-	margin-bottom: 2px;
-	padding: 4px;
-}
-
-div.tt-menu div.result img
-{
-	margin: 0px 2px;
-	border: 1px solid #333333;
-	border-radius: 4px;
+	width: 174px;
 	float: left;
+	margin: 0px 24px;
+	margin-bottom: 16px;
 }
 
-div.tt-menu div.result span
+div.album_item a.play_album
 {
-	float: left;	
+	width: 174px;
+	height: 174px;
 	display: block;
-	margin-left: 8px;		
-}
-
-div.tt-menu div.result span.result_song_title, div.tt-menu div.result span.result_artist, div.tt-menu div.result span.result_album
-{
-	color: #fff;
-}
-
-div.tt-menu div.result span.result_artist
-{
-	margin-top: 8px;
-}
-
-div.tt-menu div.result span.result_artist_album, div.tt-menu div.result span.result_song_artist
-{
-	color: #9b9c9f;		
-}
-
-div.tt-menu div.result i.play_song, div.tt-menu div.result i.enqueue_song
-{
-	float: left;
-}
-
-/* TYPEAHEAD */
-
-
-i.play_song, i.enqueue_song, i.play_album
-{
-	cursor: pointer;
-	margin-left: 6px;
-}
-
-table
-{
+	position: relative;
+	border-radius: 4px;
 	overflow: hidden;
 }
 
-table tbody tr
+div.album_item a.play_album:hover
 {
-	background: #16171B !important;
-	cursor: pointer;
+	/* opacity: 0.90; */
 }
 
-.table-striped > tbody > tr:nth-of-type(2n+1)
+div.album_item a.play_album img.no_cover
 {
-	background: #282E35 !important;	
+	display: block !important;
 }
 
-table tbody tr td {
+div.album_item a.play_album img.album_cover, div.album_item a img.vynil
+{
+	width: 174px;
+	height: 174px;
+	border: 0px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;	
+}
+
+/* album cover effect (hover -> move to left) */
+div.album_item a.play_album img.album_cover
+{
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;	
+}
+
+div.album_item a.play_album:hover img.album_cover
+{
+	left: -80px;
+}
+
+/* album (internal) disc effect (hover -> rotate) */
+div.album_item a.play_album img.vynil
+{
+	z-index: 0;
+	display: none;
+	width: 174px;
+	height: 174px;		
+    -webkit-transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    -o-transition: all 1s ease-out;
+    transition: all 1s ease-out;		
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;	
+}
+
+div.album_item a.play_album:hover img.vynil
+{
+	z-index: 0;
+	display: block;
+	-webkit-transform:rotate(360deg);
+	-moz-transform:rotate(360deg); 
+	-o-transform:rotate(360deg);
+}
+
+/* play icon (hover cover) */
+div.album_item a.play_album i
+{
+	display: none;
+	position: absolute;
+	top: 60px;
+	left: 72px;
+	z-index: 2;
+	color: #ccc;
+}
+
+div.album_item a.play_album:hover i
+{
+	display: block;
+}
+
+/* artist / album name (below cover) */
+div.album_item div.album_info
+{
+	padding: 8px;
+	overflow: hidden;
+}
+
+div.album_item div.album_info p
+{
+	margin: 0px;
+	font-size: 13px;
+	font-family: Tahoma;
+	width: 100%;
+	height: 18px;
 	white-space: nowrap;
-	color: #e6e6e6 !important;
-	font-size: 10.5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-
-/* dashboard */
-
-div#random_artists, div#random_albums
+div.album_item div.album_info p.artist_name a
 {
-	width: 95%;
-	margin: 16px auto;
-	overflow-x: scroll;
+	color: #545a5f;
 }
 
-div.album_container
+div.album_item div.album_info p.album_name
 {
-	cursor: pointer;
+	color: #939aa0;
 }
-/* dashboard */
+
+/* album item */
+
+/* artist item */
+
+div.artist_item
+{
+	width: 128px;
+	float: left;
+	margin: 0px 24px;
+	margin-bottom: 16px;
+}
+
+div.artist_item a
+{
+	width: 128x;
+	height: 128px;
+	display: block;
+	position: relative;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+div.artist_item a img
+{
+	width: 128px;
+	height: 128px;
+	border: 0px;
+	z-index: 0;
+}
+
+div.artist_item a:hover img
+{
+	opacity: 0.5;
+}
+
+div.artist_item a i
+{
+	display: none;
+	position: absolute;
+	top: 40px;
+	left: 40px;
+	z-index: 1;
+	color: #4F5B69
+}
+
+div.artist_item a:hover i
+{
+	display: block;
+}
+
+div.artist_item div.artist_info
+{
+	padding: 4px;
+	overflow: hidden;
+}
+
+div.artist_item div.artist_info p.artist_name
+{
+	margin: 0px;
+	font-size: 13px;
+	font-family: Tahoma;
+	width: 100%;
+	height: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	color: #545a5f;
+	text-overflow: ellipsis;	
+}
+
+/* artist item */
+
+ol#dashboard_most_played_tracks li, ul#dashboard_recently_added_tracks li
+{
+	font-family: Tahoma;
+}
+
+ol#dashboard_most_played_tracks li a, ul#dashboard_recently_added_tracks li a
+{
+	font-size: 13px;
+	color: #545a5f;
+	font-weight: bold;	
+}
+
+ol#dashboard_most_played_tracks li p a, ul#dashboard_recently_added_tracks li p a
+{
+	font-size: 12px;
+	font-weight: normal;	
+	color: #495563;
+}
+
+
+/* artist section */
+
+div#artist_view
+{
+	padding: 32px;
+}
+
+h1#artist_name
+{
+	
+}
+
+img#artist_image
+{
+	float: left;
+}
+
+div#artist_info
+{
+	float: left;
+	width: 40%;
+}
+
+div#artist_bio
+{
+	margin: 0px 12px;
+}
+
+p#artist_tags
+{
+	margin: 8px 12px;
+}
+
+p#artist_tags a
+{
+	margin: 0px 2px;
+}
+
+/* artist section */
+
+/* main block */
+
+/* player & playlist  */
+
+div#player
+{
+	width: 300px;
+	height: 100%;
+	display: block;
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	background-color: #181F24;		
+}
+
+div#player p#now_playing_header
+{
+	width: 100%;
+	text-align: center;	
+	color: #9b9c9f;
+	font-size: 10px;
+	margin: 0px;
+	padding: 4px 0px;
+	background-color: #16171b;
+	z-index: 1;
+	opacity: 0.72;
+}
+
+div#player img
+{
+	display: block;
+	width: 300px;
+	height: 300px;
+	margin-top: -20px;
+}
+
+div#player div#now_playing_info
+{
+	background-color: #16171b;
+	opacity: 0.72;
+	width: 300px;
+	overflow: hidden;
+	padding: 5px;
+	margin-top: -52px;
+}
+
+div#player div#now_playing_info span#now_playing_song_title
+{
+	float: left;
+	display: block;
+	width: 204px;
+	color: #f6f8f8;
+	font-size: 15px;
+	overflow: hidden;
+    white-space: nowrap;
+	
+}
+
+div#player div#now_playing_info span#now_playing_song_time
+{
+	float: right;
+	display: block;
+	width: 84px;
+	color: #9b9c9f;
+	font-size: 15px;
+	overflow: hidden;
+	text-align: right;
+}
+
+div#player div#now_playing_info span#now_playing_artist
+{
+	clear: both;
+	color: #9b9c9f;
+	font-size: 14px;
+	display: block;
+	width: 300px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+div#player audio#audio
+{
+	padding-top: 8px;
+}
+
+div#player div#player_controls
+{
+  padding: 4px;
+}
+
+div#player div#player_controls i
+{
+  cursor: pointer;
+  margin: 0px 4px;
+  color: #4F5B69;  
+}
+
+div#player ul#now_playing_list
+{
+  background: #181F24;
+  width: 300px;
+  padding-left: 0px;
+  margin-bottom: 0px;
+  list-style-type: none;
+}
+
+div#player ul#now_playing_list li
+{
+	clear: both;  
+	overflow: hidden;
+}
+
+div#player ul#now_playing_list li a
+{
+  
+	border-left: 3px solid #232c32;		
+	display: block;
+	color: #9b9c9f;
+	text-decoration: none;
+	font-size: 12px;
+	text-align: center;
+	display: block;
+	width: 300px;
+	font-size: 13px;
+	height: 26px;
+	padding: 4px;
+  	border-bottom: 1px solid #434E5A;
+	cursor: pointer;  
+}
+
+div#player ul#now_playing_list li a.selected
+{
+  background: #232c32;
+  border-left: 3px solid #d19b3d;
+}
+
+div#player ul#now_playing_list li a:hover
+{
+  background-color: #4f5b69;
+  border-left: 3px solid #4f5b69;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;  
+}
+
+div#player ul#now_playing_list li a.selected:hover
+{
+  background-color: #4f5b69;
+  border-left: 3px solid #d19b3d;
+}
+
+
+div#player ul#now_playing_list li a span.title
+{
+  float: left;
+  display: block;
+  width: 246px;  
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+div#player ul#now_playing_list li a span.duration
+{
+  float: right;
+  width: 40px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* player & playlist  */
