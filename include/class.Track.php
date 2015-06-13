@@ -82,9 +82,27 @@
 					$sql_where = " WHERE TRACK.tag_title LIKE :q ";
 					$params = array(":q" => '%' . $_GET["q"] . '%');					
 				}
-				$sql_order = $sort && $sort == "rnd" ? "RANDOM()" : "TRACK.tag_title";
-				$sql_limit = $limit ? sprintf(" LIMIT %d ", $limit) : 32;							
-				$sql = sprintf ( " SELECT %s FROM TRACK LEFT JOIN ARTIST ON ARTIST.id = TRACK.artist_id LEFT JOIN ALBUM ON ALBUM.id = TRACK.album_id %s ORDER BY %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit);
+				switch($sort) {
+					case "rnd":
+						$sql_order = "RANDOM()";
+					break;
+					case "top":
+						$sql_order = "PLAYED_TRACKS.play_count DESC";
+					break;
+					case "recent":
+						$sql_order = "TRACK.last_modified_time DESC";
+					break;
+					default:
+						$sql_order = "TRACK.tag_title";
+					break;
+				}
+				$sql_limit = $limit ? sprintf(" LIMIT %d ", $limit) : 32;
+				if ($sort != "top") {
+					$sql = sprintf ( " SELECT %s FROM TRACK LEFT JOIN ARTIST ON ARTIST.id = TRACK.artist_id LEFT JOIN ALBUM ON ALBUM.id = TRACK.album_id %s ORDER BY %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit);
+				} else {
+					$sql = sprintf ( " SELECT %s FROM PLAYED_TRACKS LEFT JOIN TRACK ON TRACK.id = PLAYED_TRACKS.track_id LEFT JOIN ARTIST ON ARTIST.id = TRACK.artist_id LEFT JOIN ALBUM ON ALBUM.id = TRACK.album_id %s ORDER BY %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit);				
+				}
+											
 				$results = $db->fetch_all($sql, $params);
 				$db = null;
 				$tracks = array();

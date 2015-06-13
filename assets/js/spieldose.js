@@ -90,14 +90,26 @@ var spieldose = {
 							spieldose.html.dashboard.putArtists(data.artists);
 							// get most played tracks 							
 							$.ajax({
-								url: "api/track/search.php?limit=5&offset=0&sort=rnd",
+								url: "api/track/search.php?limit=5&offset=0&sort=top",
 								method: "get" 
 							})
 							.done(function(data, textStatus, jqXHR) {
-								if (data.success == true) {
+								if (data.success == true) {									
 									spieldose.html.dashboard.putMostPlayedTracks(data.tracks);
-									spieldose.html.dashboard.putRecentlyAddedTracks(data.tracks);
-									$("div#dashboard").removeClass("hidden");	
+									// get recently added to library tracks
+									$.ajax({
+										url: "api/track/search.php?limit=5&offset=0&sort=recent",
+										method: "get" 
+									})
+									.done(function(data, textStatus, jqXHR) {
+										if (data.success == true) {
+											spieldose.html.dashboard.putRecentlyAddedTracks(data.tracks);
+											$("div#dashboard").removeClass("hidden");
+										}
+									})
+									.fail(function(jqXHR, textStatus, errorThrown) {
+										// TODO
+									});																									
 								} else {
 									// TODO
 								}								
