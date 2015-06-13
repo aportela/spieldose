@@ -68,6 +68,40 @@ var spieldose = {
 			}
 		}
 	},
+	track: {
+		search: function(count, order, callback) {
+			var url = null;
+			switch(order) {
+				case "rnd":
+					url = "api/track/search.php?limit=" + count + "&offset=0&sort=rnd";
+				break;
+				case "top":
+					url = "api/track/search.php?limit=" + count + "&offset=0&sort=top";
+				break;
+				case "recent":
+					url = "api/track/search.php?limit=" + count + "&offset=0&sort=recent";
+				break;
+				default:
+					url = "api/track/search.php?limit=" + count + "&offset=0";
+				break;
+			}
+			// get recently added to library tracks
+			$.ajax({
+				url: url,
+				method: "get" 
+			})
+			.done(function(data, textStatus, jqXHR) {
+				if (data.success == true) {
+					callback(null, data.tracks);
+				} else {
+					callback(data.error.msg, null);
+				}
+			})
+			.fail(function(jqXHR, textStatus, errorThrown) {				
+				callback(errorThrown, null);
+			});																												
+		}	
+	},
 	dashboard: {
 		// refresh & redraw dashboard section
 		refresh: function() {
@@ -88,35 +122,28 @@ var spieldose = {
 					.done(function(data, textStatus, jqXHR) {
 						if (data.success == true) {
 							spieldose.html.dashboard.putArtists(data.artists);
-							// get most played tracks 							
-							$.ajax({
-								url: "api/track/search.php?limit=5&offset=0&sort=top",
-								method: "get" 
-							})
-							.done(function(data, textStatus, jqXHR) {
-								if (data.success == true) {									
-									spieldose.html.dashboard.putMostPlayedTracks(data.tracks);
-									// get recently added to library tracks
-									$.ajax({
-										url: "api/track/search.php?limit=5&offset=0&sort=recent",
-										method: "get" 
-									})
-									.done(function(data, textStatus, jqXHR) {
-										if (data.success == true) {
-											spieldose.html.dashboard.putRecentlyAddedTracks(data.tracks);
-											$("div#dashboard").removeClass("hidden");
+							spieldose.track.search(5, "recent", function(err, tracks) {
+								if (err == null) {
+									spieldose.html.dashboard.putRecentlyAddedTracks(tracks);
+									spieldose.track.search(5, "top", function(err, tracks) {
+										if (err == null) {
+											spieldose.html.dashboard.putMostPlayedTracks(tracks);
+											spieldose.track.search(5, "rnd", function(err, tracks) {
+												if (err == null) {
+													spieldose.html.dashboard.putRandomTracks(tracks);
+													$("div#dashboard").removeClass("hidden");
+												} else {
+													//TODO
+												}
+											});											
+										} else {
+											//TODO
 										}
-									})
-									.fail(function(jqXHR, textStatus, errorThrown) {
-										// TODO
-									});																									
+									});									
 								} else {
-									// TODO
-								}								
-							})
-							.fail(function(jqXHR, textStatus, errorThrown) {
-								// TODO
-							});																									
+									//TODO
+								}
+							});							
 						} else {
 							// TODO
 						}
@@ -224,6 +251,13 @@ var spieldose = {
 				';
 				$("div#dashboard_artists").html(html);
 			},
+			putRecentlyAddedTracks: function(tracks) {
+				var html = "";
+				for (var i = 0; i < tracks.length; i++) {
+					html += spieldose.html.listItem.trackList(tracks[i]);
+				}
+				$("ul#dashboard_recently_added_tracks").html(html);
+			},
 			putMostPlayedTracks: function(tracks) {
 				var html = "";
 				for (var i = 0; i < tracks.length; i++) {
@@ -231,12 +265,12 @@ var spieldose = {
 				}
 				$("ol#dashboard_most_played_tracks").html(html);				
 			},
-			putRecentlyAddedTracks: function(tracks) {
+			putRandomTracks: function(tracks) {
 				var html = "";
 				for (var i = 0; i < tracks.length; i++) {
 					html += spieldose.html.listItem.trackList(tracks[i]);
 				}
-				$("ul#dashboard_recently_added_tracks").html(html);
+				$("ul#dashboard_random_tracks").html(html);				
 			}
 		}
 	}
@@ -313,6 +347,11 @@ $("body").on("click", "a.view_artist", function(e) {
 					}			
 				}
 				$("p#artist_tags").html(htmlTags);
+				var htmlAlbums = "";
+				for (var i = 0; i < data.artist.albums.length; i++) {
+					htmlAlbums += spieldose.html.listItem.album(data.artist.albums[i]);
+				}
+				$("div#artist_albums").html(htmlAlbums);
 				// show artist section
 				$("div#artist_view").removeClass("hidden");
 			} else {

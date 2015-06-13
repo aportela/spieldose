@@ -68,7 +68,7 @@
 							if (LASTFM_OVERWRITE) {
 								$album->parse_lastfm($results[$i]->lastfm_metadata);								
 							}
-							unset($album->artist);
+							//unset($album->artist);
 							unset($album->tracks);
 							unset($album->about);
 							$albums[] = $album;

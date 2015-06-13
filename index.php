@@ -48,25 +48,30 @@
 			</div>
 			<div id="dashboard" class="section">
 				<h1>Discover <i class="fa fa-bar-chart"></i></h1>
-				<h2>Albums</h2>
-				<div id="dashboard_albums"></div>
-				<h2>Artists</h2>
-				<div id="dashboard_artists"></div>
 				<h2>Tracks</h2>
 				<div id="dashboard_tracks">
 					<div class="row">
-						<div class="col-md-6">
-							<h3>Most played</h3>
-							<ol id="dashboard_most_played_tracks">
-							</ol>
-						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<h3>Recently added to library</h3>
 							<ul id="dashboard_recently_added_tracks">
 							</ul>							
 						</div>
+						<div class="col-md-4">
+							<h3>Most played</h3>
+							<ol id="dashboard_most_played_tracks">
+							</ol>
+						</div>
+						<div class="col-md-4">
+							<h3>Random</h3>
+							<ul id="dashboard_random_tracks">
+							</ul>							
+						</div>
 					</div>
 				</div>
+				<h2>Albums</h2>
+				<div id="dashboard_albums"></div>
+				<h2>Artists</h2>
+				<div id="dashboard_artists"></div>
 			</div>
 			<div id="artist_view" class="section hidden">
 				<h1 id="artist_name"></h1>
@@ -80,8 +85,10 @@
 				<h3>Top tracks</h3>
 					<ol id="artist_top_tracks">
 					</ol>
-				<h3>Top albums</h3>												
-				<div class="clearfix"></div>
+				<h3>Top albums</h3>			
+				<div id="artist_albums">					
+				</div>		
+				<div class="clearfix"></div>											
 			</div>
 		</div>
 		<div id="player" class="hidden">

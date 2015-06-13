@@ -325,19 +325,19 @@ div.artist_item div.artist_info p.artist_name
 
 /* artist item */
 
-ol#dashboard_most_played_tracks li, ul#dashboard_recently_added_tracks li
+ol#dashboard_most_played_tracks li, ul#dashboard_recently_added_tracks li, ul#dashboard_random_tracks li
 {
 	font-family: Tahoma;
 }
 
-ol#dashboard_most_played_tracks li a, ul#dashboard_recently_added_tracks li a
+ol#dashboard_most_played_tracks li a, ul#dashboard_recently_added_tracks li a, ul#dashboard_random_tracks li a
 {
 	font-size: 13px;
 	color: #545a5f;
 	font-weight: bold;	
 }
 
-ol#dashboard_most_played_tracks li p a, ul#dashboard_recently_added_tracks li p a
+ol#dashboard_most_played_tracks li p a, ul#dashboard_recently_added_tracks li p a, ul#dashboard_random_tracks li p a
 {
 	font-size: 12px;
 	font-weight: normal;	
