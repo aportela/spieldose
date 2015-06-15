@@ -276,6 +276,11 @@ div.artist_item a
 	overflow: hidden;
 }
 
+div.artist_item a.artist_pager
+{
+	background: #fff;
+}
+
 div.artist_item a img
 {
 	width: 128px;
@@ -299,9 +304,17 @@ div.artist_item a i
 	color: #4F5B69
 }
 
+div.artist_item a.artist_pager i
+{
+	display: block;
+	top: 34px;
+	left: 38px;	
+}
+
 div.artist_item a:hover i
 {
 	display: block;
+	opacity: 0.8;
 }
 
 div.artist_item div.artist_info

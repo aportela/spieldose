@@ -23,7 +23,7 @@
 		<div id="sidebar">
 			<ul id="menu">
 				<li><a id="menu_link_dashboard" href="#/dashboard"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
-				<li><a id="menu_link_browse_artists" href="#/artists"><div><i class="fa fa-2x fa-user"></i>artists</div></a></li>
+				<li><a id="menu_link_browse_artists" href="#/artists" data-offset="0"><div><i class="fa fa-2x fa-user"></i>artists</div></a></li>
 				<li><a href="#/albums" class="disabled_link"><div><i class="fa fa-2x fa-file-audio-o"></i>albums</div></a></li>
 				<li><a href="#/genres" class="disabled_link"><div><i class="fa fa-2x fa-tags"></i>genres</div></a></li>
 				<li><a href="#/prefs" class="disabled_link"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>

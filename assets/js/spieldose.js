@@ -44,6 +44,7 @@ var markupTemplates = {
 	',
 	// not artist image credits: https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon#size=128
 	artists: '\
+		{{if showPrevious}}<div class="artist_item"><a class="artist_pager" data-offset="{{previousOffset}}" href="api/artist/search.php?limit={{limit}}&offset={{previousOffset}}" title="previous"><i class="fa fa-arrow-left fa-4x"></i></a></div>{{/if}}\
 		{{artists}}\
 		<div class="artist_item">\
 			<a class="view_artist" href="api/artist/get.php?id={{id}}" data-id="{{id}}">\
@@ -55,6 +56,7 @@ var markupTemplates = {
 			</div>\
 		</div>\
 		{{/artists}}\
+		{{if showNext}}<div class="artist_item"><a class="artist_pager" data-offset="{{nextOffset}}" href="api/artist/search.php?limit={{limit}}&offset={{nextOffset}}" title="next"><i class="fa fa-arrow-right fa-4x"></i></a></div>{{/if}}\
 		{{if artists|more>1}}<div class="clearfix"></div>\{{/if}}\
 	'
 };
@@ -99,10 +101,10 @@ var spieldose = {
 		getImage(images) {						
 			return(images && images.length > 1 ? images[2].url : spieldose.artist.defaultImage);
 		},		
-		search: function(count, order, callback) {
+		search: function(count, offset, order, callback) {
 			// get random artists
 			$.ajax({
-				url: "api/artist/search.php?limit=" + count + "&offset=0&sort=" + order,
+				url: "api/artist/search.php?limit=" + count + "&offset=" + offset + ((order != null) ? "&sort=" + order : ""),
 				method: "get" 
 			})
 			.done(function(data, textStatus, jqXHR) {
@@ -291,8 +293,47 @@ $("a#menu_link_dashboard").click(function(e) {
 // browse artists link
 $("a#menu_link_browse_artists").click(function(e) {
 	$("div.section").addClass("hidden");
-	spieldose.artist.search(32, null, function(err, artists) {
-		$("div#artist_list_container").html(Mark.up(markupTemplates.artists, { artists: artists }));
+	var offset = $(this).data("offset");
+	spieldose.artist.search(33, offset, null, function(err, artists) {
+		var context = { 
+			showPrevious: false
+		};
+		if (artists.length == 33) {
+			artists.pop();
+			context.showNext = true;
+			context.nextOffset = 32;
+		} else {			
+			context.showNext = false;
+		}
+		context.artists = artists;
+		$("div#artist_list_container").html(Mark.up(markupTemplates.artists, context));		
+		$("div#artist_list").removeClass("hidden");	
+	});
+});
+
+ 
+// browse artists link
+$("body").on("click", "a.artist_pager", function(e) {
+	e.preventDefault();
+	$("div.section").addClass("hidden");
+	var offset = $(this).data("offset");
+	spieldose.artist.search(33, offset, null, function(err, artists) {		
+		var context = {}; 
+		if (offset >= 32) {
+			context.showPrevious = true;
+			context.previousOffset = offset - 32;
+		} else {
+			context.showPrevious = false;
+		}
+		if (artists.length == 33) {
+			artists.pop();
+			context.showNext = true;
+			context.nextOffset = offset + 32;
+		} else {
+			context.showNext = false;	
+		}
+		context.artists = artists;
+		$("div#artist_list_container").html(Mark.up(markupTemplates.artists, context));		
 		$("div#artist_list").removeClass("hidden");	
 	});
 });
