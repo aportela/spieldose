@@ -14,39 +14,33 @@
 	session_start();
 	$json_response = array();
 	if (isset($_POST["email"]) && filter_var($_POST["email"], FILTER_VALIDATE_EMAIL) && isset($_POST["password"])) {		
-		// configuration file	
-		require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);
-		// data access layer class
-		require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
-		$db = null;		
-		try {			
-			$db = new Database();
-			$user = $db->fetch(" SELECT id, password_hash FROM USER WHERE email = :email ", array(":email" => $_POST["email"]));
-			if ($user) {
-				if (password_verify($_POST["password"], $user->password_hash)) {
+		require_once sprintf("%s%sconfiguration.php", dirname(dirname(dirname(__FILE__))), DIRECTORY_SEPARATOR);			
+		require_once sprintf("%s%sclass.User.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
+		try {
+			$user = new User(null, $_POST["email"]);			
+			if ($user->get()) {
+				if (password_verify($_POST["password"], $user->hashed_password)) {
+					$user->update_last_activity();
 					$_SESSION["user_id"] = $user->id;
-					$db->exec(" UPDATE USER SET last_activity = CURRENT_TIMESTAMP WHERE id = :id ", array(":id" => $_SESSION["user_id"]));
 					$json_response["success"] = true;	
 				} else {
 					unset($_SESSION["user_id"]);
 					$json_response["success"] = false;
-					$json_response["errorMsg"] = "invalid password";
-				}					
+					$json_response["error"] = array("msg" => "invalid password");
+				}				
 			} else {
 				unset($_SESSION["user_id"]);
 				$json_response["success"] = false;
-				$json_response["errorMsg"] = "email not found";			
+				$json_response["error"] = array("msg" => "email not found");
 			}
-			$db = null;
 		} catch (Exception $e) {
 			$json_response["success"] = false;
-			$json_response["errorMsg"] = "signup api fatal exception";
-			$json_response["debugMsg"] = $e->getMessage();
+			$json_response["error"] = array("msg" => "signup api fatal exception", "debug" => $e->getMessage());
 		}		
 	} else {		
 		unset($_SESSION["user_id"]);
 		$json_response["success"] = false;
-		$json_response["errorMsg"] = "invalid request params";		
+		$json_response["error"] = array("msg" => "invalid request params");
 	}
 	ob_clean();
 	header("Content-Type: application/json; charset=utf-8");

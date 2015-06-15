@@ -268,15 +268,37 @@ $("form#f_signin").submit(function(e) {
 	})
 	.done(function(data, textStatus, jqXHR) {
 		if (data.success == true) {
-			window.location = "#/dashboard";
-			location.reload(); 
+			window.location.assign(location.protocol + '//' + location.host + location.pathname + "#/dashboard");
+			location.reload();		 
 		} else {			
-			$("div#signin_container").append(Mark.up(markupTemplates.alert, { msg: data.errorMsg }));
+			$("div#signin_container").append(Mark.up(markupTemplates.alert, { msg: data.error.msg }));
 		}
 	})
 	.fail(function(jqXHR, textStatus, errorThrown) {
 		$("div#signin_container").append(Mark.up(markupTemplates.alert, { msg: "ajax error" }));
 	});				
+});
+
+// signout menu link event -> close session & refresh to sign in form
+$("a#menu_link_signout").click(function(e) {
+	e.preventDefault();
+	$.ajax({
+		url: $(this).attr("href"),
+		method: "post", 
+		data: $(this).serialize(),
+		dataType : "json"
+	})
+	.done(function(data, textStatus, jqXHR) {
+		if (data.success == true) {
+			window.location.assign(location.protocol + '//' + location.host + location.pathname + "#/signin");
+			location.reload();		 
+		} else {
+			// TODO			
+		}
+	})
+	.fail(function(jqXHR, textStatus, errorThrown) {
+		// TODO
+	});						
 });
 
 // don't follow events of disabled links  
@@ -396,7 +418,6 @@ $("body").on("click", "a.view_artist", function(e) {
 	}
 });
 
- 
 $("body").on("click", "a.playlist_track", function(e) {
 	e.preventDefault();
 	var id = $(this).data("id");
@@ -407,4 +428,6 @@ $("body").on("click", "a.playlist_track", function(e) {
 	}
 }); 
 
-spieldose.dashboard.refresh();
+if ($("div#content").length == 1) {
+	spieldose.dashboard.refresh();
+}

@@ -27,6 +27,8 @@
 				<li><a href="#/albums" class="disabled_link"><div><i class="fa fa-2x fa-file-audio-o"></i>albums</div></a></li>
 				<li><a href="#/genres" class="disabled_link"><div><i class="fa fa-2x fa-tags"></i>genres</div></a></li>
 				<li><a href="#/prefs" class="disabled_link"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
+				<li><a id="menu_link_signout" href="api/user/signout.php"><div><i class="fa fa-2x fa-sign-out"></i>sign out</div></a></li>
+				 
 			</ul>
 		</div>
 		<div id="content">
