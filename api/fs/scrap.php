@@ -9,7 +9,9 @@
 		// data access layer class
 		require_once sprintf("%s%sclass.Database.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);						
 		// Last FM class
-		require_once sprintf("%s%sclass.LastFM.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
+		require_once sprintf("%s%sclass.LastFM.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);
+		// Artist class
+		require_once sprintf("%s%sclass.Artist.php", PHP_INCLUDE_PATH, DIRECTORY_SEPARATOR);		
 		echo sprintf("[spieldose]%s", PHP_EOL);
 		
 		
@@ -34,10 +36,30 @@
 					echo sprintf("ok%s", PHP_EOL);		
 				} catch(PDOException $e) {
 					echo sprintf("error saving scrapped info%s\t%s%s", PHP_EOL, $e->getMessage(), PHP_EOL);
-				}				
+				}
+				echo sprintf("\tsaving tags...");
+				$a = new Artist($artist->id, $metadata->artist->mbid);
+				$a->parse_lastfm($json_metadata);
+				$sql = " DELETE FROM ARTIST_TAG WHERE artist_id = :artist_id ";
+				$params = array(":artist_id" => $artist->id);				
+				try {
+					$db->exec($sql, $params);		
+				} catch(PDOException $e) {
+					echo sprintf("error removing old artist tags%s\t%s%s", PHP_EOL, $e->getMessage(), PHP_EOL);
+				}
+				foreach($a->tags as $tag) {
+					$sql = " INSERT INTO ARTIST_TAG (artist_id, tag) VALUES (:artist_id, :tag) ";
+					$params = array(":artist_id" => $artist->id, ":tag" => $tag);				
+					try {
+						$db->exec($sql, $params);		
+					} catch(PDOException $e) {
+						echo sprintf("error saving artist tag%s\t%s%s", PHP_EOL, $e->getMessage(), PHP_EOL);
+					}					
+				}	
+				echo sprintf("ok%s", PHP_EOL);		
 			}
 		}
-		
+				
 		$sql = sprintf(" SELECT ALBUM.id AS album_id, ALBUM.tag_name AS album_name, ARTIST.tag_name AS artist_name FROM ALBUM LEFT JOIN ARTIST ON ARTIST.id = ALBUM.artist_id WHERE ALBUM.mb_id IS NULL OR ALBUM.lastfm_metadata IS NULL ORDER BY ALBUM.tag_name ");						
 		$params = array();
 		$albums = $db->fetch_all($sql, $params);

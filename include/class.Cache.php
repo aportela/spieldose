@@ -12,6 +12,7 @@
 			if (! file_exists($this->base_dir)) {
 				mkdir ($this->base_dir . DIRECTORY_SEPARATOR . "album", 0700, true);
 				mkdir ($this->base_dir . DIRECTORY_SEPARATOR . "artist", 0700, true);
+				mkdir ($this->base_dir . DIRECTORY_SEPARATOR . "tag", 0700, true);
 			}
 		}
 		
@@ -83,4 +84,24 @@
 			}
 		}
 	}
+
+	class TagCache extends Cache {
+		function __construct($user_id) {
+			parent::__construct($user_id);
+		}		
+		function __destruct() {
+			parent::__destruct();
+		}		
+		public function search($params) {
+			return($this->get_cache("tag" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache"));
+		}		
+		public function save ($params, $content) {
+			if (count($params) == 4 && $params[3] == "rnd") {
+				// don't cache random sort results in search
+			} else {
+				$this->set_cache("tag" . DIRECTORY_SEPARATOR . $this->hash($params) . ".cache", $content);
+			}
+		}
+	}
+
 ?>

@@ -77,6 +77,14 @@
 				);		
 			');
 
+			$file_db->exec('
+				CREATE TABLE `ARTIST_TAG` (
+					`artist_id`	TEXT NOT NULL,
+					`tag`	TEXT NOT NULL,
+					PRIMARY KEY(artist_id,tag)
+				);
+			');
+
 			$file_db->exec('			
 				CREATE TABLE "PLAYED_TRACKS" (
 					`user_id`	TEXT NOT NULL,

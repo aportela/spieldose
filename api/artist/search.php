@@ -4,9 +4,10 @@
 		request method: get
 		request params:
 			q: string
+			genre: string (optional)
 			limit: int (optional)
 			offset: int (optional)			
-			sort: string (optional)
+			sort: string (optional)			
 		response:
 			success: boolean
 			artists:
@@ -44,6 +45,7 @@
 			$artist_cache = new ArtistCache($_SESSION["user_id"]);
 			$params = array(
 				isset($_GET["q"]) ? $_GET["q"]: null,
+				isset($_GET["genre"]) ? $_GET["genre"]: null,
 				isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 				isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 				isset($_GET["sort"]) ? $_GET["sort"]: null
@@ -54,6 +56,7 @@
 			} else {				
 				$json_response["artists"] = Artist::search(
 					isset($_GET["q"]) ? $_GET["q"]: null,
+					isset($_GET["genre"]) ? $_GET["genre"]: null,
 					isset($_GET["limit"]) ? intval($_GET["limit"]): 32,
 					isset($_GET["offset"]) ? intval($_GET["offset"]): 0,
 					isset($_GET["sort"]) ? $_GET["sort"]: null

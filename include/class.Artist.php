@@ -90,7 +90,7 @@
 			}							
 		}
 		
-		static function search($q = null, $limit = 32, $offset = 0, $sort = null) {
+		static function search($q = null, $genre = null, $limit = 32, $offset = 0, $sort = null) {
 			try {
 				$db = new Database();
 				$sql = null;
@@ -100,17 +100,21 @@
 				} else {
 					$sql_fields = " ARTIST.id, ARTIST.mb_id AS mbId, ARTIST.tag_name AS name ";
 				}
-				$sql_where = null;
+				$sql_where = array();
 				$params = array();
 				
 				if ($q && strlen($q) > 0) {
-					$sql_where = " WHERE ARTIST.tag_name LIKE :q ";
-					$params = array(":q" => '%' . $_GET["q"] . '%');										
+					$sql_where[] = " ARTIST.tag_name LIKE :q ";
+					$params[":q"] = '%' . $q . '%'; 
+				}
+				if ($genre && strlen($genre) > 0) {
+					$sql_where[] = " EXISTS ( SELECT artist_id FROM ARTIST_TAG WHERE ARTIST_TAG.artist_id = ARTIST.id AND ARTIST_TAG.tag = :tag ) ";
+					$params[":tag"] = $genre;
 				}
 				$sql_order = $sort && $sort == "rnd" ? "RANDOM()" : "ARTIST.tag_name";
 				$sql_limit = sprintf(" LIMIT %d ", $limit ? $limit: 32);
 				$sql_offset = sprintf(" OFFSET %d ", $offset && $offset > 0 ? $offset: 0);							
-				$sql = sprintf ( " SELECT %s FROM ARTIST %s ORDER BY %s %s %s" , $sql_fields, $sql_where, $sql_order, $sql_limit, $sql_offset);
+				$sql = sprintf ( " SELECT %s FROM ARTIST %s ORDER BY %s %s %s" , $sql_fields, count($sql_where) > 0 ? sprintf(" WHERE %s ", implode("AND ", $sql_where)) : "", $sql_order, $sql_limit, $sql_offset);
 				$results = $db->fetch_all($sql, $params);
 				$db = null;
 				$artists = array();

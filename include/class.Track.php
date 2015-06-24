@@ -60,6 +60,7 @@
 				$db = new Database();
 				$sql = " INSERT OR REPLACE INTO PLAYED_TRACKS (user_id, track_id, play_count, last_play) VALUES (:user_id, :track_id, (IFNULL((SELECT play_count FROM PLAYED_TRACKS WHERE user_id = :user_id AND track_id = :track_id), 1) + 1), strftime('%s', 'now')) ";
 				$db->exec($sql, array(":user_id" => $user_id, ":track_id" => $this->id));
+				$db = null;
 				// DATETIME(last_play, 'unixepoch') FROM PLAYED_TRACKS
 			} catch(PDOException $e) {
 				throw $e;
