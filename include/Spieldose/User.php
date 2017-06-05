@@ -30,7 +30,12 @@
                     $dbh = new \Spieldose\Database();
                 }
                 $this->get($dbh);
-                return(password_verify($password, $this->passwordHash));
+                if (password_verify($password, $this->passwordHash)) {
+                    $_SESSION["login"] = $this->login;
+                    return(true);
+                } else {
+                    return(false);
+                }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("login");
             }
@@ -45,6 +50,10 @@
             if (session_status() != PHP_SESSION_NONE) {
                 session_destroy();
             }
+        }
+
+        public static function isLogged() {
+            return(isset($_SESSION["login"]));
         }
 
         public function set(\Spieldose\Database $dbh, string $password) {
