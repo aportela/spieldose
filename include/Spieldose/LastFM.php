@@ -39,7 +39,10 @@
         public static function getAlbumImages($artist, $album) {
             $json = self::getAlbumInfo($artist, $album);
             $data = json_decode($json, true);
-            $images = $data["album"]["image"];
+            $images = array();
+            if (isset($data["album"])) {
+                $images = $data["album"]["image"];
+            }
             return(json_encode($images));
         }
     }
