@@ -16,6 +16,7 @@
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
             $dbh = new \Spieldose\Database();
+            $imagesCache = array();
             for ($i = 0; $i < $totalFiles; $i++) {
                 $id3 = new \Spieldose\ID3();
                 $id3->analyze($files[$i]);
@@ -71,8 +72,21 @@
                 } else {
                     $params[] = (new \Spieldose\DatabaseParam())->null(":genre");
                 }
-                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, coverurl) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, NULL);", $params);
+                $imageHash = sha1($trackArtist . $trackAlbum);
+                if (array_key_exists($imageHash, $imagesCache)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":images", $imagesCache[$imageHash]);
+                } else {
+                    $images = \Spieldose\LastFm::getAlbumImages($trackArtist, $trackAlbum);
+                    if (! empty($images)) {
+                        $params[] = (new \Spieldose\DatabaseParam())->str(":images", $images);
+                        $imagesCache[$imageHash] = $images;
+                    } else {
+                        $params[] = (new \Spieldose\DatabaseParam())->null(":images");
+                    }
+                }
+                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :images);", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
+
             }
         } else {
             echo sprintf("Directory not found: %s%s", $musicPath, PHP_EOL);
