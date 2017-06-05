@@ -67,10 +67,6 @@
 			return($tag_value);
 		}
 
-        public function getTrackNumber(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "track"));
-        }
-
         public function getTrackTitle(): string {
             return((string)$this->getTagFieldValue($this->tagData, "title"));
         }
@@ -87,8 +83,29 @@
             return((string)$this->getTagFieldValue($this->tagData, "album"));
         }
 
+        public function getGenre(): string {
+            return((string)$this->getTagFieldValue($this->tagData, "genre"));
+        }
+
+        public function getTrackNumber(): string {
+			$number = (string) $this->getTagFieldValue($this->tagData, "track_number");
+			if (strpos($number, "/") > 0) {
+				$fields = explode("/", $number);
+				return(intval($fields[0]) > 0 ? $fields[0]: "");
+			} else {
+            	return(intval($number) > 0 ? $number: "");
+			}
+        }
+
+        public function getDiscNumber(): string {
+			$number = (string) $this->getTagFieldValue($this->tagData, "part_of_a_set");
+            return(intval($number) > 0 ? $number: "");
+        }
+
         public function getYear(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "year"));
+			$year = (string) $this->getTagFieldValue($this->tagData, "year");
+			$year = (strlen($year) > 4) ? substr($year, 0, 4): $year;
+            return(intval($year) > 0 ? $year: "");
         }
 
         public function getPlaytimeSeconds(): int {
