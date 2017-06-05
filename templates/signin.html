@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>spieldose - music for the masses</title>
+		<meta name="referrer" content="no-referrer" />
+		<meta name="author" content="alex (https://github.com/aportela)">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.css" rel="stylesheet">
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+		<link rel="stylesheet" href="/static/styles/spieldose.css">
+	</head>
+	<body>
+		<!-- template credits: daniel (https://github.com/dansup) -->
+		<section class="hero is-fullheight is-dark is-bold">
+			<div class="hero-body">
+				<div class="container">
+					<div class="columns is-vcentered">
+						<div class="column is-4 is-offset-4">
+							<h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span></h1>
+							<h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
+							<form id="f_signin" method="post" action="/api/user/signin.php">
+								<div class="box">
+									<label class="label">Username (login)</label>
+									<p class="control" id="login-container">
+										<input class="input" type="text" name="login" required autofocus>
+									</p>
+									<label class="label">Password</label>
+									<p class="control" id="password-container">
+										<input class="input" type="password" name="password" required>
+									</p>
+									<hr>
+									<p class="control">
+										<button class="button is-primary">Sign in</button>
+									</p>
+								</div>
+							</form>
+							<p class="has-text-centered">
+								<a href="https://github.com/aportela/spieldose"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> |<a href="https://github.com/aportela/">by alex</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="/static/scripts/spieldose.js"></script>
+	</body>
+</html>
