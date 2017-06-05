@@ -7,7 +7,7 @@
 
         private $installQueries = array(
             "CREATE TABLE [USER] ([login] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY, [password_hash] VARCHAR(60) NOT NULL);",
-            "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), coverurl VARCHAR(2048));",
+            "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), images VARCHAR(8192));",
             "PRAGMA journal_mode=WAL;"
         );
 
@@ -31,6 +31,8 @@
                 echo PHP_EOL . "Error: pdo_sqlite php extension not found " . PHP_EOL;
             } else if (! extension_loaded('mbstring')) {
                 echo PHP_EOL . "Error: mbstring php extension not found " . PHP_EOL;
+            } else if (! extension_loaded('curl')) {
+                echo PHP_EOL . "Error: curl php extension not found " . PHP_EOL;
             } else if (! is_writable(dirname(SQLITE_DATABASE_PATH))) {
                 echo PHP_EOL . "Error: no write permissions on database directory (" . dirname(SQLITE_DATABASE_PATH) . ")" . PHP_EOL;
             } else {
