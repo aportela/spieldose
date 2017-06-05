@@ -9,7 +9,7 @@
     echo "Spieldose scan utility " . PHP_EOL;
 
     $cmdLine = new \Spieldose\CmdLine("", array("musicPath:"));
-    $musicPath = $cmdLine->get("musicPath");
+    $musicPath = $cmdLine->getParamValue("musicPath");
     if ($musicPath != null) {
         if (file_exists($musicPath)) {
             $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
@@ -26,7 +26,7 @@
                 $param = new \Spieldose\DatabaseParam();
                 $param->str(":path", $files[$i]);
                 $params[] = $param;
-                $dbh->execute("INSERT INTO FILE (id, path) VALUES(:id, :path);", $params);
+                $dbh->execute("REPLACE INTO FILE (id, path) VALUES(:id, :path);", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
             }
         } else {
