@@ -5,10 +5,11 @@
     class Installer
     {
 
-        private $installQueries = <<<EOD
-CREATE TABLE [USER] ([login] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY, [password_hash] VARCHAR(60) NOT NULL);
-CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL);
-EOD;
+        private $installQueries = array(
+            "CREATE TABLE [USER] ([login] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY, [password_hash] VARCHAR(60) NOT NULL);",
+            "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), coverurl VARCHAR(2048));",
+            "PRAGMA journal_mode=WAL;"
+        );
 
 	    public function __construct () {
             $cmdLine = new \Spieldose\CmdLine("", array("install", "update"));
@@ -53,8 +54,9 @@ EOD;
         private function createDatabase() {
             echo "Creating database...";
             $dbh = new \Spieldose\Database();
-            $dbh->execute($this->installQueries);
-            $dbh->execute("PRAGMA journal_mode=WAL;");
+            foreach($this->installQueries as $query) {
+                $dbh->execute($query);
+            }
             echo "ok!" . PHP_EOL;
         }
 
