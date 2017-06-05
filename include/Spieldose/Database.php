@@ -42,6 +42,27 @@
             return($stmt->execute());
         }
 
+        /**
+        *   Executes an SQL statement, returning a result set as a PDOStatement object
+        */
+        public function query(string $sql, $params = array()): array  {
+			$rows = array();
+            $stmt = $this->dbh->prepare($sql);
+            $totalParams = count($params);
+            if ($totalParams > 0) {
+                for ($i = 0; $i < $totalParams; $i++) {
+                    $stmt->bindValue($params[$i]->name, $params[$i]->value, $params[$i]->type);
+                }
+            }
+            if ($stmt->execute()) {
+                while ($row = $stmt->fetchObject()) {
+                    $rows[] = $row;
+                }
+            }
+            $stmt->closeCursor();
+			return($rows);
+        }
+
     }
 
 ?>
