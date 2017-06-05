@@ -10,7 +10,17 @@
             $this->options = getopt($short, $long);
         }
 
-        public function get(string $key) {
+        /**
+        *   check for parameter existence
+        */
+        public function hasParam(string $param) {
+            return(array_key_exists($param, $this->options));
+        }
+
+        /**
+        *   get parameter value
+        */
+        public function getParamValue(string $key) {
             return(isset($this->options[$key]) ? $this->options[$key]: null);
         }
 
