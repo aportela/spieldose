@@ -84,7 +84,7 @@
                         $params[] = (new \Spieldose\DatabaseParam())->null(":images");
                     }
                 }
-                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :images);", $params);
+                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :images)", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
 
             }
