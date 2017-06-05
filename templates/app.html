@@ -26,6 +26,119 @@
 				</div>
 			</aside>
 			<div class="column is-9" id="main-content">
+				<!-- dashboard template inspired by daniel (https://github.com/dansup) -->
+				<section class="section">
+					<div class="columns is-mobile is-multiline">
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently added</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">Tracks</a>
+									<a href="#">Artists</a>
+									<a href="#">Albums</a>
+								</p>
+								<div class="panel-block">
+									<table class="table">
+										<thead>
+										<tr>
+											<th>Name</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+								<div class="panel-block">
+									<div id="chart1" style="height: 168px;"></div>
+								</div>
+							</section>
+						</div>
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently played</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">Tracks</a>
+									<a href="#">Artists</a>
+									<a href="#">Albums</a>
+								</p>
+								<div class="panel-block">
+									<table class="table">
+										<thead>
+										<tr>
+											<th>Name</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+								<div class="panel-block">
+									<div id="chart1" style="height: 168px;"></div>
+								</div>
+							</section>
+						</div>
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-line-chart"></i></span> Play stadistics</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">by hour</a>
+									<a href="#">by day</a>
+									<a href="#">by month</a>
+								</p>
+								<div class="panel-block">
+									<div id="chart3" style="height: 250px;"></div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<div class="columns is-mobile is-multiline">
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-pie-chart"></i></span> Top played tracks</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">All Time</a>
+									<a href="#">Past week</a>
+									<a href="#">Past month</a>
+									<a href="#">Past quarter</a>
+									<a href="#">Past Year</a>
+								</p>
+								<div class="panel-block">
+									<div id="chart1" style="height: 250px;"></div>
+								</div>
+							</section>
+						</div>
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-area-chart"></i></span> Top Artists</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">All Time</a>
+									<a href="#">Past week</a>
+									<a href="#">Past month</a>
+									<a href="#">Past quarter</a>
+									<a href="#">Past Year</a>
+								</p>
+								<div class="panel-block">
+									<div id="chart1" style="height: 250px;"></div>
+								</div>
+							</section>
+						</div>
+						<div class="column is-one-third-desktop is-full-mobile">
+							<section class="panel">
+								<p class="panel-heading"><span class="icon"><i class="fa fa-bar-chart"></i></span> Top genres</p>
+								<p class="panel-tabs">
+									<a class="is-active" href="#">All Time</a>
+									<a href="#">Past week</a>
+									<a href="#">Past month</a>
+									<a href="#">Past quarter</a>
+									<a href="#">Past Year</a>
+								</p>
+								<div class="panel-block">
+									<div id="chart1" style="height: 250px;"></div>
+								</div>
+							</section>
+						</div>
+					</div>
+				</section>
 			</div>
 			<aside id="aside-player" class="column is-2">
 				<div id="player">
@@ -71,7 +184,6 @@
 				</div>
 			</aside>
 		</div>
-		<!-- template credits: daniel (https://github.com/dansup) -->
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="/static/scripts/spieldose.js"></script>
 	</body>
