@@ -15,9 +15,18 @@
             $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
+            $dbh = new \Spieldose\Database();
             for ($i = 0; $i < $totalFiles; $i++) {
                 $id3 = new \Spieldose\ID3();
                 $id3->analyze($files[$i]);
+                $params = array();
+                $param = new \Spieldose\DatabaseParam();
+                $param->str(":id", sha1($files[$i]));
+                $params[] = $param;
+                $param = new \Spieldose\DatabaseParam();
+                $param->str(":path", $files[$i]);
+                $params[] = $param;
+                $dbh->execute("INSERT INTO FILE (id, path) VALUES(:id, :path);", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
             }
         } else {
