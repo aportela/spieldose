@@ -64,7 +64,7 @@
         if (DEBUG) {
             $response["exceptionMessage"] = $e->getMessage();
         }
-    } catch (Throwable $e) {
+    } catch (\Throwable $e) {
         $errors = true;
         http_response_code(500);
         if (DEBUG) {
