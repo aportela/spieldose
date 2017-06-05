@@ -8,6 +8,8 @@
 
     \Spieldose\Utils::setAppDefaults();
 
+    echo (new \Spieldose\Page())->render();
+
     ob_flush();
 
 ?>
