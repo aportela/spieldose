@@ -8,9 +8,9 @@
 
     echo "Spieldose scan utility " . PHP_EOL;
 
-    $cmdLine = new \Spieldose\CmdLine();
-    if ($cmdLine->hasMusicPath()) {
-        $musicPath = $cmdLine->getMusicPath();
+    $cmdLine = new \Spieldose\CmdLine("", array("musicPath:"));
+    $musicPath = $cmdLine->get("musicPath");
+    if ($musicPath != null) {
         if (file_exists($musicPath)) {
             $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
             $totalFiles = count($files);
@@ -24,7 +24,7 @@
             echo sprintf("Directory not found: %s%s", $musicPath, PHP_EOL);
         }
     } else {
-        echo sprintf("Invalid params, use %s -m path or %s --musicPath path%s", $argv[0], $argv[0], PHP_EOL);
+        echo sprintf("Invalid params, use %s --musicPath path%s", $argv[0], PHP_EOL);
     }
 
 ?>
