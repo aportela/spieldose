@@ -4,7 +4,6 @@
 
     require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "getID3-master/getid3/getid3.php";
 
-
     class ID3
     {
 
