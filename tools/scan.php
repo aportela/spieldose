@@ -20,13 +20,58 @@
                 $id3 = new \Spieldose\ID3();
                 $id3->analyze($files[$i]);
                 $params = array();
-                $param = new \Spieldose\DatabaseParam();
-                $param->str(":id", sha1($files[$i]));
-                $params[] = $param;
-                $param = new \Spieldose\DatabaseParam();
-                $param->str(":path", $files[$i]);
-                $params[] = $param;
-                $dbh->execute("REPLACE INTO FILE (id, path) VALUES(:id, :path);", $params);
+                $fileId = sha1($files[$i]);
+                $params[] = (new \Spieldose\DatabaseParam())->str(":id", $fileId);
+                $params[] = (new \Spieldose\DatabaseParam())->str(":path", $files[$i]);
+                $trackTitle = $id3->getTrackTitle();
+                if (! empty($trackTitle)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":title", $trackTitle);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":title");
+                }
+                $trackArtist = $id3->getTrackArtistName();
+                if (! empty($trackArtist)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $trackArtist);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":artist");
+                }
+                $trackAlbum = $id3->getAlbum();
+                if (! empty($trackAlbum)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":album", $trackAlbum);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":album");
+                }
+                $trackNumber = $id3->getTrackNumber();
+                if (! empty($trackNumber)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":tracknumber", $trackNumber);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":tracknumber");
+                }
+                $discNumber = $id3->getDiscNumber();
+                if (! empty($discNumber)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":discnumber", $discNumber);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":discnumber");
+                }
+                $albumArtist = $id3->getAlbumArtistName();
+                if (! empty($albumArtist)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":albumartist", $albumArtist);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":albumartist");
+                }
+                $year = $id3->getYear();
+                if (! empty($year)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->int(":year", intval($year));
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":year");
+                }
+                $genre = $id3->getGenre();
+                if (! empty($genre)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":genre", $genre);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":genre");
+                }
+                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, coverurl) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, NULL);", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
             }
         } else {
