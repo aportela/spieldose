@@ -6,6 +6,8 @@
 
     require_once __DIR__ . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR . "configuration.php";
 
+    \Spieldose\Utils::setAppDefaults();
+
     ob_flush();
 
 ?>
