@@ -1,4 +1,5 @@
 <?php
+
     namespace Spieldose;
 
     ob_start();
@@ -9,7 +10,7 @@
 
     $response = array();
 
-    $response["albums"] = \Spieldose\Album::search(new \Spieldose\Database());
+    $response["albums"] = \Spieldose\Album::search(new \Spieldose\Database(), array(), "random");
     $totalAlbums = count($response["albums"]);
     for($i = 0; $i < $totalAlbums; $i++) {
         if (! empty($response["albums"][$i]->images)) {
@@ -22,4 +23,5 @@
     echo json_encode($response);
 
     ob_flush();
+
 ?>
