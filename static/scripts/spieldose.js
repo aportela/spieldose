@@ -57,7 +57,6 @@ $("form#f_signin").submit(function (e) {
     xhr.send(new FormData($(this)[0]), null, 2);
 });
 
-/*
 $("a#menu_link_signout").click(function(e) {
     e.preventDefault();
     var xhr = new XMLHttpRequest();
@@ -90,4 +89,3 @@ $("a#menu_link_signout").click(function(e) {
     };
     xhr.send(null);
 });
-*/
