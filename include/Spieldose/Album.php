@@ -19,7 +19,7 @@
             } else {
                 $sqlOrder = " ORDER BY FILE.album ASC, FILE.albumartist ASC, FILE.artist ASC ";
             }
-            $query = sprintf(" SELECT DISTINCT album as name, artist, albumartist, year, images FROM FILE WHERE album IS NOT NULL GROUP BY COALESCE(albumartist, artist) %s ", $sqlOrder);
+            $query = sprintf(" SELECT DISTINCT album as name, artist, albumartist, year, images FROM FILE WHERE album IS NOT NULL GROUP BY COALESCE(albumartist, artist) %s LIMIT 32", $sqlOrder);
             return($dbh->query($query));
         }
     }
