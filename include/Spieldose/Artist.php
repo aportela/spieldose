@@ -15,7 +15,7 @@
         public function __destruct() { }
 
         private function exists(\Spieldose\Database $dbh): bool {
-            return(false);
+            return(true);
         }
 
         public function get(\Spieldose\Database $dbh) {
