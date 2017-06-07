@@ -137,7 +137,8 @@ var container = Vue.component('spieldose-component', {
     data: function () {
         return ({
             xhr: false,
-            section: "#/dashboard"
+            section: "#/dashboard",
+            artistList: []
         });
     },
     computed: {
@@ -145,6 +146,18 @@ var container = Vue.component('spieldose-component', {
     methods: {
         changeSection: function(s) {
             this.section = s;
+            var self = this;
+            switch(s) {
+                case "#/artists":
+                    httpRequest("POST", "/api/artist/search.php", new FormData(), function (httpStatusCode, response) {
+                        self.artistList = response.artists;
+                    });
+                break;
+            }
+        }
+    }, filters: {
+        encodeURI: function(str) {
+            return(encodeURI(str));
         }
     }, components: {
         'spieldose-left-menu-sidebar-template-component': menu,
@@ -152,10 +165,11 @@ var container = Vue.component('spieldose-component', {
     }
 });
 
+
 var app = new Vue({
     el: "#app",
     data: {
-        logged: false
+        logged: true
     },
     components: {
         'modal-component': m,
