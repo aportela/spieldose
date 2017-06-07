@@ -74,6 +74,87 @@ div#main-content {
 
 /* main content */
 
+/* artist item */
+
+div.artist_item
+{
+	width: 128px;
+	float: left;
+	margin: 0px 24px;
+	margin-bottom: 16px;
+}
+
+div.artist_item a
+{
+	width: 128x;
+	height: 128px;
+	display: block;
+	position: relative;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+div.artist_item a.artist_pager
+{
+	background: #fff;
+}
+
+div.artist_item a img
+{
+	width: 128px;
+	height: 128px;
+	border: 0px;
+	z-index: 0;
+}
+
+div.artist_item a:hover img
+{
+	opacity: 0.5;
+}
+
+div.artist_item a i
+{
+	display: none;
+	position: absolute;
+	top: 40px;
+	left: 40px;
+	z-index: 1;
+	color: #4F5B69
+}
+
+div.artist_item a.artist_pager i
+{
+	display: block;
+	top: 34px;
+	left: 38px;
+}
+
+div.artist_item a:hover i
+{
+	display: block;
+	opacity: 0.8;
+}
+
+div.artist_item div.artist_info
+{
+	padding: 4px;
+	overflow: hidden;
+}
+
+div.artist_item div.artist_info p.artist_name
+{
+	margin: 0px;
+	font-size: 13px;
+	font-family: Tahoma;
+	width: 100%;
+	height: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	color: #545a5f;
+	text-overflow: ellipsis;
+}
+
+/* artist item */
 /* player & playlist  */
 
 aside#aside-player {
