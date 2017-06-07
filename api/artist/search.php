@@ -10,7 +10,7 @@
 
     $response = array();
 
-    $response["artists"] = \Spieldose\Artist::search(new \Spieldose\Database(), array(), "random");
+    $response["artists"] = \Spieldose\Artist::search(new \Spieldose\Database(), array(), "");
 
     header("Content-Type: application/json; charset=utf-8");
 
