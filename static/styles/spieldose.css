@@ -74,6 +74,135 @@ div#main-content {
 
 /* main content */
 
+/* album item */
+
+div.album_item
+{
+	width: 174px;
+	float: left;
+	margin: 0px 24px;
+	margin-bottom: 16px;
+}
+
+div.album_item a.play_album
+{
+	width: 174px;
+	height: 174px;
+	display: block;
+	position: relative;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+div.album_item a.play_album:hover
+{
+	/* opacity: 0.90; */
+}
+
+div.album_item a.play_album img.no_cover
+{
+	display: block !important;
+}
+
+div.album_item a.play_album img.album_cover, div.album_item a img.vynil
+{
+	width: 174px;
+	height: 174px;
+	border: 0px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
+/* album cover effect (hover -> move to left) */
+div.album_item a.play_album img.album_cover
+{
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+    background: #000;
+}
+
+div.album_item a.play_album:hover img.album_cover
+{
+	left: -80px;
+}
+
+/* album (internal) disc effect (hover -> rotate) */
+div.album_item a.play_album img.vynil
+{
+	z-index: 0;
+	display: none;
+	width: 174px;
+	height: 174px;
+    -webkit-transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    -o-transition: all 1s ease-out;
+    transition: all 1s ease-out;
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
+}
+
+div.album_item a.play_album:hover img.vynil
+{
+	z-index: 0;
+	display: block;
+	-webkit-transform:rotate(360deg);
+	-moz-transform:rotate(360deg);
+	-o-transform:rotate(360deg);
+}
+
+/* play icon (hover cover) */
+div.album_item a.play_album i
+{
+	display: none;
+	position: absolute;
+	top: 60px;
+	left: 72px;
+	z-index: 2;
+	color: #ccc;
+}
+
+div.album_item a.play_album:hover i
+{
+	display: block;
+}
+
+/* artist / album name (below cover) */
+div.album_item div.album_info
+{
+	padding: 8px;
+	overflow: hidden;
+}
+
+div.album_item div.album_info p
+{
+	margin: 0px;
+	font-size: 13px;
+	font-family: Tahoma;
+	width: 100%;
+	height: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+div.album_item div.album_info p.artist_name a
+{
+	color: #545a5f;
+}
+
+div.album_item div.album_info p.album_name
+{
+	color: #939aa0;
+}
+
+/* album item */
+
 /* artist item */
 
 div.artist_item
