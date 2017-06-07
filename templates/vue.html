@@ -101,7 +101,7 @@
                 <img id="now_playing_image" v-bind:src="albumCoverUrl" />
                 <div id="now_playing_info">
                     <span id="now_playing_song_title" title="">{{ title }}</span>
-                    <span id="now_playing_song_time">4:20</span>
+                    <span id="now_playing_song_time">{{ playtimeString }}</span>
                     <span id="now_playing_artist" title="">{{ artist }}</span>
                 </div>
                 <audio id="audio" ref="player" controls preload="none">
@@ -109,7 +109,7 @@
                     Your browser does not support the audio element.
                 </audio>
                 <div id="player_controls">
-                    <i title="repeat all" class="fa fa-refresh fa-lg"></i>
+                    <i v-on:click.prevent="$parent.searchTracks(1)" title="repeat all" class="fa fa-refresh fa-lg"></i>
                     <i title="shuffle" class="fa fa-random fa-lg"></i>
                     <i id="crtl_play_previous" title="previous" class="fa fa-backward fa-lg"></i>
                     <i id="crtl_play_next" title="next" class="fa fa-forward fa-lg"></i>
@@ -117,7 +117,7 @@
                     <i title="download song" class="fa fa-save fa-lg"></i>
                 </div>
                 <ul id="now_playing_list">
-                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ i + 1 }} - {{ track.title }}</span><span class="duration">4:20</span></a></li>
+                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ i + 1 }} - {{ track.title }}</span><span class="duration">{{ track.playtimeString }}</span></a></li>
                 </ul>
             </div>
         </script>
