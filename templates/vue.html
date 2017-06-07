@@ -298,6 +298,7 @@
                         <div class="album_item" v-for="album in albumList">
                             <a class="play_album" href="api/album/get.php?id=">
                                 <img class="album_cover" v-if="album.images.length > 0" v-bind:src="album.albumCoverUrl"/>
+                                <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                                 <i class="fa fa-play fa-4x"></i>
                                 <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
                             </a>
