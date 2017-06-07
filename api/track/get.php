@@ -11,7 +11,7 @@
     $response = array();
 
     $dbh = new \Spieldose\Database();
-    $track = new \Spieldose\Track("ffb5f6531b12af07e27fb0e70f55cbc4c1c6f8df");
+    $track = new \Spieldose\Track(isset($_GET["id"]) ? $_GET["id"]: "");
     $errors = false;
     try {
         $track->get(new \Spieldose\Database());
