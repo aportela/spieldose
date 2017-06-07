@@ -98,14 +98,14 @@
         <script type="text/x-template" id="spieldose-right-player-sidebar-template">
             <div id="player">
                 <p id="now_playing_header"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
-                <img id="now_playing_image" src="https://lastfm-img2.akamaized.net/i/u/174s/430e04c30d9b4a70aab49a941e27fa4a.png" />
+                <img id="now_playing_image" v-bind:src="albumCoverUrl" />
                 <div id="now_playing_info">
-                    <span id="now_playing_song_title" title="Nightcall">Nightcall</span>
+                    <span id="now_playing_song_title" title="">{{ title }}</span>
                     <span id="now_playing_song_time">4:20</span>
-                    <span id="now_playing_artist" title="Kavinsky & Lovefoxxx">Kavinsky & Lovefoxxx</span>
+                    <span id="now_playing_artist" title="">{{ artist }}</span>
                 </div>
-                <audio id="audio" controls preload="none">
-                    <source src="http://c.mimp3.eu/d/wNxkzNxkTM/nightcall.mp3" type="audio/mpeg">
+                <audio id="audio" ref="player" controls preload="none">
+                    <source v-bind:src="trackUrl" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
                 <div id="player_controls">
@@ -117,24 +117,7 @@
                     <i title="download song" class="fa fa-save fa-lg"></i>
                 </div>
                 <ul id="now_playing_list">
-                    <li class="selected"><a class="playlist_track"><span title="Nightcall">01 - Nightcall</span><span class="duration">4:20</span></a></li>
-                    <li><a class="playlist_track"><span title="Under Your Spell">02 - Under Your Spell</span><span class="duration">3:53</span></a></li>
-                    <li><a class="playlist_track"><span title="A Real Hero">03 - A Real Hero</span><span class="duration">3:53</span></a></li>
-                    <li><a class="playlist_track"><span title="Oh My Love ">04 - Oh My Love </span><span class="duration">2:50</span></a></li>
-                    <li><a class="playlist_track"><span title="Tick of the Clock">05 - Tick of the Clock</span><span class="duration">4:48</span></a></li>
-                    <li><a class="playlist_track"><span title="I Drive">07 - I Drive</span><span class="duration">2:04</span></a></li>
-                    <li><a class="playlist_track"><span title="He Had a Good Time">08 - He Had a Good Time</span><span class="duration">1:37</span></a></li>
-                    <li><a class="playlist_track"><span title="They Broke His Pelvis">09 - They Broke His Pelvis</span><span class="duration">1:58</span></a></li>
-                    <li><a class="playlist_track"><span title="Kick Your Teeth">10 - Kick Your Teeth</span><span class="duration">2:40</span></a></li>
-                    <li><a class="playlist_track"><span title="Where's the Deluxe Version?">11 - Where's the Deluxe Version?</span><span class="duration">5:33</span></a></li>
-                    <li><a class="playlist_track"><span title="See You in Four">12 - See You in Four</span><span class="duration">2:38</span></a></li>
-                    <li><a class="playlist_track"><span title="After the Chase">13 - After the Chase</span><span class="duration">5:26</span></a></li>
-                    <li><a class="playlist_track"><span title="Hammer">14 - Hammer</span><span class="duration">4:44</span></a></li>
-                    <li><a class="playlist_track"><span title="Wrong Floor">15 - Wrong Floor</span><span class="duration">1:31</span></a></li>
-                    <li><a class="playlist_track"><span title="Skull Crushing">16 - Skull Crushing</span><span class="duration">5:58</span></a></li>
-                    <li><a class="playlist_track"><span title="My Name on a Car">17 - My Name on a Car</span><span class="duration">2:19</span></a></li>
-                    <li><a class="playlist_track"><span title="On the Beach">18 -On the Beach</span><span class="duration">6:35</span></a></li>
-                    <li><a class="playlist_track"><span title="Bride of Deluxe">19 - Bride of Deluxe</span><span class="duration">3:57</span></a></li>
+                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ i + 1 }} - {{ track.title }}</span><span class="duration">4:20</span></a></li>
                 </ul>
             </div>
         </script>
@@ -149,10 +132,10 @@
                         <p class="control">
                             <span class="select">
                             <select>
-                                <option>on anything</option>
-                                <option>on track name</option>
-                                <option>on artist name</option>
-                                <option>on album name</option>
+                                <option>search on anything</option>
+                                <option>search on track names</option>
+                                <option>search on artist names</option>
+                                <option>search on album names</option>
                             </select>
                             </span>
                         </p>
@@ -169,6 +152,53 @@
                         </p>
                     </div>
                     <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
+                        <div class="columns is-mobile is-multiline">
+                            <div class="column is-one-third-desktop is-full-mobile">
+                                <section class="panel">
+                                    <p class="panel-heading"><span class="icon"><i class="fa fa-pie-chart"></i></span> Top played tracks</p>
+                                    <p class="panel-tabs">
+                                        <a class="is-active" href="#">All Time</a>
+                                        <a href="#">Past week</a>
+                                        <a href="#">Past month</a>
+                                        <a href="#">Past quarter</a>
+                                        <a href="#">Past Year</a>
+                                    </p>
+                                    <div class="panel-block">
+                                        <div id="chart1" style="height: 250px;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="column is-one-third-desktop is-full-mobile">
+                                <section class="panel">
+                                    <p class="panel-heading"><span class="icon"><i class="fa fa-area-chart"></i></span> Top Artists</p>
+                                    <p class="panel-tabs">
+                                        <a class="is-active" href="#">All Time</a>
+                                        <a href="#">Past week</a>
+                                        <a href="#">Past month</a>
+                                        <a href="#">Past quarter</a>
+                                        <a href="#">Past Year</a>
+                                    </p>
+                                    <div class="panel-block">
+                                        <div id="chart1" style="height: 250px;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="column is-one-third-desktop is-full-mobile">
+                                <section class="panel">
+                                    <p class="panel-heading"><span class="icon"><i class="fa fa-bar-chart"></i></span> Top genres</p>
+                                    <p class="panel-tabs">
+                                        <a class="is-active" href="#">All Time</a>
+                                        <a href="#">Past week</a>
+                                        <a href="#">Past month</a>
+                                        <a href="#">Past quarter</a>
+                                        <a href="#">Past Year</a>
+                                    </p>
+                                    <div class="panel-block">
+                                        <div id="chart1" style="height: 250px;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
                         <div class="columns is-mobile is-multiline">
                             <div class="column is-one-third-desktop is-full-mobile">
                                 <section class="panel">
@@ -232,53 +262,6 @@
                                 </section>
                             </div>
                         </div>
-                        <div class="columns is-mobile is-multiline">
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-pie-chart"></i></span> Top played tracks</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-area-chart"></i></span> Top Artists</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-bar-chart"></i></span> Top genres</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
-                        </div>
                     </section>
                     <section v-if="section == '#/artists'" class="section" id="section-artists">
                         <div class="artist_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchArtists(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
@@ -294,7 +277,16 @@
                         <div class="artist_item" v-show="pager.actualPage < pager.totalPages"><a class="artist_pager" href="#" title="next page" v-on:click.prevent="searchArtists(pager.actualPage + 1)"><i class="fa fa-arrow-right fa-4x"></i></a></div>
                     </section>
                     <section v-if="section == '#/albums'"class="section" id="section-albums">
-                        <div class="album_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchAlbums(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
+                        <nav class="pagination is-centered">
+                            <a class="pagination-previous" v-on:click.prevent="searchAlbums(pager.actualPage - 1)">Previous</a>
+                            <a class="pagination-next" v-on:click.prevent="searchAlbums(pager.actualPage + 1)">Next page</a>
+                            <ul class="pagination-list">
+                                <!-- vuejs pagination by Jeff (https://stackoverflow.com/a/35706926) -->
+                                <li v-for="pageNumber in pager.totalPages" v-if="Math.abs(pageNumber - pager.actualPage) < 3 || pageNumber == pager.totalPages - 1 || pageNumber == 0">
+                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber, last: (pageNumber == pager.totalPages - 1 && Math.abs(pageNumber - pager.actualPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - pager.actualPage) > 3)}">{{ pageNumber+1 }}</a>
+                                </li>
+                            </ul>
+                        </nav>
                         <div class="album_item" v-for="album in albumList">
                             <a class="play_album" href="api/album/get.php?id=">
                                 <img class="album_cover" v-if="album.images.length > 0" v-bind:src="album.albumCoverUrl"/>
@@ -307,7 +299,6 @@
                                 <p class="album_name" title="">{{ album.name }}</p>
                             </div>
                         </div>
-                        <div class="album_item" v-show="pager.actualPage < pager.totalPages"><a class="artist_pager" href="" title="next page" v-on:click.prevent="searchAlbums(pager.actualPage + 1)"><i class="fa fa-arrow-right fa-4x"></i></a></div>
                     </section>
                     <section v-if="section == '#/genres'"class="section" id="section-genres">
                     </section>
