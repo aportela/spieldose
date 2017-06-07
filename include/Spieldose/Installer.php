@@ -7,7 +7,7 @@
 
         private $installQueries = array(
             "CREATE TABLE [USER] ([login] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY, [password_hash] VARCHAR(60) NOT NULL)",
-            "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), images VARCHAR(8192))",
+            "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), playtime_seconds INTEGER, playtime_string VARCHAR(16), images VARCHAR(8192))",
             "PRAGMA journal_mode=WAL"
         );
 

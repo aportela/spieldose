@@ -84,7 +84,20 @@
                         $params[] = (new \Spieldose\DatabaseParam())->null(":images");
                     }
                 }
-                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :images)", $params);
+                $playtimeSeconds = $id3->getPlaytimeSeconds();
+                if ($playtimeSeconds > 0) {
+                    $params[] = (new \Spieldose\DatabaseParam())->int(":playtime_seconds", $playtimeSeconds);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":playtime_seconds");
+                }
+                $playtimesString = $id3->getPlaytimeString();
+                if (! empty($playtimeSeconds)) {
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":playtime_string", $playtimesString);
+                } else {
+                    $params[] = (new \Spieldose\DatabaseParam())->null(":playtime_string");
+                }
+
+                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, playtime_seconds, playtime_string, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :playtime_seconds, :playtime_string, :images)", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
 
             }
