@@ -10,7 +10,18 @@
 
     $response = array();
 
-    $response["albums"] = \Spieldose\Album::search(new \Spieldose\Database(), array(), "random");
+    $data = \Spieldose\Album::search(
+        new \Spieldose\Database(),
+        isset($_POST["actualPage"]) ? intval($_POST["actualPage"]): 1,
+        isset($_POST["resultsPage"]) ? intval($_POST["resultsPage"]): 16,
+        array(),
+        isset($_POST["orderBy"]) ? $_POST["orderBy"]: ""
+    );
+    $response["albums"] = $data->results;
+    $response["totalResults"] = $data->totalResults;
+    $response["actualPage"] = $data->actualPage;
+    $response["resultsPage"] = $data->resultsPage;
+    $response["totalPages"] = $data->totalPages;
     $totalAlbums = count($response["albums"]);
     for($i = 0; $i < $totalAlbums; $i++) {
         if (! empty($response["albums"][$i]->images)) {
