@@ -292,6 +292,17 @@
                         </div>
                     </section>
                     <section v-if="section == '#/albums'"class="section" id="section-albums">
+                        <div class="album_item" v-for="album in albumList">
+                            <a class="play_album" href="api/album/get.php?id=">
+                                <img class="album_cover" v-if="album.images.length > 0" v-bind:src="album.albumCoverUrl"/>
+                                <i class="fa fa-play fa-4x"></i>
+                                <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                            </a>
+                            <div class="album_info">
+                                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">{{ album.artist }}</a></p>
+                                <p class="album_name" title="">{{ album.name }}</p>
+                            </div>
+                        </div>
                     </section>
                     <section v-if="section == '#/genres'"class="section" id="section-genres">
                     </section>

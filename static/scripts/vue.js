@@ -138,7 +138,8 @@ var container = Vue.component('spieldose-component', {
         return ({
             xhr: false,
             section: "#/dashboard",
-            artistList: []
+            artistList: [],
+            albumList: []
         });
     },
     computed: {
@@ -151,6 +152,18 @@ var container = Vue.component('spieldose-component', {
                 case "#/artists":
                     httpRequest("POST", "/api/artist/search.php", new FormData(), function (httpStatusCode, response) {
                         self.artistList = response.artists;
+                    });
+                break;
+                case "#/albums":
+                    httpRequest("POST", "/api/album/search.php", new FormData(), function (httpStatusCode, response) {
+                        for (var i = 0; i < response.albums.length; i++) {
+                            if (response.albums[i].images.length > 0) {
+                                response.albums[i].albumCoverUrl = response.albums[i].images[response.albums[i].images.length - 1]["#text"];
+                            } else {
+                                response.albums[i].albumCoverUrl = "#";
+                            }
+                        }
+                        self.albumList = response.albums;
                     });
                 break;
             }
