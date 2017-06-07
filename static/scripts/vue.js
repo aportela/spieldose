@@ -139,7 +139,12 @@ var container = Vue.component('spieldose-component', {
             xhr: false,
             section: "#/dashboard",
             artistList: [],
-            albumList: []
+            albumList: [],
+            pager: {
+                actualPage: 1,
+                totalPages: 0,
+                resultsPage: 16
+            }
         });
     },
     computed: {
@@ -150,23 +155,49 @@ var container = Vue.component('spieldose-component', {
             var self = this;
             switch(s) {
                 case "#/artists":
-                    httpRequest("POST", "/api/artist/search.php", new FormData(), function (httpStatusCode, response) {
-                        self.artistList = response.artists;
-                    });
+                    self.searchArtists(1);
                 break;
                 case "#/albums":
-                    httpRequest("POST", "/api/album/search.php", new FormData(), function (httpStatusCode, response) {
-                        for (var i = 0; i < response.albums.length; i++) {
-                            if (response.albums[i].images.length > 0) {
-                                response.albums[i].albumCoverUrl = response.albums[i].images[response.albums[i].images.length - 1]["#text"];
-                            } else {
-                                response.albums[i].albumCoverUrl = "#";
-                            }
-                        }
-                        self.albumList = response.albums;
-                    });
+                    self.searchAlbums(1);
                 break;
             }
+        },
+        searchArtists: function(page) {
+            var self = this;
+            self.pager.actualPage = page;
+            var fData = new FormData();
+            fData.append("actualPage", self.pager.actualPage);
+            fData.append("resultsPage", self.pager.resultsPage);
+            httpRequest("POST", "/api/artist/search.php", fData, function (httpStatusCode, response) {
+                if (response.artists.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                self.artistList = response.artists;
+            });
+        },
+        searchAlbums: function(page) {
+            var self = this;
+            self.pager.actualPage = page;
+            var fData = new FormData();
+            fData.append("actualPage", self.pager.actualPage);
+            fData.append("resultsPage", self.pager.resultsPage);
+            httpRequest("POST", "/api/album/search.php", fData, function (httpStatusCode, response) {
+                for (var i = 0; i < response.albums.length; i++) {
+                    if (response.albums[i].images.length > 0) {
+                        response.albums[i].albumCoverUrl = response.albums[i].images[response.albums[i].images.length - 1]["#text"];
+                    } else {
+                        response.albums[i].albumCoverUrl = "#";
+                    }
+                }
+                if (response.albums.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                self.albumList = response.albums;
+            });
         }
     }, filters: {
         encodeURI: function(str) {

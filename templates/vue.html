@@ -281,6 +281,7 @@
                         </div>
                     </section>
                     <section v-if="section == '#/artists'" class="section" id="section-artists">
+                        <div class="artist_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchArtists(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
                         <div class="artist_item" v-for="artist in artistList">
                             <a class="view_artist" v-bind:href="'api/artist/get.php?name=' + artist.name | encodeURI">
                                 <img class="album_cover" src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
@@ -290,8 +291,10 @@
                                 <p class="artist_name">{{ artist.name }}</p>
                             </div>
                         </div>
+                        <div class="artist_item" v-show="pager.actualPage < pager.totalPages"><a class="artist_pager" href="#" title="next page" v-on:click.prevent="searchArtists(pager.actualPage + 1)"><i class="fa fa-arrow-right fa-4x"></i></a></div>
                     </section>
                     <section v-if="section == '#/albums'"class="section" id="section-albums">
+                        <div class="album_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchAlbums(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
                         <div class="album_item" v-for="album in albumList">
                             <a class="play_album" href="api/album/get.php?id=">
                                 <img class="album_cover" v-if="album.images.length > 0" v-bind:src="album.albumCoverUrl"/>
@@ -303,6 +306,7 @@
                                 <p class="album_name" title="">{{ album.name }}</p>
                             </div>
                         </div>
+                        <div class="album_item" v-show="pager.actualPage < pager.totalPages"><a class="artist_pager" href="" title="next page" v-on:click.prevent="searchAlbums(pager.actualPage + 1)"><i class="fa fa-arrow-right fa-4x"></i></a></div>
                     </section>
                     <section v-if="section == '#/genres'"class="section" id="section-genres">
                     </section>
