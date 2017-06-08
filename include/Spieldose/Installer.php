@@ -10,6 +10,7 @@
             "CREATE TABLE [FILE] ([id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY, [path] VARCHAR(2048) UNIQUE NOT NULL, title VARCHAR(128), artist VARCHAR(128), album VARCHAR(128), albumartist VARCHAR(128), discnumber INTEGER, tracknumber INTEGER, year INTEGER, genre VARCHAR(128), playtime_seconds INTEGER, playtime_string VARCHAR(16), images VARCHAR(8192))",
             "CREATE TABLE [MB_CACHE_ARTIST] ([mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY, [name] VARCHAR(128) NOT NULL, [bio] TEXT, [json] TEXT NOT NULL)",
             "CREATE TABLE [MB_CACHE_ALBUM] ([mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY, [name] VARCHAR(128) NOT NULL, [artist] VARCHAR(36) NOT NULL, [json] TEXT NOT NULL)",
+            "CREATE TABLE [MB_CACHE_TRACK] ([mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY, [name] VARCHAR(128) NOT NULL, [artist_mbid] VARCHAR(36) NOT NULL, [artist_mbname] VARCHAR(36) NOT NULL, [json] TEXT NOT NULL)",
             "PRAGMA journal_mode=WAL"
         );
 
