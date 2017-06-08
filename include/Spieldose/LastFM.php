@@ -4,7 +4,7 @@
 
     class LastFM
     {
-        const LAST_FM_API_KEY = "40ede2a05c97a8a8055ee12f813a417d";
+        const API_KEY = "40ede2a05c97a8a8055ee12f813a417d";
 
 	    public function __construct () { }
 
@@ -25,11 +25,16 @@
 			return($content);
         }
 
+        public static function gg($title, $artist) {
+            $url = sprintf("http://ws.audioscrobbler.com/2.0/?method=track.search&api_key=%s&artist=%s&track=%s&limit=1&format=json", self::API_KEY, $artist, $title);
+            return(self::proxy($url));
+        }
+
         /**
         *   return lastfm album info (json format)
         */
         private static function getAlbumInfo($artist, $album) {
-            $url = sprintf("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=%s&artist=%s&album=%s&format=json", self::LAST_FM_API_KEY, $artist, $album);
+            $url = sprintf("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=%s&artist=%s&album=%s&format=json", self::API_KEY, $artist, $album);
             return(self::proxy($url));
         }
 
