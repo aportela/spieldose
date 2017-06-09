@@ -116,7 +116,7 @@
 
         public function getPendingArtists(\Spieldose\Database $dbh = null) {
             $artists = array();
-            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE track_artist IS NOT NULL ORDER BY track_artist";
+            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NOT NULL ORDER BY track_artist";
             $results = $dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
