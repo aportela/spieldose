@@ -113,6 +113,26 @@
                 throw new \Spieldose\Exception\NotFoundException("path: " . $filePath);
             }
         }
+
+        public function getPendingArtists(\Spieldose\Database $dbh = null) {
+            $artists = array();
+            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE track_artist IS NOT NULL ORDER BY track_artist";
+            $results = $dbh->query($query);
+            $totalArtists = count($results);
+            for ($i = 0; $i < $totalArtists; $i++) {
+                $artists[] = $results[$i]->artist;
+            }
+            return($artists);
+        }
+
+        public function mbArtistScrap(\Spieldose\Database $dbh = null, $artist) {
+            $mbArtist = \Spieldose\MusicBrainz\Artist::getFromArtist($artist);
+            $mbArtist->save($dbh);
+            $params = array();
+            $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbid", $mbArtist->mbId);
+            $params[] = (new \Spieldose\DatabaseParam())->str(":track_artist", $artist);
+            $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
+        }
     }
 
 ?>
