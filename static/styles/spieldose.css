@@ -340,7 +340,7 @@ div#player div#now_playing_info span#now_playing_song_time {
 	text-align: right;
 }
 
-div#player div#now_playing_info span#now_playing_artist {
+div#player div#now_playing_info a#now_playing_artist {
 	clear: both;
 	color: #9b9c9f;
 	font-size: 14px;
@@ -348,6 +348,10 @@ div#player div#now_playing_info span#now_playing_artist {
 	width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
+}
+
+a#now_playing_artist:hover{
+
 }
 
 div#player audio#audio {
