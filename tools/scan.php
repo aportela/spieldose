@@ -16,90 +16,20 @@
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
             $dbh = new \Spieldose\Database();
-            $imagesCache = array();
+            $scrapper = new \Spieldose\Scrapper();
+            $failed = array();
             for ($i = 0; $i < $totalFiles; $i++) {
-                $id3 = new \Spieldose\ID3();
-                $id3->analyze($files[$i]);
-                $params = array();
-                $fileId = sha1($files[$i]);
-                $params[] = (new \Spieldose\DatabaseParam())->str(":id", $fileId);
-                $params[] = (new \Spieldose\DatabaseParam())->str(":path", $files[$i]);
-                $trackTitle = $id3->getTrackTitle();
-                if (! empty($trackTitle)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":title", $trackTitle);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":title");
+                try {
+                    $scrapper->scrapFileTags($dbh, $files[$i]);
+                } catch (\Throwable $e) {
+                    $failed[] = $files[$i];
                 }
-                $trackArtist = $id3->getTrackArtistName();
-                if (! empty($trackArtist)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $trackArtist);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":artist");
-                }
-                $trackAlbum = $id3->getAlbum();
-                if (! empty($trackAlbum)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":album", $trackAlbum);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":album");
-                }
-                $trackNumber = $id3->getTrackNumber();
-                if (! empty($trackNumber)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":tracknumber", $trackNumber);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":tracknumber");
-                }
-                $discNumber = $id3->getDiscNumber();
-                if (! empty($discNumber)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":discnumber", $discNumber);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":discnumber");
-                }
-                $albumArtist = $id3->getAlbumArtistName();
-                if (! empty($albumArtist)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":albumartist", $albumArtist);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":albumartist");
-                }
-                $year = $id3->getYear();
-                if (! empty($year)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->int(":year", intval($year));
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":year");
-                }
-                $genre = $id3->getGenre();
-                if (! empty($genre)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":genre", $genre);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":genre");
-                }
-                $imageHash = sha1($trackArtist . $trackAlbum);
-                if (array_key_exists($imageHash, $imagesCache)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":images", $imagesCache[$imageHash]);
-                } else {
-                    $images = \Spieldose\LastFm::getAlbumImages($trackArtist, $trackAlbum);
-                    if (! empty($images)) {
-                        $params[] = (new \Spieldose\DatabaseParam())->str(":images", $images);
-                        $imagesCache[$imageHash] = $images;
-                    } else {
-                        $params[] = (new \Spieldose\DatabaseParam())->null(":images");
-                    }
-                }
-                $playtimeSeconds = $id3->getPlaytimeSeconds();
-                if ($playtimeSeconds > 0) {
-                    $params[] = (new \Spieldose\DatabaseParam())->int(":playtime_seconds", $playtimeSeconds);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":playtime_seconds");
-                }
-                $playtimesString = $id3->getPlaytimeString();
-                if (! empty($playtimeSeconds)) {
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":playtime_string", $playtimesString);
-                } else {
-                    $params[] = (new \Spieldose\DatabaseParam())->null(":playtime_string");
-                }
-
-                $dbh->execute("REPLACE INTO FILE (id, path, title, artist, album, albumartist, discnumber, tracknumber, year, genre, playtime_seconds, playtime_string, images) VALUES(:id, :path, :title, :artist, :album, :albumartist, :discnumber, :tracknumber, :year, :genre, :playtime_seconds, :playtime_string, :images)", $params);
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
-
+            }
+            $totalFailed = count($failed);
+            if ($totalFailed > 0) {
+                echo sprintf("Failed to scrap %d files:%s", $totalFailed, PHP_EOL);
+                print_r($failed);
             }
         } else {
             echo sprintf("Directory not found: %s%s", $musicPath, PHP_EOL);
