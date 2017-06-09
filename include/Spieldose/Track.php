@@ -53,7 +53,7 @@
             } else {
                 $sqlOrder = " ORDER BY FILE.track_name ASC, FILE.track_artist ASC, FILE.album_artist ASC ";
             }
-            $query = sprintf(" SELECT DISTINCT id, track_name AS title, track_artist AS artist, album_artist AS albumartist, year, playtime_seconds AS playtimeSeconds, playtime_string AS playtimeString, image FROM FILE GROUP BY COALESCE(track_artist, album_artist) %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
+            $query = sprintf(" SELECT DISTINCT id, track_name AS title, track_artist AS artist, album_name AS album, album_artist AS albumartist, year, playtime_seconds AS playtimeSeconds, playtime_string AS playtimeString, image FROM FILE GROUP BY COALESCE(track_artist, album_artist) %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
             $data->results = $dbh->query($query);
             return($data);
         }
