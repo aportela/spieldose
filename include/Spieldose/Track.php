@@ -23,7 +23,7 @@
                 if ($dbh == null) {
                     $dbh = new \Spieldose\Database();
                 }
-                $results = $dbh->query("SELECT path FROM FILE WHERE id = :id", array(
+                $results = $dbh->query("SELECT local_path AS path FROM FILE WHERE id = :id", array(
                     (new \Spieldose\DatabaseParam())->str(":id", $this->id)
                 ));
                 if (count($results) == 1) {
@@ -40,7 +40,7 @@
             if ($dbh == null) {
                 $dbh = new \Spieldose\Database();
             }
-            $queryCount = "SELECT COUNT(DISTINCT title) AS total FROM FILE";
+            $queryCount = "SELECT COUNT(DISTINCT track_name) AS total FROM FILE";
             $result = $dbh->query($queryCount);
             $data = new \stdClass();
             $data->actualPage = $page;
@@ -48,12 +48,12 @@
             $data->totalResults = $result[0]->total;
             $data->totalPages = ceil(($data->totalResults + $resultsPage - 1) / $resultsPage);
             $sqlOrder = "";
-            if (! empty($order)) {
+            if (empty($order) || $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY FILE.title ASC, FILE.artist ASC, FILE.albumartist ASC ";
+                $sqlOrder = " ORDER BY FILE.track_name ASC, FILE.track_artist ASC, FILE.album_artist ASC ";
             }
-            $query = sprintf(" SELECT DISTINCT id, title, artist, albumartist, year, playtime_seconds AS playtimeSeconds, playtime_string AS playtimeString, images FROM FILE GROUP BY COALESCE(artist, albumartist) %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
+            $query = sprintf(" SELECT DISTINCT id, track_name AS title, track_artist AS artist, album_artist AS albumartist, year, playtime_seconds AS playtimeSeconds, playtime_string AS playtimeString, image FROM FILE GROUP BY COALESCE(track_artist, album_artist) %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
             $data->results = $dbh->query($query);
             return($data);
         }
