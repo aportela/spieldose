@@ -49,11 +49,11 @@
         private static function getBestImage($imageArray) {
             $images = array_reverse($imageArray);
             foreach($images as $image) {
-                if (isset($image->size)) {
+                if (isset($image->size) && isset($image->{"#text"})) {
                     return($image->{"#text"});
                 }
             }
-            return($images[0]->{"#text"});
+            return(isset($images[0]->{"#text"}) ? $images[0]->{"#text"}: "");
         }
 
         public static function getFromArtist(string $artist) {
