@@ -37,7 +37,7 @@
             if ($dbh == null) {
                 $dbh = new \Spieldose\Database();
             }
-            $queryCount = "SELECT COUNT(DISTINCT artist) AS total FROM FILE";
+            $queryCount = "SELECT COUNT(DISTINCT track_artist) AS total FROM FILE";
             $result = $dbh->query($queryCount);
             $data = new \stdClass();
             $data->actualPage = $page;
@@ -48,9 +48,9 @@
             if (! empty($order)) {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY FILE.artist ASC ";
+                $sqlOrder = " ORDER BY FILE.track_artist ASC ";
             }
-            $query = sprintf(" SELECT DISTINCT artist as name FROM FILE WHERE artist IS NOT NULL %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
+            $query = sprintf(" SELECT DISTINCT COALESCE(artist, track_artist) as name, MB_CACHE_ARTIST.image FROM FILE LEFT JOIN MB_CACHE_ARTIST ON mbid = FILE.artist_mbid WHERE track_artist IS NOT NULL %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
             $data->results = $dbh->query($query);
             return($data);
         }
