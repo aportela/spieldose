@@ -60,7 +60,7 @@
                                     <div class="box">
                                         <label class="label">Username (login)</label>
                                         <p class="control" id="login-container" v-bind:class="{ 'has-icons-right' : invalidUsername }">
-                                            <input class="input" type="text" name="login" value="foo" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="xhr ? true: false">
+                                            <input class="input" type="text" name="login" value="foo" maxlength="32" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="xhr ? true: false">
                                             <span class="icon is-small is-right" v-show="invalidUsername"><i class="fa fa-warning"></i></span>
                                             <p class="help is-danger" v-show="invalidUsername">Username not found</p>
                                         </p>
@@ -102,7 +102,7 @@
                 <div id="now_playing_info">
                     <span id="now_playing_song_title" title="">{{ title }}</span>
                     <span id="now_playing_song_time">{{ playtimeString }}</span>
-                    <span id="now_playing_artist" title="">{{ artist }}</span>
+                    <a id="now_playing_artist" v-bind:title="'click here to browse artist: ' + artist">{{ artist }} / {{ album }}</a>
                 </div>
                 <audio id="audio" ref="player" controls preload="none">
                     <source v-bind:src="trackUrl" type="audio/mpeg">
@@ -267,7 +267,8 @@
                         <div class="artist_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchArtists(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
                         <div class="artist_item" v-for="artist in artistList">
                             <a class="view_artist" v-bind:href="'api/artist/get.php?name=' + artist.name | encodeURI">
-                                <img class="album_cover" src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                                <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
+                                <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                                 <i class="fa fa-search fa-4x"></i>
                             </a>
                             <div class="artist_info">
@@ -289,7 +290,7 @@
                         </nav>
                         <div class="album_item" v-for="album in albumList">
                             <a class="play_album" href="api/album/get.php?id=">
-                                <img class="album_cover" v-if="album.images.length > 0" v-bind:src="album.albumCoverUrl"/>
+                                <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
                                 <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                                 <i class="fa fa-play fa-4x"></i>
                                 <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
