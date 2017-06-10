@@ -37,19 +37,28 @@
             if ($dbh == null) {
                 $dbh = new \Spieldose\Database();
             }
+            $params = array();
+            $whereCondition = "";
+            if (isset($filter)) {
+                if (isset($filter["text"])) {
+                    $whereCondition = " AND COALESCE(MBA.artist, F.track_artist) LIKE :text ";
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
+                }
+            }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT(COALESCE(MBC.artist, F.track_artist))) AS total
+                    COUNT (DISTINCT(COALESCE(MBA.artist, F.track_artist))) AS total
                 FROM FILE F
-                LEFT JOIN MB_CACHE_ARTIST MBC ON MBC.mbid = F.artist_mbid
-                WHERE COALESCE(MBC.artist, F.track_artist) IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                WHERE COALESCE(MBA.artist, F.track_artist) IS NOT NULL
+                ' . $whereCondition . '
             ';
-            $result = $dbh->query($queryCount);
+            $result = $dbh->query($queryCount, $params);
             $data = new \stdClass();
             $data->actualPage = $page;
             $data->resultsPage = $resultsPage;
             $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil(($data->totalResults + $resultsPage - 1) / $resultsPage);
+            $data->totalPages = ceil($data->totalResults / $resultsPage);
             $sqlOrder = "";
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
@@ -58,19 +67,21 @@
             }
             $query = sprintf('
                 SELECT
-                    DISTINCT COALESCE(artist, track_artist) as name,
-                    MB_CACHE_ARTIST.image
-                FROM FILE
-                LEFT JOIN MB_CACHE_ARTIST ON mbid = FILE.artist_mbid
-                WHERE track_artist IS NOT NULL
+                    DISTINCT COALESCE(MBA.artist, F.track_artist) as name,
+                    MBA.image
+                FROM FILE F
+                LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                WHERE F.track_artist IS NOT NULL
+                %s
                 %s
                 LIMIT %d OFFSET %d
                 ',
+                $whereCondition,
                 $sqlOrder,
                 $resultsPage,
                 $resultsPage * ($page - 1)
             );
-            $data->results = $dbh->query($query);
+            $data->results = $dbh->query($query, $params);
             return($data);
         }
     }
