@@ -116,7 +116,7 @@
 
         public function getPendingArtists(\Spieldose\Database $dbh = null) {
             $artists = array();
-            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NOT NULL ORDER BY track_artist";
+            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist DESC";
             $results = $dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
@@ -127,11 +127,14 @@
 
         public function mbArtistScrap(\Spieldose\Database $dbh = null, $artist) {
             $mbArtist = \Spieldose\MusicBrainz\Artist::getFromArtist($artist);
-            $mbArtist->save($dbh);
-            $params = array();
-            $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbid", $mbArtist->mbId);
-            $params[] = (new \Spieldose\DatabaseParam())->str(":track_artist", $artist);
-            $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
+            if (! empty($mbArtist->mbId)) {
+                $mbArtist->save($dbh);
+                $params = array();
+                $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbid", $mbArtist->mbId);
+                $params[] = (new \Spieldose\DatabaseParam())->str(":track_artist", $artist);
+                echo PHP_EOL . "saving " . $artist . " with " . $mbArtist->mbId . PHP_EOL;
+                $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
+            }
         }
     }
 
