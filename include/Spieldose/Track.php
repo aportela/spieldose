@@ -44,20 +44,18 @@
             $whereCondition = "";
             if (isset($filter)) {
                 if (isset($filter["text"])) {
-                    $whereCondition = " AND COALESCE(MBT.name, F.track_name) LIKE :text ";
+                    $whereCondition = " AND COALESCE(MBT.track, F.track_name) LIKE :text ";
                     $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
                 }
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT(COALESCE(MBT.name, F.track_name))) AS total
+                    COUNT (DISTINCT(COALESCE(MBT.track, F.track_name))) AS total
                 FROM FILE F
-                LEFT JOIN MB_CACHE_TRACK MBT ON MBA.mbid = F.track_mbid
-                WHERE COALESCE(MBT.name, F.track_name) IS NOT NULL
+                LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
+                WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 ' . $whereCondition . '
             ';
-
-            $queryCount = "SELECT COUNT(DISTINCT track_name) AS total FROM FILE";
             $result = $dbh->query($queryCount);
             $data = new \stdClass();
             $data->actualPage = $page;
@@ -68,12 +66,12 @@
             if (empty($order) || $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY COALESCE(MBT.name, F.track_name) COLLATE NOCASE ASC ";
+                $sqlOrder = " ORDER BY COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
             }
             $query = sprintf('
                 SELECT DISTINCT
                     id,
-                    track_name AS title,
+                    COALESCE(MBT.track, F.track_name) AS title,
                     COALESCE(MBA2.artist, F.track_artist) AS artist,
                     COALESCE(MBA1.album, F.album_name) AS album,
                     album_artist AS albumartist,
@@ -82,6 +80,7 @@
                     playtime_string AS playtimeString,
                     COALESCE(MBA1.image, MBA2.image) AS image
                 FROM FILE F
+                LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
                 LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
                 WHERE F.track_name IS NOT NULL
