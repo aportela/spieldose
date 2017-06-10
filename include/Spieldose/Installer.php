@@ -46,7 +46,7 @@
             )',
             'CREATE TABLE [MB_CACHE_TRACK] (
                 [mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                [name] VARCHAR(128) NOT NULL,
+                [track] VARCHAR(128) NOT NULL,
                 [artist_mbid] VARCHAR(36) NOT NULL,
                 [artist_mbname] VARCHAR(36) NOT NULL,
                 [json] TEXT NOT NULL
