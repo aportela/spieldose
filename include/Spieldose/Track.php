@@ -75,7 +75,7 @@
                     COALESCE(MBA2.artist, F.track_artist) AS artist,
                     COALESCE(MBA1.album, F.album_name) AS album,
                     album_artist AS albumartist,
-                    year,
+                    COALESCE(MBA1.year, F.year) AS year,
                     playtime_seconds AS playtimeSeconds,
                     playtime_string AS playtimeString,
                     COALESCE(MBA1.image, MBA2.image) AS image
