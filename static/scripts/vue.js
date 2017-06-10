@@ -238,6 +238,11 @@ var container = Vue.component('spieldose-component', {
         searchAlbums: function(page) {
             var self = this;
             self.pager.actualPage = page;
+            if (page > 1) {
+                self.pager.previousPage = page - 1;
+            } else {
+                self.pager.previousPage = 1;
+            }
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
@@ -254,6 +259,12 @@ var container = Vue.component('spieldose-component', {
                 } else {
                     self.pager.totalPages = 0;
                 }
+                if (page < self.pager.totalPages) {
+                    self.pager.nextPage = page + 1;
+                } else {
+                    self.pager.nextPage = self.pager.totalPages;
+                }
+                console.log(response.albums);
                 self.albumList = response.albums;
             });
         },
