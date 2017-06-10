@@ -10,11 +10,21 @@
 
     $response = array();
 
+    $filter = array();
+    if (isset($_POST["text"])) {
+        $filter["text"] = $_POST["text"];
+    }
+    if (isset($_POST["artist"])) {
+        $filter["artist"] = $_POST["artist"];
+    }
+    if (isset($_POST["album"])) {
+        $filter["album"] = $_POST["album"];
+    }
     $data = \Spieldose\Track::search(
         new \Spieldose\Database(),
         isset($_POST["actualPage"]) ? intval($_POST["actualPage"]): 1,
         isset($_POST["resultsPage"]) ? intval($_POST["resultsPage"]): 16,
-        array(),
+        $filter,
         isset($_POST["orderBy"]) ? $_POST["orderBy"]: ""
     );
     $response["tracks"] = $data->results;

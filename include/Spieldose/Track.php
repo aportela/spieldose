@@ -43,16 +43,28 @@
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
+                $conditions = array();
                 if (isset($filter["text"])) {
-                    $whereCondition = " AND COALESCE(MBT.track, F.track_name) LIKE :text ";
+                    $conditions[] = " AND COALESCE(MBT.track, F.track_name) LIKE :text ";
                     $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
                 }
+                if (isset($filter["artist"])) {
+                    $conditions[] = " COALESCE(MBA2.artist, F.track_artist) = :artist ";
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $filter["artist"]);
+                }
+                if (isset($filter["album"])) {
+                    $conditions[] = " COALESCE(MBA1.album, F.album_name) = :album ";
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":album", $filter["album"]);
+                }
+                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
                 SELECT
                     COUNT (DISTINCT(COALESCE(MBT.track, F.track_name))) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
+                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
                 WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 ' . $whereCondition . '
             ';
@@ -66,7 +78,7 @@
             if (empty($order) || $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
+                $sqlOrder = " ORDER BY F.track_number, COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
             }
             $query = sprintf('
                 SELECT DISTINCT
