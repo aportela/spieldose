@@ -29,6 +29,23 @@
             echo sprintf("Failed to scrap %d artists:%s", $totalFailed, PHP_EOL);
             print_r($failed);
         }
+        $mbIds = $scrapper->getPendingArtistMBIds($dbh);
+        $totalMBIds = count($mbIds);
+        $failed = array();
+        echo sprintf("Scrapping %d pending artist MusicBrainz ids%s", $totalMBIds, PHP_EOL);
+        for ($i = 0; $i < $totalMBIds; $i++) {
+            try {
+                $scrapper->mbArtistMBIdscrap($dbh, $mbIds[$i]);
+            } catch (\Throwable $e) {
+                $failed[] = $mbIds[$i];
+            }
+            \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+        }
+        $totalFailed = count($failed);
+        if ($totalFailed > 0) {
+            echo sprintf("Failed to scrap %d artist mbids:%s", $totalFailed, PHP_EOL);
+            print_r($failed);
+        }
     }
     if ($cmdLine->hasParam("albums")) {
         $dbh = new \Spieldose\Database();
@@ -48,7 +65,24 @@
         }
         $totalFailed = count($failed);
         if ($totalFailed > 0) {
-            echo sprintf("Failed to scrap %d artists:%s", $totalFailed, PHP_EOL);
+            echo sprintf("Failed to scrap %d albums:%s", $totalFailed, PHP_EOL);
+            print_r($failed);
+        }
+        $mbIds = $scrapper->getPendingAlbumMBIds($dbh);
+        $totalMBIds = count($mbIds);
+        $failed = array();
+        echo sprintf("Scrapping %d pending album MusicBrainz ids%s", $totalMBIds, PHP_EOL);
+        for ($i = 0; $i < $totalMBIds; $i++) {
+            try {
+                $scrapper->mbAlbumMBIdscrap($dbh, $mbIds[$i]);
+            } catch (\Throwable $e) {
+                $failed[] = $mbIds[$i];
+            }
+            \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+        }
+        $totalFailed = count($failed);
+        if ($totalFailed > 0) {
+            echo sprintf("Failed to scrap %d artist mbids:%s", $totalFailed, PHP_EOL);
             print_r($failed);
         }
     }
