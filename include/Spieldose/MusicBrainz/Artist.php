@@ -35,17 +35,6 @@
             return($results);
         }
 
-        public static function getFromMBId(string $mbId = "") {
-            if (empty($mbId)) {
-                throw new \Spieldose\Exception\InvalidParamsException("mbId");
-            } else {
-                $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
-                $json = \Spieldose\Net::httpRequest($url);
-                $result = json_decode($json, false);
-                return(new \Spieldose\MusicBrainz\Artist($result->artist->mbid, $result->artist->name, $result->artist->bio->content, $json));
-            }
-        }
-
         private static function getBestImage($imageArray) {
             $images = array_reverse($imageArray);
             foreach($images as $image) {
@@ -54,6 +43,18 @@
                 }
             }
             return(isset($images[0]->{"#text"}) ? $images[0]->{"#text"}: "");
+        }
+
+        public static function getFromMBId(string $mbId = "") {
+            if (empty($mbId)) {
+                throw new \Spieldose\Exception\InvalidParamsException("mbId");
+            } else {
+                $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
+                $json = \Spieldose\Net::httpRequest($url);
+                $result = json_decode($json, false);
+                $image = isset($result->artist->image) ? self::getBestImage($result->artist->image) : "";
+                return(new \Spieldose\MusicBrainz\Artist($result->artist->mbid, $result->artist->name, $result->artist->bio->content, $image, $json));
+            }
         }
 
         public static function getFromArtist(string $artist) {
