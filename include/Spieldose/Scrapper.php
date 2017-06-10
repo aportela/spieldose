@@ -132,10 +132,28 @@
                 $params = array();
                 $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbid", $mbArtist->mbId);
                 $params[] = (new \Spieldose\DatabaseParam())->str(":track_artist", $artist);
-                echo PHP_EOL . "saving " . $artist . " with " . $mbArtist->mbId . PHP_EOL;
                 $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
             }
         }
+
+        public function getPendingAlbums(\Spieldose\Database $dbh = null) {
+            $artists = array();
+            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY album_name DESC";
+            return($dbh->query($query));
+        }
+
+        public function mbAlbumScrap(\Spieldose\Database $dbh = null, string $album = "", string $artist = "") {
+            $mbAlbum = \Spieldose\MusicBrainz\Album::getFromAlbumAndArtist($album, $artist);
+            if (! empty($mbAlbum->mbId)) {
+                $mbAlbum->save($dbh);
+                $params = array();
+                $params[] = (new \Spieldose\DatabaseParam())->str(":album_mbid", $mbAlbum->mbId);
+                $params[] = (new \Spieldose\DatabaseParam())->str(":album_name", $album);
+                $params[] = (new \Spieldose\DatabaseParam())->str(":track_artist", $artist);
+                $dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND track_artist = :track_artist", $params);
+            }
+        }
+
     }
 
 ?>
