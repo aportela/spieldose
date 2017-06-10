@@ -62,6 +62,7 @@
                         SELECT DISTINCT
                             MBA2.mbid,
                             COALESCE(MBA2.album, F.album_name) as name,
+                            COALESCE(MBA2.year, F.year) as year,
                             MBA2.image
                         FROM FILE F
                         LEFT JOIN MB_CACHE_ARTIST MBA1 ON MBA1.mbid = F.artist_mbid

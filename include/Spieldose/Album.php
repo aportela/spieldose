@@ -45,7 +45,7 @@
                     COALESCE(MBA.album, F.album_name) as name,
                     F.track_artist AS artist,
                     F.album_artist AS albumartist,
-                    F.year,
+                    COALESCE(MBA.year, F.year) AS year,
                     MBA.image
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
