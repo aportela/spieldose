@@ -68,11 +68,9 @@
 		}
 
 		private function getMusicBrainzContainerData($id3_obj, $tag_field) {
-			if (isset($id3_obj['tags_html']['id3v2']["text"][$tag_field])) {
+			if (isset($id3_obj['tags_html']['id3v2']) && isset($id3_obj['tags_html']['id3v2']["text"]) && isset($id3_obj['tags_html']['id3v2']["text"][$tag_field])) {
 				return($id3_obj['tags_html']['id3v2']["text"][$tag_field]);
 			} else {
-				print_r($id3_obj['tags_html']['id3v2']["text"]);
-				echo $tag_field . PHP_EOL;
 				return(null);
 			}
 		}
