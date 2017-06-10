@@ -42,6 +42,7 @@
                 [album] VARCHAR(128) NOT NULL,
                 [artist] VARCHAR(36) NOT NULL,
                 [image] VARCHAR(8192),
+                [year] INTEGER,
                 [json] TEXT NOT NULL
             )',
             'CREATE TABLE [MB_CACHE_TRACK] (
