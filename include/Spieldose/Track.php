@@ -74,8 +74,8 @@
                 SELECT DISTINCT
                     id,
                     track_name AS title,
-                    track_artist AS artist,
-                    album_name AS album,
+                    COALESCE(MBA2.artist, F.track_artist) AS artist,
+                    COALESCE(MBA1.album, F.album_name) AS album,
                     album_artist AS albumartist,
                     year,
                     playtime_seconds AS playtimeSeconds,
