@@ -284,6 +284,15 @@ div.artist_item div.artist_info p.artist_name
 }
 
 /* artist item */
+
+/* others */
+
+img.artist-thumbnail {
+	margin-right: 32px;
+}
+
+/* others */
+
 /* player & playlist  */
 
 aside#aside-player {
