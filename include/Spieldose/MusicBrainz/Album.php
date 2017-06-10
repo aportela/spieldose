@@ -53,7 +53,7 @@
                 $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                $image = isset($result->artist->image) ? self::getBestImage($result->artist->image) : "";
+                $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
                 return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $image, $json));
             }
         }
