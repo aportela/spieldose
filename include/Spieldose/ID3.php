@@ -8,7 +8,7 @@
     {
 
         private $getID3Obj;
-        private $tagData;
+        public $tagData;
 
 	    public function __construct () {
             $this->getID3Obj = new \getID3();
@@ -65,6 +65,16 @@
 				$tag_value = trim($this->toUTF8($tag_value));
 			}
 			return($tag_value);
+		}
+
+		private function getMusicBrainzContainerData($id3_obj, $tag_field) {
+			if (isset($id3_obj['tags_html']['id3v2']["text"][$tag_field])) {
+				return($id3_obj['tags_html']['id3v2']["text"][$tag_field]);
+			} else {
+				print_r($id3_obj['tags_html']['id3v2']["text"]);
+				echo $tag_field . PHP_EOL;
+				return(null);
+			}
 		}
 
         public function getTrackTitle(): string {
@@ -124,6 +134,13 @@
             return((string)$this->getTagFieldValue($this->tagData, "mime_type"));
         }
 
+		public function getMusicBrainzArtistId(): string {
+			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id"));
+		}
+
+		public function getMusicBrainzAlbumId(): string {
+			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id"));
+		}
     }
 
 ?>
