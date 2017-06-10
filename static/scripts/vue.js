@@ -192,7 +192,9 @@ var container = Vue.component('spieldose-component', {
                 nextPage: 1,
                 totalPages: 0,
                 resultsPage: 32
-            }
+            },
+            filterByTextOn: "",
+            filterByTextCondition: ""
         });
     },
     computed: {
@@ -201,12 +203,25 @@ var container = Vue.component('spieldose-component', {
         changeSection: function(s) {
             this.section = s;
             var self = this;
+            self.filterByTextCondition = "";
             switch(s) {
                 case "#/artists":
+                    self.filterByTextOn = "artists";
                     self.searchArtists(1);
                 break;
                 case "#/albums":
+                    self.filterByTextOn = "albums";
                     self.searchAlbums(1);
+                break;
+            }
+        },
+        globalSearch: function() {
+            switch(this.filterByTextOn) {
+                case "artists":
+                    this.searchArtists(1);
+                break;
+                case "albums":
+                    this.searchAlbums(1);
                 break;
             }
         },
@@ -221,6 +236,7 @@ var container = Vue.component('spieldose-component', {
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
+            fData.append("text", self.filterByTextCondition);
             httpRequest("POST", "/api/artist/search.php", fData, function (httpStatusCode, response) {
                 if (response.artists.length > 0) {
                     self.pager.totalPages = response.totalPages;
@@ -246,6 +262,7 @@ var container = Vue.component('spieldose-component', {
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
+            fData.append("text", self.filterByTextCondition);
             httpRequest("POST", "/api/album/search.php", fData, function (httpStatusCode, response) {
                 for (var i = 0; i < response.albums.length; i++) {
                     if (response.albums[i].image) {
@@ -264,7 +281,6 @@ var container = Vue.component('spieldose-component', {
                 } else {
                     self.pager.nextPage = self.pager.totalPages;
                 }
-                console.log(response.albums);
                 self.albumList = response.albums;
             });
         },

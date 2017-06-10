@@ -131,23 +131,23 @@
                     <div class="field has-addons">
                         <p class="control">
                             <span class="select">
-                            <select>
-                                <option>search on anything</option>
-                                <option>search on track names</option>
-                                <option>search on artist names</option>
-                                <option>search on album names</option>
-                            </select>
+                                <select v-model="filterByTextOn">
+                                    <option value="">search on anything</option>
+                                    <option value="tracks">search on track names</option>
+                                    <option value="artists">search on artist names</option>
+                                    <option value="albums">search on album names</option>
+                                </select>
                             </span>
                         </p>
                         <p class="control is-expanded">
-                            <input class="input" type="text" placeholder="type search text condition">
+                            <input class="input" type="text" v-on:keyup.13="globalSearch(filterByTextCondition)" v-model="filterByTextCondition" placeholder="type search text condition">
                         </p>
                         <p class="control">
-                            <a class="button">
+                            <a v-bind:disabled="! filterByTextCondition" class="button disabled" v-on:click.prevent="globalSearch(filterByTextCondition)">
                                 <span class="icon is-small">
                                 <i class="fa fa-search"></i>
                                 </span>
-                            <span>Search</span>
+                                <span>Search</span>
                             </a>
                         </p>
                     </div>
@@ -311,7 +311,7 @@
                             </a>
                             <div class="album_info">
                                 <p class="album_name" title="">{{ album.name }}</p>
-                                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.artist }} ({{ album.year }})</a></p>
+                                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
                             </div>
                         </div>
                     </section>
