@@ -40,21 +40,61 @@
             if ($dbh == null) {
                 $dbh = new \Spieldose\Database();
             }
+            $params = array();
+            $whereCondition = "";
+            if (isset($filter)) {
+                if (isset($filter["text"])) {
+                    $whereCondition = " AND COALESCE(MBT.name, F.track_name) LIKE :text ";
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
+                }
+            }
+            $queryCount = '
+                SELECT
+                    COUNT (DISTINCT(COALESCE(MBT.name, F.track_name))) AS total
+                FROM FILE F
+                LEFT JOIN MB_CACHE_TRACK MBT ON MBA.mbid = F.track_mbid
+                WHERE COALESCE(MBT.name, F.track_name) IS NOT NULL
+                ' . $whereCondition . '
+            ';
+
             $queryCount = "SELECT COUNT(DISTINCT track_name) AS total FROM FILE";
             $result = $dbh->query($queryCount);
             $data = new \stdClass();
             $data->actualPage = $page;
             $data->resultsPage = $resultsPage;
             $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil(($data->totalResults + $resultsPage - 1) / $resultsPage);
+            $data->totalPages = ceil($data->totalResults / $resultsPage);
             $sqlOrder = "";
             if (empty($order) || $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY FILE.track_name ASC, FILE.track_artist ASC, FILE.album_artist ASC ";
+                $sqlOrder = " ORDER BY COALESCE(MBT.name, F.track_name) COLLATE NOCASE ASC ";
             }
-            $query = sprintf(" SELECT DISTINCT id, track_name AS title, track_artist AS artist, album_name AS album, album_artist AS albumartist, year, playtime_seconds AS playtimeSeconds, playtime_string AS playtimeString, image FROM FILE GROUP BY COALESCE(track_artist, album_artist) %s LIMIT %d OFFSET %d", $sqlOrder, $resultsPage, $resultsPage * $page);
-            $data->results = $dbh->query($query);
+            $query = sprintf('
+                SELECT DISTINCT
+                    id,
+                    track_name AS title,
+                    track_artist AS artist,
+                    album_name AS album,
+                    album_artist AS albumartist,
+                    year,
+                    playtime_seconds AS playtimeSeconds,
+                    playtime_string AS playtimeString,
+                    COALESCE(MBA1.image, MBA2.image) AS image
+                FROM FILE F
+                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
+                WHERE F.track_name IS NOT NULL
+                %s
+                %s
+                LIMIT %d OFFSET %d
+                ',
+                $whereCondition,
+                $sqlOrder,
+                $resultsPage,
+                $resultsPage * ($page - 1)
+            );
+            $data->results = $dbh->query($query, $params);
             return($data);
         }
 
