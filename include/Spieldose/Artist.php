@@ -54,7 +54,7 @@
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY COALESCE(artist, track_artist) ASC ";
+                $sqlOrder = " ORDER BY COALESCE(artist, track_artist) COLLATE NOCASE ASC ";
             }
             $query = sprintf('
                 SELECT
