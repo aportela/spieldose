@@ -134,7 +134,7 @@
 
         public function getPendingArtists(\Spieldose\Database $dbh = null) {
             $artists = array();
-            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist DESC";
+            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist";
             $results = $dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
@@ -203,7 +203,7 @@
 
         public function getPendingAlbums(\Spieldose\Database $dbh = null) {
             $artists = array();
-            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY album_name DESC";
+            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY album_name";
             return($dbh->query($query));
         }
 
