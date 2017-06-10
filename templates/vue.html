@@ -117,7 +117,7 @@
                     <i title="download song" class="fa fa-save fa-lg"></i>
                 </div>
                 <ul id="now_playing_list">
-                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ i + 1 }} - {{ track.title }}</span><span class="duration">{{ track.playtimeString }}</span></a></li>
+                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ track.title }}</span><span class="duration">{{ track.playtimeString }}</span></a></li>
                 </ul>
             </div>
         </script>
@@ -324,7 +324,7 @@
                             </ul>
                         </nav>
                         <div class="album_item" v-for="album in albumList">
-                            <a class="play_album" href="api/album/get.php?id=">
+                            <a class="play_album" v-on:click="searchTracks(1, '', album.artist, album.name)">
                                 <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
                                 <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                                 <i class="fa fa-play fa-4x"></i>

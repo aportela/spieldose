@@ -306,13 +306,22 @@ var container = Vue.component('spieldose-component', {
                 self.albumList = response.albums;
             });
         },
-        searchTracks: function(page) {
+        searchTracks: function(page, text, artist, album) {
             var self = this;
             self.pager.actualPage = page;
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
-            fData.append("orderBy", "random");
+            //fData.append("orderBy", "random");
+            if (text) {
+                fData.append("text", text);
+            }
+            if (artist) {
+                fData.append("artist", artist);
+            }
+            if (album) {
+                fData.append("album", album);
+            }
             httpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
                 for (var i = 0; i < response.tracks.length; i++) {
                     if (response.tracks[i].image) {
