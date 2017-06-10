@@ -11,11 +11,10 @@
     $response = array();
 
     $dbh = new \Spieldose\Database();
-    $data = new \Spieldose\Artist(isset($_GET["name"]) ? $_GET["name"]: "");
+    $data = new \Spieldose\Artist(isset($_POST["name"]) ? $_POST["name"]: "");
     try {
         $data->get(new \Spieldose\Database());
-        $response["name"] = $data->name;
-        $response["albums"] = $data->albums;
+        $response["artist"] = $data;
         http_response_code(200);
     } catch (\Spieldose\Exception\InvalidParamsException $e) {
         http_response_code(400);

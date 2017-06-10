@@ -4,7 +4,9 @@
 
     class Artist
     {
+        public $mbid;
         public $name;
+        public $bio;
         public $albums;
 
 	    public function __construct (string $name = "", array $albums = array()) {
@@ -24,7 +26,50 @@
                     $dbh = new \Spieldose\Database();
                 }
                 if ($this->exists($dbh)) {
-
+                    $params = array();
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
+                    $query = sprintf('
+                        SELECT DISTINCT
+                            MBA.mbid,
+                            MBA.bio,
+                            MBA.image
+                        FROM FILE F
+                        LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                        WHERE COALESCE(MBA.artist, F.track_artist) = :name
+                        '
+                    );
+                    $data = $dbh->query($query, $params);
+                    $this->mbid = $data[0]->mbid;
+                    $this->bio = $data[0]->bio;
+                    $this->image = $data[0]->image;
+                    $this->getAlbums($dbh);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("name: " . $this->name);
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("name");
+            }
+        }
+        private function getAlbums(\Spieldose\Database $dbh) {
+            if (isset($this->name) && ! empty($this->name)) {
+                if ($dbh == null) {
+                    $dbh = new \Spieldose\Database();
+                }
+                if ($this->exists($dbh)) {
+                    $params = array();
+                    $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
+                    $query = sprintf('
+                        SELECT DISTINCT
+                            MBA2.mbid,
+                            COALESCE(MBA2.album, F.album_name) as name,
+                            MBA2.image
+                        FROM FILE F
+                        LEFT JOIN MB_CACHE_ARTIST MBA1 ON MBA1.mbid = F.artist_mbid
+                        LEFT JOIN MB_CACHE_ALBUM MBA2 ON MBA2.mbid = F.album_mbid
+                        WHERE COALESCE(MBA1.artist, F.track_artist) = :name
+                        '
+                    );
+                    $this->albums = $dbh->query($query, $params);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("name: " . $this->name);
                 }
