@@ -140,10 +140,10 @@
                             </span>
                         </p>
                         <p class="control is-expanded">
-                            <input class="input" type="text" v-on:keyup.13="globalSearch(filterByTextCondition)" v-model="filterByTextCondition" placeholder="type search text condition">
+                            <input class="input" type="text" v-on:keyup.13="globalSearch()" v-model="filterByTextCondition" placeholder="type search text condition">
                         </p>
                         <p class="control">
-                            <a v-bind:disabled="! filterByTextCondition" class="button disabled" v-on:click.prevent="globalSearch(filterByTextCondition)">
+                            <a class="button" v-on:click.prevent="globalSearch()">
                                 <span class="icon is-small">
                                 <i class="fa fa-search"></i>
                                 </span>
@@ -268,9 +268,12 @@
                             <a class="pagination-previous" v-on:click.prevent="searchArtists(pager.previousPage)">Previous</a>
                             <a class="pagination-next" v-on:click.prevent="searchArtists(pager.nextPage)">Next page</a>
                             <ul class="pagination-list">
-                                <!-- vuejs pagination by Jeff (https://stackoverflow.com/a/35706926) -->
-                                <li v-for="pageNumber in pager.totalPages" v-if="Math.abs(pageNumber - pager.actualPage) < 3 || pageNumber == pager.totalPages - 1 || pageNumber == 0">
-                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber, last: (pageNumber == pager.totalPages - 1 && Math.abs(pageNumber - pager.actualPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - pager.actualPage) > 3)}">{{ pageNumber+1 }}</a>
+                                <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
+                                <li v-for="pageNumber in pager.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - pager.actualPage) < 3 || pager.totalPages - 2 < pageNumber">
+                                    <!--
+                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber + 1)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber + 1, last: (pageNumber + 1 == pager.totalPages - 1 && Math.abs(pageNumber +1 - pager.actualPage) > 3), first:(pageNumber +1 == 0 && Math.abs(pageNumber +1 - pager.actualPage) > 3)}">{{ pageNumber }}</a>
+                                    -->
+                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber}">{{ pageNumber }}</a>
                                 </li>
                             </ul>
                         </nav>
@@ -296,9 +299,12 @@
                             <a class="pagination-previous" v-on:click.prevent="searchAlbums(pager.actualPage - 1)">Previous</a>
                             <a class="pagination-next" v-on:click.prevent="searchAlbums(pager.actualPage + 1)">Next page</a>
                             <ul class="pagination-list">
-                                <!-- vuejs pagination by Jeff (https://stackoverflow.com/a/35706926) -->
-                                <li v-for="pageNumber in pager.totalPages" v-if="Math.abs(pageNumber - pager.actualPage) < 3 || pageNumber == pager.totalPages - 1 || pageNumber == 0">
-                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber, last: (pageNumber == pager.totalPages - 1 && Math.abs(pageNumber - pager.actualPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - pager.actualPage) > 3)}">{{ pageNumber+1 }}</a>
+                                <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
+                                <li v-for="pageNumber in pager.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - pager.actualPage) < 3 || pager.totalPages - 2 < pageNumber">
+                                    <!--
+                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber + 1)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber + 1, last: (pageNumber + 1 == pager.totalPages - 1 && Math.abs(pageNumber +1 - pager.actualPage) > 3), first:(pageNumber +1 == 0 && Math.abs(pageNumber +1 - pager.actualPage) > 3)}">{{ pageNumber }}</a>
+                                    -->
+                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber}">{{ pageNumber }}</a>
                                 </li>
                             </ul>
                         </nav>
