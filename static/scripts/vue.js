@@ -191,6 +191,7 @@ var container = Vue.component('spieldose-component', {
             artistList: [],
             albumList: [],
             trackList: [],
+            artist: null,
             pager: {
                 actualPage: 1,
                 previousPage: 1,
@@ -217,6 +218,16 @@ var container = Vue.component('spieldose-component', {
                 case "#/albums":
                     self.filterByTextOn = "albums";
                     self.searchAlbums(1);
+                break;
+                default:
+                    if (s.indexOf("#/artist") >= 0) {
+                        m = s.match(/#\/artist\/(.+)/);
+                        if (m && m.length == 2) {
+                            self.getArtist(m[1]);
+                        } else {
+                            // TODO
+                        }
+                    }
                 break;
             }
         },
@@ -316,6 +327,18 @@ var container = Vue.component('spieldose-component', {
                     self.pager.totalPages = 0;
                 }
                 self.trackList = response.tracks;
+            });
+        },
+        getArtist: function(artist) {
+            var self = this;
+            var fData = new FormData();
+            fData.append("name", artist);
+            httpRequest("POST", "/api/artist/get.php", fData, function (httpStatusCode, response) {
+                self.artist = response.artist;
+                if (self.artist.bio) {
+                    self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')
+                }
+                self.section = '#/artist';
             });
         }
     }, filters: {
