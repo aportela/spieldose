@@ -188,8 +188,10 @@ var container = Vue.component('spieldose-component', {
             trackList: [],
             pager: {
                 actualPage: 1,
+                previousPage: 1,
+                nextPage: 1,
                 totalPages: 0,
-                resultsPage: 16
+                resultsPage: 32
             }
         });
     },
@@ -211,6 +213,11 @@ var container = Vue.component('spieldose-component', {
         searchArtists: function(page) {
             var self = this;
             self.pager.actualPage = page;
+            if (page > 1) {
+                self.pager.previousPage = page - 1;
+            } else {
+                self.pager.previousPage = 1;
+            }
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
@@ -219,6 +226,11 @@ var container = Vue.component('spieldose-component', {
                     self.pager.totalPages = response.totalPages;
                 } else {
                     self.pager.totalPages = 0;
+                }
+                if (page < self.pager.totalPages) {
+                    self.pager.nextPage = page + 1;
+                } else {
+                    self.pager.nextPage = self.pager.totalPages;
                 }
                 self.artistList = response.artists;
             });

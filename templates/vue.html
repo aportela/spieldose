@@ -264,7 +264,19 @@
                         </div>
                     </section>
                     <section v-if="section == '#/artists'" class="section" id="section-artists">
+                        <nav class="pagination is-centered">
+                            <a class="pagination-previous" v-on:click.prevent="searchArtists(pager.previousPage)">Previous</a>
+                            <a class="pagination-next" v-on:click.prevent="searchArtists(pager.nextPage)">Next page</a>
+                            <ul class="pagination-list">
+                                <!-- vuejs pagination by Jeff (https://stackoverflow.com/a/35706926) -->
+                                <li v-for="pageNumber in pager.totalPages" v-if="Math.abs(pageNumber - pager.actualPage) < 3 || pageNumber == pager.totalPages - 1 || pageNumber == 0">
+                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber, last: (pageNumber == pager.totalPages - 1 && Math.abs(pageNumber - pager.actualPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - pager.actualPage) > 3)}">{{ pageNumber+1 }}</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!--
                         <div class="artist_item" v-show="pager.actualPage > 1"><a class="artist_pager" href="#" title="previous page" v-on:click.prevent="searchArtists(pager.actualPage - 1)"><i class="fa fa-arrow-left fa-4x"></i></a></div>
+                        -->
                         <div class="artist_item" v-for="artist in artistList">
                             <a class="view_artist" v-bind:href="'api/artist/get.php?name=' + artist.name | encodeURI">
                                 <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
@@ -275,7 +287,9 @@
                                 <p class="artist_name">{{ artist.name }}</p>
                             </div>
                         </div>
+                        <!--
                         <div class="artist_item" v-show="pager.actualPage < pager.totalPages"><a class="artist_pager" href="#" title="next page" v-on:click.prevent="searchArtists(pager.actualPage + 1)"><i class="fa fa-arrow-right fa-4x"></i></a></div>
+                        -->
                     </section>
                     <section v-if="section == '#/albums'"class="section" id="section-albums">
                         <nav class="pagination is-centered">
