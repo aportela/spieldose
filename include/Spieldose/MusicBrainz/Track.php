@@ -8,14 +8,14 @@
         const API_GET_URL_FROM_MBID = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=%s&mbid=%s&format=json";
         const API_GET_URL_FROM_TRACK_AND_ARTIST = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=%s&track=%s&artist=%s&autocorrect=1&format=json";
         public $mbId;
-        public $name;
+        public $track;
         public $artistMBId;
         public $artistName;
         public $json;
 
-	    public function __construct (string $mbId = "", string $name = "", string $artistMBId = "", string $artistName = "", string $json = "") {
+	    public function __construct (string $mbId = "", string $track = "", string $artistMBId = "", string $artistName = "", string $json = "") {
             $this->mbId = $mbId;
-            $this->name = $name;
+            $this->track = $track;
             $this->artistMBId = $artistMBId;
             $this->artistName = $artistName;
             $this->json = $json;
@@ -23,9 +23,9 @@
 
         public function __destruct() { }
 
-        public static function search(string $name = "", string $artist = "", int $limit = 1): array {
+        public static function search(string $track = "", string $artist = "", int $limit = 1): array {
             $results = array();
-            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $name, $artist, $limit);
+            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $track, $artist, $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
             if (isset($result->results->trackmatches->track) && is_array($result->results->trackmatches->track)) {
@@ -65,18 +65,18 @@
             if (empty($this->mbId)) {
                 throw new \Spieldose\Exception\InvalidParamsException("mbId");
             }
-            if (empty($this->name)) {
-                throw new \Spieldose\Exception\InvalidParamsException("name");
+            if (empty($this->track)) {
+                throw new \Spieldose\Exception\InvalidParamsException("track");
             }
             if (! $dbh) {
                 $dbh = new \Spieldose\Database();
             }
             $params[] = (new \Spieldose\DatabaseParam())->str(":mbid", $this->mbId);
-            $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
+            $params[] = (new \Spieldose\DatabaseParam())->str(":track", $this->track);
             $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbid", $this->artistMBId);
             $params[] = (new \Spieldose\DatabaseParam())->str(":artist_mbname", $this->artistName);
             $params[] = (new \Spieldose\DatabaseParam())->str(":json", $this->json);
-            $dbh->execute("REPLACE INTO MB_CACHE_TRACK (mbid, name, artist_mbid, artist_mbname, json) VALUES (:mbid, :name, :artist_mbid, :artist_mbname, :json)", $params);
+            $dbh->execute("REPLACE INTO MB_CACHE_TRACK (mbid, track, artist_mbid, artist_mbname, json) VALUES (:mbid, :track, :artist_mbid, :artist_mbname, :json)", $params);
         }
     }
 ?>
