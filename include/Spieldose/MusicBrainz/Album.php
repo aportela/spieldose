@@ -8,30 +8,42 @@
         const API_GET_URL_FROM_MBID = "http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=%s&mbid=%s&format=json";
         const API_GET_URL_FROM_ALBUM_AND_ARTIST = "http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=%s&album=%s&artist=%s&autocorrect=1&format=json";
         public $mbId;
-        public $name;
+        public $album;
         public $artist;
+        public $image;
         public $json;
 
-	    public function __construct (string $mbId = "", string $name = "", string $artist = "", string $json = "") {
+	    public function __construct (string $mbId = "", string $album = "", string $artist = "", string $image = "", string $json = "") {
             $this->mbId = $mbId;
-            $this->name = $name;
+            $this->album = $album;
             $this->artist = $artist;
+            $this->image = $image;
             $this->json = $json;
         }
 
         public function __destruct() { }
 
-        public static function search(string $name = "", int $limit = 1): array {
+        public static function search(string $album = "", int $limit = 1): array {
             $results = array();
-            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $name, $limit);
+            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $album, $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
             if (isset($result->results->albummatches->album) && is_array($result->results->albummatches->album)) {
                 foreach ($result->results->albummatches->album as $matchedAlbum) {
-                    $results[] = new \Spieldose\MusicBrainz\Album($matchedAlbum->mbid, $matchedAlbum->name, $matchedAlbum->artist, "");
+                    $results[] = new \Spieldose\MusicBrainz\Album($matchedAlbum->mbid, $matchedAlbum->name, $matchedAlbum->artist, "", "");
                 }
             }
             return($results);
+        }
+
+        private static function getBestImage($imageArray) {
+            $images = array_reverse($imageArray);
+            foreach($images as $image) {
+                if (isset($image->size) && isset($image->{"#text"})) {
+                    return($image->{"#text"});
+                }
+            }
+            return(isset($images[0]->{"#text"}) ? $images[0]->{"#text"}: "");
         }
 
         public static function getFromMBId(string $mbId = "") {
@@ -41,7 +53,8 @@
                 $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $json));
+                $image = isset($result->artist->image) ? self::getBestImage($result->artist->image) : "";
+                return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $image, $json));
             }
         }
 
@@ -55,7 +68,8 @@
                 $url = sprintf(self::API_GET_URL_FROM_ALBUM_AND_ARTIST, \Spieldose\LastFM::API_KEY, $album, $artist);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $json));
+                $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
+                return(new \Spieldose\MusicBrainz\Album(isset($result->album->mbid) ? $result->album->mbid: "", isset($result->album->name) ? $result->album->name: "", isset($result->album->artist) ? $result->album->artist: "", $image, $json));
             }
         }
 
@@ -63,17 +77,26 @@
             if (empty($this->mbId)) {
                 throw new \Spieldose\Exception\InvalidParamsException("mbId");
             }
-            if (empty($this->name)) {
-                throw new \Spieldose\Exception\InvalidParamsException("name");
+            if (empty($this->album)) {
+                throw new \Spieldose\Exception\InvalidParamsException("album");
             }
             if (! $dbh) {
                 $dbh = new \Spieldose\Database();
             }
             $params[] = (new \Spieldose\DatabaseParam())->str(":mbid", $this->mbId);
-            $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
-            $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $this->artist);
+            $params[] = (new \Spieldose\DatabaseParam())->str(":album", $this->album);
+            if (! empty($this->artist)) {
+                $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $this->artist);
+            } else {
+                $params[] = (new \Spieldose\DatabaseParam())->null(":artist");
+            }
+            if (! empty($this->image)) {
+                $params[] = (new \Spieldose\DatabaseParam())->str(":image", $this->image);
+            } else {
+                $params[] = (new \Spieldose\DatabaseParam())->null(":image");
+            }
             $params[] = (new \Spieldose\DatabaseParam())->str(":json", $this->json);
-            $dbh->execute("REPLACE INTO MB_CACHE_ALBUM (mbid, name, artist, json) VALUES (:mbid, :name, :artist, :json)", $params);
+            $dbh->execute("REPLACE INTO MB_CACHE_ALBUM (mbid, album, artist, image, json) VALUES (:mbid, :album, :artist, :image, :json)", $params);
         }
     }
 ?>
