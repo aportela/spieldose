@@ -32,7 +32,7 @@ var modal = Vue.component('modal-component', {
     template: '#modal-template',
     data: function () {
         return ({
-            visible: true,
+            visible: false,
             title: "Default modal title",
             body: "Default modal body"
         });
@@ -179,7 +179,7 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
     }
 });
 
-var container = Vue.component('spieldose-component', {
+var container = Vue.component('spieldose-app-component', {
     template: '#spieldose-template',
     data: function () {
         return ({
@@ -367,6 +367,6 @@ var app = new Vue({
     components: {
         //'modal-component': modal,
         'spieldose-signin-component': f,
-        'spieldose-component': container
+        'spieldose-app-component': container
     }
 });
