@@ -28,6 +28,7 @@ var httpRequest = function (method, url, data, callback) {
     xhr.send(data);
 }
 
+/* global object for events between vuejs components */
 var bus = new Vue();
 
 var modal = Vue.component('modal-component', {
@@ -93,6 +94,7 @@ var signIn = Vue.component('spieldose-signin-component', {
                         }
                         break;
                     default:
+                        bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode);
                         break;
                 }
             });
