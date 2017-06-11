@@ -98,7 +98,7 @@
         <script type="text/x-template" id="chart-template">
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel chart">
-                    <p class="panel-heading"><span class="icon"><i class="fa fa-list"></i></span> {{ title }}</p>
+                    <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-3x fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
                     <p class="panel-tabs">
                         <a class="is-active" href="#">All Time</a>
                         <a href="#">Past week</a>

@@ -138,6 +138,7 @@ var chart = Vue.component('spieldose-chart', {
     template: '#chart-template',
     data: function () {
         return ({
+            xhr: false,
             iconClass: 'fa-pie-chart',
             items: []
         });
@@ -157,7 +158,9 @@ var chart = Vue.component('spieldose-chart', {
             fData.append("actualPage", 1);
             fData.append("resultsPage", 8);
             fData.append("orderBy", "random");
+            self.xhr = true;
             httpRequest("POST", url, fData, function (httpStatusCode, response) {
+                self.xhr = false;
                 switch (self.type) {
                     default:
                         self.items = response.tracks;
