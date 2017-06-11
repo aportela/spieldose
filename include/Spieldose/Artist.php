@@ -68,6 +68,7 @@
                         LEFT JOIN MB_CACHE_ARTIST MBA1 ON MBA1.mbid = F.artist_mbid
                         LEFT JOIN MB_CACHE_ALBUM MBA2 ON MBA2.mbid = F.album_mbid
                         WHERE COALESCE(MBA1.artist, F.track_artist) = :name
+                        ORDER BY COALESCE(MBA2.year, F.year)
                         '
                     );
                     $this->albums = $dbh->query($query, $params);
