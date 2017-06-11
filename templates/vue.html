@@ -23,13 +23,13 @@
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">{{ title }}</p>
-                    <button class="delete" v-on:click="hide"></button>
+                    <button class="delete" v-on:click.prevent="hide"></button>
                 </header>
                 <section class="modal-card-body">
                     {{ body }}
                 </section>
                 <footer class="modal-card-foot">
-                    <a class="button">Close</a>
+                    <a class="button" v-on:click.prevent="hide">Close</a>
                 </footer>
             </div>
             </div>

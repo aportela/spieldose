@@ -28,17 +28,19 @@ var httpRequest = function (method, url, data, callback) {
     xhr.send(data);
 }
 
-var m = Vue.component('modal-component', {
+var modal = Vue.component('modal-component', {
     template: '#modal-template',
     data: function () {
         return ({
-            visible: false,
-            title: "Modal title",
-            body: "Modal body"
+            visible: true,
+            title: "Default modal title",
+            body: "Default modal body"
         });
     },
     methods: {
-        show: function () {
+        show: function (title, body) {
+            this.title = title;
+            this.body = body;
             this.visible = true;
         },
         hide: function () {
@@ -363,7 +365,7 @@ var app = new Vue({
         logged: true
     },
     components: {
-        'modal-component': m,
+        //'modal-component': modal,
         'spieldose-signin-component': f,
         'spieldose-component': container
     }
