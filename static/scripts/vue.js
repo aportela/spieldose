@@ -1,18 +1,8 @@
 "use strict";
 
-/*
 window.onhashchange = function(e) {
-    console.log(e);
-    switch(location.hash) {
-        case "#/albums":
-        break;
-        case "#/artists":
-        break;
-        case "#/genres":
-        break;
-    }
+    console.log("hash changed to: " + location.hash);
 };
-*/
 
 var httpRequest = function (method, url, data, callback) {
     var xhr = new XMLHttpRequest();
@@ -35,7 +25,7 @@ var httpRequest = function (method, url, data, callback) {
     xhr.ontimeout = function (e) {
         callback(408, null);
     };
-    xhr.send(data, null, 2);
+    xhr.send(data);
 }
 
 var m = Vue.component('modal-component', {
@@ -57,7 +47,7 @@ var m = Vue.component('modal-component', {
     }
 });
 
-var f = Vue.component('signin-component', {
+var f = Vue.component('spieldose-signin-component', {
     template: '#signin-template',
     ready: function () { },
     data: function () {
@@ -341,9 +331,6 @@ var container = Vue.component('spieldose-component', {
                     self.pager.totalPages = 0;
                 }
                 self.trackList = response.tracks;
-                if (response.tracks.length) {
-                    self.player.play(1);
-                }
             });
         },
         getArtist: function(artist) {
@@ -377,8 +364,7 @@ var app = new Vue({
     },
     components: {
         'modal-component': m,
-        'signin-component': f,
+        'spieldose-signin-component': f,
         'spieldose-component': container
     }
 });
-
