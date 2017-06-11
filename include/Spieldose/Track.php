@@ -75,7 +75,7 @@
             $data->totalResults = $result[0]->total;
             $data->totalPages = ceil($data->totalResults / $resultsPage);
             $sqlOrder = "";
-            if (empty($order) || $order == "random") {
+            if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
                 $sqlOrder = " ORDER BY F.track_number, COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
