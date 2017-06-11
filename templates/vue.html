@@ -95,7 +95,7 @@
                 <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
             </ul>
         </script>
-        <script type="text/x-template" id="spieldose-right-player-sidebar-template">
+        <script type="text/x-template" id="player-template">
             <div id="player">
                 <p id="now_playing_header"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
                 <img id="now_playing_image" v-bind:src="albumCoverUrl" />
@@ -109,7 +109,7 @@
                     Your browser does not support the audio element.
                 </audio>
                 <div id="player_controls">
-                    <i v-on:click.prevent="$parent.searchTracks(1)" title="repeat all" class="fa fa-refresh fa-lg"></i>
+                    <i v-on:click.prevent="$parent.searchTracks(1, 'random')" title="repeat all" class="fa fa-refresh fa-lg"></i>
                     <i title="shuffle" class="fa fa-random fa-lg"></i>
                     <i id="crtl_play_previous" title="previous" class="fa fa-backward fa-lg"></i>
                     <i id="crtl_play_next" title="next" class="fa fa-forward fa-lg"></i>
@@ -342,7 +342,7 @@
                     </section>
                 </div>
                 <aside id="aside-player" class="column is-2">
-                    <spieldose-right-player-sidebar-template-component></spieldose-right-player-sidebar-template-component>
+                    <spieldose-player-component></spieldose-player-component>
                 </aside>
             </div>
         </script>

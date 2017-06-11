@@ -133,8 +133,8 @@ var menu = Vue.component('spieldose-menu-component', {
     }
 });
 
-var player = Vue.component('spieldose-right-player-sidebar-template-component', {
-    template: '#spieldose-right-player-sidebar-template',
+var player = Vue.component('spieldose-player-component', {
+    template: '#player-template',
     data: function () {
         return ({
             title: "no title",
@@ -328,13 +328,15 @@ var container = Vue.component('spieldose-app-component', {
                 self.albumList = response.albums;
             });
         },
-        searchTracks: function (page, text, artist, album) {
+        searchTracks: function (page, order, text, artist, album) {
             var self = this;
             self.pager.actualPage = page;
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
-            fData.append("orderBy", "track_number");
+            if (order) {
+                fData.append("orderBy", order);
+            }
             if (text) {
                 fData.append("text", text);
             }
@@ -377,10 +379,10 @@ var container = Vue.component('spieldose-app-component', {
             return (encodeURI(str));
         }
     }, mounted: function () {
-        this.searchTracks(1);
+        this.searchTracks(1, "random", null, null, null);
     }, components: {
-        'spieldose-left-menu-sidebar-template-component': menu,
-        'spieldose-right-player-sidebar-template-component': player
+        //'spieldose-left-menu-sidebar-template-component': menu,
+        //'spieldose-right-player-sidebar-template-component': player
     }
 });
 
@@ -392,8 +394,10 @@ var app = new Vue({
     functions: {
     },
     components: {
+        /*
         'modal-component': modal,
         'spieldose-signin-component': signIn,
         'spieldose-app-component': container
+        */
     }
 });
