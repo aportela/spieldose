@@ -95,6 +95,25 @@
                 <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
             </ul>
         </script>
+        <script type="text/x-template" id="chart-template">
+            <div class="column is-one-third-desktop is-full-mobile">
+                <section class="panel chart">
+                    <p class="panel-heading"><span class="icon"><i class="fa fa-list"></i></span> {{ title }}</p>
+                    <p class="panel-tabs">
+                        <a class="is-active" href="#">All Time</a>
+                        <a href="#">Past week</a>
+                        <a href="#">Past month</a>
+                        <a href="#">Past quarter</a>
+                        <a href="#">Past Year</a>
+                    </p>
+                    <div class="panel-block">
+                        <ol>
+                            <li class="is-small" v-if="type != ''" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "")}}</li>
+                        </ol>
+                    </div>
+                </section>
+            </div>
+        </script>
         <script type="text/x-template" id="player-template">
             <div id="player">
                 <p id="np-header" v-if="playing"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
@@ -113,7 +132,7 @@
                     <source v-bind:src="url" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
-                <div id="player-controls">
+                <div id="player-controls" class="is-unselectable">
                     <i v-on:click.prevent="loadRandomPlayList" title="refresh random playlist" class="fa fa-refresh fa-lg"></i>
                     <i title="shuffle" class="fa fa-random fa-lg" v-on:click.prevent="toggleShuffle()" v-bind:class="{ 'player-active-control': shuffle }"></i>
                     <i title="previous track" v-on:click.prevent="playPrevious" class="fa fa-backward fa-lg"></i>
@@ -158,51 +177,9 @@
                     </div>
                     <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
                         <div class="columns is-mobile is-multiline">
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-pie-chart"></i></span> Top played tracks</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-area-chart"></i></span> Top Artists</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div class="column is-one-third-desktop is-full-mobile">
-                                <section class="panel">
-                                    <p class="panel-heading"><span class="icon"><i class="fa fa-bar-chart"></i></span> Top genres</p>
-                                    <p class="panel-tabs">
-                                        <a class="is-active" href="#">All Time</a>
-                                        <a href="#">Past week</a>
-                                        <a href="#">Past month</a>
-                                        <a href="#">Past quarter</a>
-                                        <a href="#">Past Year</a>
-                                    </p>
-                                    <div class="panel-block">
-                                        <div id="chart1" style="height: 250px;"></div>
-                                    </div>
-                                </section>
-                            </div>
+                            <spieldose-chart v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-chart>
+                            <spieldose-chart v-bind:type="'topArtists'" v-bind:title="'Top artists'"></spieldose-chart>
+                            <spieldose-chart v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-chart>
                         </div>
                         <div class="columns is-mobile is-multiline">
                             <div class="column is-one-third-desktop is-full-mobile">
