@@ -1,6 +1,6 @@
 "use strict";
 
-window.onhashchange = function(e) {
+window.onhashchange = function (e) {
     console.log("hash changed to: " + location.hash);
 };
 
@@ -28,6 +28,8 @@ var httpRequest = function (method, url, data, callback) {
     xhr.send(data);
 }
 
+var bus = new Vue();
+
 var modal = Vue.component('modal-component', {
     template: '#modal-template',
     data: function () {
@@ -35,6 +37,12 @@ var modal = Vue.component('modal-component', {
             visible: false,
             title: "Default modal title",
             body: "Default modal body"
+        });
+    },
+    created: function () {
+        var self = this;
+        bus.$on("showModal", function (title, body) {
+            self.show(title, body);
         });
     },
     methods: {
@@ -45,16 +53,18 @@ var modal = Vue.component('modal-component', {
         },
         hide: function () {
             this.visible = false;
+            this.$emit("closeModal");
         }
     }
 });
 
-var f = Vue.component('spieldose-signin-component', {
+var signIn = Vue.component('spieldose-signin-component', {
     template: '#signin-template',
-    ready: function () { },
+    created: function () { },
     data: function () {
         return ({
             xhr: false,
+            apiURL: "",
             invalidUsername: false,
             invalidPassword: false
         });
@@ -65,7 +75,7 @@ var f = Vue.component('spieldose-signin-component', {
             self.invalidUsername = false;
             self.invalidPassword = false;
             self.xhr = true;
-            httpRequest("POST", "/api/user/signin.php", new FormData($("form#f_signin")[0]), function (httpStatusCode, response) {
+            httpRequest($("form#f_signin").attr("method"), $("form#f_signin").attr("action"), new FormData($("form#f_signin")[0]), function (httpStatusCode, response) {
                 self.xhr = false;
                 switch (httpStatusCode) {
                     case 404:
@@ -73,7 +83,7 @@ var f = Vue.component('spieldose-signin-component', {
                         break;
                     case 200:
                         if (!response) {
-                            alert("error");
+                            bus.$emit("showModal", "Error", "Server error (no response)");
                         } else {
                             if (!response.success) {
                                 self.invalidPassword = true;
@@ -99,7 +109,7 @@ var menu = Vue.component('spieldose-left-menu-sidebar-template-component', {
         });
     },
     methods: {
-        changeSection: function(s) {
+        changeSection: function (s) {
             this.section = s;
             this.$parent.changeSection(s);
         },
@@ -128,7 +138,7 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
         });
     },
     methods: {
-        play: function(track) {
+        play: function (track) {
             this.actualTrack = track;
             this.trackUrl = "/api/track/get.php?id=" + track.id;
             this.title = track.title;
@@ -144,7 +154,7 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
             */
             this.setCover(track);
         },
-        setCover: function(track) {
+        setCover: function (track) {
             var self = this;
             self.albumCoverUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC";
             if (track.image) {
@@ -167,13 +177,13 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
             */
         },
         isActualPlayingTrack(track) {
-            return(this.actualTrack != null && this.actualTrack.id == track.id);
+            return (this.actualTrack != null && this.actualTrack.id == track.id);
         }
     }, computed: {
-    }, mounted: function() {
+    }, mounted: function () {
         this.$watch('trackUrl', function () {
             this.$refs.player.pause();
-    	    this.$refs.player.load();
+            this.$refs.player.load();
             this.$refs.player.play();
         });
     }
@@ -203,19 +213,19 @@ var container = Vue.component('spieldose-app-component', {
     computed: {
     },
     methods: {
-        changeSection: function(s) {
+        changeSection: function (s) {
             var self = this;
             self.section = s;
             self.filterByTextCondition = "";
-            switch(s) {
+            switch (s) {
                 case "#/artists":
                     self.filterByTextOn = "artists";
                     self.searchArtists(1);
-                break;
+                    break;
                 case "#/albums":
                     self.filterByTextOn = "albums";
                     self.searchAlbums(1);
-                break;
+                    break;
                 default:
                     if (s.indexOf("#/artist") >= 0) {
                         m = s.match(/#\/artist\/(.+)/);
@@ -225,26 +235,26 @@ var container = Vue.component('spieldose-app-component', {
                             // TODO
                         }
                     }
-                break;
+                    break;
             }
         },
-        globalSearch: function() {
-            switch(this.filterByTextOn) {
+        globalSearch: function () {
+            switch (this.filterByTextOn) {
                 case "artists":
                     if (this.section != "#/artists") {
                         this.section = "#/artists";
                     }
                     this.searchArtists(1);
-                break;
+                    break;
                 case "albums":
                     if (this.section != "#/albums") {
                         this.section = "#/albums";
                     }
                     this.searchAlbums(1);
-                break;
+                    break;
             }
         },
-        searchArtists: function(page) {
+        searchArtists: function (page) {
             var self = this;
             self.pager.actualPage = page;
             if (page > 1) {
@@ -270,7 +280,7 @@ var container = Vue.component('spieldose-app-component', {
                 self.artistList = response.artists;
             });
         },
-        searchAlbums: function(page) {
+        searchAlbums: function (page) {
             var self = this;
             self.pager.actualPage = page;
             if (page > 1) {
@@ -303,7 +313,7 @@ var container = Vue.component('spieldose-app-component', {
                 self.albumList = response.albums;
             });
         },
-        searchTracks: function(page, text, artist, album) {
+        searchTracks: function (page, text, artist, album) {
             var self = this;
             self.pager.actualPage = page;
             var fData = new FormData();
@@ -335,7 +345,7 @@ var container = Vue.component('spieldose-app-component', {
                 self.trackList = response.tracks;
             });
         },
-        getArtist: function(artist) {
+        getArtist: function (artist) {
             var self = this;
             var fData = new FormData();
             fData.append("name", artist);
@@ -348,8 +358,8 @@ var container = Vue.component('spieldose-app-component', {
             });
         }
     }, filters: {
-        encodeURI: function(str) {
-            return(encodeURI(str));
+        encodeURI: function (str) {
+            return (encodeURI(str));
         }
     }, mounted: function () {
         this.searchTracks(1);
@@ -362,11 +372,17 @@ var container = Vue.component('spieldose-app-component', {
 var app = new Vue({
     el: "#app",
     data: {
-        logged: true
+        logged: false
+    },
+    functions: {
+        showModal2: function (title, body) {
+            console.log(title);
+            console.log(body);
+        }
     },
     components: {
-        //'modal-component': modal,
-        'spieldose-signin-component': f,
+        'modal-component': modal,
+        'spieldose-signin-component': signIn,
         'spieldose-app-component': container
     }
 });
