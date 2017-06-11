@@ -453,6 +453,22 @@ ul#player-playlist li a span.duration {
 
 /* player playlist */
 
+/* dashboard charts */
+
+section.chart
+{
+	background: #fff;
+}
+
+section.chart ol
+{
+	margin-left: 1em;
+	font-size: 0.875em;
+	color: #363636;
+}
+
+/* dashboard charts */
+
 .equilizer {
   height: 100px;
   width: 100px;

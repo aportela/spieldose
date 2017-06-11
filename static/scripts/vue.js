@@ -133,6 +133,42 @@ var menu = Vue.component('spieldose-menu-component', {
     }
 });
 
+/* app chart (test) component */
+var chart = Vue.component('spieldose-chart', {
+    template: '#chart-template',
+    data: function () {
+        return ({
+            iconClass: 'fa-pie-chart',
+            items: []
+        });
+    },
+    created: function () {
+        this.loadChartData();
+    }, methods: {
+        loadChartData: function () {
+            var self = this;
+            var url = null;
+            switch (this.type) {
+                default:
+                    url = "/api/track/search.php";
+                    break;
+            }
+            var fData = new FormData();
+            fData.append("actualPage", 1);
+            fData.append("resultsPage", 8);
+            fData.append("orderBy", "random");
+            httpRequest("POST", url, fData, function (httpStatusCode, response) {
+                switch (self.type) {
+                    default:
+                        self.items = response.tracks;
+                        break;
+                }
+            });
+        }
+    },
+    props: ['type', 'title']
+});
+
 /* app (logged) player component */
 var player = Vue.component('spieldose-player-component', {
     template: '#player-template',
@@ -143,7 +179,8 @@ var player = Vue.component('spieldose-player-component', {
             nowPlayingTrack: null,
             playList: [],
             repeat: false,
-            shuffle: true
+            shuffle: false,
+            autoPlay: false,
         });
     },
     created: function () {
@@ -155,18 +192,18 @@ var player = Vue.component('spieldose-player-component', {
             this.url = "/api/track/get.php?id=" + track.id;
             this.playing = true;
         },
-        playPrevious: function() {
+        playPrevious: function () {
             var actualPlayingIdx = -1;
             for (var i = 0; i < this.playList.length && actualPlayingIdx == - 1; i++) {
                 if (this.nowPlayingTrack.id == this.playList[i].id) {
                     actualPlayingIdx = i - 1;
                 }
             }
-            if (actualPlayingIdx > -1 ) {
+            if (actualPlayingIdx > -1) {
                 this.play(this.playList[actualPlayingIdx]);
             }
         },
-        playNext: function() {
+        playNext: function () {
             var actualPlayingIdx = -1;
             for (var i = 0; i < this.playList.length && actualPlayingIdx == - 1; i++) {
                 if (this.nowPlayingTrack.id == this.playList[i].id) {
@@ -188,11 +225,13 @@ var player = Vue.component('spieldose-player-component', {
             fData.append("orderBy", "random");
             httpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
                 self.playList = response.tracks;
-                self.play(self.playList[0]);
+                if (self.autoPlay) {
+                    self.play(self.playList[0]);
+                }
             });
         },
-        toggleShuffle: function() {
-            this.shuffle = ! this.shuffle;
+        toggleShuffle: function () {
+            this.shuffle = !this.shuffle;
         }
     }, computed: {
         nowPlayingTitle: function () {
