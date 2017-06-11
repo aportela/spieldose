@@ -144,7 +144,7 @@ var chart = Vue.component('spieldose-chart', {
         });
     },
     created: function () {
-        this.loadChartData();
+        //this.loadChartData();
     }, methods: {
         loadChartData: function () {
             var self = this;
