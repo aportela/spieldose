@@ -312,7 +312,7 @@ var container = Vue.component('spieldose-component', {
             var fData = new FormData();
             fData.append("actualPage", self.pager.actualPage);
             fData.append("resultsPage", self.pager.resultsPage);
-            //fData.append("orderBy", "random");
+            fData.append("orderBy", "track_number");
             if (text) {
                 fData.append("text", text);
             }
