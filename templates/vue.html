@@ -85,14 +85,14 @@
                 </div>
             </section>
         </script>
-        <script type="text/x-template" id="spieldose-left-menu-sidebar-template">
+        <script type="text/x-template" id="menu-template">
             <ul id="menu">
-                <li><a class="item" v-bind:class="{ 'active': section == '#/dashboard' }" href="#/dashboard" v-on:click="changeSection('#/dashboard')"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
-                <li><a class="item" v-bind:class="{ 'active': section == '#/artists' }" href="#/artists" v-on:click="changeSection('#/artists')"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
-                <li><a class="item" v-bind:class="{ 'active': section == '#/albums' }" href="#/albums" v-on:click="changeSection('#/albums')"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
-                <li><a class="item" v-bind:class="{ 'active': section == '#/genres' }" href="#/genres" v-on:click="changeSection('#/genres')"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
-                <li><a class="item" v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences" v-on:click="changeSection('#/preferences')"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
-                <li><a class="item" href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
+                <li><a v-bind:class="{ 'active': section == '#/dashboard' }" href="#/dashboard"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
+                <li><a v-bind:class="{ 'active': section == '#/artists' }" href="#/artists"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
+                <li><a v-bind:class="{ 'active': section == '#/albums' }" href="#/albums"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
+                <li><a v-bind:class="{ 'active': section == '#/genres' }" href="#/genres"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
+                <li><a v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
+                <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
             </ul>
         </script>
         <script type="text/x-template" id="spieldose-right-player-sidebar-template">
@@ -124,7 +124,7 @@
         <script type="text/x-template" id="spieldose-template">
             <div class="columns is-gapless">
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
-                    <spieldose-left-menu-sidebar-template-component></spieldose-left-menu-sidebar-template-component>
+                    <spieldose-menu-component></spieldose-menu-component>
                 </aside>
                 <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
                 <div class="column is-9" id="main-content">

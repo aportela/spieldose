@@ -1,9 +1,5 @@
 "use strict";
 
-window.onhashchange = function (e) {
-    console.log("hash changed to: " + location.hash);
-};
-
 var httpRequest = function (method, url, data, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
@@ -31,6 +27,12 @@ var httpRequest = function (method, url, data, callback) {
 /* global object for events between vuejs components */
 var bus = new Vue();
 
+/* change section event */
+window.onhashchange = function (e) {
+    bus.$emit("hashChanged", location.hash);
+};
+
+/* modal component (warning & errors) */
 var modal = Vue.component('modal-component', {
     template: '#modal-template',
     data: function () {
@@ -59,6 +61,7 @@ var modal = Vue.component('modal-component', {
     }
 });
 
+/* signIn component */
 var signIn = Vue.component('spieldose-signin-component', {
     template: '#signin-template',
     created: function () { },
@@ -102,19 +105,23 @@ var signIn = Vue.component('spieldose-signin-component', {
     }
 });
 
-var menu = Vue.component('spieldose-left-menu-sidebar-template-component', {
-    template: '#spieldose-left-menu-sidebar-template',
+/* app (logged) menu component */
+var menu = Vue.component('spieldose-menu-component', {
+    template: '#menu-template',
     data: function () {
         return ({
             xhr: false,
             section: "#/dashboard"
         });
     },
+    created: function () {
+        var self = this;
+        bus.$on("hashChanged", function (hash) {
+            self.section = hash;
+            bus.$emit("loadSection", hash);
+        });
+    },
     methods: {
-        changeSection: function (s) {
-            this.section = s;
-            this.$parent.changeSection(s);
-        },
         signout: function (e) {
             var self = this;
             self.xhr = true;
@@ -213,6 +220,12 @@ var container = Vue.component('spieldose-app-component', {
         });
     },
     computed: {
+    },
+    created: function () {
+        var self = this;
+        bus.$on("loadSection", function (s) {
+            self.changeSection(s);
+        });
     },
     methods: {
         changeSection: function (s) {
@@ -374,13 +387,9 @@ var container = Vue.component('spieldose-app-component', {
 var app = new Vue({
     el: "#app",
     data: {
-        logged: false
+        logged: true
     },
     functions: {
-        showModal2: function (title, body) {
-            console.log(title);
-            console.log(body);
-        }
     },
     components: {
         'modal-component': modal,
