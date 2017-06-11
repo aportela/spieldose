@@ -293,34 +293,30 @@ img.artist-thumbnail {
 
 /* others */
 
-/* player & playlist  */
 
-aside#aside-player {
-}
+/* now playing */
 
-div#player {
-}
-
-div#player p#now_playing_header {
+div#player p#np-header {
 	width: 100%;
 	text-align: center;
 	color: #9b9c9f;
-	font-size: 10px;
 	margin: 0px;
-	padding: 4px 0px;
+	padding: 2px 0px;
 	background-color: #16171b;
 	z-index: 1;
 	opacity: 0.72;
+	font-size: 10px;
 }
+
 
 div#player img {
 	display: block;
 	width: 100%;
 	height: auto;
-	margin-top: -20px;
+	margin-top: -28px;
 }
 
-div#player div#now_playing_info {
+div#player div#np-footer {
 	background-color: #16171b;
 	opacity: 0.72;
 	width: 100%;
@@ -329,7 +325,7 @@ div#player div#now_playing_info {
 	margin-top: -52px;
 }
 
-div#player div#now_playing_info span#now_playing_song_title {
+div#player div#np-footer span#np-track-title {
 	float: left;
 	display: block;
 	width: 204px;
@@ -339,7 +335,7 @@ div#player div#now_playing_info span#now_playing_song_title {
     white-space: nowrap;
 }
 
-div#player div#now_playing_info span#now_playing_song_time {
+div#player div#np-footer span#np-track-length {
 	float: right;
 	display: block;
 	width: 84px;
@@ -349,7 +345,7 @@ div#player div#now_playing_info span#now_playing_song_time {
 	text-align: right;
 }
 
-div#player div#now_playing_info a#now_playing_artist {
+div#player div#np-footer a#np-artist {
 	clear: both;
 	color: #9b9c9f;
 	font-size: 14px;
@@ -359,27 +355,38 @@ div#player div#now_playing_info a#now_playing_artist {
 	white-space: nowrap;
 }
 
-a#now_playing_artist:hover{
+/* now playing */
 
-}
-
+/* player */
 div#player audio#audio {
     width: 100%;
     display: block;
-	padding-top: 32px;
+		padding-top: 32px;
 }
 
-div#player div#player_controls {
+/* player */
+
+/* player controls */
+
+div#player-controls {
     padding: 4px;
 }
 
-div#player div#player_controls i {
+div#player div#player-controls i {
     cursor: pointer;
     margin: 0px 4px;
     color: #4F5B69;
 }
 
-div#player ul#now_playing_list {
+i.player-active-control {
+	color: red ! important;
+}
+
+/* player controls */
+
+/* player playlist */
+
+ul#player-playlist {
     background: #181F24;
     width: 100%;
     padding-left: 0px;
@@ -387,12 +394,12 @@ div#player ul#now_playing_list {
     list-style-type: none;
 }
 
-div#player ul#now_playing_list li {
+ul#player-playlist li {
 	clear: both;
 	overflow: hidden;
 }
 
-div#player ul#now_playing_list li a {
+ul#player-playlist li a {
     border-left: 3px solid #232c32;
     display: block;
     color: #9b9c9f;
@@ -408,12 +415,12 @@ div#player ul#now_playing_list li a {
     cursor: pointer;
 }
 
-div#player ul#now_playing_list li a.selected {
+ul#player-playlist li a.selected {
     background: #232c32;
     border-left: 3px solid #d19b3d;
 }
 
-div#player ul#now_playing_list li a:hover {
+ul#player-playlist li a:hover {
     background-color: #4f5b69;
     border-left: 3px solid #4f5b69;
     -webkit-transition: all 1s ease;
@@ -423,13 +430,12 @@ div#player ul#now_playing_list li a:hover {
     transition: all 1s ease;
 }
 
-div#player ul#now_playing_list li a.selected:hover {
+ul#player-playlist li a.selected:hover {
     background-color: #4f5b69;
     border-left: 3px solid #d19b3d;
 }
 
-
-div#player ul#now_playing_list li a span.title {
+ul#player-playlist li a span.title {
     float: left;
     display: block;
     width: 246px;
@@ -438,15 +444,14 @@ div#player ul#now_playing_list li a span.title {
     white-space: nowrap;
 }
 
-div#player ul#now_playing_list li a span.duration {
+ul#player-playlist li a span.duration {
     float: right;
     width: 40px;
     overflow: hidden;
     white-space: nowrap;
 }
 
-
-/* player & playlist  */
+/* player playlist */
 
 .equilizer {
   height: 100px;

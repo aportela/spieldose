@@ -97,27 +97,32 @@
         </script>
         <script type="text/x-template" id="player-template">
             <div id="player">
-                <p id="now_playing_header"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
-                <img id="now_playing_image" v-bind:src="albumCoverUrl" />
-                <div id="now_playing_info">
-                    <span id="now_playing_song_title" title="">{{ title }}</span>
-                    <span id="now_playing_song_time">{{ playtimeString }}</span>
-                    <a id="now_playing_artist" v-bind:title="'click here to browse artist: ' + artist">{{ artist }} / {{ album }}</a>
+                <p id="np-header" v-if="playing"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
+                <p id="np-header" v-else>STOPPED</p>
+                <img v-if="nowPlayingImage" v-bind:src="nowPlayingImage" />
+                <img v-else src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC" />
+                <div id="np-footer">
+                    <span id="np-track-title" v-if="nowPlayingTitle">{{ nowPlayingTitle }}</span>
+                    <span id="np-track-title" v-else>no title</span>
+                    <span id="np-track-length" v-if="nowPlayingLength">{{ nowPlayingLength }}</span>
+                    <span id="np-track-length" v-else>00:00</span>
+                    <a id="np-artist" v-if="nowPlayingArtist || nowPlayingArtistAlbum || nowPlayingYear" v-bind:src="'#/artist/' + nowPlayingArtist ">{{ nowPlayingArtist + (nowPlayingArtistAlbum ? " / " + nowPlayingArtistAlbum: "") + " (" + nowPlayingYear + ")" }}</a>
+                    <a id="np-artist" v-else>no artist / album (year)</a>
                 </div>
                 <audio id="audio" ref="player" controls preload="none">
-                    <source v-bind:src="trackUrl" type="audio/mpeg">
+                    <source v-bind:src="url" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
-                <div id="player_controls">
-                    <i v-on:click.prevent="$parent.searchTracks(1, 'random')" title="repeat all" class="fa fa-refresh fa-lg"></i>
-                    <i title="shuffle" class="fa fa-random fa-lg"></i>
-                    <i id="crtl_play_previous" title="previous" class="fa fa-backward fa-lg"></i>
-                    <i id="crtl_play_next" title="next" class="fa fa-forward fa-lg"></i>
+                <div id="player-controls">
+                    <i v-on:click.prevent="loadRandomPlayList" title="refresh random playlist" class="fa fa-refresh fa-lg"></i>
+                    <i title="shuffle" class="fa fa-random fa-lg" v-on:click.prevent="toggleShuffle()" v-bind:class="{ 'player-active-control': shuffle }"></i>
+                    <i title="previous track" v-on:click.prevent="playPrevious" class="fa fa-backward fa-lg"></i>
+                    <i title="next track" v-on:click.prevent="playNext" class="fa fa-forward fa-lg"></i>
                     <i title="mark as loved song" class="fa fa-heart fa-lg"></i>
                     <i title="download song" class="fa fa-save fa-lg"></i>
                 </div>
-                <ul id="now_playing_list">
-                    <li v-for="track, i in $parent.trackList"><a class="playlist_track" v-bind:class="{'selected' : isActualPlayingTrack(track)}" v-on:click="play(track)"><span title="Nightcall">{{ track.title }} / {{ track.artist }}</span><!--<span class="duration">{{ track.playtimeString }}</span>--></a></li>
+                <ul id="player-playlist">
+                    <li v-for="track, i in playList"><a v-bind:class="{ 'selected' : isPlayingTrack(track) }" v-on:click="play(track)">{{ track.title + (track.artist ? ' / ' + track.artist: '') }}</span></a></li>
                 </ul>
             </div>
         </script>
