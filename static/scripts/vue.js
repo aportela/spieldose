@@ -130,12 +130,14 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
             artist: "no artist",
             album: "",
             trackUrl: "",
+            actualTrack: null,
             playtimeString: "00:00",
             albumCoverUrl: "https://lastfm-img2.akamaized.net/i/u/174s/430e04c30d9b4a70aab49a941e27fa4a.png"
         });
     },
     methods: {
         play: function(track) {
+            this.actualTrack = track;
             this.trackUrl = "/api/track/get.php?id=" + track.id;
             this.title = track.title;
             this.artist = track.artist;
@@ -171,6 +173,9 @@ var player = Vue.component('spieldose-right-player-sidebar-template-component', 
                 }
             });
             */
+        },
+        isActualPlayingTrack(track) {
+            return(this.actualTrack != null && this.actualTrack.id == track.id);
         }
     }, computed: {
     }, mounted: function() {
@@ -336,6 +341,9 @@ var container = Vue.component('spieldose-component', {
                     self.pager.totalPages = 0;
                 }
                 self.trackList = response.tracks;
+                if (response.tracks.length) {
+                    self.player.play(1);
+                }
             });
         },
         getArtist: function(artist) {

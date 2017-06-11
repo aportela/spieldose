@@ -117,7 +117,7 @@
                     <i title="download song" class="fa fa-save fa-lg"></i>
                 </div>
                 <ul id="now_playing_list">
-                    <li class="selected" v-for="track, i in $parent.trackList"><a class="playlist_track" v-on:click="play(track)"><span title="Nightcall">{{ track.title }}</span><span class="duration">{{ track.playtimeString }}</span></a></li>
+                    <li v-for="track, i in $parent.trackList"><a class="playlist_track" v-bind:class="{'selected' : isActualPlayingTrack(track)}" v-on:click="play(track)"><span title="Nightcall">{{ track.title }}</span><span class="duration">{{ track.playtimeString }}</span></a></li>
                 </ul>
             </div>
         </script>
