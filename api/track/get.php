@@ -28,7 +28,7 @@
                 // multiple ranges, which can become pretty complex, so ignore it for now
                 preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
                 $offset = intval($matches[1]);
-                $length = (($matches[2]) ? intval($matches[2]) : $filesize) - $offset;
+                $length = ((isset($matches[2])) ? intval($matches[2]) : $filesize) - $offset;
             } else {
                 $partialContent = false;
             }
