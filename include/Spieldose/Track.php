@@ -68,7 +68,7 @@
                 WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 ' . $whereCondition . '
             ';
-            $result = $dbh->query($queryCount);
+            $result = $dbh->query($queryCount, $params);
             $data = new \stdClass();
             $data->actualPage = $page;
             $data->resultsPage = $resultsPage;
