@@ -145,6 +145,20 @@
                 </ul>
             </div>
         </script>
+        <script type="text/x-template" id="pagination-template">
+            <nav class="pagination is-centered level">
+                <a class="pagination-previous" v-on:click.prevent="previous">Previous</a>
+                <a class="pagination-next" v-on:click.prevent="next">Next page</a>
+                <ul class="pagination-list">
+                    <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
+                    <li v-for="pageNumber in totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - actualPage) < 3 || totalPages - 2 < pageNumber">
+                        <a href="#" v-on:click.prevent="navigateTo(pageNumber)" class="pagination-link" :class="{'is-current': actualPage === pageNumber}">{{ pageNumber }}</a>
+                    </li>
+                </ul>
+            </nav>
+        </script>
+        <script type="text/x-template" id="browse-albums-template">
+        </script>
         <script type="text/x-template" id="spieldose-template">
             <div class="columns is-gapless">
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
@@ -246,19 +260,7 @@
                         </div>
                     </section>
                     <section v-if="section == '#/artists'" class="section" id="section-artists">
-                        <nav class="pagination is-centered level">
-                            <a class="pagination-previous" v-on:click.prevent="searchArtists(pager.previousPage)">Previous</a>
-                            <a class="pagination-next" v-on:click.prevent="searchArtists(pager.nextPage)">Next page</a>
-                            <ul class="pagination-list">
-                                <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
-                                <li v-for="pageNumber in pager.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - pager.actualPage) < 3 || pager.totalPages - 2 < pageNumber">
-                                    <!--
-                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber + 1)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber + 1, last: (pageNumber + 1 == pager.totalPages - 1 && Math.abs(pageNumber +1 - pager.actualPage) > 3), first:(pageNumber +1 == 0 && Math.abs(pageNumber +1 - pager.actualPage) > 3)}">{{ pageNumber }}</a>
-                                    -->
-                                    <a href="#" v-on:click.prevent="searchArtists(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber}">{{ pageNumber }}</a>
-                                </li>
-                            </ul>
-                        </nav>
+                        <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
                         <div class="artist_item" v-for="artist in artistList">
                             <a class="view_artist" v-bind:href="'#/artist/' + artist.name" v-on:click="changeSection('#/artist/' + artist.name)">
                                 <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
@@ -292,19 +294,7 @@
                         </div>
                     </section>
                     <section v-if="section == '#/albums'"class="section" id="section-albums">
-                        <nav class="pagination is-centered level">
-                            <a class="pagination-previous" v-on:click.prevent="searchAlbums(pager.actualPage - 1)">Previous</a>
-                            <a class="pagination-next" v-on:click.prevent="searchAlbums(pager.actualPage + 1)">Next page</a>
-                            <ul class="pagination-list">
-                                <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
-                                <li v-for="pageNumber in pager.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - pager.actualPage) < 3 || pager.totalPages - 2 < pageNumber">
-                                    <!--
-                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber + 1)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber + 1, last: (pageNumber + 1 == pager.totalPages - 1 && Math.abs(pageNumber +1 - pager.actualPage) > 3), first:(pageNumber +1 == 0 && Math.abs(pageNumber +1 - pager.actualPage) > 3)}">{{ pageNumber }}</a>
-                                    -->
-                                    <a href="#" v-on:click.prevent="searchAlbums(pageNumber)" class="pagination-link" :class="{'is-current': pager.actualPage === pageNumber}">{{ pageNumber }}</a>
-                                </li>
-                            </ul>
-                        </nav>
+                        <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
                         <div class="album_item" v-for="album in albumList">
                             <a class="play_album" v-on:click="searchTracks(1, '', '', album.artist, album.name)">
                                 <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>

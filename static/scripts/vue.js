@@ -172,6 +172,46 @@ var chart = Vue.component('spieldose-chart', {
     props: ['type', 'title']
 });
 
+var pagination = Vue.component('spieldose-pagination', {
+    template: '#pagination-template',
+    data: function() {
+        return({
+            actualPage: 1,
+            totalResults: 0,
+            resultsPage: 16,
+            totalPages: 0
+        });
+    }, props: [ 'searchEvent'
+    ], computed: {
+        visible: function() {
+            return(this.totalResults > 0 && this.totalPages > 0);
+        }
+    }, created: function() {
+        var self = this;
+        bus.$on("updatePager", function (actualPage, totalPages, totalResults) {
+            self.actualPage = actualPage;
+            self.totalPages = totalPages;
+            self.totalResults = totalResults;
+        });
+    }, methods: {
+        previous: function() {
+            if (this.actualPage > 1) {
+                bus.$emit(this.searchEvent, this.actualPage - 1, this.resultsPage);
+            }
+        },
+        next: function() {
+            if (this.actualPage < this.totalPages) {
+                bus.$emit(this.searchEvent, this.actualPage + 1, this.resultsPage);
+            }
+        },
+        navigateTo: function(pageIdx) {
+            if (pageIdx > 0 && pageIdx <= this.totalPages) {
+                bus.$emit(this.searchEvent, pageIdx, this.resultsPage);
+            }
+        }
+    }
+});
+
 /* app (logged) player component */
 var player = Vue.component('spieldose-player-component', {
     template: '#player-template',
@@ -325,11 +365,19 @@ var container = Vue.component('spieldose-app-component', {
         });
     },
     computed: {
+
     },
     created: function () {
         var self = this;
         bus.$on("loadSection", function (s) {
             self.changeSection(s);
+        });
+        var self = this;
+        bus.$on("browseArtists", function (page, resultsPage) {
+            self.searchArtists(page);
+        });
+        bus.$on("browseAlbums", function (page, resultsPage) {
+            self.searchAlbums(page);
         });
     },
     methods: {
@@ -398,6 +446,7 @@ var container = Vue.component('spieldose-app-component', {
                     self.pager.nextPage = self.pager.totalPages;
                 }
                 self.artistList = response.artists;
+                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
             });
         },
         searchAlbums: function (page) {
@@ -431,6 +480,7 @@ var container = Vue.component('spieldose-app-component', {
                     self.pager.nextPage = self.pager.totalPages;
                 }
                 self.albumList = response.albums;
+                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
             });
         },
         searchTracks: function (page, order, text, artist, album) {
