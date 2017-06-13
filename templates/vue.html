@@ -278,7 +278,7 @@
                             <div class="panel">
                                 <h2>Albums:</h2>
                                 <div class="album_item" v-for="album in artist.albums">
-                                    <a class="play_album" v-on:click="searchTracks(1, '', artist.name, album.name)">
+                                    <a class="play_album" v-on:click="searchTracks(1, '', '', artist.name, album.name)">
                                         <img class="album_cover" v-if="album.image" v-bind:src="album.image"/>
                                         <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                                         <i class="fa fa-play fa-4x"></i>
@@ -306,7 +306,7 @@
                             </ul>
                         </nav>
                         <div class="album_item" v-for="album in albumList">
-                            <a class="play_album" v-on:click="searchTracks(1, '', album.artist, album.name)">
+                            <a class="play_album" v-on:click="searchTracks(1, '', '', album.artist, album.name)">
                                 <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
                                 <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                                 <i class="fa fa-play fa-4x"></i>
