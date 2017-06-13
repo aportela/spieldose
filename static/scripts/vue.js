@@ -190,6 +190,9 @@ var player = Vue.component('spieldose-player-component', {
         var self = this;
         bus.$on("replacePlayList", function (tracks) {
             self.playList = tracks;
+            if (self.playing) {
+                self.pause();
+            }
             if (self.autoPlay) {
                 self.play(self.playList[0]);
             }
@@ -201,6 +204,10 @@ var player = Vue.component('spieldose-player-component', {
             this.nowPlayingTrack = track;
             this.url = "/api/track/get.php?id=" + track.id;
             this.playing = true;
+        },
+        pause: function() {
+            this.$refs.player.pause();
+            this.playing = false;
         },
         playPrevious: function () {
             var actualPlayingIdx = -1;
