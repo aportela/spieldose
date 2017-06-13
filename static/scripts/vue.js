@@ -187,6 +187,13 @@ var player = Vue.component('spieldose-player-component', {
         });
     },
     created: function () {
+        var self = this;
+        bus.$on("replacePlayList", function (tracks) {
+            self.playList = tracks;
+            if (self.autoPlay) {
+                self.play(self.playList[0]);
+            }
+        });
         this.loadRandomPlayList();
     },
     methods: {
@@ -227,10 +234,7 @@ var player = Vue.component('spieldose-player-component', {
             fData.append("resultsPage", 16);
             fData.append("orderBy", "random");
             httpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
-                self.playList = response.tracks;
-                if (self.autoPlay) {
-                    self.play(self.playList[0]);
-                }
+                bus.$emit("replacePlayList", response.tracks);
             });
         },
         toggleShuffle: function () {
@@ -241,7 +245,7 @@ var player = Vue.component('spieldose-player-component', {
             if (this.nowPlayingTrack) {
                 return (this.nowPlayingTrack.title);
             } else {
-                return ("no title");
+                return ("");
             }
         },
         nowPlayingLength: function () {
@@ -453,7 +457,7 @@ var container = Vue.component('spieldose-app-component', {
                 } else {
                     self.pager.totalPages = 0;
                 }
-                self.trackList = response.tracks;
+                bus.$emit("replacePlayList", response.tracks);
             });
         },
         getArtist: function (artist) {
@@ -472,12 +476,8 @@ var container = Vue.component('spieldose-app-component', {
         encodeURI: function (str) {
             return (encodeURI(str));
         }
-    }, mounted: function () {
-        this.searchTracks(1, "random", null, null, null);
-    }, components: {
-        //'spieldose-left-menu-sidebar-template-component': menu,
-        //'spieldose-right-player-sidebar-template-component': player
-    }
+    }, mounted: function () {}
+    , components: { }
 });
 
 var app = new Vue({
