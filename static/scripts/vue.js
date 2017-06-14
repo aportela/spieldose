@@ -520,9 +520,7 @@ var container = Vue.component('spieldose-app-component', {
         });
     },
     computed: {
-
-    },
-    created: function () {
+    }, created: function () {
         var self = this;
         bus.$on("loadSection", function (s) {
             self.changeSection(s);
@@ -532,12 +530,15 @@ var container = Vue.component('spieldose-app-component', {
         changeSection: function (s) {
             var self = this;
             self.section = s;
+            self.filterByTextOn = "";
             switch (s) {
                 case "#/artists":
                     bus.$emit("browseArtists", null, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    self.filterByTextOn = "artists";
                     break;
                 case "#/albums":
                     bus.$emit("browseAlbums", null, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    self.filterByTextOn = "albums";
                     break;
                 default:
                     if (s.indexOf("#/artist") >= 0) {
@@ -557,13 +558,13 @@ var container = Vue.component('spieldose-app-component', {
                     if (this.section != "#/artists") {
                         this.section = "#/artists";
                     }
-                    this.searchArtists(1);
+                    bus.$emit("browseArtists", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
                     break;
                 case "albums":
                     if (this.section != "#/albums") {
                         this.section = "#/albums";
                     }
-                    this.searchAlbums(1);
+                    bus.$emit("browseAlbums", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
                     break;
             }
         },
