@@ -25,11 +25,6 @@
 			return($content);
         }
 
-        public static function gg($title, $artist) {
-            $url = sprintf("http://ws.audioscrobbler.com/2.0/?method=track.search&api_key=%s&artist=%s&track=%s&limit=1&format=json", self::API_KEY, $artist, $title);
-            return(self::proxy($url));
-        }
-
         /**
         *   return lastfm album info (json format)
         */
