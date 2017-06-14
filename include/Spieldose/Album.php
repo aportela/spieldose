@@ -13,6 +13,7 @@
             if ($dbh == null) {
                 $dbh = new \Spieldose\Database();
             }
+            $params = array();
             $whereCondition = "";
             if (isset($filter)) {
                 if (isset($filter["text"])) {
