@@ -284,6 +284,14 @@
                 </div>
             </section>
         </script>
+        <script type="text/x-template" id="browse-genres-template">
+            <section v-if="section == '#/genres'"class="section" id="section-genres">
+            </section>
+        </script>
+        <script type="text/x-template" id="preferences-template">
+            <section v-if="section == '#/preferences'"class="section" id="section-preferences">
+            </section>
+        </script>
         <script type="text/x-template" id="spieldose-template">
             <div class="columns is-gapless">
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
@@ -318,10 +326,8 @@
                     <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
                     <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
                     <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
-                    <section v-if="section == '#/genres'"class="section" id="section-genres">
-                    </section>
-                    <section v-if="section == '#/preferences'"class="section" id="section-preferences">
-                    </section>
+                    <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
+                    <spieldose-preferences v-bind:section="section"></spieldose-preferences>
                 </div>
                 <aside id="aside-player" class="column is-2">
                     <spieldose-player-component></spieldose-player-component>

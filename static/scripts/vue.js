@@ -353,6 +353,18 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
     }
 });
 
+var browseGenres = Vue.component('spieldose-browse-genres', {
+    template: '#browse-genres-template'
+    , props: [ 'section'
+    ]
+});
+
+var preferences = Vue.component('spieldose-preferences', {
+    template: '#preferences-template'
+    , props: [ 'section'
+    ]
+});
+
 /* app (logged) player component */
 var player = Vue.component('spieldose-player-component', {
     template: '#player-template',
