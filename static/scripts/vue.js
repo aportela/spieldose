@@ -314,9 +314,30 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     template: '#browse-artist-template',
     data: function() {
         return({
+            artist: {}
         });
     }, props: ['section'
-    ]
+    ], created: function() {
+        var self = this;
+        bus.$on("loadArtist", function(artist) {
+            self.getArtist(artist);
+        });
+    }, methods: {
+        getArtist: function (artist) {
+            var self = this;
+            var fData = new FormData();
+            fData.append("name", artist);
+            httpRequest("POST", "/api/artist/get.php", fData, function (httpStatusCode, response) {
+                self.artist = response.artist;
+                if (self.artist.bio) {
+                    self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')
+                }
+            });
+        },
+        playAlbum: function(album, artist) {
+            bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
+        }
+    }
 });
 
 var browseAlbums = Vue.component('spieldose-browse-albums', {
@@ -548,7 +569,6 @@ var container = Vue.component('spieldose-app-component', {
             artistList: [],
             albumList: [],
             trackList: [],
-            artist: null,
             pager: {
                 actualPage: 1,
                 previousPage: 1,
@@ -584,8 +604,9 @@ var container = Vue.component('spieldose-app-component', {
                     break;
                 default:
                     if (s.indexOf("#/artist") >= 0) {
-                        m = s.match(/#\/artist\/(.+)/);
+                        var m = s.match(/#\/artist\/(.+)/);
                         if (m && m.length == 2) {
+                            self.section = "#/artist";
                             bus.$emit("loadArtist", m[1]);
                         } else {
                             // TODO
@@ -703,18 +724,6 @@ var container = Vue.component('spieldose-app-component', {
                     self.pager.totalPages = 0;
                 }
                 bus.$emit("replacePlayList", response.tracks);
-            });
-        },
-        getArtist: function (artist) {
-            var self = this;
-            var fData = new FormData();
-            fData.append("name", artist);
-            httpRequest("POST", "/api/artist/get.php", fData, function (httpStatusCode, response) {
-                self.artist = response.artist;
-                if (self.artist.bio) {
-                    self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')
-                }
-                self.section = '#/artist';
             });
         }
     }, filters: {
