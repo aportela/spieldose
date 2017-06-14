@@ -157,6 +157,21 @@
                 </ul>
             </nav>
         </script>
+        <script type="text/x-template" id="browse-artists-template">
+            <section v-if="section == '#/artists'" class="section" id="section-artists">
+                <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
+                <div class="artist_item" v-for="artist in artists">
+                    <a class="view_artist" v-bind:href="'#/artist/' + artist.name" v-on:click="changeSection('#/artist/' + artist.name)">
+                        <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
+                        <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                        <i class="fa fa-search fa-4x"></i>
+                    </a>
+                    <div class="artist_info">
+                        <p class="artist_name">{{ artist.name }}</p>
+                    </div>
+                </div>
+            </section>
+        </script>
         <script type="text/x-template" id="browse-albums-template">
             <section v-if="section == '#/albums'" class="section" id="section-albums">
                 <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
@@ -274,19 +289,6 @@
                             </div>
                         </div>
                     </section>
-                    <section v-if="section == '#/artists'" class="section" id="section-artists">
-                        <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
-                        <div class="artist_item" v-for="artist in artistList">
-                            <a class="view_artist" v-bind:href="'#/artist/' + artist.name" v-on:click="changeSection('#/artist/' + artist.name)">
-                                <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
-                                <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
-                                <i class="fa fa-search fa-4x"></i>
-                            </a>
-                            <div class="artist_info">
-                                <p class="artist_name">{{ artist.name }}</p>
-                            </div>
-                        </div>
-                    </section>
                     <section v-if="section == '#/artist'" class="section" id="section-artist">
                         <h1>{{ artist.name }}</h1>
                         <div v-if="artist" v-bind="artist" class="container">
@@ -308,6 +310,7 @@
                             </div>
                         </div>
                     </section>
+                    <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
                     <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
                     <section v-if="section == '#/genres'"class="section" id="section-genres">
                     </section>
