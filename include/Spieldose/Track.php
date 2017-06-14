@@ -73,7 +73,12 @@
             $data->actualPage = $page;
             $data->resultsPage = $resultsPage;
             $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil($data->totalResults / $resultsPage);
+            if ($resultsPage > 0) {
+                $data->totalPages = ceil($data->totalResults / $resultsPage);
+            } else {
+                $data->totalPages = $data->totalResults > 0 ? 1: 0;
+                $resultsPage = $data->totalResults;
+            }
             $sqlOrder = "";
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
