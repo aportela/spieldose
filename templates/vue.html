@@ -158,11 +158,26 @@
             </nav>
         </script>
         <script type="text/x-template" id="browse-albums-template">
+            <section v-if="section == '#/albums'" class="section" id="section-albums">
+                <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
+                <div class="album_item" v-for="album in albums">
+                    <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
+                        <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
+                        <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                        <i class="fa fa-play fa-4x"></i>
+                        <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                    </a>
+                    <div class="album_info">
+                        <p class="album_name" title="">{{ album.name }}</p>
+                        <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
+                    </div>
+                </div>
+            </section>
         </script>
         <script type="text/x-template" id="spieldose-template">
             <div class="columns is-gapless">
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
-                    <spieldose-menu-component></spieldose-menu-component>
+                    <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
                 </aside>
                 <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
                 <div class="column is-9" id="main-content">
@@ -293,21 +308,7 @@
                             </div>
                         </div>
                     </section>
-                    <section v-if="section == '#/albums'"class="section" id="section-albums">
-                        <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
-                        <div class="album_item" v-for="album in albumList">
-                            <a class="play_album" v-on:click="searchTracks(1, '', '', album.artist, album.name)">
-                                <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
-                                <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
-                                <i class="fa fa-play fa-4x"></i>
-                                <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
-                            </a>
-                            <div class="album_info">
-                                <p class="album_name" title="">{{ album.name }}</p>
-                                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
-                            </div>
-                        </div>
-                    </section>
+                    <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
                     <section v-if="section == '#/genres'"class="section" id="section-genres">
                     </section>
                     <section v-if="section == '#/preferences'"class="section" id="section-preferences">
