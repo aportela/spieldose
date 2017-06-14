@@ -95,6 +95,31 @@
                 <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
             </ul>
         </script>
+        <script type="text/x-template" id="search-template">
+            <div class="field has-addons">
+                <p class="control">
+                    <span class="select">
+                        <select v-model="filterByTextOn">
+                            <option value="">search on anything</option>
+                            <option value="tracks">search on track names</option>
+                            <option value="artists">search on artist names</option>
+                            <option value="albums">search on album names</option>
+                        </select>
+                    </span>
+                </p>
+                <p class="control is-expanded">
+                    <input class="input" type="text" v-on:keyup.13="search()" v-model="filterByTextCondition" placeholder="type search text condition">
+                </p>
+                <p class="control">
+                    <a class="button" v-on:click.prevent="search()">
+                        <span class="icon is-small">
+                        <i class="fa fa-search"></i>
+                        </span>
+                        <span>Search</span>
+                    </a>
+                </p>
+            </div>
+        </script>
         <script type="text/x-template" id="chart-template">
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel chart">
@@ -115,6 +140,7 @@
             </div>
         </script>
         <script type="text/x-template" id="dashboard-template">
+            <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
             <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
                 <div class="columns is-mobile is-multiline">
                     <spieldose-chart v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-chart>
@@ -297,31 +323,8 @@
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
                     <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
                 </aside>
-                <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
                 <div class="column is-9" id="main-content">
-                    <div class="field has-addons">
-                        <p class="control">
-                            <span class="select">
-                                <select v-model="filterByTextOn">
-                                    <option value="">search on anything</option>
-                                    <option value="tracks">search on track names</option>
-                                    <option value="artists">search on artist names</option>
-                                    <option value="albums">search on album names</option>
-                                </select>
-                            </span>
-                        </p>
-                        <p class="control is-expanded">
-                            <input class="input" type="text" v-on:keyup.13="globalSearch()" v-model="filterByTextCondition" placeholder="type search text condition">
-                        </p>
-                        <p class="control">
-                            <a class="button" v-on:click.prevent="globalSearch()">
-                                <span class="icon is-small">
-                                <i class="fa fa-search"></i>
-                                </span>
-                                <span>Search</span>
-                            </a>
-                        </p>
-                    </div>
+                    <spieldose-search v-bind:section="section"></spieldose-search>
                     <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
                     <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
                     <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
