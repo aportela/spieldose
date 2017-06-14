@@ -246,10 +246,8 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     }, created: function() {
         var self = this;
         bus.$on("browseArtists", function (text, page, resultsPage) {
-            console.log("browsing artists");
             self.search(text, page, resultsPage);
         });
-
     }, methods: {
         search: function(text, page, resultsPage) {
             var self = this;
