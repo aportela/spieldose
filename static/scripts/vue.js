@@ -113,15 +113,16 @@ var menu = Vue.component('spieldose-menu-component', {
     data: function () {
         return ({
             xhr: false,
-            section: "#/dashboard"
+            section: window.location.hash
         });
     },
     created: function () {
         var self = this;
         bus.$on("hashChanged", function (hash) {
             self.section = hash;
-            bus.$emit("loadSection", hash);
+            self.changeSection(self.section);
         });
+        self.changeSection(self.section);
     },
     methods: {
         signout: function (e) {
@@ -131,6 +132,8 @@ var menu = Vue.component('spieldose-menu-component', {
                 self.xhr = false;
                 app.logged = false;
             });
+        }, changeSection(s) {
+            bus.$emit("loadSection", s);
         }
     }
 });
@@ -172,6 +175,17 @@ var chart = Vue.component('spieldose-chart', {
         }
     },
     props: ['type', 'title']
+});
+
+var dashboard = Vue.component('spieldose-dashboard', {
+    template: '#dashboard-template',
+    data: function () {
+        return ({});
+    },
+    props: ['section'
+    ], created: function () {
+    }, methods: {
+    }
 });
 
 var pagination = Vue.component('spieldose-pagination', {
@@ -232,6 +246,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     }, created: function() {
         var self = this;
         bus.$on("browseArtists", function (text, page, resultsPage) {
+            console.log("browsing artists");
             self.search(text, page, resultsPage);
         });
 
@@ -268,6 +283,15 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     }
 });
 
+var browseArtist = Vue.component('spieldose-browse-artist', {
+    template: '#browse-artist-template',
+    data: function() {
+        return({
+        });
+    }, props: ['section'
+    ]
+});
+
 var browseAlbums = Vue.component('spieldose-browse-albums', {
     template: '#browse-albums-template',
     data: function() {
@@ -288,7 +312,6 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
         bus.$on("browseAlbums", function (text, page, resultsPage) {
             self.search(text, page, resultsPage);
         });
-
     }, methods: {
         search: function(text, page, resultsPage) {
             var self = this;
@@ -482,7 +505,7 @@ var container = Vue.component('spieldose-app-component', {
     data: function () {
         return ({
             xhr: false,
-            section: "#/dashboard",
+            section: window.location.hash,
             artistList: [],
             albumList: [],
             trackList: [],
@@ -506,19 +529,11 @@ var container = Vue.component('spieldose-app-component', {
         bus.$on("loadSection", function (s) {
             self.changeSection(s);
         });
-        var self = this;
-        bus.$on("browseArtists2", function (page, resultsPage) {
-            self.searchArtists(page);
-        });
-        bus.$on("browseAlbums2", function (page, resultsPage) {
-            self.searchAlbums(page);
-        });
     },
     methods: {
         changeSection: function (s) {
             var self = this;
             self.section = s;
-            self.filterByTextCondition = "";
             switch (s) {
                 case "#/artists":
                     bus.$emit("browseArtists", null, 1, DEFAULT_SECTION_RESULTS_PAGE);
@@ -530,7 +545,7 @@ var container = Vue.component('spieldose-app-component', {
                     if (s.indexOf("#/artist") >= 0) {
                         m = s.match(/#\/artist\/(.+)/);
                         if (m && m.length == 2) {
-                            self.getArtist(m[1]);
+                            bus.$emit("loadArtist", m[1]);
                         } else {
                             // TODO
                         }
