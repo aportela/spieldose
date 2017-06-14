@@ -4,7 +4,6 @@
 
     class Album
     {
-
 	    public function __construct () { }
 
         public function __destruct() { }
@@ -63,6 +62,15 @@
             );
             $data->results = $dbh->query($query, $params);
             return($data);
+        }
+
+        public static function getTracks(\Spieldose\Database $dbh, $album, $artist) {
+            $filter = array(
+                "artist" => $artist,
+                "album" => $album
+            );
+            $data = \Spieldose\Track::search($dbh, 1, 32, $filter, "");
+            return($data->results);
         }
     }
 

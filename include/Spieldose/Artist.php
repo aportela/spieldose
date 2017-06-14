@@ -43,6 +43,10 @@
                     $this->bio = $data[0]->bio;
                     $this->image = $data[0]->image;
                     $this->getAlbums($dbh);
+                    $totalAlbums = count($this->albums);
+                    for ($i = 0; $i < $totalAlbums; $i++) {
+                        $this->albums[$i]->tracks = \Spieldose\Album::getTracks($dbh, $this->albums[$i]->name, $this->name);
+                    }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("name: " . $this->name);
                 }
@@ -50,6 +54,7 @@
                 throw new \Spieldose\Exception\InvalidParamsException("name");
             }
         }
+
         private function getAlbums(\Spieldose\Database $dbh) {
             if (isset($this->name) && ! empty($this->name)) {
                 if ($dbh == null) {
