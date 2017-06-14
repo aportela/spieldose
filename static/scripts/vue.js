@@ -314,7 +314,8 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     template: '#browse-artist-template',
     data: function() {
         return({
-            artist: {}
+            artist: {},
+            detailedView: false,
         });
     }, props: ['section'
     ], created: function() {
@@ -336,6 +337,11 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
         },
         playAlbum: function(album, artist) {
             bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
+        },
+        hideAlbumDetails: function() {
+            this.detailedView = false;
+        }, showAlbumDetails: function() {
+            this.detailedView = true;
         }
     }
 });

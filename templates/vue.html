@@ -277,7 +277,7 @@
                     <img v-if="artist.image" v-bind:src="artist.image" class="artist-thumbnail is-pulled-left">
                     <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="artist.bio"></div>
                     <div class="panel">
-                        <h2>Albums:</h2>
+                        <h2>Albums: <i class="is-unselectable fa fa-2x fa-th-large" v-on:click.prevent="hideAlbumDetails()"></i><i class="is-unselectable fa fa-2x fa-list-ol" v-on:click.prevent="showAlbumDetails()"></i></h2>
                         <div class="album_item" v-for="album in artist.albums">
                             <a class="play_album" v-on:click="playAlbum(album.name, artist.name)">
                                 <img class="album_cover" v-if="album.image" v-bind:src="album.image"/>
@@ -288,6 +288,11 @@
                             <div class="album_info">
                                 <p class="album_name" title="">{{ album.name }} ({{ album.year }})</p>
                             </div>
+                            <!--
+                            <ul v-if="detailedView">
+                                <li v-for="track in album.tracks"><a>{{ track.title }} ({{ track.playtimeString }})</a></li>
+                            </ul>
+                            -->
                         </div>
                     </div>
                 </div>
