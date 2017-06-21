@@ -517,8 +517,10 @@ var player = Vue.component('spieldose-player-component', {
             this.playing = true;
         },
         pause: function () {
-            this.$refs.player.pause();
-            this.playing = false;
+            if (this.playing) {
+                this.$refs.player.pause();
+                this.playing = false;
+            }
         },
         playPrevious: function () {
             var actualPlayingIdx = -1;
