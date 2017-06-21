@@ -162,7 +162,55 @@ var search = Vue.component('spieldose-search', {
                     bus.$emit("activateSection", "#/albums");
                     bus.$emit("browseAlbums", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
                     break;
+                default:
+                    bus.$emit("activateSection", "#/search-results");
+                    bus.$emit("globalSearch", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                break;
             }
+        }
+    }
+});
+
+var search_results = Vue.component('spieldose-search-results', {
+    template: '#search-results-template',
+    data: function() {
+        return({
+            text: null,
+            results: []
+        });
+    }, props: [ 'section'
+    ], created: function() {
+        var self = this;
+        bus.$on("globalSearch", function (text, page, resultsPage) {
+            self.text = text;
+            self.globalSearch(text, page, resultsPage);
+        });
+    }, filters: {
+    }, methods: {
+        play: function(track) {
+            bus.$emit("replacePlayList", new Array(track));
+        },
+        enqueue: function(track) {
+            bus.$emit("appendToPlayList", track);
+        },
+        highlight: function(words) {
+            if (words) {
+                return words.replace( new RegExp( "(" + this.text + ")" , 'gi' ), '<span class="highlight">$1</span>' );
+            } else {
+                return(null);
+            }
+        },
+        globalSearch(text, page, resultsPage) {
+            var self = this;
+            var fData = new FormData();
+            fData.append("actualPage", page);
+            fData.append("resultsPage", resultsPage * 2);
+            if (text) {
+                fData.append("text", text);
+            }
+            httpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
+                self.results = response.tracks;
+            });
         }
     }
 });
@@ -432,7 +480,7 @@ var player = Vue.component('spieldose-player-component', {
             playList: [],
             repeat: false,
             shuffle: false,
-            autoPlay: false,
+            autoPlay: true,
         });
     },
     created: function () {
@@ -444,6 +492,17 @@ var player = Vue.component('spieldose-player-component', {
             }
             if (self.autoPlay) {
                 self.play(self.playList[0]);
+            }
+        });
+        bus.$on("appendToPlayList", function (track) {
+            var notFound = true;
+            for (var i = 0; i < self.playList.length && notFound; i++) {
+                if (self.playList[i].id == track.id) {
+                    notFound = false;
+                }
+            }
+            if (notFound) {
+                self.playList.push(track);
             }
         });
         bus.$on("searchIntoPlayList", function (page, resultsPage, text, artist, album) {

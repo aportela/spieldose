@@ -581,3 +581,17 @@ section.chart ol
     height: 80px;
   }
 }
+
+/* global search results */
+
+table#t-search-results tbody tr td i {
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+span.highlight {
+	color: #222;
+	font-weight: bold;
+}
+
+/* global search results */

@@ -122,6 +122,26 @@
                 </p>
             </div>
         </script>
+        <script type="text/x-template" id="search-results-template">
+            <section v-if="section == '#/search-results'" class="section" id="search-results">
+                <table id="t-search-results" class="table is-bordered is-striped is-narrow">
+                    <thead>
+                            <tr>
+                                <th>Track</th>
+                                <th>Artist</th>
+                                <th>Album</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr v-for="track in results">
+                                <td><i title="play this track" class="fa fa-play-circle-o" aria-hidden="true" v-on:click="play(track)"></i> <i title="enqueue this track" class="fa fa-plus-square" aria-hidden="true" v-on:click="enqueue(track)"></i> <span v-html="highlight(track.title)"></span></td>
+                                <td><span v-html="highlight(track.artist)"></span></td>
+                                <td><span v-html="highlight(track.album)"></span></td>
+                            </tr>
+                    </tbody>
+                </table>
+            </section>
+        </script>
         <script type="text/x-template" id="chart-template">
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel chart">
@@ -332,6 +352,7 @@
                 </aside>
                 <div class="column is-9" id="main-content">
                     <spieldose-search v-bind:section="section"></spieldose-search>
+                    <spieldose-search-results v-bind:section="section"></spieldose-search-results>
                     <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
                     <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
                     <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>

@@ -45,7 +45,7 @@
             if (isset($filter)) {
                 $conditions = array();
                 if (isset($filter["text"])) {
-                    $conditions[] = " AND COALESCE(MBT.track, F.track_name) LIKE :text ";
+                    $conditions[] = " (COALESCE(MBT.track, F.track_name) LIKE :text OR COALESCE(MBA2.artist, F.track_artist) LIKE :text OR COALESCE(MBA1.album, F.album_name) LIKE :text) ";
                     $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
                 }
                 if (isset($filter["artist"])) {
