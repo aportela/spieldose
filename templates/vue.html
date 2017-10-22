@@ -248,6 +248,10 @@
                     <a id="np-artist" v-if="nowPlayingArtist || nowPlayingArtistAlbum || nowPlayingYear" v-bind:src="'#/artist/' + nowPlayingArtist ">{{ nowPlayingArtist + (nowPlayingArtistAlbum ? " / " + nowPlayingArtistAlbum: "") + " (" + nowPlayingYear + ")" }}</a>
                     <a id="np-artist" v-else>no artist / album (year)</a>
                 </div>
+                <!--
+                    audio visualizer https://github.com/anonymousthing/audio-visualizer
+                -->
+                <canvas style="z-index: 20000; padding:0; margin:0; transform2: translate(-50%, -50%);" id="canvas" width="316px" height="24px"></canvas>
                 <audio id="audio" ref="player" controls preload="none">
                     <source v-bind:src="url" type="audio/mpeg">
                     Your browser does not support the audio element.
@@ -365,6 +369,7 @@
                 </aside>
             </div>
         </script>
-		<script src="/static/scripts/vue.js"></script>
+        <script src="/static/scripts/vue.js"></script>
+        <script src="/static/scripts/visualizer.js"></script>
 	</body>
 </html>

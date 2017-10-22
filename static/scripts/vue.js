@@ -515,6 +515,7 @@ var player = Vue.component('spieldose-player-component', {
             this.nowPlayingTrack = track;
             this.url = "/api/track/get.php?id=" + track.id;
             this.playing = true;
+            initializeVisualizer($("canvas")[0], $("audio")[0]);
         },
         pause: function () {
             if (this.playing) {
