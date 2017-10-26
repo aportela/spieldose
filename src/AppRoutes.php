@@ -35,4 +35,17 @@
         return $response->withJson(['logged' => false], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/track/search', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/track/search' route");
+        $data = \Spieldose\Track::search(
+            new \Spieldose\Database\DB(),
+            1,
+            16,
+            array(),
+            ""
+        );
+
+        return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
 ?>

@@ -15,17 +15,17 @@
 
         public function __destruct() { }
 
-        private function exists(\Spieldose\Database $dbh): bool {
+        private function exists(\Spieldose\Database\DB $dbh): bool {
             return(true);
         }
 
-        public function get(\Spieldose\Database $dbh) {
+        public function get(\Spieldose\Database\DB $dbh) {
             if (isset($this->id) && ! empty($this->id)) {
                 if ($dbh == null) {
-                    $dbh = new \Spieldose\Database();
+                    $dbh = new \Spieldose\Database\DB();
                 }
                 $results = $dbh->query("SELECT local_path AS path FROM FILE WHERE id = :id", array(
-                    (new \Spieldose\DatabaseParam())->str(":id", $this->id)
+                    (new \Spieldose\Database\DBParam())->str(":id", $this->id)
                 ));
                 if (count($results) == 1) {
                     $this->path = $results[0]->path;
@@ -37,9 +37,9 @@
             }
         }
 
-        public static function search(\Spieldose\Database $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
+        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             if ($dbh == null) {
-                $dbh = new \Spieldose\Database();
+                $dbh = new \Spieldose\Database\DB();
             }
             $params = array();
             $whereCondition = "";
@@ -47,15 +47,15 @@
                 $conditions = array();
                 if (isset($filter["text"])) {
                     $conditions[] = " (COALESCE(MBT.track, F.track_name) LIKE :text OR COALESCE(MBA2.artist, F.track_artist) LIKE :text OR COALESCE(MBA1.album, F.album_name) LIKE :text) ";
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }
                 if (isset($filter["artist"])) {
                     $conditions[] = " COALESCE(MBA2.artist, F.track_artist) = :artist ";
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":artist", $filter["artist"]);
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
                 }
                 if (isset($filter["album"])) {
                     $conditions[] = " COALESCE(MBA1.album, F.album_name) = :album ";
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":album", $filter["album"]);
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":album", $filter["album"]);
                 }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }

@@ -130,7 +130,7 @@ var search_results = Vue.component('spieldose-search-results', {
             if (text) {
                 fData.append("text", text);
             }
-            jsonHttpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
                 self.results = response.tracks;
             });
         }
@@ -155,7 +155,7 @@ var chart = Vue.component('spieldose-chart', {
             var url = null;
             switch (this.type) {
                 default:
-                    url = "/api/track/search.php";
+                    url = "/api/track/search";
                     break;
             }
             var fData = new FormData();
@@ -412,7 +412,9 @@ var player = Vue.component('spieldose-player-component', {
                 self.pause();
             }
             if (self.autoPlay) {
-                self.play(self.playList[0]);
+                if (self.playList && self.playList.length > 0) {
+                    self.play(self.playList[0]);
+                }
             }
         });
         bus.$on("appendToPlayList", function (track) {
@@ -486,7 +488,7 @@ var player = Vue.component('spieldose-player-component', {
             if (order) {
                 fData.append("orderBy", order);
             }
-            jsonHttpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
                 bus.$emit("replacePlayList", response && response.tracks ? response.tracks : []);
             });
         },
@@ -699,7 +701,7 @@ var container = Vue.component('spieldose-app-component', {
             if (album) {
                 fData.append("album", album);
             }
-            jsonHttpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
                 for (var i = 0; i < response.tracks.length; i++) {
                     if (response.tracks[i].image) {
                         response.tracks[i].albumCoverUrl = response.tracks[i].image;
