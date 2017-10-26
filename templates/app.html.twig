@@ -27,7 +27,7 @@
         <li><a v-bind:class="{ 'active': section == '#/albums' }" href="#/albums"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
         <li><a v-bind:class="{ 'active': section == '#/genres' }" href="#/genres"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
         <li><a v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
-        <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
+        <li><a href="/api/user/signout" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
     </ul>
 </script>
 <script type="text/x-template" id="search-template">

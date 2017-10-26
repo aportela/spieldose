@@ -56,12 +56,7 @@ var menu = Vue.component('spieldose-menu-component', {
     },
     methods: {
         signout: function (e) {
-            var self = this;
-            self.xhr = true;
-            jsonHttpRequest("POST", "/api/user/signout.php", new FormData(), function (httpStatusCode, response) {
-                self.xhr = false;
-                app.logged = false;
-            });
+            bus.$emit("signOut");
         }, changeSection(s) {
             bus.$emit("loadSection", s);
         }
@@ -492,7 +487,7 @@ var player = Vue.component('spieldose-player-component', {
                 fData.append("orderBy", order);
             }
             jsonHttpRequest("POST", "/api/track/search.php", fData, function (httpStatusCode, response) {
-                bus.$emit("replacePlayList", response.tracks);
+                bus.$emit("replacePlayList", response && response.tracks ? response.tracks : []);
             });
         },
         toggleShuffle: function () {
@@ -736,18 +731,23 @@ var app = new Vue({
             xhr: false
         });
     },
+    created: function () {
+        var self = this;
+        bus.$on("signOut", function (hash) {
+            self.signout();
+        });
+    },
     methods: {
-        signout: function(e) {
-            e.preventDefault();
+        signout: function () {
             var self = this;
             self.xhr = true;
-            var f = $("form#frm_signout");
-            jsonjsonHttpRequest($(f).attr("method"), $(f).attr("action"), {}, function (httpStatusCode, response, originalResponse) {
+            jsonHttpRequest("GET", "/api/user/signout", {}, function (httpStatusCode, response, originalResponse) {
                 self.xhr = false;
+                self.logged = false;
                 switch (httpStatusCode) {
                     case 200:
-                            window.location.href = "/login";
-                    break;
+                        window.location.href = "/login";
+                        break;
                     default:
                         bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
                         break;

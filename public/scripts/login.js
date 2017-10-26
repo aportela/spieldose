@@ -68,7 +68,7 @@ var signIn = Vue.component('spieldose-signin-component', {
                         self.invalidPassword = true;
                     break;
                     case 200:
-                            window.location.href = "/app";
+                            window.location.href = "/app#/dashboard";
                     break;
                     default:
                         bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
