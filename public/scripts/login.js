@@ -48,6 +48,7 @@ var signIn = Vue.component('spieldose-signin-component', {
     },
     methods: {
         submit: function (e) {
+            e.preventDefault();
             var self = this;
             self.invalidUsername = false;
             self.invalidPassword = false;
