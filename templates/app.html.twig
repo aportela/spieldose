@@ -9,6 +9,9 @@
 {% block body %}
 <div id="app">
     <spieldose-modal-component></spieldose-modal-component>
+    <form id="frm_signout" method="get" action="/api/user/signout" v-on:submit="signout">
+        <button type="submit" class="button">logout</a>
+    </form>
 </div>
 {% endblock %}
 

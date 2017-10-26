@@ -28,4 +28,11 @@
             return $response->withJson(['logged' => false], 401);
         }
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->get('/api/user/signout', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/user/signout' route");
+        \Spieldose\User::logout();
+        return $response->withJson(['logged' => false], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
 ?>
