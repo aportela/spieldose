@@ -63,15 +63,21 @@
             fclose($file);
             if ($partialContent) {
                 // output the right headers for partial content
-                //header('HTTP/1.1 206 Partial Content');
-                //header('Content-Range: bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize);
-            }
-            return $response->withStatus(200)
+                return $response->withStatus(206)
                 ->withHeader('Content-Type', "audio/mpeg")
                 ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                 ->withHeader('Content-Length', $filesize)
+                ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
                 ->withHeader('Accept-Ranges', 'bytes')
                 ->write($data);
+            } else {
+                return $response->withStatus(200)
+                    ->withHeader('Content-Type', "audio/mpeg")
+                    ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
+                    ->withHeader('Content-Length', $filesize)
+                    ->withHeader('Accept-Ranges', 'bytes')
+                    ->write($data);
+            }
         } else {
             throw new \Spieldose\NotFoundException("id");
         }
