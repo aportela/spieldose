@@ -34,16 +34,16 @@
 		private function getTagFieldValue($id3_obj, $tag_field) {
 			$tag_value = null;
 			if (isset($id3_obj[$tag_field])) {
-				$tag_value = html_entity_decode($id3_obj[$tag_field]);
+				$tag_value = html_entity_decode((string)$id3_obj[$tag_field]);
 			} else if (isset($id3_obj['tags_html'][$tag_field][0])) {
-				$tag_value = html_entity_decode($id3_obj['tags_html'][$tag_field][0]);
+				$tag_value = html_entity_decode((string)$id3_obj['tags_html'][$tag_field][0]);
 			} else if (isset($id3_obj['tags_html']['id3v2'][$tag_field][0])) {
-				$tag_value = html_entity_decode($id3_obj['tags_html']['id3v2'][$tag_field][0]);
+				$tag_value = html_entity_decode((string)$id3_obj['tags_html']['id3v2'][$tag_field][0]);
 			} else if (isset($id3_obj['tags_html']['id3v1'][$tag_field][0])) {
-				$tag_value = html_entity_decode($id3_obj['tags_html']['id3v1'][$tag_field][0]);
+				$tag_value = html_entity_decode((string)$id3_obj['tags_html']['id3v1'][$tag_field][0]);
 			} else if (isset($id3_obj['tags_html']['vorbiscomment'])) {
 				if (isset($id3_obj['tags_html']['vorbiscomment'][$tag_field][0])) {
-					$tag_value = html_entity_decode($id3_obj['tags_html']['vorbiscomment'][$tag_field][0]);
+					$tag_value = html_entity_decode((string)$id3_obj['tags_html']['vorbiscomment'][$tag_field][0]);
 				}
 				else {
 					// try to guess not matched tags
@@ -61,7 +61,7 @@
 				}
 			}
 			if ($tag_value != null) {
-				$tag_value = trim($this->toUTF8($tag_value));
+				//$tag_value = trim($this->toUTF8($tag_value));
 			}
 			return($tag_value);
 		}
@@ -116,7 +116,7 @@
         }
 
         public function getPlaytimeSeconds(): int {
-            return(ceil($this->getTagFieldValue($this->tagData, "playtime_seconds")));
+			return((int)ceil($this->getTagFieldValue($this->tagData, "playtime_seconds")));
         }
 
         public function getPlaytimeString(): string {
