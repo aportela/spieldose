@@ -8,16 +8,16 @@
 
         public function __destruct() { }
 
-        public static function search(\Spieldose\Database $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
+        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             if ($dbh == null) {
-                $dbh = new \Spieldose\Database();
+                $dbh = new \Spieldose\Database\DB();
             }
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
                 if (isset($filter["text"])) {
                     $whereCondition = " AND COALESCE(MBA.album, F.album_name) LIKE :text ";
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }
             }
             $queryCount = '
@@ -64,7 +64,7 @@
             return($data);
         }
 
-        public static function getTracks(\Spieldose\Database $dbh, $album, $artist) {
+        public static function getTracks(\Spieldose\Database\DB $dbh, $album, $artist) {
             $filter = array(
                 "artist" => $artist,
                 "album" => $album

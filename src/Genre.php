@@ -10,9 +10,9 @@
 
         public function __destruct() { }
 
-        public static function search(\Spieldose\Database $dbh, array $filter = array(), string $order = "") {
+        public static function search(\Spieldose\Database\DB $dbh, array $filter = array(), string $order = "") {
             if ($dbh == null) {
-                $dbh = new \Spieldose\Database();
+                $dbh = new \Spieldose\Database\DB();
             }
             $sqlOrder = "";
             if (! empty($order)) {

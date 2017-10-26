@@ -16,18 +16,18 @@
 
         public function __destruct() { }
 
-        private function exists(\Spieldose\Database $dbh): bool {
+        private function exists(\Spieldose\Database\DB $dbh): bool {
             return(true);
         }
 
-        public function get(\Spieldose\Database $dbh) {
+        public function get(\Spieldose\Database\DB $dbh) {
             if (isset($this->name) && ! empty($this->name)) {
                 if ($dbh == null) {
-                    $dbh = new \Spieldose\Database();
+                    $dbh = new \Spieldose\Database\DB();
                 }
                 if ($this->exists($dbh)) {
                     $params = array();
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $this->name);
                     $query = sprintf('
                         SELECT DISTINCT
                             MBA.mbid,
@@ -55,14 +55,14 @@
             }
         }
 
-        private function getAlbums(\Spieldose\Database $dbh) {
+        private function getAlbums(\Spieldose\Database\DB $dbh) {
             if (isset($this->name) && ! empty($this->name)) {
                 if ($dbh == null) {
-                    $dbh = new \Spieldose\Database();
+                    $dbh = new \Spieldose\Database\DB();
                 }
                 if ($this->exists($dbh)) {
                     $params = array();
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":name", $this->name);
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $this->name);
                     $query = sprintf('
                         SELECT DISTINCT
                             MBA2.mbid,
@@ -85,16 +85,16 @@
             }
         }
 
-        public static function search(\Spieldose\Database $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
+        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             if ($dbh == null) {
-                $dbh = new \Spieldose\Database();
+                $dbh = new \Spieldose\Database\DB();
             }
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
                 if (isset($filter["text"])) {
                     $whereCondition = " AND COALESCE(MBA.artist, F.track_artist) LIKE :text ";
-                    $params[] = (new \Spieldose\DatabaseParam())->str(":text", "%" . $filter["text"] . "%");
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }
             }
             $queryCount = '
