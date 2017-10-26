@@ -1,8 +1,10 @@
 <?php
 
-    namespace Spieldose;
+declare(strict_types=1);
 
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR. "configuration.php";
+    require __DIR__ . '/../vendor/autoload.php';
+
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR. "configuration.php";
 
     \Spieldose\Utils::setAppDefaults();
 
@@ -15,7 +17,7 @@
             $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
-            $dbh = new \Spieldose\Database();
+            $dbh = new \Spieldose\Database\DB();
             $scrapper = new \Spieldose\Scrapper();
             $failed = array();
             for ($i = 0; $i < $totalFiles; $i++) {

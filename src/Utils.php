@@ -36,10 +36,10 @@
             $bar=floor($perc*$size);
 
             $status_bar="\r[";
-            $status_bar.=str_repeat("=", $bar);
+            $status_bar .= str_repeat("=", intval($bar));
             if($bar<$size){
                 $status_bar.=">";
-                $status_bar.=str_repeat(" ", $size-$bar);
+                $status_bar.=str_repeat(" ", intval($size-$bar));
             } else {
                 $status_bar.="=";
             }
