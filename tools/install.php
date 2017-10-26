@@ -1,8 +1,9 @@
 <?php
+    declare(strict_types=1);
 
-    namespace Spieldose;
+    require __DIR__ . '/../vendor/autoload.php';
 
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR. "configuration.php";
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR. "configuration.php";
 
     \Spieldose\Utils::setAppDefaults();
 
