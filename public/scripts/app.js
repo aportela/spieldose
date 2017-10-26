@@ -5,6 +5,11 @@ const DEFAULT_SECTION_RESULTS_PAGE = 32;
 /* global object for events between vuejs components */
 const bus = new Vue();
 
+/* change section event */
+window.onhashchange = function (e) {
+    bus.$emit("hashChanged", location.hash);
+};
+
 /* modal component (warning & errors) */
 var modal = Vue.component('spieldose-modal-component', {
     template: '#modal-template',
