@@ -436,7 +436,8 @@ var player = Vue.component('spieldose-player-component', {
     methods: {
         play: function (track) {
             this.nowPlayingTrack = track;
-            this.url = "/api/track/get.php?id=" + track.id;
+            this.url = "/api/track/get/" + track.id;
+            console.log(this.url);
             this.playing = true;
             initializeVisualizer($("canvas")[0], $("audio")[0]);
         },

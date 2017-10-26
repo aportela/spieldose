@@ -35,6 +35,48 @@
         return $response->withJson(['logged' => false], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->get('/api/track/get/{id}', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/track/get' route");
+        $route = $request->getAttribute('route');
+        $track  = new \Spieldose\Track($route->getArgument("id"));
+        $track->get(new \Spieldose\Database\DB());
+        if (file_exists($track->path)) {
+            $filesize = filesize($track->path);
+            $offset = 0;
+            $length = $filesize;
+            // https://stackoverflow.com/a/157447
+            if (isset($_SERVER['HTTP_RANGE'])) {
+                // if the HTTP_RANGE header is set we're dealing with partial content
+                $partialContent = true;
+                // find the requested range
+                // this might be too simplistic, apparently the client can request
+                // multiple ranges, which can become pretty complex, so ignore it for now
+                preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                $offset = intval($matches[1]);
+                $length = ((isset($matches[2])) ? intval($matches[2]) : $filesize) - $offset;
+            } else {
+                $partialContent = false;
+            }
+            $file = fopen($track->path, 'r');
+            fseek($file, $offset);
+            $data = fread($file, $length);
+            fclose($file);
+            if ($partialContent) {
+                // output the right headers for partial content
+                //header('HTTP/1.1 206 Partial Content');
+                //header('Content-Range: bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize);
+            }
+            return $response->withStatus(200)
+                ->withHeader('Content-Type', "audio/mpeg")
+                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
+                ->withHeader('Content-Length', $filesize)
+                ->withHeader('Accept-Ranges', 'bytes')
+                ->write($data);
+        } else {
+            throw new \Spieldose\NotFoundException("id");
+        }
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/track/search', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/track/search' route");
         $data = \Spieldose\Track::search(
@@ -44,7 +86,6 @@
             array(),
             ""
         );
-
         return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
