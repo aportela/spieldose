@@ -1,0 +1,19 @@
+{% extends "skeleton.html.twig" %}
+
+{% block title %}Spieldose{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/styles/app.css">
+{% endblock %}
+
+{% block body %}
+<div id="app">
+    <spieldose-modal-component></spieldose-modal-component>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {% verbatim %}
+    {% endverbatim %}
+<script src="/scripts/app.js"></script>
+{% endblock %}

@@ -14,6 +14,11 @@
         return $this->view->render($response, 'login.html.twig', []);
     });
 
+    $app->get('/app', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/app' route");
+        return $this->view->render($response, 'app.html.twig', []);
+    });
+
     $app->post('/api/user/signin', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/user/signin' route");
         $u = new \Spieldose\User($request->getParam("email"));
