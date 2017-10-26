@@ -8,15 +8,301 @@
 
 {% block body %}
 <div id="app">
+    <spieldose-app-component></spieldose-app-component>
     <spieldose-modal-component></spieldose-modal-component>
+    <!--
     <form id="frm_signout" method="get" action="/api/user/signout" v-on:submit="signout">
         <button type="submit" class="button">logout</a>
     </form>
+    -->
 </div>
 {% endblock %}
 
 {% block scripts %}
     {% verbatim %}
+<script type="text/x-template" id="menu-template">
+    <ul id="menu">
+        <li><a v-bind:class="{ 'active': section == '#/dashboard' }" href="#/dashboard"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
+        <li><a v-bind:class="{ 'active': section == '#/artists' }" href="#/artists"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
+        <li><a v-bind:class="{ 'active': section == '#/albums' }" href="#/albums"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
+        <li><a v-bind:class="{ 'active': section == '#/genres' }" href="#/genres"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
+        <li><a v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
+        <li><a href="/api/user/signout.php" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
+    </ul>
+</script>
+<script type="text/x-template" id="search-template">
+    <div class="field has-addons">
+        <p class="control">
+            <span class="select">
+                <select v-model="filterByTextOn">
+                    <option value="">search on anything</option>
+                    <option value="tracks">search on track names</option>
+                    <option value="artists">search on artist names</option>
+                    <option value="albums">search on album names</option>
+                </select>
+            </span>
+        </p>
+        <p class="control is-expanded">
+            <input class="input" type="text" v-on:keyup.13="search()" v-model="filterByTextCondition" placeholder="type search text condition">
+        </p>
+        <p class="control">
+            <a class="button" v-on:click.prevent="search()">
+                <span class="icon is-small">
+                <i class="fa fa-search"></i>
+                </span>
+                <span>Search</span>
+            </a>
+        </p>
+    </div>
+</script>
+<script type="text/x-template" id="search-results-template">
+    <section v-if="section == '#/search-results'" class="section" id="search-results">
+        <table id="t-search-results" class="table is-bordered is-striped is-narrow">
+            <thead>
+                    <tr>
+                        <th>Track</th>
+                        <th>Artist</th>
+                        <th>Album</th>
+                    </tr>
+            </thead>
+            <tbody>
+                    <tr v-for="track in results">
+                        <td><i title="play this track" class="fa fa-play-circle-o" aria-hidden="true" v-on:click="play(track)"></i> <i title="enqueue this track" class="fa fa-plus-square" aria-hidden="true" v-on:click="enqueue(track)"></i> <span v-html="highlight(track.title)"></span></td>
+                        <td><span v-html="highlight(track.artist)"></span></td>
+                        <td><span v-html="highlight(track.album)"></span></td>
+                    </tr>
+            </tbody>
+        </table>
+    </section>
+</script>
+<script type="text/x-template" id="chart-template">
+    <div class="column is-one-third-desktop is-full-mobile">
+        <section class="panel chart">
+            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-3x fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
+            <p class="panel-tabs">
+                <a class="is-active" href="#">All Time</a>
+                <a href="#">Past week</a>
+                <a href="#">Past month</a>
+                <a href="#">Past quarter</a>
+                <a href="#">Past Year</a>
+            </p>
+            <div class="panel-block">
+                <ol>
+                    <li class="is-small" v-if="type != ''" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "")}}</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</script>
+<script type="text/x-template" id="dashboard-template">
+    <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
+    <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
+        <div class="columns is-mobile is-multiline">
+            <spieldose-chart v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-chart>
+            <spieldose-chart v-bind:type="'topArtists'" v-bind:title="'Top artists'"></spieldose-chart>
+            <spieldose-chart v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-chart>
+        </div>
+        <div class="columns is-mobile is-multiline">
+            <div class="column is-one-third-desktop is-full-mobile">
+                <section class="panel">
+                    <p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently added</p>
+                    <p class="panel-tabs">
+                        <a class="is-active" href="#">Tracks</a>
+                        <a href="#">Artists</a>
+                        <a href="#">Albums</a>
+                    </p>
+                    <div class="panel-block">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-block">
+                        <div id="chart1" style="height: 168px;"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <section class="panel">
+                    <p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently played</p>
+                    <p class="panel-tabs">
+                        <a class="is-active" href="#">Tracks</a>
+                        <a href="#">Artists</a>
+                        <a href="#">Albums</a>
+                    </p>
+                    <div class="panel-block">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-block">
+                        <div id="chart1" style="height: 168px;"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <section class="panel">
+                    <p class="panel-heading"><span class="icon"><i class="fa fa-line-chart"></i></span> Play stadistics</p>
+                    <p class="panel-tabs">
+                        <a class="is-active" href="#">by hour</a>
+                        <a href="#">by day</a>
+                        <a href="#">by month</a>
+                    </p>
+                    <div class="panel-block">
+                        <div id="chart3" style="height: 250px;"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</script>
+<script type="text/x-template" id="player-template">
+    <div id="player">
+        <p id="np-header" v-if="playing"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
+        <p id="np-header" v-else>STOPPED</p>
+        <img v-if="nowPlayingImage" v-bind:src="nowPlayingImage" />
+        <img v-else src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC" />
+        <div id="np-footer">
+            <span id="np-track-title" v-if="nowPlayingTitle">{{ nowPlayingTitle }}</span>
+            <span id="np-track-title" v-else>no title</span>
+            <span id="np-track-length" v-if="nowPlayingLength">{{ nowPlayingLength }}</span>
+            <span id="np-track-length" v-else>00:00</span>
+            <a id="np-artist" v-if="nowPlayingArtist || nowPlayingArtistAlbum || nowPlayingYear" v-bind:src="'#/artist/' + nowPlayingArtist ">{{ nowPlayingArtist + (nowPlayingArtistAlbum ? " / " + nowPlayingArtistAlbum: "") + " (" + nowPlayingYear + ")" }}</a>
+            <a id="np-artist" v-else>no artist / album (year)</a>
+        </div>
+        <!--
+            audio visualizer https://github.com/anonymousthing/audio-visualizer
+        -->
+        <canvas style="z-index: 20000; padding:0; margin:0; transform2: translate(-50%, -50%);" id="canvas" width="316px" height="24px"></canvas>
+        <audio id="audio" ref="player" controls preload="none">
+            <source v-bind:src="url" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div id="player-controls" class="is-unselectable">
+            <i v-on:click.prevent="loadRandomPlayList" title="refresh random playlist" class="fa fa-refresh fa-lg"></i>
+            <i title="shuffle" class="fa fa-random fa-lg" v-on:click.prevent="toggleShuffle()" v-bind:class="{ 'player-active-control': shuffle }"></i>
+            <i title="previous track" v-on:click.prevent="playPrevious" class="fa fa-backward fa-lg"></i>
+            <i title="next track" v-on:click.prevent="playNext" class="fa fa-forward fa-lg"></i>
+            <i title="mark as loved song" class="fa fa-heart fa-lg"></i>
+            <i title="download song" class="fa fa-save fa-lg"></i>
+        </div>
+        <ul id="player-playlist">
+            <li v-for="track, i in playList"><a v-bind:class="{ 'selected' : isPlayingTrack(track) }" v-on:click="play(track)">{{ track.title + (track.artist ? ' / ' + track.artist: '') }}</span></a></li>
+        </ul>
+    </div>
+</script>
+<script type="text/x-template" id="pagination-template">
+    <nav class="pagination is-centered level">
+        <a class="pagination-previous" v-on:click.prevent="previous">Previous</a>
+        <a class="pagination-next" v-on:click.prevent="next">Next page</a>
+        <ul class="pagination-list">
+            <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
+            <li v-for="pageNumber in totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - actualPage) < 3 || totalPages - 2 < pageNumber">
+                <a href="#" v-on:click.prevent="navigateTo(pageNumber)" class="pagination-link" :class="{'is-current': actualPage === pageNumber}">{{ pageNumber }}</a>
+            </li>
+        </ul>
+    </nav>
+</script>
+<script type="text/x-template" id="browse-artists-template">
+    <section v-if="section == '#/artists'" class="section" id="section-artists">
+        <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
+        <div class="artist_item" v-for="artist in artists">
+            <a class="view_artist" v-bind:href="'#/artist/' + artist.name">
+                <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
+                <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                <i class="fa fa-search fa-4x"></i>
+            </a>
+            <div class="artist_info">
+                <p class="artist_name">{{ artist.name }}</p>
+            </div>
+        </div>
+    </section>
+</script>
+<script type="text/x-template" id="browse-artist-template">
+    <section v-if="section == '#/artist'" class="section" id="section-artist">
+        <h1>{{ artist.name }}</h1>
+        <div v-if="artist" v-bind="artist" class="container">
+            <img v-if="artist.image" v-bind:src="artist.image" class="artist-thumbnail is-pulled-left">
+            <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="artist.bio"></div>
+            <div class="panel">
+                <h2>Albums: <i class="is-unselectable fa fa-2x fa-th-large" v-on:click.prevent="hideAlbumDetails()"></i><i class="is-unselectable fa fa-2x fa-list-ol" v-on:click.prevent="showAlbumDetails()"></i></h2>
+                <div class="album_item" v-for="album in artist.albums">
+                    <a class="play_album" v-on:click="playAlbum(album.name, artist.name)">
+                        <img class="album_cover" v-if="album.image" v-bind:src="album.image"/>
+                        <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                        <i class="fa fa-play fa-4x"></i>
+                        <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                    </a>
+                    <div class="album_info">
+                        <p class="album_name" title="">{{ album.name }} ({{ album.year }})</p>
+                    </div>
+                    <!--
+                    <ul v-if="detailedView">
+                        <li v-for="track in album.tracks"><a>{{ track.title }} ({{ track.playtimeString }})</a></li>
+                    </ul>
+                    -->
+                </div>
+            </div>
+        </div>
+    </section>
+</script>
+<script type="text/x-template" id="browse-albums-template">
+    <section v-if="section == '#/albums'" class="section" id="section-albums">
+        <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
+        <div class="album_item" v-for="album in albums">
+            <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
+                <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
+                <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                <i class="fa fa-play fa-4x"></i>
+                <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+            </a>
+            <div class="album_info">
+                <p class="album_name" title="">{{ album.name }}</p>
+                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
+            </div>
+        </div>
+    </section>
+</script>
+<script type="text/x-template" id="browse-genres-template">
+    <section v-if="section == '#/genres'"class="section" id="section-genres">
+    </section>
+</script>
+<script type="text/x-template" id="preferences-template">
+    <section v-if="section == '#/preferences'"class="section" id="section-preferences">
+    </section>
+</script>
+<script type="text/x-template" id="spieldose-template">
+    <div class="columns is-gapless">
+        <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
+            <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
+        </aside>
+        <div class="column is-9" id="main-content">
+            <spieldose-search v-bind:section="section"></spieldose-search>
+            <spieldose-search-results v-bind:section="section"></spieldose-search-results>
+            <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
+            <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
+            <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
+            <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
+            <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
+            <spieldose-preferences v-bind:section="section"></spieldose-preferences>
+        </div>
+        <aside id="aside-player" class="column is-2">
+            <spieldose-player-component></spieldose-player-component>
+        </aside>
+    </div>
+</script>
     {% endverbatim %}
+<script src="/scripts/visualizer.js"></script>
 <script src="/scripts/app.js"></script>
 {% endblock %}
