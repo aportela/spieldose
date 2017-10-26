@@ -43,7 +43,7 @@
                                 <p class="control" id="login-container" v-bind:class="{ 'has-icons-right' : invalidUsername }">
                                     <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="xhr ? true: false" v-model="email">
                                     <span class="icon is-small is-right" v-show="invalidUsername"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="invalidUsername">Username not found</p>
+                                    <p class="help is-danger" v-show="invalidUsername">Email not found</p>
                                 </p>
                                 <label class="label">Password</label>
                                 <p class="control" id="password-container" v-bind:class="{ 'has-icons-right' : invalidPassword }">
