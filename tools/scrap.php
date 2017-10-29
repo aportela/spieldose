@@ -1,8 +1,10 @@
 <?php
 
-    namespace Spieldose;
+declare(strict_types=1);
 
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR. "configuration.php";
+    require __DIR__ . '/../vendor/autoload.php';
+
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR. "configuration.php";
 
     \Spieldose\Utils::setAppDefaults();
 
@@ -10,7 +12,7 @@
 
     $cmdLine = new \Spieldose\CmdLine("", array("artists", "albums"));
     if ($cmdLine->hasParam("artists")) {
-        $dbh = new \Spieldose\Database();
+        $dbh = new \Spieldose\Database\DB();
         $scrapper = new \Spieldose\Scrapper();
         $artists = $scrapper->getPendingArtists($dbh);
         $totalArtists = count($artists);
