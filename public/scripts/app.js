@@ -261,13 +261,14 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
             } else {
                 self.pager.previousPage = 1;
             }
-            var fData = new FormData();
-            fData.append("actualPage", self.pager.actualPage);
-            fData.append("resultsPage", self.pager.resultsPage);
+            var d = {
+                actualPage: self.pager.actualPage,
+                resultsPage: self.pager.resultsPage
+            };
             if (text) {
-                fData.append("text", text);
+                d.text = text;
             }
-            jsonHttpRequest("POST", "/api/artist/search.php", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/artist/search", d, function (httpStatusCode, response) {
                 if (response.artists.length > 0) {
                     self.pager.totalPages = response.totalPages;
                 } else {

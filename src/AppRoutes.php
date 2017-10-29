@@ -97,4 +97,16 @@
         return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/artist/search', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/artist/search' route");
+        $data = \Spieldose\Artist::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage"),
+            $request->getParam("resultsPage"),
+            array(),
+            ""
+        );
+        return $response->withJson(['artists' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
 ?>
