@@ -39,8 +39,10 @@
         $this->logger->info("Slim-Skeleton GET '/api/track/get' route");
         $route = $request->getAttribute('route');
         $track  = new \Spieldose\Track($route->getArgument("id"));
-        $track->get(new \Spieldose\Database\DB());
+        $db = new \Spieldose\Database\DB();
+        $track->get($db);
         if (file_exists($track->path)) {
+            $track->incPlayCount($db);
             $filesize = filesize($track->path);
             $offset = 0;
             $length = $filesize;
@@ -90,7 +92,7 @@
             1,
             16,
             array(),
-            ""
+            "random"
         );
         return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);

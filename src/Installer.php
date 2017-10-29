@@ -52,6 +52,11 @@
                 [artist_mbname] VARCHAR(36) NOT NULL,
                 [json] TEXT NOT NULL
             )',
+            'CREATE TABLE [STATS] (
+                [file_id] VARCHAR(40) UNIQUE NOT NULL,
+                [played] INTEGER NOT NULL,
+                PRIMARY KEY(`file_id`,`played`)
+            )',
             'PRAGMA journal_mode=WAL'
         );
 
