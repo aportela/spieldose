@@ -92,7 +92,7 @@
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
-                if (isset($filter["text"])) {
+                if (isset($filter["text"]) && ! empty($filter["text"])) {
                     $whereCondition = " AND COALESCE(MBA.artist, F.track_artist) LIKE :text ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }

@@ -15,7 +15,7 @@
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
-                if (isset($filter["text"])) {
+                if (isset($filter["text"]) && ! empty($filter["text"])) {
                     $whereCondition = " AND COALESCE(MBA.album, F.album_name) LIKE :text ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }
