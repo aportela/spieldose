@@ -521,7 +521,7 @@ var player = Vue.component('spieldose-player-component', {
                 d.album = album;
             }
             if (order) {
-                d.order = order;
+                d.orderBy = order;
             }
             jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
                 bus.$emit("replacePlayList", response && response.tracks ? response.tracks : []);
@@ -735,7 +735,7 @@ var container = Vue.component('spieldose-app-component', {
                 d.album = album;
             }
             if (order) {
-                d.order = order;
+                d.orderBy = order;
             }
             jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
                 for (var i = 0; i < response.tracks.length; i++) {
