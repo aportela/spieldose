@@ -103,7 +103,14 @@ var search_results = Vue.component('spieldose-search-results', {
     data: function () {
         return ({
             text: null,
-            results: []
+            results: [],
+            pager: {
+                actualPage: 1,
+                previousPage: 1,
+                nextPage: 1,
+                totalPages: 0,
+                resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            }
         });
     }, props: ['section'
     ], created: function () {
@@ -129,14 +136,32 @@ var search_results = Vue.component('spieldose-search-results', {
         },
         globalSearch(text, page, resultsPage) {
             var self = this;
-            var fData = new FormData();
-            fData.append("actualPage", page);
-            fData.append("resultsPage", resultsPage * 2);
-            if (text) {
-                fData.append("text", text);
+            self.pager.actualPage = page;
+            if (page > 1) {
+                self.pager.previousPage = page - 1;
+            } else {
+                self.pager.previousPage = 1;
             }
-            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage
+            };
+            if (text) {
+                d.text = text;
+            }
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+                if (response.tracks.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                if (page < self.pager.totalPages) {
+                    self.pager.nextPage = page + 1;
+                } else {
+                    self.pager.nextPage = self.pager.totalPages;
+                }
                 self.results = response.tracks;
+                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
             });
         }
     }
@@ -163,12 +188,13 @@ var chart = Vue.component('spieldose-chart', {
                     url = "/api/track/search";
                     break;
             }
-            var fData = new FormData();
-            fData.append("actualPage", 1);
-            fData.append("resultsPage", 8);
-            fData.append("orderBy", "random");
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage,
+                orderBy: "random"
+            };
             self.xhr = true;
-            jsonHttpRequest("POST", url, fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
                 self.xhr = false;
                 switch (self.type) {
                     default:
@@ -481,22 +507,23 @@ var player = Vue.component('spieldose-player-component', {
         },
         fillFromSearch: function (page, resultsPage, text, artist, album, order) {
             var self = this;
-            var fData = new FormData();
-            fData.append("actualPage", page);
-            fData.append("resultsPage", resultsPage);
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage
+            };
             if (text) {
-                fData.append("text", page);
+                d.text = text;
             }
             if (artist) {
-                fData.append("artist", artist);
+                d.artist = artist;
             }
             if (album) {
-                fData.append("album", album);
+                d.album = album;
             }
             if (order) {
-                fData.append("orderBy", order);
+                d.order = order;
             }
-            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
                 bus.$emit("replacePlayList", response && response.tracks ? response.tracks : []);
             });
         },
@@ -694,22 +721,23 @@ var container = Vue.component('spieldose-app-component', {
         searchTracks: function (page, order, text, artist, album) {
             var self = this;
             self.pager.actualPage = page;
-            var fData = new FormData();
-            fData.append("actualPage", self.pager.actualPage);
-            fData.append("resultsPage", self.pager.resultsPage);
-            if (order) {
-                fData.append("orderBy", order);
-            }
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage
+            };
             if (text) {
-                fData.append("text", text);
+                d.text = text;
             }
             if (artist) {
-                fData.append("artist", artist);
+                d.artist = artist;
             }
             if (album) {
-                fData.append("album", album);
+                d.album = album;
             }
-            jsonHttpRequest("POST", "/api/track/search", fData, function (httpStatusCode, response) {
+            if (order) {
+                d.order = order;
+            }
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
                 for (var i = 0; i < response.tracks.length; i++) {
                     if (response.tracks[i].image) {
                         response.tracks[i].albumCoverUrl = response.tracks[i].image;

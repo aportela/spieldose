@@ -25,8 +25,10 @@
         <li><a v-bind:class="{ 'active': section == '#/dashboard' }" href="#/dashboard"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
         <li><a v-bind:class="{ 'active': section == '#/artists' }" href="#/artists"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
         <li><a v-bind:class="{ 'active': section == '#/albums' }" href="#/albums"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
+        <!--
         <li><a v-bind:class="{ 'active': section == '#/genres' }" href="#/genres"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
         <li><a v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
+        -->
         <li><a href="/api/user/signout" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
     </ul>
 </script>
@@ -57,7 +59,8 @@
 </script>
 <script type="text/x-template" id="search-results-template">
     <section v-if="section == '#/search-results'" class="section" id="search-results">
-        <table id="t-search-results" class="table is-bordered is-striped is-narrow">
+        <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
+        <table id="t-search-results" class="table is-bordered is-striped is-narrow is-fullwidth">
             <thead>
                     <tr>
                         <th>Track</th>
