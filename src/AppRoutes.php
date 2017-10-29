@@ -87,12 +87,17 @@
 
     $app->post('/api/track/search', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/track/search' route");
+        $filter = array();
         $data = \Spieldose\Track::search(
             new \Spieldose\Database\DB(),
-            $request->getParam("actualPage"),
-            $request->getParam("resultsPage"),
-            array(),
-            ""
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", ""),
+                "artist" => $request->getParam("artist", ""),
+                "album" => $request->getParam("album", "")
+            ),
+            $request->getParam("orderBy", "")
         );
         return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
@@ -101,10 +106,12 @@
         $this->logger->info("Slim-Skeleton POST '/api/artist/search' route");
         $data = \Spieldose\Artist::search(
             new \Spieldose\Database\DB(),
-            $request->getParam("actualPage"),
-            $request->getParam("resultsPage"),
-            array(),
-            ""
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
         );
         return $response->withJson(['artists' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
@@ -113,10 +120,12 @@
         $this->logger->info("Slim-Skeleton POST '/api/album/search' route");
         $data = \Spieldose\Album::search(
             new \Spieldose\Database\DB(),
-            $request->getParam("actualPage"),
-            $request->getParam("resultsPage"),
-            array(),
-            ""
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
         );
         return $response->withJson(['albums' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
