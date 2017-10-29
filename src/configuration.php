@@ -12,4 +12,6 @@
     define("PDO_PASSWORD", "");
     define("PDO_CONNECTION_STRING", sprintf("sqlite:%s", SQLITE_DATABASE_PATH));
 
+    define("DEFAULT_RESULTS_PAGE", 32);
+
 ?>
