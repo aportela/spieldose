@@ -351,13 +351,14 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
             } else {
                 self.pager.previousPage = 1;
             }
-            var fData = new FormData();
-            fData.append("actualPage", self.pager.actualPage);
-            fData.append("resultsPage", self.pager.resultsPage);
+            var d = {
+                actualPage: self.pager.actualPage,
+                resultsPage: self.pager.resultsPage
+            };
             if (text) {
-                fData.append("text", text);
+                d.text = text;
             }
-            jsonHttpRequest("POST", "/api/album/search.php", fData, function (httpStatusCode, response) {
+            jsonHttpRequest("POST", "/api/album/search", d, function (httpStatusCode, response) {
                 for (var i = 0; i < response.albums.length; i++) {
                     if (response.albums[i].image) {
                         response.albums[i].albumCoverUrl = response.albums[i].image;

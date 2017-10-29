@@ -204,8 +204,8 @@
 </script>
 <script type="text/x-template" id="pagination-template">
     <nav class="pagination is-centered level">
-        <a class="pagination-previous" v-on:click.prevent="previous">Previous</a>
-        <a class="pagination-next" v-on:click.prevent="next">Next page</a>
+        <a class="button is-link pagination-previous" v-on:click.prevent="previous"><span class="icon is-small"><i class="fa fa-caret-left" aria-hidden="true"></i></span>Previous</a>
+        <a class="button is-link pagination-next" v-on:click.prevent="next">Next<span class="icon is-small"><i class="fa fa-caret-right" aria-hidden="true"></i></span></a>
         <ul class="pagination-list">
             <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
             <li v-for="pageNumber in totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - actualPage) < 3 || totalPages - 2 < pageNumber">
