@@ -50,7 +50,7 @@ declare(strict_types=1);
         }
     }
     if ($cmdLine->hasParam("albums")) {
-        $dbh = new \Spieldose\Database();
+        $dbh = new \Spieldose\Database\DB();
         $scrapper = new \Spieldose\Scrapper();
         $albums = $scrapper->getPendingAlbums($dbh);
         $totalAlbums = count($albums);
