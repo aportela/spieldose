@@ -470,7 +470,6 @@ var player = Vue.component('spieldose-player-component', {
         play: function (track) {
             this.nowPlayingTrack = track;
             this.url = "/api/track/get/" + track.id;
-            console.log(this.url);
             this.playing = true;
             initializeVisualizer($("canvas")[0], $("audio")[0]);
         },
@@ -529,6 +528,10 @@ var player = Vue.component('spieldose-player-component', {
         },
         toggleShuffle: function () {
             this.shuffle = !this.shuffle;
+        },
+        download: function() {
+            console.log("down");
+            window.location = "/api/track/get/" + this.nowPlayingTrack.id;
         }
     }, computed: {
         nowPlayingTitle: function () {
