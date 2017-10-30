@@ -130,4 +130,34 @@
         return $response->withJson(['albums' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/stats/top_played_tracks' route");
+        $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/top_artists', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/stats/top_artists' route");
+        $metrics = \Spieldose\Metrics::GetTopArtists(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/top_genres', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/stats/top_genres' route");
+        $metrics = \Spieldose\Metrics::GetTopGenres(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
 ?>

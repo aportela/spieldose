@@ -178,30 +178,31 @@ var chart = Vue.component('spieldose-chart', {
         });
     },
     created: function () {
-        //this.loadChartData();
+        this.loadChartData();
     }, methods: {
         loadChartData: function () {
             var self = this;
             var url = null;
             switch (this.type) {
-                default:
-                    url = "/api/track/search";
+                case "topTracks":
+                    var d = {};
+                    jsonHttpRequest("POST", "/api/metrics/top_played_tracks", d, function (httpStatusCode, response) {
+                        self.items = response.metrics;
+                    });
+                    break;
+                    case "topArtists":
+                    var d = {};
+                    jsonHttpRequest("POST", "/api/metrics/top_artists", d, function (httpStatusCode, response) {
+                        self.items = response.metrics;
+                    });
+                    break;
+                    case "topGenres":
+                    var d = {};
+                    jsonHttpRequest("POST", "/api/metrics/top_genres", d, function (httpStatusCode, response) {
+                        self.items = response.metrics;
+                    });
                     break;
             }
-            var d = {
-                actualPage: page,
-                resultsPage: resultsPage,
-                orderBy: "random"
-            };
-            self.xhr = true;
-            jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
-                self.xhr = false;
-                switch (self.type) {
-                    default:
-                        self.items = response.tracks;
-                        break;
-                }
-            });
         }
     },
     props: ['type', 'title']
@@ -210,9 +211,11 @@ var chart = Vue.component('spieldose-chart', {
 var dashboard = Vue.component('spieldose-dashboard', {
     template: '#dashboard-template',
     data: function () {
-        return ({});
+        return ({
+        });
     },
-    props: ['section'
+    props: [
+        'section',
     ], created: function () {
     }, methods: {
     }
@@ -529,8 +532,7 @@ var player = Vue.component('spieldose-player-component', {
         toggleShuffle: function () {
             this.shuffle = !this.shuffle;
         },
-        download: function() {
-            console.log("down");
+        download: function () {
             window.location = "/api/track/get/" + this.nowPlayingTrack.id;
         }
     }, computed: {

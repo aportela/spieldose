@@ -91,7 +91,9 @@
             </p>
             <div class="panel-block">
                 <ol>
-                    <li class="is-small" v-if="type != ''" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "")}}</li>
+                    <li class="is-small" v-if="type == 'topTracks'" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "") }}</li>
+                    <li class="is-small" v-if="type == 'topArtists'" v-for="artist, i in items">{{ artist.name }}</li>
+                    <li class="is-small" v-if="type == 'topGenres'" v-for="genre, i in items">{{ genre.name }}</li>
                 </ol>
             </div>
         </section>
