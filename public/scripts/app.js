@@ -174,6 +174,7 @@ var chart = Vue.component('spieldose-chart', {
         return ({
             xhr: false,
             iconClass: 'fa-pie-chart',
+            interval: 0,
             items: []
         });
     },
@@ -183,26 +184,49 @@ var chart = Vue.component('spieldose-chart', {
         loadChartData: function () {
             var self = this;
             var url = null;
+            var d = {};
+            switch (this.interval) {
+                case 0:
+                    break;
+                case 1:
+                    d.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    d.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    d.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    d.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    d.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    d.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    d.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    d.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
             switch (this.type) {
                 case "topTracks":
-                    var d = {};
                     jsonHttpRequest("POST", "/api/metrics/top_played_tracks", d, function (httpStatusCode, response) {
                         self.items = response.metrics;
                     });
                     break;
-                    case "topArtists":
+                case "topArtists":
                     var d = {};
                     jsonHttpRequest("POST", "/api/metrics/top_artists", d, function (httpStatusCode, response) {
                         self.items = response.metrics;
                     });
                     break;
-                    case "topGenres":
+                case "topGenres":
                     var d = {};
                     jsonHttpRequest("POST", "/api/metrics/top_genres", d, function (httpStatusCode, response) {
                         self.items = response.metrics;
                     });
                     break;
             }
+        }, changeInterval: function (i) {
+            this.interval = i;
+            this.loadChartData();
         }
     },
     props: ['type', 'title']
@@ -216,7 +240,20 @@ var dashboard = Vue.component('spieldose-dashboard', {
     },
     props: [
         'section',
-    ], created: function () {
+    ], mounted: function () {
+        var d = {};
+        jsonHttpRequest("POST", "/api/metrics/play_stats", d, function (httpStatusCode, response) {
+            var ctx = document.getElementById("play_metrics_chart");
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                    datasets: [{ "label": "by hour", "data": [65, 59, 80, 81, 56, 55, 40], "fill": false, "borderColor": "rgb(75, 192, 192)", "lineTension": 0.1 }]
+                }, options: {}
+            });
+        });
+
+    }, created: function () {
     }, methods: {
     }
 });
@@ -474,7 +511,7 @@ var player = Vue.component('spieldose-player-component', {
             this.nowPlayingTrack = track;
             this.url = "/api/track/get/" + track.id;
             this.playing = true;
-            initializeVisualizer($("canvas")[0], $("audio")[0]);
+            initializeVisualizer($("canvas")[1], $("audio")[0]);
         },
         pause: function () {
             if (this.playing) {

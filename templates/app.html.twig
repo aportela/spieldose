@@ -19,6 +19,8 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     {% verbatim %}
 <script type="text/x-template" id="menu-template">
     <ul id="menu">
@@ -83,11 +85,11 @@
         <section class="panel chart">
             <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-3x fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
             <p class="panel-tabs">
-                <a class="is-active" href="#">All Time</a>
-                <a href="#">Past week</a>
-                <a href="#">Past month</a>
-                <a href="#">Past quarter</a>
-                <a href="#">Past Year</a>
+                <a href="#" v-bind:class="{ 'is-active' : interval == 0 }" v-on:click.prevent="changeInterval(0)">All Time</a>
+                <a href="#" v-bind:class="{ 'is-active' : interval == 1 }" v-on:click.prevent="changeInterval(1)">Past week</a>
+                <a href="#" v-bind:class="{ 'is-active' : interval == 2 }" v-on:click.prevent="changeInterval(2)">Past month</a>
+                <a href="#" v-bind:class="{ 'is-active' : interval == 3 }" v-on:click.prevent="changeInterval(3)">Past semester</a>
+                <a href="#" v-bind:class="{ 'is-active' : interval == 4 }" v-on:click.prevent="changeInterval(4)">Past Year</a>
             </p>
             <div class="panel-block">
                 <ol>
@@ -161,11 +163,14 @@
                     <p class="panel-heading"><span class="icon"><i class="fa fa-line-chart"></i></span> Play stadistics</p>
                     <p class="panel-tabs">
                         <a class="is-active" href="#">by hour</a>
-                        <a href="#">by day</a>
-                        <a href="#">by month</a>
+                        <a href="#" v-on:click.prevent="">by weekday</a>
+                        <a href="#" v-on:click.prevent="">by month</a>
+                        <a href="#" v-on:click.prevent="">by year</a>
                     </p>
                     <div class="panel-block">
-                        <div id="chart3" style="height: 250px;"></div>
+                        <div id="chart3">
+                            <canvas id="play_metrics_chart" width="400" height="250"></canvas>
+                        </div>
                     </div>
                 </section>
             </div>
