@@ -212,13 +212,11 @@ var chart = Vue.component('spieldose-chart', {
                     });
                     break;
                 case "topArtists":
-                    var d = {};
                     jsonHttpRequest("POST", "/api/metrics/top_artists", d, function (httpStatusCode, response) {
                         self.items = response.metrics;
                     });
                     break;
                 case "topGenres":
-                    var d = {};
                     jsonHttpRequest("POST", "/api/metrics/top_genres", d, function (httpStatusCode, response) {
                         self.items = response.metrics;
                     });
