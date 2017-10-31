@@ -63,8 +63,8 @@
                 SELECT F.genre AS name, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
-                GROUP BY F.genre
                 ' . $queryConditions . '
+                GROUP BY F.genre
                 HAVING F.genre NOT NULL
                 ORDER BY total DESC LIMIT 5;
             ';
