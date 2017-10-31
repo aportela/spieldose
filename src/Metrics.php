@@ -22,7 +22,8 @@
             ' . $queryConditions . '
                 GROUP BY S.file_id
                 HAVING F.track_name NOT NULL
-                ORDER BY total DESC LIMIT 5;
+                ORDER BY total DESC
+                LIMIT 5;
             ';
             $metrics = $dbh->query($query, $params);
             return($metrics);
@@ -44,7 +45,8 @@
                 ' . $queryConditions . '
                 GROUP BY F.track_artist
                 HAVING F.track_artist NOT NULL
-                ORDER BY total DESC LIMIT 5;
+                ORDER BY total DESC
+                LIMIT 5;
             ';
             $metrics = $dbh->query($query, $params);
             return($metrics);
@@ -66,9 +68,91 @@
                 ' . $queryConditions . '
                 GROUP BY F.genre
                 HAVING F.genre NOT NULL
-                ORDER BY total DESC LIMIT 5;
+                ORDER BY total DESC
+                LIMIT 5;
             ';
             $metrics = $dbh->query($query, $params);
+            return($metrics);
+        }
+
+        public static function GetRecentlyAddedTracks(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT F.id AS id, F.track_name AS title, F.track_artist AS artist
+                FROM FILE F
+                WHERE F.track_name IS NOT NULL
+                ORDER BY created DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
+            return($metrics);
+        }
+
+        public static function GetRecentlyAddedArtists(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT DISTINCT F.track_artist AS name
+                FROM FILE F
+                WHERE F.track_artist IS NOT NULL
+                ORDER BY created DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
+            return($metrics);
+        }
+
+        public static function GetRecentlyAddedAlbums(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT DISTINCT F.album_name AS name, F.track_artist AS artist
+                FROM FILE F
+                WHERE F.album_name IS NOT NULL
+                ORDER BY created DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
+            return($metrics);
+        }
+
+        public static function GetRecentlyPlayedTracks(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT DISTINCT F.id AS id, F.track_name AS title, F.track_artist AS artist
+                FROM STATS S
+                LEFT JOIN FILE F ON F.id = S.file_id
+                WHERE F.track_name IS NOT NULL
+                ORDER BY S.played DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
+            return($metrics);
+        }
+
+        public static function GetRecentlyPlayedArtists(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT DISTINCT F.track_artist AS name
+                FROM STATS S
+                LEFT JOIN FILE F ON F.id = S.file_id
+                WHERE F.track_artist IS NOT NULL
+                ORDER BY S.played DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
+            return($metrics);
+        }
+
+        public static function GetRecentlyPlayedAlbums(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $query = '
+                SELECT DISTINCT F.album_name AS name, F.track_artist AS artist
+                FROM STATS S
+                LEFT JOIN FILE F ON F.id = S.file_id
+                WHERE F.album_name IS NOT NULL
+                ORDER BY S.played DESC
+                LIMIT 5;
+            ';
+            $metrics = $dbh->query($query, array());
             return($metrics);
         }
 
@@ -78,6 +162,7 @@
                 SELECT strftime("%H", S.played) AS hour, COUNT(*) AS total
                 FROM STATS S
                 GROUP BY hour
+                ORDER BY hour
             ';
             $metrics = $dbh->query($query, array());
             return($metrics);

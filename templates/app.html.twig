@@ -83,7 +83,7 @@
 <script type="text/x-template" id="chart-template">
     <div class="column is-one-third-desktop is-full-mobile">
         <section class="panel chart">
-            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-3x fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
+            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
             <p class="panel-tabs">
                 <a href="#" v-bind:class="{ 'is-active' : interval == 0 }" v-on:click.prevent="changeInterval(0)">All Time</a>
                 <a href="#" v-bind:class="{ 'is-active' : interval == 1 }" v-on:click.prevent="changeInterval(1)">Past week</a>
@@ -92,7 +92,7 @@
                 <a href="#" v-bind:class="{ 'is-active' : interval == 4 }" v-on:click.prevent="changeInterval(4)">Past Year</a>
             </p>
             <div class="panel-block">
-                <ol>
+                <ol v-if="items.length > 0">
                     <li class="is-small" v-if="type == 'topTracks'" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "") }}</li>
                     <li class="is-small" v-if="type == 'topArtists'" v-for="artist, i in items">{{ artist.name }}</li>
                     <li class="is-small" v-if="type == 'topGenres'" v-for="genre, i in items">{{ genre.name }}</li>
@@ -101,6 +101,27 @@
         </section>
     </div>
 </script>
+
+<script type="text/x-template" id="chart-template-recent">
+    <div class="column is-one-third-desktop is-full-mobile">
+        <section class="panel chart">
+            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-clock-o"></i></span> {{ title }}</p>
+            <p class="panel-tabs">
+                <a v-bind:class="{ 'is-active' : entity == 0 }" v-on:click.prevent="changeEntity(0)" href="#">Tracks</a>
+                <a v-bind:class="{ 'is-active' : entity == 1 }" v-on:click.prevent="changeEntity(1)" href="#">Artists</a>
+                <a v-bind:class="{ 'is-active' : entity == 2 }" v-on:click.prevent="changeEntity(2)" href="#">Albums</a>
+            </p>
+            <div class="panel-block">
+                <ol v-if="items.length > 0">
+                    <li class="is-small" v-if="entity == 0" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "") }}</li>
+                    <li class="is-small" v-if="entity == 1" v-for="artist, i in items">{{ artist.name }}</li>
+                    <li class="is-small" v-if="entity == 2" v-for="album, i in items">{{ album.name + (album.artist ? " / " + album.artist: "") }}</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</script>
+
 <script type="text/x-template" id="dashboard-template">
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
@@ -110,57 +131,11 @@
             <spieldose-chart v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-chart>
         </div>
         <div class="columns is-mobile is-multiline">
+            <spieldose-chart-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'"></spieldose-chart-recent>
+            <spieldose-chart-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'"></spieldose-chart-recent>
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently added</p>
-                    <p class="panel-tabs">
-                        <a class="is-active" href="#">Tracks</a>
-                        <a href="#">Artists</a>
-                        <a href="#">Albums</a>
-                    </p>
-                    <div class="panel-block">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-block">
-                        <div id="chart1" style="height: 168px;"></div>
-                    </div>
-                </section>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i class="fa fa-clock-o"></i></span> Recently played</p>
-                    <p class="panel-tabs">
-                        <a class="is-active" href="#">Tracks</a>
-                        <a href="#">Artists</a>
-                        <a href="#">Albums</a>
-                    </p>
-                    <div class="panel-block">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-block">
-                        <div id="chart1" style="height: 168px;"></div>
-                    </div>
-                </section>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i class="fa fa-line-chart"></i></span> Play stadistics</p>
+                    <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
                     <p class="panel-tabs">
                         <a class="is-active" href="#">by hour</a>
                         <a href="#" v-on:click.prevent="">by weekday</a>
@@ -169,7 +144,7 @@
                     </p>
                     <div class="panel-block">
                         <div id="chart3">
-                            <canvas id="play_metrics_chart" width="400" height="250"></canvas>
+                            <canvas id="play_metrics_chart" width="400" height="105"></canvas>
                         </div>
                     </div>
                 </section>

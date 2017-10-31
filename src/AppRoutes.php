@@ -166,6 +166,76 @@
         return $response->withJson(['metrics' => $metrics], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/metrics/recently_added', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/metrics/recently_added' route");
+        $entity = $request->getParam("entity", "");
+        if (! empty($entity)) {
+            switch($entity) {
+                case "tracks":
+                    $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+                break;
+                case "artists":
+                    $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+                break;
+                case "albums":
+                    $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+
+                break;
+            }
+
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("entity");
+        }
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/recently_played', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/metrics/recently_played' route");
+        $entity = $request->getParam("entity", "");
+        if (! empty($entity)) {
+            switch($entity) {
+                case "tracks":
+                    $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+                break;
+                case "artists":
+                    $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+                break;
+                case "albums":
+                    $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
+                        new \Spieldose\Database\DB(),
+                        array(
+                        )
+                    );
+
+                break;
+            }
+
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("entity");
+        }
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/metrics/play_stats', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
         $metrics = \Spieldose\Metrics::GetPlayStats(
