@@ -31,6 +31,7 @@
     <script src="/scripts/vue-component-dashboard.js"></script>
     <script src="/scripts/vue-component-browse-artists.js"></script>
     <script src="/scripts/vue-component-browse-artist.js"></script>
+    <script src="/scripts/vue-component-browse-albums.js"></script>
     <script src="/scripts/vue-component-player.js"></script>
     {% verbatim %}
 <script type="text/x-template" id="search-template">
@@ -132,21 +133,6 @@
     </nav>
 </script>
 <script type="text/x-template" id="browse-albums-template">
-    <section v-show="section == '#/albums'" class="section" id="section-albums">
-        <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
-        <div class="album_item" v-for="album in albums">
-            <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
-                <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
-                <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
-                <i class="fa fa-play fa-4x"></i>
-                <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
-            </a>
-            <div class="album_info">
-                <p class="album_name" title="">{{ album.name }}</p>
-                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
-            </div>
-        </div>
-    </section>
 </script>
 <script type="text/x-template" id="browse-genres-template">
     <section v-show="section == '#/genres'"class="section" id="section-genres">

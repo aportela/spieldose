@@ -226,7 +226,6 @@ var chart2 = Vue.component('spieldose-chart-recent', {
     props: ['type', 'title']
 });
 
-
 var pagination = Vue.component('spieldose-pagination', {
     template: '#pagination-template',
     data: function () {
@@ -263,71 +262,6 @@ var pagination = Vue.component('spieldose-pagination', {
             if (pageIdx > 0 && pageIdx <= this.totalPages) {
                 bus.$emit(this.searchEvent, null, pageIdx, this.resultsPage);
             }
-        }
-    }
-});
-
-
-var browseAlbums = Vue.component('spieldose-browse-albums', {
-    template: '#browse-albums-template',
-    data: function () {
-        return ({
-            albums: [],
-            pager: {
-                actualPage: 1,
-                previousPage: 1,
-                nextPage: 1,
-                totalPages: 0,
-                resultsPage: DEFAULT_SECTION_RESULTS_PAGE
-            }
-        });
-    }, props: ['section'
-    ], computed: {
-    }, created: function () {
-        var self = this;
-        bus.$on("browseAlbums", function (text, page, resultsPage) {
-            self.search(text, page, resultsPage);
-        });
-    }, methods: {
-        search: function (text, page, resultsPage) {
-            var self = this;
-            self.pager.actualPage = page;
-            if (page > 1) {
-                self.pager.previousPage = page - 1;
-            } else {
-                self.pager.previousPage = 1;
-            }
-            var d = {
-                actualPage: self.pager.actualPage,
-                resultsPage: self.pager.resultsPage
-            };
-            if (text) {
-                d.text = text;
-            }
-            jsonHttpRequest("POST", "/api/album/search", d, function (httpStatusCode, response) {
-                for (var i = 0; i < response.albums.length; i++) {
-                    if (response.albums[i].image) {
-                        response.albums[i].albumCoverUrl = response.albums[i].image;
-                    } else {
-                        response.albums[i].albumCoverUrl = "#";
-                    }
-                }
-                if (response.albums.length > 0) {
-                    self.pager.totalPages = response.totalPages;
-                } else {
-                    self.pager.totalPages = 0;
-                }
-                if (page < self.pager.totalPages) {
-                    self.pager.nextPage = page + 1;
-                } else {
-                    self.pager.nextPage = self.pager.totalPages;
-                }
-                self.albums = response.albums;
-                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
-            });
-        },
-        enqueueAlbumTracks: function (album, artist) {
-            bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
         }
     }
 });
