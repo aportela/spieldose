@@ -19,21 +19,16 @@
 {% endblock %}
 
 {% block scripts %}
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    -->
+    <script src="/scripts/moment.min.js"></script>
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    -->
+    <script src="/scripts/Chart.min.js"></script>
+    <script src="/scripts/vue-component-menu.js"></script>
     {% verbatim %}
-<script type="text/x-template" id="menu-template">
-    <ul id="menu">
-        <li><a v-bind:class="{ 'active': section == '#/dashboard' }" href="#/dashboard"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
-        <li><a v-bind:class="{ 'active': section == '#/artists' }" href="#/artists"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
-        <li><a v-bind:class="{ 'active': section == '#/albums' }" href="#/albums"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
-        <!--
-        <li><a v-bind:class="{ 'active': section == '#/genres' }" href="#/genres"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
-        <li><a v-bind:class="{ 'active': section == '#/preferences' }" href="#/preferences"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
-        -->
-        <li><a href="/api/user/signout" v-on:click.prevent="signout"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
-    </ul>
-</script>
 <script type="text/x-template" id="search-template">
     <div class="field has-addons">
         <div class="control">

@@ -39,35 +39,6 @@ var modal = Vue.component('spieldose-modal-component', {
     }
 });
 
-/* app (logged) menu component */
-var menu = Vue.component('spieldose-menu-component', {
-    template: '#menu-template',
-    data: function () {
-        return ({
-            xhr: false,
-            section: window.location.hash
-        });
-    },
-    created: function () {
-        var self = this;
-        bus.$on("hashChanged", function (hash) {
-            self.section = hash;
-            self.changeSection(self.section);
-        });
-        bus.$on("activateSection", function (s) {
-            self.section = s;
-        });
-        self.changeSection(self.section);
-    },
-    methods: {
-        signout: function (e) {
-            bus.$emit("signOut");
-        }, changeSection(s) {
-            bus.$emit("loadSection", s);
-        }
-    }
-});
-
 var search = Vue.component('spieldose-search', {
     template: '#search-template',
     data: function () {
