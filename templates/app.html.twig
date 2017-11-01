@@ -93,9 +93,9 @@
             </p>
             <div class="panel-block">
                 <ol v-if="items.length > 0">
-                    <li class="is-small" v-if="type == 'topTracks'" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "") }}</li>
-                    <li class="is-small" v-if="type == 'topArtists'" v-for="artist, i in items">{{ artist.name }}</li>
-                    <li class="is-small" v-if="type == 'topGenres'" v-for="genre, i in items">{{ genre.name }}</li>
+                    <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items">{{ item.title + (item.artist ? " / " + item.artist: "") }}</li>
+                    <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items">{{ item.artist }}</li>
+                    <li class="is-small" v-if="type == 'topGenres'" v-for="item, i in items">{{ item.genre }}</li>
                 </ol>
             </div>
         </section>
@@ -113,9 +113,9 @@
             </p>
             <div class="panel-block">
                 <ol v-if="items.length > 0">
-                    <li class="is-small" v-if="entity == 0" v-for="track, i in items">{{ track.title + (track.artist ? " / " + track.artist: "") }}</li>
-                    <li class="is-small" v-if="entity == 1" v-for="artist, i in items">{{ artist.name }}</li>
-                    <li class="is-small" v-if="entity == 2" v-for="album, i in items">{{ album.name + (album.artist ? " / " + album.artist: "") }}</li>
+                    <li class="is-small" v-if="entity == 0" v-for="item, i in items">{{ item.title + (item.artist ? " / " + item.artist: "") }}</li>
+                    <li class="is-small" v-if="entity == 1" v-for="item, i in items">{{ item.artist }}</li>
+                    <li class="is-small" v-if="entity == 2" v-for="item, i in items">{{ item.album + (item.album ? " / " + item.artist: "") }}</li>
                 </ol>
             </div>
         </section>
