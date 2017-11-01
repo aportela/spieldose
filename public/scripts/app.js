@@ -126,13 +126,6 @@ var chart2 = Vue.component('spieldose-chart-recent', {
     props: ['type', 'title']
 });
 
-
-var browseGenres = Vue.component('spieldose-browse-genres', {
-    template: '#browse-genres-template'
-    , props: ['section'
-    ]
-});
-
 var preferences = Vue.component('spieldose-preferences', {
     template: '#preferences-template'
     , props: ['section'
