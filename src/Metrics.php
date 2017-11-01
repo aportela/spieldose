@@ -16,12 +16,13 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
             }
             $query = '
-                SELECT S.file_id AS id, F.track_name AS title, F.track_artist AS artist, COUNT(S.played) AS total
+                SELECT S.file_id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
             ' . $queryConditions . '
                 GROUP BY S.file_id
-                HAVING F.track_name NOT NULL
+                HAVING title NOT NULL
                 ORDER BY total DESC
                 LIMIT 5;
             ';
@@ -39,12 +40,13 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
             }
             $query = '
-                SELECT F.track_artist AS name, COUNT(S.played) AS total
+                SELECT COALESCE(MB.artist, F.track_artist) AS artist, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 ' . $queryConditions . '
                 GROUP BY F.track_artist
-                HAVING F.track_artist NOT NULL
+                HAVING artist NOT NULL
                 ORDER BY total DESC
                 LIMIT 5;
             ';
@@ -62,12 +64,12 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
             }
             $query = '
-                SELECT F.genre AS name, COUNT(S.played) AS total
+                SELECT F.genre AS genre, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 ' . $queryConditions . '
                 GROUP BY F.genre
-                HAVING F.genre NOT NULL
+                HAVING genre NOT NULL
                 ORDER BY total DESC
                 LIMIT 5;
             ';
@@ -78,9 +80,10 @@
         public static function GetRecentlyAddedTracks(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT F.id AS id, F.track_name AS title, F.track_artist AS artist
+                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist
                 FROM FILE F
-                WHERE F.track_name IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                WHERE title IS NOT NULL
                 ORDER BY created DESC
                 LIMIT 5;
             ';
@@ -91,9 +94,10 @@
         public static function GetRecentlyAddedArtists(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT DISTINCT F.track_artist AS name
+                SELECT DISTINCT COALESCE(MB.artist, F.track_artist) AS artist
                 FROM FILE F
-                WHERE F.track_artist IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                WHERE artist IS NOT NULL
                 ORDER BY created DESC
                 LIMIT 5;
             ';
@@ -104,9 +108,11 @@
         public static function GetRecentlyAddedAlbums(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT DISTINCT F.album_name AS name, F.track_artist AS artist
+                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, MB1.artist, F.track_artist) AS artist
                 FROM FILE F
-                WHERE F.album_name IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
+                LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
+                WHERE album IS NOT NULL
                 ORDER BY created DESC
                 LIMIT 5;
             ';
@@ -117,10 +123,11 @@
         public static function GetRecentlyPlayedTracks(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT DISTINCT F.id AS id, F.track_name AS title, F.track_artist AS artist
+                SELECT DISTINCT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
-                WHERE F.track_name IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                WHERE title IS NOT NULL
                 ORDER BY S.played DESC
                 LIMIT 5;
             ';
@@ -131,10 +138,11 @@
         public static function GetRecentlyPlayedArtists(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT DISTINCT F.track_artist AS name
+                SELECT DISTINCT COALESCE(MB.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
-                WHERE F.track_artist IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                WHERE artist IS NOT NULL
                 ORDER BY S.played DESC
                 LIMIT 5;
             ';
@@ -145,10 +153,12 @@
         public static function GetRecentlyPlayedAlbums(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $query = '
-                SELECT DISTINCT F.album_name AS name, F.track_artist AS artist
+                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, MB1.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
-                WHERE F.album_name IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
+                LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
+                WHERE album IS NOT NULL
                 ORDER BY S.played DESC
                 LIMIT 5;
             ';
