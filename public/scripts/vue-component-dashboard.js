@@ -10,8 +10,8 @@ var vTemplateDashboard = function () {
             <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-dashboard-toplist>
         </div>
         <div class="columns is-mobile is-multiline">
-            <spieldose-chart-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'"></spieldose-chart-recent>
-            <spieldose-chart-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'"></spieldose-chart-recent>
+            <spieldose-dashboard-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'"></spieldose-dashboard-recent>
+            <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'"></spieldose-dashboard-recent>
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel">
                     <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>

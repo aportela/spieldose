@@ -27,12 +27,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     -->
     <script src="/scripts/Chart.min.js"></script>
+    <script src="/scripts/visualizer.js"></script>
     <script src="/scripts/vue-component-menu.js"></script>
     <script src="/scripts/vue-component-container.js"></script>
     <script src="/scripts/vue-component-search.js"></script>
     <script src="/scripts/vue-component-search-results.js"></script>
     <script src="/scripts/vue-component-dashboard.js"></script>
     <script src="/scripts/vue-component-dashboard-toplist.js"></script>
+    <script src="/scripts/vue-component-dashboard-recent.js"></script>
     <script src="/scripts/vue-component-pagination.js"></script>
     <script src="/scripts/vue-component-browse-artists.js"></script>
     <script src="/scripts/vue-component-browse-artist.js"></script>
@@ -40,31 +42,5 @@
     <script src="/scripts/vue-component-browse-genres.js"></script>
     <script src="/scripts/vue-component-preferences.js"></script>
     <script src="/scripts/vue-component-player.js"></script>
-    {% verbatim %}
-<script type="text/x-template" id="chart-template-recent">
-    <div class="column is-one-third-desktop is-full-mobile">
-        <section class="panel chart">
-            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-clock-o"></i></span> {{ title }}</p>
-            <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active' : entity == 0 }" v-on:click.prevent="changeEntity(0)" href="#">Tracks</a>
-                <a v-bind:class="{ 'is-active' : entity == 1 }" v-on:click.prevent="changeEntity(1)" href="#">Artists</a>
-                <a v-bind:class="{ 'is-active' : entity == 2 }" v-on:click.prevent="changeEntity(2)" href="#">Albums</a>
-            </p>
-            <div class="panel-block">
-                <ol v-if="items.length > 0">
-                    <li class="is-small" v-if="entity == 0" v-for="item, i in items">{{ item.title + (item.artist ? " / " + item.artist: "") }}</li>
-                    <li class="is-small" v-if="entity == 1" v-for="item, i in items">{{ item.artist }}</li>
-                    <li class="is-small" v-if="entity == 2" v-for="item, i in items">{{ item.album + (item.album ? " / " + item.artist: "") }}</li>
-                </ol>
-            </div>
-        </section>
-    </div>
-</script>
-<script type="text/x-template" id="preferences-template">
-</script>
-<script type="text/x-template" id="spieldose-template">
-</script>
-    {% endverbatim %}
-<script src="/scripts/visualizer.js"></script>
-<script src="/scripts/app.js"></script>
+    <script src="/scripts/app.js"></script>
 {% endblock %}
