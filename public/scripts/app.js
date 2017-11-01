@@ -10,37 +10,6 @@ window.onhashchange = function (e) {
     bus.$emit("hashChanged", location.hash);
 };
 
-
-var search = Vue.component('spieldose-search', {
-    template: '#search-template',
-    data: function () {
-        return ({
-            filterByTextOn: "",
-            filterByTextCondition: ""
-        });
-    }, props: ['section'
-    ], methods: {
-        search() {
-            switch (this.filterByTextOn) {
-                case "artists":
-                    if (this.section != "#/artists") {
-                        bus.$emit("activateSection", "#/artists");
-                    }
-                    bus.$emit("browseArtists", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
-                    break;
-                case "albums":
-                    bus.$emit("activateSection", "#/albums");
-                    bus.$emit("browseAlbums", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
-                    break;
-                default:
-                    bus.$emit("activateSection", "#/search-results");
-                    bus.$emit("globalSearch", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
-                    break;
-            }
-        }
-    }
-});
-
 var search_results = Vue.component('spieldose-search-results', {
     template: '#search-results-template',
     data: function () {

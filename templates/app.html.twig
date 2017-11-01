@@ -28,37 +28,13 @@
     -->
     <script src="/scripts/Chart.min.js"></script>
     <script src="/scripts/vue-component-menu.js"></script>
+    <script src="/scripts/vue-component-search.js"></script>
     <script src="/scripts/vue-component-dashboard.js"></script>
     <script src="/scripts/vue-component-browse-artists.js"></script>
     <script src="/scripts/vue-component-browse-artist.js"></script>
     <script src="/scripts/vue-component-browse-albums.js"></script>
     <script src="/scripts/vue-component-player.js"></script>
     {% verbatim %}
-<script type="text/x-template" id="search-template">
-    <div class="field has-addons">
-        <div class="control">
-            <div class="select is-fullwidth">
-                <select v-model="filterByTextOn">
-                        <option value="">search on anything</option>
-                        <option value="tracks">search on track names</option>
-                        <option value="artists">search on artist names</option>
-                        <option value="albums">search on album names</option>
-                </select>
-            </div>
-        </div>
-        <div class="control is-expanded">
-            <input class="input" type="text" v-on:keyup.13="search()" v-model="filterByTextCondition" placeholder="type search text condition">
-        </div>
-        <div class="control">
-            <a class="button" v-on:click.prevent="search()">
-                <span class="icon is-small">
-                <i class="fa fa-search"></i>
-                </span>
-                <span>Search</span>
-            </a>
-        </div>
-    </div>
-</script>
 <script type="text/x-template" id="search-results-template">
     <section v-show="section == '#/search-results'" class="section" id="search-results">
         <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
