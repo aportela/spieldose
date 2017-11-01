@@ -115,7 +115,7 @@
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY COALESCE(artist, track_artist) COLLATE NOCASE ASC ";
+                $sqlOrder = " ORDER BY COALESCE(MBA.artist, F.track_artist) COLLATE NOCASE ASC ";
             }
             $query = sprintf('
                 SELECT
@@ -123,7 +123,7 @@
                     MBA.image
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                WHERE F.track_artist IS NOT NULL
+                WHERE COALESCE(MBA.artist, F.track_artist) IS NOT NULL
                 %s
                 %s
                 LIMIT %d OFFSET %d
