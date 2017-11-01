@@ -126,12 +126,6 @@ var chart2 = Vue.component('spieldose-chart-recent', {
     props: ['type', 'title']
 });
 
-var preferences = Vue.component('spieldose-preferences', {
-    template: '#preferences-template'
-    , props: ['section'
-    ]
-});
-
 var container = Vue.component('spieldose-app-component', {
     template: '#spieldose-template',
     data: function () {
