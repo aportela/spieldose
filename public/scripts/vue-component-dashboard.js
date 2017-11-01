@@ -5,9 +5,9 @@ var vTemplateDashboard = function () {
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <section v-show="section == '#/dashboard'" class="section" id="section-dashboard">
         <div class="columns is-mobile is-multiline">
-            <spieldose-chart v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-chart>
-            <spieldose-chart v-bind:type="'topArtists'" v-bind:title="'Top artists'"></spieldose-chart>
-            <spieldose-chart v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-chart>
+            <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-dashboard-toplist>
+            <spieldose-dashboard-toplist v-bind:type="'topArtists'" v-bind:title="'Top artists'"></spieldose-dashboard-toplist>
+            <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'"></spieldose-dashboard-toplist>
         </div>
         <div class="columns is-mobile is-multiline">
             <spieldose-chart-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'"></spieldose-chart-recent>
