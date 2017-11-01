@@ -29,6 +29,7 @@
     <script src="/scripts/Chart.min.js"></script>
     <script src="/scripts/vue-component-menu.js"></script>
     <script src="/scripts/vue-component-search.js"></script>
+    <script src="/scripts/vue-component-search-results.js"></script>
     <script src="/scripts/vue-component-dashboard.js"></script>
     <script src="/scripts/vue-component-browse-artists.js"></script>
     <script src="/scripts/vue-component-browse-artist.js"></script>
@@ -36,25 +37,6 @@
     <script src="/scripts/vue-component-player.js"></script>
     {% verbatim %}
 <script type="text/x-template" id="search-results-template">
-    <section v-show="section == '#/search-results'" class="section" id="search-results">
-        <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
-        <table id="t-search-results" class="table is-bordered is-striped is-narrow is-fullwidth">
-            <thead>
-                    <tr>
-                        <th>Track</th>
-                        <th>Artist</th>
-                        <th>Album</th>
-                    </tr>
-            </thead>
-            <tbody>
-                    <tr v-for="track in results">
-                        <td><i title="play this track" class="fa fa-play-circle-o" aria-hidden="true" v-on:click="play(track)"></i> <i title="enqueue this track" class="fa fa-plus-square" aria-hidden="true" v-on:click="enqueue(track)"></i> <span v-html="highlight(track.title)"></span></td>
-                        <td><span v-html="highlight(track.artist)"></span></td>
-                        <td><span v-html="highlight(track.album)"></span></td>
-                    </tr>
-            </tbody>
-        </table>
-    </section>
 </script>
 <script type="text/x-template" id="chart-template">
     <div class="column is-one-third-desktop is-full-mobile">
@@ -107,8 +89,6 @@
             </li>
         </ul>
     </nav>
-</script>
-<script type="text/x-template" id="browse-albums-template">
 </script>
 <script type="text/x-template" id="browse-genres-template">
     <section v-show="section == '#/genres'"class="section" id="section-genres">
