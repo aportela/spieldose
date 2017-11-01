@@ -293,6 +293,7 @@ var dashboard = Vue.component('spieldose-dashboard', {
     props: [
         'section',
     ], mounted: function () {
+        /*
         var self = this;
         var d = {};
         self.xhr = true;
@@ -319,7 +320,7 @@ var dashboard = Vue.component('spieldose-dashboard', {
                 }, options: {}
             });
         });
-
+        */
     }, created: function () {
     }, methods: {
     }
@@ -435,9 +436,8 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     }, methods: {
         getArtist: function (artist) {
             var self = this;
-            var fData = new FormData();
-            fData.append("name", artist);
-            jsonHttpRequest("POST", "/api/artist/get.php", fData, function (httpStatusCode, response) {
+            var d = {};
+            jsonHttpRequest("GET", "/api/artist/" + encodeURIComponent(artist), d, function (httpStatusCode, response) {
                 self.artist = response.artist;
                 if (self.artist.bio) {
                     self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')
