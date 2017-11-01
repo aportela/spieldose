@@ -22,7 +22,7 @@
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT(COALESCE(MBA.album, F.album_name))) AS total
+                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(F.album_artist, F.track_artist)) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
                 WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
@@ -49,7 +49,7 @@
                     MBA.image
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
-                WHERE F.album_name IS NOT NULL
+                WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
                 %s
                 GROUP BY COALESCE(MBA.album, F.album_name), COALESCE(F.album_artist, F.track_artist)
                 %s
@@ -58,7 +58,7 @@
                 $whereCondition,
                 $sqlOrder,
                 $resultsPage,
-                $resultsPage * ($page - 1)
+                $resultsPage * ($page -1)
             );
             $data->results = $dbh->query($query, $params);
             return($data);
