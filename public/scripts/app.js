@@ -267,40 +267,6 @@ var pagination = Vue.component('spieldose-pagination', {
     }
 });
 
-var browseArtist = Vue.component('spieldose-browse-artist', {
-    template: '#browse-artist-template',
-    data: function () {
-        return ({
-            artist: {},
-            detailedView: false,
-        });
-    }, props: ['section'
-    ], created: function () {
-        var self = this;
-        bus.$on("loadArtist", function (artist) {
-            self.getArtist(artist);
-        });
-    }, methods: {
-        getArtist: function (artist) {
-            var self = this;
-            var d = {};
-            jsonHttpRequest("GET", "/api/artist/" + encodeURIComponent(artist), d, function (httpStatusCode, response) {
-                self.artist = response.artist;
-                if (self.artist.bio) {
-                    self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')
-                }
-            });
-        },
-        playAlbum: function (album, artist) {
-            bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
-        },
-        hideAlbumDetails: function () {
-            this.detailedView = false;
-        }, showAlbumDetails: function () {
-            this.detailedView = true;
-        }
-    }
-});
 
 var browseAlbums = Vue.component('spieldose-browse-albums', {
     template: '#browse-albums-template',
