@@ -126,45 +126,6 @@ var chart2 = Vue.component('spieldose-chart-recent', {
     props: ['type', 'title']
 });
 
-var pagination = Vue.component('spieldose-pagination', {
-    template: '#pagination-template',
-    data: function () {
-        return ({
-            actualPage: 1,
-            totalResults: 0,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
-            totalPages: 0
-        });
-    }, props: ['searchEvent'
-    ], computed: {
-        visible: function () {
-            return (this.totalResults > 0 && this.totalPages > 0);
-        }
-    }, created: function () {
-        var self = this;
-        bus.$on("updatePager", function (actualPage, totalPages, totalResults) {
-            self.actualPage = actualPage;
-            self.totalPages = totalPages;
-            self.totalResults = totalResults;
-        });
-    }, methods: {
-        previous: function () {
-            if (this.actualPage > 1) {
-                bus.$emit(this.searchEvent, null, this.actualPage - 1, this.resultsPage);
-            }
-        },
-        next: function () {
-            if (this.actualPage < this.totalPages) {
-                bus.$emit(this.searchEvent, null, this.actualPage + 1, this.resultsPage);
-            }
-        },
-        navigateTo: function (pageIdx) {
-            if (pageIdx > 0 && pageIdx <= this.totalPages) {
-                bus.$emit(this.searchEvent, null, pageIdx, this.resultsPage);
-            }
-        }
-    }
-});
 
 var browseGenres = Vue.component('spieldose-browse-genres', {
     template: '#browse-genres-template'
