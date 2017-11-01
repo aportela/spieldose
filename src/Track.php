@@ -101,7 +101,7 @@
                 LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
                 LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
-                WHERE F.track_name IS NOT NULL
+                WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 %s
                 %s
                 LIMIT %d OFFSET %d
