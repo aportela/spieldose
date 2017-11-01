@@ -226,48 +226,6 @@ var chart2 = Vue.component('spieldose-chart-recent', {
     props: ['type', 'title']
 });
 
-var dashboard = Vue.component('spieldose-dashboard', {
-    template: '#dashboard-template',
-    data: function () {
-        return ({
-            xhr: false
-        });
-    },
-    props: [
-        'section',
-    ], mounted: function () {
-        /*
-        var self = this;
-        var d = {};
-        self.xhr = true;
-        jsonHttpRequest("POST", "/api/metrics/play_stats", d, function (httpStatusCode, response) {
-            self.xhr = false;
-            var d = [ 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-            for (var i = 0; i < response.metrics.length; i++) {
-                d[response.metrics[i].hour] = response.metrics[i].total;
-            }
-            var ctx = document.getElementById("play_metrics_chart");
-            var myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-                    datasets: [
-                        {
-                            "label": "by hour",
-                            "data": d,
-                            "fill": true,
-                            "borderColor": "rgb(75, 192, 192)",
-                            "lineTension": 0.1
-                        }
-                    ]
-                }, options: {}
-            });
-        });
-        */
-    }, created: function () {
-    }, methods: {
-    }
-});
 
 var pagination = Vue.component('spieldose-pagination', {
     template: '#pagination-template',
