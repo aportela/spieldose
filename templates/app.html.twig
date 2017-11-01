@@ -60,7 +60,7 @@
     </div>
 </script>
 <script type="text/x-template" id="search-results-template">
-    <section v-if="section == '#/search-results'" class="section" id="search-results">
+    <section v-show="section == '#/search-results'" class="section" id="search-results">
         <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
         <table id="t-search-results" class="table is-bordered is-striped is-narrow is-fullwidth">
             <thead>
@@ -101,7 +101,6 @@
         </section>
     </div>
 </script>
-
 <script type="text/x-template" id="chart-template-recent">
     <div class="column is-one-third-desktop is-full-mobile">
         <section class="panel chart">
@@ -121,10 +120,9 @@
         </section>
     </div>
 </script>
-
 <script type="text/x-template" id="dashboard-template">
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
-    <section v-if="section == '#/dashboard'" class="section" id="section-dashboard">
+    <section v-show="section == '#/dashboard'" class="section" id="section-dashboard">
         <div class="columns is-mobile is-multiline">
             <spieldose-chart v-bind:type="'topTracks'" v-bind:title="'Top played tracks'"></spieldose-chart>
             <spieldose-chart v-bind:type="'topArtists'" v-bind:title="'Top artists'"></spieldose-chart>
@@ -200,7 +198,7 @@
     </nav>
 </script>
 <script type="text/x-template" id="browse-artists-template">
-    <section v-if="section == '#/artists'" class="section" id="section-artists">
+    <section v-show="section == '#/artists'" class="section" id="section-artists">
         <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
         <div class="artist_item" v-for="artist in artists">
             <a class="view_artist" v-bind:href="'#/artist/' + artist.name">
@@ -215,7 +213,7 @@
     </section>
 </script>
 <script type="text/x-template" id="browse-artist-template">
-    <section v-if="section == '#/artist'" class="section" id="section-artist">
+    <section v-show="section == '#/artist'" class="section" id="section-artist">
         <h1>{{ artist.name }}</h1>
         <div v-if="artist" v-bind="artist" class="container">
             <img v-if="artist.image" v-bind:src="artist.image" class="artist-thumbnail is-pulled-left">
@@ -243,7 +241,7 @@
     </section>
 </script>
 <script type="text/x-template" id="browse-albums-template">
-    <section v-if="section == '#/albums'" class="section" id="section-albums">
+    <section v-show="section == '#/albums'" class="section" id="section-albums">
         <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
         <div class="album_item" v-for="album in albums">
             <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
@@ -260,11 +258,11 @@
     </section>
 </script>
 <script type="text/x-template" id="browse-genres-template">
-    <section v-if="section == '#/genres'"class="section" id="section-genres">
+    <section v-show="section == '#/genres'"class="section" id="section-genres">
     </section>
 </script>
 <script type="text/x-template" id="preferences-template">
-    <section v-if="section == '#/preferences'"class="section" id="section-preferences">
+    <section v-show="section == '#/preferences'"class="section" id="section-preferences">
     </section>
 </script>
 <script type="text/x-template" id="spieldose-template">
