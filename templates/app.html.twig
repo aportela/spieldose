@@ -28,6 +28,7 @@
     -->
     <script src="/scripts/Chart.min.js"></script>
     <script src="/scripts/vue-component-menu.js"></script>
+    <script src="/scripts/vue-component-container.js"></script>
     <script src="/scripts/vue-component-search.js"></script>
     <script src="/scripts/vue-component-search-results.js"></script>
     <script src="/scripts/vue-component-dashboard.js"></script>
@@ -82,24 +83,6 @@
 <script type="text/x-template" id="preferences-template">
 </script>
 <script type="text/x-template" id="spieldose-template">
-    <div class="columns is-gapless">
-        <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
-            <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
-        </aside>
-        <div class="column is-9" id="main-content">
-            <spieldose-search v-bind:section="section"></spieldose-search>
-            <spieldose-search-results v-bind:section="section"></spieldose-search-results>
-            <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
-            <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
-            <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
-            <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
-            <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
-            <spieldose-preferences v-bind:section="section"></spieldose-preferences>
-        </div>
-        <aside id="aside-player" class="column is-2">
-            <spieldose-player-component></spieldose-player-component>
-        </aside>
-    </div>
 </script>
     {% endverbatim %}
 <script src="/scripts/visualizer.js"></script>

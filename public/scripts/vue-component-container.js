@@ -1,0 +1,199 @@
+"use strict";
+
+var vTemplateContainer = function () {
+    return `
+    <div class="columns is-gapless">
+        <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
+            <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
+        </aside>
+        <div class="column is-9" id="main-content">
+            <spieldose-search v-bind:section="section"></spieldose-search>
+            <spieldose-search-results v-bind:section="section"></spieldose-search-results>
+            <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
+            <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
+            <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
+            <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
+            <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
+            <spieldose-preferences v-bind:section="section"></spieldose-preferences>
+        </div>
+        <aside id="aside-player" class="column is-2">
+            <spieldose-player-component></spieldose-player-component>
+        </aside>
+    </div>
+    `;
+}
+
+var container = Vue.component('spieldose-app-component', {
+    template: vTemplateContainer(),
+    data: function () {
+        return ({
+            xhr: false,
+            section: window.location.hash,
+            artistList: [],
+            albumList: [],
+            trackList: [],
+            pager: {
+                actualPage: 1,
+                previousPage: 1,
+                nextPage: 1,
+                totalPages: 0,
+                resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            }
+        });
+    },
+    computed: {
+    }, created: function () {
+        var self = this;
+        bus.$on("loadSection", function (s) {
+            self.changeSection(s);
+        });
+        bus.$on("activateSection", function (s) {
+            self.section = s;
+        });
+    },
+    methods: {
+        changeSection: function (s) {
+            var self = this;
+            self.section = s;
+            self.filterByTextOn = "";
+            switch (s) {
+                case "#/artists":
+                    bus.$emit("browseArtists", null, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    self.filterByTextOn = "artists";
+                    break;
+                case "#/albums":
+                    bus.$emit("browseAlbums", null, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    self.filterByTextOn = "albums";
+                    break;
+                default:
+                    if (s.indexOf("#/artist") >= 0) {
+                        var m = s.match(/#\/artist\/(.+)/);
+                        if (m && m.length == 2) {
+                            self.section = "#/artist";
+                            bus.$emit("loadArtist", m[1]);
+                        } else {
+                            // TODO
+                        }
+                    }
+                    break;
+            }
+        },
+        globalSearch2: function () {
+            switch (this.filterByTextOn) {
+                case "artists":
+                    if (this.section != "#/artists") {
+                        this.section = "#/artists";
+                    }
+                    bus.$emit("browseArtists", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    break;
+                case "albums":
+                    if (this.section != "#/albums") {
+                        this.section = "#/albums";
+                    }
+                    bus.$emit("browseAlbums", this.filterByTextCondition, 1, DEFAULT_SECTION_RESULTS_PAGE);
+                    break;
+            }
+        },
+        searchArtists2: function (page) {
+            var self = this;
+            self.pager.actualPage = page;
+            if (page > 1) {
+                self.pager.previousPage = page - 1;
+            } else {
+                self.pager.previousPage = 1;
+            }
+            var fData = new FormData();
+            fData.append("actualPage", self.pager.actualPage);
+            fData.append("resultsPage", self.pager.resultsPage);
+            fData.append("text", self.filterByTextCondition);
+            jsonHttpRequest("POST", "/api/artist/search.php", fData, function (httpStatusCode, response) {
+                if (response.artists.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                if (page < self.pager.totalPages) {
+                    self.pager.nextPage = page + 1;
+                } else {
+                    self.pager.nextPage = self.pager.totalPages;
+                }
+                self.artistList = response.artists;
+                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
+            });
+        },
+        searchAlbums: function (page) {
+            var self = this;
+            self.pager.actualPage = page;
+            if (page > 1) {
+                self.pager.previousPage = page - 1;
+            } else {
+                self.pager.previousPage = 1;
+            }
+            var fData = new FormData();
+            fData.append("actualPage", self.pager.actualPage);
+            fData.append("resultsPage", self.pager.resultsPage);
+            fData.append("text", self.filterByTextCondition);
+            jsonHttpRequest("POST", "/api/album/search.php", fData, function (httpStatusCode, response) {
+                for (var i = 0; i < response.albums.length; i++) {
+                    if (response.albums[i].image) {
+                        response.albums[i].albumCoverUrl = response.albums[i].image;
+                    } else {
+                        response.albums[i].albumCoverUrl = "#";
+                    }
+                }
+                if (response.albums.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                if (page < self.pager.totalPages) {
+                    self.pager.nextPage = page + 1;
+                } else {
+                    self.pager.nextPage = self.pager.totalPages;
+                }
+                self.albumList = response.albums;
+                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
+            });
+        },
+        searchTracks: function (page, order, text, artist, album) {
+            var self = this;
+            self.pager.actualPage = page;
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage
+            };
+            if (text) {
+                d.text = text;
+            }
+            if (artist) {
+                d.artist = artist;
+            }
+            if (album) {
+                d.album = album;
+            }
+            if (order) {
+                d.orderBy = order;
+            }
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+                for (var i = 0; i < response.tracks.length; i++) {
+                    if (response.tracks[i].image) {
+                        response.tracks[i].albumCoverUrl = response.tracks[i].image;
+                    } else {
+                        response.tracks[i].albumCoverUrl = "";
+                    }
+                }
+                if (response.tracks.length > 0) {
+                    self.pager.totalPages = response.totalPages;
+                } else {
+                    self.pager.totalPages = 0;
+                }
+                bus.$emit("replacePlayList", response.tracks);
+            });
+        }
+    }, filters: {
+        encodeURI: function (str) {
+            return (encodeURI(str));
+        }
+    }, mounted: function () { }
+    , components: {}
+});
