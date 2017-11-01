@@ -10,34 +10,6 @@ window.onhashchange = function (e) {
     bus.$emit("hashChanged", location.hash);
 };
 
-/* modal component (warning & errors) */
-var modal = Vue.component('spieldose-modal-component', {
-    template: '#modal-template',
-    data: function () {
-        return ({
-            visible: false,
-            title: "Default modal title",
-            body: "Default modal body"
-        });
-    },
-    created: function () {
-        var self = this;
-        bus.$on("showModal", function (title, body) {
-            self.show(title, body);
-        });
-    },
-    methods: {
-        show: function (title, body) {
-            this.title = title;
-            this.body = body;
-            this.visible = true;
-        },
-        hide: function () {
-            this.visible = false;
-            this.$emit("closeModal");
-        }
-    }
-});
 
 var search = Vue.component('spieldose-search', {
     template: '#search-template',
