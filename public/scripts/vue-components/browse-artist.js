@@ -14,19 +14,18 @@ var vTemplateBrowseArtist = function () {
                     <p>
                         <strong>{{ artist.name }}</strong>
                         <br>
-                        396 plays
+                        <span>{{ artist.playCount}}</span> plays
                     </p>
                     <div class="tabs">
                         <ul>
-                            <li class="is-active"><a href="#" class="is-active" v-on:click.prevent="">Overview</a></li>
-                            <li><a href="#" v-on:click.prevent="">Bio</a></li>
-                            <li><a href="#" v-on:click.prevent="">Tracks</a></li>
-                            <li><a href="#" v-on:click.prevent="">Albums</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a href="#" v-on:click.prevent="changeTab('overview');">Overview</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a href="#" v-on:click.prevent="changeTab('bio');">Bio</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a href="#" v-on:click.prevent="changeTab('tracks');">Tracks</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a href="#" v-on:click.prevent="changeTab('albums');">Albums</a></li>
                         </ul>
                     </div>
-                    <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="truncatedBio">
-                    </div>
-                    <div class="panel">
+                    <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
+                    <div class="panel" v-if="activeTab =='albums'">
                     <h2>Albums: <i class="is-unselectable fa fa-2x fa-th-large" v-on:click.prevent="hideAlbumDetails()"></i><i class="is-unselectable fa fa-2x fa-list-ol" v-on:click.prevent="showAlbumDetails()"></i></h2>
                     <div class="album_item" v-for="album in artist.albums">
                         <a class="play_album" v-on:click="playAlbum(album.name, artist.name)">
@@ -57,6 +56,7 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     data: function () {
         return ({
             artist: {},
+            activeTab: 'overview',
             truncatedBio: null,
             detailedView: false,
         });
@@ -78,6 +78,9 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
                     console.log(self.truncatedBio);
                 }
             });
+        },
+        changeTab: function(tab) {
+            this.activeTab = tab;
         },
         playAlbum: function (album, artist) {
             bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);

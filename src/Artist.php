@@ -8,6 +8,7 @@
         public $name;
         public $bio;
         public $albums;
+        public $playCount;
 
 	    public function __construct (string $name = "", array $albums = array()) {
             $this->name = $name;
@@ -32,16 +33,20 @@
                         SELECT DISTINCT
                             MBA.mbid,
                             MBA.bio,
-                            MBA.image
+                            MBA.image,
+                            COUNT(*) AS playCount
                         FROM FILE F
                         LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                        LEFT JOIN STATS S ON S.file_id = F.id
                         WHERE COALESCE(MBA.artist, F.track_artist) = :name
+                        GROUP BY (MBA.mbid)
                         '
                     );
                     $data = $dbh->query($query, $params);
                     $this->mbid = $data[0]->mbid;
                     $this->bio = $data[0]->bio;
                     $this->image = $data[0]->image;
+                    $this->playCount = $data[0]->playCount;
                     $this->getAlbums($dbh);
                     $totalAlbums = count($this->albums);
                     for ($i = 0; $i < $totalAlbums; $i++) {
