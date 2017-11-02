@@ -14,7 +14,7 @@ var vTemplateDashboardTopList = function () {
             </p>
             <div class="panel-block">
                 <ol v-if="items.length > 0">
-                    <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items">{{ item.title + (item.artist ? " / " + item.artist: "") }}</li>
+                    <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items">{{ item.title}} <span v-if="item.artist">/ <a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></span></li>
                     <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items"><a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></li>
                     <li class="is-small" v-if="type == 'topGenres'" v-for="item, i in items">{{ item.genre }}</li>
                 </ol>
