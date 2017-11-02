@@ -75,11 +75,11 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
                 if (self.artist.bio) {
                     self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
                     self.truncatedBio = self.truncate(self.artist.bio);
-                    console.log(self.truncatedBio);
+                    self.activeTab = "overview";
                 }
             });
         },
-        changeTab: function(tab) {
+        changeTab: function (tab) {
             this.activeTab = tab;
         },
         playAlbum: function (album, artist) {
@@ -89,8 +89,8 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             this.detailedView = false;
         }, showAlbumDetails: function () {
             this.detailedView = true;
-        }, truncate: function(text) {
-            return(text.substring(0, 500));
+        }, truncate: function (text) {
+            return (text.substring(0, 500));
         }
     }
 });
