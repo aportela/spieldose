@@ -13,7 +13,7 @@ var vTemplateDashboardRecent = function () {
             <div class="panel-block">
                 <ol v-if="items.length > 0">
                     <li class="is-small" v-if="entity == 0" v-for="item, i in items">{{ item.title + (item.artist ? " / " + item.artist: "") }}</li>
-                    <li class="is-small" v-if="entity == 1" v-for="item, i in items">{{ item.artist }}</li>
+                    <li class="is-small" v-if="entity == 1" v-for="item, i in items"><a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></li>
                     <li class="is-small" v-if="entity == 2" v-for="item, i in items">{{ item.album + (item.album ? " / " + item.artist: "") }}</li>
                 </ol>
             </div>
