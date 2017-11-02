@@ -5,13 +5,23 @@ var vTemplateDashboard = function () {
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <section v-show="section == '#/dashboard'" class="section" id="section-dashboard">
         <div class="columns is-mobile is-multiline">
-            <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
-            <spieldose-dashboard-toplist v-bind:type="'topArtists'" v-bind:title="'Top artists'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
-            <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
+            </div>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <spieldose-dashboard-toplist v-bind:type="'topArtists'" v-bind:title="'Top artists'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
+            </div>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'" v-bind:listItemCount="5"></spieldose-dashboard-toplist>
+            </div>
         </div>
         <div class="columns is-mobile is-multiline">
-            <spieldose-dashboard-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
-            <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <spieldose-dashboard-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
+            </div>
+            <div class="column is-one-third-desktop is-full-mobile">
+                <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
+            </div>
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel">
                     <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>

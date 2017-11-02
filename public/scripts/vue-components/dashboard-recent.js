@@ -2,23 +2,21 @@
 
 var vTemplateDashboardRecent = function () {
     return `
-    <div class="column is-one-third-desktop is-full-mobile">
-        <section class="panel chart">
-            <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-clock-o"></i></span> {{ title }}</p>
-            <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active' : entity == 0 }" v-on:click.prevent="changeEntity(0)" href="#">Tracks</a>
-                <a v-bind:class="{ 'is-active' : entity == 1 }" v-on:click.prevent="changeEntity(1)" href="#">Artists</a>
-                <a v-bind:class="{ 'is-active' : entity == 2 }" v-on:click.prevent="changeEntity(2)" href="#">Albums</a>
-            </p>
-            <div class="panel-block">
-                <ol v-if="items.length > 0">
-                    <li class="is-small" v-if="entity == 0" v-for="item, i in items">{{ item.title}} <span v-if="item.artist">/ <a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></span></li>
-                    <li class="is-small" v-if="entity == 1" v-for="item, i in items"><a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></li>
-                    <li class="is-small" v-if="entity == 2" v-for="item, i in items">{{ item.album }} <span v-if="item.artist">/ <a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></span></li>
-                </ol>
-            </div>
-        </section>
-    </div>
+    <section class="panel chart">
+        <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-clock-o"></i></span> {{ title }}</p>
+        <p class="panel-tabs">
+            <a v-bind:class="{ 'is-active' : entity == 0 }" v-on:click.prevent="changeEntity(0)" href="#">Tracks</a>
+            <a v-bind:class="{ 'is-active' : entity == 1 }" v-on:click.prevent="changeEntity(1)" href="#">Artists</a>
+            <a v-bind:class="{ 'is-active' : entity == 2 }" v-on:click.prevent="changeEntity(2)" href="#">Albums</a>
+        </p>
+        <div class="panel-block">
+            <ol v-if="items.length > 0">
+                <li class="is-small" v-if="entity == 0" v-for="item, i in items">{{ item.title}} <span v-if="item.artist">/ <a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></span></li>
+                <li class="is-small" v-if="entity == 1" v-for="item, i in items"><a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></li>
+                <li class="is-small" v-if="entity == 2" v-for="item, i in items">{{ item.album }} <span v-if="item.artist">/ <a v-bind:href="'#/artist/' + item.artist">{{ item.artist }}</a></span></li>
+            </ol>
+        </div>
+    </section>
     `;
 }
 
