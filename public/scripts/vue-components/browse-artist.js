@@ -6,8 +6,9 @@ var vTemplateBrowseArtist = function () {
         <div class="box" v-if="artist" v-bind="artist">
             <article class="media">
                 <div class="media-left">
-                    <figure class="image" v-if="artist.image">
-                    <img v-bind:src="artist.image" alt="Image" class="artist_avatar">
+                    <figure class="image">
+                        <img v-bind:src="artist.image" alt="Image" class="artist_avatar" v-if="artist.image">
+                        <img alt="Image" class="artist_avatar" src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" v-else />
                     </figure>
                 </div>
                 <div class="media-content">
