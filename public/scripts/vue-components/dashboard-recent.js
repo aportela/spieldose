@@ -45,7 +45,9 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
             } else if (this.type == "recentlyPlayed") {
                 url = '/api/metrics/recently_played';
             }
-            var d = {};
+            var d = {
+                count: self.listItemCount
+            };
             switch (this.entity) {
                 case 0: // tracks
                     d.entity = "tracks";
@@ -67,5 +69,5 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
             this.loadChartData();
         }
     },
-    props: ['type', 'title']
+    props: ['type', 'title', 'listItemCount']
 });

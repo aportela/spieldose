@@ -145,7 +145,9 @@
             array(
                 "fromDate" => $request->getParam("fromDate", ""),
                 "toDate" => $request->getParam("toDate", ""),
-            )
+                "artist" => $request->getParam("artist", ""),
+            ),
+            $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
@@ -157,7 +159,8 @@
             array(
                 "fromDate" => $request->getParam("fromDate", ""),
                 "toDate" => $request->getParam("toDate", ""),
-            )
+            ),
+            $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
@@ -169,7 +172,8 @@
             array(
                 "fromDate" => $request->getParam("fromDate", ""),
                 "toDate" => $request->getParam("toDate", ""),
-            )
+            ),
+            $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
@@ -183,26 +187,28 @@
                     $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
                 break;
                 case "artists":
                     $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
                 break;
                 case "albums":
                     $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
 
                 break;
             }
-
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("entity");
         }
@@ -218,23 +224,25 @@
                     $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
                 break;
                 case "artists":
                     $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
                 break;
                 case "albums":
                     $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
                         new \Spieldose\Database\DB(),
                         array(
-                        )
+                        ),
+                        $request->getParam("count", 5)
                     );
-
                 break;
             }
 

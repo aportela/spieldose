@@ -42,7 +42,9 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             var self = this;
             self.items = [];
             var url = null;
-            var d = {};
+            var d = {
+                count: self.listItemCount
+            };
             switch (this.interval) {
                 case 0:
                     break;
@@ -89,5 +91,5 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             this.loadChartData();
         }
     },
-    props: ['type', 'title']
+    props: ['type', 'title', 'listItemCount']
 });
