@@ -425,3 +425,34 @@ img.artist_avatar
 }
 
 /* vuejs router transitions */
+
+/* global search dropdown results */
+
+div#dropdown_search_results
+{
+    position: absolute;
+    z-index: 5000;
+    background: #fff;
+    color: #222;
+    width: 200%;
+    padding: 1.25rem;
+    border: 1px solid #666;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
+}
+
+div#dropdown_search_results img
+{
+    max-height: 64px !important;
+}
+
+div#dropdown_search_results div.content
+{
+    margin-top: 10px;
+}
+
+div#dropdown_search_results div.content a
+{
+    color: #222;
+}
+/* global search dropdown results */
