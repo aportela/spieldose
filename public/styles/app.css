@@ -60,7 +60,7 @@ ul#menu li a div i {
 /* main content */
 
 div#main-content {
-    background: #fff;
+    background-color: #fff;
 }
 /* main content */
 /* album item */
@@ -392,3 +392,16 @@ span.highlight {
     font-weight: bold;
 }
 /* global search results */
+
+div#bio
+{
+    font-size: 0.875em;
+}
+
+img.artist_avatar
+{
+    object-fit: cover;
+    border-radius:50%;
+    width: 150px;
+    height: 150px;
+}
