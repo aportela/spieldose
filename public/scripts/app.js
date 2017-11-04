@@ -86,11 +86,6 @@ const app = new Vue({
         });
     },
     created: function () {
-        if (!this.logged) {
-            this.$router.push({ name: 'signin' });
-        } else {
-            this.$router.push({ name: 'dashboard' });
-        }
         var self = this;
         bus.$on("signOut", function () {
             self.signout();
@@ -98,6 +93,9 @@ const app = new Vue({
         bus.$on("changeRouterPath", function (routeName) {
             self.$router.push({ name: routeName });
         });
+        if (!this.logged) {
+            this.$router.push({ name: 'signin' });
+        }
     },
     methods: {
         signout: function () {

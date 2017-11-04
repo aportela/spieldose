@@ -28,6 +28,9 @@ var menu = Vue.component('spieldose-menu-component', {
             this.actualRouteName = to.name;
         }
     },
+    created: function() {
+        this.actualRouteName = this.$route.name;
+    },
     methods: {
         signout: function (e) {
             bus.$emit("signOut");
