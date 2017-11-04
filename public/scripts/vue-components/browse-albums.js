@@ -13,7 +13,7 @@ var vTemplateBrowseAlbums = function () {
             </a>
             <div class="album_info">
                 <p class="album_name" title="">{{ album.name }}</p>
-                <p class="artist_name" title=""><a class="view_artist" href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
+                <p class="artist_name" title=""><a class="view_artist" v-bind:href="'/#/app/artist/' + album.artist">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
             </div>
         </div>
     </section>
