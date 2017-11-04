@@ -27,34 +27,30 @@ var vTemplateSearch = function () {
             </p>
         </div>
         <div id="dropdown_search_results" v-show="results.length > 0">
-            <div class="box" v-for="result in results" v-if="searchType == 2">
-                <article class="media">
-                    <div class="media-left">
-                        <figure class="image is-48x48">
-                            <img v-bind:src="result.image || 'https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png'" alt="Image">
-                        </figure>
+            <article class="media" v-for="result in results" v-if="searchType == 2">
+                <div class="media-left">
+                    <figure class="image is-48x48">
+                        <img v-bind:src="result.image || 'https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png'" alt="Image">
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                        <p><a v-bind:href="'/#/app/artist/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name)"></a></p>
                     </div>
-                    <div class="media-content">
-                        <div class="content">
-                            <p><a v-bind:href="'/#/app/artist/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name)"></a></p>
-                        </div>
+                </div>
+            </article>
+            <article class="media" v-for="result in results" v-if="searchType == 3">
+                <div class="media-left">
+                    <figure class="image is-48x48">
+                        <img v-bind:src="result.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='" alt="Image">
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                        <p><a v-bind:href="'/#/app/album/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name + (result.artist ? ' / ' + result.artist: ''))"></a></p>
                     </div>
-                </article>
-            </div>
-            <div class="box" v-for="result in results" v-if="searchType == 3">
-                <article class="media">
-                    <div class="media-left">
-                        <figure class="image is-48x48">
-                            <img v-bind:src="result.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='" alt="Image">
-                        </figure>
-                    </div>
-                    <div class="media-content">
-                        <div class="content">
-                            <p><a v-bind:href="'/#/app/album/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name + (result.artist ? ' / ' + result.artist: ''))"></a></p>
-                        </div>
-                    </div>
-                </article>
-            </div>
+                </div>
+            </article>
         </div>
     </div>
     `;
@@ -81,7 +77,7 @@ var search = Vue.component('spieldose-search', {
         },
         search() {
             var self = this;
-            if (self.searchText && self.searchText.length > 2) {
+            if (self.searchText && self.searchText.length > 0) {
                 if (!self.xhr) {
                     var url = null;
                     switch (self.searchType) {
