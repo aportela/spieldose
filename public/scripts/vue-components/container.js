@@ -14,9 +14,7 @@ var vTemplateContainer = function () {
             <spieldose-preferences v-bind:section="section"></spieldose-preferences>
         </div>
         <aside id="aside-player" class="column is-2">
-            <!--
             <spieldose-player-component></spieldose-player-component>
-            -->
         </aside>
     </div>
     `;
