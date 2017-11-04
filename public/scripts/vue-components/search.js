@@ -115,8 +115,12 @@ var search = Vue.component('spieldose-search', {
                                     break;
                             }
                         });
+                    } else {
+                        this.hideResults();
                     }
                 }
+            } else {
+                this.hideResults();
             }
         },
         highlight: function (words) {
