@@ -15,7 +15,7 @@ var vTemplateSearch = function () {
                 </span>
             </p>
             <p class="control">
-                <input class="input" type="text" v-model="searchText" placeholder="search conditions..." v-on:keyup="search()">
+                <input class="input" type="text" v-model="searchText" placeholder="search conditions..." v-on:keyup.esc="abort()" v-on:keyup="search()">
             </p>
             <p class="control">
                 <a class="button is-link" v-bind:disabled="! isEnabled" v-on:click.prevent="search()">
@@ -74,6 +74,10 @@ var search = Vue.component('spieldose-search', {
     methods: {
         hideResults() {
             this.results = [];
+        },
+        abort() {
+            this.searchText = "";
+            this.hideResults();
         },
         search() {
             var self = this;
