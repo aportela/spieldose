@@ -5,6 +5,16 @@ const DEFAULT_SECTION_RESULTS_PAGE = 32;
 /* global object for events between vuejs components */
 const bus = new Vue();
 
+var getPager = function () {
+    return ({
+        actualPage: 1,
+        previousPage: 1,
+        nextPage: 1,
+        totalPages: 0,
+        resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+    });
+}
+
 /*
 var app = new Vue({
     el: "#app",
@@ -50,26 +60,36 @@ const routes = [
             {
                 path: 'dashboard',
                 name: 'dashboard',
-                component: dashboard,
-                props: true
+                component: dashboard
             },
             {
                 path: 'artists',
                 name: 'artists',
                 component: browseArtists,
-                props: true
+                children: [
+                    {
+                        path: 'page/:page',
+                        name: 'artistsPaged',
+                        component: browseArtists
+                    }
+                ]
             },
             {
                 path: 'albums',
                 name: 'albums',
                 component: browseAlbums,
-                props: true
+                children: [
+                    {
+                        path: 'page/:page',
+                        name: 'albumsPaged',
+                        component: browseAlbums
+                    }
+                ]
             },
             {
                 path: 'artist/:artist',
                 name: 'artist',
-                component: browseArtist,
-                props: true
+                component: browseArtist
             }]
     }
 ];
@@ -82,7 +102,7 @@ const app = new Vue({
     router,
     data: function () {
         return ({
-            logged: false
+            logged: true
         });
     },
     created: function () {

@@ -3,7 +3,7 @@
 var vTemplateBrowseAlbums = function () {
     return `
     <section class="section" id="section-albums">
-        <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
+    <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
         <div class="album_item" v-for="album in albums">
             <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
                 <img class="album_cover" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
@@ -13,7 +13,7 @@ var vTemplateBrowseAlbums = function () {
             </a>
             <div class="album_info">
                 <p class="album_name" title="">{{ album.name }}</p>
-                <p class="artist_name" title=""><a class="view_artist"  href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
+                <p class="artist_name" title=""><a class="view_artist" href="api/artist/get.php?id=">by {{ album.albumartist ? album.albumartist: album.artist }} ({{ album.year }})</a></p>
             </div>
         </div>
     </section>
@@ -25,30 +25,30 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
     data: function () {
         return ({
             albums: [],
-            pager: {
-                actualPage: 1,
-                previousPage: 1,
-                nextPage: 1,
-                totalPages: 0,
-                resultsPage: DEFAULT_SECTION_RESULTS_PAGE
-            }
+            pager: getPager()
         });
-    }, props: ['section'
-    ], computed: {
-    }, created: function () {
-        this.search("", 1, DEFAULT_SECTION_RESULTS_PAGE);
+    },
+    watch: {
+        '$route'(to, from) {
+            this.pager.actualPage = parseInt(to.params.page);
+            this.search("");
+        }
+    },
+    created: function () {
+        var self = this;
+        this.pager.refresh = function () {
+            self.$router.push({ name: 'albumsPaged', params: { page: self.pager.actualPage } });
+        }
+        if (this.$route.params.page) {
+            self.pager.actualPage = parseInt(this.$route.params.page);
+        }
+        this.search("");
     }, methods: {
-        search: function (text, page, resultsPage) {
+        search: function (text) {
             var self = this;
-            self.pager.actualPage = page;
-            if (page > 1) {
-                self.pager.previousPage = page - 1;
-            } else {
-                self.pager.previousPage = 1;
-            }
             var d = {
-                actualPage: self.pager.actualPage,
-                resultsPage: self.pager.resultsPage
+                actualPage: parseInt(self.pager.actualPage),
+                resultsPage: parseInt(self.pager.resultsPage)
             };
             if (text) {
                 d.text = text;
@@ -66,13 +66,12 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                 } else {
                     self.pager.totalPages = 0;
                 }
-                if (page < self.pager.totalPages) {
-                    self.pager.nextPage = page + 1;
+                if (self.pager.actualPage < self.pager.totalPages) {
+                    self.pager.nextPage = self.pager.actualPage + 1;
                 } else {
                     self.pager.nextPage = self.pager.totalPages;
                 }
                 self.albums = response.albums;
-                bus.$emit("updatePager", self.pager.actualPage, self.pager.totalPages, self.pager.totalResults);
             });
         },
         enqueueAlbumTracks: function (album, artist) {
