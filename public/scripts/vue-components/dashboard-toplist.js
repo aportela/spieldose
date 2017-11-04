@@ -3,7 +3,7 @@
 var vTemplateDashboardTopList = function () {
     return `
     <section class="panel chart">
-        <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
+        <p class="panel-heading"><span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-cog fa-exclamation-triangle"></i><i v-else class="fa fa-list"></i></span> {{ title }}</p>
         <p class="panel-tabs">
             <a href="#" v-bind:class="{ 'is-active' : interval == 0 }" v-on:click.prevent="changeInterval(0)">All Time</a>
             <a href="#" v-bind:class="{ 'is-active' : interval == 1 }" v-on:click.prevent="changeInterval(1)">Past week</a>
@@ -17,6 +17,8 @@ var vTemplateDashboardTopList = function () {
                 <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items"><a v-bind:href="'/#/app/artist/' + item.artist">{{ item.artist }}</a><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
                 <li class="is-small" v-if="type == 'topGenres'" v-for="item, i in items">{{ item.genre }}<span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
             </ol>
+            <p v-else-if="items.length == 0 && ! loading && ! errors">not enough data for the stats</p>
+            <p v-else-if="errors">error loading data (invalid response from server)</p>
         </div>
     </section>
     `;
@@ -27,7 +29,8 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
     template: vTemplateDashboardTopList(),
     data: function () {
         return ({
-            xhr: false,
+            loading: false,
+            errors: false,
             iconClass: 'fa-pie-chart',
             interval: 0,
             items: []
@@ -38,6 +41,7 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
     }, methods: {
         loadChartData: function () {
             var self = this;
+            self.loading = true;
             self.items = [];
             var url = null;
             var d = {
@@ -63,7 +67,6 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
                     d.toDate = moment().format('YYYYMMDD');
                     break;
             }
-            self.xhr = true;
             switch (this.type) {
                 case "topTracks":
                     if (self.artist) {
@@ -80,11 +83,17 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             }
             if (url) {
                 jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
-                    self.items = response.metrics;
-                    self.xhr = false;
+                    self.loading = false;
+                    if (httpStatusCode == 200) {
+                        self.errors = false;
+                        self.items = response.metrics;
+                    } else {
+                        self.errors = true;
+                        self.items = [];
+                    }
                 });
             } else {
-                self.xhr = false;
+                self.loading = false;
             }
         }, changeInterval: function (i) {
             this.interval = i;
