@@ -67,7 +67,7 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             switch (this.type) {
                 case "topTracks":
                     if (self.artist) {
-                        d.artist = artist;
+                        d.artist = self.artist;
                     }
                     url = "/api/metrics/top_played_tracks";
                     break;
@@ -91,5 +91,5 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             this.loadChartData();
         }
     },
-    props: ['type', 'title', 'listItemCount', 'showPlayCount']
+    props: ['type', 'title', 'listItemCount', 'showPlayCount', 'artist']
 });

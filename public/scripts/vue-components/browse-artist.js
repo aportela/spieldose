@@ -30,7 +30,7 @@ var vTemplateBrowseArtist = function () {
                             <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
                             <div class="columns">
                                 <div class="column is-half is-full-mobile">
-                                    <spieldose-dashboard-toplist v-if="activeTab == 'overview'" v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="10" v-bind:showPlayCount="true"></spieldose-dashboard-toplist>
+                                    <spieldose-dashboard-toplist v-if="activeTab == 'overview'" v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="10" v-bind:showPlayCount="true" v-bind:artist="this.$route.params.artist"></spieldose-dashboard-toplist>
                                 </div>
                             </div>
                         </div>
