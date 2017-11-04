@@ -4,7 +4,7 @@ var vTemplateContainer = function () {
     return `
     <div class="columns is-gapless">
         <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
-            <spieldose-menu-component v-bind:section="section"></spieldose-menu-component>
+            <spieldose-menu-component></spieldose-menu-component>
         </aside>
         <div class="column is-9" id="main-content">
             <spieldose-search v-bind:section="section"></spieldose-search>
@@ -14,7 +14,9 @@ var vTemplateContainer = function () {
             <spieldose-preferences v-bind:section="section"></spieldose-preferences>
         </div>
         <aside id="aside-player" class="column is-2">
+            <!--
             <spieldose-player-component></spieldose-player-component>
+            -->
         </aside>
     </div>
     `;
@@ -25,7 +27,8 @@ var container = Vue.component('spieldose-app-component', {
     data: function () {
         return ({
             xhr: false,
-            section: window.location.hash,
+            section: null,
+            urlHash: window.location.hash,
             artistList: [],
             albumList: [],
             trackList: [],
@@ -40,18 +43,10 @@ var container = Vue.component('spieldose-app-component', {
     },
     computed: {
     }, created: function () {
-        var self = this;
-        bus.$on("loadSection", function (s) {
-            //self.changeSection(s);
-        });
-        bus.$on("activateSection", function (s) {
-            //self.section = s;
-        });
     },
     methods: {
         changeSection: function (s) {
             var self = this;
-            self.section = s;
             self.filterByTextOn = "";
             switch (s) {
                 case "#/artists":
@@ -66,7 +61,6 @@ var container = Vue.component('spieldose-app-component', {
                     if (s.indexOf("#/artist") >= 0) {
                         var m = s.match(/#\/artist\/(.+)/);
                         if (m && m.length == 2) {
-                            self.section = "#/artist";
                             bus.$emit("loadArtist", m[1]);
                         } else {
                             // TODO

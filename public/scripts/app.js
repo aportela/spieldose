@@ -42,30 +42,35 @@ var app = new Vue({
 */
 
 const routes = [
-    { path: '/signin', component: signIn },
+    { path: '/signin', name: 'signin', component: signIn },
     {
         path: '/app',
         component: container,
         children: [
-        {
-            path: 'dashboard',
-            component: dashboard
-        },
-        {
-            path: 'artists',
-            component: browseArtists,
-            props: true
-        },
-        {
-            path: 'albums',
-            component: browseAlbums,
-            props: true
-        },
-        {
-            path: 'artist/:artist',
-            component: browseArtist,
-            props: true
-        }]
+            {
+                path: 'dashboard',
+                name: 'dashboard',
+                component: dashboard,
+                props: true
+            },
+            {
+                path: 'artists',
+                name: 'artists',
+                component: browseArtists,
+                props: true
+            },
+            {
+                path: 'albums',
+                name: 'albums',
+                component: browseAlbums,
+                props: true
+            },
+            {
+                path: 'artist/:artist',
+                name: 'artist',
+                component: browseArtist,
+                props: true
+            }]
     }
 ];
 
@@ -77,21 +82,21 @@ const app = new Vue({
     router,
     data: function () {
         return ({
-            logged: true
+            logged: false
         });
     },
     created: function () {
         if (!this.logged) {
-            this.$router.push({ path: '/signin' });
+            this.$router.push({ name: 'signin' });
         } else {
-            //this.$router.push({ path: '/app/dashboard' });
+            this.$router.push({ name: 'dashboard' });
         }
         var self = this;
-        bus.$on("signOut", function() {
+        bus.$on("signOut", function () {
             self.signout();
         });
-        bus.$on("changeRouterPath", function (newPath) {
-            self.$router.push({ path: newPath });
+        bus.$on("changeRouterPath", function (routeName) {
+            self.$router.push({ name: routeName });
         });
     },
     methods: {

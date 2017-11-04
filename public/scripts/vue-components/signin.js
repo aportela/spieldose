@@ -90,7 +90,7 @@ var signIn = Vue.component('spieldose-signin-component', {
                         self.invalidPassword = true;
                         break;
                     case 200:
-                        bus.$emit("changeRouterPath", '/app/dashboard');
+                        bus.$emit("changeRouterPath", 'dashboard');
                         break;
                     default:
                         bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
