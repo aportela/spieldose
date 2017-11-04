@@ -2,10 +2,10 @@
 
 var vTemplateBrowseArtists = function () {
     return `
-    <section v-show="section == '#/artists'" class="section" id="section-artists">
+    <section class="section" id="section-artists">
         <spieldose-pagination v-bind:searchEvent="'browseArtists'"></spieldose-pagination>
         <div class="artist_item" v-for="artist in artists">
-            <a class="view_artist" v-bind:href="'#/artist/' + artist.name">
+            <a class="view_artist" v-bind:href="'/#/app/artist/' + artist.name">
                 <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
                 <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                 <i class="fa fa-search fa-4x"></i>
@@ -34,10 +34,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     }, props: ['section'
     ], computed: {
     }, created: function () {
-        var self = this;
-        bus.$on("browseArtists", function (text, page, resultsPage) {
-            self.search(text, page, resultsPage);
-        });
+        this.search("", 1, DEFAULT_SECTION_RESULTS_PAGE);
     }, methods: {
         search: function (text, page, resultsPage) {
             var self = this;

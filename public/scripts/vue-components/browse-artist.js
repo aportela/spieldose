@@ -2,7 +2,7 @@
 
 var vTemplateBrowseArtist = function () {
     return `
-    <section v-show="section == '#/artist'" class="section" id="section-artist">
+    <section class="section" id="section-artist">
         <div class="box" v-if="artist" v-bind="artist">
             <article class="media">
                 <div class="media-left">
@@ -72,10 +72,12 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
         });
     }, props: ['section'
     ], created: function () {
-        var self = this;
+        this.getArtist(this.$route.params.artist);
+        /*
         bus.$on("loadArtist", function (artist) {
             self.getArtist(artist);
         });
+        */
     }, methods: {
         getArtist: function (artist) {
             var self = this;

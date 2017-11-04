@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <title>Spieldose</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+  <!-- Bulma Version 0.6.0 -->
+  <!--
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css" integrity="sha256-HEtF7HLJZSC3Le1HcsWbz1hDYFPZCqDhZa9QsCgVUdw=" crossorigin="anonymous" />
+  -->
+  <link rel="stylesheet" href="/styles/vendor/bulma.min.css" integrity="sha256-HEtF7HLJZSC3Le1HcsWbz1hDYFPZCqDhZa9QsCgVUdw=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/styles/login.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  </head>
+    <body>
+        <div id="app">
+                <transition name="fade">
+                <!-- component matched by the route will render here -->
+                <router-view></router-view>
+            </transition>
+        </div>
+        <!--
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        -->
+        <script src="/scripts/vendor/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <!--
+        <script src="https://unpkg.com/vue@2.5.0"></script>
+        -->
+        <script src="/scripts/vendor/vue.min.js"></script>
+        <script src="/scripts/vendor/vue-router.min.js"></script>
+        <script src="/scripts/xhrHelper.js"></script>
+        <script src="/scripts/vue-components/modal.js"></script>
+
+        <!-- signin section -->
+        <script src="/scripts/vue-components/signin.js"></script>
+        <!--
+        <script src="/scripts/login.js"></script>
+        -->
+        <!-- signin section -->
+
+        <!-- app section -->
+        <!--
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+        -->
+        <script src="/scripts/vendor/moment.min.js"></script>
+        <!--
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+        -->
+        <script src="/scripts/vendor/Chart.min.js"></script>
+        <script src="/scripts/vendor/visualizer.js"></script>
+        <script src="/scripts/vue-components/menu.js"></script>
+        <script src="/scripts/vue-components/container.js"></script>
+        <script src="/scripts/vue-components/search.js"></script>
+        <script src="/scripts/vue-components/search-results.js"></script>
+        <script src="/scripts/vue-components/dashboard.js"></script>
+        <script src="/scripts/vue-components/dashboard-toplist.js"></script>
+        <script src="/scripts/vue-components/dashboard-recent.js"></script>
+        <script src="/scripts/vue-components/pagination.js"></script>
+        <script src="/scripts/vue-components/browse-artists.js"></script>
+        <script src="/scripts/vue-components/browse-artist.js"></script>
+        <script src="/scripts/vue-components/browse-albums.js"></script>
+        <script src="/scripts/vue-components/browse-genres.js"></script>
+        <script src="/scripts/vue-components/preferences.js"></script>
+        <script src="/scripts/vue-components/player.js"></script>
+        <script src="/scripts/app.js"></script>
+        <!-- app section -->
+
+    </body>
+</html>

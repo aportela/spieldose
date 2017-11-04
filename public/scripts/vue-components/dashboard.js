@@ -3,7 +3,7 @@
 var vTemplateDashboard = function () {
     return `
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
-    <section v-show="section == '#/dashboard'" class="section" id="section-dashboard">
+    <section class="section" id="section-dashboard">
         <div class="columns is-mobile is-multiline">
             <div class="column is-one-third-desktop is-full-mobile">
                 <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>

@@ -2,7 +2,7 @@
 
 var vTemplateBrowseAlbums = function () {
     return `
-    <section v-show="section == '#/albums'" class="section" id="section-albums">
+    <section class="section" id="section-albums">
         <spieldose-pagination v-bind:searchEvent="'browseAlbums'"></spieldose-pagination>
         <div class="album_item" v-for="album in albums">
             <a class="play_album" v-on:click="enqueueAlbumTracks(album.name, album.artist)">
@@ -36,10 +36,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
     }, props: ['section'
     ], computed: {
     }, created: function () {
-        var self = this;
-        bus.$on("browseAlbums", function (text, page, resultsPage) {
-            self.search(text, page, resultsPage);
-        });
+        this.search("", 1, DEFAULT_SECTION_RESULTS_PAGE);
     }, methods: {
         search: function (text, page, resultsPage) {
             var self = this;

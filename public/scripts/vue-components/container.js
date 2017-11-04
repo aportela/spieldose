@@ -9,10 +9,7 @@ var vTemplateContainer = function () {
         <div class="column is-9" id="main-content">
             <spieldose-search v-bind:section="section"></spieldose-search>
             <spieldose-search-results v-bind:section="section"></spieldose-search-results>
-            <spieldose-dashboard v-bind:section="section"></spieldose-dashboard>
-            <spieldose-browse-artists v-bind:section="section"></spieldose-browse-artists>
-            <spieldose-browse-artist v-bind:section="section"></spieldose-browse-artist>
-            <spieldose-browse-albums v-bind:section="section"></spieldose-browse-albums>
+            <router-view></router-view>
             <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
             <spieldose-preferences v-bind:section="section"></spieldose-preferences>
         </div>
@@ -45,10 +42,10 @@ var container = Vue.component('spieldose-app-component', {
     }, created: function () {
         var self = this;
         bus.$on("loadSection", function (s) {
-            self.changeSection(s);
+            //self.changeSection(s);
         });
         bus.$on("activateSection", function (s) {
-            self.section = s;
+            //self.section = s;
         });
     },
     methods: {
