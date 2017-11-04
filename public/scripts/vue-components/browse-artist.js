@@ -14,8 +14,8 @@ var vTemplateBrowseArtist = function () {
                 <div class="media-content">
                     <p>
                         <strong>{{ artist.name }}</strong>
-                        <br>
-                        <span>{{ artist.playCount}}</span> plays
+                        <p v-if="artist.playCount > 0">{{ artist.playCount }} plays</p>
+                        <p v-else>not played yet</p>
                     </p>
                     <div class="tabs">
                         <ul>
@@ -70,14 +70,14 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             truncatedBio: null,
             detailedView: false,
         });
-    }, props: ['section'
-    ], created: function () {
+    }, props: ['section'],
+    watch: {
+        '$route'(to, from) {
+            this.getArtist(to.params.artist);
+        }
+    }
+    , created: function () {
         this.getArtist(this.$route.params.artist);
-        /*
-        bus.$on("loadArtist", function (artist) {
-            self.getArtist(artist);
-        });
-        */
     }, methods: {
         getArtist: function (artist) {
             var self = this;
@@ -93,7 +93,6 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
         },
         changeTab: function (tab) {
             this.activeTab = tab;
-            console.log(tab);
         },
         playAlbum: function (album, artist) {
             bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
