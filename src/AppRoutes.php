@@ -22,6 +22,15 @@
     });
     */
 
+    $app->get('/api/user/poll', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/user/poll' route");
+        if (\Spieldose\User::isLogged()) {
+            return $response->withJson(['success' => true], 200);
+        } else {
+            return $response->withJson(['success' => false], 403);
+        }
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/user/signin', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/user/signin' route");
         $u = new \Spieldose\User($request->getParam("email"));

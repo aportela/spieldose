@@ -15,42 +15,6 @@ var getPager = function () {
     });
 }
 
-/*
-var app = new Vue({
-    el: "#app",
-    data: function () {
-        return ({
-            logged: true,
-            xhr: false
-        });
-    },
-    created: function () {
-        var self = this;
-        bus.$on("signOut", function (hash) {
-            self.signout();
-        });
-    },
-    methods: {
-        signout: function () {
-            var self = this;
-            self.xhr = true;
-            jsonHttpRequest("GET", "/api/user/signout", {}, function (httpStatusCode, response, originalResponse) {
-                self.xhr = false;
-                self.logged = false;
-                switch (httpStatusCode) {
-                    case 200:
-                        window.location.href = "/login";
-                        break;
-                    default:
-                        bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
-                        break;
-                }
-            });
-        }
-    }
-});
-*/
-
 const routes = [
     { path: '/signin', name: 'signin', component: signIn },
     {
@@ -102,6 +66,7 @@ const app = new Vue({
     router,
     data: function () {
         return ({
+            xhr: false,
             logged: true
         });
     },
@@ -113,9 +78,13 @@ const app = new Vue({
         bus.$on("changeRouterPath", function (routeName) {
             self.$router.push({ name: routeName });
         });
-        if (!this.logged) {
-            this.$router.push({ name: 'signin' });
-        }
+        this.poll(function (logged2) {
+            if (!logged2) {
+                self.$router.push({ name: 'signin' });
+            } else {
+                self.$router.push({ name: 'dashboard' });
+            }
+        });
     },
     methods: {
         signout: function () {
@@ -132,6 +101,14 @@ const app = new Vue({
                         bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
                         break;
                 }
+            });
+        },
+        poll: function (callback) {
+            var self = this;
+            self.xhr = true;
+            jsonHttpRequest("GET", "/api/user/poll", {}, function (httpStatusCode, response, originalResponse) {
+                self.xhr = false;
+                callback(httpStatusCode == 200);
             });
         }
     }
