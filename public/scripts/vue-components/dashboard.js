@@ -3,43 +3,46 @@
 var vTemplateDashboard = function () {
     return `
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
-    <section class="section" id="section-dashboard">
-        <div class="columns is-mobile is-multiline">
-            <div class="column is-one-third-desktop is-full-mobile">
-                <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <spieldose-dashboard-toplist v-bind:type="'topArtists'" v-bind:title="'Top artists'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
-            </div>
+    <div class="box">
+    <p class="title is-1">Spieldose dashboard</p>
+    <div class="columns is-mobile is-multiline">
+        <div class="column is-one-third-desktop is-full-mobile">
+            <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
         </div>
-        <div class="columns is-mobile is-multiline">
-            <div class="column is-one-third-desktop is-full-mobile">
-                <spieldose-dashboard-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
-            </div>
-            <div class="column is-one-third-desktop is-full-mobile">
-                <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
-                    <p class="panel-tabs">
-                        <a class="is-active" href="#">by hour</a>
-                        <a href="#" v-on:click.prevent="">by weekday</a>
-                        <a href="#" v-on:click.prevent="">by month</a>
-                        <a href="#" v-on:click.prevent="">by year</a>
-                    </p>
-                    <div class="panel-block">
-                        <div id="chart3">
-                            <canvas id="play_metrics_chart" width="400" height="105"></canvas>
-                        </div>
+        <div class="column is-one-third-desktop is-full-mobile">
+            <spieldose-dashboard-toplist v-bind:type="'topArtists'" v-bind:title="'Top artists'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
+        </div>
+        <div class="column is-one-third-desktop is-full-mobile">
+            <spieldose-dashboard-toplist v-bind:type="'topGenres'" v-bind:title="'Top genres'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
+        </div>
+    </div>
+    <div class="columns is-mobile is-multiline">
+        <div class="column is-one-third-desktop is-full-mobile">
+            <spieldose-dashboard-recent v-bind:type="'recentlyAdded'" v-bind:title="'Recently added'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
+        </div>
+        <div class="column is-one-third-desktop is-full-mobile">
+            <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
+        </div>
+        <div class="column is-one-third-desktop is-full-mobile">
+            <section class="panel">
+                <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
+                <p class="panel-tabs">
+                    <a class="is-active" href="#">by hour</a>
+                    <a href="#" v-on:click.prevent="">by weekday</a>
+                    <a href="#" v-on:click.prevent="">by month</a>
+                    <a href="#" v-on:click.prevent="">by year</a>
+                </p>
+                <div class="panel-block">
+                    <div id="chart3">
+                        <!--
+                        <canvas id="play_metrics_chart" width="400" height="105"></canvas>
+                        -->
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
-    </section>
+    </div>
+    </div>
     `;
 }
 
