@@ -2,7 +2,7 @@
 
 var vTemplateSearch = function () {
     return `
-    <div>
+    <div class="navbar-item has-dropdown is-mega" v-bind:class="hasResults ? 'is-active': ''">
         <div class="field has-addons">
             <p class="control">
                 <span class="select">
@@ -26,6 +26,7 @@ var vTemplateSearch = function () {
                 </a>
             </p>
         </div>
+        <!--
         <div id="dropdown_search_results" v-show="results.length > 0">
             <article class="media" v-for="result in results" v-if="searchType == 2">
                 <div class="media-left">
@@ -52,6 +53,66 @@ var vTemplateSearch = function () {
                 </div>
             </article>
         </div>
+        -->
+
+        <div id="blogDropdown" class="navbar-dropdown">
+            <div class="container is-fluid">
+                <div class="columns">
+                    <div class="column is-one-quarter" style="overflow: hidden;">
+                        <h1 class="title is-6 is-mega-menu-title">Artists</h1>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" v-for="result in results.artists">
+                            <article class="media">
+                                <div class="media-left">
+                                <figure class="image is-48x48">
+                                    <img v-bind:src="result.image || 'https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png'" alt="Image">
+                                </figure>
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p><a v-bind:href="'/#/app/artist/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name)"></a></p>
+                                    </div>
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                    <div class="column is-one-quarter" style="overflow: hidden;">
+                        <h1 class="title is-6 is-mega-menu-title">Albums</h1>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" v-for="result in results.albums">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-48x48">
+                                    <img v-bind:src="result.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p><a v-bind:href="'/#/app/album/' + result.name" v-on:click="hideResults()" v-html="highlight(result.name + (result.artist ? ' / ' + result.artist: ''))"></a></p>
+                                </div>
+                            </div>
+                        </article>
+
+                        </a>
+                    </div>
+                    <div class="column is-one-quarter" style="overflow: hidden;">
+                        <h1 class="title is-6 is-mega-menu-title">Tracks</h1>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" v-for="result in results.tracks">
+                            {{ result.title }}
+                            <span v-if="result.artist"> / <a v-bind:href="'/#/app/artist/' + result.artist">{{ result.artist }}</a></span>
+                        </a>
+                    </div>
+                    <div class="column is-one-quarter">
+                        <h1 class="title is-6 is-mega-menu-title">Playlists</h1>
+                        <hr class="dropdown-divider">
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+      </div>
+
     </div>
     `;
 }
@@ -61,19 +122,26 @@ var search = Vue.component('spieldose-search', {
     data: function () {
         return ({
             xhr: false,
-            searchType: "2",
+            searchType: "0",
             searchText: null,
-            results: []
+            results: {}
         });
     },
     computed: {
         isEnabled: function () {
             return (this.searchText && this.searchText.length > 0);
+        },
+        hasResults: function () {
+            return (this.results && (
+                (this.results.artists && this.results.artists.length > 0) ||
+                (this.results.albums && this.results.albums.length > 0) ||
+                (this.results.tracks && this.results.tracks.length > 0)
+            ));
         }
     },
     methods: {
         hideResults() {
-            this.results = [];
+            this.results = {};
         },
         abort() {
             this.searchText = "";
@@ -86,9 +154,10 @@ var search = Vue.component('spieldose-search', {
                     var url = null;
                     switch (self.searchType) {
                         case "0":
+                            url = "/api/search/global";
                             break;
                         case "1":
-                            //url = "/api/track/search";
+                            url = "/api/track/search";
                             break;
                         case "2":
                             url = "/api/artist/search";
@@ -107,15 +176,32 @@ var search = Vue.component('spieldose-search', {
                             self.xhr = false;
                             switch (self.searchType) {
                                 case "0":
+                                    self.results = {
+                                        artists: response.artists,
+                                        albums: response.albums,
+                                        tracks: response.tracks
+                                    };
                                     break;
                                 case "1":
-                                    self.results = response.tracks;
+                                    self.results = {
+                                        artists: [],
+                                        albums: [],
+                                        tracks: response.tracks
+                                    };
                                     break;
                                 case "2":
-                                    self.results = response.artists;
+                                    self.results = {
+                                        artists: response.artists,
+                                        albums: [],
+                                        tracks: []
+                                    };
                                     break;
                                 case "3":
-                                    self.results = response.albums;
+                                    self.results = {
+                                        artists: [],
+                                        albums: response.albums,
+                                        tracks: []
+                                    };
                                     break;
                             }
                         });

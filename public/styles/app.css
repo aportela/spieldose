@@ -11,6 +11,11 @@ ul#menu {
 }
 /* sidebar menu effects */
 
+ul#menu li#search_from_menu
+{
+    padding: 4px 8px;
+}
+
 ul#menu li a {
     border-left: 3px solid #232c32;
     display: block;
@@ -456,3 +461,17 @@ div#dropdown_search_results div.content a
     color: #222;
 }
 /* global search dropdown results */
+
+
+
+.navbar-item.is-mega
+{
+    position: static;
+
+}
+
+.is-mega-menu-title
+{
+    margin-bottom: 0;
+    padding: .375rem 1rem;
+}

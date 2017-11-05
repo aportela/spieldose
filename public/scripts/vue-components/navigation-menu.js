@@ -11,9 +11,10 @@ var vTemplateNavigationMenu = function () {
         <div class="navbar-menu">
             <div class="navbar-start">
                 <a class="navbar-item" v-bind:class="{ 'is-active': actualRouteName == 'dashboard' }" v-on:click.prevent="changeSection('dashboard')"><span class="icon is-small"><i class="fa fa-home"></i></span> dashboard</a>
+                <a class="navbar-item" v-bind:class="{ 'is-active': actualRouteName == 'nowplaying' }" v-on:click.prevent="changeSection('nowplaying')"><span class="icon is-small"><i class="fa fa-headphones"></i></span> now playing</a>
                 <a class="navbar-item" v-bind:class="{ 'is-active': actualRouteName == 'artist' || actualRouteName == 'artists' }" v-on:click.prevent="changeSection('artists')"><span class="icon is-small"><i class="fa fa-user"></i></span> browse artists</a>
                 <a class="navbar-item" v-bind:class="{ 'is-active': actualRouteName == 'albums' }"  v-on:click.prevent="changeSection('albums')"><span class="icon is-small"><i class="fa fa-file-audio-o"></i></span> browse albums</a>
-                <div class="navbar-item">
+                <div class="navbar-item is-mega">
                     <spieldose-search></spieldose-search>
                 </div>
             </div>
