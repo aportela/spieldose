@@ -6,7 +6,7 @@ var vTemplateBrowseArtists = function () {
         <div v-show="! loading">
             <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
             <div class="artist_item" v-for="artist in artists">
-                <a class="view_artist" v-bind:href="'/#/app/artist/' + artist.name">
+                <a class="view_artist" v-bind:href="'/#/app/artist/' + safeRouterLink(artist.name)">
                     <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
                     <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                     <i class="fa fa-search fa-4x"></i>
@@ -69,6 +69,13 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
                 self.artists = response.artists;
                 self.loading = false;
             });
+        },
+        safeRouterLink: function(name) {
+            if (name && name.indexOf("/") > 0) {
+                return(encodeURIComponent(name));
+            } else {
+                return(name);
+            }
         }
     }
 });
