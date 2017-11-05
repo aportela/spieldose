@@ -15,8 +15,10 @@ var vTemplateContainer = function () {
                     <spieldose-player-component></spieldose-player-component>
                 </aside>
                 <div class="column is-10" id="main-content">
+                    <!--
                     <spieldose-search></spieldose-search>
                     <spieldose-search-results v-bind:section="section"></spieldose-search-results>
+                    -->
                     <router-view></router-view>
                     <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
                     <spieldose-preferences v-bind:section="section"></spieldose-preferences>
