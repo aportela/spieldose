@@ -67,6 +67,11 @@ const router = new VueRouter({
     routes
 });
 
+router.beforeEach((to, from, next) => {
+    window.scrollTo(0, 0);
+    next()
+});
+
 const app = new Vue({
     router,
     data: function () {
