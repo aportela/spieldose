@@ -2,7 +2,7 @@
 
 var vTemplatePagination = function () {
     return `
-    <nav class="pagination is-centered level" v-if="data">
+    <nav class="pagination is-centered level is-small" v-if="data">
         <a class="button is-link pagination-previous" v-on:click.prevent="previous"><span class="icon is-small"><i class="fa fa-caret-left" aria-hidden="true"></i></span>Previous</a>
         <a class="button is-link pagination-next" v-on:click.prevent="next">Next<span class="icon is-small"><i class="fa fa-caret-right" aria-hidden="true"></i></span></a>
         <ul class="pagination-list">
