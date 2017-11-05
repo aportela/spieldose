@@ -150,6 +150,38 @@
         return $response->withJson(['albums' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/search/global', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/search/global' route");
+        $artistData = \Spieldose\Artist::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
+        );
+        $albumData = \Spieldose\Album::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
+        );
+        $trackData = \Spieldose\Track::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
+        );
+        return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results ], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/metrics/top_played_tracks' route");
         $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
