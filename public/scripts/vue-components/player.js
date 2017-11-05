@@ -31,6 +31,7 @@ var vTemplatePlayer = function () {
             <i title="mark as loved song" class="fa fa-heart fa-lg"></i>
             <i title="download song" v-on:click.prevent="download()" class="fa fa-save fa-lg"></i>
         </div>
+        <spieldose-menu-component></spieldose-menu-component>
         <ul id="player-playlist">
             <li v-for="track, i in playList"><a v-bind:class="{ 'selected' : isPlayingTrack(track) }" v-on:click="play(track)">{{ track.title + (track.artist ? ' / ' + track.artist: '') }}</span></a></li>
         </ul>
@@ -85,7 +86,7 @@ var player = Vue.component('spieldose-player-component', {
             this.nowPlayingTrack = track;
             this.url = "/api/track/get/" + track.id;
             this.playing = true;
-            initializeVisualizer($("canvas")[1], $("audio")[0]);
+            initializeVisualizer($("canvas")[0], $("audio")[0]);
         },
         pause: function () {
             if (this.playing) {
