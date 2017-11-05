@@ -27,6 +27,11 @@ const routes = [
                 component: dashboard
             },
             {
+                path: 'nowplaying',
+                name: 'nowplaying',
+                component: nowPlaying
+            },
+            {
                 path: 'artists',
                 name: 'artists',
                 component: browseArtists,
@@ -82,7 +87,7 @@ const app = new Vue({
             if (!logged2) {
                 self.$router.push({ name: 'signin' });
             } else {
-                self.$router.push({ name: 'dashboard' });
+                //self.$router.push({ name: 'dashboard' });
             }
         });
     },
