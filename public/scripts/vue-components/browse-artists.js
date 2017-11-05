@@ -2,21 +2,21 @@
 
 var vTemplateBrowseArtists = function () {
     return `
-    <section class="section" id="section-artists">
-        <div v-show="! loading">
-            <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
-            <div class="artist_item" v-for="artist in artists">
-                <a class="view_artist" v-bind:href="'/#/app/artist/' + safeRouterLink(artist.name)">
-                    <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
-                    <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
-                    <i class="fa fa-search fa-4x"></i>
-                </a>
-                <div class="artist_info">
-                    <p class="artist_name">{{ artist.name }}</p>
-                </div>
+    <div class="container is-fluid box">
+        <p class="title is-1 has-text-centered">Browse artists</i></p>
+        <spieldose-pagination v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
+        <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
+            <a v-bind:href="'/#/app/artist/' + safeRouterLink(artist.name)" v-bind:title="'click to open artist section'">
+                <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
+                <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                <i class="fa fa-search fa-4x"></i>
+            </a>
+            <div class="artist-info is-clipped">
+                <p class="artist-name has-text-centered">{{ artist.name }}</p>
             </div>
         </div>
-    </section>
+        <div class="is-clearfix"></div>
+    </div>
     `;
 }
 
