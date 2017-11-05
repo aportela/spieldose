@@ -2,30 +2,28 @@
 
 var vTemplateContainer = function () {
     return `
-    <div>
+        <!--
         <spieldose-navigation-menu-component></spieldose-navigation-menu-component>
-        <section class="hero is-fullheight is-dark is-bold">
-            <div class="columns is-gapless">
+        -->
+        <div class="hero is-fullheight is-light is-bold">
+            <div class="columns is-gapless" id="main_container">
                 <!--
                 <aside id="aside-menu" class="column is-1 hero is-fullheight is-hidden-mobile">
                     <spieldose-menu-component></spieldose-menu-component>
                 </aside>
                 -->
-                <aside id="aside-player" class="column is-2">
+                <aside id="aside-player" class="column is-3">
                     <spieldose-player-component></spieldose-player-component>
                 </aside>
-                <div class="column is-10" id="main-content">
+                <section class="column is-9">
                     <!--
                     <spieldose-search></spieldose-search>
                     <spieldose-search-results v-bind:section="section"></spieldose-search-results>
                     -->
                     <router-view></router-view>
-                    <spieldose-browse-genres v-bind:section="section"></spieldose-browse-genres>
-                    <spieldose-preferences v-bind:section="section"></spieldose-preferences>
-                </div>
+                </section>
             </div>
         </div>
-    </div>
     `;
 }
 
