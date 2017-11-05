@@ -20,7 +20,8 @@ var vTemplateSearch = function () {
             <p class="control">
                 <a class="button is-link" v-bind:disabled="! isEnabled" v-on:click.prevent="search()">
                     <span class="icon">
-                        <i class="fa fa-search"></i>
+                        <i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i>
+                        <i v-else class="fa fa-search"></i>
                     </span>
                     <span>Search</span>
                 </a>
@@ -124,7 +125,8 @@ var search = Vue.component('spieldose-search', {
             xhr: false,
             searchType: "0",
             searchText: null,
-            results: {}
+            results: {},
+            timeout: null
         });
     },
     computed: {
@@ -150,65 +152,72 @@ var search = Vue.component('spieldose-search', {
         search() {
             var self = this;
             if (self.searchText && self.searchText.length > 0) {
-                if (!self.xhr) {
-                    var url = null;
-                    switch (self.searchType) {
-                        case "0":
-                            url = "/api/search/global";
-                            break;
-                        case "1":
-                            url = "/api/track/search";
-                            break;
-                        case "2":
-                            url = "/api/artist/search";
-                            break;
-                        case "3":
-                            url = "/api/album/search";
-                            break;
-                    }
-                    if (url) {
-                        var d = {
-                            actualPage: 1,
-                            resultsPage: 5,
-                            text: self.searchText
-                        };
-                        jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
-                            self.xhr = false;
-                            switch (self.searchType) {
-                                case "0":
-                                    self.results = {
-                                        artists: response.artists,
-                                        albums: response.albums,
-                                        tracks: response.tracks
-                                    };
-                                    break;
-                                case "1":
-                                    self.results = {
-                                        artists: [],
-                                        albums: [],
-                                        tracks: response.tracks
-                                    };
-                                    break;
-                                case "2":
-                                    self.results = {
-                                        artists: response.artists,
-                                        albums: [],
-                                        tracks: []
-                                    };
-                                    break;
-                                case "3":
-                                    self.results = {
-                                        artists: [],
-                                        albums: response.albums,
-                                        tracks: []
-                                    };
-                                    break;
-                            }
-                        });
-                    } else {
-                        this.hideResults();
-                    }
+
+                if (self.timeout) {
+                    clearTimeout(self.timeout);
                 }
+                self.timeout = setTimeout(function () {
+                    if (!self.xhr) {
+                        self.xhr = true;
+                        var url = null;
+                        switch (self.searchType) {
+                            case "0":
+                                url = "/api/search/global";
+                                break;
+                            case "1":
+                                url = "/api/track/search";
+                                break;
+                            case "2":
+                                url = "/api/artist/search";
+                                break;
+                            case "3":
+                                url = "/api/album/search";
+                                break;
+                        }
+                        if (url) {
+                            var d = {
+                                actualPage: 1,
+                                resultsPage: 5,
+                                text: self.searchText
+                            };
+                            jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
+                                self.xhr = false;
+                                switch (self.searchType) {
+                                    case "0":
+                                        self.results = {
+                                            artists: response.artists,
+                                            albums: response.albums,
+                                            tracks: response.tracks
+                                        };
+                                        break;
+                                    case "1":
+                                        self.results = {
+                                            artists: [],
+                                            albums: [],
+                                            tracks: response.tracks
+                                        };
+                                        break;
+                                    case "2":
+                                        self.results = {
+                                            artists: response.artists,
+                                            albums: [],
+                                            tracks: []
+                                        };
+                                        break;
+                                    case "3":
+                                        self.results = {
+                                            artists: [],
+                                            albums: response.albums,
+                                            tracks: []
+                                        };
+                                        break;
+                                }
+                            });
+                        } else {
+                            this.hideResults();
+                        }
+                    }
+                }, 256);
             } else {
                 this.hideResults();
             }
