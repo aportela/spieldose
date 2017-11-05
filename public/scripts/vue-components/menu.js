@@ -2,23 +2,18 @@
 
 var vTemplateMenu = function () {
     return `
-    <ul id="menu">
-        <li id="search_from_menu">
-            <div class="field">
-                <p class="control has-icons-right">
-                    <input class="input" type="password" placeholder="search...">
-                    <span class="icon is-small is-right"><i class="fa fa-search"></i></span>
-                </p>
-            </div>
-        </li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'dashboard' }" v-on:click.prevent="changeSection('dashboard')"><div><i class="fa fa-2x fa-home"></i>dashboard</div></a></li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'nowplaying' }" v-on:click.prevent="changeSection('nowplaying')"><div><i class="fa fa-2x fa-headphones"></i>now playing</div></a></li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'artist' || actualRouteName == 'artists' }" v-on:click.prevent="changeSection('artists')"><div><i class="fa fa-2x fa-user"></i>browse artists</div></a></li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'albums' }" v-on:click.prevent="changeSection('albums')"><div><i class="fa fa-2x fa-file-audio-o"></i>browse albums</div></a></li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'genres' }" v-on:click.prevent="changeSection('genres')"><div><i class="fa fa-2x fa-tags"></i>browse genres</div></a></li>
-        <li><a v-bind:class="{ 'active': actualRouteName == 'preferences' }" v-on:click.prevent="changeSection('preferences')"><div><i class="fa fa-2x fa-cog"></i>preferences</div></a></li>
-        <li><a href="/api/user/signout" v-on:click.prevent="signout()"><div><i class="fa fa-2x fa-sign-out"></i>signout</div></a></li>
-    </ul>
+
+    <aside class="menu">
+        <hr class="dropdown-divider">
+        <ul class="menu-list">
+            <li><a v-bind:class="{ 'is-active': actualRouteName == 'search' }" v-on:click.prevent="changeSection('search')"><i class="fa fa-search"></i> Search</a></li>
+            <li><a v-bind:class="{ 'is-active': actualRouteName == 'dashboard' }" v-on:click.prevent="changeSection('dashboard')"><i class="fa fa-home"></i> dashboard</a></li>
+            <li><a v-bind:class="{ 'is-active': actualRouteName == 'nowplaying' }" v-on:click.prevent="changeSection('nowplaying')"><i class="fa fa-headphones"></i> now playing</a></li>
+            <li><a v-bind:class="{ 'is-active': actualRouteName == 'artist' || actualRouteName == 'artists' }" v-on:click.prevent="changeSection('artists')"><i class="fa fa-user"></i> browse artists</a></li>
+            <li><a v-bind:class="{ 'is-active': actualRouteName == 'albums' }" v-on:click.prevent="changeSection('albums')"><i class="fa fa-file-audio-o"></i> browse albums</a></li>
+            <li><a href="/api/user/signout" v-on:click.prevent="signout()"><i class="fa fa-sign-out"></i> signout</a></li>
+        </ul>
+    </aside>
     `;
 }
 
