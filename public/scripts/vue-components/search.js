@@ -231,3 +231,36 @@ var search = Vue.component('spieldose-search', {
         },
     }
 });
+
+var vTemplateSearch2 = function () {
+    return `
+    <section class="section container is-fluid">
+        <h1>Busca un artista, canción, álbum o playlist</h1>
+        <div class="field">
+            <div class="control">
+                <input class="input" type="text" placeholder="Escribir...">
+            </div>
+        </div>
+
+        <div class="container is-fluid"><div class="columns"><div class="column is-one-quarter" style="overflow: hidden;"><h1 class="title is-6 is-mega-menu-title">Artists</h1> <hr class="dropdown-divider"> <a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/artist/2 Brothers on the 4th Floor">2 Bro<span class="highlight">the</span>rs on <span class="highlight">the</span> 4th Floor</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/artist/Bela Fleck &amp; The Flecktones">Bela Fleck &amp; <span class="highlight">The</span> Flecktones</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/artist/Bill Withers">Bill Wi<span class="highlight">the</span>rs</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/artist/Bob Marley &amp; The Wailers">Bob Marley &amp; <span class="highlight">The</span> Wailers</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/artist/Booker T. &amp; The MG's">Booker T. &amp; <span class="highlight">The</span> MG's</a></p></div></div></article></a></div> <div class="column is-one-quarter" style="overflow: hidden;"><h1 class="title is-6 is-mega-menu-title">Albums</h1> <hr class="dropdown-divider"> <a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://lastfm-img2.akamaized.net/i/u/300x300/73af99a124e846f69d9b6bf72231c4f6.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/album/(What's the Story) Morning Glory?">(What's <span class="highlight">the</span> Story) Morning Glory? / Oasis</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/album/100 Superhits From the '80s">100 Superhits From <span class="highlight">the</span> '80s / Jody Watley</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/album/100% Hits: Best Hits of the Decade 1990-2000">100% Hits: Best Hits of <span class="highlight">the</span> Decade 1990-2000 / Everything but <span class="highlight">the</span> Girl</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/album/1984-09-22: Where the Rivers Meet: Pittsburgh, PA, USA">1984-09-22: Where <span class="highlight">the</span> Rivers Meet: Pittsburgh, PA, USA / Bruce Springsteen</a></p></div></div></article></a><a class="dropdown-item"><article class="media"><div class="media-left"><figure class="image is-48x48"><img src="https://lastfm-img2.akamaized.net/i/u/300x300/05f48c1fbb5943d285cdd8c93798994b.png" alt="Image"></figure></div> <div class="media-content"><div class="content"><p><a href="/#/app/album/200 km/h in the Wrong Lane">200 km/h in <span class="highlight">the</span> Wrong Lane / t.A.T.u.</a></p></div></div></article></a></div> <div class="column is-one-quarter" style="overflow: hidden;"><h1 class="title is-6 is-mega-menu-title">Tracks</h1> <hr class="dropdown-divider"> <a class="dropdown-item">
+        A hero's anthem
+        <span> / <a href="/#/app/artist/Flash Arnold">Flash Arnold</a></span></a><a class="dropdown-item">
+        Angel of the city
+        <span> / <a href="/#/app/artist/Robert Tepper">Robert Tepper</a></span></a><a class="dropdown-item">
+        Angry Birds theme
+        <span> / <a href="/#/app/artist/Pomplamoose">Pomplamoose</a></span></a><a class="dropdown-item">
+        Another Day
+        <span> / <a href="/#/app/artist/Whigfield">Whigfield</a></span></a><a class="dropdown-item">
+        Anthem Apocalyptica
+        <span> / <a href="/#/app/artist/Machinae Supremacy">Machinae Supremacy</a></span></a></div> <div class="column is-one-quarter"><h1 class="title is-6 is-mega-menu-title">Playlists</h1> <hr class="dropdown-divider"></div></div></div>
+
+
+    </section>
+    `;
+}
+
+var search2 = Vue.component('spieldose-search2', {
+    template: vTemplateSearch2()
+    , props: ['section'
+    ]
+});
