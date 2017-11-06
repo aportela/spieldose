@@ -19,11 +19,11 @@ var vTemplateBrowseAlbums = function () {
                 <img class="album-thumbnail" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
                 <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                 <i class="fa fa-play fa-4x"></i>
-                <img class="vinyl no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                <img class="vinyl no-cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
             </a>
             <div class="album-info">
-                <p class="album-name" title="">{{ album.name }}</p>
-                <p class="artist-name" title=""><a v-bind:href="'/#/app/artist/' + album.artist">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                <p class="album-name">{{ album.name }}</p>
+                <p class="artist-name"><a v-bind:title="'click to open artist section'" v-bind:href="'/#/app/artist/' + album.artist">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
             </div>
         </div>
         <div class="is-clearfix"></div>
