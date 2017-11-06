@@ -5,7 +5,7 @@ var vTemplateDashboard = function () {
 
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <div class="container is-fluid box">
-        <p class="title is-1 has-text-centered">Spieldose dashboard</p>
+        <p class="title is-1 has-text-centered">Dashboard</p>
         <div class="columns is-mobile is-multiline">
             <div class="column is-one-third-desktop is-full-mobile">
                 <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="'Top played tracks'" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
@@ -26,7 +26,7 @@ var vTemplateDashboard = function () {
             </div>
             <div class="column is-one-third-desktop is-full-mobile">
                 <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i v-if="xhr" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
+                    <p class="panel-heading"><span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
                     <p class="panel-tabs">
                         <a class="is-active" href="#">by hour</a>
                         <a href="#" v-on:click.prevent="">by weekday</a>
@@ -51,18 +51,16 @@ var dashboard = Vue.component('spieldose-dashboard', {
     template: vTemplateDashboard(),
     data: function () {
         return ({
-            xhr: false
+            loading: false
         });
     },
-    props: [
-        'section',
-    ], mounted: function () {
+    mounted: function () {
         /*
         var self = this;
         var d = {};
-        self.xhr = true;
+        self.loading = true;
         jsonHttpRequest("POST", "/api/metrics/play_stats", d, function (httpStatusCode, response) {
-            self.xhr = false;
+            self.loading = false;
             var d = [ 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
             for (var i = 0; i < response.metrics.length; i++) {
                 d[response.metrics[i].hour] = response.metrics[i].total;
