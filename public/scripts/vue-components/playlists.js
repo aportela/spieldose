@@ -23,7 +23,11 @@ var vTemplatePlayLists = function () {
                 </thead>
                 <tbody>
                     <tr v-for="track in tracks" v-bind:class="nowPlayingTrack.id == track.id ? 'is-selected': ''">
-                        <td><i title="play this track" class="fa fa-play-circle-o" aria-hidden="true" v-on:click="play(track)"></i> <i title="enqueue this track" class="fa fa-plus-square" aria-hidden="true" v-on:click="enqueue(track)"></i> <span>{{ track.title}}</span></td>
+                        <td>
+                        <i v-if="nowPlayingTrack.id != track.id" title="play this track" class="fa fa-play" aria-hidden="true"></i>
+                        <i v-else title="now playing" class="fa fa-headphones" aria-hidden="true" v-on:click="play(track)"></i>
+                        <span> {{ track.title}}</span>
+                        </td>
                         <td><a v-if="track.artist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(track.artist)" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
                         <td><span>{{ track.album }}</span></td>
                         <td><span>{{ track.genre }}</span></td>
@@ -35,6 +39,10 @@ var vTemplatePlayLists = function () {
                 <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
                 <div class="browse-playlist-item" v-for="playlist in playlists" v-show="! loading">
                 </div>
+                <h2>TODO</h2>
+            </div>
+            <div v-show="tab == 2">
+                <h2>TODO</h2>
             </div>
     </div>
     `;
@@ -69,6 +77,9 @@ var playLists = Vue.component('spieldose-playlists', {
     }, methods: {
         changeTab: function (tab) {
             this.tab = tab;
+        },
+        play: function(track) {
+            console.log(track);
         }
     }
 });
