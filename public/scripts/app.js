@@ -22,6 +22,11 @@ const routes = [
         component: container,
         children: [
             {
+                path: 'search',
+                name: 'search',
+                component: search2
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: dashboard
@@ -71,6 +76,14 @@ router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
     next()
 });
+
+router.encodeSafeName = function(name) {
+    if (name && name.indexOf("/") > 0) {
+        return(encodeURIComponent(name));
+    } else {
+        return(name);
+    }
+}
 
 const app = new Vue({
     router,
