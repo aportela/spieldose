@@ -4,6 +4,15 @@ var vTemplateBrowseArtists = function () {
     return `
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Browse artists</i></p>
+        <div class="field">
+            <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+                <input class="input " v-model="nameFilter" type="text" placeholder="search artist name..." v-on:keyup="instantSearch();">
+                <span class="icon is-small is-left">
+                    <i class="fa fa-search">
+                </i>
+              </span>
+            </div>
+        </div>
         <spieldose-pagination v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
         <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
             <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(artist.name)" v-bind:title="'click to open artist section'">
@@ -25,6 +34,8 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     data: function () {
         return ({
             loading: false,
+            nameFilter: null,
+            timeout: null,
             artists: [],
             pager: getPager()
         });
@@ -32,7 +43,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     watch: {
         '$route'(to, from) {
             this.pager.actualPage = parseInt(to.params.page);
-            this.search("");
+            this.search();
         }
     },
     created: function () {
@@ -43,17 +54,27 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
         if (this.$route.params.page) {
             self.pager.actualPage = parseInt(this.$route.params.page);
         }
-        this.search("");
+        this.search();
     }, methods: {
-        search: function (text) {
+        instantSearch: function () {
+            var self = this;
+            if (self.timeout) {
+                clearTimeout(self.timeout);
+            }
+            self.timeout = setTimeout(function () {
+                self.pager.actualPage = 1;
+                self.search();
+            }, 256);
+        },
+        search: function () {
             var self = this;
             self.loading = true;
             var d = {
                 actualPage: parseInt(self.pager.actualPage),
                 resultsPage: parseInt(self.pager.resultsPage)
             };
-            if (text) {
-                d.text = text;
+            if (self.nameFilter) {
+                d.text = self.nameFilter;
             }
             jsonHttpRequest("POST", "/api/artist/search", d, function (httpStatusCode, response) {
                 if (response.artists.length > 0) {
