@@ -236,7 +236,7 @@ div.browse-album-item a.play-album
     overflow: hidden;
 }
 
-div.browse-album-item a.play-album img.no_cover
+div.browse-album-item a.play-album img.no-cover
 {
     display: block !important;
 }
@@ -301,7 +301,8 @@ div.browse-album-item a.play-album:hover img.vinyl
 
 /* play icon (hover cover) */
 
-div.browse-album-item a.play-album i {
+div.browse-album-item a.play-album i
+{
     display: none;
     position: absolute;
     top: 60px;
@@ -309,16 +310,22 @@ div.browse-album-item a.play-album i {
     z-index: 2;
     color: #ccc;
 }
-div.browse-album-item a.play-album:hover i {
+
+div.browse-album-item a.play-album:hover i
+{
     display: block;
 }
+
 /* artist / album name (below cover) */
 
-div.browse-album-item div.album_info {
+div.browse-album-item div.album_info
+{
     padding: 8px;
     overflow: hidden;
 }
-div.browse-album-item div.album-info p {
+
+div.browse-album-item div.album-info p
+{
     margin: 0px;
     font-size: 13px;
     font-family: Tahoma;
@@ -328,10 +335,9 @@ div.browse-album-item div.album-info p {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-div.browse-album-item div.album-info p.artist-name a {
-    color: #545a5f;
-}
-div.browse-album-item div.album-info p.album-name {
+
+div.browse-album-item div.album-info p.artist-name *
+{
     color: #939aa0;
 }
 
@@ -466,6 +472,7 @@ ul#player-playlist li a span.duration {
     white-space: nowrap;
 }
 /* player playlist */
+
 /* dashboard charts */
 
 section.chart {
@@ -477,6 +484,7 @@ section.chart ol {
     color: #363636;
 }
 /* dashboard charts */
+
 /* global search results */
 
 table#t-search-results tbody tr td i {
