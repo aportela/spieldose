@@ -84,11 +84,11 @@ var search = Vue.component('spieldose-search', {
             timeout: null,
             artists: [],
             albums: [],
-            tracks:[],
+            tracks: [],
             playLists: []
         });
     }, methods: {
-        abortInstantSearch: function() {
+        abortInstantSearch: function () {
             this.textFilter = null;
         },
         instantSearch: function () {
@@ -118,11 +118,18 @@ var search = Vue.component('spieldose-search', {
                 self.loading = false;
             });
         },
+        highlight: function (text) {
+            if (text && this.textFilter) {
+                return text.replace(new RegExp("(" + this.textFilter + ")", 'gi'), '<span class="highlight">$1</span>');
+            } else {
+                return (null);
+            }
+        },
         enqueueAlbumTracks: function (album, artist) {
             bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
         },
-        enqueueTrack: function(track) {
-            bus.$emit("replacePlayList", [ track ]);
+        enqueueTrack: function (track) {
+            bus.$emit("replacePlayList", [track]);
         }
     }
 });
