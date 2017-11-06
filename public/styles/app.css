@@ -578,3 +578,8 @@ div#dropdown_search_results div.content a
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.cursor-pointer
+{
+    cursor: pointer;
+}
