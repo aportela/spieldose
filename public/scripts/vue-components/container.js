@@ -20,7 +20,9 @@ var vTemplateContainer = function () {
                     <spieldose-search></spieldose-search>
                     <spieldose-search-results v-bind:section="section"></spieldose-search-results>
                     -->
-                    <router-view></router-view>
+                    <keep-alive>
+                        <router-view></router-view>
+                    </keep-alive>
                 </section>
             </div>
         </div>
@@ -183,6 +185,7 @@ var container = Vue.component('spieldose-app-component', {
                 } else {
                     self.pager.totalPages = 0;
                 }
+                console.log(response.tracks);
                 bus.$emit("replacePlayList", response.tracks);
             });
         }

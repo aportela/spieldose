@@ -86,6 +86,7 @@ var player = Vue.component('spieldose-player-component', {
     },
     methods: {
         play: function (track) {
+            bus.$emit("nowPlayingTrack", track);
             this.nowPlayingTrack = track;
             this.url = "/api/track/get/" + track.id;
             this.playing = true;

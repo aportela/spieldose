@@ -32,9 +32,9 @@ const routes = [
                 component: dashboard
             },
             {
-                path: 'nowplaying',
-                name: 'nowplaying',
-                component: nowPlaying
+                path: 'playlists',
+                name: 'playlists',
+                component: playLists
             },
             {
                 path: 'artists',
