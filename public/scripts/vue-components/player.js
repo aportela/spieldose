@@ -57,6 +57,20 @@ var player = Vue.component('spieldose-player-component', {
     },
     created: function () {
         var self = this;
+        bus.$on("playTrack", function (track) {
+            self.playList = [ track ];
+            if (self.playing) {
+                self.pause();
+            }
+            if (self.autoPlay) {
+                if (self.playList && self.playList.length > 0) {
+                    self.play(self.playList[0]);
+                }
+            }
+        });
+        bus.$on("enqueueTrack", function (track) {
+            self.playList.push(track);
+        });
         bus.$on("replacePlayList", function (tracks) {
             self.playList = tracks;
             if (self.playing) {
