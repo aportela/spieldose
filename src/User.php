@@ -4,6 +4,7 @@
     namespace Spieldose;
 
     class User {
+        private $id;
         private $email;
         private $passwordHash;
 
@@ -13,7 +14,8 @@
          * @param $email
          */
 	    public function __construct ($email) {
-            $this->email = $email;
+            $this->email = mb_strtolower($email);
+            $this->id = md5(mb_strtolower($email));
         }
 
         public function __destruct() { }
@@ -25,7 +27,7 @@
          */
         private function get(\Spieldose\Database\DB $dbh) {
             $results = $dbh->query("SELECT password_hash AS passwordHash FROM USER WHERE email = :email", array(
-                (new \Spieldose\Database\DBParam())->str(":email", $this->email)
+                (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email))
             ));
             if (count($results) == 1) {
                 $this->passwordHash = $results[0]->passwordHash;
@@ -47,6 +49,7 @@
                 if (isset($password) && ! empty($password)) {
                     $this->get($dbh);
                     if (password_verify($password, $this->passwordHash)) {
+                        $_SESSION["userId"] = $this->id;
                         $_SESSION["email"] = $this->email;
                         return(true);
                     } else {
@@ -82,6 +85,13 @@
         }
 
         /**
+         * return logged user id
+         */
+        public static function getUserId() {
+            return(isset($_SESSION["userId"]) ? $_SESSION["userId"]: null);
+        }
+
+        /**
          * set user credentials
          *
          * @param $dbh \Spieldose\Database\DB $dbh
@@ -93,11 +103,11 @@
             if (isset($this->email) && ! empty($this->email)) {
                 if (isset($password) && ! empty($password)) {
                     $params = array(
-                        (new \Spieldose\DataBase\DBParam())->str(":email", $this->email),
+                        (new \Spieldose\DataBase\DBParam())->str(":id", md5(mb_strtolower($this->email))),
+                        (new \Spieldose\DataBase\DBParam())->str(":email", mb_strtolower($this->email)),
                         (new \Spieldose\DataBase\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
-
                     );
-                    return($dbh->execute("REPLACE INTO USER (email, password_hash) VALUES(:email, :password_hash)", $params));
+                    return($dbh->execute("REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("email");
                 }

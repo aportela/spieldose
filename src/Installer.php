@@ -7,7 +7,8 @@
 
         private $installQueries = array(
             'CREATE TABLE [USER] (
-                [email] VARCHAR(255) UNIQUE NOT NULL PRIMARY KEY,
+                [id] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY,
+                [email] VARCHAR(255) UNIQUE NOT NULL,
                 [password_hash] VARCHAR(60) NOT NULL
             )',
             'CREATE TABLE [FILE] (
@@ -53,9 +54,10 @@
                 [json] TEXT NOT NULL
             )',
             'CREATE TABLE [STATS] (
+                [user_id] VARCHAR(32) NOT NULL,
                 [file_id] VARCHAR(40) NOT NULL,
                 [played] INTEGER NOT NULL,
-                PRIMARY KEY(`file_id`,`played`)
+                PRIMARY KEY(`user_id`,`file_id`)
             )',
             'PRAGMA journal_mode=WAL'
         );
