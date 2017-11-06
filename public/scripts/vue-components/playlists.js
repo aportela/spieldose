@@ -11,6 +11,14 @@ var vTemplatePlayLists = function () {
                     <li v-bind:class="{ 'is-active' : tab == 2 }"><a v-on:click.prevent="changeTab(2)" href="#">Add new playlist</a></li>
                 </ul>
             </div>
+            <p class="field" v-show="tab == 0">
+                <a class="button is-light" v-on:click.prevent="shufflePlayList();">
+                    <span class="icon is-small">
+                        <i class="fa fa-random"></i>
+                    </span>
+                    <span>shuffle tracks</span>
+                </a>
+            </p>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="tab == 0">
                 <thead>
                         <tr>
@@ -48,6 +56,29 @@ var vTemplatePlayLists = function () {
     `;
 }
 
+/*
+    https://stackoverflow.com/a/6274398
+*/
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
 var playLists = Vue.component('spieldose-playlists', {
     template: vTemplatePlayLists(),
     data: function () {
@@ -78,8 +109,12 @@ var playLists = Vue.component('spieldose-playlists', {
         changeTab: function (tab) {
             this.tab = tab;
         },
-        play: function(track) {
+        play: function (track) {
             console.log(track);
+        },
+        shufflePlayList: function () {
+            this.tracks = shuffle(this.tracks);
+            this.$forceUpdate();
         }
     }
 });
