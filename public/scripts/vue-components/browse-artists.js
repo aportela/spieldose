@@ -8,16 +8,15 @@ var vTemplateBrowseArtists = function () {
             <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                 <input class="input " v-model="nameFilter" type="text" placeholder="search artist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                 <span class="icon is-small is-left">
-                    <i class="fa fa-search">
-                </i>
-              </span>
+                    <i class="fa fa-search"></i>
+                </span>
             </div>
         </div>
         <spieldose-pagination v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
         <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
             <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(artist.name)" v-bind:title="'click to open artist section'">
-                <img class="album_cover" v-if="artist.image" v-bind:src="artist.image" />
-                <img class="album_cover" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                <img v-if="artist.image" v-bind:src="artist.image" />
+                <img v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                 <i class="fa fa-search fa-4x"></i>
             </a>
             <div class="artist-info is-clipped">
