@@ -562,20 +562,19 @@ div#dropdown_search_results div.content a
 /* global search dropdown results */
 
 
-
-.navbar-item.is-mega
-{
-    position: static;
-
-}
-
-.is-mega-menu-title
-{
-    margin-bottom: 0;
-    padding: .375rem 1rem;
-}
-
 .hero .tabs ul
 {
     border-bottom: 1px solid #dbdbdb;
+}
+
+.border-radius-50
+{
+    border-radius: 50%;
+}
+
+.cut-text
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
