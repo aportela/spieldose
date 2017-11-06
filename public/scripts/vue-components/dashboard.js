@@ -23,7 +23,9 @@ var vTemplateDashboard = function () {
             <div class="column is-one-third-desktop is-full-mobile">
                 <spieldose-dashboard-recent v-bind:type="'recentlyPlayed'" v-bind:title="'Recently played'" v-bind:listItemCount="5"></spieldose-dashboard-recent>
             </div>
-            <div class="column is-one-third-desktop is-full-mobile">
+        </div>
+        <div class="columns is-mobile is-multiline">
+            <div class="column is-full-mobile">
                 <section class="panel">
                     <p class="panel-heading"><span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
                     <p class="panel-tabs">
@@ -33,9 +35,7 @@ var vTemplateDashboard = function () {
                         <a href="#" v-on:click.prevent="">by year</a>
                     </p>
                     <div class="panel-block">
-                        <div id="chart3">
-                            <canvas id="playcount-metrics-chart" width="400" height="105"></canvas>
-                        </div>
+                        <canvas id="playcount-metrics-chart" height="200"></canvas>
                     </div>
                 </section>
             </div>
