@@ -24,7 +24,7 @@ const routes = [
             {
                 path: 'search',
                 name: 'search',
-                component: search2
+                component: search
             },
             {
                 path: 'dashboard',
