@@ -34,9 +34,7 @@ var vTemplateDashboard = function () {
                     </p>
                     <div class="panel-block">
                         <div id="chart3">
-                            <!--
-                            <canvas id="play_metrics_chart" width="400" height="105"></canvas>
-                            -->
+                            <canvas id="playcount-metrics-chart" width="400" height="105"></canvas>
                         </div>
                     </div>
                 </section>
@@ -54,7 +52,6 @@ var dashboard = Vue.component('spieldose-dashboard', {
         });
     },
     mounted: function () {
-        /*
         var self = this;
         var d = {};
         self.loading = true;
@@ -64,7 +61,7 @@ var dashboard = Vue.component('spieldose-dashboard', {
             for (var i = 0; i < response.metrics.length; i++) {
                 d[response.metrics[i].hour] = response.metrics[i].total;
             }
-            var ctx = document.getElementById("play_metrics_chart");
+            var ctx = document.getElementById("playcount-metrics-chart");
             var myLineChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -81,7 +78,6 @@ var dashboard = Vue.component('spieldose-dashboard', {
                 }, options: {}
             });
         });
-        */
     }, created: function () {
     }, methods: {
     }
