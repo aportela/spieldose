@@ -31,7 +31,6 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
         return ({
             loading: false,
             errors: false,
-            iconClass: 'fa-pie-chart',
             interval: 0,
             items: []
         });
@@ -42,6 +41,7 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
         loadChartData: function () {
             var self = this;
             self.loading = true;
+            self.errors = false;
             self.items = [];
             var url = null;
             var d = {
@@ -94,6 +94,7 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
                 });
             } else {
                 self.loading = false;
+                self.errors = true;
             }
         }, changeInterval: function (i) {
             this.interval = i;

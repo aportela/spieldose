@@ -29,7 +29,6 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
         return ({
             loading: false,
             errors: false,
-            iconClass: 'fa-pie-chart',
             items: [],
             entity: 0
         });
@@ -40,6 +39,7 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
         loadChartData: function () {
             var self = this;
             self.loading = true;
+            self.errors = false;
             self.items = [];
             var url = null;
             if (this.type == "recentlyAdded") {
@@ -74,6 +74,7 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
                 });
             } else {
                 self.loading = false;
+                self.errors = true;
             }
         }, changeEntity: function (e) {
             this.entity = e;
