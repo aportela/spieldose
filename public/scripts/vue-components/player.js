@@ -71,6 +71,10 @@ var player = Vue.component('spieldose-player-component', {
         bus.$on("enqueueTrack", function (track) {
             self.playList.push(track);
         });
+        bus.$on("playAlbum", function (album) {
+        });
+        bus.$on("enqueueAlbum", function (album) {
+        });
         bus.$on("replacePlayList", function (tracks) {
             self.playList = tracks;
             if (self.playing) {
