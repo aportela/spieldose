@@ -6,7 +6,7 @@ var vTemplateBrowseAlbums = function () {
         <p class="title is-1 has-text-centered">Browse albums</i></p>
         <div class="field">
             <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                <input class="input " v-model="nameFilter" type="text" placeholder="search album name..." v-on:keyup="instantSearch();">
+                <input class="input " v-model="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                 <span class="icon is-small is-left">
                     <i class="fa fa-search">
                 </i>
@@ -58,6 +58,9 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
         }
         this.search();
     }, methods: {
+        abortInstantSearch: function() {
+            this.nameFilter = null;
+        },
         instantSearch: function () {
             var self = this;
             if (self.timeout) {
