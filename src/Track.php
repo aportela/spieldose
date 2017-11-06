@@ -119,7 +119,8 @@
         public function incPlayCount(\Spieldose\Database\DB $dbh): bool {
             if (isset($this->id) && ! empty($this->id)) {
                 $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
-                return($dbh->execute('INSERT INTO STATS (file_id, played) VALUES(:file_id, CURRENT_TIMESTAMP); ', $params));
+                $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                return($dbh->execute('INSERT INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
