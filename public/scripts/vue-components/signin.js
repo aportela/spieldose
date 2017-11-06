@@ -3,7 +3,7 @@
 var vTemplateSignIn = function () {
     return `
     <!-- template credits: daniel (https://github.com/dansup) -->
-    <section class="hero is-fullheight is-dark is-bold">
+    <section class="hero is-fullheight is-light is-bold">
         <div class="hero-body">
             <div class="container">
                 <div class="columns is-vcentered">
