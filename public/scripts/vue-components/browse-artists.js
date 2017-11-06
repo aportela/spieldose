@@ -12,7 +12,7 @@ var vTemplateBrowseArtists = function () {
                 </span>
             </div>
         </div>
-        <spieldose-pagination v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
+        <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
         <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
             <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(artist.name)" v-bind:title="'click to open artist section'">
                 <img v-if="artist.image" v-bind:src="artist.image" />

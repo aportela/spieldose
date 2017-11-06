@@ -12,7 +12,7 @@ var vTemplateBrowseAlbums = function () {
                 </span>
             </div>
         </div>
-        <spieldose-pagination v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
+        <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
         <div class="browse-album-item" v-for="album in albums" v-show="! loading">
             <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist)" v-bind:title="'click to play album'">
                 <img class="album-thumbnail" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
