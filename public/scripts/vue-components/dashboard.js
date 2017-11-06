@@ -2,7 +2,6 @@
 
 var vTemplateDashboard = function () {
     return `
-
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Dashboard</p>
