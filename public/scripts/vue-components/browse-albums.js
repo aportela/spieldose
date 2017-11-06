@@ -8,9 +8,8 @@ var vTemplateBrowseAlbums = function () {
             <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                 <input class="input " v-model="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                 <span class="icon is-small is-left">
-                    <i class="fa fa-search">
-                </i>
-            </span>
+                    <i class="fa fa-search"></i>
+                </span>
             </div>
         </div>
         <spieldose-pagination v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
