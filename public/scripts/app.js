@@ -30,6 +30,8 @@ var getPlayerData = function () {
         playerData.isPaused = false;
         playerData.isPlaying = false;
         playerData.loading = true;
+        playerData.actualTrackIdx = 0;
+        playerData.actualTrack = null;
         var d = {
             actualPage: 1,
             resultsPage: count,
@@ -44,6 +46,10 @@ var getPlayerData = function () {
         });
     };
     playerData.emptyPlayList = function () {
+        playerData.isPaused = false;
+        playerData.isPlaying = false;
+        playerData.actualTrackIdx = 0;
+        playerData.actualTrack = null;
         playerData.tracks = [];
     };
     playerData.toggleRepeatMode = function () {
