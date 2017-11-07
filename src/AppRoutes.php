@@ -7,20 +7,7 @@
     $app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton GET '/' route");
         return $this->view->render($response, 'index.html.twig', []);
-        //return $response->withRedirect('/login');
     });
-
-    /*
-    $app->get('/login', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/login' route");
-        return $this->view->render($response, 'index.html.twig', []);
-    });
-
-    $app->get('/app', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/app' route");
-        return $this->view->render($response, 'index.html.twig', []);
-    });
-    */
 
     $app->get('/api/user/poll', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton GET '/api/user/poll' route");
