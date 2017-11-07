@@ -8,7 +8,7 @@ var vTemplatePlayer = function () {
         <p id="player-cover-header" v-else class="title is-6 is-marginless has-text-centered has-text-light"><span class="icon is-small"><i class="fa fa-stop" aria-hidden="true"></i></span> STOPPED <span class="icon is-small"><i class="fa fa-stop" aria-hidden="true"></i></span></p>
         <img id="player-cover" v-bind:src="coverSrc" />
         <div id="player-cover-footer">
-            <p><span>{{ nowPlayingTitle }}</span> <span v-show="nowPlayingLength"> ({{ nowPlayingLength }})</span></p>
+            <p><span>{{ nowPlayingTitle }}</span> <span v-show="nowPlayingLength"> {{ nowPlayingLength }}</span></p>
             <p>
                 <span v-if="nowPlayingArtist"><a class="title is-6 is-marginless has-text-centered has-text-light" v-if="nowPlayingArtist" v-bind:src="'#/artist/' + nowPlayingArtist ">{{ nowPlayingArtist }}</a></span>
                 <span v-else></span>
@@ -59,7 +59,7 @@ var player = Vue.component('spieldose-player-component', {
         },
         coverSrc: function () {
             if ((this.playerData.isPlaying || this.playerData.isPaused) && this.playerData.actualTrack.image) {
-                return (this.nowPlayingImage);
+                return (this.playerData.actualTrack.image);
             } else {
                 return ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC');
             }
@@ -72,17 +72,25 @@ var player = Vue.component('spieldose-player-component', {
             }
         },
         nowPlayingTitle: function () {
-            if (this.playerData.isPlaying) {
-                return (this.playerData.actualTrack.title);
+            if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.playerData.actualTrack.title) {
+                    return (this.playerData.actualTrack.title);
+                } else {
+                    return("track title unknown");
+                }
             } else {
-                return ("");
+                return ("track title");
             }
         },
         nowPlayingLength: function () {
-            if (this.playerData.isPlaying) {
-                return (this.playerData.actualTrack.playtimeString);
+            if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.playerData.actualTrack.playtimeString) {
+                    return ("(" + this.playerData.actualTrack.playtimeString + ")");
+                } else {
+                    return ("(00:00)");
+                }
             } else {
-                return ("");
+                return("(track length)");
             }
         },
         nowPlayingArtist: function () {
@@ -90,10 +98,10 @@ var player = Vue.component('spieldose-player-component', {
                 if (this.playerData.actualTrack.artist) {
                     return (this.playerData.actualTrack.artist);
                 } else {
-                    return ("unknown");
+                    return ("artist unknown");
                 }
             } else {
-                return ("");
+                return ("artist");
             }
         },
         nowPlayingArtistAlbum: function () {
@@ -101,8 +109,10 @@ var player = Vue.component('spieldose-player-component', {
                 if (this.playerData.actualTrack.album) {
                     return (" / " + this.playerData.actualTrack.album);
                 } else {
-                    return ("");
+                    return ("album unknown");
                 }
+            } else {
+                return("album");
             }
         },
         nowPlayingYear: function () {
@@ -110,15 +120,10 @@ var player = Vue.component('spieldose-player-component', {
                 if (this.playerData.actualTrack.year) {
                     return (" (" + this.playerData.actualTrack.year + ")");
                 } else {
-                    return ("");
+                    return ("(year unknown)");
                 }
-            }
-        },
-        nowPlayingImage: function () {
-            if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
-                return (this.playerData.actualTrack && this.playerData.actualTrack.image);
             } else {
-                return (null);
+                return("(year)");
             }
         }
     },
