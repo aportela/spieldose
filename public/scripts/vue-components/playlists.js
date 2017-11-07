@@ -11,14 +11,80 @@ var vTemplatePlayLists = function () {
                     <li v-bind:class="{ 'is-active' : tab == 2 }"><a v-on:click.prevent="changeTab(2)" href="#">Add new playlist</a></li>
                 </ul>
             </div>
-            <p class="field" v-show="tab == 0">
-                <a class="button is-light" v-on:click.prevent="shufflePlayList();">
-                    <span class="icon is-small">
-                        <i class="fa fa-random"></i>
-                    </span>
-                    <span>shuffle tracks</span>
-                </a>
-            </p>
+            <div class="field is-grouped" v-show="tab == 0">
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-refresh"></i>
+                            </span>
+                            <span>repeat: none</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="shufflePlayList();">
+                            <span class="icon is-small">
+                                <i class="fa fa-random"></i>
+                            </span>
+                            <span>shuffle tracks</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-backward"></i>
+                            </span>
+                            <span>previous</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-forward"></i>
+                            </span>
+                            <span>next</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-play"></i>
+                            </span>
+                            <span>play</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-pause"></i>
+                            </span>
+                            <span>pause</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-stop"></i>
+                            </span>
+                            <span>stop</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-heart"></i>
+                            </span>
+                            <span>love</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="">
+                            <span class="icon is-small">
+                                <i class="fa fa-save"></i>
+                            </span>
+                            <span>download</span>
+                        </a>
+                    </p>
+            </div>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="tab == 0">
                 <thead>
                         <tr>
