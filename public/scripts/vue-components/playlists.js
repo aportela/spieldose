@@ -226,10 +226,6 @@ var playLists = Vue.component('spieldose-playlists', {
         },
         unLoveTrack: function() {
             bus.$emit("debug", "unLoveTrack");
-        },
-        downloadTrack: function() {
-
-            bus.$emit("debug", "downloadTrack");
         }
     }
 });
