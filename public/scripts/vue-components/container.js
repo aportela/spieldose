@@ -10,7 +10,7 @@ var vTemplateContainer = function () {
                 </aside>
                 <section class="column is-9">
                     <keep-alive>
-                        <router-view></router-view>
+                        <router-view v-bind:playerData="playerData"></router-view>
                     </keep-alive>
                 </section>
             </div>
@@ -28,6 +28,7 @@ var container = Vue.component('spieldose-app-component', {
             artistList: [],
             albumList: [],
             trackList: [],
+            playerData: getPlayerData(),
             pager: {
                 actualPage: 1,
                 previousPage: 1,
@@ -39,6 +40,7 @@ var container = Vue.component('spieldose-app-component', {
     },
     computed: {
     }, created: function () {
+        this.playerData.loadRandomTracks(32, function() {});
     },
     methods: {
         changeSection: function (s) {
@@ -176,6 +178,29 @@ var container = Vue.component('spieldose-app-component', {
                 }
                 console.log(response.tracks);
                 bus.$emit("replacePlayList", response.tracks);
+            });
+        },
+        fillFromSearch: function (page, resultsPage, text, artist, album, order) {
+            var self = this;
+            var d = {
+                actualPage: page,
+                resultsPage: resultsPage
+            };
+            if (text) {
+                d.text = text;
+            }
+            if (artist) {
+                d.artist = artist;
+            }
+            if (album) {
+                d.album = album;
+            }
+            if (order) {
+                d.orderBy = order;
+            }
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+                //bus.$emit("replacePlayList", response && response.tracks ? response.tracks : []);
+                self.playerData.tracks = response.tracks;
             });
         }
     }, filters: {

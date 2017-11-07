@@ -15,6 +15,53 @@ var getPager = function () {
     });
 }
 
+var getPlayerData = function() {
+    var playerData = {
+        isPlaying: false,
+        repeatTracksMode: 'none', // none | track | all
+        shuffleTracks: false,
+        actualTrack: null,
+        tracks: []
+    };
+    playerData.toggleRepeatMode = function() {
+        switch(playerData.repeatTracksMode) {
+            case "none":
+            playerData.repeatTracksMode = "track";
+            break;
+            case "track":
+            playerData.repeatTracksMode = "all";
+            break;
+            default:
+            playerData.repeatTracksMode = "none";
+            break;
+        }
+    };
+    playerData.loadRandomTracks = function(count, callback) {
+        var d = {
+            actualPage: 1,
+            resultsPage: count,
+            orderBy: "random"
+        };
+        jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+            playerData.tracks = response.tracks;
+            callback();
+        });
+    },
+    playerData.emptyPlayList = function() {
+        playerData.tracks = [];
+    },
+    playerData.toggleShuffleMode = function() {
+        playerData.shuffleTracks = ! playerData.shuffleTracks
+    };
+    playerData.playPreviousTrack = function() {
+        console.log("play previous track");
+    };
+    playerData.playNextTrack = function() {
+        console.log("play next track");
+    };
+    return(playerData);
+}
+
 const routes = [
     { path: '/signin', name: 'signin', component: signIn },
     {

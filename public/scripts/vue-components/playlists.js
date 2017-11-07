@@ -13,26 +13,40 @@ var vTemplatePlayLists = function () {
             </div>
             <div class="field is-grouped" v-show="tab == 0">
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="toggleRepeatMode();">
+                        <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);">
+                            <span class="icon is-small">
+                                <i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i>
+                                <i v-else class="fa fa-clone"></i>
+                            </span>
+                            <span>load random playlist</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
+                            <span class="icon is-small">
+                                <i class="fa fa-eraser"></i>
+                            </span>
+                            <span>clear playlist</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
                             <span class="icon is-small">
                                 <i class="fa fa-refresh"></i>
                             </span>
-                            <span v-if="repeat == 0">repeat: none</span>
-                            <span v-if="repeat == 1">repeat: song</span>
-                            <span v-if="repeat == 2">repeat: all</span>
+                            <span>repeat: {{ playerData.repeatTracksMode }}</span>
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="toggleShuffleMode();">
+                        <a class="button is-light" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="playerData.shuffleTracks ? 'is-primary': ''">
                             <span class="icon is-small">
                                 <i class="fa fa-random"></i>
                             </span>
-                            <span v-if="shuffle">shuffle: enabled</span>
-                            <span v-else>shuffle: disabled</span>
+                            <span>shuffle: {{ playerData.shuffleTracks ? "true": "false" }}</span>
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playPreviousTrack();">
+                        <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-backward"></i>
                             </span>
@@ -40,7 +54,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playNextTrack();">
+                        <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-forward"></i>
                             </span>
@@ -48,7 +62,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playTrack();">
+                        <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playTrack(); }" :disabled="playerData.isPlaying" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
                             <span class="icon is-small">
                                 <i class="fa fa-play"></i>
                             </span>
@@ -56,7 +70,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="pauseTrack();">
+                        <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { pauseTrack(); }" :disabled="! playerData.isPlaying">
                             <span class="icon is-small">
                                 <i class="fa fa-pause"></i>
                             </span>
@@ -64,7 +78,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="stopTrack();">
+                        <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { stopTrack(); }" :disabled="! playerData.isPlaying">
                             <span class="icon is-small">
                                 <i class="fa fa-stop"></i>
                             </span>
@@ -99,10 +113,10 @@ var vTemplatePlayLists = function () {
                         </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="track in tracks" v-bind:class="nowPlayingTrack.id == track.id ? 'is-selected': ''">
+                    <tr v-for="track in playerData.tracks" v-bind:class="nowPlayingTrack && nowPlayingTrack.id == track.id ? 'is-selected': ''">
                         <td>
-                        <i v-if="nowPlayingTrack.id != track.id" title="play this track" class="fa fa-play" aria-hidden="true"></i>
-                        <i v-else title="now playing" class="fa fa-headphones" aria-hidden="true" v-on:click="play(track)"></i>
+                        <i v-if="nowPlayingTrack.id != track.id" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true"></i>
+                        <i v-else title="now playing" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="play(track)"></i>
                         <span> {{ track.title}}</span>
                         </td>
                         <td><a v-if="track.artist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(track.artist)" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
@@ -157,25 +171,34 @@ var playLists = Vue.component('spieldose-playlists', {
             tracks: [],
             playlists: [],
             pager: getPager(),
-            nowPlayingTrack: null,
-            repeat: 0,
-            shuffle: false
+            nowPlayingTrack: {},
         });
     },
+    props: [ 'playerData' ],
     mounted: function () {
     }, created: function () {
         var self = this;
         bus.$on("replacePlayList", function (tracks) {
-            self.tracks = tracks;
+            //self.tracks = tracks;
         });
         bus.$on("nowPlayingTrack", function (track) {
-            self.nowPlayingTrack = track;
+            //self.nowPlayingTrack = track;
         });
-        /*
-        bus.$on("enqueueNowPlayingPlayList", function (tracks) {
-            self.tracks.push(tracks);
+        bus.$on("playTrack", function (track) {
+            console.log(track);
+            console.log(self);
+            console.log(tracks);
+            console.log(pager);
+            //self.tracks.push(tracks);
         });
-        */
+        bus.$on("enqueueTrack", function (track) {
+            console.log(track);
+            //self.tracks.push(tracks);
+        });
+        bus.$on("playAlbum", function (album) {
+        });
+        bus.$on("enqueueAlbum", function (album) {
+        });
     }, methods: {
         changeTab: function (tab) {
             this.tab = tab;
@@ -189,26 +212,7 @@ var playLists = Vue.component('spieldose-playlists', {
             this.$forceUpdate();
         },
         */
-        toggleRepeatMode: function() {
-            if (this.repeat < 2) {
-                this.repeat++;
-            } else {
-                this.repeat = 0;
-            }
-            bus.$emit("debug", "toggleRepeatMode => " + this.repeat);
-        },
-        toggleShuffleMode: function() {
-            this.shuffle = ! this.shuffle;
-            bus.$emit("debug", "toggleShuffleMode => " + this.shuffle);
-        },
         playPreviousTrack: function() {
-            bus.$emit("debug", "playPreviousTrack");
-        },
-        playNextTrack: function() {
-            bus.$emit("debug", "playNextTrack");
-        },
-        playTrack: function() {
-            bus.$emit("debug", "playTrack");
         },
         pauseTrack: function() {
             bus.$emit("debug", "pauseTrack");

@@ -100,8 +100,10 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             this.interval = i;
             this.loadChartData();
         }, playTrack: function(track) {
+            bus.$emit("debug", "playTrack");
             bus.$emit("playTrack", track);
         }, enqueueTrack: function(track) {
+            bus.$emit("debug", "enqueueTrack");
             bus.$emit("enqueueTrack", track);
         }
     },

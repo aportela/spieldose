@@ -57,6 +57,7 @@ var player = Vue.component('spieldose-player-component', {
     },
     created: function () {
         var self = this;
+        /*
         bus.$on("playTrack", function (track) {
             self.playList = [ track ];
             if (self.playing) {
@@ -100,7 +101,8 @@ var player = Vue.component('spieldose-player-component', {
         bus.$on("searchIntoPlayList", function (page, resultsPage, text, artist, album) {
             self.fillFromSearch(page, resultsPage, text, artist, album, null);
         });
-        this.fillFromSearch(1, DEFAULT_SECTION_RESULTS_PAGE, null, null, null, "random");
+        */
+        //this.fillFromSearch(1, DEFAULT_SECTION_RESULTS_PAGE, null, null, null, "random");
     },
     methods: {
         play: function (track) {
