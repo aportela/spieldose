@@ -111,6 +111,11 @@ var getPlayerData = function() {
         playerData.isPlaying = false;
         console.log("stop");
     };
+    playerData.download = function(trackId) {
+        if (playerData.actualTrack) {
+            window.location = "/api/track/get/" + trackId;
+        }
+    },
     playerData.sendTrack = function(track) {
     }
     return(playerData);

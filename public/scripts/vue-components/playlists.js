@@ -94,7 +94,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="downloadTrack();">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.tracks.length > 0) { playerData.download(playerData.tracks[playerData.actualTrackIdx].id); }">
                         <span class="icon is-small">
                             <i class="fa fa-save"></i>
                         </span>
@@ -228,6 +228,7 @@ var playLists = Vue.component('spieldose-playlists', {
             bus.$emit("debug", "unLoveTrack");
         },
         downloadTrack: function() {
+
             bus.$emit("debug", "downloadTrack");
         }
     }
