@@ -27,19 +27,19 @@ var vTemplateSignIn = function () {
                             <div class="box">
                                 <label class="label">Email</label>
                                 <p class="control" id="login-container" v-bind:class="{ 'has-icons-right' : invalidUsername }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="xhr ? true: false" v-model="email">
+                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="loading ? true: false" v-model="email">
                                     <span class="icon is-small is-right" v-show="invalidUsername"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="invalidUsername">Email not found</p>
                                 </p>
                                 <label class="label">Password</label>
                                 <p class="control" id="password-container" v-bind:class="{ 'has-icons-right' : invalidPassword }">
-                                    <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': invalidPassword }" v-bind:disabled="xhr ? true: false" v-model="password">
+                                    <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': invalidPassword }" v-bind:disabled="loading ? true: false" v-model="password">
                                     <span class="icon is-small is-right" v-show="invalidPassword"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="invalidPassword">Invalid password</p>
                                 </p>
                                 <hr>
                                 <p class="control">
-                                    <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': xhr }" v-bind:disabled="xhr ? true: false">Sign in</button>
+                                    <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">Sign in</button>
                                 </p>
                             </div>
                         </form>
@@ -61,7 +61,7 @@ var signIn = Vue.component('spieldose-signin-component', {
     },
     data: function () {
         return ({
-            xhr: false,
+            loading: false,
             email: "foo@bar",
             password: "secret",
             invalidUsername: false,
@@ -74,14 +74,13 @@ var signIn = Vue.component('spieldose-signin-component', {
             var self = this;
             self.invalidUsername = false;
             self.invalidPassword = false;
-            self.xhr = true;
-            var f = $("form#f_signin");
+            self.loading = true;
             var d = {
                 email: this.email,
                 password: this.password
             };
-            jsonHttpRequest($(f).attr("method"), $(f).attr("action"), d, function (httpStatusCode, response, originalResponse) {
-                self.xhr = false;
+            jsonHttpRequest("post", "/api/user/signin", d, function (httpStatusCode, response, originalResponse) {
+                self.loading = false;
                 switch (httpStatusCode) {
                     case 404:
                         self.invalidUsername = true;

@@ -137,7 +137,7 @@ var player = Vue.component('spieldose-player-component', {
                 self.$refs.player.pause();
                 self.$refs.player.load();
                 self.$refs.player.play();
-                initializeVisualizer($("canvas#canvas")[0], $("audio#player-audio")[0]);
+                initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
             } else {
                 self.$refs.player.pause();
             }
