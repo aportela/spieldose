@@ -140,92 +140,21 @@ var vTemplatePlayLists = function () {
     `;
 }
 
-/*
-    https://stackoverflow.com/a/6274398
-*/
-function shuffle(array) {
-    let counter = array.length;
-
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        let index = Math.floor(Math.random() * counter);
-
-        // Decrease counter by 1
-        counter--;
-
-        // And swap the last element with it
-        let temp = array[counter];
-        array[counter] = array[index];
-        array[index] = temp;
-    }
-
-    return array;
-}
-
 var playLists = Vue.component('spieldose-playlists', {
     template: vTemplatePlayLists(),
     data: function () {
         return ({
             tab: 0,
             loading: false,
-            tracks: [],
             playlists: [],
             pager: getPager(),
-            nowPlayingTrack: {},
         });
     },
     props: [ 'playerData' ],
     mounted: function () {
-    }, created: function () {
-        var self = this;
-        bus.$on("replacePlayList", function (tracks) {
-            //self.tracks = tracks;
-        });
-        bus.$on("nowPlayingTrack", function (track) {
-            //self.nowPlayingTrack = track;
-        });
-        bus.$on("playTrack", function (track) {
-            console.log(track);
-            console.log(self);
-            console.log(tracks);
-            console.log(pager);
-            //self.tracks.push(tracks);
-        });
-        bus.$on("enqueueTrack", function (track) {
-            console.log(track);
-            //self.tracks.push(tracks);
-        });
-        bus.$on("playAlbum", function (album) {
-        });
-        bus.$on("enqueueAlbum", function (album) {
-        });
     }, methods: {
         changeTab: function (tab) {
             this.tab = tab;
-        },
-        play: function (track) {
-            console.log(track);
-        },
-        /*
-        shufflePlayList: function () {
-            this.tracks = shuffle(this.tracks);
-            this.$forceUpdate();
-        },
-        */
-        playPreviousTrack: function() {
-        },
-        pauseTrack: function() {
-            bus.$emit("debug", "pauseTrack");
-        },
-        stopTrack: function() {
-            bus.$emit("debug", "stopTrack");
-        },
-        loveTrack: function() {
-            bus.$emit("debug", "loveTrack");
-        },
-        unLoveTrack: function() {
-            bus.$emit("debug", "unLoveTrack");
         }
     }
 });
