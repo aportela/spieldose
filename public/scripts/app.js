@@ -69,7 +69,7 @@ var getPlayerData = function () {
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.actualTrackIdx < playerData.tracks.length) {
+        if (playerData.actualTrackIdx < playerData.tracks.length - 1) {
             playerData.actualTrackIdx++;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
         }
@@ -85,7 +85,7 @@ var getPlayerData = function () {
         }
     };
     playerData.playAtIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length - 1) {
             playerData.actualTrackIdx = idx;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
             playerData.isPlaying = true;
