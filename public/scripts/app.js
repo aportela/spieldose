@@ -17,9 +17,12 @@ var getPager = function () {
 
 var getPlayerData = function() {
     var playerData = {
+        loading: false,
         isPlaying: false,
+        isPaused: false,
         repeatTracksMode: 'none', // none | track | all
         shuffleTracks: false,
+        actualTrackIdx: 0,
         actualTrack: null,
         tracks: []
     };
@@ -37,6 +40,7 @@ var getPlayerData = function() {
         }
     };
     playerData.loadRandomTracks = function(count, callback) {
+        playerData.loading = true;
         var d = {
             actualPage: 1,
             resultsPage: count,
@@ -44,7 +48,10 @@ var getPlayerData = function() {
         };
         jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
             playerData.tracks = response.tracks;
-            callback();
+            playerData.loading = false;
+            if (callback) {
+                callback();
+            }
         });
     },
     playerData.emptyPlayList = function() {
@@ -54,11 +61,58 @@ var getPlayerData = function() {
         playerData.shuffleTracks = ! playerData.shuffleTracks
     };
     playerData.playPreviousTrack = function() {
-        console.log("play previous track");
+        if (playerData.actualTrackIdx > 0) {
+            playerData.actualTrackIdx--;
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.sendTrack(playerData.actualTrack);
+        }
     };
     playerData.playNextTrack = function() {
-        console.log("play next track");
+        if (playerData.actualTrackIdx < playerData.tracks.length) {
+            playerData.actualTrackIdx++;
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.sendTrack(playerData.actualTrack);
+        }
     };
+    playerData.play = function() {
+        playerData.actualTrackIdx = 0;
+        if (playerData.tracks.length > 0) {
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.sendTrack(playerData.actualTrack);
+            playerData.isPlaying = true;
+            playerData.isPaused = false;
+        } else {
+            playerData.isPlaying = false;
+        }
+    };
+    playerData.playAtIdx = function(idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
+            playerData.actualTrackIdx = idx;
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.sendTrack(playerData.actualTrack);
+            playerData.isPlaying = true;
+            playerData.isPaused = false;
+        } else {
+            playerData.isPlaying = false;
+        }
+    };
+    playerData.pause = function() {
+        playerData.isPaused = true;
+        playerData.isPlaying = false;
+        console.log("pause");
+    };
+    playerData.resume = function() {
+        playerData.isPaused = false;
+        playerData.isPlaying = true;
+        console.log("resume");
+    };
+    playerData.stop = function() {
+        playerData.isPaused = false;
+        playerData.isPlaying = false;
+        console.log("stop");
+    };
+    playerData.sendTrack = function(track) {
+    }
     return(playerData);
 }
 

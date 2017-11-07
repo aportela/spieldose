@@ -12,95 +12,95 @@ var vTemplatePlayLists = function () {
                 </ul>
             </div>
             <div class="field is-grouped" v-show="tab == 0">
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);">
-                            <span class="icon is-small">
-                                <i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i>
-                                <i v-else class="fa fa-clone"></i>
-                            </span>
-                            <span>load random playlist</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
-                            <span class="icon is-small">
-                                <i class="fa fa-eraser"></i>
-                            </span>
-                            <span>clear playlist</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
-                            <span class="icon is-small">
-                                <i class="fa fa-refresh"></i>
-                            </span>
-                            <span>repeat: {{ playerData.repeatTracksMode }}</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="playerData.shuffleTracks ? 'is-primary': ''">
-                            <span class="icon is-small">
-                                <i class="fa fa-random"></i>
-                            </span>
-                            <span>shuffle: {{ playerData.shuffleTracks ? "true": "false" }}</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
-                            <span class="icon is-small">
-                                <i class="fa fa-backward"></i>
-                            </span>
-                            <span>previous</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
-                            <span class="icon is-small">
-                                <i class="fa fa-forward"></i>
-                            </span>
-                            <span>next</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playTrack(); }" :disabled="playerData.isPlaying" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
-                            <span class="icon is-small">
-                                <i class="fa fa-play"></i>
-                            </span>
-                            <span>play</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { pauseTrack(); }" :disabled="! playerData.isPlaying">
-                            <span class="icon is-small">
-                                <i class="fa fa-pause"></i>
-                            </span>
-                            <span>pause</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { stopTrack(); }" :disabled="! playerData.isPlaying">
-                            <span class="icon is-small">
-                                <i class="fa fa-stop"></i>
-                            </span>
-                            <span>stop</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="loveTrack();">
-                            <span class="icon is-small">
-                                <i class="fa fa-heart"></i>
-                            </span>
-                            <span>love</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" v-on:click.prevent="downloadTrack();">
-                            <span class="icon is-small">
-                                <i class="fa fa-save"></i>
-                            </span>
-                            <span>download</span>
-                        </a>
-                    </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (! playerData.loading) { playerData.loadRandomTracks(32); }" :disabled="playerData.loading">
+                        <span class="icon is-small">
+                            <i v-if="playerData.loading" class="fa fa-cog fa-spin fa-fw"></i>
+                            <i v-else class="fa fa-clone"></i>
+                        </span>
+                        <span>load random playlist</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
+                        <span class="icon is-small">
+                            <i class="fa fa-eraser"></i>
+                        </span>
+                        <span>clear playlist</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
+                        <span class="icon is-small">
+                            <i class="fa fa-refresh"></i>
+                        </span>
+                        <span>repeat: {{ playerData.repeatTracksMode }}</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="playerData.shuffleTracks ? 'is-primary': ''">
+                        <span class="icon is-small">
+                            <i class="fa fa-random"></i>
+                        </span>
+                        <span>shuffle: {{ playerData.shuffleTracks ? "true": "false" }}</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.playPreviousTrack(); }" :disabled="! playerData.isPlaying">
+                        <span class="icon is-small">
+                            <i class="fa fa-backward"></i>
+                        </span>
+                        <span>previous</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.playNextTrack(); }" :disabled="! playerData.isPlaying">
+                        <span class="icon is-small">
+                            <i class="fa fa-forward"></i>
+                        </span>
+                        <span>next</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playerData.play(); }" :disabled="playerData.isPlaying" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
+                        <span class="icon is-small">
+                            <i class="fa fa-play"></i>
+                        </span>
+                        <span>play</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); }" :disabled="! playerData.isPlaying" v-bind:class="playerData.isPaused ? 'is-primary': ''">
+                        <span class="icon is-small">
+                            <i class="fa fa-pause"></i>
+                        </span>
+                        <span>pause</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }" :disabled="! playerData.isPlaying">
+                        <span class="icon is-small">
+                            <i class="fa fa-stop"></i>
+                        </span>
+                        <span>stop</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="loveTrack();">
+                        <span class="icon is-small">
+                            <i class="fa fa-heart"></i>
+                        </span>
+                        <span>love</span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a class="button is-light" v-on:click.prevent="downloadTrack();">
+                        <span class="icon is-small">
+                            <i class="fa fa-save"></i>
+                        </span>
+                        <span>download</span>
+                    </a>
+                </p>
             </div>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="tab == 0">
                 <thead>
@@ -113,10 +113,11 @@ var vTemplatePlayLists = function () {
                         </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="track in playerData.tracks" v-bind:class="nowPlayingTrack && nowPlayingTrack.id == track.id ? 'is-selected': ''">
+                    <tr v-for="track, i in playerData.tracks" v-bind:class="playerData.actualTrack && playerData.actualTrack.id == track.id ? 'is-selected': ''">
                         <td>
-                        <i v-if="nowPlayingTrack.id != track.id" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true"></i>
-                        <i v-else title="now playing" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="play(track)"></i>
+                        <i v-if="playerData.actualTrack && playerData.actualTrack.id != track.id" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
+                        <i v-else-if="! playerData.isPaused" title="now playing, click to pause" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
+                        <i v-else title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
                         <span> {{ track.title}}</span>
                         </td>
                         <td><a v-if="track.artist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(track.artist)" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>

@@ -40,7 +40,10 @@ var container = Vue.component('spieldose-app-component', {
     },
     computed: {
     }, created: function () {
-        this.playerData.loadRandomTracks(32, function() {});
+        var self = this;
+        self.playerData.loadRandomTracks(32, function() {
+            self.playerData.play();
+        });
     },
     methods: {
         changeSection: function (s) {
