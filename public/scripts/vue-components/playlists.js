@@ -13,23 +13,26 @@ var vTemplatePlayLists = function () {
             </div>
             <div class="field is-grouped" v-show="tab == 0">
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="toggleRepeatMode();">
                             <span class="icon is-small">
                                 <i class="fa fa-refresh"></i>
                             </span>
-                            <span>repeat: none</span>
+                            <span v-if="repeat == 0">repeat: none</span>
+                            <span v-if="repeat == 1">repeat: song</span>
+                            <span v-if="repeat == 2">repeat: all</span>
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="shufflePlayList();">
+                        <a class="button is-light" v-on:click.prevent="toggleShuffleMode();">
                             <span class="icon is-small">
                                 <i class="fa fa-random"></i>
                             </span>
-                            <span>shuffle tracks</span>
+                            <span v-if="shuffle">shuffle: enabled</span>
+                            <span v-else>shuffle: disabled</span>
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="playPreviousTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-backward"></i>
                             </span>
@@ -37,7 +40,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="playNextTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-forward"></i>
                             </span>
@@ -45,7 +48,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="playTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-play"></i>
                             </span>
@@ -53,7 +56,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="pauseTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-pause"></i>
                             </span>
@@ -61,7 +64,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="stopTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-stop"></i>
                             </span>
@@ -69,7 +72,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="loveTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-heart"></i>
                             </span>
@@ -77,7 +80,7 @@ var vTemplatePlayLists = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-light" v-on:click.prevent="">
+                        <a class="button is-light" v-on:click.prevent="downloadTrack();">
                             <span class="icon is-small">
                                 <i class="fa fa-save"></i>
                             </span>
@@ -154,7 +157,9 @@ var playLists = Vue.component('spieldose-playlists', {
             tracks: [],
             playlists: [],
             pager: getPager(),
-            nowPlayingTrack: null
+            nowPlayingTrack: null,
+            repeat: 0,
+            shuffle: false
         });
     },
     mounted: function () {
@@ -178,9 +183,47 @@ var playLists = Vue.component('spieldose-playlists', {
         play: function (track) {
             console.log(track);
         },
+        /*
         shufflePlayList: function () {
             this.tracks = shuffle(this.tracks);
             this.$forceUpdate();
+        },
+        */
+        toggleRepeatMode: function() {
+            if (this.repeat < 2) {
+                this.repeat++;
+            } else {
+                this.repeat = 0;
+            }
+            bus.$emit("debug", "toggleRepeatMode => " + this.repeat);
+        },
+        toggleShuffleMode: function() {
+            this.shuffle = ! this.shuffle;
+            bus.$emit("debug", "toggleShuffleMode => " + this.shuffle);
+        },
+        playPreviousTrack: function() {
+            bus.$emit("debug", "playPreviousTrack");
+        },
+        playNextTrack: function() {
+            bus.$emit("debug", "playNextTrack");
+        },
+        playTrack: function() {
+            bus.$emit("debug", "playTrack");
+        },
+        pauseTrack: function() {
+            bus.$emit("debug", "pauseTrack");
+        },
+        stopTrack: function() {
+            bus.$emit("debug", "stopTrack");
+        },
+        loveTrack: function() {
+            bus.$emit("debug", "loveTrack");
+        },
+        unLoveTrack: function() {
+            bus.$emit("debug", "unLoveTrack");
+        },
+        downloadTrack: function() {
+            bus.$emit("debug", "downloadTrack");
         }
     }
 });
