@@ -86,7 +86,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="loveTrack();">
+                    <a class="button is-light" v-on:click.prevent="" disabled>
                         <span class="icon is-small">
                             <i class="fa fa-heart"></i>
                         </span>
@@ -150,9 +150,8 @@ var playLists = Vue.component('spieldose-playlists', {
             pager: getPager(),
         });
     },
-    props: [ 'playerData' ],
-    mounted: function () {
-    }, methods: {
+    props: ['playerData'],
+    methods: {
         changeTab: function (tab) {
             this.tab = tab;
         }

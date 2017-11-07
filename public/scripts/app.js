@@ -15,7 +15,7 @@ var getPager = function () {
     });
 }
 
-var getPlayerData = function() {
+var getPlayerData = function () {
     var playerData = {
         loading: false,
         isPlaying: false,
@@ -26,20 +26,7 @@ var getPlayerData = function() {
         actualTrack: null,
         tracks: []
     };
-    playerData.toggleRepeatMode = function() {
-        switch(playerData.repeatTracksMode) {
-            case "none":
-            playerData.repeatTracksMode = "track";
-            break;
-            case "track":
-            playerData.repeatTracksMode = "all";
-            break;
-            default:
-            playerData.repeatTracksMode = "none";
-            break;
-        }
-    };
-    playerData.loadRandomTracks = function(count, callback) {
+    playerData.loadRandomTracks = function (count, callback) {
         playerData.loading = true;
         var d = {
             actualPage: 1,
@@ -53,72 +40,79 @@ var getPlayerData = function() {
                 callback();
             }
         });
-    },
-    playerData.emptyPlayList = function() {
-        playerData.tracks = [];
-    },
-    playerData.toggleShuffleMode = function() {
-        playerData.shuffleTracks = ! playerData.shuffleTracks
     };
-    playerData.playPreviousTrack = function() {
+    playerData.emptyPlayList = function () {
+        playerData.tracks = [];
+    };
+    playerData.toggleRepeatMode = function () {
+        switch (playerData.repeatTracksMode) {
+            case "none":
+                playerData.repeatTracksMode = "track";
+                break;
+            case "track":
+                playerData.repeatTracksMode = "all";
+                break;
+            default:
+                playerData.repeatTracksMode = "none";
+                break;
+        }
+    };
+    playerData.toggleShuffleMode = function () {
+        playerData.shuffleTracks = !playerData.shuffleTracks
+    };
+    playerData.playPreviousTrack = function () {
         if (playerData.actualTrackIdx > 0) {
             playerData.actualTrackIdx--;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            playerData.sendTrack(playerData.actualTrack);
         }
     };
-    playerData.playNextTrack = function() {
+    playerData.playNextTrack = function () {
         if (playerData.actualTrackIdx < playerData.tracks.length) {
             playerData.actualTrackIdx++;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            playerData.sendTrack(playerData.actualTrack);
         }
     };
-    playerData.play = function() {
+    playerData.play = function () {
         playerData.actualTrackIdx = 0;
         if (playerData.tracks.length > 0) {
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            playerData.sendTrack(playerData.actualTrack);
             playerData.isPlaying = true;
             playerData.isPaused = false;
         } else {
             playerData.isPlaying = false;
         }
     };
-    playerData.playAtIdx = function(idx) {
+    playerData.playAtIdx = function (idx) {
         if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
             playerData.actualTrackIdx = idx;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            playerData.sendTrack(playerData.actualTrack);
             playerData.isPlaying = true;
             playerData.isPaused = false;
         } else {
             playerData.isPlaying = false;
         }
     };
-    playerData.pause = function() {
+    playerData.pause = function () {
         playerData.isPaused = true;
         playerData.isPlaying = false;
         console.log("pause");
     };
-    playerData.resume = function() {
+    playerData.resume = function () {
         playerData.isPaused = false;
         playerData.isPlaying = true;
         console.log("resume");
     };
-    playerData.stop = function() {
+    playerData.stop = function () {
         playerData.isPaused = false;
         playerData.isPlaying = false;
         console.log("stop");
     };
-    playerData.download = function(trackId) {
+    playerData.download = function (trackId) {
         if (playerData.actualTrack) {
             window.location = "/api/track/get/" + trackId;
         }
-    },
-    playerData.sendTrack = function(track) {
-    }
-    return(playerData);
+    };
+    return (playerData);
 }
 
 const routes = [
@@ -183,11 +177,11 @@ router.beforeEach((to, from, next) => {
     next()
 });
 
-router.encodeSafeName = function(name) {
+router.encodeSafeName = function (name) {
     if (name && name.indexOf("/") > 0) {
-        return(encodeURIComponent(name));
+        return (encodeURIComponent(name));
     } else {
-        return(name);
+        return (name);
     }
 }
 
