@@ -62,7 +62,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playerData.play(); }" :disabled="playerData.isPlaying" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
+                    <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playerData.play(); }" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
                         <span class="icon is-small">
                             <i class="fa fa-play"></i>
                         </span>
@@ -70,7 +70,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); }" :disabled="! playerData.isPlaying" v-bind:class="playerData.isPaused ? 'is-primary': ''">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); } else if (playerData.isPaused) { playerData.resume(); }"  v-bind:class="playerData.isPaused ? 'is-primary': ''">
                         <span class="icon is-small">
                             <i class="fa fa-pause"></i>
                         </span>
@@ -78,7 +78,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }" :disabled="! playerData.isPlaying">
+                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }">
                         <span class="icon is-small">
                             <i class="fa fa-stop"></i>
                         </span>
