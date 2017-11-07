@@ -27,6 +27,8 @@ var getPlayerData = function () {
         tracks: []
     };
     playerData.loadRandomTracks = function (count, callback) {
+        playerData.isPaused = false;
+        playerData.isPlaying = false;
         playerData.loading = true;
         var d = {
             actualPage: 1,
@@ -95,17 +97,14 @@ var getPlayerData = function () {
     playerData.pause = function () {
         playerData.isPaused = true;
         playerData.isPlaying = false;
-        console.log("pause");
     };
     playerData.resume = function () {
         playerData.isPaused = false;
         playerData.isPlaying = true;
-        console.log("resume");
     };
     playerData.stop = function () {
         playerData.isPaused = false;
         playerData.isPlaying = false;
-        console.log("stop");
     };
     playerData.download = function (trackId) {
         if (playerData.actualTrack) {
