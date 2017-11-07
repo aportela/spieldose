@@ -6,7 +6,7 @@ var vTemplateContainer = function () {
             <spieldose-debug></spieldose-debug>
             <div class="columns is-gapless" id="main_container">
                 <aside id="aside-player" class="column is-3">
-                    <spieldose-player-component></spieldose-player-component>
+                    <spieldose-player-component v-bind:playerData="playerData"></spieldose-player-component>
                 </aside>
                 <section class="column is-9">
                     <keep-alive>
