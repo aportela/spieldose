@@ -41,10 +41,13 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
             pager: getPager()
         });
     },
+    props: ['playerData'],
     watch: {
         '$route'(to, from) {
-            this.pager.actualPage = parseInt(to.params.page);
-            this.search();
+            if (to.name == "albums" || to.name == "albumsPaged") {
+                this.pager.actualPage = parseInt(to.params.page);
+                this.search();
+            }
         }
     },
     created: function () {
@@ -102,8 +105,23 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                 self.loading = false;
             });
         },
+        getAlbumTracks: function(album, artist, callback) {
+            var d = {
+                artist: artist,
+                album: album
+            };
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+                callback(response.tracks);
+            });
+
+        },
         enqueueAlbumTracks: function (album, artist) {
-            bus.$emit("searchIntoPlayList", 1, DEFAULT_SECTION_RESULTS_PAGE, null, artist, album, null);
+            var self = this;
+            this.getAlbumTracks(album, artist, function(tracks) {
+                self.playerData.emptyPlayList();
+                self.playerData.tracks = tracks;
+                self.playerData.play();
+            });
         }
     }
 });
