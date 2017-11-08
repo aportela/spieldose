@@ -8,6 +8,7 @@
 
         public $id;
         public $path;
+        public $mime;
 
 	    public function __construct (string $id = "") {
             $this->id = $id;
@@ -24,11 +25,12 @@
                 if ($dbh == null) {
                     $dbh = new \Spieldose\Database\DB();
                 }
-                $results = $dbh->query("SELECT local_path AS path FROM FILE WHERE id = :id", array(
+                $results = $dbh->query("SELECT local_path AS path, mime FROM FILE WHERE id = :id", array(
                     (new \Spieldose\Database\DBParam())->str(":id", $this->id)
                 ));
                 if (count($results) == 1) {
                     $this->path = $results[0]->path;
+                    $this->mime = $results[0]->mime;
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->name);
                 }

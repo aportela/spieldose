@@ -65,7 +65,7 @@
             if ($partialContent) {
                 // output the right headers for partial content
                 return $response->withStatus(206)
-                ->withHeader('Content-Type', "audio/mpeg")
+                ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
                 ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                 ->withHeader('Content-Length', $filesize)
                 ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
@@ -73,7 +73,7 @@
                 ->write($data);
             } else {
                 return $response->withStatus(200)
-                    ->withHeader('Content-Type', "audio/mpeg")
+                    ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
                     ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                     ->withHeader('Content-Length', $filesize)
                     ->withHeader('Accept-Ranges', 'bytes')
