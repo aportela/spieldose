@@ -32,7 +32,8 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
             loading: false,
             errors: false,
             interval: 0,
-            items: []
+            items: [],
+            playerData: sharedPlayerData,
         });
     },
     created: function () {
@@ -99,12 +100,10 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
         }, changeInterval: function (i) {
             this.interval = i;
             this.loadChartData();
-        }, playTrack: function(track) {
-            bus.$emit("debug", "playTrack");
-            bus.$emit("playTrack", track);
-        }, enqueueTrack: function(track) {
-            bus.$emit("debug", "enqueueTrack");
-            bus.$emit("enqueueTrack", track);
+        }, playTrack: function (track) {
+            this.playerData.replace([ track ]);
+        }, enqueueTrack: function (track) {
+            this.playerData.enqueue([ track ]);
         }
     },
     props: ['type', 'title', 'listItemCount', 'showPlayCount', 'artist']

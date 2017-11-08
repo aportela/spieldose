@@ -6,11 +6,11 @@ var vTemplateContainer = function () {
             <spieldose-debug></spieldose-debug>
             <div class="columns is-gapless" id="main_container">
                 <aside id="aside-player" class="column is-3">
-                    <spieldose-player-component v-bind:playerData="playerData"></spieldose-player-component>
+                    <spieldose-player-component></spieldose-player-component>
                 </aside>
                 <section class="column is-9">
                     <keep-alive>
-                        <router-view v-bind:playerData="playerData"></router-view>
+                        <router-view></router-view>
                     </keep-alive>
                 </section>
             </div>
@@ -28,20 +28,20 @@ var container = Vue.component('spieldose-app-component', {
             artistList: [],
             albumList: [],
             trackList: [],
-            playerData: getPlayerData(),
             pager: {
                 actualPage: 1,
                 previousPage: 1,
                 nextPage: 1,
                 totalPages: 0,
                 resultsPage: DEFAULT_SECTION_RESULTS_PAGE
-            }
+            },
+            playerData: sharedPlayerData,
         });
     },
     computed: {
     }, created: function () {
         var self = this;
-        self.playerData.loadRandomTracks(32, function() {
+        self.playerData.loadRandomTracks(32, function () {
             self.playerData.play();
         });
     },
@@ -210,6 +210,5 @@ var container = Vue.component('spieldose-app-component', {
         encodeURI: function (str) {
             return (encodeURI(str));
         }
-    }, mounted: function () { }
-    , components: {}
+    }
 });

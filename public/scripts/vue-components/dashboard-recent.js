@@ -29,8 +29,9 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
         return ({
             loading: false,
             errors: false,
+            entity: 0,
             items: [],
-            entity: 0
+            playerData: sharedPlayerData,
         });
     },
     created: function () {
@@ -79,14 +80,12 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
         }, changeEntity: function (e) {
             this.entity = e;
             this.loadChartData();
-        }, playTrack: function(track) {
-            bus.$emit("playTrack", track);
-        }, enqueueTrack: function(track) {
-            bus.$emit("enqueueTrack", track);
+        }, playTrack: function (track) {
+            this.playerData.replace([ track ]);
+        }, enqueueTrack: function (track) {
+            this.playerData.enqueue([ track ]);
         }, playAlbum: function(album) {
-            bus.$emit("playAlbum", album);
         }, enqueueAlbum: function(album) {
-            bus.$emit("enqueueAlbum", album);
         }
     },
     props: ['type', 'title', 'listItemCount']

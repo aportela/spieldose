@@ -50,9 +50,9 @@ var player = Vue.component('spieldose-player-component', {
             repeat: false,
             shuffle: false,
             autoPlay: true,
+            playerData: sharedPlayerData,
         });
     },
-    props: ['playerData'],
     computed: {
         isPlaying: function () {
             return (this.playerData.isPlaying || this.playerData.isPaused);
@@ -126,9 +126,6 @@ var player = Vue.component('spieldose-player-component', {
                 return("(year)");
             }
         }
-    },
-    created: function () {
-        var self = this;
     },
     mounted: function () {
         var self = this;

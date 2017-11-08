@@ -148,9 +148,9 @@ var playLists = Vue.component('spieldose-playlists', {
             loading: false,
             playlists: [],
             pager: getPager(),
+            playerData: sharedPlayerData,
         });
     },
-    props: ['playerData'],
     methods: {
         changeTab: function (tab) {
             this.tab = tab;
