@@ -78,7 +78,5 @@ var dashboard = Vue.component('spieldose-dashboard', {
                 }, options: {}
             });
         });
-    }, created: function () {
-    }, methods: {
     }
 });
