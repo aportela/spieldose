@@ -92,10 +92,17 @@
                 } else {
                     $params[] = (new \Spieldose\Database\DBParam())->null(":playtime_string");
                 }
+                $mimeType = $this->id3->getMimeType();
+                if (! empty($mimeType)) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":mime", $mimeType);
+                } else {
+                    $params[] = (new \Spieldose\Database\DBParam())->null(":mime");
+                }
                 $dbh->execute('
                     REPLACE INTO FILE (
                         id,
                         local_path,
+                        mime,
                         track_name,
                         track_artist,
                         artist_mbid,
@@ -112,6 +119,7 @@
                     ) VALUES (
                         :id,
                         :local_path,
+                        :mime,
                         :track_name,
                         :track_artist,
                         :artist_mbid,
@@ -203,7 +211,7 @@
 
         public function getPendingAlbums(\Spieldose\Database\DB $dbh = null) {
             $artists = array();
-            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY album_name";
+            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY RANDOM(), album_name";
             return($dbh->query($query));
         }
 

@@ -97,7 +97,8 @@
                     playtime_seconds AS playtimeSeconds,
                     playtime_string AS playtimeString,
                     COALESCE(MBA1.image, MBA2.image) AS image,
-                    genre
+                    genre,
+                    mime
                 FROM FILE F
                 LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
