@@ -15,14 +15,14 @@ var vTemplateBrowseAlbums = function () {
         <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
         <div class="browse-album-item" v-for="album in albums" v-show="! loading">
             <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist)" v-bind:title="'click to play album'">
-                <img class="album-thumbnail" v-if="album.image" v-bind:src="album.albumCoverUrl"/>
+                <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>
                 <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                 <i class="fa fa-play fa-4x"></i>
                 <img class="vinyl no-cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
             </a>
             <div class="album-info">
                 <p class="album-name">{{ album.name }}</p>
-                <p class="artist-name"><a v-bind:title="'click to open artist section'" v-bind:href="'/#/app/artist/' + album.artist">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                <p class="artist-name"><a v-bind:title="'click to open artist section'" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(album.artist)">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
             </div>
         </div>
         <div class="is-clearfix"></div>
@@ -38,10 +38,10 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
             nameFilter: null,
             timeout: null,
             albums: [],
-            pager: getPager()
+            pager: getPager(),
+            playerData: sharedPlayerData,
         });
     },
-    props: ['playerData'],
     watch: {
         '$route'(to, from) {
             if (to.name == "albums" || to.name == "albumsPaged") {
@@ -60,7 +60,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
         }
         this.search();
     }, methods: {
-        abortInstantSearch: function() {
+        abortInstantSearch: function () {
             this.nameFilter = null;
         },
         instantSearch: function () {
@@ -88,7 +88,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                     if (response.albums[i].image) {
                         response.albums[i].albumCoverUrl = response.albums[i].image;
                     } else {
-                        response.albums[i].albumCoverUrl = "#";
+                        response.albums[i].albumCoverUrl = null;
                     }
                 }
                 if (response.albums.length > 0) {
@@ -105,7 +105,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                 self.loading = false;
             });
         },
-        getAlbumTracks: function(album, artist, callback) {
+        getAlbumTracks: function (album, artist, callback) {
             var d = {
                 artist: artist,
                 album: album
@@ -117,7 +117,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
         },
         enqueueAlbumTracks: function (album, artist) {
             var self = this;
-            this.getAlbumTracks(album, artist, function(tracks) {
+            this.getAlbumTracks(album, artist, function (tracks) {
                 self.playerData.emptyPlayList();
                 self.playerData.tracks = tracks;
                 self.playerData.play();
