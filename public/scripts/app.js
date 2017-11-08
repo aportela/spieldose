@@ -11,7 +11,7 @@ var getPager = function () {
         previousPage: 1,
         nextPage: 1,
         totalPages: 0,
-        resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+        resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
     });
 }
 
@@ -44,6 +44,14 @@ var getPlayerData = function () {
                 callback();
             }
         });
+    };
+    playerData.replace = function (tracks) {
+        playerData.emptyPlayList();
+        playerData.tracks = tracks;
+        playerData.play();
+    };
+    playerData.enqueue = function (tracks) {
+        playerData.tracks.push(tracks);
     };
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
@@ -206,11 +214,13 @@ const app = new Vue({
         bus.$on("changeRouterPath", function (routeName) {
             self.$router.push({ name: routeName });
         });
-        this.poll(function (logged2) {
-            if (!logged2) {
+        this.poll(function (logged) {
+            if (!logged) {
                 self.$router.push({ name: 'signin' });
             } else {
-                //self.$router.push({ name: 'dashboard' });
+                if (!self.$router.name) {
+                    self.$router.push({ name: 'dashboard' });
+                }
             }
         });
     },
