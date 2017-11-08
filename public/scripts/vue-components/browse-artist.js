@@ -31,22 +31,19 @@ var vTemplateBrowseArtist = function () {
                 <div class="content is-clearfix" id="bio" v-html="artist.bio"></div>
             </div>
             <div class="panel" v-if="activeTab == 'albums'">
-                <div class="album_item" v-for="album in artist.albums">
-                    <a class="play_album" v-on:click="playAlbum(album.name, artist.name)">
-                        <img class="album_cover" v-if="album.image" v-bind:src="album.image"/>
-                        <img class="album_cover" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                <div class="browse-album-item" v-for="album in artist.albums" v-show="! loading">
+                    <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist)" v-bind:title="'click to play album'">
+                        <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>
+                        <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                         <i class="fa fa-play fa-4x"></i>
-                        <img class="vynil no_cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                        <img class="vinyl no-cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
                     </a>
-                    <div class="album_info">
-                        <p class="album_name" title="">{{ album.name }} ({{ album.year }})</p>
+                    <div class="album-info">
+                        <p class="album-name">{{ album.name }}</p>
+                        <p class="album-year" v-show="album.year">({{ album.year }})</p>
                     </div>
-                    <!--
-                    <ul v-if="detailedView">
-                        <li v-for="track in album.tracks"><a>{{ track.title }} ({{ track.playtimeString }})</a></li>
-                    </ul>
-                    -->
                 </div>
+                <div class="is-clearfix"></div>
             </div>
         </div>
     </article>
@@ -62,8 +59,9 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             activeTab: 'overview',
             truncatedBio: null,
             detailedView: false,
+            playerData: sharedPlayerData,
         });
-    }, props: ['section'],
+    },
     watch: {
         '$route'(to, from) {
             if (to.name == "artist") {
@@ -100,6 +98,24 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             this.detailedView = true;
         }, truncate: function (text) {
             return (text.substring(0, 500));
+        },
+        getAlbumTracks: function (album, artist, callback) {
+            var d = {
+                artist: artist,
+                album: album
+            };
+            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
+                callback(response.tracks);
+            });
+
+        },
+        enqueueAlbumTracks: function (album, artist) {
+            var self = this;
+            this.getAlbumTracks(album, artist, function (tracks) {
+                self.playerData.emptyPlayList();
+                self.playerData.tracks = tracks;
+                self.playerData.play();
+            });
         }
     }
 });
