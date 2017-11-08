@@ -14,6 +14,7 @@
             'CREATE TABLE [FILE] (
                 [id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY,
                 [local_path] VARCHAR(2048) UNIQUE NOT NULL,
+                [mime] VARCHAR(127),
                 [track_name] VARCHAR(128),
                 [track_mbid] VARCHAR(36),
                 [track_artist] VARCHAR(128),
@@ -57,7 +58,7 @@
                 [user_id] VARCHAR(32) NOT NULL,
                 [file_id] VARCHAR(40) NOT NULL,
                 [played] INTEGER NOT NULL,
-                PRIMARY KEY(`user_id`,`file_id`)
+                PRIMARY KEY(`user_id`,`file_id`, `played`)
             )',
             'PRAGMA journal_mode=WAL'
         );
