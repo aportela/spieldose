@@ -215,7 +215,7 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT strftime("%s", S.played) AS hour, COUNT(*) AS total
+                SELECT strftime("%s", S.played, "localtime") AS hour, COUNT(*) AS total
                 FROM STATS S
                 %s
                 GROUP BY hour
