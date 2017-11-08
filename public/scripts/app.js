@@ -51,7 +51,11 @@ var getPlayerData = function () {
         playerData.play();
     };
     playerData.enqueue = function (tracks) {
-        playerData.tracks.push(tracks);
+        if (tracks.length > 0) {
+            for (var i = 0; i < tracks.length; i++) {
+                playerData.tracks.push(tracks[i]);
+            }
+        }
     };
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
@@ -128,6 +132,8 @@ var getPlayerData = function () {
     return (playerData);
 }
 
+const sharedPlayerData = getPlayerData();
+
 const routes = [
     { path: '/signin', name: 'signin', component: signIn },
     {
@@ -187,7 +193,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
-    next()
+    next();
 });
 
 router.encodeSafeName = function (name) {
@@ -202,8 +208,8 @@ const app = new Vue({
     router,
     data: function () {
         return ({
-            xhr: false,
-            logged: true
+            loading: false,
+            logged: false
         });
     },
     created: function () {
@@ -227,9 +233,9 @@ const app = new Vue({
     methods: {
         signout: function () {
             var self = this;
-            self.xhr = true;
+            self.loading = true;
             jsonHttpRequest("GET", "/api/user/signout", {}, function (httpStatusCode, response, originalResponse) {
-                self.xhr = false;
+                self.loading = false;
                 self.logged = false;
                 switch (httpStatusCode) {
                     case 200:
@@ -243,9 +249,9 @@ const app = new Vue({
         },
         poll: function (callback) {
             var self = this;
-            self.xhr = true;
+            self.loading = true;
             jsonHttpRequest("GET", "/api/user/poll", {}, function (httpStatusCode, response, originalResponse) {
-                self.xhr = false;
+                self.loading = false;
                 callback(httpStatusCode == 200);
             });
         }
