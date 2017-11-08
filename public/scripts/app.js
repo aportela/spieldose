@@ -125,7 +125,7 @@ var getPlayerData = function () {
         playerData.isPlaying = false;
     };
     playerData.download = function (trackId) {
-        if (playerData.actualTrack) {
+        if (trackId) {
             window.location = "/api/track/get/" + trackId;
         }
     };
