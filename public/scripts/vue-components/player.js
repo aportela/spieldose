@@ -12,7 +12,7 @@ var vTemplatePlayer = function () {
             <p>
                 <span v-if="nowPlayingArtist"><a class="title is-6 is-marginless has-text-centered has-text-light" v-if="nowPlayingArtist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(nowPlayingArtist)">{{ nowPlayingArtist }}</a></span>
                 <span v-else></span>
-                <span v-if="nowPlayingArtistAlbum">{{ nowPlayingArtistAlbum + nowPlayingYear  }}</span>
+                <span v-if="nowPlayingArtistAlbum"><a class="title is-6 is-marginless has-text-centered has-text-light">{{ nowPlayingArtistAlbum + nowPlayingYear  }}</a></span>
                 <span v-else></span>
             </p>
         </div>
