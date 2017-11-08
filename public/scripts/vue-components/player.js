@@ -31,7 +31,7 @@ var vTemplatePlayer = function () {
                 <div class="column is-2"><i title="previous track" v-on:click.prevent="playerData.playPreviousTrack();" class="fa fa-backward fa-lg"></i></div>
                 <div class="column is-2"><i title="next track" v-on:click.prevent="playerData.playNextTrack();" class="fa fa-forward fa-lg"></i></div>
                 <div class="column is-2"><i title="mark as loved song" class="fa fa-heart fa-lg"></i></div>
-                <div class="column is-2"><i title="download song" v-on:click.prevent="playerData.download();" class="fa fa-save fa-lg"></i></div>
+                <div class="column is-2"><i title="download song" v-on:click.prevent="playerData.download(playerData.tracks[playerData.actualTrackIdx].id);" class="fa fa-save fa-lg"></i></div>
             </div>
         </div>
         <spieldose-menu-component></spieldose-menu-component>
