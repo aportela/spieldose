@@ -87,7 +87,7 @@ var getPlayerData = function () {
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.actualTrackIdx < playerData.tracks.length - 1) {
+        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
             playerData.actualTrackIdx++;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
         }
@@ -103,7 +103,7 @@ var getPlayerData = function () {
         }
     };
     playerData.playAtIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx < playerData.tracks.length - 1) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
             playerData.actualTrackIdx = idx;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
             playerData.isPlaying = true;
@@ -127,6 +127,13 @@ var getPlayerData = function () {
     playerData.download = function (trackId) {
         if (playerData.actualTrack) {
             window.location = "/api/track/get/" + trackId;
+        }
+    };
+    playerData.advancePlayList = function () {
+        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+            playerData.playAtIdx(playerData.actualTrackIdx + 1);
+        } else {
+            playerData.stop();
         }
     };
     return (playerData);

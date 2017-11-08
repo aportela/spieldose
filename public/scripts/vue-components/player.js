@@ -76,7 +76,7 @@ var player = Vue.component('spieldose-player-component', {
                 if (this.playerData.actualTrack.title) {
                     return (this.playerData.actualTrack.title);
                 } else {
-                    return("track title unknown");
+                    return ("track title unknown");
                 }
             } else {
                 return ("track title");
@@ -90,7 +90,7 @@ var player = Vue.component('spieldose-player-component', {
                     return ("(00:00)");
                 }
             } else {
-                return("(track length)");
+                return ("(track length)");
             }
         },
         nowPlayingArtist: function () {
@@ -112,7 +112,7 @@ var player = Vue.component('spieldose-player-component', {
                     return ("album unknown");
                 }
             } else {
-                return("album");
+                return ("album");
             }
         },
         nowPlayingYear: function () {
@@ -123,7 +123,7 @@ var player = Vue.component('spieldose-player-component', {
                     return ("(year unknown)");
                 }
             } else {
-                return("(year)");
+                return ("(year)");
             }
         }
     },
@@ -138,6 +138,9 @@ var player = Vue.component('spieldose-player-component', {
             } else {
                 self.$refs.player.pause();
             }
+        });
+        self.$refs.player.addEventListener("ended", function () {
+            self.playerData.advancePlayList();
         });
     }
 });
