@@ -66,7 +66,9 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     }, props: ['section'],
     watch: {
         '$route'(to, from) {
-            this.getArtist(to.params.artist);
+            if (to.name == "artist") {
+                this.getArtist(to.params.artist);
+            }
         }
     }
     , created: function () {
