@@ -600,3 +600,8 @@ div#debug
     font-weight: bold;
     padding: 0.2rem;
 }
+
+.no-text-decoration
+{
+    text-decoration: none !important;
+}
