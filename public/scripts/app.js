@@ -231,7 +231,7 @@ const app = new Vue({
             if (!logged) {
                 self.$router.push({ name: 'signin' });
             } else {
-                if (!self.$router.name) {
+                if (!self.$router.params.name) {
                     self.$router.push({ name: 'dashboard' });
                 }
             }
