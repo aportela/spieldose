@@ -15,7 +15,7 @@ var jsonHttpRequest = function (method, url, jsonData, callback) {
                 console.log(xhr.responseText);
                 console.groupEnd();
             } finally {
-                callback(xhr.status, jsonResult, jsonResult == null ? xhr.responseText: null);
+                callback(xhr.status, jsonResult, jsonResult == null ? xhr.responseText: null, xhr.getAllResponseHeaders());
             }
         }
     }
