@@ -84,6 +84,24 @@
         }
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->post('/api/track/{id}/love', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/track/love' route");
+        $route = $request->getAttribute('route');
+        $track  = new \Spieldose\Track($route->getArgument("id"));
+        $db = new \Spieldose\Database\DB();
+        $loved = $track->love($db);
+        return $response->withJson(['loved' => $loved ? "1": "0"], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/track/{id}/unlove', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/track/unlove' route");
+        $route = $request->getAttribute('route');
+        $track  = new \Spieldose\Track($route->getArgument("id"));
+        $db = new \Spieldose\Database\DB();
+        $loved = $track->unLove($db);
+        return $response->withJson(['loved' => "0" ], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/track/search', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/track/search' route");
         $filter = array();

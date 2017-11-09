@@ -129,6 +129,20 @@ var getPlayerData = function () {
             window.location = "/api/track/get/" + trackId;
         }
     };
+    playerData.love = function(track) {
+        playerData.loading = true;
+        jsonHttpRequest("POST", "/api/track/" + track.id + "/love", {}, function (httpStatusCode, response) {
+            playerData.loading = false;
+            track.loved = response.loved;
+        });
+    };
+    playerData.unlove = function(track) {
+        playerData.loading = true;
+        jsonHttpRequest("POST", "/api/track/" + track.id + "/unlove", {}, function (httpStatusCode, response) {
+            playerData.loading = false;
+            track.loved = response.loved;
+        });
+    };
     playerData.advancePlayList = function () {
         if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
             playerData.playAtIdx(playerData.actualTrackIdx + 1);

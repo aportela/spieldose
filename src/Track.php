@@ -88,6 +88,7 @@
             } else {
                 $sqlOrder = " ORDER BY F.track_number, COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
             }
+            $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
             $query = sprintf('
                 SELECT DISTINCT
                     id,
@@ -100,11 +101,13 @@
                     playtime_string AS playtimeString,
                     COALESCE(MBA1.image, MBA2.image) AS image,
                     genre,
-                    mime
+                    mime,
+                    COALESCE(LF.loved, 0) AS loved
                 FROM FILE F
                 LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
                 LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
+                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
                 WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 %s
                 %s
@@ -124,6 +127,26 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
                 return($dbh->execute('INSERT INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
+        }
+
+        public function love(\Spieldose\Database\DB $dbh): bool {
+            if (isset($this->id) && ! empty($this->id)) {
+                $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                return($dbh->execute('REPLACE INTO LOVED_FILE (file_id, user_id, loved) VALUES(:file_id, :user_id, 1); ', $params));
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
+        }
+
+        public function unLove(\Spieldose\Database\DB $dbh): bool {
+            if (isset($this->id) && ! empty($this->id)) {
+                $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                return($dbh->execute('DELETE FROM LOVED_FILE WHERE file_id = :file_id AND user_id = :user_id; ', $params));
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }

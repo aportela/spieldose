@@ -60,6 +60,14 @@
                 [played] INTEGER NOT NULL,
                 PRIMARY KEY(`user_id`,`file_id`, `played`)
             )',
+            '
+            CREATE TABLE [LOVED_FILE] (
+                [file_id] VARCHAR(40) NOT NULL,
+                [user_id] VARCHAR(32) NOT NULL,
+                [loved]	INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY([file_id], [user_id])
+            );
+            ',
             'PRAGMA journal_mode=WAL'
         );
 
