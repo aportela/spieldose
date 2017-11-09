@@ -24,11 +24,12 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
             }
             $query = sprintf('
-                SELECT S.file_id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COUNT(S.played) AS total
+                SELECT S.file_id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
                 %s
                 GROUP BY S.file_id
                 HAVING title NOT NULL
@@ -96,16 +97,20 @@
 
         public static function GetRecentlyAddedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array {
             $metrics = array();
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            );
             $query = sprintf('
-                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year
+                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
                 WHERE title IS NOT NULL
                 ORDER BY created DESC
                 LIMIT %d;
             ', $count);
-            $metrics = $dbh->query($query, array());
+            $metrics = $dbh->query($query, $params);
             return($metrics);
         }
 
@@ -147,11 +152,12 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT DISTINCT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year
+                SELECT DISTINCT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
                 WHERE title IS NOT NULL
                 %s
                 ORDER BY S.played DESC
