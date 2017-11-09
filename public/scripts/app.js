@@ -26,6 +26,9 @@ var getPlayerData = function () {
         actualTrack: null,
         tracks: []
     };
+    playerData.hasTracks = function() {
+        return(playerData.tracks && playerData.tracks.length > 0);
+    };
     playerData.loadRandomTracks = function (count, callback) {
         playerData.isPaused = false;
         playerData.isPlaying = false;
@@ -245,9 +248,7 @@ const app = new Vue({
             if (!logged) {
                 self.$router.push({ name: 'signin' });
             } else {
-                if (!self.$router.params.name) {
-                    self.$router.push({ name: 'dashboard' });
-                }
+                self.$router.push({ name: 'dashboard' });
             }
         });
     },
