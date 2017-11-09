@@ -13,16 +13,28 @@ var vTemplateApiError = function () {
                 <p v-if="! visibleDetails"><a href="#" v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
                 <div v-if="visibleDetails">
                     <hr>
-                    <h2>Api url:</h2>
-                    <pre>{{ apiErrorResponse.url }}</pre>
-                    <h2>Api method:</h2>
-                    <pre>{{ apiErrorResponse.method }}</pre>
-                    <h2>Api params:</h2>
-                    <pre>{{ apiErrorResponse.params }}</pre>
-                    <h2>Api response headers:</h2>
-                    <pre>{{ apiErrorResponse.headers }}</pre>
-                    <h2>Api response body:</h2>
-                    <pre>{{ apiErrorResponse.body }}</pre>
+                    <div class="tabs is-medium is-toggle">
+                        <ul>
+                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'request' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeTab('request');"><span class="icon is-small"><i class="fa fa-upload"></i></span><span>Request</span></a></li>
+                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'response' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeTab('response');"><span class="icon is-small"><i class="fa fa-download"></i></span><span>Response</span></a></li>
+                        </ul>
+                    </div>
+                    <div class="panel" v-if="activeTab == 'request'">
+                        <h2>Api request url:</h2>
+                        <pre>{{ apiErrorResponse.url }}</pre>
+                        <h2>Api request method:</h2>
+                        <pre>{{ apiErrorResponse.method }}</pre>
+                        <h2>Api request headers:</h2>
+                        <pre>{{ apiErrorResponse.headers }}</pre>
+                        <h2>Api request params:</h2>
+                        <pre>{{ apiErrorResponse.params }}</pre>
+                    </div>
+                    <div class="panel" v-if="activeTab == 'response'">
+                        <h2>Api response headers:</h2>
+                        <pre>{{ apiErrorResponse.headers }}</pre>
+                        <h2>Api response body:</h2>
+                        <pre>{{ apiErrorResponse.body }}</pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -35,12 +47,16 @@ var apiError = Vue.component('spieldose-api-error-component', {
     template: vTemplateApiError(),
     data: function () {
         return ({
-            visibleDetails: false
+            visibleDetails: false,
+            activeTab: "request"
         });
     }, props: ['apiErrorResponse'],
     methods: {
         toggleDetails() {
             this.visibleDetails = ! this.visibleDetails;
+        },
+        changeTab(tab) {
+            this.activeTab = tab;
         }
     }
 });
