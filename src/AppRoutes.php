@@ -6,7 +6,9 @@
 
     $app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton GET '/' route");
-        return $this->view->render($response, 'index.html.twig', []);
+        return $this->view->render($response, 'index.html.twig', array(
+            'settings' => $this->settings["twigParams"]
+        ));
     });
 
     $app->get('/api/user/poll', function (Request $request, Response $response, array $args) {

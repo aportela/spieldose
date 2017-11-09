@@ -5,6 +5,10 @@
         'settings' => [
             'displayErrorDetails' => true, // set to false in production
             'addContentLengthHeader' => false, // Allow the web server to send the content-length header
+            'twigParams' => [
+                'production' => true,
+                'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
+            ],
             // Renderer settings
             'renderer' => [
                 'template_path' => __DIR__ . '/../templates',

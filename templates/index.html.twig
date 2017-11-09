@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <title>Spieldose</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-  <!-- Bulma Version 0.6.0 -->
-  <!--
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css" integrity="sha256-HEtF7HLJZSC3Le1HcsWbz1hDYFPZCqDhZa9QsCgVUdw=" crossorigin="anonymous" />
-  -->
-  <link rel="stylesheet" href="styles/vendor/bulma.min.css" integrity="sha256-HEtF7HLJZSC3Le1HcsWbz1hDYFPZCqDhZa9QsCgVUdw=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="styles/app.css">
-  </head>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <title>Spieldose</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+        {% if settings.localVendorAssets %}
+            {% if settings.production %}
+        <link rel="stylesheet" href="styles/vendor/bulma-0.6.1/css/bulma.min.css" integrity="sha256-v5YlJGWVLS5hQ+o48fBzCKHEP2vMNsku57x3CosYykc=" crossorigin="anonymous" />
+            {% else %}
+        <link rel="stylesheet" href="styles/vendor/bulma-0.6.1/css/bulma.css" integrity="sha256-lUssH++umYLC/97WXqr424ew3ing8e+dATTAmMpCF40=" crossorigin="anonymous" />
+            {% endif %}
+        {% else %}
+            {% if settings.production %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css" integrity="sha256-v5YlJGWVLS5hQ+o48fBzCKHEP2vMNsku57x3CosYykc=" crossorigin="anonymous" />
+            {% else %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.css" integrity="sha256-lUssH++umYLC/97WXqr424ew3ing8e+dATTAmMpCF40=" crossorigin="anonymous" />
+            {% endif %}
+        {% endif %}
+        <link rel="stylesheet" href="styles/app.css">
+    </head>
     <body>
         <div id="app">
             <transition name="fade">
@@ -23,11 +31,25 @@
                 <router-view></router-view>
             </transition>
         </div>
-        <!--
-        <script src="https://unpkg.com/vue@2.5.0"></script>
-        -->
-        <script src="scripts/vendor/vue.min.js"></script>
-        <script src="scripts/vendor/vue-router.min.js"></script>
+
+        {% if settings.localVendorAssets %}
+            {% if settings.production %}
+        <script src="scripts/vendor/vue-2.5.3/vue.min.js" integrity="sha256-nAf3juAvyNkyQ17QrPxyArUX5HVce401EpmGfiFXyvk=" crossorigin="anonymous"></script>
+        <script src="scripts/vendor/vue-router-3.0.1/vue-router.min.js" integrity="sha256-yEB9jUlD51i5kxJZlzgzfR6XmVKI76Nl1WRA1aqIilU=" crossorigin="anonymous"></script>
+            {% else %}
+        <script src="scripts/vendor/vue-2.5.3/vue.js" integrity="sha256-C6USxZcxxFo9Wm1p3PFcYgEVpHQqRegQ0dgGc8rlR4o=" crossorigin="anonymous"></script>
+        <script src="scripts/vendor/vue-router-3.0.1/vue-router.js" integrity="sha256-POlBNmX1CMDkfPMqbFqOxE8fGJyTT7tcwch5tvXZqVs=" crossorigin="anonymous"></script>
+            {% endif %}
+        {% else %}
+            {% if settings.production %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js" integrity="sha256-nAf3juAvyNkyQ17QrPxyArUX5HVce401EpmGfiFXyvk=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.min.js" integrity="sha256-yEB9jUlD51i5kxJZlzgzfR6XmVKI76Nl1WRA1aqIilU=" crossorigin="anonymous"></script>
+            {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js" integrity="sha256-C6USxZcxxFo9Wm1p3PFcYgEVpHQqRegQ0dgGc8rlR4o=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js" integrity="sha256-POlBNmX1CMDkfPMqbFqOxE8fGJyTT7tcwch5tvXZqVs=" crossorigin="anonymous"></script>
+            {% endif %}
+        {% endif %}
+
         <script src="scripts/xhrHelper.js"></script>
         <script src="scripts/vue-components/modal.js"></script>
 
@@ -63,6 +85,5 @@
         <script src="scripts/vue-components/player.js"></script>
         <script src="scripts/app.js"></script>
         <!-- app section -->
-
     </body>
 </html>
