@@ -3,7 +3,6 @@
 var vTemplateContainer = function () {
     return `
         <div class="hero is-fullheight is-light is-bold">
-            <spieldose-debug></spieldose-debug>
             <div class="columns is-gapless" id="main_container">
                 <aside id="aside-player" class="column is-3">
                     <spieldose-player-component></spieldose-player-component>
@@ -22,7 +21,6 @@ var container = Vue.component('spieldose-app-component', {
     template: vTemplateContainer(),
     data: function () {
         return ({
-            xhr: false,
             section: null,
             urlHash: window.location.hash,
             artistList: [],

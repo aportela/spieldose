@@ -33,6 +33,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     data: function () {
         return ({
             loading: false,
+            errors: false,
             nameFilter: null,
             timeout: null,
             artists: [],
@@ -71,6 +72,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
         search: function () {
             var self = this;
             self.loading = true;
+            self.errors = false;
             var d = {
                 actualPage: parseInt(self.pager.actualPage),
                 resultsPage: parseInt(self.pager.resultsPage)
@@ -79,17 +81,21 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
                 d.text = self.nameFilter;
             }
             jsonHttpRequest("POST", "/api/artist/search", d, function (httpStatusCode, response) {
-                if (response.artists.length > 0) {
-                    self.pager.totalPages = response.totalPages;
+                if (httpStatusCode == 200) {
+                    if (response.artists.length > 0) {
+                        self.pager.totalPages = response.totalPages;
+                    } else {
+                        self.pager.totalPages = 0;
+                    }
+                    if (self.pager.actualPage < self.pager.totalPages) {
+                        self.pager.nextPage = self.pager.actualPage + 1;
+                    } else {
+                        self.pager.nextPage = self.pager.totalPages;
+                    }
+                    self.artists = response.artists;
                 } else {
-                    self.pager.totalPages = 0;
+                    self.errors = true;
                 }
-                if (self.pager.actualPage < self.pager.totalPages) {
-                    self.pager.nextPage = self.pager.actualPage + 1;
-                } else {
-                    self.pager.nextPage = self.pager.totalPages;
-                }
-                self.artists = response.artists;
                 self.loading = false;
             });
         }

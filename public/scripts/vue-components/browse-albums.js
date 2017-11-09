@@ -35,6 +35,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
     data: function () {
         return ({
             loading: false,
+            errors: true,
             nameFilter: null,
             timeout: null,
             albums: [],
@@ -76,6 +77,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
         search: function () {
             var self = this;
             self.loading = true;
+            self.errors = false;
             var d = {
                 actualPage: parseInt(self.pager.actualPage),
                 resultsPage: parseInt(self.pager.resultsPage)
@@ -84,24 +86,28 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                 d.text = self.nameFilter;
             }
             jsonHttpRequest("POST", "/api/album/search", d, function (httpStatusCode, response) {
-                for (var i = 0; i < response.albums.length; i++) {
-                    if (response.albums[i].image) {
-                        response.albums[i].albumCoverUrl = response.albums[i].image;
-                    } else {
-                        response.albums[i].albumCoverUrl = null;
+                if (httpStatusCode == 200) {
+                    for (var i = 0; i < response.albums.length; i++) {
+                        if (response.albums[i].image) {
+                            response.albums[i].albumCoverUrl = response.albums[i].image;
+                        } else {
+                            response.albums[i].albumCoverUrl = null;
+                        }
                     }
-                }
-                if (response.albums.length > 0) {
-                    self.pager.totalPages = response.totalPages;
+                    if (response.albums.length > 0) {
+                        self.pager.totalPages = response.totalPages;
+                    } else {
+                        self.pager.totalPages = 0;
+                    }
+                    if (self.pager.actualPage < self.pager.totalPages) {
+                        self.pager.nextPage = self.pager.actualPage + 1;
+                    } else {
+                        self.pager.nextPage = self.pager.totalPages;
+                    }
+                    self.albums = response.albums;
                 } else {
-                    self.pager.totalPages = 0;
+                    self.errors = true;
                 }
-                if (self.pager.actualPage < self.pager.totalPages) {
-                    self.pager.nextPage = self.pager.actualPage + 1;
-                } else {
-                    self.pager.nextPage = self.pager.totalPages;
-                }
-                self.albums = response.albums;
                 self.loading = false;
             });
         },
@@ -110,8 +116,18 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                 artist: artist,
                 album: album
             };
+            var self = this;
+            self.loading = true;
+            self.errors = false;
             jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
-                callback(response.tracks);
+                if (httpStatusCode == 200) {
+                    self.loading = false;
+                    callback(response.tracks);
+                } else {
+                    self.loading = false;
+                    self.errors = true;
+                    callback([]);
+                }
             });
 
         },

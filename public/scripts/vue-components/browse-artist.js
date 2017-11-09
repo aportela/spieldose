@@ -55,6 +55,7 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     data: function () {
         return ({
             loading: false,
+            errors: false,
             artist: {},
             activeTab: 'overview',
             truncatedBio: null,
@@ -75,13 +76,18 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
         getArtist: function (artist) {
             var self = this;
             self.loading = true;
+            self.errors = false;
             var d = {};
             jsonHttpRequest("GET", "/api/artist/" + encodeURIComponent(artist), d, function (httpStatusCode, response) {
-                self.artist = response.artist;
-                if (self.artist.bio) {
-                    self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                    self.truncatedBio = self.truncate(self.artist.bio);
-                    self.activeTab = "overview";
+                if (httpStatusCode == 200) {
+                    self.artist = response.artist;
+                    if (self.artist.bio) {
+                        self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                        self.truncatedBio = self.truncate(self.artist.bio);
+                        self.activeTab = "overview";
+                    }
+                } else {
+                    self.errors = true;
                 }
                 self.loading = false;
             });
@@ -100,12 +106,22 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             return (text.substring(0, 500));
         },
         getAlbumTracks: function (album, artist, callback) {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
             var d = {
                 artist: artist,
                 album: album
             };
             jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
-                callback(response.tracks);
+                if (httpStatusCode == 200) {
+                    self.loading = false;
+                    self.errors = false;
+                    callback(response.tracks);
+                } else {
+                    self.loading = false;
+                    self.errors = true;
+                }
             });
 
         },

@@ -48,35 +48,41 @@ var dashboard = Vue.component('spieldose-dashboard', {
     template: vTemplateDashboard(),
     data: function () {
         return ({
-            loading: false
+            loading: false,
+            errors: false
         });
     },
     mounted: function () {
         var self = this;
         var d = {};
         self.loading = true;
+        self.errors = false;
         jsonHttpRequest("POST", "/api/metrics/play_stats", d, function (httpStatusCode, response) {
-            self.loading = false;
-            var d = [ 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-            for (var i = 0; i < response.metrics.length; i++) {
-                d[response.metrics[i].hour] = response.metrics[i].total;
+            if (httpStatusCode == 200) {
+                var d = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for (var i = 0; i < response.metrics.length; i++) {
+                    d[response.metrics[i].hour] = response.metrics[i].total;
+                }
+                var ctx = document.getElementById("playcount-metrics-chart");
+                var myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+                        datasets: [
+                            {
+                                "label": "by hour",
+                                "data": d,
+                                "fill": true,
+                                "borderColor": "rgb(75, 192, 192)",
+                                "lineTension": 0.1
+                            }
+                        ]
+                    }, options: {}
+                });
+            } else {
+                self.errors = true;
             }
-            var ctx = document.getElementById("playcount-metrics-chart");
-            var myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-                    datasets: [
-                        {
-                            "label": "by hour",
-                            "data": d,
-                            "fill": true,
-                            "borderColor": "rgb(75, 192, 192)",
-                            "lineTension": 0.1
-                        }
-                    ]
-                }, options: {}
-            });
+            self.loading = false;
         });
     }
 });

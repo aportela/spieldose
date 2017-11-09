@@ -80,6 +80,7 @@ var search = Vue.component('spieldose-search', {
     data: function () {
         return ({
             loading: false,
+            errors: false,
             textFilter: null,
             timeout: null,
             artists: [],
@@ -103,6 +104,7 @@ var search = Vue.component('spieldose-search', {
         search: function () {
             var self = this;
             self.loading = true;
+            self.errors = false;
             var d = {
                 actualPage: 1,
                 resultsPage: 8
@@ -111,10 +113,14 @@ var search = Vue.component('spieldose-search', {
                 d.text = self.textFilter;
             }
             jsonHttpRequest("POST", "/api/search/global", d, function (httpStatusCode, response) {
-                self.artists = response.artists;
-                self.albums = response.albums;
-                self.tracks = response.tracks;
-                self.playLists = [];
+                if (httpStatusCode == 200) {
+                    self.artists = response.artists;
+                    self.albums = response.albums;
+                    self.tracks = response.tracks;
+                    self.playLists = [];
+                } else {
+                    self.errors = true;
+                }
                 self.loading = false;
             });
         },
