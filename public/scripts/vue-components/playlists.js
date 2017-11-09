@@ -86,7 +86,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light is-primary" v-if="playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" :disabled="playerData.loading">
+                    <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i class="fa fa-heart"></i>
                         </span>

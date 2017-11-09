@@ -35,7 +35,7 @@ var vTemplatePlayer = function () {
                 <div class="column is-1"><i title="pause" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); } else if (playerData.isPaused) { playerData.resume(); }" class="fa fa-pause fa-lg" v-bind:class="{ 'player-active-control': playerData.isPaused }"></i></div>
                 <div class="column is-1"><i title="stop" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }" class="fa fa-stop fa-lg" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></div>
                 <div class="column is-1">
-                    <i v-if="playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
+                    <i v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
                     <i v-else title="mark as loved song" class="fa fa-heart fa-lg" v-on:click.prevent="playerData.love(playerData.tracks[playerData.actualTrackIdx]);"></i>
                 </div>
                 <div class="column is-1"><i title="download song" v-on:click.prevent="playerData.download(playerData.tracks[playerData.actualTrackIdx].id);" class="fa fa-save fa-lg"></i></div>
