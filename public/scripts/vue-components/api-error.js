@@ -9,7 +9,7 @@ var vTemplateApiError = function () {
         <div class="message-body">
             <div class="content">
                 <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
-                <h2>Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiErrorResponse.code }})</h2>
+                <h2>Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiResponse.status }} - {{ apiResponse.statusText }})</h2>
                 <p v-if="! visibleDetails"><a href="#" v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
                 <div v-if="visibleDetails">
                     <hr>
@@ -21,19 +21,17 @@ var vTemplateApiError = function () {
                     </div>
                     <div class="panel" v-if="activeTab == 'request'">
                         <h2>Api request url:</h2>
-                        <pre>{{ apiErrorResponse.url }}</pre>
+                        <pre>{{ apiRequest.url }}</pre>
                         <h2>Api request method:</h2>
-                        <pre>{{ apiErrorResponse.method }}</pre>
-                        <h2>Api request headers:</h2>
-                        <pre>{{ apiErrorResponse.headers }}</pre>
+                        <pre>{{ apiRequest.method  }}</pre>
                         <h2>Api request params:</h2>
-                        <pre>{{ apiErrorResponse.params }}</pre>
+                        <pre>{{ apiRequest.params }}</pre>
                     </div>
                     <div class="panel" v-if="activeTab == 'response'">
                         <h2>Api response headers:</h2>
-                        <pre>{{ apiErrorResponse.headers }}</pre>
-                        <h2>Api response body:</h2>
-                        <pre>{{ apiErrorResponse.body }}</pre>
+                        <pre>{{ apiResponse.headers }}</pre>
+                        <h2>Api response text:</h2>
+                        <pre>{{ apiResponse.text }}</pre>
                     </div>
                 </div>
             </div>
@@ -50,7 +48,7 @@ var apiError = Vue.component('spieldose-api-error-component', {
             visibleDetails: false,
             activeTab: "request"
         });
-    }, props: ['apiErrorResponse'],
+    }, props: ['apiRequest', 'apiResponse'],
     methods: {
         toggleDetails() {
             this.visibleDetails = ! this.visibleDetails;
