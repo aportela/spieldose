@@ -6,7 +6,7 @@ var vTemplateSearch = function () {
         <p class="title is-1 has-text-centered">Search artists, albums, tracks, playlists</p>
         <div class="field">
             <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                <input class="input" v-model="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                <input class="input" :disabled="loading" v-model="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                 <span class="icon is-small is-left">
                     <i class="fa fa-search"></i>
                 </span>
