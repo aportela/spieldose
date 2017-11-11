@@ -114,7 +114,8 @@
             array(
                 "text" => $request->getParam("text", ""),
                 "artist" => $request->getParam("artist", ""),
-                "album" => $request->getParam("album", "")
+                "album" => $request->getParam("album", ""),
+                "year" => $request->getParam("year", "")
             ),
             $request->getParam("orderBy", "")
         );
