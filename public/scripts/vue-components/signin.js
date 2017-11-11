@@ -50,6 +50,9 @@ var vTemplateSignIn = function () {
                 </div>
             </div>
         </div>
+        <footer class="footer" v-if="errors">
+            <spieldose-api-error-component v-bind:apiError="apiError"></spieldose-api-error-component>
+        </footer>
     </section>
     `;
 }
@@ -65,7 +68,9 @@ var signIn = Vue.component('spieldose-signin-component', {
             email: "foo@bar",
             password: "secret",
             invalidUsername: false,
-            invalidPassword: false
+            invalidPassword: false,
+            errors: false,
+            apiError: null,
         });
     },
     methods: {
@@ -75,25 +80,28 @@ var signIn = Vue.component('spieldose-signin-component', {
             self.invalidUsername = false;
             self.invalidPassword = false;
             self.loading = true;
+            self.errors = false;
             var d = {
                 email: this.email,
                 password: this.password
             };
-            jsonHttpRequest("post", "/api/user/signin", d, function (httpStatusCode, response, originalResponse) {
-                self.loading = false;
-                switch (httpStatusCode) {
-                    case 404:
-                        self.invalidUsername = true;
-                        break;
-                    case 401:
-                        self.invalidPassword = true;
-                        break;
-                    case 200:
-                        bus.$emit("changeRouterPath", 'dashboard');
-                        break;
-                    default:
-                        bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
-                        break;
+            spieldoseAPI.signIn(this.email, this.password, function (response) {
+                if (response.ok) {
+                    bus.$emit("changeRouterPath", 'dashboard');
+                } else {
+                    switch (response.status) {
+                        case 404:
+                            self.invalidUsername = true;
+                            break;
+                        case 401:
+                            self.invalidPassword = true;
+                            break;
+                        default:
+                            self.apiError = response.getApiErrorData();
+                            self.errors = true;
+                            break;
+                    }
+                    self.loading = false;
                 }
             });
         }
