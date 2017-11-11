@@ -127,10 +127,10 @@ var player = Vue.component('spieldose-player-component', {
                 if (this.playerData.actualTrack.year) {
                     return (" (" + this.playerData.actualTrack.year + ")");
                 } else {
-                    return ("(year unknown)");
+                    return (" (year unknown)");
                 }
             } else {
-                return ("(year)");
+                return (" (year)");
             }
         }
     },
