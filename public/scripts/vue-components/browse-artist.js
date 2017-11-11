@@ -32,7 +32,7 @@ var vTemplateBrowseArtist = function () {
             </div>
             <div class="panel" v-if="activeTab == 'albums'">
                 <div class="browse-album-item" v-for="album in artist.albums" v-show="! loading">
-                    <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist)" v-bind:title="'click to play album'">
+                    <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                         <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>
                         <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                         <i class="fa fa-play fa-4x"></i>
@@ -105,32 +105,19 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
         }, truncate: function (text) {
             return (text.substring(0, 500));
         },
-        getAlbumTracks: function (album, artist, callback) {
+        enqueueAlbumTracks: function (album, artist, year) {
             var self = this;
-            self.loading = true;
-            self.errors = false;
-            var d = {
-                artist: artist,
-                album: album
-            };
-            jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
-                if (httpStatusCode == 200) {
-                    self.loading = false;
-                    self.errors = false;
-                    callback(response.tracks);
-                } else {
-                    self.loading = false;
-                    self.errors = true;
-                }
-            });
-
-        },
-        enqueueAlbumTracks: function (album, artist) {
-            var self = this;
-            this.getAlbumTracks(album, artist, function (tracks) {
+            spieldoseAPI.getAlbumTracks(album || null, artist || null , year || null, function(response) {
                 self.playerData.emptyPlayList();
-                self.playerData.tracks = tracks;
-                self.playerData.play();
+                if (response.ok) {
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.playerData.tracks = response.body.tracks;
+                        self.playerData.play();
+                    }
+                } else {
+                    self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                }
             });
         }
     }
