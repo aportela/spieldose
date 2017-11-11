@@ -174,6 +174,16 @@ const sharedPlayerData = getPlayerData();
  * all methods return callback with vue-resource response object
  */
 const spieldoseAPI = {
+    poll: function(callback) {
+        Vue.http.get("/api/user/poll").then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     signIn: function (email, password, callback) {
         var params = {
             email: email,
@@ -394,8 +404,8 @@ const app = new Vue({
         bus.$on("changeRouterPath", function (routeName) {
             self.$router.push({ name: routeName });
         });
-        this.poll(function (logged) {
-            if (!logged) {
+        this.poll(function (response) {
+            if (! response.ok) {
                 self.$router.push({ name: 'signin' });
             } else {
                 self.$router.push({ name: 'dashboard' });
@@ -405,6 +415,7 @@ const app = new Vue({
     methods: {
         signOut: function () {
             var self = this;
+            self.loading = true;
             self.errors = false;
             spieldoseAPI.signOut(function(response) {
                 if (response.ok) {
@@ -412,6 +423,7 @@ const app = new Vue({
                 } else {
                     self.apiError = response.getApiErrorData();
                     self.errors = true;
+                    self.loading = false;
                     // TODO: show error
                 }
             });
@@ -419,9 +431,9 @@ const app = new Vue({
         poll: function (callback) {
             var self = this;
             self.loading = true;
-            jsonHttpRequest("GET", "/api/user/poll", {}, function (httpStatusCode, response, originalResponse) {
+            spieldoseAPI.poll(function(response) {
                 self.loading = false;
-                callback(httpStatusCode == 200);
+                callback(response);
             });
         }
     }
