@@ -174,7 +174,7 @@ const sharedPlayerData = getPlayerData();
  * all methods return callback with vue-resource response object
  */
 const spieldoseAPI = {
-    poll: function(callback) {
+    poll: function (callback) {
         Vue.http.get("/api/user/poll").then(
             response => {
                 callback(response);
@@ -198,8 +198,31 @@ const spieldoseAPI = {
             }
         );
     },
-    signOut: function(callback) {
+    signOut: function (callback) {
         Vue.http.get("/api/user/signout").then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    globalSearch: function (text, actualPage, resultsPage, callback) {
+        var params = {
+            actualPage: 1,
+            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+        };
+        if (actualPage) {
+            params.actualPage = parseInt(actualPage);
+        }
+        if (resultsPage) {
+            params.resultsPage = parseInt(resultsPage);
+        }
+        if (text) {
+            params.text = text;
+        }
+        Vue.http.post("/api/search/global", params).then(
             response => {
                 callback(response);
             },
@@ -232,7 +255,6 @@ const spieldoseAPI = {
         var params = {
             actualPage: 1,
             resultsPage: DEFAULT_SECTION_RESULTS_PAGE
-
         };
         if (name) {
             params.text = name;
@@ -405,7 +427,7 @@ const app = new Vue({
             self.$router.push({ name: routeName });
         });
         this.poll(function (response) {
-            if (! response.ok) {
+            if (!response.ok) {
                 self.$router.push({ name: 'signin' });
             } else {
                 self.$router.push({ name: 'dashboard' });
@@ -417,7 +439,7 @@ const app = new Vue({
             var self = this;
             self.loading = true;
             self.errors = false;
-            spieldoseAPI.signOut(function(response) {
+            spieldoseAPI.signOut(function (response) {
                 if (response.ok) {
                     self.$router.push({ path: '/signin' });
                 } else {
@@ -431,7 +453,7 @@ const app = new Vue({
         poll: function (callback) {
             var self = this;
             self.loading = true;
-            spieldoseAPI.poll(function(response) {
+            spieldoseAPI.poll(function (response) {
                 self.loading = false;
                 callback(response);
             });
