@@ -212,7 +212,7 @@
             return($metrics);
         }
 
-        public static function GetPlayStats(\Spieldose\Database\DB $dbh, $filter): array {
+        public static function GetPlayStatsByHour(\Spieldose\Database\DB $dbh, $filter): array {
             $metrics = array();
             $params = array(
                 (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
@@ -227,6 +227,63 @@
                 GROUP BY hour
                 ORDER BY hour
             ', "%H", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
+            $metrics = $dbh->query($query, $params);
+            return($metrics);
+        }
+
+        public static function GetPlayStatsByWeekDay(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            );
+            $queryConditions = array(
+                " S.user_id = :user_id "
+            );
+            $query = sprintf('
+                SELECT strftime("%s", S.played, "localtime") AS weekDay, COUNT(*) AS total
+                FROM STATS S
+                %s
+                GROUP BY weekDay
+                ORDER BY weekDay
+            ', "%w", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
+            $metrics = $dbh->query($query, $params);
+            return($metrics);
+        }
+
+        public static function GetPlayStatsByMonth(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            );
+            $queryConditions = array(
+                " S.user_id = :user_id "
+            );
+            $query = sprintf('
+                SELECT strftime("%s", S.played, "localtime") AS month, COUNT(*) AS total
+                FROM STATS S
+                %s
+                GROUP BY month
+                ORDER BY month
+            ', "%m", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
+            $metrics = $dbh->query($query, $params);
+            return($metrics);
+        }
+
+        public static function GetPlayStatsByYear(\Spieldose\Database\DB $dbh, $filter): array {
+            $metrics = array();
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            );
+            $queryConditions = array(
+                " S.user_id = :user_id "
+            );
+            $query = sprintf('
+                SELECT strftime("%s", S.played, "localtime") AS year, COUNT(*) AS total
+                FROM STATS S
+                %s
+                GROUP BY year
+                ORDER BY year
+            ', "%Y", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
             $metrics = $dbh->query($query, $params);
             return($metrics);
         }

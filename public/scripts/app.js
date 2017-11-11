@@ -159,7 +159,7 @@ const getPlayerData = function () {
             window.location = "/api/track/get/" + trackId;
         }
     };
-    playerData.downloadActualTrack = function() {
+    playerData.downloadActualTrack = function () {
         if (playerData.hasTracks()) {
             playerData.download(playerData.tracks[playerData.actualTrackIdx].id);
         }
@@ -176,7 +176,7 @@ const getPlayerData = function () {
             }
         });
     };
-    playerData.loveActualTrack = function() {
+    playerData.loveActualTrack = function () {
         if (playerData.hasTracks()) {
             playerData.love(playerData.tracks[playerData.actualTrackIdx]);
         }
@@ -193,18 +193,18 @@ const getPlayerData = function () {
             }
         });
     };
-    playerData.unLoveActualTrack = function() {
+    playerData.unLoveActualTrack = function () {
         if (playerData.hasTracks()) {
             playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);
         }
     },
-    playerData.advancePlayList = function () {
-        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-            playerData.playAtIdx(playerData.actualTrackIdx + 1);
-        } else {
-            playerData.stop();
-        }
-    };
+        playerData.advancePlayList = function () {
+            if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+                playerData.playAtIdx(playerData.actualTrackIdx + 1);
+            } else {
+                playerData.stop();
+            }
+        };
     return (playerData);
 }
 
@@ -667,9 +667,42 @@ const spieldoseAPI = {
             }
         );
     },
-    getPlayStatMetrics: function (callback) {
+    getPlayStatMetricsByHour: function (callback) {
         var params = {};
-        Vue.http.post("/api/metrics/play_stats", params).then(
+        Vue.http.post("/api/metrics/play_stats_by_hour", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPlayStatMetricsByWeekDay: function (callback) {
+        var params = {};
+        Vue.http.post("/api/metrics/play_stats_by_weekday", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPlayStatMetricsByMonth: function (callback) {
+        var params = {};
+        Vue.http.post("/api/metrics/play_stats_by_month", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPlayStatMetricsByYear: function (callback) {
+        var params = {};
+        Vue.http.post("/api/metrics/play_stats_by_year", params).then(
             response => {
                 callback(response);
             },

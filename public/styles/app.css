@@ -584,7 +584,7 @@ div#dropdown_search_results div.content a
     cursor: pointer;
 }
 
-canvas#playcount-metrics-chart
+canvas.play-stats-metrics-graph
 {
     width: 100%;
     height: 200px;

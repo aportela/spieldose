@@ -326,9 +326,39 @@
         return $response->withJson(['metrics' => $metrics], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
-    $app->post('/api/metrics/play_stats', function (Request $request, Response $response, array $args) {
+    $app->post('/api/metrics/play_stats_by_hour', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
-        $metrics = \Spieldose\Metrics::GetPlayStats(
+        $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/play_stats_by_weekday', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/play_stats_by_month', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
+            new \Spieldose\Database\DB(),
+            array(
+            )
+        );
+        return $response->withJson(['metrics' => $metrics], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/metrics/play_stats_by_year', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
             new \Spieldose\Database\DB(),
             array(
             )
