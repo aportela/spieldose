@@ -169,6 +169,28 @@ const getPlayerData = function () {
  */
 const sharedPlayerData = getPlayerData();
 
+const spieldoseAPI = {
+    getAlbumTracks: function(album, artist, year, callback) {
+        var params = {};
+        if (album) {
+            params.album = album;
+        }
+        if (artist) {
+            params.artist = artist;
+        }
+        if (year) {
+            params.year = year;
+        }
+        Vue.http.post("/api/track/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    }
+};
 /**
  * vue-router route definitions
  */
