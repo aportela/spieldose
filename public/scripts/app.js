@@ -55,9 +55,11 @@ const getPlayerData = function () {
                     playerData.tracks = response.body.tracks;
                 }
                 playerData.loading = false;
+                callback();
             } else {
                 // TODO: errors
                 playerData.loading = false;
+                callback();
             }
         });
     };
