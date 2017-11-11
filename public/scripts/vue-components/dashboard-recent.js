@@ -35,8 +35,147 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
         });
     },
     created: function () {
-        this.loadChartData();
+        this.load();
     }, methods: {
+        loadRecentAddedTracks: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentAddedTracks(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        loadRecentAddedArtists: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentAddedArtists(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        loadRecentAddedAlbums: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentAddedAlbums(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        loadRecentPlayedTracks: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentPlayedTracks(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        loadRecentPlayedArtists: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentPlayedArtists(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        loadRecentPlayedAlbums: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getRecentPlayedAlbums(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        },
+        load: function () {
+            switch (this.type) {
+                case "recentlyAdded":
+                    this.loadRecentAdded();
+                    break;
+                case "recentlyPlayed": {
+                    this.loadRecentPlayed();
+                }
+            }
+        },
+        loadRecentAdded: function () {
+            switch (this.entity) {
+                case "tracks":
+                    this.loadRecentAddedTracks();
+
+                    break;
+                case "artists":
+                    this.loadRecentAddedArtists();
+                    break;
+                case "albums":
+                    this.loadRecentAddedAlbums();
+                    break;
+            }
+        },
+        loadRecentPlayed: function () {
+            switch (this.entity) {
+                case "tracks":
+                    this.loadRecentPlayedTracks();
+                    break;
+                case "artists":
+                    this.loadRecentPlayedArtists();
+                    break;
+                case "albums":
+                    this.loadRecentPlayedAlbums();
+                    break;
+            }
+        },
         loadChartData: function () {
             var self = this;
             self.loading = true;
@@ -83,11 +222,11 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
                 this.loadChartData();
             }
         }, playTrack: function (track) {
-            this.playerData.replace([ track ]);
+            this.playerData.replace([track]);
         }, enqueueTrack: function (track) {
-            this.playerData.enqueue([ track ]);
-        }, playAlbum: function(album) {
-        }, enqueueAlbum: function(album) {
+            this.playerData.enqueue([track]);
+        }, playAlbum: function (album) {
+        }, enqueueAlbum: function (album) {
         }
     },
     props: ['type', 'title', 'listItemCount']
