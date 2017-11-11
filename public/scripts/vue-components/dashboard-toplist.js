@@ -98,8 +98,10 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
                 self.errors = true;
             }
         }, changeInterval: function (i) {
-            this.interval = i;
-            this.loadChartData();
+            if (this.interval != i) {
+                this.interval = i;
+                this.loadChartData();
+            }
         }, playTrack: function (track) {
             this.playerData.replace([ track ]);
         }, enqueueTrack: function (track) {
