@@ -132,7 +132,18 @@
             ),
             $request->getParam("orderBy", "")
         );
-        return $response->withJson(['artists' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+        return $response->withJson(
+            [
+                'artists' => $data->results,
+                "pagination" => array(
+                    'totalResults' => $data->totalResults,
+                    'actualPage' => $data->actualPage,
+                    'resultsPage' => $data->resultsPage,
+                    'totalPages' => $data->totalPages
+                )
+            ],
+            200
+        );
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
     $app->get('/api/artist/{name}', function (Request $request, Response $response, array $args) {
@@ -154,7 +165,18 @@
             ),
             $request->getParam("orderBy", "")
         );
-        return $response->withJson(['albums' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+        return $response->withJson(
+            [
+                'albums' => $data->results,
+                "pagination" => array(
+                    'totalResults' => $data->totalResults,
+                    'actualPage' => $data->actualPage,
+                    'resultsPage' => $data->resultsPage,
+                    'totalPages' => $data->totalPages
+                )
+            ],
+            200
+        );
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
     $app->post('/api/search/global', function (Request $request, Response $response, array $args) {
