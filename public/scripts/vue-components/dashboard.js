@@ -40,6 +40,7 @@ var vTemplateDashboard = function () {
                 </section>
             </div>
         </div>
+        <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
 }
@@ -49,7 +50,8 @@ var dashboard = Vue.component('spieldose-dashboard', {
     data: function () {
         return ({
             loading: false,
-            errors: false
+            errors: false,
+            apiError: null,
         });
     },
     mounted: function () {
