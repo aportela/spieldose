@@ -253,24 +253,11 @@ router.encodeSafeName = function (name) {
 }
 
 /**
- * vue-resource interceptor for adding into response original request params (used in function getApiErrorFromResponse)
- */
-Vue.http.interceptors.push((request, next) => {
-    next((response) => {
-        response.rBody = request.body;
-        response.rUrl = request.url;
-        response.rMethod = request.method;
-        response.rHeaders = request.headers;
-        return (response);
-    });
-});
-
-/**
  * parse vue-resource (custom) resource and return valid object for api-error component
  * @param {*} r a valid vue-resource response object
  */
-var getApiErrorFromResponse = function (r) {
-    var error = {
+const getApiErrorDataFromResponse = function (r) {
+    var data = {
         request: {
             method: r.rMethod,
             url: r.rUrl,
@@ -282,16 +269,34 @@ var getApiErrorFromResponse = function (r) {
             text: r.bodyText
         }
     };
-    error.request.headers = [];
+    data.request.headers = [];
     for (var headerName in r.rHeaders.map) {
-        error.request.headers.push({ name: headerName, value: r.rHeaders.get(headerName) });
+        data.request.headers.push({ name: headerName, value: r.rHeaders.get(headerName) });
     }
-    error.response.headers = [];
+    data.response.headers = [];
     for (var headerName in r.headers.map) {
-        error.response.headers.push({ name: headerName, value: r.headers.get(headerName) });
+        data.response.headers.push({ name: headerName, value: r.headers.get(headerName) });
     }
-    return (error);
+    return (data);
 };
+
+/**
+ * vue-resource interceptor for adding (on errors) custom get data function (used in api-error component) into response
+ */
+Vue.http.interceptors.push((request, next) => {
+    next((response) => {
+        if (! response.ok) {
+            response.rBody = request.body;
+            response.rUrl = request.url;
+            response.rMethod = request.method;
+            response.rHeaders = request.headers;
+            response.getApiErrorData = function() {
+                return(getApiErrorDataFromResponse(response));
+            };
+        }
+        return (response);
+    });
+});
 
 /**
  * main app component
