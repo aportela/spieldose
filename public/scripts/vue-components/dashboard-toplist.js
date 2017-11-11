@@ -37,75 +37,78 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
         });
     },
     created: function () {
-        this.loadChartData();
+        this.load();
     }, methods: {
-        loadChartData: function () {
+        loadTopPlayedTracks: function () {
             var self = this;
             self.loading = true;
             self.errors = false;
             self.items = [];
-            var url = null;
-            var d = {
-                count: self.listItemCount
-            };
-            switch (this.interval) {
-                case 0:
-                    break;
-                case 1:
-                    d.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    d.toDate = moment().format('YYYYMMDD');
-                    break;
-                case 2:
-                    d.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    d.toDate = moment().format('YYYYMMDD');
-                    break;
-                case 3:
-                    d.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    d.toDate = moment().format('YYYYMMDD');
-                    break;
-                case 4:
-                    d.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    d.toDate = moment().format('YYYYMMDD');
-                    break;
-            }
-            switch (this.type) {
-                case "topTracks":
-                    if (self.artist) {
-                        d.artist = self.artist;
+            spieldoseAPI.getTopPlayedTracks(this.interval, self.artist, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
                     }
-                    url = "/api/metrics/top_played_tracks";
-                    break;
-                case "topArtists":
-                    url = "/api/metrics/top_artists";
-                    break;
-                case "topGenres":
-                    url = "/api/metrics/top_genres";
-                    break;
-            }
-            if (url) {
-                jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
                     self.loading = false;
-                    if (httpStatusCode == 200) {
-                        self.errors = false;
-                        self.items = response.metrics;
-                    } else {
-                        self.errors = true;
-                        self.items = [];
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        }, loadTopPlayedArtists: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getTopPlayedArtists(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
                     }
-                });
-            } else {
-                self.loading = false;
-                self.errors = true;
-            }
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
+        }, loadTopPlayedGenres: function () {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            self.items = [];
+            spieldoseAPI.getTopPlayedGenres(this.interval, function (response) {
+                if (response.ok) {
+                    if (response.body.metrics && response.body.metrics.length > 0) {
+                        self.items = response.body.metrics;
+                    }
+                    console.log(self.items);
+                    self.loading = false;
+                } else {
+                    self.loading = false;
+                    self.errors = false;
+                }
+            });
         }, changeInterval: function (i) {
             if (this.interval != i) {
                 this.interval = i;
-                this.loadChartData();
+            }
+            this.load();
+        }, load: function () {
+            switch (this.type) {
+                case "topTracks":
+                    this.loadTopPlayedTracks();
+                    break;
+                case "topArtists":
+                    this.loadTopPlayedArtists();
+                    break;
+                case "topGenres":
+                    this.loadTopPlayedGenres();
+                    break;
             }
         }, playTrack: function (track) {
-            this.playerData.replace([ track ]);
+            this.playerData.replace([track]);
         }, enqueueTrack: function (track) {
-            this.playerData.enqueue([ track ]);
+            this.playerData.enqueue([track]);
         }
     },
     props: ['type', 'title', 'listItemCount', 'showPlayCount', 'artist']
