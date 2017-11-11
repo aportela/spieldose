@@ -26,18 +26,7 @@ var vTemplateDashboard = function () {
         </div>
         <div class="columns is-mobile is-multiline">
             <div class="column is-full-mobile">
-                <section class="panel">
-                    <p class="panel-heading"><span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
-                    <p class="panel-tabs">
-                        <a class="is-active" href="#">by hour</a>
-                        <a href="#" v-on:click.prevent="">by weekday</a>
-                        <a href="#" v-on:click.prevent="">by month</a>
-                        <a href="#" v-on:click.prevent="">by year</a>
-                    </p>
-                    <div class="panel-block">
-                        <canvas id="playcount-metrics-chart" height="200"></canvas>
-                    </div>
-                </section>
+                <spieldose-dashboard-play-stats></spieldose-dashboard-play-stats>
             </div>
         </div>
         <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
