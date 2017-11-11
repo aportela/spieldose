@@ -40,6 +40,7 @@ const getPlayerData = function () {
     playerData.loadRandomTracks = function (count, callback) {
         playerData.isPaused = false;
         playerData.isPlaying = false;
+        playerData.tracks = [];
         playerData.loading = true;
         playerData.actualTrackIdx = 0;
         playerData.actualTrack = null;
@@ -48,11 +49,15 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        jsonHttpRequest("POST", "/api/track/search", d, function (httpStatusCode, response) {
-            playerData.tracks = response.tracks;
-            playerData.loading = false;
-            if (callback) {
-                callback();
+        spieldoseAPI.searchTracks(1, DEFAULT_SECTION_RESULTS_PAGE, "random", function (response) {
+            if (response.ok) {
+                if (response.body.tracks && response.body.tracks.length > 0) {
+                    playerData.tracks = response.body.tracks;
+                }
+                playerData.loading = false;
+            } else {
+                // TODO: errors
+                playerData.loading = false;
             }
         });
     };
@@ -142,7 +147,7 @@ const getPlayerData = function () {
     };
     playerData.love = function (track) {
         this.loading = true;
-        spieldoseAPI.loveTrack(track.id, function(response) {
+        spieldoseAPI.loveTrack(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
                 track.loved = response.body.loved;
@@ -154,7 +159,7 @@ const getPlayerData = function () {
     };
     playerData.unlove = function (track) {
         this.loading = true;
-        spieldoseAPI.unLoveTrack(track.id, function(response) {
+        spieldoseAPI.unLoveTrack(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
                 track.loved = response.body.loved;
@@ -271,6 +276,29 @@ const spieldoseAPI = {
             }
         );
     },
+    searchTracks: function (actualPage, resultsPage, order, callback) {
+        var params = {
+            actualPage: 1,
+            resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
+        };
+        if (actualPage) {
+            params.actualPage = actualPage;
+        }
+        if (resultsPage) {
+            params.resultsPage = resultsPage;
+        }
+        if (order) {
+            params.orderBy = order;
+        }
+        Vue.http.post("/api/track/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     searchArtists: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
@@ -294,7 +322,7 @@ const spieldoseAPI = {
             }
         );
     },
-    loveTrack: function(trackId, callback) {
+    loveTrack: function (trackId, callback) {
         var params = {};
         Vue.http.post("/api/track/" + trackId + "/love", params).then(
             response => {
@@ -305,7 +333,7 @@ const spieldoseAPI = {
             }
         );
     },
-    unLoveTrack: function(trackId, callback) {
+    unLoveTrack: function (trackId, callback) {
         var params = {};
         Vue.http.post("/api/track/" + trackId + "/unlove", params).then(
             response => {
