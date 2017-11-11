@@ -7,7 +7,7 @@ var vTemplateBrowseArtists = function () {
         <div v-if="! errors">
             <div class="field">
                 <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input " v-model="nameFilter" type="text" placeholder="search artist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-model="nameFilter" type="text" placeholder="search artist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
@@ -79,14 +79,14 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
             self.loading = true;
             self.errors = false;
             var d = {
-                actualPage: parseInt(self.pager.actualPage),
-                resultsPage: parseInt(self.pager.resultsPage)
+                actualPage: parseInt(),
+                resultsPage: parseInt()
             };
             if (self.nameFilter) {
                 d.text = self.nameFilter;
             }
-            this.$http.post("/api/artist/search", d).then(
-                response => {
+            spieldoseAPI.searchArtists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                if (response.ok) {
                     self.pager.actualPage = response.body.pagination.actualPage;
                     self.pager.totalPages = response.body.pagination.totalPages;
                     self.pager.totalResults = response.body.pagination.totalResults;
@@ -96,13 +96,13 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
                         self.artists = [];
                     }
                     self.loading = false;
-                },
-                response => {
+                } else {
                     self.errors = true;
                     self.apiError = response.getApiErrorData();
                     self.loading = false;
+
                 }
-            );
+            });
         }
     }
 });
