@@ -57,11 +57,11 @@ var dashboard = Vue.component('spieldose-dashboard', {
         var d = {};
         self.loading = true;
         self.errors = false;
-        jsonHttpRequest("POST", "/api/metrics/play_stats", d, function (httpStatusCode, response) {
-            if (httpStatusCode == 200) {
+        spieldoseAPI.getPlayStatMetrics(function (response) {
+            if (response.ok) {
                 var d = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for (var i = 0; i < response.metrics.length; i++) {
-                    d[response.metrics[i].hour] = response.metrics[i].total;
+                for (var i = 0; i < response.body.metrics.length; i++) {
+                    d[response.body.metrics[i].hour] = response.body.metrics[i].total;
                 }
                 var ctx = document.getElementById("playcount-metrics-chart");
                 var myLineChart = new Chart(ctx, {
@@ -79,10 +79,12 @@ var dashboard = Vue.component('spieldose-dashboard', {
                         ]
                     }, options: {}
                 });
+                self.loading = false;
             } else {
                 self.errors = true;
+                self.apiError = response.getApiErrorData();
+                self.loading = false;
             }
-            self.loading = false;
         });
     }
 });
