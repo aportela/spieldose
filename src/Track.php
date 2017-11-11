@@ -59,6 +59,10 @@
                     $conditions[] = " COALESCE(MBA1.album, F.album_name) = :album ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":album", $filter["album"]);
                 }
+                if (isset($filter["year"]) && ! empty($filter["year"])) {
+                    $conditions[] = " COALESCE(MBA1.year, F.year) = :year ";
+                    $params[] = (new \Spieldose\Database\DBParam())->int(":year", intval($filter["year"]));
+                }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
