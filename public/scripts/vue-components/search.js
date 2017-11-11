@@ -56,7 +56,7 @@ var vTemplateSearch = function () {
                         </div>
                         <div class="media-content">
                             <div class="content cut-text">
-                                <a>{{ item.title }}</a>
+                                <a><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}</a>
                                 <br >
                                 <span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></span>
                             </div>
@@ -93,7 +93,7 @@ var search = Vue.component('spieldose-search', {
         });
     }, directives: {
         focus: {
-            update: function(el) {
+            update: function (el) {
                 el.focus();
             }
         }
@@ -161,7 +161,10 @@ var search = Vue.component('spieldose-search', {
                     self.apiError = response.getApiErrorData();
                 }
             });
+        }, playTrack: function (track) {
+            this.playerData.replace([track]);
+        }, enqueueTrack: function (track) {
+            this.playerData.enqueue([track]);
         }
     }
 });
-
