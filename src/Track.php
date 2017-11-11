@@ -103,7 +103,7 @@
                     COALESCE(MBA1.year, F.year) AS year,
                     playtime_seconds AS playtimeSeconds,
                     playtime_string AS playtimeString,
-                    COALESCE(MBA1.image, MBA2.image) AS image,
+                    MBA1.image AS image,
                     genre,
                     mime,
                     COALESCE(LF.loved, 0) AS loved
