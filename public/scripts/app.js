@@ -231,6 +231,16 @@ const spieldoseAPI = {
             }
         );
     },
+    getArtist: function(name, callback) {
+        Vue.http.get("/api/artist/" + encodeURIComponent(name)).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getAlbumTracks: function (album, artist, year, callback) {
         var params = {};
         if (album) {
