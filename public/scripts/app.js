@@ -141,17 +141,27 @@ const getPlayerData = function () {
         }
     };
     playerData.love = function (track) {
-        playerData.loading = true;
-        jsonHttpRequest("POST", "/api/track/" + track.id + "/love", {}, function (httpStatusCode, response) {
-            playerData.loading = false;
-            track.loved = response.loved;
+        this.loading = true;
+        spieldoseAPI.loveTrack(track.id, function(response) {
+            if (response.ok) {
+                playerData.loading = false;
+                track.loved = response.body.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
         });
     };
     playerData.unlove = function (track) {
-        playerData.loading = true;
-        jsonHttpRequest("POST", "/api/track/" + track.id + "/unlove", {}, function (httpStatusCode, response) {
-            playerData.loading = false;
-            track.loved = response.loved;
+        this.loading = true;
+        spieldoseAPI.unLoveTrack(track.id, function(response) {
+            if (response.ok) {
+                playerData.loading = false;
+                track.loved = response.body.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
         });
     };
     playerData.advancePlayList = function () {
@@ -276,6 +286,28 @@ const spieldoseAPI = {
             params.resultsPage = parseInt(resultsPage);
         }
         Vue.http.post("/api/artist/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    loveTrack: function(trackId, callback) {
+        var params = {};
+        Vue.http.post("/api/track/" + trackId + "/love", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    unLoveTrack: function(trackId, callback) {
+        var params = {};
+        Vue.http.post("/api/track/" + trackId + "/unlove", params).then(
             response => {
                 callback(response);
             },
