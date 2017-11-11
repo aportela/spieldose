@@ -37,6 +37,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
         return ({
             loading: false,
             errors: false,
+            apiError: null,
             nameFilter: null,
             timeout: null,
             artists: [],
@@ -100,7 +101,6 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
                     self.errors = true;
                     self.apiError = response.getApiErrorData();
                     self.loading = false;
-
                 }
             });
         }
