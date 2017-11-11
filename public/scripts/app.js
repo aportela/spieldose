@@ -231,7 +231,7 @@ const spieldoseAPI = {
             }
         );
     },
-    getArtist: function(name, callback) {
+    getArtist: function (name, callback) {
         Vue.http.get("/api/artist/" + encodeURIComponent(name)).then(
             response => {
                 callback(response);
@@ -276,6 +276,17 @@ const spieldoseAPI = {
             params.resultsPage = parseInt(resultsPage);
         }
         Vue.http.post("/api/artist/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPlayStatMetrics: function (callback) {
+        var params = {};
+        Vue.http.post("/api/metrics/play_stats", params).then(
             response => {
                 callback(response);
             },
