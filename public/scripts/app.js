@@ -284,7 +284,7 @@ const spieldoseAPI = {
             }
         );
     },
-    getTopPlayedTracks: function(interval, artist, callback) {
+    getTopPlayedTracks: function (interval, artist, callback) {
         var params = {};
         if (artist) {
             params.artist = artist;
@@ -293,20 +293,20 @@ const spieldoseAPI = {
             case 0:
                 break;
             case 1:
-            params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 2:
-            params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 3:
-            params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 4:
-            params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
         }
         Vue.http.post("/api/metrics/top_played_tracks", params).then(
@@ -318,26 +318,26 @@ const spieldoseAPI = {
             }
         );
     },
-    getTopPlayedArtists: function(interval, callback) {
+    getTopPlayedArtists: function (interval, callback) {
         var params = {};
         switch (interval) {
             case 0:
                 break;
             case 1:
-            params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 2:
-            params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 3:
-            params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 4:
-            params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
         }
         Vue.http.post("/api/metrics/top_artists", params).then(
@@ -349,29 +349,227 @@ const spieldoseAPI = {
             }
         );
     },
-    getTopPlayedGenres: function(interval, callback) {
+    getTopPlayedGenres: function (interval, callback) {
         var params = {};
         switch (interval) {
             case 0:
                 break;
             case 1:
-            params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 2:
-            params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 3:
-            params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
             case 4:
-            params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-            params.toDate = moment().format('YYYYMMDD');
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
                 break;
         }
         Vue.http.post("/api/metrics/top_genres", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentAddedTracks: function (interval, callback) {
+        var params = {
+            entity: "tracks"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_added", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentAddedArtists: function (interval, callback) {
+        var params = {
+            entity: "artists"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_added", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentAddedAlbums: function (interval, callback) {
+        var params = {
+            entity: "albums"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_added", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentPlayedTracks: function (interval, callback) {
+        var params = {
+            entity: "tracks"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_played", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentPlayedArtists: function (interval, callback) {
+        var params = {
+            entity: "albums"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_played", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getRecentPlayedAlbums: function (interval, callback) {
+        var params = {
+            entity: "albums"
+        };
+        switch (interval) {
+            case 0:
+                break;
+            case 1:
+                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 2:
+                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 3:
+                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+            case 4:
+                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                params.toDate = moment().format('YYYYMMDD');
+                break;
+        }
+        Vue.http.post("/api/metrics/recently_played", params).then(
             response => {
                 callback(response);
             },
