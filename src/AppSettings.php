@@ -6,8 +6,9 @@
             'displayErrorDetails' => true, // set to false in production
             'addContentLengthHeader' => false, // Allow the web server to send the content-length header
             'twigParams' => [
-                'production' => true,
-                'localVendorAssets' => false, // use local vendor assets (vs remote cdn)
+                'siteUrl' => "http://localhost",
+                'production' => false,
+                'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
             ],
             // Renderer settings
             'renderer' => [

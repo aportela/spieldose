@@ -2,7 +2,6 @@
 
 var vTemplateMenu = function () {
     return `
-
     <aside class="menu">
         <hr class="dropdown-divider">
         <ul class="menu-list">
@@ -11,7 +10,7 @@ var vTemplateMenu = function () {
             <li><a v-bind:class="{ 'is-active': actualRouteName == 'playlists' }" v-on:click.prevent="changeSection('playlists')"><i class="fa fa-list-alt"></i> playlists</a></li>
             <li><a v-bind:class="{ 'is-active': actualRouteName == 'artist' || actualRouteName == 'artists' }" v-on:click.prevent="changeSection('artists')"><i class="fa fa-user"></i> browse artists</a></li>
             <li><a v-bind:class="{ 'is-active': actualRouteName == 'albums' }" v-on:click.prevent="changeSection('albums')"><i class="fa fa-file-audio-o"></i> browse albums</a></li>
-            <li><a href="/api/user/signout" v-on:click.prevent="signout()"><i class="fa fa-sign-out"></i> signout</a></li>
+            <li><a v-on:click.prevent="signout();"><i class="fa fa-sign-out"></i> signout</a></li>
         </ul>
     </aside>
     `;

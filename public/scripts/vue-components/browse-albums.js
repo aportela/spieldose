@@ -95,7 +95,7 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
             if (self.nameFilter) {
                 d.text = self.nameFilter;
             }
-            this.$http.post("/api/album/search", d).then(
+            this.$http.post(siteUrl + "/api/album/search", d).then(
                 response => {
                     self.pager.actualPage = response.body.pagination.actualPage;
                     self.pager.totalPages = response.body.pagination.totalPages;

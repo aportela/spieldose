@@ -23,7 +23,7 @@ var vTemplateSignIn = function () {
                         </div>
                         <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music rainbow-transition" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music rainbow-transition" aria-hidden="true"></i></span></h1>
                         <h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
-                        <form id="f_signin" method="post" action="/api/user/signin" v-on:submit.prevent="submit">
+                        <form v-on:submit.prevent="submit">
                             <div class="box">
                                 <label class="label">Email</label>
                                 <p class="control" id="login-container" v-bind:class="{ 'has-icons-right' : invalidUsername }">

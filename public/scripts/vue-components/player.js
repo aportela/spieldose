@@ -73,7 +73,7 @@ var player = Vue.component('spieldose-player-component', {
         },
         streamUrl: function () {
             if (this.playerData.isPlaying) {
-                return ("/api/track/get/" + this.playerData.actualTrack.id);
+                return (siteUrl + "/api/track/get/" + this.playerData.actualTrack.id);
             } else {
                 return ("");
             }
