@@ -42,8 +42,10 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
     },
     watch: {
         '$route'(to, from) {
-            this.pager.actualPage = parseInt(to.params.page);
-            this.search();
+            if (to.name == "artists" || to.name == "artistsPaged") {
+                this.pager.actualPage = parseInt(to.params.page);
+                this.search();
+            }
         }
     },
     created: function () {
@@ -56,7 +58,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
         }
         this.search();
     }, methods: {
-        abortInstantSearch: function() {
+        abortInstantSearch: function () {
             this.nameFilter = null;
         },
         instantSearch: function () {
@@ -80,24 +82,24 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
             if (self.nameFilter) {
                 d.text = self.nameFilter;
             }
-            jsonHttpRequest("POST", "/api/artist/search", d, function (httpStatusCode, response) {
-                if (httpStatusCode == 200) {
-                    if (response.artists.length > 0) {
-                        self.pager.totalPages = response.totalPages;
+            this.$http.post("/api/artist/search", d).then(
+                response => {
+                    self.pager.actualPage = response.body.pagination.actualPage;
+                    self.pager.totalPages = response.body.pagination.totalPages;
+                    self.pager.totalResults = response.body.pagination.totalResults;
+                    if (response.body.artists && response.body.artists.length > 0) {
+                        self.artists = response.body.artists;
                     } else {
-                        self.pager.totalPages = 0;
+                        self.artists = [];
                     }
-                    if (self.pager.actualPage < self.pager.totalPages) {
-                        self.pager.nextPage = self.pager.actualPage + 1;
-                    } else {
-                        self.pager.nextPage = self.pager.totalPages;
-                    }
-                    self.artists = response.artists;
-                } else {
+                    self.loading = false;
+                },
+                response => {
                     self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                    self.loading = false;
                 }
-                self.loading = false;
-            });
+            );
         }
     }
 });
