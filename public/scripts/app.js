@@ -189,6 +189,30 @@ const spieldoseAPI = {
                 callback(response);
             }
         );
+    },
+    searchArtists: function(name, actualPage, resultsPage, callback) {
+        var params = {
+            actualPage: 1,
+            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+
+        };
+        if (name) {
+            params.text = name;
+        }
+        if (actualPage) {
+            params.actualPage = parseInt(actualPage);
+        }
+        if (resultsPage) {
+            params.resultsPage = parseInt(resultsPage);
+        }
+        Vue.http.post("/api/artist/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
     }
 };
 /**
