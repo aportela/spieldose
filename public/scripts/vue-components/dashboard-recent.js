@@ -176,50 +176,10 @@ var dashboardRecent = Vue.component('spieldose-dashboard-recent', {
                     break;
             }
         },
-        loadChartData: function () {
-            var self = this;
-            self.loading = true;
-            self.errors = false;
-            self.items = [];
-            var url = null;
-            if (this.type == "recentlyAdded") {
-                url = '/api/metrics/recently_added';
-            } else if (this.type == "recentlyPlayed") {
-                url = '/api/metrics/recently_played';
-            }
-            var d = {
-                count: self.listItemCount
-            };
-            switch (this.entity) {
-                case "tracks": // tracks
-                    d.entity = "tracks";
-                    break;
-                case "artists": // artists
-                    d.entity = "artists";
-                    break;
-                case "albums": // albums
-                    d.entity = "albums";
-                    break;
-            }
-            if (url) {
-                jsonHttpRequest("POST", url, d, function (httpStatusCode, response) {
-                    self.loading = false;
-                    if (httpStatusCode == 200) {
-                        self.errors = false;
-                        self.items = response.metrics;
-                    } else {
-                        self.errors = true;
-                        self.items = [];
-                    }
-                });
-            } else {
-                self.loading = false;
-                self.errors = true;
-            }
-        }, changeEntity: function (e) {
+        changeEntity: function (e) {
             if (e && e != this.entity) {
                 this.entity = e;
-                this.loadChartData();
+                this.load();
             }
         }, playTrack: function (track) {
             this.playerData.replace([track]);
