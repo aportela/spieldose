@@ -99,15 +99,19 @@ const getPlayerData = function () {
         playerData.shuffleTracks = !playerData.shuffleTracks
     };
     playerData.playPreviousTrack = function () {
-        if (playerData.actualTrackIdx > 0) {
-            playerData.actualTrackIdx--;
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+        if (playerData.isPlaying) {
+            if (playerData.actualTrackIdx > 0) {
+                playerData.actualTrackIdx--;
+                playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            }
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-            playerData.actualTrackIdx++;
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+        if (playerData.isPlaying) {
+            if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+                playerData.actualTrackIdx++;
+                playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            }
         }
     };
     playerData.play = function () {
@@ -131,20 +135,33 @@ const getPlayerData = function () {
         }
     };
     playerData.pause = function () {
-        playerData.isPaused = true;
-        playerData.isPlaying = false;
+        if (playerData.isPlaying) {
+            playerData.isPaused = true;
+            playerData.isPlaying = false;
+        } else if (playerData.isPaused) {
+            playerData.resume();
+        }
     };
     playerData.resume = function () {
-        playerData.isPaused = false;
-        playerData.isPlaying = true;
+        if (playerData.isPlaying) {
+            playerData.isPaused = false;
+            playerData.isPlaying = true;
+        }
     };
     playerData.stop = function () {
-        playerData.isPaused = false;
-        playerData.isPlaying = false;
+        if (playerData.isPlaying) {
+            playerData.isPaused = false;
+            playerData.isPlaying = false;
+        }
     };
     playerData.download = function (trackId) {
         if (trackId) {
             window.location = "/api/track/get/" + trackId;
+        }
+    };
+    playerData.downloadActualTrack = function() {
+        if (playerData.hasTracks()) {
+            playerData.download(playerData.tracks[playerData.actualTrackIdx].id);
         }
     };
     playerData.love = function (track) {
@@ -159,6 +176,11 @@ const getPlayerData = function () {
             }
         });
     };
+    playerData.loveActualTrack = function() {
+        if (playerData.hasTracks()) {
+            playerData.love(playerData.tracks[playerData.actualTrackIdx]);
+        }
+    };
     playerData.unlove = function (track) {
         this.loading = true;
         spieldoseAPI.unLoveTrack(track.id, function (response) {
@@ -171,6 +193,11 @@ const getPlayerData = function () {
             }
         });
     };
+    playerData.unLoveActualTrack = function() {
+        if (playerData.hasTracks()) {
+            playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);
+        }
+    },
     playerData.advancePlayList = function () {
         if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
             playerData.playAtIdx(playerData.actualTrackIdx + 1);

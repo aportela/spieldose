@@ -29,16 +29,16 @@ var vTemplatePlayer = function () {
                 <div class="column is-1"><i v-on:click.prevent="playerData.loadRandomTracks(32);" title="load random playlist" class="fa fa-clone fa-lg"></i></div>
                 <div class="column is-1"><i title="repeat" class="fa fa-refresh fa-lg" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="{ 'player-active-control': playerData.repeatTracksMode != 'none' }"></i></div>
                 <div class="column is-1"><i title="shuffle" class="fa fa-random fa-lg" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="{ 'player-active-control': playerData.shuffleTracks }"></i></div>
-                <div class="column is-1"><i title="previous track" v-on:click.prevent="if (playerData.isPlaying) { playerData.playPreviousTrack(); }" class="fa fa-backward fa-lg"></i></div>
-                <div class="column is-1"><i title="next track" v-on:click.prevent="if (playerData.isPlaying) { playerData.playNextTrack(); }" class="fa fa-forward fa-lg"></i></div>
-                <div class="column is-1"><i title="play" v-on:click.prevent="if (! playerData.isPlaying) { playerData.play(); }" class="fa fa-play fa-lg" v-bind:class="{ 'player-active-control': playerData.isPlaying }"></i></div>
-                <div class="column is-1"><i title="pause" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); } else if (playerData.isPaused) { playerData.resume(); }" class="fa fa-pause fa-lg" v-bind:class="{ 'player-active-control': playerData.isPaused }"></i></div>
-                <div class="column is-1"><i title="stop" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }" class="fa fa-stop fa-lg" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></div>
+                <div class="column is-1"><i title="previous track" v-on:click.prevent="playerData.playPreviousTrack();" class="fa fa-backward fa-lg"></i></div>
+                <div class="column is-1"><i title="next track" v-on:click.prevent="playerData.playNextTrack();" class="fa fa-forward fa-lg"></i></div>
+                <div class="column is-1"><i title="play" v-on:click.prevent="playerData.play();" class="fa fa-play fa-lg" v-bind:class="{ 'player-active-control': playerData.isPlaying }"></i></div>
+                <div class="column is-1"><i title="pause" v-on:click.prevent="playerData.pause();" class="fa fa-pause fa-lg" v-bind:class="{ 'player-active-control': playerData.isPaused }"></i></div>
+                <div class="column is-1"><i title="stop" v-on:click.prevent="playerData.stop();" class="fa fa-stop fa-lg" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></div>
                 <div class="column is-1">
-                    <i v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
-                    <i v-else title="mark as loved song" class="fa fa-heart fa-lg" v-on:click.prevent="playerData.love(playerData.tracks[playerData.actualTrackIdx]);"></i>
+                    <i v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
+                    <i v-else title="mark as loved song" class="fa fa-heart fa-lg" v-on:click.prevent="playerData.loveActualTrack();"></i>
                 </div>
-                <div class="column is-1"><i title="download song" v-on:click.prevent="playerData.download(playerData.tracks[playerData.actualTrackIdx].id);" class="fa fa-save fa-lg"></i></div>
+                <div class="column is-1"><i title="download song" v-on:click.prevent="playerData.downloadActualTrack();" class="fa fa-save fa-lg"></i></div>
             </div>
         </div>
         <spieldose-menu-component></spieldose-menu-component>
@@ -132,6 +132,9 @@ var player = Vue.component('spieldose-player-component', {
             } else {
                 return (" (year)");
             }
+        },
+        nowPlayingLoved: function () {
+            return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
         }
     },
     mounted: function () {

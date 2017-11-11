@@ -13,7 +13,7 @@ var vTemplatePlayLists = function () {
             </div>
             <div class="field is-grouped" v-show="tab == 0">
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (! playerData.loading) { playerData.loadRandomTracks(32); }" :disabled="playerData.loading">
+                    <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i v-if="playerData.loading" class="fa fa-cog fa-spin fa-fw"></i>
                             <i v-else class="fa fa-clone"></i>
@@ -46,7 +46,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.playPreviousTrack(); }" :disabled="! playerData.isPlaying">
+                    <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();" :disabled="! playerData.isPlaying">
                         <span class="icon is-small">
                             <i class="fa fa-backward"></i>
                         </span>
@@ -54,7 +54,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.playNextTrack(); }" :disabled="! playerData.isPlaying">
+                    <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();" :disabled="! playerData.isPlaying">
                         <span class="icon is-small">
                             <i class="fa fa-forward"></i>
                         </span>
@@ -62,7 +62,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (! playerData.isPlaying) { playerData.play(); }" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
+                    <a class="button is-light" v-on:click.prevent="playerData.play();" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
                         <span class="icon is-small">
                             <i class="fa fa-play"></i>
                         </span>
@@ -70,7 +70,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.pause(); } else if (playerData.isPaused) { playerData.resume(); }"  v-bind:class="playerData.isPaused ? 'is-primary': ''">
+                    <a class="button is-light" v-on:click.prevent="playerData.pause();"  v-bind:class="playerData.isPaused ? 'is-primary': ''">
                         <span class="icon is-small">
                             <i class="fa fa-pause"></i>
                         </span>
@@ -78,7 +78,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.isPlaying) { playerData.stop(); }">
+                    <a class="button is-light" v-on:click.prevent="playerData.stop();">
                         <span class="icon is-small">
                             <i class="fa fa-stop"></i>
                         </span>
@@ -86,13 +86,13 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);" :disabled="playerData.loading">
+                    <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unLoveActualTrack();" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i class="fa fa-heart"></i>
                         </span>
                         <span>love</span>
                     </a>
-                    <a class="button is-light" v-else v-on:click.prevent="playerData.love(playerData.tracks[playerData.actualTrackIdx]);" :disabled="playerData.loading">
+                    <a class="button is-light" v-else v-on:click.prevent="playerData.loveActualTrack();" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i class="fa fa-heart"></i>
                         </span>
@@ -100,7 +100,7 @@ var vTemplatePlayLists = function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="if (playerData.tracks.length > 0) { playerData.download(playerData.tracks[playerData.actualTrackIdx].id); }">
+                    <a class="button is-light" v-on:click.prevent="playerData.downloadActualTrack();">
                         <span class="icon is-small">
                             <i class="fa fa-save"></i>
                         </span>
