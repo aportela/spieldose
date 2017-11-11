@@ -81,7 +81,6 @@ var dashboardToplist = Vue.component('spieldose-dashboard-toplist', {
                     if (response.body.metrics && response.body.metrics.length > 0) {
                         self.items = response.body.metrics;
                     }
-                    console.log(self.items);
                     self.loading = false;
                 } else {
                     self.loading = false;
