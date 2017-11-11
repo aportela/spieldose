@@ -169,8 +169,36 @@ const getPlayerData = function () {
  */
 const sharedPlayerData = getPlayerData();
 
+/**
+ * common object for interact with API
+ * all methods return callback with vue-resource response object
+ */
 const spieldoseAPI = {
-    getAlbumTracks: function(album, artist, year, callback) {
+    signIn: function (email, password, callback) {
+        var params = {
+            email: email,
+            password: password
+        }
+        Vue.http.post("/api/user/signin", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    signOut: function(callback) {
+        Vue.http.get("/api/user/signout").then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getAlbumTracks: function (album, artist, year, callback) {
         var params = {};
         if (album) {
             params.album = album;
@@ -190,7 +218,7 @@ const spieldoseAPI = {
             }
         );
     },
-    searchArtists: function(name, actualPage, resultsPage, callback) {
+    searchArtists: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
             resultsPage: DEFAULT_SECTION_RESULTS_PAGE
@@ -215,6 +243,7 @@ const spieldoseAPI = {
         );
     }
 };
+
 /**
  * vue-router route definitions
  */
@@ -331,13 +360,13 @@ const getApiErrorDataFromResponse = function (r) {
  */
 Vue.http.interceptors.push((request, next) => {
     next((response) => {
-        if (! response.ok) {
+        if (!response.ok) {
             response.rBody = request.body;
             response.rUrl = request.url;
             response.rMethod = request.method;
             response.rHeaders = request.headers;
-            response.getApiErrorData = function() {
-                return(getApiErrorDataFromResponse(response));
+            response.getApiErrorData = function () {
+                return (getApiErrorDataFromResponse(response));
             };
         }
         return (response);
@@ -352,13 +381,15 @@ const app = new Vue({
     data: function () {
         return ({
             loading: false,
-            logged: false
+            logged: false,
+            errors: false,
+            apiError: null
         });
     },
     created: function () {
         var self = this;
         bus.$on("signOut", function () {
-            self.signout();
+            self.signOut();
         });
         bus.$on("changeRouterPath", function (routeName) {
             self.$router.push({ name: routeName });
@@ -372,19 +403,16 @@ const app = new Vue({
         });
     },
     methods: {
-        signout: function () {
+        signOut: function () {
             var self = this;
-            self.loading = true;
-            jsonHttpRequest("GET", "/api/user/signout", {}, function (httpStatusCode, response, originalResponse) {
-                self.loading = false;
-                self.logged = false;
-                switch (httpStatusCode) {
-                    case 200:
-                        self.$router.push({ path: '/signin' });
-                        break;
-                    default:
-                        bus.$emit("showModal", "Error", "Invalid server response: " + httpStatusCode + "\n" + originalResponse);
-                        break;
+            self.errors = false;
+            spieldoseAPI.signOut(function(response) {
+                if (response.ok) {
+                    self.$router.push({ path: '/signin' });
+                } else {
+                    self.apiError = response.getApiErrorData();
+                    self.errors = true;
+                    // TODO: show error
                 }
             });
         },
