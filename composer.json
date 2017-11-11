@@ -10,9 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Spieldose\\": "src",
-            "Spieldose\\Database\\": "src/Database",
-            "Spieldose\\Exception\\": "src/Exception"
+            "Spieldose\\": "src"
         }
     }
 }
