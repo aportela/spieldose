@@ -2,10 +2,15 @@
 
 const DEFAULT_SECTION_RESULTS_PAGE = 32;
 
-/* global object for events between vuejs components */
+/**
+ * global object for events between vuejs components
+ */
 const bus = new Vue();
 
-var getPager = function () {
+/**
+ * create & return a pagination object
+ */
+const getPager = function () {
     return ({
         actualPage: 1,
         previousPage: 1,
@@ -15,7 +20,10 @@ var getPager = function () {
     });
 }
 
-var getPlayerData = function () {
+/**
+ * create & return a player data object
+ */
+const getPlayerData = function () {
     var playerData = {
         loading: false,
         isPlaying: false,
@@ -26,8 +34,8 @@ var getPlayerData = function () {
         actualTrack: null,
         tracks: []
     };
-    playerData.hasTracks = function() {
-        return(playerData.tracks && playerData.tracks.length > 0);
+    playerData.hasTracks = function () {
+        return (playerData.tracks && playerData.tracks.length > 0);
     };
     playerData.loadRandomTracks = function (count, callback) {
         playerData.isPaused = false;
@@ -132,14 +140,14 @@ var getPlayerData = function () {
             window.location = "/api/track/get/" + trackId;
         }
     };
-    playerData.love = function(track) {
+    playerData.love = function (track) {
         playerData.loading = true;
         jsonHttpRequest("POST", "/api/track/" + track.id + "/love", {}, function (httpStatusCode, response) {
             playerData.loading = false;
             track.loved = response.loved;
         });
     };
-    playerData.unlove = function(track) {
+    playerData.unlove = function (track) {
         playerData.loading = true;
         jsonHttpRequest("POST", "/api/track/" + track.id + "/unlove", {}, function (httpStatusCode, response) {
             playerData.loading = false;
@@ -156,8 +164,14 @@ var getPlayerData = function () {
     return (playerData);
 }
 
+/**
+ * the player data object for share between components
+ */
 const sharedPlayerData = getPlayerData();
 
+/**
+ * vue-router route definitions
+ */
 const routes = [
     { path: '/signin', name: 'signin', component: signIn },
     {
@@ -211,15 +225,25 @@ const routes = [
     }
 ];
 
+/**
+ * main vue-router component inicialization
+ */
 const router = new VueRouter({
     routes
 });
 
+/**
+ * top scroll window before change router page
+ */
 router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
     next();
 });
 
+/**
+ * get safe name (with "/" encoded) for using in routes
+ * @param {*} name string to encode
+ */
 router.encodeSafeName = function (name) {
     if (name && name.indexOf("/") > 0) {
         return (encodeURIComponent(name));
@@ -228,6 +252,50 @@ router.encodeSafeName = function (name) {
     }
 }
 
+/**
+ * vue-resource interceptor for adding into response original request params (used in function getApiErrorFromResponse)
+ */
+Vue.http.interceptors.push((request, next) => {
+    next((response) => {
+        response.rBody = request.body;
+        response.rUrl = request.url;
+        response.rMethod = request.method;
+        response.rHeaders = request.headers;
+        return (response);
+    });
+});
+
+/**
+ * parse vue-resource (custom) resource and return valid object for api-error component
+ * @param {*} r a valid vue-resource response object
+ */
+var getApiErrorFromResponse = function (r) {
+    var error = {
+        request: {
+            method: r.rMethod,
+            url: r.rUrl,
+            body: r.rBody
+        },
+        response: {
+            status: r.status,
+            statusText: r.statusText,
+            text: r.bodyText
+        }
+    };
+    error.request.headers = [];
+    for (var headerName in r.rHeaders.map) {
+        error.request.headers.push({ name: headerName, value: r.rHeaders.get(headerName) });
+    }
+    error.response.headers = [];
+    for (var headerName in r.headers.map) {
+        error.response.headers.push({ name: headerName, value: r.headers.get(headerName) });
+    }
+    return (error);
+};
+
+/**
+ * main app component
+ */
 const app = new Vue({
     router,
     data: function () {
