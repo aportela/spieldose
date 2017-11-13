@@ -68,6 +68,16 @@
                 PRIMARY KEY([file_id], [user_id])
             );
             ',
+            'CREATE TABLE [PLAYLIST] (
+                [id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY,
+                [user_id] VARCHAR(32) NOT NULL,
+                [name] VARCHAR(32) NOT NULL
+            )',
+            'CREATE TABLE [PLAYLIST_TRACK] (
+                [playlist_id] VARCHAR(40) NOT NULL,
+                [file_id] VARCHAR(40) NOT NULL,
+                PRIMARY KEY([playlist_id], [file_id])
+            )',
             'PRAGMA journal_mode=WAL'
         );
 
