@@ -58,7 +58,7 @@ var vTemplateSearch = function () {
                             <div class="content cut-text">
                                 <a><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}</a>
                                 <br >
-                                <span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></span>
+                                <span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></a></span>
                             </div>
                         </div>
                     </article>
@@ -66,8 +66,18 @@ var vTemplateSearch = function () {
                 <div class="column is-one-quarter is-clipped">
                     <h1 class="title is-6 has-text-centered">Playlists</h1>
                     <hr class="dropdown-divider">
-                    <ol v-if="playLists.length > 0">
-                    </ol>
+                    <article class="media" v-for="item, i in playlists">
+                        <div class="media-left">
+                        </div>
+                        <div class="media-content">
+                            <div class="content cut-text">
+                                <p class="subtitle is-6">
+                                <i v-on:click="playPlaylist(item);" class="cursor-pointer fa fa-play" title="play this playlist"></i> <i v-on:click="enqueuePlaylist(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this playlist"></i>
+                                {{ item.name }} ({{ item.trackCount}} tracks)
+                                </p>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </div>
         </div>
@@ -88,7 +98,7 @@ var search = Vue.component('spieldose-search', {
             artists: [],
             albums: [],
             tracks: [],
-            playLists: [],
+            playlists: [],
             playerData: sharedPlayerData,
         });
     }, directives: {
@@ -100,15 +110,23 @@ var search = Vue.component('spieldose-search', {
     }, methods: {
         abortInstantSearch: function () {
             this.textFilter = null;
+            this.artists = [];
+            this.albums = [];
+            this.tracks = [];
+            this.playlists = [];
         },
         instantSearch: function () {
-            var self = this;
-            if (self.timeout) {
-                clearTimeout(self.timeout);
+            if (this.textFilter) {
+                var self = this;
+                if (self.timeout) {
+                    clearTimeout(self.timeout);
+                }
+                self.timeout = setTimeout(function () {
+                    self.search();
+                }, 256);
+            } else {
+                this.abortInstantSearch();
             }
-            self.timeout = setTimeout(function () {
-                self.search();
-            }, 256);
         },
         search: function () {
             var self = this;
@@ -131,7 +149,11 @@ var search = Vue.component('spieldose-search', {
                     } else {
                         self.tracks = [];
                     }
-                    self.playLists = [];
+                    if (response.body.playlists && response.body.playlists.length > 0) {
+                        self.playlists = response.body.playlists;
+                    } else {
+                        self.playlists = [];
+                    }
                     self.loading = false;
                 } else {
                     self.errors = true;
@@ -165,6 +187,37 @@ var search = Vue.component('spieldose-search', {
             this.playerData.replace([track]);
         }, enqueueTrack: function (track) {
             this.playerData.enqueue([track]);
+        },
+        playPlaylist: function(playlist) {
+            var self = this;
+            spieldoseAPI.getPlayList(playlist, function (response) {
+                self.playerData.emptyPlayList();
+                if (response.ok) {
+                    if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
+                        self.playerData.tracks = response.body.playlist.tracks;
+                        self.playerData.play();
+                    }
+                } else {
+                    self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                }
+            });
+        },
+        enqueuePlaylist: function(playlist) {
+            var self = this;
+            spieldoseAPI.getPlayList(playlist, function (response) {
+                if (response.ok) {
+                    if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
+                        for (var i = 0; i < response.body.playlist.tracks.length; i++) {
+                            self.playerData.tracks.push(response.body.playlist.tracks[i]);
+                        }
+                        self.playerData.play();
+                    }
+                } else {
+                    self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                }
+            });
         }
     }
 });
