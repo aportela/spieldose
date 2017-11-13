@@ -4,14 +4,16 @@ var vTemplatePlayLists = function () {
     return `
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Playlists</p>
-            <div class="tabs is-centered">
-                <ul>
-                    <li v-bind:class="{ 'is-active' : tab == 0 }"><a v-on:click.prevent="changeTab(0)" href="#">Now playing</a></li>
-                    <li v-bind:class="{ 'is-active' : tab == 1 }"><a v-on:click.prevent="changeTab(1)" href="#">Playlists</a></li>
-                    <li v-bind:class="{ 'is-active' : tab == 2 }"><a v-on:click.prevent="changeTab(2)" href="#">Add new playlist</a></li>
-                </ul>
-            </div>
-            <div class="field is-grouped" v-show="tab == 0">
+        <div class="tabs is-centered">
+            <ul>
+                <li v-bind:class="{ 'is-active' : tab == 0 }"><a v-on:click.prevent="changeTab(0)" href="#">Now playing</a></li>
+                <li v-bind:class="{ 'is-active' : tab == 1 }"><a v-on:click.prevent="changeTab(1)" href="#">Playlists</a></li>
+                <li v-bind:class="{ 'is-active' : tab == 2 }"><a v-on:click.prevent="changeTab(2)" href="#">Add new playlist</a></li>
+            </ul>
+        </div>
+        <div v-show="tab == 0">
+            <p class="title is-1 has-text-centered">Current playlist</i></p>
+            <div class="field is-grouped">
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);" :disabled="playerData.loading">
                         <span class="icon is-small">
@@ -139,15 +141,30 @@ var vTemplatePlayLists = function () {
                     </tr>
                 </tbody>
             </table>
-            <div v-show="tab == 1">
-                <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
-                <div class="browse-playlist-item" v-for="playlist in playlists" v-show="! loading">
+        </div>
+        <div v-show="tab == 1">
+            <p class="title is-1 has-text-centered">My playlists</i></p>
+            <div class="field">
+                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+                    <input class="input" :disabled="loading" v-focus v-model="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-search"></i>
+                    </span>
                 </div>
-                <h2>TODO</h2>
             </div>
-            <div v-show="tab == 2">
-                <h2>TODO</h2>
+            <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
+            <div class="playlist-item box" v-for="playlist in playlists" v-show="! loading">
+                <p class="playlist-info has-text-centered">
+                    <strong>“{{ playlist.name }}”</strong>
+                    <br>13 tracks
+                </p>
             </div>
+            <div class="is-clearfix"></div>
+        </div>
+        <div v-show="tab == 2">
+            <h2>TODO</h2>
+        </div>
+        <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
 }
@@ -158,14 +175,71 @@ var playLists = Vue.component('spieldose-playlists', {
         return ({
             tab: 0,
             loading: false,
+            errors: false,
+            apiError: null,
+            nameFilter: null,
             playlists: [],
             pager: getPager(),
             playerData: sharedPlayerData,
         });
+    }, directives: {
+        focus: {
+            update: function(el) {
+                el.focus();
+            }
+        }
+    },
+    created: function() {
+        var self = this;
+        this.pager.refresh = function () {
+            //self.$router.push({ name: 'playListsPaged', params: { page: self.pager.actualPage } });
+        }
+        if (this.$route.params.page) {
+            //self.pager.actualPage = parseInt(this.$route.params.page);
+        }
     },
     methods: {
         changeTab: function (tab) {
             this.tab = tab;
+            if (this.tab == 1) {
+                this.search();
+            }
+        },
+        abortInstantSearch: function () {
+            this.nameFilter = null;
+        },
+        instantSearch: function () {
+            var self = this;
+            if (self.timeout) {
+                clearTimeout(self.timeout);
+            }
+            self.timeout = setTimeout(function () {
+                self.pager.actualPage = 1;
+                self.search();
+            }, 256);
+        },
+        search: function() {
+            var self = this;
+            this.loading = true;
+            spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                if (response.ok) {
+                    self.pager.actualPage = response.body.pagination.actualPage;
+                    self.pager.totalPages = response.body.pagination.totalPages;
+                    self.pager.totalResults = response.body.pagination.totalResults;
+                    if (response.body.playlists && response.body.playlists.length > 0) {
+                        self.playlists = response.body.playlists;
+                    } else {
+                        self.playlists = [];
+                    }
+                    console.log(self.playlists);
+                    self.loading = false;
+                } else {
+                    self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                    self.loading = false;
+                }
+            });
+
         }
     }
 });

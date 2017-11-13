@@ -218,7 +218,7 @@ aside.menu ul.menu-list li a.is-active
 
 /* album thumb */
 
-div.browse-album-item
+div.browse-album-item, div.playlist-item
 {
     width: 174px;
     float: left;
@@ -397,7 +397,7 @@ div.browse-artist-item div.artist-info
     overflow: hidden;
 }
 
-div.browse-artist-item div.artist-info p.artist-name
+div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info
 {
     margin: 0px;
     font-size: 13px;
