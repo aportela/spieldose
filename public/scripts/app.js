@@ -134,6 +134,28 @@ const getPlayerData = function () {
             playerData.isPlaying = false;
         }
     };
+    playerData.moveUpIdx = function (idx) {
+        if (playerData.tracks.length > 0 && idx > 0) {
+            var tmpTrack = playerData.tracks[idx - 1];
+            playerData.tracks.splice(idx - 1, 1);
+            playerData.tracks.splice(idx, 0, tmpTrack);
+        }
+    };
+    playerData.moveDownIdx = function (idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length - 1) {
+            var tmpTrack = playerData.tracks[idx];
+            playerData.tracks.splice(idx, 1);
+            playerData.tracks.splice(idx + 1, 0, tmpTrack);
+        }
+    };
+    playerData.removeAtIdx = function (idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
+            if (idx == playerData.actualTrackIdx && (playerData.isPlaying || playerData.isPaused)) {
+                playerData.playNextTrack();
+            }
+            playerData.tracks.splice(idx, 1);
+        }
+    };
     playerData.pause = function () {
         if (playerData.isPlaying) {
             playerData.isPaused = true;
@@ -367,7 +389,9 @@ const app = new Vue({
             if (!response.ok) {
                 self.$router.push({ name: 'signin' });
             } else {
-                self.$router.push({ name: 'dashboard' });
+                if (!self.$route.name) {
+                    self.$router.push({ name: 'dashboard' });
+                }
             }
         });
     },
