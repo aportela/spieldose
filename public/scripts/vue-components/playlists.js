@@ -110,12 +110,13 @@ var vTemplatePlayLists = function () {
             </div>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="tab == 0">
                 <thead>
-                        <tr>
+                        <tr class="is-unselectable">
                             <th>Track</th>
                             <th>Artist</th>
                             <th>Album</th>
                             <th>Genre</th>
                             <th>Year</th>
+                            <th>Actions</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -130,6 +131,11 @@ var vTemplatePlayLists = function () {
                         <td><span>{{ track.album }}</span></td>
                         <td><span>{{ track.genre }}</span></td>
                         <td><span>{{ track.year }}</span></td>
+                        <td class="is-unselectable">
+                            <i title="move up this track on playlist" class="fa fa-caret-up cursor-pointer" aria-hidden="true" v-on:click="playerData.moveUpIdx(i);"></i>
+                            <i title="move down this track playlist" class="fa fa-caret-down cursor-pointer" aria-hidden="true" v-on:click="playerData.moveDownIdx(i);"></i>
+                            <i title="remove this track from playlist" class="fa fa-remove cursor-pointer" aria-hidden="true" v-on:click="playerData.removeAtIdx(i); $forceUpdate();"></i>
+                        </td>
                     </tr>
                 </tbody>
             </table>
