@@ -180,6 +180,40 @@
         );
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
+    $app->get('/api/playlist/{id}', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/playlist/' route");
+        $route = $request->getAttribute('route');
+        $playlist = new \Spieldose\Playlist($route->getArgument("id"));
+        $playlist->get(new \Spieldose\Database\DB());
+        return $response->withJson(['playlist' => $playlist], 200);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
+
+    $app->post('/api/playlist/search', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton POST '/api/playlist/search' route");
+        $data = \Spieldose\Playlist::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
+        );
+        return $response->withJson(
+            [
+                'playlists' => $data->results,
+                "pagination" => array(
+                    'totalResults' => $data->totalResults,
+                    'actualPage' => $data->actualPage,
+                    'resultsPage' => $data->resultsPage,
+                    'totalPages' => $data->totalPages
+                )
+            ],
+            200
+        );
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+
     $app->post('/api/search/global', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/search/global' route");
         $artistData = \Spieldose\Artist::search(
@@ -209,7 +243,16 @@
             ),
             $request->getParam("orderBy", "")
         );
-        return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results ], 200);
+        $playlistData = \Spieldose\Playlist::search(
+            new \Spieldose\Database\DB(),
+            $request->getParam("actualPage", 1),
+            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            array(
+                "text" => $request->getParam("text", "")
+            ),
+            $request->getParam("orderBy", "")
+        );
+        return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
     $app->post('/api/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
