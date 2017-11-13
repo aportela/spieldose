@@ -2,7 +2,7 @@
 
 var vTemplatePagination = function () {
     return `
-    <nav class="pagination is-centered level" v-if="data">
+    <nav class="pagination is-centered level" v-if="visible">
         <a :disabled=loading class="button is-link pagination-previous" v-on:click.prevent="previous"><span class="icon is-small"><i class="fa fa-caret-left" aria-hidden="true"></i></span>Previous</a>
         <a :disabled=loading class="button is-link pagination-next" v-on:click.prevent="next">Next<span class="icon is-small"><i class="fa fa-caret-right" aria-hidden="true"></i></span></a>
         <ul class="pagination-list">
@@ -20,7 +20,7 @@ var pagination = Vue.component('spieldose-pagination', {
     props: ['data', 'loading'
     ], computed: {
         visible: function () {
-            return (this.data.totalResults > 0 && this.data.totalPages > 0);
+            return (this.data && this.data.totalPages > 1);
         }
     }, methods: {
         previous: function () {
