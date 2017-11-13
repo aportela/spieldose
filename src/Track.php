@@ -63,6 +63,11 @@
                     $conditions[] = " COALESCE(MBA1.year, F.year) = :year ";
                     $params[] = (new \Spieldose\Database\DBParam())->int(":year", intval($filter["year"]));
                 }
+                if (isset($filter["playlist"]) && ! empty($filter["playlist"])) {
+                    // TODO: check permissions
+                    $conditions[] = " EXISTS ( SELECT * FROM PLAYLIST_TRACK WHERE file_id = F.id AND playlist_id = :playlist_id ) ";
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":playlist_id", $filter["playlist"]);
+                }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
