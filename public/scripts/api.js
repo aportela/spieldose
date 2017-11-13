@@ -138,6 +138,39 @@ const spieldoseAPI = {
             }
         );
     },
+    searchPlaylists: function (name, actualPage, resultsPage, callback) {
+        var params = {
+            actualPage: 1,
+            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+        };
+        if (name) {
+            params.text = name;
+        }
+        if (actualPage) {
+            params.actualPage = parseInt(actualPage);
+        }
+        if (resultsPage) {
+            params.resultsPage = parseInt(resultsPage);
+        }
+        Vue.http.post(siteUrl + "/api/playlist/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPlayList: function(playlist, callback) {
+        Vue.http.get(siteUrl + "/api/playlist/" + playlist.id).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     loveTrack: function (trackId, callback) {
         var params = {};
         Vue.http.post(siteUrl + "/api/track/" + trackId + "/love", params).then(
