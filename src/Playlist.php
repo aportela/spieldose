@@ -37,9 +37,11 @@
                         '
                     );
                     $data = $dbh->query($query, $params);
-                    $this->name = $data[0]->name;
-                    $data = \Spieldose\Track::search($dbh, 1, 10, array("playlist" => $this->id), "");
-                    $this->tracks = $data->results;
+                    if ($data) {
+                        $this->name = $data[0]->name;
+                        $data = \Spieldose\Track::search($dbh, 1, 10, array("playlist" => $this->id), "");
+                        $this->tracks = $data->results;
+                    }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
                 }

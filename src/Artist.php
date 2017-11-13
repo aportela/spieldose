@@ -43,10 +43,12 @@
                         '
                     );
                     $data = $dbh->query($query, $params);
-                    $this->mbid = $data[0]->mbid;
-                    $this->bio = $data[0]->bio;
-                    $this->image = $data[0]->image;
-                    $this->playCount = $data[0]->playCount;
+                    if ($data) {
+                        $this->mbid = $data[0]->mbid;
+                        $this->bio = $data[0]->bio;
+                        $this->image = $data[0]->image;
+                        $this->playCount = $data[0]->playCount;
+                    }
                     $this->getAlbums($dbh);
                     $totalAlbums = count($this->albums);
                     for ($i = 0; $i < $totalAlbums; $i++) {
