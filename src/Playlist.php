@@ -86,8 +86,13 @@
                 $sqlOrder = " ORDER BY P.name COLLATE NOCASE ASC ";
             }
             $query = sprintf('
-                SELECT P.id, P.name, 0 AS trackCount
+                SELECT P.id, P.name, TMP_COUNT.total AS trackCount
                 FROM PLAYLIST P
+                LEFT JOIN (
+                    SELECT COUNT(file_id) AS total, playlist_id
+                    FROM PLAYLIST_TRACK
+                    GROUP BY playlist_id
+                ) TMP_COUNT ON TMP_COUNT.playlist_id = P.id
                 %s
                 %s
                 LIMIT %d OFFSET %d
