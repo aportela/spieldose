@@ -43,7 +43,9 @@ var vTemplateSearch = function () {
                         </div>
                         <div class="media-content">
                             <div class="content cut-text">
-                                <p class="subtitle is-6"><a v-on:click="enqueueAlbumTracks(item.name, item.artist, item.year);" v-bind:title="'click to enqueue album'">{{ item.name }}</a></p>
+                                <p class="subtitle is-6"><a v-on:click="enqueueAlbumTracks(item.name, item.artist, item.year);" v-bind:title="'click to enqueue album'">{{ item.name }}</a>
+                                    <br><span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }}</span>
+                                </p>
                             </div>
                         </div>
                     </article>
