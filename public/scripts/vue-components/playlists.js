@@ -231,7 +231,6 @@ var playLists = Vue.component('spieldose-playlists', {
                     } else {
                         self.playlists = [];
                     }
-                    console.log(self.playlists);
                     self.loading = false;
                 } else {
                     self.errors = true;
