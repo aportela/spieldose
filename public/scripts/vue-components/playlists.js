@@ -122,9 +122,9 @@ var vTemplatePlayLists = function () {
                         </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="track, i in playerData.tracks" v-bind:class="playerData.actualTrack && playerData.actualTrack.id == track.id ? 'is-selected': ''">
+                    <tr v-for="track, i in playerData.tracks" v-bind:class="playerData.actualTrack && playerData.actualTrackIdx == i ? 'is-selected': ''">
                         <td>
-                        <i v-if="playerData.actualTrack && playerData.actualTrack.id != track.id" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
+                        <i v-if="playerData.actualTrack && playerData.actualTrackIdx != i" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
                         <i v-else-if="! playerData.isPaused" title="now playing, click to pause" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
                         <i v-else title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
                         <span> {{ track.title}}</span>
