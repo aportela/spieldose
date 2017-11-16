@@ -11,7 +11,10 @@
         private $dbh = null;
 
 	    public function __construct () {
-            $this->dbh = new \PDO(PDO_CONNECTION_STRING, PDO_USERNAME, PDO_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+            global $app;
+            $container = $app->getContainer();
+            $settings = $container->get('settings');
+            $this->dbh = new \PDO($settings['database']['connectionString'], $settings['database']['username'], $settings['database']['password'], array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
         }
 
         public function __destruct() {
