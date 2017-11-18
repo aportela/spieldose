@@ -4,15 +4,17 @@
     namespace Spieldose;
 
     class Scrapper {
+        private $dbh = null;
         private $id3 = null;
 
-	    public function __construct () {
+	    public function __construct (\Spieldose\Database\DB $dbh) {
+            $this->dbh = $dbh;
             $this->id3 = new \Spieldose\ID3();
         }
 
         public function __destruct() { }
 
-        public function scrapFileTags(\Spieldose\Database\DB $dbh = null, string $filePath = "") {
+        public function scrapFileTags(string $filePath = "") {
             if (file_exists($filePath)) {
                 $this->id3->analyze($filePath);
                 $params = array();
@@ -100,7 +102,7 @@
                 } else {
                     $params[] = (new \Spieldose\Database\DBParam())->null(":mime");
                 }
-                $dbh->execute('
+                $this->dbh->execute('
                     REPLACE INTO FILE (
                         id,
                         local_path,
@@ -146,10 +148,10 @@
             }
         }
 
-        public function getPendingArtists(\Spieldose\Database\DB $dbh = null) {
+        public function getPendingArtists() {
             $artists = array();
             $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist";
-            $results = $dbh->query($query);
+            $results = $this->dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
                 $artists[] = $results[$i]->artist;
@@ -157,17 +159,17 @@
             return($artists);
         }
 
-        public function getPendingArtistMBIds(\Spieldose\Database\DB $dbh = null) {
+        public function getPendingArtistMBIds() {
             $mbIds = array();
             $query = '
                 SELECT
                     DISTINCT F.artist_mbid AS mbid
                 FROM FILE F
-                WHERE NOT EXISTS
+                WHERE F.artist_mbid IS NOT NULL
+                AND NOT EXISTS
                     (SELECT mbid FROM MB_CACHE_ARTIST MCA WHERE MCA.mbid = F.artist_mbid)
-                AND F.artist_mbid IS NOT NULL
             ';
-            $results = $dbh->query($query);
+            $results = $this->dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
                 $mbIds[] = $results[$i]->mbid;
@@ -175,29 +177,29 @@
             return($mbIds);
         }
 
-        public function mbArtistScrap(\Spieldose\Database\DB $dbh = null, $artist) {
+        public function mbArtistScrap($artist) {
             $mbArtist = \Spieldose\MusicBrainz\Artist::getFromArtist($artist);
             if (! empty($mbArtist->mbId)) {
-                $mbArtist->save($dbh);
+                $mbArtist->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $artist);
-                $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
+                $this->dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
             }
         }
 
-        public function mbArtistMBIdscrap(\Spieldose\Database\DB $dbh = null, $mbid) {
+        public function mbArtistMBIdscrap($mbid) {
             $mbArtist = \Spieldose\MusicBrainz\Artist::getFromMBId($mbid);
             if (! empty($mbArtist->mbId)) {
-                $mbArtist->save($dbh);
+                $mbArtist->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":old_artist_mbid", $mbid);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
-                $dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE artist_mbid = :old_artist_mbid", $params);
+                $this->dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE artist_mbid = :old_artist_mbid", $params);
             }
         }
 
-        public function getPendingAlbumMBIds(\Spieldose\Database\DB $dbh = null) {
+        public function getPendingAlbumMBIds() {
             $mbIds = array();
             $query = '
                 SELECT
@@ -207,7 +209,7 @@
                     (SELECT mbid FROM MB_CACHE_ALBUM MCA WHERE MCA.mbid = F.album_mbid)
                 AND F.album_mbid IS NOT NULL
             ';
-            $results = $dbh->query($query);
+            $results = $this->dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
                 $mbIds[] = $results[$i]->mbid;
@@ -215,32 +217,32 @@
             return($mbIds);
         }
 
-        public function getPendingAlbums(\Spieldose\Database\DB $dbh = null) {
+        public function getPendingAlbums() {
             $artists = array();
             $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY RANDOM(), album_name";
-            return($dbh->query($query));
+            return($this->dbh->query($query));
         }
 
-        public function mbAlbumScrap(\Spieldose\Database\DB $dbh = null, string $album = "", string $artist = "") {
+        public function mbAlbumScrap(string $album = "", string $artist = "") {
             $mbAlbum = \Spieldose\MusicBrainz\Album::getFromAlbumAndArtist($album, $artist);
             if (! empty($mbAlbum->mbId)) {
-                $mbAlbum->save($dbh);
+                $mbAlbum->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":album_mbid", $mbAlbum->mbId);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":album_name", $album);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $artist);
-                $dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND track_artist = :track_artist", $params);
+                $this->dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND track_artist = :track_artist", $params);
             }
         }
 
-        public function mbAlbumMBIdScrap(\Spieldose\Database\DB $dbh = null, string $mbid = "") {
+        public function mbAlbumMBIdScrap(string $mbid = "") {
             $mbAlbum = \Spieldose\MusicBrainz\Album::getFromMBId($mbid);
             if (! empty($mbAlbum->mbId)) {
-                $mbAlbum->save($dbh);
+                $mbAlbum->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":old_album_mbid", $mbid);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":album_mbid", $mbAlbum->mbId);
-                $dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_mbid = :old_album_mbid", $params);
+                $this->dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_mbid = :old_album_mbid", $params);
             }
         }
     }
