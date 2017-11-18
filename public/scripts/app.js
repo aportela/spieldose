@@ -55,11 +55,15 @@ const getPlayerData = function () {
                     playerData.tracks = response.body.tracks;
                 }
                 playerData.loading = false;
-                callback();
+                if (callback && typeof callback === "function") {
+                    callback();
+                }
             } else {
                 // TODO: errors
                 playerData.loading = false;
-                callback();
+                if (callback && typeof callback === "function") {
+                    callback();
+                }
             }
         });
     };
@@ -220,14 +224,14 @@ const getPlayerData = function () {
             playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);
         }
     },
-    playerData.advancePlayList = function () {
-        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-            playerData.playAtIdx(playerData.actualTrackIdx + 1);
-        } else {
-            playerData.stop();
-            playerData.play();
-        }
-    };
+        playerData.advancePlayList = function () {
+            if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+                playerData.playAtIdx(playerData.actualTrackIdx + 1);
+            } else {
+                playerData.stop();
+                playerData.play();
+            }
+        };
     return (playerData);
 }
 
@@ -402,7 +406,9 @@ const app = new Vue({
             self.loading = true;
             spieldoseAPI.poll(function (response) {
                 self.loading = false;
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             });
         }
     }
