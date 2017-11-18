@@ -5,7 +5,7 @@
     use Slim\Http\Response;
 
     $app->get('/', function (Request $request, Response $response, array $args) {
-        $this->apiLogger->info("Spieldose API: GET /");
+        $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"]
         ));
@@ -16,7 +16,6 @@
         /* user */
 
         $this->get('/user/poll', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             if (\Spieldose\User::isLogged()) {
                 return $response->withJson(['success' => true], 200);
             } else {
@@ -25,7 +24,6 @@
         });
 
         $this->post('/user/signin', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $u = new \Spieldose\User("", $request->getParam("email", ""), $request->getParam("password", ""));
             if ($u->login(new \Spieldose\Database\DB())) {
                 return $response->withJson(['logged' => true], 200);
@@ -35,7 +33,6 @@
         });
 
         $this->get('/user/signout', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             \Spieldose\User::logout();
             return $response->withJson(['logged' => false], 200);
         });
@@ -45,7 +42,6 @@
         /* track */
 
         $this->get('/track/get/{id}', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $route = $request->getAttribute('route');
             $track  = new \Spieldose\Track($route->getArgument("id"));
             $db = new \Spieldose\Database\DB();
@@ -95,7 +91,6 @@
         });
 
         $this->post('/track/{id}/love', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $route = $request->getAttribute('route');
             $track  = new \Spieldose\Track($route->getArgument("id"));
             $db = new \Spieldose\Database\DB();
@@ -104,7 +99,6 @@
         });
 
         $this->post('/track/{id}/unlove', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $route = $request->getAttribute('route');
             $track  = new \Spieldose\Track($route->getArgument("id"));
             $db = new \Spieldose\Database\DB();
@@ -113,7 +107,6 @@
         });
 
         $this->post('/track/search', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $filter = array();
             $data = \Spieldose\Track::search(
                 new \Spieldose\Database\DB(),
@@ -135,7 +128,6 @@
         /* artist */
 
         $this->post('/artist/search', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $data = \Spieldose\Artist::search(
                 new \Spieldose\Database\DB(),
                 $request->getParam("actualPage", 1),
@@ -160,7 +152,6 @@
         });
 
         $this->get('/artist/{name}', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $route = $request->getAttribute('route');
             $artist = new \Spieldose\Artist($route->getArgument("name"));
             $artist->get(new \Spieldose\Database\DB());
@@ -172,7 +163,6 @@
         /* album */
 
         $this->post('/album/search', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $data = \Spieldose\Album::search(
                 new \Spieldose\Database\DB(),
                 $request->getParam("actualPage", 1),
@@ -201,7 +191,6 @@
         /* playlist */
 
         $this->get('/playlist/{id}', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $route = $request->getAttribute('route');
             $playlist = new \Spieldose\Playlist($route->getArgument("id"));
             $playlist->get(new \Spieldose\Database\DB());
@@ -209,7 +198,6 @@
         });
 
         $this->post('playlist/search', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $data = \Spieldose\Playlist::search(
                 new \Spieldose\Database\DB(),
                 $request->getParam("actualPage", 1),
@@ -238,7 +226,6 @@
         /* global search */
 
         $this->post('/search/global', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $artistData = \Spieldose\Artist::search(
                 new \Spieldose\Database\DB(),
                 $request->getParam("actualPage", 1),
@@ -283,7 +270,6 @@
         /* metrics */
 
         $this->post('/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
                 new \Spieldose\Database\DB(),
                 array(
@@ -297,7 +283,6 @@
         });
 
         $this->post('/metrics/top_artists', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetTopArtists(
                 new \Spieldose\Database\DB(),
                 array(
@@ -310,7 +295,6 @@
         });
 
         $this->post('/metrics/top_genres', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetTopGenres(
                 new \Spieldose\Database\DB(),
                 array(
@@ -323,7 +307,6 @@
         });
 
         $this->post('/metrics/recently_added', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $entity = $request->getParam("entity", "");
             if (! empty($entity)) {
                 switch($entity) {
@@ -360,7 +343,6 @@
         });
 
         $this->post('/metrics/recently_played', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $entity = $request->getParam("entity", "");
             if (! empty($entity)) {
                 switch($entity) {
@@ -397,7 +379,6 @@
         });
 
         $this->post('/metrics/play_stats_by_hour', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
                 new \Spieldose\Database\DB(),
                 array(
@@ -407,7 +388,6 @@
         });
 
         $this->post('/metrics/play_stats_by_weekday', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
                 new \Spieldose\Database\DB(),
                 array(
@@ -417,7 +397,6 @@
         });
 
         $this->post('/metrics/play_stats_by_month', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
                 new \Spieldose\Database\DB(),
                 array(
@@ -427,7 +406,6 @@
         });
 
         $this->post('/metrics/play_stats_by_year', function (Request $request, Response $response, array $args) {
-            $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
             $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
                 new \Spieldose\Database\DB(),
                 array(

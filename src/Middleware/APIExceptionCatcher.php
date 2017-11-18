@@ -24,6 +24,8 @@
         public function __invoke($request, $response, $next)
         {
             try {
+                $this->container["apiLogger"]->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+                $this->container["apiLogger"]->debug($request->getBody());
                 $response = $next($request, $response);
                 return $response;
             } catch (\Spieldose\Exception\InvalidParamsException $e) {
