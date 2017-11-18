@@ -74,6 +74,21 @@
             }
 
             /**
+             * set FLOAT param
+             *
+             * @param $name string
+             * @param $value int
+             *
+             * @return \Spieldose\Database\DBParam
+             */
+            public function float(string $name, float $value): \Spieldose\Database\DBParam {
+                  $this->name = $name;
+                  $this->value = $value;
+                  $this->type = \PDO::PARAM_STR;
+                  return($this);
+            }
+
+            /**
              * set STRING param
              *
              * @param $name string
