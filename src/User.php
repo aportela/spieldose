@@ -4,10 +4,10 @@
     namespace Spieldose;
 
     class User {
-        private $id;
-        private $email;
-        private $password;
-        private $passwordHash;
+        public $id;
+        public $email;
+        public $password;
+        public $passwordHash;
 
         /**
          * user constructor
@@ -45,7 +45,7 @@
                             (new \Spieldose\DataBase\DBParam())->str(":email", mb_strtolower($this->email)),
                             (new \Spieldose\DataBase\DBParam())->str(":password_hash", $this->passwordHash($this->password))
                         );
-                        return($dbh->execute("INSERTO INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
+                        return($dbh->execute("INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
                     } else {
                         throw new \Spieldose\Exception\NotFoundException("password");
                     }
@@ -88,7 +88,7 @@
          *
          * @param $dbh \Spieldose\Database\DB
          */
-        private function get(\Spieldose\Database\DB $dbh) {
+        public function get(\Spieldose\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id)) {
                 $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
