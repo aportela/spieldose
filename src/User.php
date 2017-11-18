@@ -41,9 +41,9 @@
                 if (! empty($this->email)) {
                     if (! empty($this->password)) {
                         $params = array(
-                            (new \Spieldose\DataBase\DBParam())->str(":id", $this->id),
-                            (new \Spieldose\DataBase\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Spieldose\DataBase\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                            (new \Spieldose\Database\DBParam())->str(":id", $this->id),
+                            (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Spieldose\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
                         );
                         return($dbh->execute("INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
                     } else {
@@ -67,9 +67,9 @@
                 if (! empty($this->email)) {
                     if (! empty($this->password)) {
                         $params = array(
-                            (new \Spieldose\DataBase\DBParam())->str(":id", $this->id),
-                            (new \Spieldose\DataBase\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Spieldose\DataBase\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                            (new \Spieldose\Database\DBParam())->str(":id", $this->id),
+                            (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Spieldose\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
                         );
                         return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params));
                     } else {
@@ -169,9 +169,9 @@
             if (isset($this->email) && ! empty($this->email)) {
                 if (isset($password) && ! empty($password)) {
                     $params = array(
-                        (new \Spieldose\DataBase\DBParam())->str(":id", md5(mb_strtolower($this->email))),
-                        (new \Spieldose\DataBase\DBParam())->str(":email", mb_strtolower($this->email)),
-                        (new \Spieldose\DataBase\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
+                        (new \Spieldose\Database\DBParam())->str(":id", md5(mb_strtolower($this->email))),
+                        (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                        (new \Spieldose\Database\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
                     );
                     return($dbh->execute("REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
                 } else {

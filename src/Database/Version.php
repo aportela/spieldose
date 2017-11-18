@@ -141,7 +141,7 @@
 
         private function set(float $number) {
             $params = array(
-                (new \Spieldose\DataBase\DBParam())->float(":num", $number)
+                (new \Spieldose\Database\DBParam())->float(":num", $number)
             );
             $query = '
                 INSERT INTO VERSION
