@@ -29,10 +29,14 @@
             $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $album, $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
-            if (isset($result->results->albummatches->album) && is_array($result->results->albummatches->album)) {
-                foreach ($result->results->albummatches->album as $matchedAlbum) {
-                    $results[] = new \Spieldose\MusicBrainz\Album($matchedAlbum->mbid, $matchedAlbum->name, $matchedAlbum->artist, "", "");
+            if (! $result->error) {
+                if (isset($result->results->albummatches->album) && is_array($result->results->albummatches->album)) {
+                    foreach ($result->results->albummatches->album as $matchedAlbum) {
+                        $results[] = new \Spieldose\MusicBrainz\Album($matchedAlbum->mbid, $matchedAlbum->name, $matchedAlbum->artist, "", "");
+                    }
                 }
+            } else {
+                throw new \Exception("MusicBrainz error: " . $result->error);
             }
             return($results);
         }
@@ -58,7 +62,7 @@
                     $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
                     return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $image, $json));
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException($mbId);
+                    throw new \Exception("MusicBrainz error: " . $result->error);
                 }
             }
         }
@@ -73,8 +77,12 @@
                 $url = sprintf(self::API_GET_URL_FROM_ALBUM_AND_ARTIST, \Spieldose\LastFM::API_KEY, $album, $artist);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
-                return(new \Spieldose\MusicBrainz\Album(isset($result->album->mbid) ? $result->album->mbid: "", isset($result->album->name) ? $result->album->name: "", isset($result->album->artist) ? $result->album->artist: "", $image, $json));
+                if (! $result->error) {
+                    $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
+                    return(new \Spieldose\MusicBrainz\Album(isset($result->album->mbid) ? $result->album->mbid: "", isset($result->album->name) ? $result->album->name: "", isset($result->album->artist) ? $result->album->artist: "", $image, $json));
+                } else {
+                    throw new \Exception("MusicBrainz error: " . $result->error);
+                }
             }
         }
 
