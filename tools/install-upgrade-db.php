@@ -10,17 +10,18 @@
 
     $app = (new \Spieldose\App($settings))->get();
 
-    $actualVersion = 1.00;
+    $actualVersion = 0;
     $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB());
     try {
         $actualVersion = $v->get();
     } catch (\Spieldose\Exception\NotFoundException $e) {
     } catch (\PDOException $e) {
     }
-    if ($actualVersion == 1.00) {
+    if ($actualVersion == 0) {
         echo "Creating database...";
         $v->install();
         echo "ok!" , PHP_EOL;
+        $actualVersion = 1.00;
     }
     echo sprintf("Upgrading database from version %.2f%s", $actualVersion, PHP_EOL);
     $result = $v->upgrade();
