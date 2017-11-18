@@ -6,9 +6,8 @@
             'displayErrorDetails' => true, // set to false in production
             'addContentLengthHeader' => false, // Allow the web server to send the content-length header
             'twigParams' => [
-                'siteUrl' => "http://localhost",
                 'production' => false,
-                'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
+                'localVendorAssets' => true // use local vendor assets (vs remote cdn)
             ],
             //
             'common' => [
@@ -28,17 +27,17 @@
             'logger' => [
                 'name' => 'spieldose-app',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-                'level' => \Monolog\Logger::DEBUG,
+                'level' => \Monolog\Logger::DEBUG
             ],
             'scanLogger' => [
                 'name' => 'spieldose-app',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
-                'level' => \Monolog\Logger::DEBUG,
+                'level' => \Monolog\Logger::DEBUG
             ],
             'scrapLogger' => [
                 'name' => 'spieldose-app',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
-                'level' => \Monolog\Logger::DEBUG,
+                'level' => \Monolog\Logger::DEBUG
             ]
         ],
     ];

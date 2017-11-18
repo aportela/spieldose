@@ -6,7 +6,7 @@
  */
 const spieldoseAPI = {
     poll: function (callback) {
-        Vue.http.get(siteUrl + "/api/user/poll").then(
+        Vue.http.get("api/user/poll").then(
             response => {
                 callback(response);
             },
@@ -20,7 +20,7 @@ const spieldoseAPI = {
             email: email,
             password: password
         }
-        Vue.http.post(siteUrl + "/api/user/signin", params).then(
+        Vue.http.post("api/user/signin", params).then(
             response => {
                 callback(response);
             },
@@ -30,7 +30,7 @@ const spieldoseAPI = {
         );
     },
     signOut: function (callback) {
-        Vue.http.get(siteUrl + "/api/user/signout").then(
+        Vue.http.get("api/user/signout").then(
             response => {
                 callback(response);
             },
@@ -53,7 +53,7 @@ const spieldoseAPI = {
         if (text) {
             params.text = text;
         }
-        Vue.http.post(siteUrl + "/api/search/global", params).then(
+        Vue.http.post("api/search/global", params).then(
             response => {
                 callback(response);
             },
@@ -63,7 +63,7 @@ const spieldoseAPI = {
         );
     },
     getArtist: function (name, callback) {
-        Vue.http.get(siteUrl + "/api/artist/" + encodeURIComponent(name)).then(
+        Vue.http.get("api/artist/" + encodeURIComponent(name)).then(
             response => {
                 callback(response);
             },
@@ -83,7 +83,7 @@ const spieldoseAPI = {
         if (year) {
             params.year = year;
         }
-        Vue.http.post(siteUrl + "/api/track/search", params).then(
+        Vue.http.post("api/track/search", params).then(
             response => {
                 callback(response);
             },
@@ -106,7 +106,7 @@ const spieldoseAPI = {
         if (order) {
             params.orderBy = order;
         }
-        Vue.http.post(siteUrl + "/api/track/search", params).then(
+        Vue.http.post("api/track/search", params).then(
             response => {
                 callback(response);
             },
@@ -129,7 +129,7 @@ const spieldoseAPI = {
         if (resultsPage) {
             params.resultsPage = parseInt(resultsPage);
         }
-        Vue.http.post(siteUrl + "/api/artist/search", params).then(
+        Vue.http.post("api/artist/search", params).then(
             response => {
                 callback(response);
             },
@@ -152,7 +152,7 @@ const spieldoseAPI = {
         if (resultsPage) {
             params.resultsPage = parseInt(resultsPage);
         }
-        Vue.http.post(siteUrl + "/api/playlist/search", params).then(
+        Vue.http.post("api/playlist/search", params).then(
             response => {
                 callback(response);
             },
@@ -162,7 +162,7 @@ const spieldoseAPI = {
         );
     },
     getPlayList: function(playlist, callback) {
-        Vue.http.get(siteUrl + "/api/playlist/" + playlist.id).then(
+        Vue.http.get("api/playlist/" + playlist.id).then(
             response => {
                 callback(response);
             },
@@ -173,7 +173,7 @@ const spieldoseAPI = {
     },
     loveTrack: function (trackId, callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/track/" + trackId + "/love", params).then(
+        Vue.http.post("api/track/" + trackId + "/love", params).then(
             response => {
                 callback(response);
             },
@@ -184,7 +184,7 @@ const spieldoseAPI = {
     },
     unLoveTrack: function (trackId, callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/track/" + trackId + "/unlove", params).then(
+        Vue.http.post("api/track/" + trackId + "/unlove", params).then(
             response => {
                 callback(response);
             },
@@ -218,7 +218,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/top_played_tracks", params).then(
+        Vue.http.post("api/metrics/top_played_tracks", params).then(
             response => {
                 callback(response);
             },
@@ -249,7 +249,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/top_artists", params).then(
+        Vue.http.post("api/metrics/top_artists", params).then(
             response => {
                 callback(response);
             },
@@ -280,7 +280,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/top_genres", params).then(
+        Vue.http.post("api/metrics/top_genres", params).then(
             response => {
                 callback(response);
             },
@@ -313,7 +313,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_added", params).then(
+        Vue.http.post("api/metrics/recently_added", params).then(
             response => {
                 callback(response);
             },
@@ -346,7 +346,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_added", params).then(
+        Vue.http.post("api/metrics/recently_added", params).then(
             response => {
                 callback(response);
             },
@@ -379,7 +379,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_added", params).then(
+        Vue.http.post("api/metrics/recently_added", params).then(
             response => {
                 callback(response);
             },
@@ -412,7 +412,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_played", params).then(
+        Vue.http.post("api/metrics/recently_played", params).then(
             response => {
                 callback(response);
             },
@@ -445,7 +445,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_played", params).then(
+        Vue.http.post("api/metrics/recently_played", params).then(
             response => {
                 callback(response);
             },
@@ -478,7 +478,7 @@ const spieldoseAPI = {
                 params.toDate = moment().format('YYYYMMDD');
                 break;
         }
-        Vue.http.post(siteUrl + "/api/metrics/recently_played", params).then(
+        Vue.http.post("api/metrics/recently_played", params).then(
             response => {
                 callback(response);
             },
@@ -489,7 +489,7 @@ const spieldoseAPI = {
     },
     getPlayStatMetricsByHour: function (callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/metrics/play_stats_by_hour", params).then(
+        Vue.http.post("api/metrics/play_stats_by_hour", params).then(
             response => {
                 callback(response);
             },
@@ -500,7 +500,7 @@ const spieldoseAPI = {
     },
     getPlayStatMetricsByWeekDay: function (callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/metrics/play_stats_by_weekday", params).then(
+        Vue.http.post("api/metrics/play_stats_by_weekday", params).then(
             response => {
                 callback(response);
             },
@@ -511,7 +511,7 @@ const spieldoseAPI = {
     },
     getPlayStatMetricsByMonth: function (callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/metrics/play_stats_by_month", params).then(
+        Vue.http.post("api/metrics/play_stats_by_month", params).then(
             response => {
                 callback(response);
             },
@@ -522,7 +522,7 @@ const spieldoseAPI = {
     },
     getPlayStatMetricsByYear: function (callback) {
         var params = {};
-        Vue.http.post(siteUrl + "/api/metrics/play_stats_by_year", params).then(
+        Vue.http.post("api/metrics/play_stats_by_year", params).then(
             response => {
                 callback(response);
             },

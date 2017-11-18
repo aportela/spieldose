@@ -178,7 +178,7 @@ const getPlayerData = function () {
     };
     playerData.download = function (trackId) {
         if (trackId) {
-            window.location = siteUrl + "/api/track/get/" + trackId;
+            window.location = "api/track/get/" + trackId;
         }
     };
     playerData.downloadActualTrack = function () {
