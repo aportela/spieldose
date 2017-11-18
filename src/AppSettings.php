@@ -40,7 +40,7 @@
                 'level' => \Monolog\Logger::DEBUG
             ],
             'scrapLogger' => [
-                'name' => 'spieldose-scrapper',
+                'name' => 'spieldose-scraper',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
                 'level' => \Monolog\Logger::DEBUG
             ]
