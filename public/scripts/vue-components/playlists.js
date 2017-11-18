@@ -124,10 +124,10 @@ var vTemplatePlayLists = function () {
                 <tbody>
                     <tr v-for="track, i in playerData.tracks" v-bind:class="playerData.actualTrack && playerData.actualTrackIdx == i ? 'is-selected': ''">
                         <td>
-                        <i v-if="playerData.actualTrack && playerData.actualTrackIdx != i" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
-                        <i v-else-if="! playerData.isPaused" title="now playing, click to pause" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
-                        <i v-else title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
-                        <span> {{ track.title}}</span>
+                            <i v-if="iconAction(i) == 'play'" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
+                            <i v-else-if="iconAction(i) == 'none'" title="now playing, click to pause" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
+                            <i v-else-if="iconAction(i) == 'unPause'" title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
+                            <span> {{ track.title}}</span>
                         </td>
                         <td><a v-if="track.artist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(track.artist)" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
                         <td><span>{{ track.album }}</span></td>
@@ -199,6 +199,17 @@ var playLists = Vue.component('spieldose-playlists', {
         }
     },
     methods: {
+        iconAction: function(index) {
+            if (this.playerData.isPaused && this.playerData.actualTrackIdx == index) {
+                return('unPause');
+            } else {
+                if (this.playerData.isPlaying && this.playerData.actualTrackIdx == index) {
+                    return('none');
+                } else {
+                    return('play');
+                }
+            }
+        },
         changeTab: function (tab) {
             this.tab = tab;
             if (this.tab == 1) {
