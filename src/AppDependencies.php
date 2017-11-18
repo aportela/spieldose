@@ -19,4 +19,13 @@
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
         return ($logger);
     };
+
+    $container['apiLogger'] = function ($c) {
+        $settings = $c->get('settings')['apiLogger'];
+        $logger = new \Monolog\Logger($settings['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+        return ($logger);
+    };
+
 ?>
