@@ -40,6 +40,7 @@ var vTemplateSignIn = function () {
                                 <hr>
                                 <p class="control">
                                     <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">Sign in</button>
+                                    <button v-if="allowSignUp" type="button" class="button is-info" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">Sign up</button>
                                 </p>
                             </div>
                         </form>
@@ -69,6 +70,7 @@ var signIn = Vue.component('spieldose-signin-component', {
             password: "secret",
             invalidUsername: false,
             invalidPassword: false,
+            allowSignUp: false,
             errors: false,
             apiError: null,
         });
@@ -87,7 +89,7 @@ var signIn = Vue.component('spieldose-signin-component', {
             };
             spieldoseAPI.signIn(this.email, this.password, function (response) {
                 if (response.ok) {
-                    bus.$emit("changeRouterPath", 'dashboard');
+                    self.$router.push({ name: 'dashboard' });
                 } else {
                     switch (response.status) {
                         case 404:
