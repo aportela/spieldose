@@ -10,6 +10,10 @@
                 'production' => false,
                 'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
             ],
+            //
+            'common' => [
+                'defaultResultsPage' => 32,
+            ],
             // database settings
             'database' => [
                 'connectionString' => sprintf("sqlite:%s", dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "spieldose.sqlite3"),

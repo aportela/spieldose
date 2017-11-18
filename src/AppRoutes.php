@@ -110,7 +110,7 @@
         $data = \Spieldose\Track::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", ""),
                 "artist" => $request->getParam("artist", ""),
@@ -127,7 +127,7 @@
         $data = \Spieldose\Artist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -160,7 +160,7 @@
         $data = \Spieldose\Album::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -188,13 +188,12 @@
         return $response->withJson(['playlist' => $playlist], 200);
     })->add(new \Spieldose\Middleware\APIExceptionCatcher);
 
-
     $app->post('/api/playlist/search', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/playlist/search' route");
         $data = \Spieldose\Playlist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -219,7 +218,7 @@
         $artistData = \Spieldose\Artist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -228,7 +227,7 @@
         $albumData = \Spieldose\Album::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -237,7 +236,7 @@
         $trackData = \Spieldose\Track::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
@@ -246,7 +245,7 @@
         $playlistData = \Spieldose\Playlist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
-            $request->getParam("resultsPage", DEFAULT_RESULTS_PAGE),
+            $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
             array(
                 "text" => $request->getParam("text", "")
             ),
