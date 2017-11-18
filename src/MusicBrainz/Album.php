@@ -29,7 +29,7 @@
             $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $album, $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
-            if (! $result->error) {
+            if (! isset($result->error)) {
                 if (isset($result->results->albummatches->album) && is_array($result->results->albummatches->album)) {
                     foreach ($result->results->albummatches->album as $matchedAlbum) {
                         $results[] = new \Spieldose\MusicBrainz\Album($matchedAlbum->mbid, $matchedAlbum->name, $matchedAlbum->artist, "", "");
@@ -58,7 +58,7 @@
                 $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                if (! $result->error) {
+                if (! isset($result->error)) {
                     $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
                     return(new \Spieldose\MusicBrainz\Album($result->album->mbid, $result->album->name, $result->album->artist, $image, $json));
                 } else {
@@ -77,7 +77,7 @@
                 $url = sprintf(self::API_GET_URL_FROM_ALBUM_AND_ARTIST, \Spieldose\LastFM::API_KEY, $album, $artist);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                if (! $result->error) {
+                if (! isset($result->error)) {
                     $image = isset($result->album->image) ? self::getBestImage($result->album->image) : "";
                     return(new \Spieldose\MusicBrainz\Album(isset($result->album->mbid) ? $result->album->mbid: "", isset($result->album->name) ? $result->album->name: "", isset($result->album->artist) ? $result->album->artist: "", $image, $json));
                 } else {

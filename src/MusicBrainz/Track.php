@@ -29,7 +29,7 @@
             $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $track, $artist, $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
-            if (! $result->error) {
+            if (! isset($result->error)) {
                 if (isset($result->results->trackmatches->track) && is_array($result->results->trackmatches->track)) {
                     foreach ($result->results->trackmatches->track as $matchedTrack) {
                         $results[] = new \Spieldose\MusicBrainz\Track($matchedTrack->mbid, $matchedTrack->name, "", $matchedTrack->artist, "");
@@ -48,7 +48,7 @@
                 $url = sprintf(self::API_GET_URL_FROM_MBID, \Spieldose\LastFM::API_KEY, $mbId);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                if (! $result->error) {
+                if (! isset($result->error)) {
                     return(new \Spieldose\MusicBrainz\Track($result->track->mbid, $result->track->name, $result->track->artist->mbid, $result->track->artist->name, $json));
                 } else {
                     throw new \Exception("MusicBrainz error: " . $result->error);
@@ -66,7 +66,7 @@
                 $url = sprintf(self::API_GET_URL_FROM_TRACK_AND_ARTIST, \Spieldose\LastFM::API_KEY, $track, $artist);
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
-                if (! $result->error) {
+                if (! isset($result->error)) {
                     return(new \Spieldose\MusicBrainz\Track($result->track->mbid, $result->track->name, $result->track->artist->mbid, $result->track->artist->name, $json));
                 } else {
                     throw new \Exception("MusicBrainz error: " . $result->error);
