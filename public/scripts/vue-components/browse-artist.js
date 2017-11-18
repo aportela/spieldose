@@ -3,7 +3,8 @@
 var vTemplateBrowseArtist = function () {
     return `
     <div class="container is-fluid box">
-        <p class="title is-1 has-text-centered">Artist details</i></p>
+        <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i></p>
+        <p v-else="! loading" class="title is-1 has-text-centered">Artist details</p>
         <div class="media" v-if="! errors && ! loading">
             <figure class="image media-left">
                 <img v-bind:src="artist.image" alt="Image" class="artist_avatar" v-if="artist.image">
