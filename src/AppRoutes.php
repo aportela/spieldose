@@ -22,8 +22,8 @@
 
     $app->post('/api/user/signin', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton POST '/api/user/signin' route");
-        $u = new \Spieldose\User($request->getParam("email"));
-        if ($u->login(new \Spieldose\Database\DB(), $request->getParam("password"))) {
+        $u = new \Spieldose\User("", $request->getParam("email", ""), $request->getParam("password", ""));
+        if ($u->login(new \Spieldose\Database\DB())) {
             return $response->withJson(['logged' => true], 200);
         } else {
             return $response->withJson(['logged' => false], 401);
