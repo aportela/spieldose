@@ -150,7 +150,14 @@ var player = Vue.component('spieldose-player-component', {
             }
         });
         self.$refs.player.addEventListener("ended", function () {
-            self.playerData.advancePlayList();
+            switch(self.playerData.repeatTracksMode) {
+                case "track":
+                    self.$refs.player.play();
+                break;
+                default:
+                    self.playerData.advancePlayList();
+                break;
+            }
         });
     }
 });
