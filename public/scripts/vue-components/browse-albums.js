@@ -23,7 +23,7 @@ var vTemplateBrowseAlbums = function () {
                 </a>
                 <div class="album-info">
                     <p class="album-name">{{ album.name }}</p>
-                    <p class="artist-name"><a v-bind:title="'click to open artist section'" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(album.artist)">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                    <p class="artist-name"><a v-bind:title="'click to open artist section'" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: album.artist } })">by {{ album.albumartist ? album.albumartist: album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
                 </div>
             </div>
             <div class="is-clearfix"></div>

@@ -10,7 +10,7 @@ var vTemplatePlayer = function () {
         <div id="player-cover-footer">
             <p><span>{{ nowPlayingTitle }}</span> <span v-show="nowPlayingLength"> {{ nowPlayingLength }}</span></p>
             <p>
-                <span v-if="nowPlayingArtist"><a class="title is-6 is-marginless has-text-centered has-text-light" v-if="nowPlayingArtist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(nowPlayingArtist)">{{ nowPlayingArtist }}</a></span>
+                <span v-if="nowPlayingArtist"><a class="title is-6 is-marginless has-text-centered has-text-light" v-if="nowPlayingArtist" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: nowPlayingArtist } })">{{ nowPlayingArtist }}</a></span>
                 <span v-else></span>
                 <span v-if="nowPlayingArtistAlbum"><a class="title is-6 is-marginless has-text-centered has-text-light">{{ nowPlayingArtistAlbum + nowPlayingYear  }}</a></span>
                 <span v-else></span>

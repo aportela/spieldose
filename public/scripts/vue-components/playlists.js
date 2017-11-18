@@ -129,7 +129,7 @@ var vTemplatePlayLists = function () {
                             <i v-else-if="iconAction(i) == 'unPause'" title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
                             <span> {{ track.title}}</span>
                         </td>
-                        <td><a v-if="track.artist" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(track.artist)" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
+                        <td><a v-if="track.artist" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: track.artist } })" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
                         <td><span>{{ track.album }}</span></td>
                         <td><span>{{ track.genre }}</span></td>
                         <td><span>{{ track.year }}</span></td>

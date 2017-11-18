@@ -15,7 +15,7 @@ var vTemplateBrowseArtists = function () {
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
             <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
-                <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(artist.name)" v-bind:title="'click to open artist section'">
+                <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: artist.name } })" v-bind:title="'click to open artist section'">
                     <img v-if="artist.image" v-bind:src="artist.image" />
                     <img v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                     <i class="fa fa-search fa-4x"></i>
@@ -30,6 +30,7 @@ var vTemplateBrowseArtists = function () {
     </div>
     `;
 }
+
 
 var browseArtists = Vue.component('spieldose-browse-artists', {
     template: vTemplateBrowseArtists(),

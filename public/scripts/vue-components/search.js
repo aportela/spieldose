@@ -26,7 +26,7 @@ var vTemplateSearch = function () {
                         </div>
                         <div class="media-content">
                             <div class="content">
-                                <p class="subtitle is-6"><a v-bind:title="'click to open artist section'" v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.name)">{{ item.name }}</a></p>
+                                <p class="subtitle is-6"><a v-bind:title="'click to open artist section'" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.name } })">{{ item.name }}</a></p>
                             </div>
                         </div>
                     </article>
@@ -44,7 +44,7 @@ var vTemplateSearch = function () {
                         <div class="media-content">
                             <div class="content cut-text">
                                 <p class="subtitle is-6"><a v-on:click="enqueueAlbumTracks(item.name, item.artist, item.year);" v-bind:title="'click to enqueue album'">{{ item.name }}</a>
-                                    <br><span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }}</span>
+                                    <br><span v-if="item.artist">by <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }}</span>
                                 </p>
                             </div>
                         </div>
@@ -60,7 +60,7 @@ var vTemplateSearch = function () {
                             <div class="content cut-text">
                                 <a><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}</a>
                                 <br >
-                                <span v-if="item.artist">by <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></a></span>
+                                <span v-if="item.artist">by <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></a></span>
                             </div>
                         </div>
                     </article>

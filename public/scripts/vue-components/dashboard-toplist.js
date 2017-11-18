@@ -13,8 +13,8 @@ var vTemplateDashboardTopList = function () {
         </p>
         <div class="panel-block cut-text">
             <ol v-if="items.length > 0">
-                <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items"><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}<span v-if="item.artist"> / <a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }}</a></span><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
-                <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items"><a v-bind:href="'/#/app/artist/' + $router.encodeSafeName(item.artist)">{{ item.artist }}</a><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
+                <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items"><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}<span v-if="item.artist"> / <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }}</a></span><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
+                <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items"><a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }}</a><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
                 <li class="is-small" v-if="type == 'topGenres'" v-for="item, i in items">{{ item.genre }}<span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
             </ol>
             <p v-else-if="items.length == 0 && ! loading && ! errors">not enough data for the stats</p>
