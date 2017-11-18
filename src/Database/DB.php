@@ -22,6 +22,27 @@
         }
 
         /**
+         * Initiates a transaction
+         */
+        public function beginTransaction() {
+            $this->dbh->beginTransaction();
+        }
+
+        /**
+         * Commits a transaction
+         */
+        public function commit() {
+            $this->dbh->commit();
+        }
+
+        /**
+         * Rolls back a transaction
+         */
+        public function rollBack() {
+            $this->dbh->rollBack();
+        }
+
+        /**
          * Execute an SQL statement and return the number of affected rows
          *
          * @param $sql string query to execute
