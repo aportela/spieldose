@@ -70,11 +70,10 @@
                 }
                 $totalFailed = count($failed);
                 if ($totalFailed > 0) {
-                    echo sprintf("Failed to scrap %d artist MusicBrainz ids:%s", $totalFailed, PHP_EOL);
-                    print_r($failed);
+                    echo "Failed MusicBrainz Artist ids: " . implode(", ",$failed) . PHP_EOL;
                 }
             } else {
-                echo "No pending artist MusicBrainz ids found to scrap" . PHP_EOL;
+                echo "No pending MusicBrainz Artist ids found to scrap" . PHP_EOL;
             }
         }
         if ($scrapAlbums) {
@@ -118,11 +117,10 @@
                 }
                 $totalFailed = count($failed);
                 if ($totalFailed > 0) {
-                    echo sprintf("Failed to scrap %d album mbids:%s", $totalFailed, PHP_EOL);
-                    print_r($failed);
+                    echo "Failed MusicBrainz Album ids: " . implode(", ",$failed) . PHP_EOL;
                 }
             } else {
-                echo "No pending album MusicBrainz ids found to scrap" . PHP_EOL;
+                echo "No pending MusicBrainz Album ids found to scrap" . PHP_EOL;
             }
         }
         $c["logger"]->info("Scraper finished");
