@@ -371,9 +371,6 @@ const app = new Vue({
         bus.$on("signOut", function () {
             self.signOut();
         });
-        bus.$on("changeRouterPath", function (routeName) {
-            self.$router.push({ name: routeName });
-        });
         this.poll(function (response) {
             if (!response.ok) {
                 self.$router.push({ name: 'signin' });
