@@ -35,6 +35,11 @@
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
                 'level' => \Monolog\Logger::DEBUG,
             ],
+            'scrapLogger' => [
+                'name' => 'spieldose-app',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
+                'level' => \Monolog\Logger::DEBUG,
+            ]
         ],
     ];
 ?>
