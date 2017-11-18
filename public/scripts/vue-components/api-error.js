@@ -2,14 +2,16 @@
 
 var vTemplateApiError = function () {
     return `
-    <article class="message is-danger">
+    <article class="message is-danger" v-if="visible">
         <div class="message-header">
-        <p><i class="fa fa-bomb" aria-hidden="true"></i> Error</p>
+            <p><i class="fa fa-bomb" aria-hidden="true"></i> Error</p>
+            <button class="delete" v-on:click.prevent="hide();"></button>
         </div>
         <div class="message-body">
             <div class="content">
                 <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
-                <h2>Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiError.response.status }} - {{ apiError.response.statusText }})</h2>
+                <h2 v-if="apiError.response.status != 0">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiError.response.status }} - {{ apiError.response.statusText }})</h2>
+                <h2 v-else>Uh oh! ...can't connect, server unreachable</h2>
                 <p v-if="! visibleDetails"><a href="#" v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
                 <div v-if="visibleDetails">
                     <hr>
@@ -70,8 +72,11 @@ var apiError = Vue.component('spieldose-api-error-component', {
             activeRequestTab: "body",
             activeResponseTab: "text"
         });
-    }, props: ['apiError'],
+    }, props: ['visible', 'apiError'],
     methods: {
+        hide() {
+            this.visible = false;
+        },
         toggleDetails() {
             this.visibleDetails = !this.visibleDetails;
         },
