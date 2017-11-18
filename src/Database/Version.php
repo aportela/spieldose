@@ -99,7 +99,7 @@
                 '
                     CREATE TABLE [LOVED_FILE] (
                         [file_id] VARCHAR(40) NOT NULL,
-                        [user_id] VARCHAR(32) NOT NULL,
+                        [user_id] VARCHAR(36) NOT NULL,
                         [loved]	INTEGER NOT NULL DEFAULT 0,
                         PRIMARY KEY([file_id], [user_id])
                     );
@@ -108,14 +108,14 @@
             "1.03" => array(
                 '
                     CREATE TABLE [PLAYLIST] (
-                        [id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY,
-                        [user_id] VARCHAR(32) NOT NULL,
+                        [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                        [user_id] VARCHAR(36) NOT NULL,
                         [name] VARCHAR(32) NOT NULL
                     );
                 ',
                 '
                     CREATE TABLE [PLAYLIST_TRACK] (
-                        [playlist_id] VARCHAR(40) NOT NULL,
+                        [playlist_id] VARCHAR(36) NOT NULL,
                         [file_id] VARCHAR(40) NOT NULL,
                         PRIMARY KEY([playlist_id], [file_id])
                     );
