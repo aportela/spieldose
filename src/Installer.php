@@ -7,13 +7,15 @@
 
         private $installQueries = array(
             'CREATE TABLE [USER] (
-                [id] VARCHAR(32) UNIQUE NOT NULL PRIMARY KEY,
+                [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
                 [email] VARCHAR(255) UNIQUE NOT NULL,
                 [password_hash] VARCHAR(60) NOT NULL
             )',
             'CREATE TABLE [FILE] (
                 [id] VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY,
                 [local_path] VARCHAR(2048) UNIQUE NOT NULL,
+                [base_path] VARCHAR(2048) NOT NULL,
+                [file_name] VARCHAR(512) NOT NULL,
                 [mime] VARCHAR(127),
                 [track_name] VARCHAR(128),
                 [track_mbid] VARCHAR(36),
@@ -55,7 +57,7 @@
                 [json] TEXT NOT NULL
             )',
             'CREATE TABLE [STATS] (
-                [user_id] VARCHAR(32) NOT NULL,
+                [user_id] VARCHAR(36) NOT NULL,
                 [file_id] VARCHAR(40) NOT NULL,
                 [played] INTEGER NOT NULL,
                 PRIMARY KEY(`user_id`,`file_id`, `played`)
@@ -140,22 +142,26 @@
             echo "ok!" . PHP_EOL;
         }
 
-        private function update() {
-            echo "TODO" . PHP_EOL;
-            /*
-            echo "Starting update..." . PHP_EOL;
-            if ($this->checkRequirements()) {
-                if (! file_exists(SQLITE_DATABASE_PATH)) {
-                }
-            }
-            echo "ok!" . PHP_EOL;
-            */
-        }
-
         private function setCredentials(string $email, string $password) {
-            echo "Setting account credentials...";
-            (new \Spieldose\User($email))->setCredentials(new \Spieldose\Database\DB(), $password);
-            echo "ok!" . PHP_EOL;
+            echo "Setting account credentials..." . PHP_EOL;
+            $dbh = new \Spieldose\Database\DB();
+            $found = false;
+            try {
+                $u = new \Spieldose\User("", $email, $password);
+                $u->get($dbh);
+                $found = true;
+            } catch (\Spieldose\Exception\NotFoundException $e) { }
+            if ($found) {
+                echo "User found, updating password...";
+                $u->password = $password;
+                $u->update($dbh);
+                echo "ok!" . PHP_EOL;
+            } else {
+                echo "User not found, creating account...";
+                $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                $u->add($dbh);
+                echo "ok!" . PHP_EOL;
+            }
         }
 
     }
