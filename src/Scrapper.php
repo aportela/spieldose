@@ -18,6 +18,8 @@
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":id", sha1($filePath));
                 $params[] = (new \Spieldose\Database\DBParam())->str(":local_path", $filePath);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":base_path", dirname($filePath));
+                $params[] = (new \Spieldose\Database\DBParam())->str(":file_name", basename($filePath));
                 $trackName = $this->id3->getTrackTitle();
                 if (! empty($trackName)) {
                     $params[] = (new \Spieldose\Database\DBParam())->str(":track_name", $trackName);
@@ -102,6 +104,8 @@
                     REPLACE INTO FILE (
                         id,
                         local_path,
+                        base_path,
+                        file_name,
                         mime,
                         track_name,
                         track_artist,
@@ -119,6 +123,8 @@
                     ) VALUES (
                         :id,
                         :local_path,
+                        :base_path,
+                        :file_name,
                         :mime,
                         :track_name,
                         :track_artist,
