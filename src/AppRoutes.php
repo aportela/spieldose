@@ -5,39 +5,39 @@
     use Slim\Http\Response;
 
     $app->get('/', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/' route");
+        $this->apiLogger->info("Spieldose API: GET /");
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"]
         ));
     });
 
     $app->get('/api/user/poll', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/user/poll' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         if (\Spieldose\User::isLogged()) {
             return $response->withJson(['success' => true], 200);
         } else {
             return $response->withJson(['success' => false], 403);
         }
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/user/signin', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/user/signin' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $u = new \Spieldose\User("", $request->getParam("email", ""), $request->getParam("password", ""));
         if ($u->login(new \Spieldose\Database\DB())) {
             return $response->withJson(['logged' => true], 200);
         } else {
             return $response->withJson(['logged' => false], 401);
         }
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->get('/api/user/signout', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/user/signout' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         \Spieldose\User::logout();
         return $response->withJson(['logged' => false], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->get('/api/track/get/{id}', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/track/get' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $route = $request->getAttribute('route');
         $track  = new \Spieldose\Track($route->getArgument("id"));
         $db = new \Spieldose\Database\DB();
@@ -84,28 +84,28 @@
         } else {
             throw new \Spieldose\NotFoundException("id");
         }
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/track/{id}/love', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/track/love' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $route = $request->getAttribute('route');
         $track  = new \Spieldose\Track($route->getArgument("id"));
         $db = new \Spieldose\Database\DB();
         $loved = $track->love($db);
         return $response->withJson(['loved' => $loved ? "1": "0"], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/track/{id}/unlove', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/track/unlove' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $route = $request->getAttribute('route');
         $track  = new \Spieldose\Track($route->getArgument("id"));
         $db = new \Spieldose\Database\DB();
         $loved = $track->unLove($db);
         return $response->withJson(['loved' => "0" ], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/track/search', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/track/search' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $filter = array();
         $data = \Spieldose\Track::search(
             new \Spieldose\Database\DB(),
@@ -120,10 +120,10 @@
             $request->getParam("orderBy", "")
         );
         return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/artist/search', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/artist/search' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $data = \Spieldose\Artist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
@@ -145,18 +145,18 @@
             ],
             200
         );
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->get('/api/artist/{name}', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/artist/' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $route = $request->getAttribute('route');
         $artist = new \Spieldose\Artist($route->getArgument("name"));
         $artist->get(new \Spieldose\Database\DB());
         return $response->withJson(['artist' => $artist], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/album/search', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/album/search' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $data = \Spieldose\Album::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
@@ -178,18 +178,18 @@
             ],
             200
         );
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->get('/api/playlist/{id}', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton GET '/api/playlist/' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $route = $request->getAttribute('route');
         $playlist = new \Spieldose\Playlist($route->getArgument("id"));
         $playlist->get(new \Spieldose\Database\DB());
         return $response->withJson(['playlist' => $playlist], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/playlist/search', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/playlist/search' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $data = \Spieldose\Playlist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
@@ -211,10 +211,10 @@
             ],
             200
         );
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/search/global', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/search/global' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $artistData = \Spieldose\Artist::search(
             new \Spieldose\Database\DB(),
             $request->getParam("actualPage", 1),
@@ -252,10 +252,10 @@
             $request->getParam("orderBy", "")
         );
         return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/top_played_tracks' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
             new \Spieldose\Database\DB(),
             array(
@@ -266,10 +266,10 @@
             $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/top_artists', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/top_artists' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetTopArtists(
             new \Spieldose\Database\DB(),
             array(
@@ -279,10 +279,10 @@
             $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/top_genres', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/top_genres' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetTopGenres(
             new \Spieldose\Database\DB(),
             array(
@@ -292,10 +292,10 @@
             $request->getParam("count", 5)
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/recently_added', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/recently_added' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $entity = $request->getParam("entity", "");
         if (! empty($entity)) {
             switch($entity) {
@@ -329,10 +329,10 @@
             throw new \Spieldose\Exception\InvalidParamsException("entity");
         }
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/recently_played', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/recently_played' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $entity = $request->getParam("entity", "");
         if (! empty($entity)) {
             switch($entity) {
@@ -366,46 +366,46 @@
             throw new \Spieldose\Exception\InvalidParamsException("entity");
         }
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/play_stats_by_hour', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
             new \Spieldose\Database\DB(),
             array(
             )
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/play_stats_by_weekday', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
             new \Spieldose\Database\DB(),
             array(
             )
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/play_stats_by_month', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
             new \Spieldose\Database\DB(),
             array(
             )
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
     $app->post('/api/metrics/play_stats_by_year', function (Request $request, Response $response, array $args) {
-        $this->logger->info("Slim-Skeleton POST '/api/metrics/play_stats' route");
+        $this->apiLogger->info("Spieldose API: " . $request->getOriginalMethod() . " " . $request->getUri()->getPath());
         $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
             new \Spieldose\Database\DB(),
             array(
             )
         );
         return $response->withJson(['metrics' => $metrics], 200);
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher);
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
 
 ?>
