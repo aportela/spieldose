@@ -308,18 +308,6 @@ router.beforeEach((to, from, next) => {
 });
 
 /**
- * get safe name (with "/" encoded) for using in routes
- * @param {*} name string to encode
- */
-router.encodeSafeName = function (name) {
-    if (name && name.indexOf("/") > 0) {
-        return (encodeURIComponent(name));
-    } else {
-        return (name);
-    }
-}
-
-/**
  * parse vue-resource (custom) resource and return valid object for api-error component
  * @param {*} r a valid vue-resource response object
  */
