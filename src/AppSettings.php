@@ -30,17 +30,17 @@
                 'level' => \Monolog\Logger::DEBUG
             ],
             'apiLogger' => [
-                'name' => 'spieldose-app',
+                'name' => 'spieldose-api',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/api.log',
                 'level' => \Monolog\Logger::DEBUG
             ],
             'scanLogger' => [
-                'name' => 'spieldose-app',
+                'name' => 'spieldose-scanner',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
                 'level' => \Monolog\Logger::DEBUG
             ],
             'scrapLogger' => [
-                'name' => 'spieldose-app',
+                'name' => 'spieldose-scrapper',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
                 'level' => \Monolog\Logger::DEBUG
             ]
