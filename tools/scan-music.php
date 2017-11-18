@@ -18,11 +18,11 @@
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
             $dbh = new \Spieldose\Database\DB();
-            $scrapper = new \Spieldose\Scrapper();
+            $scrapper = new \Spieldose\Scrapper($dbh);
             $failed = array();
             for ($i = 0; $i < $totalFiles; $i++) {
                 try {
-                    $scrapper->scrapFileTags($dbh, $files[$i]);
+                    $scrapper->scrapFileTags($files[$i]);
                 } catch (\Throwable $e) {
                     $failed[] = $files[$i];
                 }
