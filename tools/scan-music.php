@@ -10,10 +10,22 @@
 
     $app = (new \Spieldose\App($settings))->get();
 
+    $container = $app->getContainer();
+
+    $container['logger'] = function ($c) {
+        $settings = $c->get('settings')['scanLogger'];
+        $logger = new \Monolog\Logger($settings['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+        return ($logger);
+    };
+
     $cmdLine = new \Spieldose\CmdLine("", array("path:"));
     if ($cmdLine->hasParam("path")) {
         $musicPath = $cmdLine->getParamValue("path");
         if (file_exists($musicPath)) {
+            $c = $app->getContainer();
+            $c["logger"]->info("Scanner started");
             $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
             $totalFiles = count($files);
             echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
@@ -22,8 +34,10 @@
             $failed = array();
             for ($i = 0; $i < $totalFiles; $i++) {
                 try {
+                    $c["logger"]->debug("Processing " . $files[$i]);
                     $scrapper->scrapFileTags($files[$i]);
                 } catch (\Throwable $e) {
+                    $c["logger"]->error("Error: " . $e->getMessage());
                     $failed[] = $files[$i];
                 }
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
@@ -31,8 +45,8 @@
             $totalFailed = count($failed);
             if ($totalFailed > 0) {
                 echo sprintf("Failed to scrap %d files:%s", $totalFailed, PHP_EOL);
-                print_r($failed);
             }
+            $c["logger"]->info("Scanner finished");
         } else {
             echo "Invalid music path" . PHP_EOL;
         }
