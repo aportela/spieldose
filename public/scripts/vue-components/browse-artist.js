@@ -31,7 +31,16 @@ var vTemplateBrowseArtist = function () {
                     </div>
                 </div>
                 <div class="panel" v-if="activeTab == 'artistTracks'">
-                    <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth">
+                    <div class="field">
+                        <div class="control has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
+                            <input class="input" :disabled="loadingTracks" v-focus v-model="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager" v-show="tracks.length > 0"></spieldose-pagination>
+                    <table class="table is-bordered is-striped is-narrow is-fullwidth">
                         <thead>
                                 <tr class="is-unselectable">
                                     <th>Album</th>
@@ -88,6 +97,7 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     data: function () {
         return ({
             loading: false,
+            loadingTracks: false,
             errors: false,
             apiError: null,
             artist: {},
@@ -96,7 +106,9 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             detailedView: false,
             playerData: sharedPlayerData,
             pager: getPager(),
-            tracks: []
+            tracks: [],
+            nameFilter: null,
+            timeout: null
         });
     },
     watch: {
@@ -110,6 +122,12 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
     , created: function () {
         this.getArtist(this.$route.params.artist);
         this.searchArtistTracks(this.$route.params.artist);
+    }, directives: {
+        focus: {
+            update: function(el) {
+                el.focus();
+            }
+        }
     }, methods: {
         getArtist: function (artist) {
             var self = this;
@@ -132,15 +150,26 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
                 }
             });
         },
+        abortInstantSearch: function () {
+            this.nameFilter = null;
+            clearTimeout(this.timeout);
+        },
+        instantSearch: function () {
+            var self = this;
+            if (self.timeout) {
+                clearTimeout(self.timeout);
+            }
+            self.timeout = setTimeout(function () {
+                self.pager.actualPage = 1;
+                self.searchArtistTracks(self.$route.params.artist);
+            }, 256);
+        },
         searchArtistTracks: function(artist) {
             var self = this;
-            self.loading = true;
+            self.loadingTracks = true;
             self.errors = false;
-            var d = {};
-            if (self.nameFilter) {
-                d.text = self.nameFilter;
-            }
-            spieldoseAPI.searchTracks("", artist, "", self.pager.actualPage, self.pager.resultsPage, "", function (response) {
+            var text = this.nameFilter ? this.nameFilter: "";
+            spieldoseAPI.searchTracks(text, artist, text, self.pager.actualPage, self.pager.resultsPage, "", function (response) {
                 if (response.ok) {
                     self.pager.actualPage = response.body.actualPage;
                     self.pager.totalPages = response.body.totalPages;
@@ -150,11 +179,11 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
                     } else {
                         self.tracks = [];
                     }
-                    self.loading = false;
+                    self.loadingTracks = false;
                 } else {
                     self.errors = true;
                     self.apiError = response.getApiErrorData();
-                    self.loading = false;
+                    self.loadingTracks = false;
                 }
             });
         },
