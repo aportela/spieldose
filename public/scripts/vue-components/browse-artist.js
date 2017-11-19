@@ -18,7 +18,7 @@ var vTemplateBrowseArtist = function () {
                     <ul>
                         <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a href="#" v-on:click.prevent="changeTab('overview');">Overview</a></li>
                         <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a href="#" v-on:click.prevent="changeTab('bio');">Bio</a></li>
-                        <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a href="#" v-on:click.prevent="changeTab('tracks');">Tracks</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'artistTracks' }"><a href="#" v-on:click.prevent="changeTab('artistTracks');">Tracks</a></li>
                         <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a href="#" v-on:click.prevent="changeTab('albums');">Albums</a></li>
                     </ul>
                 </div>
@@ -30,7 +30,35 @@ var vTemplateBrowseArtist = function () {
                         </div>
                     </div>
                 </div>
-                <div class="panel" v-if="activeTab == 'bio'" v-html="">
+                <div class="panel" v-if="activeTab == 'artistTracks'">
+                    <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth">
+                        <thead>
+                                <tr class="is-unselectable">
+                                    <th>Album</th>
+                                    <th>Year</th>
+                                    <th>Number</th>
+                                    <th>Track</th>
+                                    <th>Actions</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="track, i in tracks">
+                                <td><span>{{ track.album }}</span></td>
+                                <td><span>{{ track.year }}</span></td>
+                                <td>{{ track.number }}</td>
+                                <td>
+                                    <span> {{ track.title}}</span>
+                                </td>
+                                <td>
+                                    <i v-on:click.prevent="playerData.replace([track]);" class="cursor-pointer fa fa-play" title="play this track"></i>
+                                    <i v-on:click.prevent="playerData.enqueue([track]);" class="cursor-pointer fa fa-plus-square" title="enqueue this track"></i>
+                                    <i v-on:click.prevent="playerData.download(track.id);" class="cursor-pointer fa fa-save" title="download this track"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel" v-if="activeTab == 'bio'">
                     <div class="content is-clearfix" id="bio" v-html="artist.bio"></div>
                 </div>
                 <div class="panel" v-if="activeTab == 'albums'">
@@ -67,17 +95,21 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
             truncatedBio: null,
             detailedView: false,
             playerData: sharedPlayerData,
+            pager: getPager(),
+            tracks: []
         });
     },
     watch: {
         '$route'(to, from) {
             if (to.name == "artist") {
                 this.getArtist(to.params.artist);
+                this.searchArtistTracks(to.params.artist);
             }
         }
     }
     , created: function () {
         this.getArtist(this.$route.params.artist);
+        this.searchArtistTracks(this.$route.params.artist);
     }, methods: {
         getArtist: function (artist) {
             var self = this;
@@ -91,6 +123,32 @@ var browseArtist = Vue.component('spieldose-browse-artist', {
                         self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
                         self.truncatedBio = self.truncate(self.artist.bio);
                         self.activeTab = "overview";
+                    }
+                    self.loading = false;
+                } else {
+                    self.errors = true;
+                    self.apiError = response.getApiErrorData();
+                    self.loading = false;
+                }
+            });
+        },
+        searchArtistTracks: function(artist) {
+            var self = this;
+            self.loading = true;
+            self.errors = false;
+            var d = {};
+            if (self.nameFilter) {
+                d.text = self.nameFilter;
+            }
+            spieldoseAPI.searchTracks("", artist, "", self.pager.actualPage, self.pager.resultsPage, "", function (response) {
+                if (response.ok) {
+                    self.pager.actualPage = response.body.actualPage;
+                    self.pager.totalPages = response.body.totalPages;
+                    self.pager.totalResults = response.body.totalResults;
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.tracks = response.body.tracks;
+                    } else {
+                        self.tracks = [];
                     }
                     self.loading = false;
                 } else {
