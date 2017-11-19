@@ -88,15 +88,12 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
             var self = this;
             self.loading = true;
             self.errors = false;
-            var d = {
-                actualPage: parseInt(self.pager.actualPage),
-                resultsPage: parseInt(self.pager.resultsPage)
-            };
+            var d = {};
             if (self.nameFilter) {
                 d.text = self.nameFilter;
             }
-            this.$http.post("api/album/search", d).then(
-                response => {
+            spieldoseAPI.searchAlbums(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                if (response.ok) {
                     self.pager.actualPage = response.body.pagination.actualPage;
                     self.pager.totalPages = response.body.pagination.totalPages;
                     self.pager.totalResults = response.body.pagination.totalResults;
@@ -106,13 +103,12 @@ var browseAlbums = Vue.component('spieldose-browse-albums', {
                         self.albums = [];
                     }
                     self.loading = false;
-                },
-                response => {
+                } else {
                     self.errors = true;
                     self.apiError = response.getApiErrorData();
                     self.loading = false;
                 }
-            );
+            });
         },
         enqueueAlbumTracks: function (album, artist, year) {
             var self = this;

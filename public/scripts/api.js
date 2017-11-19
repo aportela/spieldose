@@ -138,6 +138,29 @@ const spieldoseAPI = {
             }
         );
     },
+    searchAlbums: function (name, actualPage, resultsPage, callback) {
+        var params = {
+            actualPage: 1,
+            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+        };
+        if (name) {
+            params.text = name;
+        }
+        if (actualPage) {
+            params.actualPage = parseInt(actualPage);
+        }
+        if (resultsPage) {
+            params.resultsPage = parseInt(resultsPage);
+        }
+        Vue.http.post("api/album/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     searchPlaylists: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
