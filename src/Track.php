@@ -95,12 +95,17 @@
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY F.track_number, COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
+                if (isset($filter["artist"]) && ! empty($filter["artist"])) {
+                    $sqlOrder = " ORDER BY year ASC, album COLLATE NOCASE ASC, F.track_number ";
+                } else {
+                    $sqlOrder = " ORDER BY F.track_number, COALESCE(MBT.track, F.track_name) COLLATE NOCASE ASC ";
+                }
             }
             $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
             $query = sprintf('
                 SELECT DISTINCT
                     id,
+                    F.track_number AS number,
                     COALESCE(MBT.track, F.track_name) AS title,
                     COALESCE(MBA2.artist, F.track_artist) AS artist,
                     COALESCE(MBA1.album, F.album_name) AS album,
