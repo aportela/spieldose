@@ -5,7 +5,7 @@
       namespace Spieldose\Database;
 
       /**
-       * Simple PDO Database Param Warapper
+       * Simple PDO Database Param Wrapper
        */
       class DBParam {
 
