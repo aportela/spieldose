@@ -9,11 +9,13 @@
      */
     class DB {
         private $dbh = null;
+        private $container = null;
+        private $queryParams = array();
 
 	    public function __construct () {
             global $app;
-            $container = $app->getContainer();
-            $settings = $container->get('settings');
+            $this->container = $app->getContainer();
+            $settings = $this->container->get('settings');
             $this->dbh = new \PDO($settings['database']['connectionString'], $settings['database']['username'], $settings['database']['password'], array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
         }
 
@@ -42,6 +44,40 @@
             $this->dbh->rollBack();
         }
 
+        private function replaceQueryParams($m) {
+            foreach ($this->queryParams as $param) {
+                if ($param->name == $m[0]) {
+                    if ($param->value === null) {
+                        return("NULL");
+                    } else {
+                        switch($param->type) {
+                            case \PDO::PARAM_NULL:
+                                return("NULL");
+                            break;
+                            case \PDO::PARAM_BOOL:
+                                return($param->value ? "TRUE": "FALSE");
+                            break;
+                            case \PDO::PARAM_INT:
+                                return($param->value);
+                            break;
+                            case \PDO::PARAM_STR:
+                                default:
+                                return("'" . str_replace("'", "''", $param->value) . "'");
+                            break;
+                        }
+                    }
+                }
+            }
+            return("ERROR_GETTING_QUERY_PARAM");
+        }
+
+        private function getQuery(string $query, bool $replaced = true) {
+            if (! $replaced) {
+                return $query;
+            }
+            return preg_replace_callback('/:([0-9a-z_]+)/i', array($this, 'replaceQueryParams'), $query);
+        }
+
         /**
          * Execute an SQL statement and return the number of affected rows
          *
@@ -51,6 +87,8 @@
          * @return int number of affected rows
          */
         public function exec(string $sql, $params = array()): int {
+            $this->queryParams = $params;
+            $this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
             if ($totalParams > 0) {
@@ -70,6 +108,8 @@
          * @return bool
          */
         public function execute(string $sql, $params = array()): bool {
+            $this->queryParams = $params;
+            $this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
             if ($totalParams > 0) {
@@ -89,6 +129,8 @@
          * @return array result set as a PDOStatement object array
          */
         public function query(string $sql, $params = array()): array {
+            $this->queryParams = $params;
+            $this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
 			$rows = array();
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
