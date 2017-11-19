@@ -86,10 +86,7 @@ var browseArtists = Vue.component('spieldose-browse-artists', {
             var self = this;
             self.loading = true;
             self.errors = false;
-            var d = {
-                actualPage: parseInt(),
-                resultsPage: parseInt()
-            };
+            var d = {};
             if (self.nameFilter) {
                 d.text = self.nameFilter;
             }
