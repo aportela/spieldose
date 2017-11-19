@@ -92,11 +92,20 @@ const spieldoseAPI = {
             }
         );
     },
-    searchTracks: function (actualPage, resultsPage, order, callback) {
+    searchTracks: function (text, artist, album, actualPage, resultsPage, order, callback) {
         var params = {
             actualPage: 1,
             resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
         };
+        if (text) {
+            params.text = text;
+        }
+        if (artist) {
+            params.artist = artist;
+        }
+        if (album) {
+            params.album = album;
+        }
         if (actualPage) {
             params.actualPage = actualPage;
         }
