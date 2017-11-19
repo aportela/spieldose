@@ -4,14 +4,14 @@
     use Slim\Http\Request;
     use Slim\Http\Response;
 
-    $app->get('/', function (Request $request, Response $response, array $args) {
+    $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"]
         ));
     });
 
-    $app->group("/api", function() {
+    $this->app->group("/api", function() {
 
         /* user */
 
@@ -416,6 +416,6 @@
 
         /* metrics */
 
-    })->add(new \Spieldose\Middleware\APIExceptionCatcher($app->getContainer()));
+    })->add(new \Spieldose\Middleware\APIExceptionCatcher($this->app->getContainer()));
 
 ?>

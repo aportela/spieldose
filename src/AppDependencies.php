@@ -1,7 +1,7 @@
 <?php
     declare(strict_types=1);
 
-    $container = $app->getContainer();
+    $container = $this->app->getContainer();
 
     $container['view'] = function ($c) {
         $view = new \Slim\Views\Twig($c->get('settings')['renderer']['template_path'], [
