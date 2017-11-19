@@ -6,9 +6,7 @@
 
     echo "Spieldose installer" . PHP_EOL;
 
-    $settings = require dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "AppSettings.php";
-
-    $app = (new \Spieldose\App($settings))->get();
+    $app = (new \Spieldose\App())->get();
 
     $actualVersion = 0;
     $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB());

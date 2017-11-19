@@ -6,9 +6,7 @@
 
     echo "Spieldose acount manager" . PHP_EOL;
 
-    $settings = require dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "AppSettings.php";
-
-    $app = (new \Spieldose\App($settings))->get();
+    $app = (new \Spieldose\App())->get();
 
     $cmdLine = new \Spieldose\CmdLine("", array("email:", "password:"));
     if ($cmdLine->hasParam("email") && $cmdLine->hasParam("password")) {
