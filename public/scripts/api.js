@@ -15,6 +15,20 @@ const spieldoseAPI = {
             }
         );
     },
+    signUp: function (email, password, callback) {
+        var params = {
+            email: email,
+            password: password
+        }
+        Vue.http.post("api/user/signup", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     signIn: function (email, password, callback) {
         var params = {
             email: email,
