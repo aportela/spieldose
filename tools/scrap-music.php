@@ -16,7 +16,9 @@
         $settings = $c->get('settings')['scrapLogger'];
         $logger = new \Monolog\Logger($settings['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['path'], 0, $settings['level']);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $logger->pushHandler($handler);
         return ($logger);
     };
 
