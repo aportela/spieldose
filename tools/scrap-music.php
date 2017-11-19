@@ -42,7 +42,7 @@
                         $c["logger"]->debug("Searching on MusicBrainz artist: " . $pendingArtists[$i]);
                         $scraper->mbArtistScrap($pendingArtists[$i]);
                     } catch (\Throwable $e) {
-                        $c["logger"]->error("Error: " . $e->getMessage());
+                        $c["logger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
                         $failed[] = $pendingArtists[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalPendingArtists, 20);

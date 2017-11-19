@@ -39,7 +39,7 @@
                     $c["logger"]->debug("Processing " . $files[$i]);
                     $scrapper->scrapFileTags($files[$i]);
                 } catch (\Throwable $e) {
-                    $c["logger"]->error("Error: " . $e->getMessage());
+                    $c["logger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
                     $failed[] = $files[$i];
                 }
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
