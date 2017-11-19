@@ -29,6 +29,11 @@
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
                 'level' => \Monolog\Logger::DEBUG
             ],
+            'databaseLogger' => [
+                'name' => 'spieldose-db',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
+                'level' => \Monolog\Logger::DEBUG
+            ],
             'apiLogger' => [
                 'name' => 'spieldose-api',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/api.log',
