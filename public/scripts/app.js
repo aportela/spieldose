@@ -49,7 +49,7 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        spieldoseAPI.searchTracks(1, DEFAULT_SECTION_RESULTS_PAGE, "random", function (response) {
+        spieldoseAPI.searchTracks("", "", "", 1, DEFAULT_SECTION_RESULTS_PAGE, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
