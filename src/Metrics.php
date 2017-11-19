@@ -60,7 +60,7 @@
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 %s
                 GROUP BY F.track_artist
-                HAVING artist NOT NULL
+                HAVING COALESCE(MB.artist, F.track_artist) NOT NULL
                 ORDER BY total DESC
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
