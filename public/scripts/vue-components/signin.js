@@ -25,18 +25,6 @@ var vTemplateSignIn = function () {
                         <h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
                         <form v-on:submit.prevent="submitSignIn" v-if="tab == 'signin'">
                             <div class="box">
-                                <div class="tabs is-boxed is-centered">
-                                <ul>
-                                    <li class="is-active">
-                                        <i class="fa fa-user" aria-hidden="true"></i>
-                                        <span>Sign in</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
-                                        <span>Sign up</span>
-                                    </li>
-                            </ul>
-                                </div>
                                 <label class="label">Email</label>
                                 <p class="control" id="login-container" v-bind:class="{ 'has-icons-right' : invalidUsername }">
                                     <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidUsername }" v-bind:disabled="loading ? true: false" v-model="email">
