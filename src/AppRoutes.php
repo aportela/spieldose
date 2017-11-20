@@ -61,6 +61,7 @@
 
         /* user */
 
+        $this->group("", function() {
         /* track */
 
         $this->get('/track/get/{id}', function (Request $request, Response $response, array $args) {
@@ -209,6 +210,19 @@
         });
 
         /* album */
+
+        /* path */
+
+        $this->get('/path/search', function (Request $request, Response $response, array $args) {
+            return $response->withJson(
+                [
+                    'paths' => \Spieldose\Path::getPaths(new \Spieldose\Database\DB())
+                ],
+                200
+            );
+        });
+
+        /* path */
 
         /* playlist */
 
@@ -437,6 +451,7 @@
         });
 
         /* metrics */
+    })->add(new \Spieldose\Middleware\CheckAuth($this->getContainer()));
 
     })->add(new \Spieldose\Middleware\APIExceptionCatcher($this->app->getContainer()));
 
