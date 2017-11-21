@@ -12,6 +12,7 @@
             //
             'common' => [
                 'defaultResultsPage' => 32,
+                'allowSignUp' => true
             ],
             // database settings
             'database' => [

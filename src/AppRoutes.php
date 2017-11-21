@@ -7,7 +7,14 @@
     $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
         return $this->view->render($response, 'index.html.twig', array(
-            'settings' => $this->settings["twigParams"]
+            'settings' => $this->settings["twigParams"],
+            'initialState' => json_encode(
+                array(
+                    "logged" => true,
+                    "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
+                    "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                )
+            )
         ));
     });
 
