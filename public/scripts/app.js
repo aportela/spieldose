@@ -244,7 +244,7 @@ const sharedPlayerData = getPlayerData();
  * vue-router route definitions
  */
 const routes = [
-    { path: '/signin', name: 'signin', component: signIn },
+    { path: '/signin', name: 'signin', component: signInUp },
     {
         path: '/app',
         component: container,
@@ -375,15 +375,13 @@ const app = new Vue({
         bus.$on("signOut", function () {
             self.signOut();
         });
-        this.poll(function (response) {
-            if (!response.ok) {
-                self.$router.push({ name: 'signin' });
-            } else {
-                if (!self.$route.name) {
-                    self.$router.push({ name: 'dashboard' });
-                }
+        if (! initialState.logged) {
+            self.$router.push({ name: 'signin' });
+        } else {
+            if (!self.$route.name) {
+                self.$router.push({ name: 'dashboard' });
             }
-        });
+        }
     },
     methods: {
         signOut: function () {
