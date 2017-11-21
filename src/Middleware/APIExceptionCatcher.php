@@ -34,7 +34,7 @@
             } catch (\Spieldose\Exception\NotFoundException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
-            } catch (\Spieldose\Exception\AccessDenied $e) {
+            } catch (\Spieldose\Exception\AccessDeniedException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
             } catch (\Throwable $e) {
