@@ -106,7 +106,7 @@ var dashboardPlayStats = (function () {
                         var data = [];
                         for (var i = 0; i < response.body.metrics.length; i++) {
                             data.push(response.body.metrics[i].total);
-                            weekDays.push(weekDayNames[response.body.metrics[i].weekDay - 1]);
+                            weekDays.push(weekDayNames[response.body.metrics[i].weekDay ]);
                         }
                         new Chart(document.getElementById("playcount-metrics-chart-weekday"), {
                             type: 'bar',
