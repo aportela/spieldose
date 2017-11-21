@@ -40,24 +40,28 @@
         });
 
         $this->post('/user/signup', function (Request $request, Response $response, array $args) {
-            $dbh = new \Spieldose\Database\DB();
-            $u = new \Spieldose\User(
-                "",
-                $request->getParam("email", ""),
-                $request->getParam("password", "")
-            );
-            $exists = false;
-            try {
-                $u->get($dbh);
-                $exists = true;
-            } catch (\Spieldose\Exception\NotFoundException $e) {
-            }
-            if ($exists) {
-                return $response->withJson([], 409);
+            if ($this->get('settings')['common']['allowSignUp']) {
+                $dbh = new \Spieldose\Database\DB();
+                $u = new \Spieldose\User(
+                    "",
+                    $request->getParam("email", ""),
+                    $request->getParam("password", "")
+                );
+                $exists = false;
+                try {
+                    $u->get($dbh);
+                    $exists = true;
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+                if ($exists) {
+                    return $response->withJson([], 409);
+                } else {
+                    $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                    $u->add($dbh);
+                    return $response->withJson([], 200);
+                }
             } else {
-                $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $u->add($dbh);
-                return $response->withJson([], 200);
+                throw new \Spieldose\Exception\AccessDeniedException("");
             }
         });
 
