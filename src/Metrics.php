@@ -120,7 +120,7 @@
                 SELECT DISTINCT COALESCE(MB.artist, F.track_artist) AS artist
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
-                WHERE artist IS NOT NULL
+                WHERE COALESCE(MB.artist, F.track_artist) IS NOT NULL
                 ORDER BY created DESC
                 LIMIT %d;
             ', $count);
@@ -135,7 +135,7 @@
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
-                WHERE album IS NOT NULL
+                WHERE COALESCE(MB2.album, F.album_name) IS NOT NULL
                 ORDER BY created DESC
                 LIMIT %d;
             ', $count);
@@ -180,7 +180,7 @@
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
-                WHERE artist IS NOT NULL
+                WHERE COALESCE(MB.artist, F.track_artist) IS NOT NULL
                 %s
                 ORDER BY S.played DESC
                 LIMIT %d;
@@ -203,7 +203,7 @@
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
-                WHERE album IS NOT NULL
+                WHERE COALESCE(MB2.album, F.album_name) IS NOT NULL
                 %s
                 ORDER BY S.played DESC
                 LIMIT %d;
