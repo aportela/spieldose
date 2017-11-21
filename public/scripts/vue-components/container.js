@@ -1,7 +1,8 @@
-"use strict";
+var container = (function () {
+    "use strict";
 
-var vTemplateContainer = function () {
-    return `
+    var template = function () {
+        return `
         <div class="hero is-fullheight is-light is-bold">
             <div class="columns is-gapless" id="main_container">
                 <aside id="aside-player" class="column is-3">
@@ -15,18 +16,21 @@ var vTemplateContainer = function () {
             </div>
         </div>
     `;
-}
+    };
 
-var container = Vue.component('spieldose-app-component', {
-    template: vTemplateContainer(),
-    data: function () {
-        return ({
-            playerData: sharedPlayerData,
-        });
-    }, created: function () {
-        var self = this;
-        self.playerData.loadRandomTracks(DEFAULT_SECTION_RESULTS_PAGE, function () {
-            self.playerData.play();
-        });
-    }
-});
+    var module = Vue.component('spieldose-app-component', {
+        template: template(),
+        data: function () {
+            return ({
+                playerData: sharedPlayerData,
+            });
+        }, created: function () {
+            var self = this;
+            self.playerData.loadRandomTracks(DEFAULT_SECTION_RESULTS_PAGE, function () {
+                self.playerData.play();
+            });
+        }
+    });
+
+    return (module);
+})();

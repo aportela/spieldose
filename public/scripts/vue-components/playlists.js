@@ -1,7 +1,8 @@
-"use strict";
+var playLists = (function () {
+    "use strict";
 
-var vTemplatePlayLists = function () {
-    return `
+    var template = function () {
+        return `
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Playlists</p>
         <div class="tabs is-centered">
@@ -167,89 +168,92 @@ var vTemplatePlayLists = function () {
         <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
-}
+    };
 
-var playLists = Vue.component('spieldose-playlists', {
-    template: vTemplatePlayLists(),
-    data: function () {
-        return ({
-            tab: 0,
-            loading: false,
-            errors: false,
-            apiError: null,
-            nameFilter: null,
-            playlists: [],
-            pager: getPager(),
-            playerData: sharedPlayerData,
-        });
-    }, directives: {
-        focus: {
-            update: function(el) {
-                el.focus();
-            }
-        }
-    },
-    created: function() {
-        var self = this;
-        this.pager.refresh = function () {
-            //self.$router.push({ name: 'playListsPaged', params: { page: self.pager.actualPage } });
-        }
-        if (this.$route.params.page) {
-            //self.pager.actualPage = parseInt(this.$route.params.page);
-        }
-    },
-    methods: {
-        iconAction: function(index) {
-            if (this.playerData.isPaused && this.playerData.actualTrackIdx == index) {
-                return('unPause');
-            } else {
-                if (this.playerData.isPlaying && this.playerData.actualTrackIdx == index) {
-                    return('none');
-                } else {
-                    return('play');
-                }
-            }
-        },
-        changeTab: function (tab) {
-            this.tab = tab;
-            if (this.tab == 1) {
-                this.search();
-            }
-        },
-        abortInstantSearch: function () {
-            this.nameFilter = null;
-        },
-        instantSearch: function () {
-            var self = this;
-            if (self.timeout) {
-                clearTimeout(self.timeout);
-            }
-            self.timeout = setTimeout(function () {
-                self.pager.actualPage = 1;
-                self.search();
-            }, 256);
-        },
-        search: function() {
-            var self = this;
-            this.loading = true;
-            spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
-                    } else {
-                        self.playlists = [];
-                    }
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
+    var module = Vue.component('spieldose-playlists', {
+        template: template(),
+        data: function () {
+            return ({
+                tab: 0,
+                loading: false,
+                errors: false,
+                apiError: null,
+                nameFilter: null,
+                playlists: [],
+                pager: getPager(),
+                playerData: sharedPlayerData,
             });
+        }, directives: {
+            focus: {
+                update: function (el) {
+                    el.focus();
+                }
+            }
+        },
+        created: function () {
+            var self = this;
+            this.pager.refresh = function () {
+                //self.$router.push({ name: 'playListsPaged', params: { page: self.pager.actualPage } });
+            }
+            if (this.$route.params.page) {
+                //self.pager.actualPage = parseInt(this.$route.params.page);
+            }
+        },
+        methods: {
+            iconAction: function (index) {
+                if (this.playerData.isPaused && this.playerData.actualTrackIdx == index) {
+                    return ('unPause');
+                } else {
+                    if (this.playerData.isPlaying && this.playerData.actualTrackIdx == index) {
+                        return ('none');
+                    } else {
+                        return ('play');
+                    }
+                }
+            },
+            changeTab: function (tab) {
+                this.tab = tab;
+                if (this.tab == 1) {
+                    this.search();
+                }
+            },
+            abortInstantSearch: function () {
+                this.nameFilter = null;
+            },
+            instantSearch: function () {
+                var self = this;
+                if (self.timeout) {
+                    clearTimeout(self.timeout);
+                }
+                self.timeout = setTimeout(function () {
+                    self.pager.actualPage = 1;
+                    self.search();
+                }, 256);
+            },
+            search: function () {
+                var self = this;
+                this.loading = true;
+                spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                    if (response.ok) {
+                        self.pager.actualPage = response.body.pagination.actualPage;
+                        self.pager.totalPages = response.body.pagination.totalPages;
+                        self.pager.totalResults = response.body.pagination.totalResults;
+                        if (response.body.playlists && response.body.playlists.length > 0) {
+                            self.playlists = response.body.playlists;
+                        } else {
+                            self.playlists = [];
+                        }
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
+                    }
+                });
 
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();

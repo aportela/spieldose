@@ -1,7 +1,8 @@
-"use strict";
+var browseAlbums = (function () {
+    "use strict";
 
-var vTemplateBrowseAlbums = function () {
-    return `
+    var template = function () {
+        return `
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Browse albums</i></p>
         <div v-if="! errors">
@@ -31,99 +32,102 @@ var vTemplateBrowseAlbums = function () {
         <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
-}
+    };
 
-var browseAlbums = Vue.component('spieldose-browse-albums', {
-    template: vTemplateBrowseAlbums(),
-    data: function () {
-        return ({
-            loading: false,
-            errors: true,
-            apiError: null,
-            nameFilter: null,
-            timeout: null,
-            albums: [],
-            pager: getPager(),
-            playerData: sharedPlayerData,
-        });
-    },
-    watch: {
-        '$route'(to, from) {
-            if (to.name == "albums" || to.name == "albumsPaged") {
-                this.pager.actualPage = parseInt(to.params.page);
-                this.search();
-            }
-        }
-    },
-    created: function () {
-        var self = this;
-        this.pager.refresh = function () {
-            self.$router.push({ name: 'albumsPaged', params: { page: self.pager.actualPage } });
-        }
-        if (this.$route.params.page) {
-            self.pager.actualPage = parseInt(this.$route.params.page);
-        }
-        this.search();
-    }, directives: {
-        focus: {
-            update: function(el) {
-                el.focus();
-            }
-        }
-    }, methods: {
-        abortInstantSearch: function () {
-            this.nameFilter = null;
+    var module = Vue.component('spieldose-browse-albums', {
+        template: template(),
+        data: function () {
+            return ({
+                loading: false,
+                errors: true,
+                apiError: null,
+                nameFilter: null,
+                timeout: null,
+                albums: [],
+                pager: getPager(),
+                playerData: sharedPlayerData,
+            });
         },
-        instantSearch: function () {
-            var self = this;
-            if (self.timeout) {
-                clearTimeout(self.timeout);
+        watch: {
+            '$route'(to, from) {
+                if (to.name == "albums" || to.name == "albumsPaged") {
+                    this.pager.actualPage = parseInt(to.params.page);
+                    this.search();
+                }
             }
-            self.timeout = setTimeout(function () {
-                self.pager.actualPage = 1;
-                self.search();
-            }, 256);
         },
-        search: function () {
+        created: function () {
             var self = this;
-            self.loading = true;
-            self.errors = false;
-            var d = {};
-            if (self.nameFilter) {
-                d.text = self.nameFilter;
+            this.pager.refresh = function () {
+                self.$router.push({ name: 'albumsPaged', params: { page: self.pager.actualPage } });
             }
-            spieldoseAPI.searchAlbums(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.albums && response.body.albums.length > 0) {
-                        self.albums = response.body.albums;
+            if (this.$route.params.page) {
+                self.pager.actualPage = parseInt(this.$route.params.page);
+            }
+            this.search();
+        }, directives: {
+            focus: {
+                update: function (el) {
+                    el.focus();
+                }
+            }
+        }, methods: {
+            abortInstantSearch: function () {
+                this.nameFilter = null;
+            },
+            instantSearch: function () {
+                var self = this;
+                if (self.timeout) {
+                    clearTimeout(self.timeout);
+                }
+                self.timeout = setTimeout(function () {
+                    self.pager.actualPage = 1;
+                    self.search();
+                }, 256);
+            },
+            search: function () {
+                var self = this;
+                self.loading = true;
+                self.errors = false;
+                var d = {};
+                if (self.nameFilter) {
+                    d.text = self.nameFilter;
+                }
+                spieldoseAPI.searchAlbums(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                    if (response.ok) {
+                        self.pager.actualPage = response.body.pagination.actualPage;
+                        self.pager.totalPages = response.body.pagination.totalPages;
+                        self.pager.totalResults = response.body.pagination.totalResults;
+                        if (response.body.albums && response.body.albums.length > 0) {
+                            self.albums = response.body.albums;
+                        } else {
+                            self.albums = [];
+                        }
+                        self.loading = false;
                     } else {
-                        self.albums = [];
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
-        },
-        enqueueAlbumTracks: function (album, artist, year) {
-            var self = this;
-            spieldoseAPI.getAlbumTracks(album || null, artist || null , year || null, function(response) {
-                self.playerData.emptyPlayList();
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.tracks = response.body.tracks;
-                        self.playerData.play();
+                });
+            },
+            enqueueAlbumTracks: function (album, artist, year) {
+                var self = this;
+                spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                    self.playerData.emptyPlayList();
+                    if (response.ok) {
+                        if (response.body.tracks && response.body.tracks.length > 0) {
+                            self.playerData.tracks = response.body.tracks;
+                            self.playerData.play();
+                        }
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
                     }
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                }
-            });
+                });
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();

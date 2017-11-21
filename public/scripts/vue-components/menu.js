@@ -1,7 +1,8 @@
-"use strict";
+var menu = (function () {
+    "use strict";
 
-var vTemplateMenu = function () {
-    return `
+    var template = function () {
+        return `
     <aside class="menu">
         <hr class="dropdown-divider">
         <ul class="menu-list">
@@ -14,29 +15,32 @@ var vTemplateMenu = function () {
         </ul>
     </aside>
     `;
-}
+    };
 
-/* app (logged) menu component */
-var menu = Vue.component('spieldose-menu-component', {
-    template: vTemplateMenu(),
-    data: function () {
-        return ({
-            actualRouteName: null
-        });
-    },
-    watch: {
-        '$route'(to, from) {
-            this.actualRouteName = to.name;
+    /* app (logged) menu component */
+    var module = Vue.component('spieldose-menu-component', {
+        template: template(),
+        data: function () {
+            return ({
+                actualRouteName: null
+            });
+        },
+        watch: {
+            '$route'(to, from) {
+                this.actualRouteName = to.name;
+            }
+        },
+        created: function () {
+            this.actualRouteName = this.$route.name;
+        },
+        methods: {
+            signout: function (e) {
+                bus.$emit("signOut");
+            }, changeSection(routeName) {
+                this.$router.push({ name: routeName });
+            }
         }
-    },
-    created: function() {
-        this.actualRouteName = this.$route.name;
-    },
-    methods: {
-        signout: function (e) {
-            bus.$emit("signOut");
-        }, changeSection(routeName) {
-            this.$router.push({ name: routeName });
-        }
-    }
-});
+    });
+
+    return (module);
+})();

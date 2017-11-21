@@ -1,7 +1,8 @@
-"use strict";
+var player = (function () {
+    "use strict";
 
-var vTemplatePlayer = function () {
-    return `
+    var template = function () {
+        return `
     <div id="player" class="container is-fluid box">
         <p id="player-cover-header" v-if="playerData.isPlaying" class="title is-6 is-marginless has-text-centered has-text-light"><span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span> NOW PLAYING <span class="icon is-small"><i class="fa fa-music" aria-hidden="true"></i></span></p>
         <p id="player-cover-header" v-else-if="playerData.isPaused" class="title is-6 is-marginless has-text-centered has-text-light"><span class="icon is-small"><i class="fa fa-pause" aria-hidden="true"></i></span> PAUSED <span class="icon is-small"><i class="fa fa-pause" aria-hidden="true"></i></span></p>
@@ -44,120 +45,123 @@ var vTemplatePlayer = function () {
         <spieldose-menu-component></spieldose-menu-component>
     </div>
     `;
-}
+    };
 
-var player = Vue.component('spieldose-player-component', {
-    template: vTemplatePlayer(),
-    data: function () {
-        return ({
-            playing: false,
-            url: "",
-            nowPlayingTrack: null,
-            playList: [],
-            repeat: false,
-            shuffle: false,
-            autoPlay: true,
-            playerData: sharedPlayerData,
-        });
-    },
-    computed: {
-        isPlaying: function () {
-            return (this.playerData.isPlaying || this.playerData.isPaused);
+    var module = Vue.component('spieldose-player-component', {
+        template: template(),
+        data: function () {
+            return ({
+                playing: false,
+                url: "",
+                nowPlayingTrack: null,
+                playList: [],
+                repeat: false,
+                shuffle: false,
+                autoPlay: true,
+                playerData: sharedPlayerData,
+            });
         },
-        coverSrc: function () {
-            if ((this.playerData.isPlaying || this.playerData.isPaused) && this.playerData.actualTrack.image) {
-                return (this.playerData.actualTrack.image);
-            } else {
-                return ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC');
-            }
-        },
-        streamUrl: function () {
-            if (this.playerData.isPlaying) {
-                return ("api/track/get/" + this.playerData.actualTrack.id);
-            } else {
-                return ("");
-            }
-        },
-        nowPlayingTitle: function () {
-            if (this.playerData.isPlaying || this.playerData.isPaused) {
-                if (this.playerData.actualTrack.title) {
-                    return (this.playerData.actualTrack.title);
+        computed: {
+            isPlaying: function () {
+                return (this.playerData.isPlaying || this.playerData.isPaused);
+            },
+            coverSrc: function () {
+                if ((this.playerData.isPlaying || this.playerData.isPaused) && this.playerData.actualTrack.image) {
+                    return (this.playerData.actualTrack.image);
                 } else {
-                    return ("track title unknown");
+                    return ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC');
                 }
-            } else {
-                return ("track title");
-            }
-        },
-        nowPlayingLength: function () {
-            if (this.playerData.isPlaying || this.playerData.isPaused) {
-                if (this.playerData.actualTrack.playtimeString) {
-                    return ("(" + this.playerData.actualTrack.playtimeString + ")");
+            },
+            streamUrl: function () {
+                if (this.playerData.isPlaying) {
+                    return ("api/track/get/" + this.playerData.actualTrack.id);
                 } else {
-                    return ("(00:00)");
+                    return ("");
                 }
-            } else {
-                return ("(track length)");
-            }
-        },
-        nowPlayingArtist: function () {
-            if (this.playerData.isPlaying || this.playerData.isPaused) {
-                if (this.playerData.actualTrack.artist) {
-                    return (this.playerData.actualTrack.artist);
+            },
+            nowPlayingTitle: function () {
+                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                    if (this.playerData.actualTrack.title) {
+                        return (this.playerData.actualTrack.title);
+                    } else {
+                        return ("track title unknown");
+                    }
                 } else {
-                    return ("artist unknown");
+                    return ("track title");
                 }
-            } else {
-                return ("artist");
-            }
-        },
-        nowPlayingArtistAlbum: function () {
-            if (this.playerData.isPlaying || this.playerData.isPaused) {
-                if (this.playerData.actualTrack.album) {
-                    return (" / " + this.playerData.actualTrack.album);
+            },
+            nowPlayingLength: function () {
+                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                    if (this.playerData.actualTrack.playtimeString) {
+                        return ("(" + this.playerData.actualTrack.playtimeString + ")");
+                    } else {
+                        return ("(00:00)");
+                    }
                 } else {
-                    return ("album unknown");
+                    return ("(track length)");
                 }
-            } else {
-                return ("album");
-            }
-        },
-        nowPlayingYear: function () {
-            if (this.playerData.isPlaying || this.playerData.isPaused) {
-                if (this.playerData.actualTrack.year) {
-                    return (" (" + this.playerData.actualTrack.year + ")");
+            },
+            nowPlayingArtist: function () {
+                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                    if (this.playerData.actualTrack.artist) {
+                        return (this.playerData.actualTrack.artist);
+                    } else {
+                        return ("artist unknown");
+                    }
                 } else {
-                    return (" (year unknown)");
+                    return ("artist");
                 }
-            } else {
-                return (" (year)");
+            },
+            nowPlayingArtistAlbum: function () {
+                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                    if (this.playerData.actualTrack.album) {
+                        return (" / " + this.playerData.actualTrack.album);
+                    } else {
+                        return ("album unknown");
+                    }
+                } else {
+                    return ("album");
+                }
+            },
+            nowPlayingYear: function () {
+                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                    if (this.playerData.actualTrack.year) {
+                        return (" (" + this.playerData.actualTrack.year + ")");
+                    } else {
+                        return (" (year unknown)");
+                    }
+                } else {
+                    return (" (year)");
+                }
+            },
+            nowPlayingLoved: function () {
+                return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             }
         },
-        nowPlayingLoved: function () {
-            return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
-        }
-    },
-    mounted: function () {
-        var self = this;
-        this.$watch('streamUrl', function () {
-            if (self.streamUrl) {
-                self.$refs.player.pause();
-                self.$refs.player.load();
-                self.$refs.player.play();
-                initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
-            } else {
-                self.$refs.player.pause();
-            }
-        });
-        self.$refs.player.addEventListener("ended", function () {
-            switch(self.playerData.repeatTracksMode) {
-                case "track":
+        mounted: function () {
+            var self = this;
+            this.$watch('streamUrl', function () {
+                if (self.streamUrl) {
+                    self.$refs.player.pause();
+                    self.$refs.player.load();
                     self.$refs.player.play();
-                break;
-                default:
-                    self.playerData.advancePlayList();
-                break;
-            }
-        });
-    }
-});
+                    initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
+                } else {
+                    self.$refs.player.pause();
+                }
+            });
+            self.$refs.player.addEventListener("ended", function () {
+                switch (self.playerData.repeatTracksMode) {
+                    case "track":
+                        self.$refs.player.play();
+                        break;
+                    default:
+                        self.playerData.advancePlayList();
+                        break;
+                }
+            });
+        }
+    });
+
+    return (module);
+})();

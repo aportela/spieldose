@@ -1,7 +1,8 @@
-"use strict";
+var dashboardPlayStats = (function () {
+    "use strict";
 
-var vTemplateDashboardPlayStats = function () {
-    return `
+    var template = function () {
+        return `
     <section class="panel">
         <p class="panel-heading"><span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play stadistics</p>
         <p class="panel-tabs">
@@ -18,206 +19,209 @@ var vTemplateDashboardPlayStats = function () {
         </div>
     </section>
     `;
-}
+    };
 
-const commonChartOptions = {
-    legend: {
-        display: false
-    },
-    // https://stackoverflow.com/a/38945591
-    scales: {
-        yAxes: [
-            {
-                ticks: {
-                    beginAtZero: true,
-                    callback: function (value) {
-                        if (value % 1 === 0) {
-                            return value;
+    const commonChartOptions = {
+        legend: {
+            display: false
+        },
+        // https://stackoverflow.com/a/38945591
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function (value) {
+                            if (value % 1 === 0) {
+                                return value;
+                            }
                         }
                     }
                 }
-            }
-        ]
-    }
-};
+            ]
+        }
+    };
 
-/* app chart (test) component */
-var dashboardPlayStats = Vue.component('spieldose-dashboard-play-stats', {
-    template: vTemplateDashboardPlayStats(),
-    data: function () {
-        return ({
-            loading: false,
-            errors: false,
-            interval: "hour",
-            items: []
-        });
-    },
-    created: function () {
-        this.loadChart();
-    }, methods: {
-        randomColorGenerator: function () {
-            return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
-        },
-        loadMetricsByHourChart: function () {
-            var self = this;
-            var d = {};
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.getPlayStatMetricsByHour(function (response) {
-                if (response.ok) {
-                    var hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-                    var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    for (var i = 0; i < response.body.metrics.length; i++) {
-                        data[response.body.metrics[i].hour] = response.body.metrics[i].total;
-                    }
-                    new Chart(document.getElementById("playcount-metrics-chart-hour"), {
-                        type: 'line',
-                        data: {
-                            labels: hourNames,
-                            datasets: [
-                                {
-                                    "label": "play stats by hour",
-                                    "data": data,
-                                    "fill": true,
-                                    "borderColor": "#3273dc",
-                                    "lineTension": 0.1
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
+    /* app chart (test) component */
+    var module = Vue.component('spieldose-dashboard-play-stats', {
+        template: template(),
+        data: function () {
+            return ({
+                loading: false,
+                errors: false,
+                interval: "hour",
+                items: []
             });
         },
-        loadMetricsByWeekDayChart: function () {
-            var self = this;
-            var d = {};
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.getPlayStatMetricsByWeekDay(function (response) {
-                if (response.ok) {
-                    var weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    var weekDays = [];
-                    var data = [];
-                    for (var i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        weekDays.push(weekDayNames[response.body.metrics[i].weekDay - 1]);
+        created: function () {
+            this.loadChart();
+        }, methods: {
+            randomColorGenerator: function () {
+                return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
+            },
+            loadMetricsByHourChart: function () {
+                var self = this;
+                var d = {};
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.getPlayStatMetricsByHour(function (response) {
+                    if (response.ok) {
+                        var hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+                        var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for (var i = 0; i < response.body.metrics.length; i++) {
+                            data[response.body.metrics[i].hour] = response.body.metrics[i].total;
+                        }
+                        new Chart(document.getElementById("playcount-metrics-chart-hour"), {
+                            type: 'line',
+                            data: {
+                                labels: hourNames,
+                                datasets: [
+                                    {
+                                        "label": "play stats by hour",
+                                        "data": data,
+                                        "fill": true,
+                                        "borderColor": "#3273dc",
+                                        "lineTension": 0.1
+                                    }
+                                ]
+                            }, options: commonChartOptions
+                        });
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
-                    new Chart(document.getElementById("playcount-metrics-chart-weekday"), {
-                        type: 'bar',
-                        data: {
-                            labels: weekDays,
-                            datasets: [
-                                {
-                                    "label": "play stats by weekday",
-                                    "data": data,
-                                    "backgroundColor": "#3273dc"
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
-        },
-        loadMetricsByMonthChart: function () {
-            var self = this;
-            var d = {};
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.getPlayStatMetricsByMonth(function (response) {
-                if (response.ok) {
-                    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                    var months = [];
-                    var data = [];
-                    for (var i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        months.push(monthNames[response.body.metrics[i].month - 1]);
+                });
+            },
+            loadMetricsByWeekDayChart: function () {
+                var self = this;
+                var d = {};
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.getPlayStatMetricsByWeekDay(function (response) {
+                    if (response.ok) {
+                        var weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        var weekDays = [];
+                        var data = [];
+                        for (var i = 0; i < response.body.metrics.length; i++) {
+                            data.push(response.body.metrics[i].total);
+                            weekDays.push(weekDayNames[response.body.metrics[i].weekDay - 1]);
+                        }
+                        new Chart(document.getElementById("playcount-metrics-chart-weekday"), {
+                            type: 'bar',
+                            data: {
+                                labels: weekDays,
+                                datasets: [
+                                    {
+                                        "label": "play stats by weekday",
+                                        "data": data,
+                                        "backgroundColor": "#3273dc"
+                                    }
+                                ]
+                            }, options: commonChartOptions
+                        });
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
-                    new Chart(document.getElementById("playcount-metrics-chart-month"), {
-                        type: 'bar',
-                        data: {
-                            labels: months,
-                            datasets: [
-                                {
-                                    "label": "play stats by month",
-                                    "data": data,
-                                    "backgroundColor": "#3273dc"
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
-        },
-        loadMetricsByYearChart: function () {
-            var self = this;
-            var d = {};
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.getPlayStatMetricsByYear(function (response) {
-                if (response.ok) {
-                    var years = [];
-                    var data = [];
-                    for (var i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        years.push(response.body.metrics[i].year);
+                });
+            },
+            loadMetricsByMonthChart: function () {
+                var self = this;
+                var d = {};
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.getPlayStatMetricsByMonth(function (response) {
+                    if (response.ok) {
+                        var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        var months = [];
+                        var data = [];
+                        for (var i = 0; i < response.body.metrics.length; i++) {
+                            data.push(response.body.metrics[i].total);
+                            months.push(monthNames[response.body.metrics[i].month - 1]);
+                        }
+                        new Chart(document.getElementById("playcount-metrics-chart-month"), {
+                            type: 'bar',
+                            data: {
+                                labels: months,
+                                datasets: [
+                                    {
+                                        "label": "play stats by month",
+                                        "data": data,
+                                        "backgroundColor": "#3273dc"
+                                    }
+                                ]
+                            }, options: commonChartOptions
+                        });
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
-                    new Chart(document.getElementById("playcount-metrics-chart-year"), {
-                        type: 'bar',
-                        data: {
-                            labels: years,
-                            datasets: [
-                                {
-                                    "label": "play stats by year",
-                                    "data": data,
-                                    "backgroundColor": "#3273dc"
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
-        },
-        loadChart: function () {
-            switch (this.interval) {
-                case "hour":
-                    this.loadMetricsByHourChart();
-                    break;
-                case "weekDay":
-                    this.loadMetricsByWeekDayChart();
-                    break;
+                });
+            },
+            loadMetricsByYearChart: function () {
+                var self = this;
+                var d = {};
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.getPlayStatMetricsByYear(function (response) {
+                    if (response.ok) {
+                        var years = [];
+                        var data = [];
+                        for (var i = 0; i < response.body.metrics.length; i++) {
+                            data.push(response.body.metrics[i].total);
+                            years.push(response.body.metrics[i].year);
+                        }
+                        new Chart(document.getElementById("playcount-metrics-chart-year"), {
+                            type: 'bar',
+                            data: {
+                                labels: years,
+                                datasets: [
+                                    {
+                                        "label": "play stats by year",
+                                        "data": data,
+                                        "backgroundColor": "#3273dc"
+                                    }
+                                ]
+                            }, options: commonChartOptions
+                        });
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
+                    }
+                });
+            },
+            loadChart: function () {
+                switch (this.interval) {
+                    case "hour":
+                        this.loadMetricsByHourChart();
+                        break;
+                    case "weekDay":
+                        this.loadMetricsByWeekDayChart();
+                        break;
                     case "month":
-                    this.loadMetricsByMonthChart();
-                    break;
-                case "year":
-                    this.loadMetricsByYearChart();
-                    break;
-            }
-        },
-        changeInterval: function (i) {
-            if (i && i != this.interval) {
-                this.interval = i;
-                this.loadChart();
+                        this.loadMetricsByMonthChart();
+                        break;
+                    case "year":
+                        this.loadMetricsByYearChart();
+                        break;
+                }
+            },
+            changeInterval: function (i) {
+                if (i && i != this.interval) {
+                    this.interval = i;
+                    this.loadChart();
+                }
             }
         }
-    }
-});
+    });
+
+    return (module);
+})();

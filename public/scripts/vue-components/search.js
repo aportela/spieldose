@@ -1,7 +1,8 @@
-"use strict";
+var search = (function () {
+    "use strict";
 
-var vTemplateSearch = function () {
-    return `
+    var template = function () {
+        return `
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Search artists, albums, tracks, playlists</p>
         <div v-if="! errors">
@@ -86,140 +87,143 @@ var vTemplateSearch = function () {
         <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
-}
+    };
 
-var search = Vue.component('spieldose-search', {
-    template: vTemplateSearch(),
-    data: function () {
-        return ({
-            loading: false,
-            errors: false,
-            apiError: null,
-            textFilter: null,
-            timeout: null,
-            artists: [],
-            albums: [],
-            tracks: [],
-            playlists: [],
-            playerData: sharedPlayerData,
-        });
-    }, directives: {
-        focus: {
-            update: function (el) {
-                el.focus();
+    var module = Vue.component('spieldose-search', {
+        template: template(),
+        data: function () {
+            return ({
+                loading: false,
+                errors: false,
+                apiError: null,
+                textFilter: null,
+                timeout: null,
+                artists: [],
+                albums: [],
+                tracks: [],
+                playlists: [],
+                playerData: sharedPlayerData,
+            });
+        }, directives: {
+            focus: {
+                update: function (el) {
+                    el.focus();
+                }
             }
-        }
-    }, methods: {
-        abortInstantSearch: function () {
-            this.textFilter = null;
-            this.artists = [];
-            this.albums = [];
-            this.tracks = [];
-            this.playlists = [];
-        },
-        instantSearch: function () {
-            if (this.textFilter) {
+        }, methods: {
+            abortInstantSearch: function () {
+                this.textFilter = null;
+                this.artists = [];
+                this.albums = [];
+                this.tracks = [];
+                this.playlists = [];
+            },
+            instantSearch: function () {
+                if (this.textFilter) {
+                    var self = this;
+                    if (self.timeout) {
+                        clearTimeout(self.timeout);
+                    }
+                    self.timeout = setTimeout(function () {
+                        self.search();
+                    }, 256);
+                } else {
+                    this.abortInstantSearch();
+                }
+            },
+            search: function () {
                 var self = this;
-                if (self.timeout) {
-                    clearTimeout(self.timeout);
-                }
-                self.timeout = setTimeout(function () {
-                    self.search();
-                }, 256);
-            } else {
-                this.abortInstantSearch();
-            }
-        },
-        search: function () {
-            var self = this;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
-                if (response.ok) {
-                    if (response.body.artists && response.body.artists.length > 0) {
-                        self.artists = response.body.artists;
-                    } else {
-                        self.artists = [];
-                    }
-                    if (response.body.albums && response.body.albums.length > 0) {
-                        self.albums = response.body.albums;
-                    } else {
-                        self.albums = [];
-                    }
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.tracks = response.body.tracks;
-                    } else {
-                        self.tracks = [];
-                    }
-                    if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
-                    } else {
-                        self.playlists = [];
-                    }
-                    self.loading = false;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
-        },
-        highlight: function (text) {
-            if (text && this.textFilter) {
-                return text.replace(new RegExp("(" + this.textFilter + ")", 'gi'), '<span class="highlight">$1</span>');
-            } else {
-                return (null);
-            }
-        },
-        enqueueAlbumTracks: function (album, artist, year) {
-            var self = this;
-            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                self.playerData.emptyPlayList();
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.tracks = response.body.tracks;
-                        self.playerData.play();
-                    }
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                }
-            });
-        }, playTrack: function (track) {
-            this.playerData.replace([track]);
-        }, enqueueTrack: function (track) {
-            this.playerData.enqueue([track]);
-        },
-        playPlaylist: function(playlist) {
-            var self = this;
-            spieldoseAPI.getPlayList(playlist, function (response) {
-                self.playerData.emptyPlayList();
-                if (response.ok) {
-                    if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
-                        self.playerData.tracks = response.body.playlist.tracks;
-                        self.playerData.play();
-                    }
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                }
-            });
-        },
-        enqueuePlaylist: function(playlist) {
-            var self = this;
-            spieldoseAPI.getPlayList(playlist, function (response) {
-                if (response.ok) {
-                    if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
-                        for (var i = 0; i < response.body.playlist.tracks.length; i++) {
-                            self.playerData.tracks.push(response.body.playlist.tracks[i]);
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
+                    if (response.ok) {
+                        if (response.body.artists && response.body.artists.length > 0) {
+                            self.artists = response.body.artists;
+                        } else {
+                            self.artists = [];
                         }
-                        self.playerData.play();
+                        if (response.body.albums && response.body.albums.length > 0) {
+                            self.albums = response.body.albums;
+                        } else {
+                            self.albums = [];
+                        }
+                        if (response.body.tracks && response.body.tracks.length > 0) {
+                            self.tracks = response.body.tracks;
+                        } else {
+                            self.tracks = [];
+                        }
+                        if (response.body.playlists && response.body.playlists.length > 0) {
+                            self.playlists = response.body.playlists;
+                        } else {
+                            self.playlists = [];
+                        }
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
+                });
+            },
+            highlight: function (text) {
+                if (text && this.textFilter) {
+                    return text.replace(new RegExp("(" + this.textFilter + ")", 'gi'), '<span class="highlight">$1</span>');
                 } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
+                    return (null);
                 }
-            });
+            },
+            enqueueAlbumTracks: function (album, artist, year) {
+                var self = this;
+                spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                    self.playerData.emptyPlayList();
+                    if (response.ok) {
+                        if (response.body.tracks && response.body.tracks.length > 0) {
+                            self.playerData.tracks = response.body.tracks;
+                            self.playerData.play();
+                        }
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                    }
+                });
+            }, playTrack: function (track) {
+                this.playerData.replace([track]);
+            }, enqueueTrack: function (track) {
+                this.playerData.enqueue([track]);
+            },
+            playPlaylist: function (playlist) {
+                var self = this;
+                spieldoseAPI.getPlayList(playlist, function (response) {
+                    self.playerData.emptyPlayList();
+                    if (response.ok) {
+                        if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
+                            self.playerData.tracks = response.body.playlist.tracks;
+                            self.playerData.play();
+                        }
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                    }
+                });
+            },
+            enqueuePlaylist: function (playlist) {
+                var self = this;
+                spieldoseAPI.getPlayList(playlist, function (response) {
+                    if (response.ok) {
+                        if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
+                            for (var i = 0; i < response.body.playlist.tracks.length; i++) {
+                                self.playerData.tracks.push(response.body.playlist.tracks[i]);
+                            }
+                            self.playerData.play();
+                        }
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                    }
+                });
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();

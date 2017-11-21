@@ -1,7 +1,8 @@
-"use strict";
+var signIn = (function () {
+    "use strict";
 
-var vTemplateSignIn = function () {
-    return `
+    var template = function () {
+        return `
     <!-- template credits: daniel (https://github.com/dansup) -->
     <section class="hero is-fullheight is-light is-bold">
         <div class="hero-body">
@@ -104,83 +105,86 @@ var vTemplateSignIn = function () {
         </footer>
     </section>
     `;
-}
+    };
 
-/* signIn component */
-var signIn = Vue.component('spieldose-signin-component', {
-    template: vTemplateSignIn(),
-    created: function () {
-    },
-    data: function () {
-        return ({
-            loading: false,
-            signInEmail: "foo@bar",
-            signInPassword: "secret",
-            invalidSignInUsername: false,
-            invalidSignInPassword: false,
-            allowSignUp: true,
-            signUpEmail: "foo@bar",
-            signUpPassword: "secret",
-            invalidSignUpUsername: false,
-            invalidSignUpPassword: false,
-            errors: false,
-            apiError: null,
-            tab: 'signin'
-        });
-    },
-    methods: {
-        submitSignIn: function () {
-            var self = this;
-            self.invalidSignInUsername = false;
-            self.invalidSignInPassword = false;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.signIn(this.signInEmail, this.signInPassword, function (response) {
-                if (response.ok) {
-                    self.$router.push({ name: 'dashboard' });
-                } else {
-                    switch (response.status) {
-                        case 404:
-                            self.invalidSignInUsername = true;
-                            break;
-                        case 401:
-                            self.invalidSignInPassword = true;
-                            break;
-                        default:
-                            self.apiError = response.getApiErrorData();
-                            self.errors = true;
-                            break;
-                    }
-                    self.loading = false;
-                }
+    /* signIn component */
+    var module = Vue.component('spieldose-signin-component', {
+        template: template(),
+        created: function () {
+        },
+        data: function () {
+            return ({
+                loading: false,
+                signInEmail: "foo@bar",
+                signInPassword: "secret",
+                invalidSignInUsername: false,
+                invalidSignInPassword: false,
+                allowSignUp: true,
+                signUpEmail: "foo@bar",
+                signUpPassword: "secret",
+                invalidSignUpUsername: false,
+                invalidSignUpPassword: false,
+                errors: false,
+                apiError: null,
+                tab: 'signin'
             });
         },
-        submitSignUp: function () {
-            var self = this;
-            self.invalidSignUpUsername = false;
-            self.invalidSignUpPassword = false;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.signUp(this.signUpEmail, this.signUpPassword, function (response) {
-                if (response.ok) {
-                    self.signInEmail = self.signUpEmail;
-                    self.signInPassword = self.signUpPassword;
-                    self.loading = false;
-                    self.tab = 'signin';
-                    self.submitSignIn();
-                } else {
-                    switch (response.status) {
-                        case 409:
-                            self.invalidSignUpUsername = true;
-                            break;
-                        default:
-                            self.apiError = response.getApiErrorData();
-                            self.errors = true;
-                            break;
+        methods: {
+            submitSignIn: function () {
+                var self = this;
+                self.invalidSignInUsername = false;
+                self.invalidSignInPassword = false;
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.signIn(this.signInEmail, this.signInPassword, function (response) {
+                    if (response.ok) {
+                        self.$router.push({ name: 'dashboard' });
+                    } else {
+                        switch (response.status) {
+                            case 404:
+                                self.invalidSignInUsername = true;
+                                break;
+                            case 401:
+                                self.invalidSignInPassword = true;
+                                break;
+                            default:
+                                self.apiError = response.getApiErrorData();
+                                self.errors = true;
+                                break;
+                        }
+                        self.loading = false;
                     }
-                    self.loading = false;
-                }
-            });
+                });
+            },
+            submitSignUp: function () {
+                var self = this;
+                self.invalidSignUpUsername = false;
+                self.invalidSignUpPassword = false;
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.signUp(this.signUpEmail, this.signUpPassword, function (response) {
+                    if (response.ok) {
+                        self.signInEmail = self.signUpEmail;
+                        self.signInPassword = self.signUpPassword;
+                        self.loading = false;
+                        self.tab = 'signin';
+                        self.submitSignIn();
+                    } else {
+                        switch (response.status) {
+                            case 409:
+                                self.invalidSignUpUsername = true;
+                                break;
+                            default:
+                                self.apiError = response.getApiErrorData();
+                                self.errors = true;
+                                break;
+                        }
+                        self.loading = false;
+                    }
+                });
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();

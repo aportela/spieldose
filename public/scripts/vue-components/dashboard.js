@@ -1,7 +1,8 @@
-"use strict";
+var dashboard = (function () {
+    "use strict";
 
-var vTemplateDashboard = function () {
-    return `
+    var template = function () {
+        return `
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Dashboard</p>
@@ -32,15 +33,18 @@ var vTemplateDashboard = function () {
         <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
-}
+    };
 
-var dashboard = Vue.component('spieldose-dashboard', {
-    template: vTemplateDashboard(),
-    data: function () {
-        return ({
-            loading: false,
-            errors: false,
-            apiError: null,
-        });
-    }
-});
+    var module = Vue.component('spieldose-dashboard', {
+        template: template(),
+        data: function () {
+            return ({
+                loading: false,
+                errors: false,
+                apiError: null,
+            });
+        }
+    });
+
+    return (module);
+})();

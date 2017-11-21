@@ -1,7 +1,8 @@
-"use strict";
+var signIn = (function () {
+    "use strict";
 
-var vTemplateApiError = function () {
-    return `
+    var template = function () {
+        return `
     <article class="message is-danger" v-if="visible">
         <div class="message-header">
             <p><i class="fa fa-bomb" aria-hidden="true"></i> Error</p>
@@ -60,34 +61,37 @@ var vTemplateApiError = function () {
         </div>
     </article>
     `;
-}
+    };
 
-/* app (logged) menu component */
-var apiError = Vue.component('spieldose-api-error-component', {
-    template: vTemplateApiError(),
-    data: function () {
-        return ({
-            visibleDetails: false,
-            activeTab: "request",
-            activeRequestTab: "body",
-            activeResponseTab: "text"
-        });
-    }, props: ['visible', 'apiError'],
-    methods: {
-        hide() {
-            this.visible = false;
-        },
-        toggleDetails() {
-            this.visibleDetails = !this.visibleDetails;
-        },
-        changeTab(tab) {
-            this.activeTab = tab;
-        },
-        changeRequestTab(tab) {
-            this.activeRequestTab = tab;
-        },
-        changeResponseTab(tab) {
-            this.activeResponseTab = tab;
+    /* app (logged) menu component */
+    var module = Vue.component('spieldose-api-error-component', {
+        template: template(),
+        data: function () {
+            return ({
+                visibleDetails: false,
+                activeTab: "request",
+                activeRequestTab: "body",
+                activeResponseTab: "text"
+            });
+        }, props: ['visible', 'apiError'],
+        methods: {
+            hide() {
+                this.visible = false;
+            },
+            toggleDetails() {
+                this.visibleDetails = !this.visibleDetails;
+            },
+            changeTab(tab) {
+                this.activeTab = tab;
+            },
+            changeRequestTab(tab) {
+                this.activeRequestTab = tab;
+            },
+            changeResponseTab(tab) {
+                this.activeResponseTab = tab;
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();
