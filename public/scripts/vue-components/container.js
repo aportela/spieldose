@@ -26,7 +26,7 @@ var container = (function () {
             });
         }, created: function () {
             var self = this;
-            self.playerData.loadRandomTracks(DEFAULT_SECTION_RESULTS_PAGE, function () {
+            self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
                 self.playerData.play();
             });
         }

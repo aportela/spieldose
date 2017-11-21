@@ -56,7 +56,7 @@ const spieldoseAPI = {
     globalSearch: function (text, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            resultsPage: initialState.defaultResultsPage
         };
         if (actualPage) {
             params.actualPage = parseInt(actualPage);
@@ -109,7 +109,7 @@ const spieldoseAPI = {
     searchTracks: function (text, artist, album, actualPage, resultsPage, order, callback) {
         var params = {
             actualPage: 1,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
+            resultsPage: initialState.defaultResultsPage
         };
         if (text) {
             params.text = text;
@@ -141,7 +141,7 @@ const spieldoseAPI = {
     searchArtists: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            resultsPage: initialState.defaultResultsPage
         };
         if (name) {
             params.text = name;
@@ -164,7 +164,7 @@ const spieldoseAPI = {
     searchAlbums: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            resultsPage: initialState.defaultResultsPage
         };
         if (name) {
             params.text = name;
@@ -187,7 +187,7 @@ const spieldoseAPI = {
     searchPlaylists: function (name, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
-            resultsPage: DEFAULT_SECTION_RESULTS_PAGE
+            resultsPage: initialState.defaultResultsPage
         };
         if (name) {
             params.text = name;

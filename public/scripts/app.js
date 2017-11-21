@@ -1,7 +1,5 @@
 "use strict";
 
-const DEFAULT_SECTION_RESULTS_PAGE = 32;
-
 /**
  * global object for events between vuejs components
  */
@@ -16,7 +14,7 @@ const getPager = function () {
         previousPage: 1,
         nextPage: 1,
         totalPages: 0,
-        resultsPage: DEFAULT_SECTION_RESULTS_PAGE,
+        resultsPage: initialState.defaultResultsPage
     });
 }
 
@@ -49,7 +47,7 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        spieldoseAPI.searchTracks("", "", "", 1, DEFAULT_SECTION_RESULTS_PAGE, "random", function (response) {
+        spieldoseAPI.searchTracks("", "", "", 1, initialState.defaultResultsPage, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
