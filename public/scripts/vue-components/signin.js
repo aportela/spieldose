@@ -1,4 +1,4 @@
-var signIn = (function () {
+var signInUp = (function () {
     "use strict";
 
     var template = function () {
@@ -119,7 +119,7 @@ var signIn = (function () {
                 signInPassword: "secret",
                 invalidSignInUsername: false,
                 invalidSignInPassword: false,
-                allowSignUp: true,
+                allowSignUp: initialState.allowSignUp,
                 signUpEmail: "foo@bar",
                 signUpPassword: "secret",
                 invalidSignUpUsername: false,
