@@ -1,4 +1,4 @@
-var signIn = (function () {
+var apiError = (function () {
     "use strict";
 
     var template = function () {
