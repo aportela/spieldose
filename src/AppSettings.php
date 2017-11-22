@@ -9,6 +9,7 @@
                 'production' => false,
                 'localVendorAssets' => true // use local vendor assets (vs remote cdn)
             ],
+            'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring', 'curl'),
             //
             'common' => [
                 'defaultResultsPage' => 32,

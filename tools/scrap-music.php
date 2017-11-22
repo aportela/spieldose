@@ -8,6 +8,12 @@
 
     $app = (new \Spieldose\App())->get();
 
+    $missingExtensions = array_diff($app->getContainer()["settings"]["phpRequiredExtensions"], get_loaded_extensions());
+    if (count($missingExtensions) > 0) {
+        echo "Error: missing php extension/s: " . implode(", ", $missingExtensions) . PHP_EOL;
+        exit;
+    }
+
     $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums"));
     $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
     $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
