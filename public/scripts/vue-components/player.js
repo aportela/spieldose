@@ -37,10 +37,6 @@ var player = (function () {
                     <i title="resume" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();" class="fa fa-pause fa-lg player-active-control"></i>
                 </div>
                 <div class="column is-1"><i title="next track" v-on:click.prevent="playerData.playNextTrack();" class="fa fa-forward fa-lg"></i></div>
-                <!--
-                <div class="column is-1"><i title="play" v-on:click.prevent="playerData.play();" class="fa fa-play fa-lg" v-bind:class="{ 'player-active-control': playerData.isPlaying }"></i></div>
-                <div class="column is-1"><i title="pause" v-on:click.prevent="playerData.pause();" class="fa fa-pause fa-lg" v-bind:class="{ 'player-active-control': playerData.isPaused }"></i></div>
-                -->
                 <div class="column is-1"><i title="stop" v-on:click.prevent="playerData.stop();" class="fa fa-stop fa-lg" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></div>
                 <div class="column is-1">
                     <i v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
