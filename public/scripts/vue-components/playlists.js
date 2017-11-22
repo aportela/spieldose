@@ -65,23 +65,27 @@ var playLists = (function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.play();" v-bind:class="playerData.isPlaying ? 'is-primary': ''">
+                    <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
                         <span class="icon is-small">
                             <i class="fa fa-play"></i>
                         </span>
                         <span>play</span>
                     </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.pause();"  v-bind:class="playerData.isPaused ? 'is-primary': ''">
+                    <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
+                        <span class="icon is-small">
+                            <i class="fa fa-play"></i>
+                        </span>
+                        <span>play</span>
+                    </a>
+                    <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
                         <span class="icon is-small">
                             <i class="fa fa-pause"></i>
                         </span>
-                        <span>pause</span>
+                        <span>resume</span>
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.stop();">
+                    <a class="button is-light" v-bind:class="playerData.isStopped ? 'is-primary': ''" v-on:click.prevent="playerData.stop();">
                         <span class="icon is-small">
                             <i class="fa fa-stop"></i>
                         </span>
