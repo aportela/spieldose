@@ -412,6 +412,6 @@ const app = new Vue({
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
 setInterval(function() {
-    spieldoseAPI.poll();
+    spieldoseAPI.poll(function() {});
     }, 300000 // 5 mins * 60 * 1000
 );
