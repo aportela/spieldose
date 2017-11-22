@@ -410,3 +410,8 @@ const app = new Vue({
     }
 }).$mount('#app');
 
+// prevent php session lost (TODO: better management, only poll if we are logged)
+setInterval(function() {
+    spieldoseAPI.poll();
+    }, 300000 // 5 mins * 60 * 1000
+);
