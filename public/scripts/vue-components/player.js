@@ -68,10 +68,10 @@ var player = (function () {
             isPlaying: function () {
                 return (this.playerData.isPlaying);
             },
-            isPaused: function() {
+            isPaused: function () {
                 return (this.playerData.isPaused);
             },
-            isStopped: function() {
+            isStopped: function () {
                 return (this.playerData.isStopped);
             },
             coverSrc: function () {
@@ -85,7 +85,7 @@ var player = (function () {
                 if (this.playerData.actualTrack && this.playerData.actualTrack.id) {
                     return ("api/track/get/" + this.playerData.actualTrack.id);
                 } else {
-                    return("");
+                    return ("");
                 }
             },
             nowPlayingTitle: function () {
@@ -161,19 +161,19 @@ var player = (function () {
                     this.$refs.player.pause();
                 }
             },
-            isPlaying: function(newValue) {
+            isPlaying: function (newValue) {
                 if (newValue) {
                     this.$refs.player.play();
                 }
             },
-            isPaused: function(newValue) {
+            isPaused: function (newValue) {
                 if (newValue == false) {
                     this.$refs.player.play();
                 } else {
                     this.$refs.player.pause();
                 }
             },
-            isStopped: function(newValue) {
+            isStopped: function (newValue) {
                 if (newValue) {
                     this.$refs.player.pause();
                     this.$refs.player.currentTime = 0;
@@ -187,6 +187,9 @@ var player = (function () {
                     case "track":
                         self.$refs.player.currentTime = 0;
                         self.$refs.player.play();
+                        break;
+                    case "all":
+                        self.playerData.playAtIdx(0);
                         break;
                     default:
                         self.playerData.advancePlayList();
