@@ -23,11 +23,7 @@
         /* user */
 
         $this->get('/user/poll', function (Request $request, Response $response, array $args) {
-            if (\Spieldose\User::isLogged()) {
-                return $response->withJson(['success' => true], 200);
-            } else {
-                return $response->withJson(['success' => false], 403);
-            }
+            return $response->withJson(['sessionId' => session_id() ], 200);
         });
 
         $this->post('/user/signin', function (Request $request, Response $response, array $args) {
