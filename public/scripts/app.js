@@ -102,23 +102,18 @@ const getPlayerData = function () {
         playerData.shuffleTracks = !playerData.shuffleTracks
     };
     playerData.playPreviousTrack = function () {
-        if (playerData.isPlaying || playerData.isPaused) {
-            if (playerData.actualTrackIdx > 0) {
-                playerData.actualTrackIdx--;
-                playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            }
+        if (playerData.actualTrackIdx > 0) {
+            playerData.actualTrackIdx--;
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.isPlaying || playerData.isPaused) {
-            if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-                playerData.actualTrackIdx++;
-                playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
-            }
+        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+            playerData.actualTrackIdx++;
+            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
         }
     };
     playerData.play = function () {
-        playerData.actualTrackIdx = 0;
         if (playerData.tracks.length > 0) {
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
             playerData.isPlaying = true;

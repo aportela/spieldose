@@ -49,7 +49,7 @@ var playLists = (function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();" :disabled="! playerData.isPlaying">
+                    <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
                         <span class="icon is-small">
                             <i class="fa fa-backward"></i>
                         </span>
@@ -57,7 +57,7 @@ var playLists = (function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();" :disabled="! playerData.isPlaying">
+                    <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
                         <span class="icon is-small">
                             <i class="fa fa-forward"></i>
                         </span>
