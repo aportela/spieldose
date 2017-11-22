@@ -150,7 +150,10 @@ var player = (function () {
         watch: {
             streamUrl: function (value) {
                 if (value) {
-                    this.$refs.player.pause();
+                    if (this.isPlaying || this.isPaused) {
+                        this.$refs.player.pause();
+                        this.$refs.player.currentTime = 0;
+                    }
                     this.$refs.player.load();
                     this.$refs.player.play();
                     initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
@@ -178,9 +181,11 @@ var player = (function () {
             }
         },
         mounted: function () {
+            var self = this;
             this.$refs.player.addEventListener("ended", function () {
                 switch (self.playerData.repeatTracksMode) {
                     case "track":
+                        self.$refs.player.currentTime = 0;
                         self.$refs.player.play();
                         break;
                     default:
