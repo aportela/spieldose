@@ -230,7 +230,6 @@ const getPlayerData = function () {
                 playerData.playAtIdx(playerData.actualTrackIdx + 1);
             } else {
                 playerData.stop();
-                playerData.play();
             }
         };
     return (playerData);
