@@ -26,6 +26,7 @@ const getPlayerData = function () {
         loading: false,
         isPlaying: false,
         isPaused: false,
+        isStopped: true,
         repeatTracksMode: 'none', // none | track | all
         shuffleTracks: false,
         actualTrackIdx: 0,
@@ -101,7 +102,7 @@ const getPlayerData = function () {
         playerData.shuffleTracks = !playerData.shuffleTracks
     };
     playerData.playPreviousTrack = function () {
-        if (playerData.isPlaying) {
+        if (playerData.isPlaying || playerData.isPaused) {
             if (playerData.actualTrackIdx > 0) {
                 playerData.actualTrackIdx--;
                 playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
@@ -109,7 +110,7 @@ const getPlayerData = function () {
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.isPlaying) {
+        if (playerData.isPlaying || playerData.isPaused) {
             if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
                 playerData.actualTrackIdx++;
                 playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
@@ -122,8 +123,7 @@ const getPlayerData = function () {
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
             playerData.isPlaying = true;
             playerData.isPaused = false;
-        } else {
-            playerData.isPlaying = false;
+            playerData.isStopped = false;
         }
     };
     playerData.playAtIdx = function (idx) {
@@ -132,8 +132,7 @@ const getPlayerData = function () {
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
             playerData.isPlaying = true;
             playerData.isPaused = false;
-        } else {
-            playerData.isPlaying = false;
+            playerData.isStopped = false;
         }
     };
     playerData.moveUpIdx = function (idx) {
@@ -162,20 +161,21 @@ const getPlayerData = function () {
         if (playerData.isPlaying) {
             playerData.isPaused = true;
             playerData.isPlaying = false;
-        } else if (playerData.isPaused) {
-            playerData.resume();
+            playerData.isStopped = false;
         }
     };
     playerData.resume = function () {
-        if (playerData.isPlaying) {
+        if (playerData.isPaused) {
             playerData.isPaused = false;
             playerData.isPlaying = true;
+            playerData.isStopped = false;
         }
     };
     playerData.stop = function () {
-        if (playerData.isPlaying) {
+        if (playerData.isPlaying || playerData.isPaused) {
             playerData.isPaused = false;
             playerData.isPlaying = false;
+            playerData.isStopped = true;
         }
     };
     playerData.download = function (trackId) {

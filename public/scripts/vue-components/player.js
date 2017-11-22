@@ -31,9 +31,16 @@ var player = (function () {
                 <div class="column is-1"><i title="repeat" class="fa fa-refresh fa-lg" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="{ 'player-active-control': playerData.repeatTracksMode != 'none' }"></i></div>
                 <div class="column is-1"><i title="shuffle" class="fa fa-random fa-lg" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="{ 'player-active-control': playerData.shuffleTracks }"></i></div>
                 <div class="column is-1"><i title="previous track" v-on:click.prevent="playerData.playPreviousTrack();" class="fa fa-backward fa-lg"></i></div>
+                <div class="column is-1">
+                    <i title="play" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();" class="fa fa-play fa-lg"></i>
+                    <i title="pause" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();" class="fa fa-play fa-lg player-active-control"></i>
+                    <i title="resume" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();" class="fa fa-pause fa-lg player-active-control"></i>
+                </div>
                 <div class="column is-1"><i title="next track" v-on:click.prevent="playerData.playNextTrack();" class="fa fa-forward fa-lg"></i></div>
+                <!--
                 <div class="column is-1"><i title="play" v-on:click.prevent="playerData.play();" class="fa fa-play fa-lg" v-bind:class="{ 'player-active-control': playerData.isPlaying }"></i></div>
                 <div class="column is-1"><i title="pause" v-on:click.prevent="playerData.pause();" class="fa fa-pause fa-lg" v-bind:class="{ 'player-active-control': playerData.isPaused }"></i></div>
+                -->
                 <div class="column is-1"><i title="stop" v-on:click.prevent="playerData.stop();" class="fa fa-stop fa-lg" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></div>
                 <div class="column is-1">
                     <i v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" title="unmark as loved song" class="fa fa-heart fa-lg has-text-danger"></i>
@@ -58,12 +65,18 @@ var player = (function () {
                 repeat: false,
                 shuffle: false,
                 autoPlay: true,
-                playerData: sharedPlayerData,
+                playerData: sharedPlayerData
             });
         },
         computed: {
             isPlaying: function () {
-                return (this.playerData.isPlaying || this.playerData.isPaused);
+                return (this.playerData.isPlaying);
+            },
+            isPaused: function() {
+                return (this.playerData.isPaused);
+            },
+            isStopped: function() {
+                return (this.playerData.isStopped);
             },
             coverSrc: function () {
                 if ((this.playerData.isPlaying || this.playerData.isPaused) && this.playerData.actualTrack.image) {
@@ -73,14 +86,14 @@ var player = (function () {
                 }
             },
             streamUrl: function () {
-                if (this.playerData.isPlaying) {
+                if (this.playerData.actualTrack && this.playerData.actualTrack.id) {
                     return ("api/track/get/" + this.playerData.actualTrack.id);
                 } else {
-                    return ("");
+                    return("");
                 }
             },
             nowPlayingTitle: function () {
-                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.isPlaying || this.isPaused) {
                     if (this.playerData.actualTrack.title) {
                         return (this.playerData.actualTrack.title);
                     } else {
@@ -91,7 +104,7 @@ var player = (function () {
                 }
             },
             nowPlayingLength: function () {
-                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.isPlaying || this.isPaused) {
                     if (this.playerData.actualTrack.playtimeString) {
                         return ("(" + this.playerData.actualTrack.playtimeString + ")");
                     } else {
@@ -102,7 +115,7 @@ var player = (function () {
                 }
             },
             nowPlayingArtist: function () {
-                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.isPlaying || this.isPaused) {
                     if (this.playerData.actualTrack.artist) {
                         return (this.playerData.actualTrack.artist);
                     } else {
@@ -113,7 +126,7 @@ var player = (function () {
                 }
             },
             nowPlayingArtistAlbum: function () {
-                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.isPlaying || this.isPaused) {
                     if (this.playerData.actualTrack.album) {
                         return (" / " + this.playerData.actualTrack.album);
                     } else {
@@ -124,7 +137,7 @@ var player = (function () {
                 }
             },
             nowPlayingYear: function () {
-                if (this.playerData.isPlaying || this.playerData.isPaused) {
+                if (this.isPlaying || this.isPaused) {
                     if (this.playerData.actualTrack.year) {
                         return (" (" + this.playerData.actualTrack.year + ")");
                     } else {
@@ -138,19 +151,38 @@ var player = (function () {
                 return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             }
         },
-        mounted: function () {
-            var self = this;
-            this.$watch('streamUrl', function () {
-                if (self.streamUrl) {
-                    self.$refs.player.pause();
-                    self.$refs.player.load();
-                    self.$refs.player.play();
+        watch: {
+            streamUrl: function (value) {
+                if (value) {
+                    this.$refs.player.pause();
+                    this.$refs.player.load();
+                    this.$refs.player.play();
                     initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                 } else {
-                    self.$refs.player.pause();
+                    this.$refs.player.pause();
                 }
-            });
-            self.$refs.player.addEventListener("ended", function () {
+            },
+            isPlaying: function(newValue) {
+                if (newValue) {
+                    this.$refs.player.play();
+                }
+            },
+            isPaused: function(newValue) {
+                if (newValue == false) {
+                    this.$refs.player.play();
+                } else {
+                    this.$refs.player.pause();
+                }
+            },
+            isStopped: function(newValue) {
+                if (newValue) {
+                    this.$refs.player.pause();
+                    this.$refs.player.currentTime = 0;
+                }
+            }
+        },
+        mounted: function () {
+            this.$refs.player.addEventListener("ended", function () {
                 switch (self.playerData.repeatTracksMode) {
                     case "track":
                         self.$refs.player.play();
