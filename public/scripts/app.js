@@ -105,12 +105,20 @@ const getPlayerData = function () {
         if (playerData.actualTrackIdx > 0) {
             playerData.actualTrackIdx--;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            if (playerData.isPaused) {
+                playerData.isPaused = false;
+                playerData.isPlaying = true;
+            }
         }
     };
     playerData.playNextTrack = function () {
         if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
             playerData.actualTrackIdx++;
             playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            if (playerData.isPaused) {
+                playerData.isPaused = false;
+                playerData.isPlaying = true;
+            }
         }
     };
     playerData.play = function () {
@@ -368,7 +376,7 @@ const app = new Vue({
         bus.$on("signOut", function () {
             self.signOut();
         });
-        if (! initialState.logged) {
+        if (!initialState.logged) {
             self.$router.push({ name: 'signin' });
         } else {
             if (!self.$route.name) {
@@ -406,7 +414,7 @@ const app = new Vue({
 }).$mount('#app');
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
-setInterval(function() {
-    spieldoseAPI.poll(function() {});
-    }, 300000 // 5 mins * 60 * 1000
+setInterval(function () {
+    spieldoseAPI.poll(function () { });
+}, 300000 // 5 mins * 60 * 1000
 );
