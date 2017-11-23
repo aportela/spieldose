@@ -193,7 +193,7 @@ var playLists = (function () {
                 </div>
             </div>
             <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
-            <div class="playlist-item box" v-for="playlist in playlists" v-show="! loading">
+            <div class="playlist-item box" v-for="playlist in playlists" v-show="! loading" v-on:click.prevent="loadPlayList(playlist.id);">
                 <p class="playlist-info has-text-centered">
                     <strong>“{{ playlist.name }}”</strong>
                     <br>13 tracks
@@ -294,7 +294,7 @@ var playLists = (function () {
                 });
 
             },
-            savePlayList: function() {
+            savePlayList: function () {
                 var self = this;
                 var trackIds = [];
                 self.savingPlaylist = true;
@@ -302,21 +302,42 @@ var playLists = (function () {
                     trackIds.push(this.playerData.tracks[i].id);
                 }
                 if (this.currentPlaylistId) {
-                    spieldoseAPI.updatePlaylist(this.currentPlaylistId, this.currentPlaylistName, trackIds, function(response) {
+                    spieldoseAPI.updatePlaylist(this.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
                         } else {
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
                         }
                     });
                 } else {
-                    spieldoseAPI.addPlaylist(this.currentPlaylistName, trackIds, function(response) {
+                    spieldoseAPI.addPlaylist(this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
                             self.currentPlaylistId = response.body.playlist.id;
                         } else {
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
                         }
                     });
                 }
+            },
+            loadPlayList: function (playListId) {
+                var self = this;
+                spieldoseAPI.getPlayList(playListId, function (response) {
+                    if (response.ok) {
+                        self.currentPlaylistId = playListId;
+                        self.currentPlaylistName = response.body.playlist.name;
+                        self.playerData.replace(response.body.playlist.tracks);
+                        self.changeTab(0);
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
+                    }
+                });
             }
         }
     });
