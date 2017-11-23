@@ -6,11 +6,13 @@
 
     $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+        $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB());
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"],
             'initialState' => json_encode(
                 array(
                     "logged" => \Spieldose\User::isLogged(),
+                    'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                     "allowSignUp" => $this->get('settings')['common']['allowSignUp']
                 )

@@ -261,6 +261,7 @@ const sharedPlayerData = getPlayerData();
  * vue-router route definitions
  */
 const routes = [
+    { path: '/upgrade', name: 'upgrade', component: upgrade },
     { path: '/signin', name: 'signin', component: signInUp },
     {
         path: '/app',
@@ -404,12 +405,16 @@ const app = new Vue({
         bus.$on("signOut", function () {
             self.signOut();
         });
-        if (!initialState.logged) {
-            self.$router.push({ name: 'signin' });
-        } else {
-            if (!self.$route.name) {
-                self.$router.push({ name: 'dashboard' });
+        if (! initialState.upgradeAvailable) {
+            if (!initialState.logged) {
+                self.$router.push({ name: 'signin' });
+            } else {
+                if (!self.$route.name) {
+                    self.$router.push({ name: 'dashboard' });
+                }
             }
+        } else {
+            self.$router.push({ name: 'upgrade' });
         }
     },
     methods: {
