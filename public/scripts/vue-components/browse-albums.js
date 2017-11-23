@@ -39,7 +39,7 @@ var browseAlbums = (function () {
         data: function () {
             return ({
                 loading: false,
-                errors: true,
+                errors: false,
                 apiError: null,
                 nameFilter: null,
                 timeout: null,
