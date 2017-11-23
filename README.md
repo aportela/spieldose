@@ -12,3 +12,13 @@ create user (optional, can be done from web): php tools/set-credential.php --ema
 start php web server instance: php -S 0.0.0.0:8080 -t public
 browse http://localhost:8080
 ```
+
+## Screenshots (for the impatient)
+### sing in
+![Alt text](https://i.imgur.com/m2WyqH6l.png "signin")
+### dashboard
+![Alt text](https://i.imgur.com/fyMqFD1l.png "dashboard")
+### browse artists
+![Alt text](https://i.imgur.com/3zK5jiZl.jpg "browse artists")
+### browse albums
+![Alt text](https://i.imgur.com/TOIuMFNl.jpg "browse albums")
