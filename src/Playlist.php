@@ -55,11 +55,14 @@
                         (new \Spieldose\Database\DBParam())->str(":name", $this->name)
                     );
                     if ($dbh->execute(" UPDATE PLAYLIST SET name = :name WHERE id = :id AND user_id = :user_id ", $params)) {
+                        $params = array(
+                            (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
+                        );
+                        $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
                         foreach($this->tracks as $trackId) {
                             $params = array(
                                 (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
                             );
-                            $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
                             $params = array(
                                 (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
                                 (new \Spieldose\Database\DBParam())->str(":file_id", $trackId)
