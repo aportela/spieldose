@@ -10,7 +10,7 @@
             'settings' => $this->settings["twigParams"],
             'initialState' => json_encode(
                 array(
-                    "logged" => true,
+                    "logged" => \Spieldose\User::isLogged(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                     "allowSignUp" => $this->get('settings')['common']['allowSignUp']
                 )
