@@ -14,7 +14,7 @@ browse http://localhost:8080
 ```
 
 ## Screenshots (for the impatient)
-### sing in
+### sign in
 ![Alt text](https://i.imgur.com/m2WyqH6l.png "signin")
 ### dashboard
 ![Alt text](https://i.imgur.com/fyMqFD1l.png "dashboard")
