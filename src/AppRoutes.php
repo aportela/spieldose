@@ -69,396 +69,426 @@
         /* user */
 
         $this->group("", function() {
-        /* track */
 
-        $this->get('/track/get/{id}', function (Request $request, Response $response, array $args) {
-            $route = $request->getAttribute('route');
-            $track  = new \Spieldose\Track($route->getArgument("id"));
-            $db = new \Spieldose\Database\DB();
-            $track->get($db);
-            if (file_exists($track->path)) {
-                $track->incPlayCount($db);
-                $filesize = filesize($track->path);
-                $offset = 0;
-                $length = $filesize;
-                // https://stackoverflow.com/a/157447
-                if (isset($_SERVER['HTTP_RANGE'])) {
-                    // if the HTTP_RANGE header is set we're dealing with partial content
-                    $partialContent = true;
-                    // find the requested range
-                    // this might be too simplistic, apparently the client can request
-                    // multiple ranges, which can become pretty complex, so ignore it for now
-                    preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
-                    $offset = intval($matches[1]);
-                    $length = ((isset($matches[2])) ? intval($matches[2]) : $filesize) - $offset;
-                } else {
-                    $partialContent = false;
-                }
-                $file = fopen($track->path, 'r');
-                fseek($file, $offset);
-                $data = fread($file, $length);
-                fclose($file);
-                if ($partialContent) {
-                    // output the right headers for partial content
-                    return $response->withStatus(206)
-                    ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
-                    ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
-                    ->withHeader('Content-Length', $filesize)
-                    ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
-                    ->withHeader('Accept-Ranges', 'bytes')
-                    ->write($data);
-                } else {
-                    return $response->withStatus(200)
+            /* track */
+
+            $this->get('/track/get/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $track  = new \Spieldose\Track($route->getArgument("id"));
+                $db = new \Spieldose\Database\DB();
+                $track->get($db);
+                if (file_exists($track->path)) {
+                    $track->incPlayCount($db);
+                    $filesize = filesize($track->path);
+                    $offset = 0;
+                    $length = $filesize;
+                    // https://stackoverflow.com/a/157447
+                    if (isset($_SERVER['HTTP_RANGE'])) {
+                        // if the HTTP_RANGE header is set we're dealing with partial content
+                        $partialContent = true;
+                        // find the requested range
+                        // this might be too simplistic, apparently the client can request
+                        // multiple ranges, which can become pretty complex, so ignore it for now
+                        preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                        $offset = intval($matches[1]);
+                        $length = ((isset($matches[2])) ? intval($matches[2]) : $filesize) - $offset;
+                    } else {
+                        $partialContent = false;
+                    }
+                    $file = fopen($track->path, 'r');
+                    fseek($file, $offset);
+                    $data = fread($file, $length);
+                    fclose($file);
+                    if ($partialContent) {
+                        // output the right headers for partial content
+                        return $response->withStatus(206)
                         ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
                         ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                         ->withHeader('Content-Length', $filesize)
+                        ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
                         ->withHeader('Accept-Ranges', 'bytes')
                         ->write($data);
+                    } else {
+                        return $response->withStatus(200)
+                            ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
+                            ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
+                            ->withHeader('Content-Length', $filesize)
+                            ->withHeader('Accept-Ranges', 'bytes')
+                            ->write($data);
+                    }
+                } else {
+                    throw new \Spieldose\NotFoundException("id");
                 }
-            } else {
-                throw new \Spieldose\NotFoundException("id");
-            }
-        });
+            });
 
-        $this->post('/track/{id}/love', function (Request $request, Response $response, array $args) {
-            $route = $request->getAttribute('route');
-            $track  = new \Spieldose\Track($route->getArgument("id"));
-            $db = new \Spieldose\Database\DB();
-            $loved = $track->love($db);
-            return $response->withJson(['loved' => $loved ? "1": "0"], 200);
-        });
+            $this->post('/track/{id}/love', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $track  = new \Spieldose\Track($route->getArgument("id"));
+                $db = new \Spieldose\Database\DB();
+                $loved = $track->love($db);
+                return $response->withJson(['loved' => $loved ? "1": "0"], 200);
+            });
 
-        $this->post('/track/{id}/unlove', function (Request $request, Response $response, array $args) {
-            $route = $request->getAttribute('route');
-            $track  = new \Spieldose\Track($route->getArgument("id"));
-            $db = new \Spieldose\Database\DB();
-            $loved = $track->unLove($db);
-            return $response->withJson(['loved' => "0" ], 200);
-        });
+            $this->post('/track/{id}/unlove', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $track  = new \Spieldose\Track($route->getArgument("id"));
+                $db = new \Spieldose\Database\DB();
+                $loved = $track->unLove($db);
+                return $response->withJson(['loved' => "0" ], 200);
+            });
 
-        $this->post('/track/search', function (Request $request, Response $response, array $args) {
-            $filter = array();
-            $data = \Spieldose\Track::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", ""),
-                    "artist" => $request->getParam("artist", ""),
-                    "album" => $request->getParam("album", ""),
-                    "year" => $request->getParam("year", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
-        });
+            $this->post('/track/search', function (Request $request, Response $response, array $args) {
+                $filter = array();
+                $data = \Spieldose\Track::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", ""),
+                        "artist" => $request->getParam("artist", ""),
+                        "album" => $request->getParam("album", ""),
+                        "year" => $request->getParam("year", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+            });
 
-        /* track */
+            /* track */
 
-        /* artist */
+            /* artist */
 
-        $this->post('/artist/search', function (Request $request, Response $response, array $args) {
-            $data = \Spieldose\Artist::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            return $response->withJson(
-                [
-                    'artists' => $data->results,
-                    "pagination" => array(
-                        'totalResults' => $data->totalResults,
-                        'actualPage' => $data->actualPage,
-                        'resultsPage' => $data->resultsPage,
-                        'totalPages' => $data->totalPages
-                    )
-                ],
-                200
-            );
-        });
+            $this->post('/artist/search', function (Request $request, Response $response, array $args) {
+                $data = \Spieldose\Artist::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(
+                    [
+                        'artists' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'actualPage' => $data->actualPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ],
+                    200
+                );
+            });
 
-        $this->get('/artist/{name}', function (Request $request, Response $response, array $args) {
-            $route = $request->getAttribute('route');
-            $artist = new \Spieldose\Artist($route->getArgument("name"));
-            $artist->get(new \Spieldose\Database\DB());
-            return $response->withJson(['artist' => $artist], 200);
-        });
+            $this->get('/artist/{name}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $artist = new \Spieldose\Artist($route->getArgument("name"));
+                $artist->get(new \Spieldose\Database\DB());
+                return $response->withJson(['artist' => $artist], 200);
+            });
 
-        /* artist */
+            /* artist */
 
-        /* album */
+            /* album */
 
-        $this->post('/album/search', function (Request $request, Response $response, array $args) {
-            $data = \Spieldose\Album::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            return $response->withJson(
-                [
-                    'albums' => $data->results,
-                    "pagination" => array(
-                        'totalResults' => $data->totalResults,
-                        'actualPage' => $data->actualPage,
-                        'resultsPage' => $data->resultsPage,
-                        'totalPages' => $data->totalPages
-                    )
-                ],
-                200
-            );
-        });
+            $this->post('/album/search', function (Request $request, Response $response, array $args) {
+                $data = \Spieldose\Album::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(
+                    [
+                        'albums' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'actualPage' => $data->actualPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ],
+                    200
+                );
+            });
 
-        /* album */
+            /* album */
 
-        /* path */
+            /* path */
 
-        $this->get('/path/search', function (Request $request, Response $response, array $args) {
-            return $response->withJson(
-                [
-                    'paths' => \Spieldose\Path::getPaths(new \Spieldose\Database\DB())
-                ],
-                200
-            );
-        });
+            $this->get('/path/search', function (Request $request, Response $response, array $args) {
+                return $response->withJson(
+                    [
+                        'paths' => \Spieldose\Path::getPaths(new \Spieldose\Database\DB())
+                    ],
+                    200
+                );
+            });
 
-        /* path */
+            /* path */
 
-        /* playlist */
+            /* playlist */
 
-        $this->get('/playlist/{id}', function (Request $request, Response $response, array $args) {
-            $route = $request->getAttribute('route');
-            $playlist = new \Spieldose\Playlist($route->getArgument("id"));
-            $playlist->get(new \Spieldose\Database\DB());
-            return $response->withJson(['playlist' => $playlist], 200);
-        });
+            $this->get('/playlist/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $playlist = new \Spieldose\Playlist($route->getArgument("id"));
+                $playlist->get(new \Spieldose\Database\DB());
+                return $response->withJson(['playlist' => $playlist], 200);
+            });
 
-        $this->post('playlist/search', function (Request $request, Response $response, array $args) {
-            $data = \Spieldose\Playlist::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            return $response->withJson(
-                [
-                    'playlists' => $data->results,
-                    "pagination" => array(
-                        'totalResults' => $data->totalResults,
-                        'actualPage' => $data->actualPage,
-                        'resultsPage' => $data->resultsPage,
-                        'totalPages' => $data->totalPages
-                    )
-                ],
-                200
-            );
-        });
+            $this->post('/playlist/search', function (Request $request, Response $response, array $args) {
+                $data = \Spieldose\Playlist::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(
+                    [
+                        'playlists' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'actualPage' => $data->actualPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ],
+                    200
+                );
+            });
 
-        /* playlist */
+            $this->post('/playlist/add', function (Request $request, Response $response, array $args) {
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                $name = $request->getParam("name", "");
+                $tracks = $request->getParam("tracks", array());
+                $playlist = new \Spieldose\Playlist(
+                    $id,
+                    $name,
+                    $tracks
+                );
+                $dbh = new \Spieldose\Database\DB();
+                $playlist->add($dbh);
+                return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+            });
 
-        /* global search */
+            $this->post('/playlist/update', function (Request $request, Response $response, array $args) {
+                $id = $request->getParam("id", "");
+                $name = $request->getParam("name", "");
+                $tracks = $request->getParam("tracks", array());
+                $playlist = new \Spieldose\Playlist(
+                    $id,
+                    $name,
+                    $tracks
+                );
+                $dbh = new \Spieldose\Database\DB();
+                $playlist->update($dbh);
+                return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+            });
 
-        $this->post('/search/global', function (Request $request, Response $response, array $args) {
-            $artistData = \Spieldose\Artist::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            $albumData = \Spieldose\Album::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            $trackData = \Spieldose\Track::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            $playlistData = \Spieldose\Playlist::search(
-                new \Spieldose\Database\DB(),
-                $request->getParam("actualPage", 1),
-                $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
-                array(
-                    "text" => $request->getParam("text", "")
-                ),
-                $request->getParam("orderBy", "")
-            );
-            return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results], 200);
-        });
+            /* playlist */
 
-        /* global search */
+            /* global search */
 
-        /* metrics */
+            $this->post('/search/global', function (Request $request, Response $response, array $args) {
+                $artistData = \Spieldose\Artist::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                $albumData = \Spieldose\Album::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                $trackData = \Spieldose\Track::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                $playlistData = \Spieldose\Playlist::search(
+                    new \Spieldose\Database\DB(),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "text" => $request->getParam("text", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results], 200);
+            });
 
-        $this->post('/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
-                new \Spieldose\Database\DB(),
-                array(
-                    "fromDate" => $request->getParam("fromDate", ""),
-                    "toDate" => $request->getParam("toDate", ""),
-                    "artist" => $request->getParam("artist", ""),
-                ),
-                $request->getParam("count", 5)
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            /* global search */
 
-        $this->post('/metrics/top_artists', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetTopArtists(
-                new \Spieldose\Database\DB(),
-                array(
-                    "fromDate" => $request->getParam("fromDate", ""),
-                    "toDate" => $request->getParam("toDate", ""),
-                ),
-                $request->getParam("count", 5)
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            /* metrics */
 
-        $this->post('/metrics/top_genres', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetTopGenres(
-                new \Spieldose\Database\DB(),
-                array(
-                    "fromDate" => $request->getParam("fromDate", ""),
-                    "toDate" => $request->getParam("toDate", ""),
-                ),
-                $request->getParam("count", 5)
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            $this->post('/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
+                    new \Spieldose\Database\DB(),
+                    array(
+                        "fromDate" => $request->getParam("fromDate", ""),
+                        "toDate" => $request->getParam("toDate", ""),
+                        "artist" => $request->getParam("artist", ""),
+                    ),
+                    $request->getParam("count", 5)
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/recently_added', function (Request $request, Response $response, array $args) {
-            $entity = $request->getParam("entity", "");
-            if (! empty($entity)) {
-                switch($entity) {
-                    case "tracks":
-                        $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
-                    break;
-                    case "artists":
-                        $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
-                    break;
-                    case "albums":
-                        $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
+            $this->post('/metrics/top_artists', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetTopArtists(
+                    new \Spieldose\Database\DB(),
+                    array(
+                        "fromDate" => $request->getParam("fromDate", ""),
+                        "toDate" => $request->getParam("toDate", ""),
+                    ),
+                    $request->getParam("count", 5)
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-                    break;
+            $this->post('/metrics/top_genres', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetTopGenres(
+                    new \Spieldose\Database\DB(),
+                    array(
+                        "fromDate" => $request->getParam("fromDate", ""),
+                        "toDate" => $request->getParam("toDate", ""),
+                    ),
+                    $request->getParam("count", 5)
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
+
+            $this->post('/metrics/recently_added', function (Request $request, Response $response, array $args) {
+                $entity = $request->getParam("entity", "");
+                if (! empty($entity)) {
+                    switch($entity) {
+                        case "tracks":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+                        break;
+                        case "artists":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+                        break;
+                        case "albums":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+
+                        break;
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("entity");
                 }
-            } else {
-                throw new \Spieldose\Exception\InvalidParamsException("entity");
-            }
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/recently_played', function (Request $request, Response $response, array $args) {
-            $entity = $request->getParam("entity", "");
-            if (! empty($entity)) {
-                switch($entity) {
-                    case "tracks":
-                        $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
-                    break;
-                    case "artists":
-                        $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
-                    break;
-                    case "albums":
-                        $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
-                            new \Spieldose\Database\DB(),
-                            array(
-                            ),
-                            $request->getParam("count", 5)
-                        );
-                    break;
+            $this->post('/metrics/recently_played', function (Request $request, Response $response, array $args) {
+                $entity = $request->getParam("entity", "");
+                if (! empty($entity)) {
+                    switch($entity) {
+                        case "tracks":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+                        break;
+                        case "artists":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+                        break;
+                        case "albums":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
+                                new \Spieldose\Database\DB(),
+                                array(
+                                ),
+                                $request->getParam("count", 5)
+                            );
+                        break;
+                    }
+
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("entity");
                 }
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-            } else {
-                throw new \Spieldose\Exception\InvalidParamsException("entity");
-            }
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            $this->post('/metrics/play_stats_by_hour', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
+                    new \Spieldose\Database\DB(),
+                    array(
+                    )
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/play_stats_by_hour', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
-                new \Spieldose\Database\DB(),
-                array(
-                )
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            $this->post('/metrics/play_stats_by_weekday', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
+                    new \Spieldose\Database\DB(),
+                    array(
+                    )
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/play_stats_by_weekday', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
-                new \Spieldose\Database\DB(),
-                array(
-                )
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            $this->post('/metrics/play_stats_by_month', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
+                    new \Spieldose\Database\DB(),
+                    array(
+                    )
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/play_stats_by_month', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
-                new \Spieldose\Database\DB(),
-                array(
-                )
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            $this->post('/metrics/play_stats_by_year', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
+                    new \Spieldose\Database\DB(),
+                    array(
+                    )
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
 
-        $this->post('/metrics/play_stats_by_year', function (Request $request, Response $response, array $args) {
-            $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
-                new \Spieldose\Database\DB(),
-                array(
-                )
-            );
-            return $response->withJson(['metrics' => $metrics], 200);
-        });
+            /* metrics */
 
-        /* metrics */
-    })->add(new \Spieldose\Middleware\CheckAuth($this->getContainer()));
+        })->add(new \Spieldose\Middleware\CheckAuth($this->getContainer()));
 
     })->add(new \Spieldose\Middleware\APIExceptionCatcher($this->app->getContainer()));
 

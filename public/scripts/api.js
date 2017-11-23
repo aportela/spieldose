@@ -207,6 +207,35 @@ const spieldoseAPI = {
             }
         );
     },
+    addPlaylist: function(name, tracks, callback) {
+        var params = {
+            name: name,
+            tracks: tracks
+        };
+        Vue.http.post("api/playlist/add", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    updatePlaylist: function(id, name, tracks, callback) {
+        var params = {
+            id: id,
+            name: name,
+            tracks: tracks
+        };
+        Vue.http.post("api/playlist/update", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getPlayList: function(playlist, callback) {
         Vue.http.get("api/playlist/" + playlist.id).then(
             response => {
