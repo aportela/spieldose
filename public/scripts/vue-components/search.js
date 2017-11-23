@@ -75,7 +75,7 @@ var search = (function () {
                         <div class="media-content">
                             <div class="content cut-text">
                                 <p class="subtitle is-6">
-                                <i v-on:click="playPlaylist(item);" class="cursor-pointer fa fa-play" title="play this playlist"></i> <i v-on:click="enqueuePlaylist(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this playlist"></i>
+                                <i v-on:click="playPlaylist(item.id);" class="cursor-pointer fa fa-play" title="play this playlist"></i> <i v-on:click="enqueuePlaylist(item.id);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this playlist"></i>
                                 {{ item.name }} ({{ item.trackCount}} tracks)
                                 </p>
                             </div>
@@ -191,34 +191,29 @@ var search = (function () {
             }, enqueueTrack: function (track) {
                 this.playerData.enqueue([track]);
             },
-            playPlaylist: function (playlist) {
+            playPlaylist: function (playListId) {
                 var self = this;
-                spieldoseAPI.getPlayList(playlist, function (response) {
-                    self.playerData.emptyPlayList();
+                spieldoseAPI.getPlayList(playListId, function (response) {
                     if (response.ok) {
-                        if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
-                            self.playerData.tracks = response.body.playlist.tracks;
-                            self.playerData.play();
-                        }
+                        self.playerData.replace(response.body.playlist.tracks);
+                        self.playerData.setCurrentPlayList(playListId, response.body.playlist.name);
+                        self.$router.push({ name: 'nowPlaying' });
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
                 });
             },
-            enqueuePlaylist: function (playlist) {
+            enqueuePlaylist: function (playListId) {
                 var self = this;
-                spieldoseAPI.getPlayList(playlist, function (response) {
+                spieldoseAPI.getPlayList(playListId, function (response) {
                     if (response.ok) {
-                        if (response.body.playlist.tracks && response.body.playlist.tracks.length > 0) {
-                            for (var i = 0; i < response.body.playlist.tracks.length; i++) {
-                                self.playerData.tracks.push(response.body.playlist.tracks[i]);
-                            }
-                            self.playerData.play();
-                        }
+                        self.playerData.enqueue(response.body.playlist.tracks);
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
                 });
             }
