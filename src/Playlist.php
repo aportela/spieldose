@@ -17,8 +17,66 @@
 
         public function __destruct() { }
 
-        private function exists(\Spieldose\Database\DB $dbh): bool {
-            return(true);
+        public function add(\Spieldose\Database\DB $dbh) {
+            if (! empty($this->id)) {
+                if (! empty($this->name)) {
+                    $params = array(
+                        (new \Spieldose\Database\DBParam())->str(":id", $this->id),
+                        (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
+                        (new \Spieldose\Database\DBParam())->str(":name", $this->name)
+                    );
+                    if ($dbh->execute(" INSERT INTO PLAYLIST (id, user_id, name) VALUES(:id, :user_id, :name) ", $params)) {
+                        foreach($this->tracks as $trackId) {
+                            $params = array(
+                                (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
+                                (new \Spieldose\Database\DBParam())->str(":file_id", $trackId)
+                            );
+                            if (! $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, file_id) VALUES(:playlist_id, :file_id) ", $params)) {
+                                throw new \PDOException("");
+                            }
+                        }
+                    } else {
+                        throw new \PDOException("");
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
+        }
+
+        public function update(\Spieldose\Database\DB $dbh) {
+            if (! empty($this->id)) {
+                if (! empty($this->name)) {
+                    $params = array(
+                        (new \Spieldose\Database\DBParam())->str(":id", $this->id),
+                        (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
+                        (new \Spieldose\Database\DBParam())->str(":name", $this->name)
+                    );
+                    if ($dbh->execute(" UPDATE PLAYLIST SET name = :name WHERE id = :id AND user_id = :user_id ", $params)) {
+                        foreach($this->tracks as $trackId) {
+                            $params = array(
+                                (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
+                            );
+                            $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                            $params = array(
+                                (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
+                                (new \Spieldose\Database\DBParam())->str(":file_id", $trackId)
+                            );
+                            if (! $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, file_id) VALUES(:playlist_id, :file_id) ", $params)) {
+                                throw new \PDOException("");
+                            }
+                        }
+                    } else {
+                        throw new \PDOException("");
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
         }
 
         public function get(\Spieldose\Database\DB $dbh) {
@@ -26,21 +84,21 @@
                 if ($dbh == null) {
                     $dbh = new \Spieldose\Database\DB();
                 }
-                if ($this->exists($dbh)) {
-                    $params = array();
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-                    $query = sprintf('
-                        SELECT P.name
-                        FROM PLAYLIST P
-                        WHERE P.id = :id AND p.user_id = :user_id
-                        '
-                    );
-                    $data = $dbh->query($query, $params);
-                    if ($data) {
+                $params = array();
+                $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
+                $query = sprintf('
+                    SELECT P.name, P.user_id AS userId
+                    FROM PLAYLIST P
+                    WHERE P.id = :id
+                    '
+                );
+                $data = $dbh->query($query, $params);
+                if (count($data) == 1) {
+                    if ($data[0]->userId == \Spieldose\User::getUserId()) {
                         $this->name = $data[0]->name;
-                        $data = \Spieldose\Track::search($dbh, 1, 10, array("playlist" => $this->id), "");
-                        $this->tracks = $data->results;
+                        $this->tracks = [];
+                    } else {
+                        throw new \Spieldose\Exception\AccessDeniedException("id: " . $this->id . "userId:" . $data[0]->userId);
                     }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
@@ -49,7 +107,6 @@
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
         }
-
 
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             if ($dbh == null) {
