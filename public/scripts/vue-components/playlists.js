@@ -6,9 +6,9 @@ var nowPlaying = (function () {
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Now playing</p>
         <div v-if="! errors">
-            <div v-if="! currentPlaylistId" class="field has-addons">
+            <div v-if="! currentPlaylistName" class="field has-addons">
                 <div class="control has-icons-left is-expanded">
-                    <input v-model="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
+                    <input v-model.trim="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
                     <span class="icon is-small is-left">
                         <i class="fa fa-list-alt"></i>
                     </span>
@@ -23,9 +23,9 @@ var nowPlaying = (function () {
                 </div>
             </div>
 
-            <div v-else="! currentPlaylistId" class="field has-addons">
+            <div v-else class="field has-addons">
                 <div class="control has-icons-left is-expanded">
-                    <input v-model="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
+                    <input v-model.trim="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
                     <span class="icon is-small is-left">
                         <i class="fa fa-list-alt"></i>
                     </span>
@@ -42,7 +42,7 @@ var nowPlaying = (function () {
 
             <div class="field is-grouped">
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);" :disabled="playerData.loading">
+                    <a class="button is-light" v-on:click.prevent="loadRandom();" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i v-if="playerData.loading" class="fa fa-cog fa-spin fa-fw"></i>
                             <i v-else class="fa fa-clone"></i>
@@ -188,10 +188,9 @@ var nowPlaying = (function () {
                 apiError: null,
                 nameFilter: null,
                 playlists: [],
-                currentPlaylistId: null,
-                currentPlaylistName: null,
                 savingPlaylist: false,
                 pager: getPager(),
+                currentPlaylistName: null,
                 playerData: sharedPlayerData,
             });
         }, directives: {
@@ -199,6 +198,20 @@ var nowPlaying = (function () {
                 update: function (el) {
                     el.focus();
                 }
+            }
+        },
+        watch: {
+            playerCurrentPlayListName: function(newValue) {
+                if (newValue) {
+                    this.currentPlaylistName = newValue;
+                } else {
+                    this.currentPlaylistName = null;
+                }
+            }
+        },
+        computed: {
+            playerCurrentPlayListName: function() {
+                return(this.playerData.currentPlaylistName);
             }
         },
         methods: {
@@ -213,6 +226,10 @@ var nowPlaying = (function () {
                     }
                 }
             },
+            loadRandom: function() {
+                this.playerData.unsetCurrentPlayList();
+                this.playerData.loadRandomTracks(initialState.defaultResultsPage);
+            },
             savePlayList: function () {
                 var self = this;
                 var trackIds = [];
@@ -220,10 +237,11 @@ var nowPlaying = (function () {
                 for (let i = 0; i < this.playerData.tracks.length; i++) {
                     trackIds.push(this.playerData.tracks[i].id);
                 }
-                if (this.currentPlaylistId) {
-                    spieldoseAPI.updatePlaylist(this.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
+                if (this.playerData.hasCurrentPlayList()) {
+                    spieldoseAPI.updatePlaylist(this.playerData.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
+                            self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);
                         } else {
                             self.errors = true;
                             self.apiError = response.getApiErrorData();
@@ -234,7 +252,7 @@ var nowPlaying = (function () {
                     spieldoseAPI.addPlaylist(this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
-                            self.currentPlaylistId = response.body.playlist.id;
+                            self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);
                         } else {
                             self.errors = true;
                             self.apiError = response.getApiErrorData();
