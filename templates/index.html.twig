@@ -7,6 +7,7 @@
         <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         <title>Spieldose</title>
+        <link rel="icon" type="image/png" href="static/favicon.png">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
         {% if settings.localVendorAssets %}
@@ -31,11 +32,6 @@
                 <router-view></router-view>
             </transition>
         </div>
-
-        <script type="text/javascript">
-            window.__INITIAL_STATE__ = '{{ initialState | raw }}';
-            let initialState = JSON.parse(window.__INITIAL_STATE__);
-        </script>
 
         {% if settings.localVendorAssets %}
             {% if settings.production %}
