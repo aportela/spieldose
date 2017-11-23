@@ -236,9 +236,14 @@
 
             $this->get('/playlist/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
-                $playlist = new \Spieldose\Playlist($route->getArgument("id"));
-                $playlist->get(new \Spieldose\Database\DB());
-                return $response->withJson(['playlist' => $playlist], 200);
+                $playlist = new \Spieldose\Playlist($route->getArgument("id"), "", array());
+                $dbh = new \Spieldose\Database\DB();
+                if ($playlist->isAllowed($dbh)) {
+                    $playlist->get($dbh);
+                    return $response->withJson(['playlist' => $playlist], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
             });
 
             $this->post('/playlist/search', function (Request $request, Response $response, array $args) {
@@ -289,8 +294,28 @@
                     $tracks
                 );
                 $dbh = new \Spieldose\Database\DB();
-                $playlist->update($dbh);
-                return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+                if ($playlist->isAllowed($dbh)) {
+                    $playlist->update($dbh);
+                    return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
+            });
+
+            $this->post('/playlist/remove', function (Request $request, Response $response, array $args) {
+                $id = $request->getParam("id", "");
+                $playlist = new \Spieldose\Playlist(
+                    $id,
+                    "",
+                    array()
+                );
+                $dbh = new \Spieldose\Database\DB();
+                if ($playlist->isAllowed($dbh)) {
+                    $playlist->remove($dbh);
+                    return $response->withJson([ ], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
             });
 
             /* playlist */
