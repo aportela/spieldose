@@ -18,14 +18,15 @@
     $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
     $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
     if ($scrapArtists || $scrapAlbums) {
+        $c = $app->getContainer();
+        $c["scrapLogger"]->info("Scraper started");
         $dbh = new \Spieldose\Database\DB();
         if ((new \Spieldose\Database\Version($dbh))->hasUpgradeAvailable()) {
+            $c["scrapLogger"]->warning("Process stopped: upgrade database before continue");
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
         $scraper = new \Spieldose\Scrapper($dbh);
-        $c = $app->getContainer();
-        $c["scrapLogger"]->info("Scraper started");
         if ($scrapArtists) {
             echo "Artist scraping...." . PHP_EOL;
             $c["scrapLogger"]->info("Scraping artists");
