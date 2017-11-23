@@ -260,9 +260,9 @@ const routes = [
                 component: dashboard
             },
             {
-                path: 'playlists',
-                name: 'playlists',
-                component: playLists
+                path: 'now_playing',
+                name: 'nowPlaying',
+                component: nowPlaying
             },
             {
                 path: 'artists',
@@ -285,6 +285,18 @@ const routes = [
                         path: 'page/:page',
                         name: 'albumsPaged',
                         component: browseAlbums
+                    }
+                ]
+            },
+            {
+                path: 'playlists',
+                name: 'playlists',
+                component: browsePlaylists,
+                children: [
+                    {
+                        path: 'page/:page',
+                        name: 'playlistsPaged',
+                        component: browsePlaylists
                     }
                 ]
             },

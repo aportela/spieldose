@@ -1,20 +1,11 @@
-var playLists = (function () {
+var nowPlaying = (function () {
     "use strict";
 
     var template = function () {
         return `
     <div class="container is-fluid box">
-        <p class="title is-1 has-text-centered">Playlists</p>
-        <div class="tabs is-centered">
-            <ul>
-                <li v-bind:class="{ 'is-active' : tab == 0 }"><a v-on:click.prevent="changeTab(0)" href="#">Now playing</a></li>
-                <li v-bind:class="{ 'is-active' : tab == 1 }"><a v-on:click.prevent="changeTab(1)" href="#">Playlists</a></li>
-                <li v-bind:class="{ 'is-active' : tab == 2 }"><a v-on:click.prevent="changeTab(2)" href="#">Add new playlist</a></li>
-            </ul>
-        </div>
-        <div v-show="tab == 0">
-            <p class="title is-1 has-text-centered">Current playlist</p>
-
+        <p class="title is-1 has-text-centered">Now playing</p>
+        <div v-if="! errors">
             <div v-if="! currentPlaylistId" class="field has-addons">
                 <div class="control has-icons-left is-expanded">
                     <input v-model="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
@@ -182,34 +173,12 @@ var playLists = (function () {
                 </tbody>
             </table>
         </div>
-        <div v-show="tab == 1">
-            <p class="title is-1 has-text-centered">My playlists</i></p>
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-focus v-model="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
-                    <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
-                    </span>
-                </div>
-            </div>
-            <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
-            <div class="playlist-item box" v-for="playlist in playlists" v-show="! loading" v-on:click.prevent="loadPlayList(playlist.id);">
-                <p class="playlist-info has-text-centered">
-                    <strong>“{{ playlist.name }}”</strong>
-                    <br>13 tracks
-                </p>
-            </div>
-            <div class="is-clearfix"></div>
-        </div>
-        <div v-show="tab == 2">
-            <h2>TODO</h2>
-        </div>
         <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
     };
 
-    var module = Vue.component('spieldose-playlists', {
+    var module = Vue.component('spieldose-nowplaying', {
         template: template(),
         data: function () {
             return ({
@@ -232,15 +201,6 @@ var playLists = (function () {
                 }
             }
         },
-        created: function () {
-            var self = this;
-            this.pager.refresh = function () {
-                //self.$router.push({ name: 'playListsPaged', params: { page: self.pager.actualPage } });
-            }
-            if (this.$route.params.page) {
-                //self.pager.actualPage = parseInt(this.$route.params.page);
-            }
-        },
         methods: {
             iconAction: function (index) {
                 if (this.playerData.isPaused && this.playerData.actualTrackIdx == index) {
@@ -252,47 +212,6 @@ var playLists = (function () {
                         return ('play');
                     }
                 }
-            },
-            changeTab: function (tab) {
-                this.tab = tab;
-                if (this.tab == 1) {
-                    this.search();
-                }
-            },
-            abortInstantSearch: function () {
-                this.nameFilter = null;
-            },
-            instantSearch: function () {
-                var self = this;
-                if (self.timeout) {
-                    clearTimeout(self.timeout);
-                }
-                self.timeout = setTimeout(function () {
-                    self.pager.actualPage = 1;
-                    self.search();
-                }, 256);
-            },
-            search: function () {
-                var self = this;
-                this.loading = true;
-                spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                    if (response.ok) {
-                        self.pager.actualPage = response.body.pagination.actualPage;
-                        self.pager.totalPages = response.body.pagination.totalPages;
-                        self.pager.totalResults = response.body.pagination.totalResults;
-                        if (response.body.playlists && response.body.playlists.length > 0) {
-                            self.playlists = response.body.playlists;
-                        } else {
-                            self.playlists = [];
-                        }
-                        self.loading = false;
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
-                    }
-                });
-
             },
             savePlayList: function () {
                 var self = this;
@@ -323,21 +242,6 @@ var playLists = (function () {
                         }
                     });
                 }
-            },
-            loadPlayList: function (playListId) {
-                var self = this;
-                spieldoseAPI.getPlayList(playListId, function (response) {
-                    if (response.ok) {
-                        self.currentPlaylistId = playListId;
-                        self.currentPlaylistName = response.body.playlist.name;
-                        self.playerData.replace(response.body.playlist.tracks);
-                        self.changeTab(0);
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
-                    }
-                });
             }
         }
     });
