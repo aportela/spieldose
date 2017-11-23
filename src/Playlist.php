@@ -96,7 +96,7 @@
                 if (count($data) == 1) {
                     if ($data[0]->userId == \Spieldose\User::getUserId()) {
                         $this->name = $data[0]->name;
-                        $this->tracks = [];
+                        $this->tracks = $this->getPlaylistTracks($dbh);
                     } else {
                         throw new \Spieldose\Exception\AccessDeniedException("id: " . $this->id . "userId:" . $data[0]->userId);
                     }
@@ -106,6 +106,44 @@
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
+        }
+
+        private function getPlaylistTracks(\Spieldose\Database\DB $dbh) {
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
+                (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id)
+            );
+            $whereCondition = " AND PT.playlist_id = :playlist_id ";
+            $sqlOrder = "";
+            $query = sprintf('
+                SELECT DISTINCT
+                    id,
+                    F.track_number AS number,
+                    COALESCE(MBT.track, F.track_name) AS title,
+                    COALESCE(MBA2.artist, F.track_artist) AS artist,
+                    COALESCE(MBA1.album, F.album_name) AS album,
+                    album_artist AS albumartist,
+                    COALESCE(MBA1.year, F.year) AS year,
+                    playtime_seconds AS playtimeSeconds,
+                    playtime_string AS playtimeString,
+                    MBA1.image AS image,
+                    genre,
+                    mime,
+                    COALESCE(LF.loved, 0) AS loved
+                FROM FILE F
+                INNER JOIN PLAYLIST_TRACK PT ON PT.file_id = F.id
+                LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
+                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
+                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
+                WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
+                %s
+                %s
+                ',
+                $whereCondition,
+                $sqlOrder
+            );
+            return($dbh->query($query, $params));
         }
 
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
