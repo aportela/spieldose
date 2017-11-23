@@ -42,7 +42,7 @@ var browsePlaylists = (function () {
             </div>
             <div class="is-clearfix"></div>
         </div>
-        <spieldose-api-error-component v-else v-bind:visible="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
+        <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
     `;
     };

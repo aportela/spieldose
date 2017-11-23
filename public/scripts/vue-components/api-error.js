@@ -3,10 +3,9 @@ var apiError = (function () {
 
     var template = function () {
         return `
-    <article class="message is-danger" v-if="visible">
+    <article class="message is-danger">
         <div class="message-header">
             <p><i class="fa fa-bomb" aria-hidden="true"></i> Error</p>
-            <button class="delete" v-on:click.prevent="hide();"></button>
         </div>
         <div class="message-body">
             <div class="content">
@@ -73,11 +72,8 @@ var apiError = (function () {
                 activeRequestTab: "body",
                 activeResponseTab: "text"
             });
-        }, props: ['visible', 'apiError'],
+        }, props: [ 'apiError' ],
         methods: {
-            hide() {
-                this.visible = false;
-            },
             toggleDetails() {
                 this.visibleDetails = !this.visibleDetails;
             },

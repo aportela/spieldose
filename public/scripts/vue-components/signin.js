@@ -101,7 +101,7 @@ var signInUp = (function () {
             </div>
         </div>
         <footer class="footer" v-if="errors">
-            <spieldose-api-error-component v-bind:visible="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
+            <spieldose-api-error-component v-bind:apiError="apiError"></spieldose-api-error-component>
         </footer>
     </section>
     `;
