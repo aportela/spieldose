@@ -16,6 +16,7 @@
 
     require __DIR__ . '/../vendor/autoload.php';
 
+    session_cache_limiter("nocache");
     session_start();
 
     $app = (new \Spieldose\App())->get();
