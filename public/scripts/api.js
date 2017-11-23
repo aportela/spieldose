@@ -236,8 +236,8 @@ const spieldoseAPI = {
             }
         );
     },
-    getPlayList: function(playlist, callback) {
-        Vue.http.get("api/playlist/" + playlist.id).then(
+    getPlayList: function(playlistId, callback) {
+        Vue.http.get("api/playlist/" + playlistId).then(
             response => {
                 callback(response);
             },
