@@ -412,6 +412,15 @@ div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playli
 
 /* artist thumb */
 
+/* playlist thumb */
+
+p.playlist-item-icon
+{
+    margin-top: 1em;
+}
+
+/* playlist thumb */
+
 /* player playlist */
 
 ul#player-playlist {
