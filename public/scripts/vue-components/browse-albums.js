@@ -15,6 +15,10 @@ var browseAlbums = (function () {
                 </div>
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
+            <!--
+                Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
+                https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
+            -->
             <div class="browse-album-item" v-for="album in albums" v-show="! loading">
                 <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                     <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>

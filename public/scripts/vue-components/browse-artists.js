@@ -15,6 +15,10 @@ var browseArtists = (function () {
                 </div>
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
+            <!--
+                Music band icon credits: adiante apps (http://www.adianteapps.com/)
+                https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon
+            -->
             <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
                 <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: artist.name } })" v-bind:title="'click to open artist section'">
                     <img v-if="artist.image" v-bind:src="artist.image" />
