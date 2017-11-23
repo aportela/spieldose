@@ -27,26 +27,38 @@ var player = (function () {
         </audio>
         <div id="player-controls" class="is-unselectable">
             <div class="buttons has-addons is-centered">
-                <span class="button"><span class="icon"><i title="repeat" class="fa fa-refresh" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="{ 'player-active-control': playerData.repeatTracksMode != 'none' }"></i></span></span>
-                <span class="button"><span class="icon"><i title="shuffle" class="fa fa-random" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="{ 'player-active-control': playerData.shuffleTracks }"></i></span></span>
-                <span class="button"><span class="icon"><i title="previous track" v-on:click.prevent="playerData.playPreviousTrack();" class="fa fa-backward"></i></span></span>
-                <span class="button">
+                <span class="button" v-on:click.prevent="playerData.toggleRepeatMode();"><span class="icon"><i title="repeat" class="fa fa-refresh" v-bind:class="{ 'player-active-control': playerData.repeatTracksMode != 'none' }"></i></span></span>
+                <span class="button" v-on:click.prevent="playerData.toggleShuffleMode();"><span class="icon"><i title="shuffle" class="fa fa-random" v-bind:class="{ 'player-active-control': playerData.shuffleTracks }"></i></span></span>
+                <span class="button" v-on:click.prevent="playerData.playPreviousTrack();"><span class="icon"><i title="previous track" class="fa fa-backward"></i></span></span>
+                <span class="button" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
                     <span class="icon">
-                        <i title="play" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();" class="fa fa-play"></i>
-                        <i title="pause" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();" class="fa fa-play player-active-control"></i>
-                        <i title="resume" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();" class="fa fa-pause player-active-control"></i>
+                        <i title="play" class="fa fa-play"></i>
                     </span>
                 </span>
-                <span class="button"><span class="icon"><i title="next track" v-on:click.prevent="playerData.playNextTrack();" class="fa fa-forward"></i></span></span>
-                <span class="button"><span class="icon"><i title="stop" v-on:click.prevent="playerData.stop();" class="fa fa-stop" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></span></span>
-                <span class="button"><span class="icon"><i v-on:click.prevent="playerData.loadRandomTracks(32);" title="load random playlist" class="fa fa-clone"></i></span></span>
-                <span class="button">
+                <span class="button" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
                     <span class="icon">
-                        <i v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" title="unmark as loved song" class="fa fa-heart has-text-danger"></i>
-                        <i v-else title="mark as loved song" class="fa fa-heart" v-on:click.prevent="playerData.loveActualTrack();"></i>
+                        <i title="pause" class="fa fa-play player-active-control"></i>
                     </span>
                 </span>
-                <span class="button"><span class="icon"><i title="download song" v-on:click.prevent="playerData.downloadActualTrack();" class="fa fa-save"></i></span></span>
+                <span class="button" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
+                    <span class="icon">
+                        <i title="resume" class="fa fa-pause player-active-control"></i>
+                    </span>
+                </span>
+                <span class="button" v-on:click.prevent="playerData.playNextTrack();"><span class="icon"><i title="next track" class="fa fa-forward"></i></span></span>
+                <span class="button" v-on:click.prevent="playerData.stop();"><span class="icon"><i title="stop" class="fa fa-stop" v-bind:class="{ 'player-active-control': ! playerData.isPlaying && ! playerData.isPaused }"></i></span></span>
+                <span class="button" v-on:click.prevent="playerData.loadRandomTracks(32);"><span class="icon"><i title="load random playlist" class="fa fa-clone"></i></span></span>
+                <span class="button" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();">
+                    <span class="icon">
+                        <i title="unmark as loved song" class="fa fa-heart has-text-danger"></i>
+                    </span>
+                </span>
+                <span class="button" v-else v-on:click.prevent="playerData.loveActualTrack();">
+                    <span class="icon">
+                        <i  title="mark as loved song" class="fa fa-heart"></i>
+                    </span>
+                </span>
+                <span class="button" v-on:click.prevent="playerData.downloadActualTrack();"><span class="icon"><i title="download song" class="fa fa-save"></i></span></span>
             </div>
         </div>
         <spieldose-menu-component class="is-hidden-mobile"></spieldose-menu-component>
