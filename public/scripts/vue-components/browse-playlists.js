@@ -14,7 +14,7 @@ var browsePlaylists = (function () {
                     </span>
                 </div>
             </div>
-            <spieldose-pagination v-bind:data="pager" v-show="playlists.length > 0"></spieldose-pagination>
+            <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
             <div class="playlist-item box has-text-centered" v-for="playlist in playlists" v-show="! loading">
                 <p class="playlist-item-icon">
                     <span class="icon has-text-light">

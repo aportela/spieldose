@@ -14,7 +14,7 @@ var browseArtists = (function () {
                     </span>
                 </div>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="artists.length > 0"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
             <!--
                 Music band icon credits: adiante apps (http://www.adianteapps.com/)
                 https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon

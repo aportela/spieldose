@@ -40,7 +40,7 @@ var browseArtist = (function () {
                             </span>
                         </div>
                     </div>
-                    <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager" v-show="tracks.length > 0"></spieldose-pagination>
+                    <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager"></spieldose-pagination>
                     <table class="table is-bordered is-striped is-narrow is-fullwidth">
                         <thead>
                                 <tr class="is-unselectable">

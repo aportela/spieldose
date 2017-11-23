@@ -14,7 +14,7 @@ var browseAlbums = (function () {
                     </span>
                 </div>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-show="albums.length > 0"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
             <!--
                 Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
                 https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
