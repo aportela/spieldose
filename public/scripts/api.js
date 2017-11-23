@@ -236,6 +236,19 @@ const spieldoseAPI = {
             }
         );
     },
+    removePlaylist: function(id, callback) {
+        var params = {
+            id: id
+        };
+        Vue.http.post("api/playlist/remove", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getPlayList: function(playlistId, callback) {
         Vue.http.get("api/playlist/" + playlistId).then(
             response => {
