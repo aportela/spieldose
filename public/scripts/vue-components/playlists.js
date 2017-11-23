@@ -13,7 +13,42 @@ var playLists = (function () {
             </ul>
         </div>
         <div v-show="tab == 0">
-            <p class="title is-1 has-text-centered">Current playlist</i></p>
+            <p class="title is-1 has-text-centered">Current playlist</p>
+
+            <div v-if="! currentPlaylistId" class="field has-addons">
+                <div class="control has-icons-left is-expanded">
+                    <input v-model="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-list-alt"></i>
+                    </span>
+                </div>
+                <div class="control">
+                    <a class="button is-success" v-bind:class="savingPlaylist ? 'is-loading': ''"  v-on:click.prevent="savePlayList();" :disabled="! currentPlaylistName || savingPlaylist">
+                        <span class="icon is-small">
+                        <i class="fa fa-check"></i>
+                        </span>
+                        <span>Save as new playlist</span>
+                    </a>
+                </div>
+            </div>
+
+            <div v-else="! currentPlaylistId" class="field has-addons">
+                <div class="control has-icons-left is-expanded">
+                    <input v-model="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-list-alt"></i>
+                    </span>
+                </div>
+                <div class="control">
+                    <a class="button is-success" v-bind:class="savingPlaylist ? 'is-loading': ''" v-on:click.prevent="savePlayList();" :disabled="! currentPlaylistName || savingPlaylist">
+                        <span class="icon is-small">
+                        <i class="fa fa-check"></i>
+                        </span>
+                        <span>Save playlist</span>
+                    </a>
+                </div>
+            </div>
+
             <div class="field is-grouped">
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.loadRandomTracks(32);" :disabled="playerData.loading">
@@ -184,6 +219,9 @@ var playLists = (function () {
                 apiError: null,
                 nameFilter: null,
                 playlists: [],
+                currentPlaylistId: null,
+                currentPlaylistName: null,
+                savingPlaylist: false,
                 pager: getPager(),
                 playerData: sharedPlayerData,
             });
@@ -255,6 +293,30 @@ var playLists = (function () {
                     }
                 });
 
+            },
+            savePlayList: function() {
+                var self = this;
+                var trackIds = [];
+                self.savingPlaylist = true;
+                for (let i = 0; i < this.playerData.tracks.length; i++) {
+                    trackIds.push(this.playerData.tracks[i].id);
+                }
+                if (this.currentPlaylistId) {
+                    spieldoseAPI.updatePlaylist(this.currentPlaylistId, this.currentPlaylistName, trackIds, function(response) {
+                        self.savingPlaylist = false;
+                        if (response.ok) {
+                        } else {
+                        }
+                    });
+                } else {
+                    spieldoseAPI.addPlaylist(this.currentPlaylistName, trackIds, function(response) {
+                        self.savingPlaylist = false;
+                        if (response.ok) {
+                            self.currentPlaylistId = response.body.playlist.id;
+                        } else {
+                        }
+                    });
+                }
             }
         }
     });
