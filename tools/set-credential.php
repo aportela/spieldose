@@ -18,6 +18,10 @@
     if ($cmdLine->hasParam("email") && $cmdLine->hasParam("password")) {
         echo "Setting account credentials..." . PHP_EOL;
         $dbh = new \Spieldose\Database\DB();
+        if ((new \Spieldose\Database\Version($dbh))->hasUpgradeAvailable()) {
+            echo "New database version available, an upgrade is required before continue." . PHP_EOL;
+            exit;
+        }
         $found = false;
         $u = new \Spieldose\User("", $cmdLine->getParamValue("email"), $cmdLine->getParamValue("password"));
         try {

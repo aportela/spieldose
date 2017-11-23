@@ -18,7 +18,12 @@
     $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
     $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
     if ($scrapArtists || $scrapAlbums) {
-        $scraper = new \Spieldose\Scrapper(new \Spieldose\Database\DB());
+        $dbh = new \Spieldose\Database\DB();
+        if ((new \Spieldose\Database\Version($dbh))->hasUpgradeAvailable()) {
+            echo "New database version available, an upgrade is required before continue." . PHP_EOL;
+            exit;
+        }
+        $scraper = new \Spieldose\Scrapper($dbh);
         $c = $app->getContainer();
         $c["scrapLogger"]->info("Scraper started");
         if ($scrapArtists) {
