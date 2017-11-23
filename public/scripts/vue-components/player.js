@@ -45,7 +45,7 @@ var player = (function () {
                 <div class="column is-1"><i title="download song" v-on:click.prevent="playerData.downloadActualTrack();" class="fa fa-save fa-lg"></i></div>
             </div>
         </div>
-        <spieldose-menu-component></spieldose-menu-component>
+        <spieldose-menu-component class="is-hidden-mobile"></spieldose-menu-component>
     </div>
     `;
     };
