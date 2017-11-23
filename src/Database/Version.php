@@ -187,6 +187,17 @@
             return($result);
         }
 
+        public function hasUpgradeAvailable() {
+            $actualVersion = $this->get();
+            $errors = false;
+            foreach($this->upgradeQueries as $version => $queries) {
+                if ($version > $actualVersion) {
+                    return(true);
+                }
+            }
+            return(false);
+        }
+
     }
 
 ?>
