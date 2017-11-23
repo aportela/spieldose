@@ -17,6 +17,28 @@
 
         public function __destruct() { }
 
+        public function isAllowed(\Spieldose\Database\DB $dbh) {
+            if (isset($this->id) && ! empty($this->id)) {
+                $params = array();
+                $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
+                $query = sprintf('
+                    SELECT P.user_id AS userId
+                    FROM PLAYLIST P
+                    WHERE P.id = :id
+                    '
+                );
+                $data = $dbh->query($query, $params);
+                if (count($data) == 1) {
+                    return($data[0]->userId == \Spieldose\User::getUserId());
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                }
+                return($allowed);
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
+        }
+
         public function add(\Spieldose\Database\DB $dbh) {
             if (! empty($this->id)) {
                 if (! empty($this->name)) {
@@ -82,6 +104,22 @@
             }
         }
 
+        public function remove(\Spieldose\Database\DB $dbh) {
+            if (! empty($this->id)) {
+                $params = array(
+                    (new \Spieldose\Database\DBParam())->str(":playlist_id", $this->id),
+                );
+                $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                $params = array(
+                    (new \Spieldose\Database\DBParam())->str(":id", $this->id),
+                    (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
+                );
+                $dbh->execute(" DELETE FROM PLAYLIST WHERE id = :id AND user_id = :user_id ", $params);
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("id");
+            }
+        }
+
         public function get(\Spieldose\Database\DB $dbh) {
             if (isset($this->id) && ! empty($this->id)) {
                 if ($dbh == null) {
@@ -90,19 +128,15 @@
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
                 $query = sprintf('
-                    SELECT P.name, P.user_id AS userId
+                    SELECT P.name
                     FROM PLAYLIST P
                     WHERE P.id = :id
                     '
                 );
                 $data = $dbh->query($query, $params);
                 if (count($data) == 1) {
-                    if ($data[0]->userId == \Spieldose\User::getUserId()) {
-                        $this->name = $data[0]->name;
-                        $this->tracks = $this->getPlaylistTracks($dbh);
-                    } else {
-                        throw new \Spieldose\Exception\AccessDeniedException("id: " . $this->id . "userId:" . $data[0]->userId);
-                    }
+                    $this->name = $data[0]->name;
+                    $this->tracks = $this->getPlaylistTracks($dbh);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
                 }
