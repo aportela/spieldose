@@ -31,6 +31,8 @@ const getPlayerData = function () {
         shuffleTracks: false,
         actualTrackIdx: 0,
         actualTrack: null,
+        currentPlaylistId: null,
+        currentPlaylistName: null,
         tracks: []
     };
     playerData.hasTracks = function () {
@@ -77,6 +79,21 @@ const getPlayerData = function () {
                 playerData.tracks.push(tracks[i]);
             }
         }
+    };
+    playerData.hasCurrentPlayList = function() {
+        if (playerData.currentPlaylistId) {
+            return(true);
+        } else {
+            return(false);
+        }
+    };
+    playerData.setCurrentPlayList = function(id, name) {
+        playerData.currentPlaylistId = id;
+        playerData.currentPlaylistName = name;
+    };
+    playerData.unsetCurrentPlayList = function() {
+        playerData.currentPlaylistId = null;
+        playerData.currentPlaylistName = null;
     };
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
