@@ -5,7 +5,7 @@ var dashboardToplist = (function () {
         return `
     <section class="panel chart">
         <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-cog fa-exclamation-triangle"></i><i v-else class="fa fa-list"></i></span> {{ title }}
+            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-exclamation-triangle"></i><i v-else class="fa fa-list"></i></span> {{ title }}
             <a v-on:click.prevent="load();" title="refresh data" class="icon pull-right"><i class="fa fa-refresh fa-fw"></i></a>
         </p>
         <p class="panel-tabs">
@@ -56,7 +56,7 @@ var dashboardToplist = (function () {
                         self.loading = false;
                     } else {
                         self.loading = false;
-                        self.errors = false;
+                        self.errors = true;
                     }
                 });
             }, loadTopPlayedArtists: function () {
@@ -72,7 +72,7 @@ var dashboardToplist = (function () {
                         self.loading = false;
                     } else {
                         self.loading = false;
-                        self.errors = false;
+                        self.errors = true;
                     }
                 });
             }, loadTopPlayedGenres: function () {
@@ -88,7 +88,7 @@ var dashboardToplist = (function () {
                         self.loading = false;
                     } else {
                         self.loading = false;
-                        self.errors = false;
+                        self.errors = true;
                     }
                 });
             }, changeInterval: function (i) {
