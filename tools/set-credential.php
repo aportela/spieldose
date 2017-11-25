@@ -19,7 +19,7 @@
         $c = $app->getContainer();
         $c["logger"]->info("Setting account credentials");
         echo "Setting account credentials..." . PHP_EOL;
-        $dbh = new \Spieldose\Database\DB();
+        $dbh = new \Spieldose\Database\DB($app->getContainer());
         if ((new \Spieldose\Database\Version($dbh))->hasUpgradeAvailable()) {
             $c["logger"]->warning("Process stopped: upgrade database before continue");
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;

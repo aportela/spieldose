@@ -12,9 +12,8 @@
         private $container = null;
         private $queryParams = array();
 
-	    public function __construct () {
-            global $app;
-            $this->container = $app->getContainer();
+	    public function __construct (\Slim\Container $container) {
+            $this->container = $container;
             $settings = $this->container->get('settings');
             $this->dbh = new \PDO($settings['database']['connectionString'], $settings['database']['username'], $settings['database']['password'], array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
         }
