@@ -131,7 +131,7 @@
         public static function GetRecentlyAddedAlbums(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array {
             $metrics = array();
             $query = sprintf('
-                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, MB1.artist, F.track_artist) AS artist
+                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, F.album_artist, MB1.artist, F.track_artist) AS artist
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
@@ -198,7 +198,7 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, MB1.artist, F.track_artist) AS artist
+                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, F.album_artist, MB1.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
