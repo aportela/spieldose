@@ -115,13 +115,13 @@ var signInUp = (function () {
         data: function () {
             return ({
                 loading: false,
-                signInEmail: "foo@bar",
-                signInPassword: "secret",
+                signInEmail: null,
+                signInPassword: null,
                 invalidSignInUsername: false,
                 invalidSignInPassword: false,
                 allowSignUp: initialState.allowSignUp,
-                signUpEmail: "foo@bar",
-                signUpPassword: "secret",
+                signUpEmail: null,
+                signUpPassword: null,
                 invalidSignUpUsername: false,
                 invalidSignUpPassword: false,
                 errors: false,
