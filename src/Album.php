@@ -22,7 +22,7 @@
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(F.album_artist, F.track_artist)) AS total
+                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(MBA.artist, F.album_artist, F.track_artist) || COALESCE(MBA.year, F.year)) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
                 WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
@@ -43,15 +43,13 @@
             $query = sprintf('
                 SELECT DISTINCT
                     COALESCE(MBA.album, F.album_name) as name,
-                    F.track_artist AS artist,
-                    F.album_artist AS albumartist,
+                    COALESCE(MBA.artist, F.album_artist, F.track_artist) AS artist,
                     COALESCE(MBA.year, F.year) AS year,
                     MBA.image
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
                 WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
                 %s
-                GROUP BY COALESCE(MBA.album, F.album_name), COALESCE(F.album_artist, F.track_artist)
                 %s
                 LIMIT %d OFFSET %d
                 ',
