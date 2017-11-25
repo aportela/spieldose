@@ -43,6 +43,7 @@
                         $c["scrapLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
                         $failed[] = $pendingArtists[$i];
                     }
+                    sleep(1);
                     \Spieldose\Utils::showProgressBar($i + 1, $totalPendingArtists, 20);
                 }
                 $totalFailed = count($failed);
@@ -67,6 +68,7 @@
                         $failed[] = $mbIds[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+                    sleep(1);
                 }
                 $totalFailed = count($failed);
                 if ($totalFailed > 0) {
@@ -93,6 +95,7 @@
                         $failed[] = $pendingAlbums[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalPendingAlbums, 20);
+                    sleep(1);
                 }
                 $totalFailed = count($failed);
                 if ($totalFailed > 0) {
@@ -114,6 +117,7 @@
                         $failed[] = $mbIds[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+                    sleep(1);
                 }
                 $totalFailed = count($failed);
                 if ($totalFailed > 0) {
