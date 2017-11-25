@@ -37,7 +37,7 @@ var browseArtist = (function () {
                 <div class="panel" v-if="activeTab == 'tracks'">
                     <div class="field">
                         <div class="control has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
-                            <input class="input" :disabled="loadingTracks" v-focus v-model="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                            <input class="input" :disabled="loadingTracks" v-focus v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                             <span class="icon is-small is-left">
                                 <i class="fa fa-search"></i>
                             </span>
