@@ -59,7 +59,7 @@ var search = (function () {
                         </div>
                         <div class="media-content">
                             <div class="content cut-text">
-                                <a><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this track"></i> {{ item.title }}</a>
+                                <a><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-plus-square" title="enqueue this track"></i> {{ item.title }}</a>
                                 <br >
                                 <span v-if="item.artist">by <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }} <span v-if="item.album"> / {{ item.album }}</span></a></span>
                             </div>
@@ -75,7 +75,7 @@ var search = (function () {
                         <div class="media-content">
                             <div class="content cut-text">
                                 <p class="subtitle is-6">
-                                <i v-on:click="playPlaylist(item.id);" class="cursor-pointer fa fa-play" title="play this playlist"></i> <i v-on:click="enqueuePlaylist(item.id);" class="cursor-pointer fa fa-cog fa-plus-square" title="enqueue this playlist"></i>
+                                <i v-on:click="playPlaylist(item.id);" class="cursor-pointer fa fa-play" title="play this playlist"></i> <i v-on:click="enqueuePlaylist(item.id);" class="cursor-pointer fa fa-plus-square" title="enqueue this playlist"></i>
                                 {{ item.name }} ({{ item.trackCount}} tracks)
                                 </p>
                             </div>
