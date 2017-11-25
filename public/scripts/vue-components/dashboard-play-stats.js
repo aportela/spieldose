@@ -5,7 +5,7 @@ var dashboardPlayStats = (function () {
         return `
     <section class="panel">
         <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else class="fa fa-line-chart"></i></span> Play statistics
+            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-exclamation-triangle"><i v-else class="fa fa-line-chart"></i></span> Play statistics
             <a v-on:click.prevent="loadChart();" title="refresh data" class="icon pull-right"><i class="fa fa-refresh fa-fw"></i></a>
         </p>
         <p class="panel-tabs">
@@ -14,12 +14,13 @@ var dashboardPlayStats = (function () {
             <a v-bind:class="interval == 'month' ? 'is-active': ''" v-on:click.prevent="changeInterval('month');">by month</a>
             <a v-bind:class="interval == 'year' ? 'is-active': ''" v-on:click.prevent="changeInterval('year');">by year</a>
         </p>
-        <div class="panel-block">
+        <div class="panel-block" v-if="! errors">
             <canvas v-if="interval == 'hour'" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
             <canvas v-if="interval == 'weekDay'" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
             <canvas v-if="interval == 'month'" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
             <canvas v-if="interval == 'year'" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
         </div>
+        <div class="panel-block" v-else>error loading data (invalid response from server)</div>
     </section>
     `;
     };
@@ -92,7 +93,6 @@ var dashboardPlayStats = (function () {
                         self.loading = false;
                     } else {
                         self.errors = true;
-                        self.apiError = response.getApiErrorData();
                         self.loading = false;
                     }
                 });
@@ -127,7 +127,6 @@ var dashboardPlayStats = (function () {
                         self.loading = false;
                     } else {
                         self.errors = true;
-                        self.apiError = response.getApiErrorData();
                         self.loading = false;
                     }
                 });
@@ -162,7 +161,6 @@ var dashboardPlayStats = (function () {
                         self.loading = false;
                     } else {
                         self.errors = true;
-                        self.apiError = response.getApiErrorData();
                         self.loading = false;
                     }
                 });
@@ -196,7 +194,6 @@ var dashboardPlayStats = (function () {
                         self.loading = false;
                     } else {
                         self.errors = true;
-                        self.apiError = response.getApiErrorData();
                         self.loading = false;
                     }
                 });
