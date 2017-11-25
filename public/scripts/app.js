@@ -321,7 +321,31 @@ const routes = [
             {
                 path: 'artist/:artist',
                 name: 'artist',
-                component: browseArtist
+                component: browseArtist,
+                children: [
+                    {
+                        path: 'bio',
+                        name: 'artistBio',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'tracks',
+                        name: 'artistTracks',
+                        component: browseArtist,
+                        children: [
+                            {
+                                path: 'page/:page',
+                                name: 'artistTracksPaged',
+                                component: browseArtist
+                            }
+                        ]
+                    },
+                    {
+                        path: 'albums',
+                        name: 'artistAlbums',
+                        component: browseArtist
+                    }
+                ]
             }]
     }
 ];

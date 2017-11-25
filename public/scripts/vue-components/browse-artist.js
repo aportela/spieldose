@@ -17,10 +17,10 @@ var browseArtist = (function () {
                 <p class="subtitle is-6" v-else>not played yet</p>
                 <div class="tabs is-medium">
                     <ul>
-                        <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a href="#" v-on:click.prevent="changeTab('overview');">Overview</a></li>
-                        <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a href="#" v-on:click.prevent="changeTab('bio');">Bio</a></li>
-                        <li v-bind:class="{ 'is-active' : activeTab == 'artistTracks' }"><a href="#" v-on:click.prevent="changeTab('artistTracks');">Tracks</a></li>
-                        <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a href="#" v-on:click.prevent="changeTab('albums');">Albums</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a v-on:click.prevent="$router.push({ name: 'artist', params: { 'artist': $route.params.artist } })">Overview</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a v-on:click.prevent="$router.push({ name: 'artistBio' })">Bio</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a v-on:click.prevent="$router.push({ name: 'artistTracks' })">Tracks</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a v-on:click.prevent="$router.push({ name: 'artistAlbums' })">Albums</a></li>
                     </ul>
                 </div>
                 <div class="panel" v-if="activeTab == 'overview'">
@@ -31,7 +31,10 @@ var browseArtist = (function () {
                         </div>
                     </div>
                 </div>
-                <div class="panel" v-if="activeTab == 'artistTracks'">
+                <div class="panel" v-if="activeTab == 'bio'">
+                    <div class="content is-clearfix" id="bio" v-html="artist.bio"></div>
+                </div>
+                <div class="panel" v-if="activeTab == 'tracks'">
                     <div class="field">
                         <div class="control has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
                             <input class="input" :disabled="loadingTracks" v-focus v-model="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
@@ -67,9 +70,6 @@ var browseArtist = (function () {
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="panel" v-if="activeTab == 'bio'">
-                    <div class="content is-clearfix" id="bio" v-html="artist.bio"></div>
                 </div>
                 <div class="panel" v-if="activeTab == 'albums'">
                     <div class="browse-album-item" v-for="album in artist.albums" v-show="! loading">
@@ -114,15 +114,50 @@ var browseArtist = (function () {
         },
         watch: {
             '$route'(to, from) {
-                if (to.name == "artist") {
-                    this.getArtist(to.params.artist);
-                    this.searchArtistTracks(to.params.artist);
+                switch(to.name) {
+                    case "artistBio":
+                        this.activeTab = "bio";
+                    break;
+                    case "artistTracks":
+                    case "artistTracksPaged":
+                        this.pager.actualPage = parseInt(to.params.page);
+                        this.searchArtistTracks(to.params.artist);
+                        this.activeTab = "tracks";
+                    break;
+                    case "artistAlbums":
+                        this.activeTab = "albums";
+                    break;
+                    default:
+                        this.activeTab = "overview";
+                    break;
                 }
             }
         }
         , created: function () {
             this.getArtist(this.$route.params.artist);
-            this.searchArtistTracks(this.$route.params.artist);
+            if (this.$route.name == "artistTracks" || this.$route.name == "artistTracksPaged") {
+                var self = this;
+                this.pager.refresh = function () {
+                    self.$router.push({ name: 'artistTracksPaged', params: { page: self.pager.actualPage } });
+                }
+                if (this.$route.params.page) {
+                    this.pager.actualPage = parseInt(this.$route.params.page);
+                }
+                this.searchArtistTracks(this.$route.params.artist);
+                this.activeTab = "tracks";
+            } else {
+                switch(this.$route.name) {
+                    case "artistBio":
+                        this.activeTab = "bio";
+                    break;
+                    case "artistAlbums":
+                        this.activeTab = "albums";
+                    break;
+                    default:
+                        this.activeTab = "overview";
+                    break;
+                }
+            }
         }, directives: {
             focus: {
                 update: function (el) {
@@ -141,7 +176,7 @@ var browseArtist = (function () {
                         if (self.artist.bio) {
                             self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
                             self.truncatedBio = self.truncate(self.artist.bio);
-                            self.activeTab = "overview";
+                            //self.activeTab = "overview";
                         }
                         self.loading = false;
                     } else {
