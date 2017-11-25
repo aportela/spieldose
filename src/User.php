@@ -42,7 +42,7 @@
          */
         public function add(\Spieldose\Database\DB $dbh) {
             if (! empty($this->id)) {
-                if (! empty($this->email)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                     if (! empty($this->password)) {
                         $params = array(
                             (new \Spieldose\Database\DBParam())->str(":id", $this->id),
@@ -68,7 +68,7 @@
          */
         public function update(\Spieldose\Database\DB $dbh) {
             if (! empty($this->id)) {
-                if (! empty($this->email)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                     if (! empty($this->password)) {
                         $params = array(
                             (new \Spieldose\Database\DBParam())->str(":id", $this->id),
@@ -99,7 +99,7 @@
                 $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
                     (new \Spieldose\Database\DBParam())->str(":id", $this->id)
                 ));
-            } else if (! empty($this->email)) {
+            } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                 $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE email = :email ", array(
                     (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
@@ -179,10 +179,10 @@
          *
          * @return bool
          */
-        public function setCredentials(\Spieldose\Database\DB $dbh, string $password): bool {
-            if (isset($this->id) && ! empty($this->id)) {
-                if (isset($this->email) && ! empty($this->email)) {
-                    if (isset($password) && ! empty($password)) {
+        public function setCredentials(\Spieldose\Database\DB $dbh, string $password = ""): bool {
+            if (! empty($this->id)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($password)) {
                         $params = array(
                             (new \Spieldose\Database\DBParam())->str(":id", md5(mb_strtolower($this->email))),
                             (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),

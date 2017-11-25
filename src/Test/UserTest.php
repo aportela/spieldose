@@ -65,6 +65,17 @@
             }
         }
 
+        public function testAddWithoutValidEmail(): void {
+            if (self::$container->get('settings')['common']['allowSignUp']) {
+                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+                $this->expectExceptionMessage("email");
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Spieldose\User($id, $id, ""))->add(self::$dbh);
+            } else {
+                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+            }
+        }
+
         public function testAddWithoutPassword(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
@@ -99,6 +110,13 @@
             (new \Spieldose\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->update(self::$dbh);
         }
 
+        public function testUpdateWithoutValidEmail(): void {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Spieldose\User($id, $id, ""))->update(self::$dbh);
+        }
+
         public function testUpdateWithoutPassword(): void {
             $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("password");
@@ -118,6 +136,13 @@
             $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
             $u = new \Spieldose\User("", "", "");
+            $u->get(self::$dbh);
+        }
+
+        public function testGetWithoutValidEmail(): void {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("id,email");
+            $u = new \Spieldose\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString(), "");
             $u->get(self::$dbh);
         }
 
@@ -158,6 +183,12 @@
             $this->expectException(\Spieldose\Exception\NotFoundException::class);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $this->assertTrue((new \Spieldose\User($id, $id . "@server.com", "secret"))->login(self::$dbh));
+        }
+
+        public function testLoginWithoutValidEmail(): void {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertTrue((new \Spieldose\User("", $id, "secret"))->login(self::$dbh));
         }
 
         public function testLoginWithInvalidPassword(): void {
