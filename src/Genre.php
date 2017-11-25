@@ -11,9 +11,6 @@
         public function __destruct() { }
 
         public static function search(\Spieldose\Database\DB $dbh, array $filter = array(), string $order = "") {
-            if ($dbh == null) {
-                $dbh = new \Spieldose\Database\DB();
-            }
             $sqlOrder = "";
             if (! empty($order)) {
                 $sqlOrder = " ORDER BY RANDOM() ";

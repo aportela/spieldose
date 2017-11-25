@@ -9,9 +9,6 @@
         public function __destruct() { }
 
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
-            if ($dbh == null) {
-                $dbh = new \Spieldose\Database\DB();
-            }
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {

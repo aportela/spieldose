@@ -122,9 +122,6 @@
 
         public function get(\Spieldose\Database\DB $dbh) {
             if (isset($this->id) && ! empty($this->id)) {
-                if ($dbh == null) {
-                    $dbh = new \Spieldose\Database\DB();
-                }
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
                 $query = sprintf('
@@ -184,9 +181,6 @@
         }
 
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
-            if ($dbh == null) {
-                $dbh = new \Spieldose\Database\DB();
-            }
             $params = array();
             $params = array(
                 (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())

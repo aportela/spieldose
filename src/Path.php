@@ -10,9 +10,6 @@
 
         public static function getPaths(\Spieldose\Database\DB $dbh) {
             $paths = array();
-            if ($dbh == null) {
-                $dbh = new \Spieldose\Database\DB();
-            }
             $params = array();
             $query = '
                 SELECT

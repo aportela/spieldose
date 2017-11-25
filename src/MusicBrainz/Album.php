@@ -86,15 +86,12 @@
             }
         }
 
-        public function save(\Spieldose\Database\DB $dbh = null) {
+        public function save(\Spieldose\Database\DB $dbh) {
             if (empty($this->mbId)) {
                 throw new \Spieldose\Exception\InvalidParamsException("mbId");
             }
             if (empty($this->album)) {
                 throw new \Spieldose\Exception\InvalidParamsException("album");
-            }
-            if (! $dbh) {
-                $dbh = new \Spieldose\Database\DB();
             }
             $params[] = (new \Spieldose\Database\DBParam())->str(":mbid", $this->mbId);
             $params[] = (new \Spieldose\Database\DBParam())->str(":album", $this->album);
