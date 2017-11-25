@@ -1,9 +1,11 @@
 <?php
+
     declare(strict_types=1);
 
     namespace Spieldose;
 
     class Scrapper {
+
         private $dbh = null;
         private $id3 = null;
 
@@ -150,7 +152,7 @@
 
         public function getPendingArtists() {
             $artists = array();
-            $query = "SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist";
+            $query = " SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY RANDOM() ";
             $results = $this->dbh->query($query);
             $totalArtists = count($results);
             for ($i = 0; $i < $totalArtists; $i++) {
@@ -179,12 +181,18 @@
 
         public function mbArtistScrap($artist) {
             $mbArtist = \Spieldose\MusicBrainz\Artist::getFromArtist($artist);
+            if (empty($mbArtist->mbId)) {
+                $mbIds = \Spieldose\MusicBrainz\Artist::searchMusicBrainzId($artist, 1);
+                if (count($mbIds) == 1) {
+                    $mbArtist->mbId = $mbIds[0];
+                }
+            }
             if (! empty($mbArtist->mbId)) {
                 $mbArtist->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $artist);
-                $this->dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist", $params);
+                $this->dbh->execute(" UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist ", $params);
             }
         }
 
@@ -195,7 +203,7 @@
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":old_artist_mbid", $mbid);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
-                $this->dbh->execute("UPDATE FILE SET artist_mbid = :artist_mbid WHERE artist_mbid = :old_artist_mbid", $params);
+                $this->dbh->execute(" UPDATE FILE SET artist_mbid = :artist_mbid WHERE artist_mbid = :old_artist_mbid ", $params);
             }
         }
 
@@ -218,20 +226,26 @@
         }
 
         public function getPendingAlbums() {
-            $artists = array();
-            $query = "SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY RANDOM(), album_name";
+            $query = " SELECT DISTINCT album_name AS album, COALESCE(album_artist, track_artist) AS artist FROM FILE WHERE album_mbid IS NULL AND album_name IS NOT NULL ORDER BY RANDOM() ";
             return($this->dbh->query($query));
         }
 
         public function mbAlbumScrap(string $album = "", string $artist = "") {
             $mbAlbum = \Spieldose\MusicBrainz\Album::getFromAlbumAndArtist($album, $artist);
+            if (empty($mbArtist->mbId)) {
+                $mbIds = \Spieldose\MusicBrainz\Album::searchMusicBrainzId($album, $artist, 1);
+                if (count($mbIds) == 1) {
+                    $mbAlbum->mbId = $mbIds[0];
+                }
+            }
             if (! empty($mbAlbum->mbId)) {
                 $mbAlbum->save($this->dbh);
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":album_mbid", $mbAlbum->mbId);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":album_name", $album);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $artist);
-                $this->dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND track_artist = :track_artist", $params);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":album_artist", $artist);
+                $this->dbh->execute(" UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND (track_artist = :track_artist OR album_artist = :album_artist) ", $params);
             }
         }
 
@@ -245,6 +259,7 @@
                 $this->dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_mbid = :old_album_mbid", $params);
             }
         }
+
     }
 
 ?>

@@ -5,6 +5,8 @@
     namespace Spieldose\MusicBrainz;
 
     class Album {
+        const USER_AGENT = 'Spieldose/1 (https://github.com/aportela/spieldose)';
+        const MUSICBRAINZ_API_BASE_URL = "http://musicbrainz.org/ws/2/release-group/?query=release:%s&artistname=%s&limit=%d&fmt=json";
         const API_SEARCH_URL = "http://ws.audioscrobbler.com/2.0/?method=album.search&api_key=%s&album=%s&limit=%d&format=json";
         const API_GET_URL_FROM_MBID = "http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=%s&mbid=%s&format=json";
         const API_GET_URL_FROM_ALBUM_AND_ARTIST = "http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=%s&album=%s&artist=%s&autocorrect=1&format=json";
@@ -39,6 +41,19 @@
                 throw new \Exception("MusicBrainz error: " . $result->error);
             }
             return($results);
+        }
+
+        public static function searchMusicBrainzId(string $name = "", string $artist = "", int $limit = 1): array {
+            $url = sprintf(self::MUSICBRAINZ_API_BASE_URL, $name, $artist, $limit);
+            $result = \Spieldose\Net::httpRequest($url, self::USER_AGENT);
+            $result = json_decode($result);
+            $mbIds = array();
+            if (isset($result->artists)) {
+                foreach($result->artists as $artist) {
+                    $mbIds[] = $artist->id;
+                }
+            }
+            return($mbIds);
         }
 
         private static function getBestImage($imageArray) {
