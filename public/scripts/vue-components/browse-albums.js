@@ -72,6 +72,9 @@ var browseAlbums = (function () {
             this.search();
         }, directives: {
             focus: {
+                inserted: function(el) {
+                    el.focus();
+                },
                 update: function (el) {
                     el.focus();
                 }

@@ -195,6 +195,9 @@ var nowPlaying = (function () {
             });
         }, directives: {
             focus: {
+                inserted: function(el) {
+                    el.focus();
+                },
                 update: function (el) {
                     el.focus();
                 }
