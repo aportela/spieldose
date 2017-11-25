@@ -20,8 +20,8 @@
     if ($scrapArtists || $scrapAlbums) {
         $c = $app->getContainer();
         $c["scrapLogger"]->info("Scraper started");
-        $dbh = new \Spieldose\Database\DB($app->getContainer());
-        if ((new \Spieldose\Database\Version($dbh))->hasUpgradeAvailable()) {
+        $dbh = new \Spieldose\Database\DB($c);
+        if ((new \Spieldose\Database\Version($dbh, $c->get("settings")['database']['type']))->hasUpgradeAvailable()) {
             $c["scrapLogger"]->warning("Process stopped: upgrade database before continue");
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;

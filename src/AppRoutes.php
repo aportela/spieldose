@@ -7,7 +7,7 @@
 
     $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
-        $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($this));
+        $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($this), $this->get('settings')['database']['type']);
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"],
             'initialState' => json_encode(

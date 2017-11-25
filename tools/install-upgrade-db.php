@@ -15,7 +15,8 @@
     }
 
     $actualVersion = 0;
-    $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($app->getContainer()));
+    $container = $app->getContainer();
+    $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($container), $container->get("settings")['database']['type']);
     try {
         $actualVersion = $v->get();
     } catch (\Spieldose\Exception\NotFoundException $e) {
