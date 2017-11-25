@@ -8,7 +8,7 @@ var search = (function () {
         <div v-if="! errors">
             <div class="field">
                 <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-focus v-model="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-focus v-model.trim="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
@@ -106,6 +106,9 @@ var search = (function () {
             });
         }, directives: {
             focus: {
+                inserted: function(el) {
+                    el.focus();
+                },
                 update: function (el) {
                     el.focus();
                 }
