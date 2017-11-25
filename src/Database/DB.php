@@ -15,7 +15,27 @@
 	    public function __construct (\Slim\Container $container) {
             $this->container = $container;
             $settings = $this->container->get('settings');
-            $this->dbh = new \PDO($settings['database']['connectionString'], $settings['database']['username'], $settings['database']['password'], array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+            $options = array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+            );
+            switch($settings['database']['type']) {
+                case "PDO_SQLITE":
+                    $connectionString = sprintf("sqlite:%s", dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $settings['database']['name'] . ".sqlite3");
+                break;
+                case "PDO_MARIADB":
+                    $connectionString = sprintf("mysql:dbname=%s;host=%s;port=%d", $settings['database']['name'], $settings['database']['host'], $settings['database']['port']);
+                break;
+            }
+            if (! empty($connectionString)) {
+                $this->dbh = new \PDO(
+                    $connectionString,
+                    $settings['database']['username'],
+                    $settings['database']['password'],
+                    $options
+                );
+            } else {
+                throw new \Exception("Unsupported database type: " . $settings['database']['type']);
+            }
         }
 
         public function __destruct() {

@@ -17,9 +17,12 @@
             ],
             // database settings
             'database' => [
-                'connectionString' => sprintf("sqlite:%s", dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "spieldose.sqlite3"),
+                'type' => "PDO_SQLITE", // supported types: PDO_SQLITE | PDO_MARIADB
+                'name' => "spieldose",
                 'username' => '',
-                'password' => ''
+                'password' => '',
+                'host' => 'localhost',
+                'port' => 3306,
             ],
             // Renderer settings
             'renderer' => [
