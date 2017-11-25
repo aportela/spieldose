@@ -5,7 +5,7 @@ var dashboardPlayStats = (function () {
         return `
     <section class="panel">
         <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-exclamation-triangle"><i v-else class="fa fa-line-chart"></i></span> Play statistics
+            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-exclamation-triangle"></i><i v-else class="fa fa-line-chart"></i></span> Play statistics
             <a v-on:click.prevent="loadChart();" title="refresh data" class="icon pull-right"><i class="fa fa-refresh fa-fw"></i></a>
         </p>
         <p class="panel-tabs">
