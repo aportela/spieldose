@@ -1,9 +1,11 @@
 <?php
+
     declare(strict_types=1);
 
     namespace Spieldose;
 
     class User {
+
         public $id;
         public $email;
         public $password;
@@ -12,7 +14,9 @@
         /**
          * user constructor
          *
-         * @param $email
+         * @param string $id
+         * @param string $email
+         * @param string $password
          */
 	    public function __construct (string $id = "", string $email = "", string $password = "") {
             $this->id = $id;
@@ -25,7 +29,7 @@
         /**
          * helper for hashing password (predefined algorithm)
          *
-         * @param $password string the password to hash
+         * @param string $password string the password to hash
          */
         private function passwordHash(string $password = "") {
             return(password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)));
@@ -34,7 +38,7 @@
         /**
          * add new user
          *
-         * @param $dbh \Spieldose\Database\DB
+         * @param \Spieldose\Database\DB $dbh database handler
          */
         public function add(\Spieldose\Database\DB $dbh) {
             if (! empty($this->id)) {
@@ -47,7 +51,7 @@
                         );
                         return($dbh->execute("INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
                     } else {
-                        throw new \Spieldose\Exception\NotFoundException("password");
+                        throw new \Spieldose\Exception\InvalidParamsException("password");
                     }
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("email");
@@ -58,9 +62,9 @@
         }
 
         /**
-         * update user
+         * update user (email & hashed password fields)
          *
-         * @param $dbh \Spieldose\Database\DB
+         * @param \Spieldose\Database\DB $dbh database handler
          */
         public function update(\Spieldose\Database\DB $dbh) {
             if (! empty($this->id)) {
@@ -73,7 +77,7 @@
                         );
                         return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params));
                     } else {
-                        throw new \Spieldose\Exception\NotFoundException("password");
+                        throw new \Spieldose\Exception\InvalidParamsException("password");
                     }
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("email");
@@ -84,22 +88,23 @@
         }
 
         /**
-         * get user data
+         * get user data (id, email, hashed password)
+         * id || email must be set
          *
-         * @param $dbh \Spieldose\Database\DB
+         * @param \Spieldose\Database\DB $dbh database handler
          */
         public function get(\Spieldose\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id)) {
                 $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
-                    (new \Spieldose\Database\DBParam())->str(":id", id)
+                    (new \Spieldose\Database\DBParam())->str(":id", $this->id)
                 ));
             } else if (! empty($this->email)) {
                 $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE email = :email ", array(
                     (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
             } else {
-                throw new \Spieldose\Exception\InvalidParamsException("id,password");
+                throw new \Spieldose\Exception\InvalidParamsException("id,email");
             }
             if (count($results) == 1) {
                 $this->id = $results[0]->id;
@@ -112,19 +117,24 @@
 
         /**
          * try login with specified credentials
+         * id || email & password must be set
          *
-         * @param $dbh \Spieldose\Database\DB $dbh
+         * @param \Spieldose\Database\DB $dbh database handler
          *
-         * @return bool password password match
+         * @return bool password match (true | false)
          */
         public function login(\Spieldose\Database\DB $dbh): bool {
-            $this->get($dbh);
-            if (password_verify($this->password, $this->passwordHash)) {
-                $_SESSION["userId"] = $this->id;
-                $_SESSION["email"] = $this->email;
-                return(true);
+            if (! empty($this->password)) {
+                $this->get($dbh);
+                if (password_verify($this->password, $this->passwordHash)) {
+                    $_SESSION["userId"] = $this->id;
+                    $_SESSION["email"] = $this->email;
+                    return(true);
+                } else {
+                    return(false);
+                }
             } else {
-                return(false);
+                throw new \Spieldose\Exception\InvalidParamsException("password");
             }
         }
 
@@ -134,8 +144,10 @@
         public static function logout() {
             $_SESSION = array();
             if (ini_get("session.use_cookies")) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                if (PHP_SAPI != 'cli') {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                }
             }
             if (session_status() != PHP_SESSION_NONE) {
                 session_destroy();
@@ -151,6 +163,8 @@
 
         /**
          * return logged user id
+         *
+         * @return string userId || null
          */
         public static function getUserId() {
             return(isset($_SESSION["userId"]) ? $_SESSION["userId"]: null);
@@ -160,27 +174,32 @@
          * set user credentials
          * TODO: REMOVE
          *
-         * @param $dbh \Spieldose\Database\DB $dbh
-         * @param $password string "secret :-)"
+         * @param \Spieldose\Database\DB $dbh database handler
+         * @param string $password "secret :-)"
          *
          * @return bool
          */
         public function setCredentials(\Spieldose\Database\DB $dbh, string $password): bool {
-            if (isset($this->email) && ! empty($this->email)) {
-                if (isset($password) && ! empty($password)) {
-                    $params = array(
-                        (new \Spieldose\Database\DBParam())->str(":id", md5(mb_strtolower($this->email))),
-                        (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                        (new \Spieldose\Database\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
-                    );
-                    return($dbh->execute("REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
+            if (isset($this->id) && ! empty($this->id)) {
+                if (isset($this->email) && ! empty($this->email)) {
+                    if (isset($password) && ! empty($password)) {
+                        $params = array(
+                            (new \Spieldose\Database\DBParam())->str(":id", md5(mb_strtolower($this->email))),
+                            (new \Spieldose\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Spieldose\Database\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
+                        );
+                        return($dbh->execute("REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
+                    } else {
+                        throw new \Spieldose\Exception\InvalidParamsException("password");
+                    }
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException("password");
+                    throw new \Spieldose\Exception\InvalidParamsException("email");
                 }
             } else {
-                throw new \Spieldose\Exception\InvalidParamsException("email");
+                throw new \Spieldose\Exception\InvalidParamsException("id");
             }
         }
+
     }
 
 ?>
