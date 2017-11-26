@@ -202,7 +202,11 @@
                     $request->getParam("actualPage", 1),
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
-                        "text" => $request->getParam("text", "")
+                        "partialName" => $request->getParam("partialName", ""),
+                        "name" => $request->getParam("name", ""),
+                        "partialArtist" => $request->getParam("partialArtist", ""),
+                        "artist" => $request->getParam("artist", ""),
+                        "year" => $request->getParam("year", "")
                     ),
                     $request->getParam("orderBy", "")
                 );

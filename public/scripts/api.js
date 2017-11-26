@@ -167,7 +167,7 @@ const spieldoseAPI = {
             resultsPage: initialState.defaultResultsPage
         };
         if (name) {
-            params.text = name;
+            params.partialName = name;
         }
         if (actualPage) {
             params.actualPage = parseInt(actualPage);
