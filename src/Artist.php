@@ -14,41 +14,80 @@
 	    public function __construct (string $name = "", array $albums = array()) {
             $this->name = $name;
             $this->albums = $albums;
+            $this->playCount = 0;
         }
 
         public function __destruct() { }
 
         /**
-         * get artist metadata (bio & albums)
+         * get artist metadata (bio, play stats & albums)
+         *
+         * @param \Spieldose\Database\DB $dbh database handler
+         * name must be set
+         */
+        public function get(\Spieldose\Database\DB $dbh) {
+            $this->getMusicBrainzMetadata($dbh);
+            if (! empty($this->name)) {
+                $params = array(
+                    (new \Spieldose\Database\DBParam())->str(":name", $this->name)
+                );
+                $query = '
+                    SELECT
+                        COUNT(DISTINCT(COALESCE(MBA.artist, F.track_artist))) AS total
+                    FROM FILE F
+                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                    WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
+                ';
+                $data = $dbh->query($query, $params);
+                if ($data && $data[0]->total == 1) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                    $query = '
+                        SELECT
+                            COUNT(S.played) AS playCount
+                        FROM STATS S
+                        LEFT JOIN FILE F ON (F.id = S.file_id)
+                        LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                        WHERE S.user_id = :user_id
+                        AND COALESCE(MBA.artist, F.track_artist) LIKE :name
+                    ';
+                    $data = $dbh->query($query, $params);
+                    if ($data && $data[0]->playCount) {
+                        $this->playCount = $data[0]->playCount;
+                    }
+                    $this->getMusicBrainzMetadata($dbh);
+                    $this->albums = (\Spieldose\Album::search($dbh, 1, 1024, array("artist" => $this->name), "year"))->results;
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("");
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("name");
+            }
+        }
+
+        /**
+         * get artist musicbrainz metadata (bio & image)
          *
          * @param \Spieldose\Database\DB $dbh database handler
          */
-        public function get(\Spieldose\Database\DB $dbh) {
+        private function getMusicBrainzMetadata(\Spieldose\Database\DB $dbh) {
             if (! empty($this->name)) {
                 $params = array(
-                    (new \Spieldose\Database\DBParam())->str(":name", $this->name),
-                    (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+                    (new \Spieldose\Database\DBParam())->str(":name", $this->name)
                 );
                 $query = sprintf('
                     SELECT DISTINCT
                         MBA.mbid,
                         MBA.bio,
-                        MBA.image,
-                        COUNT(*) AS playCount
+                        MBA.image
                     FROM FILE F
                     LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                    LEFT JOIN STATS S ON (S.file_id = F.id AND S.user_id = :user_id)
-                    WHERE COALESCE(MBA.artist, F.track_artist) = :name
+                    WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
                 ');
                 $data = $dbh->query($query, $params);
                 if ($data) {
                     $this->mbid = $data[0]->mbid;
                     $this->bio = $data[0]->bio;
                     $this->image = $data[0]->image;
-                    $this->playCount = $data[0]->playCount;
-                    $this->albums = (\Spieldose\Album::search($dbh, 1, 16, array("artist" => $this->name), ""))->results;
-                } else {
-                    throw new \Spieldose\Exception\NotFoundException("name: " . $this->name);
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("name");
