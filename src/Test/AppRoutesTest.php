@@ -36,7 +36,7 @@
 
         public function testUserPoll(): void {
             $this->request('GET', "/api/user/poll");
-            $this->assertThatResponseHasStatus(403);
+            $this->assertThatResponseHasStatus(200);
             $this->assertThatResponseHasContentType("application/json;charset=utf-8");
         }
     }
