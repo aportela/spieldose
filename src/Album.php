@@ -17,7 +17,7 @@
          * @param int $page return results from this page
          * @param int $resultsPage number of results / page
          * @param array $filter the condition filter
-         * @param string $order results order (at this time only "random" | "")
+         * @param string $order results order
          *
          */
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
