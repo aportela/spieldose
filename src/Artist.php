@@ -47,10 +47,6 @@
                         $this->playCount = $data[0]->playCount;
                     }
                     $this->getAlbums($dbh);
-                    $totalAlbums = count($this->albums);
-                    for ($i = 0; $i < $totalAlbums; $i++) {
-                        $this->albums[$i]->tracks = \Spieldose\Album::getTracks($dbh, $this->albums[$i]->name, $this->name);
-                    }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("name: " . $this->name);
                 }
