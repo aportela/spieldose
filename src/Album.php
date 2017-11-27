@@ -47,7 +47,7 @@
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(MBA.artist, F.album_artist, F.track_artist) || COALESCE(MBA.year, F.year)) AS total
+                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(MBA.artist, F.album_artist, F.track_artist) || COALESCE(MBA.year, F.year, 0)) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
                 WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
