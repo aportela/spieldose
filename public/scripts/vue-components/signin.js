@@ -49,7 +49,7 @@ var signInUp = (function () {
                                     <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidSignInUsername }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                                     <span class="icon is-small is-right" v-show="invalidSignInUsername"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="invalidSignInUsername">Email not found</p>
+                                    <p class="help is-danger" v-show="invalidSignInUsername">Invalid email</p>
                                 </p>
                                 <label class="label">Password</label>
                                 <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidSignInPassword }">
@@ -141,6 +141,16 @@ var signInUp = (function () {
                         self.$router.push({ name: 'dashboard' });
                     } else {
                         switch (response.status) {
+                            case 400:
+                                if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
+                                    self.invalidSignInUsername = true;
+                                } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
+                                    self.invalidSignInPassword = true;
+                                } else {
+                                    self.apiError = response.getApiErrorData();
+                                    self.errors = true;
+                                }
+                                break;
                             case 404:
                                 self.invalidSignInUsername = true;
                                 break;
@@ -171,6 +181,16 @@ var signInUp = (function () {
                         self.submitSignIn();
                     } else {
                         switch (response.status) {
+                            case 400:
+                                if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
+                                    self.invalidSignInUsername = true;
+                                } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
+                                    self.invalidSignInPassword = true;
+                                } else {
+                                    self.apiError = response.getApiErrorData();
+                                    self.errors = true;
+                                }
+                                break;
                             case 409:
                                 self.invalidSignUpUsername = true;
                                 break;
