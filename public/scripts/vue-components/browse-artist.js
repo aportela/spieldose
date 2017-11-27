@@ -116,6 +116,7 @@ var browseArtist = (function () {
             '$route'(to, from) {
                 switch(to.name) {
                     case "artistBio":
+                        this.getArtist(to.params.artist);
                         this.activeTab = "bio";
                     break;
                     case "artistTracks":
@@ -125,15 +126,16 @@ var browseArtist = (function () {
                         this.activeTab = "tracks";
                     break;
                     case "artistAlbums":
+                        this.getArtist(to.params.artist);
                         this.activeTab = "albums";
                     break;
                     default:
+                        this.getArtist(to.params.artist);
                         this.activeTab = "overview";
                     break;
                 }
             }
-        }
-        , created: function () {
+        }, created: function () {
             this.getArtist(this.$route.params.artist);
             if (this.$route.name == "artistTracks" || this.$route.name == "artistTracksPaged") {
                 var self = this;
