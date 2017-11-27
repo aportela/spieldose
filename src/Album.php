@@ -33,11 +33,11 @@
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
                 if (isset($filter["partialArtist"]) && ! empty($filter["partialArtist"])) {
-                    $whereCondition = " AND COALESCE(MBA.artist, F.album_artist, F.track_artist) LIKE :partialArtist ";
+                    $whereCondition = " AND (MBA.artist LIKE :partialArtist OR F.album_artist LIKE :partialArtist OR F.track_artist LIKE :partialArtist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialArtist", "%" . $filter["partialArtist"] . "%");
                 }
                 if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                    $whereCondition = " AND COALESCE(MBA.artist, F.album_artist, F.track_artist) LIKE :artist ";
+                    $whereCondition = " AND (MBA.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
                 }
                 if (isset($filter["year"]) && ! empty($filter["year"])) {
