@@ -17,11 +17,12 @@ var browsePaths = (function () {
             <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
                 <ul>
                     <li><a href="#"><span>Current path:</span></a></li>
-                    <li v-for="item in breadcrumbPathItems"><a href="#"><span class="icon is-small"><i class="fa fa-folder-open"></i></span><span>{{ item }}</span></a></li>
+                    <li><a href="#" v-on:click.prevent="search('');">Root</a></li>
+                    <li v-if="currentPath"><a href="#">{{ currentPath }}</a></li>
                 </ul>
             </nav>
             <div class="path-item box has-text-centered" v-for="item in currentPathFolders" v-show="! loading">
-                <p class="path-item-icon">
+                <p class="path-item-icon" v-on:click.prevent="search(item.path);">
                     <span class="icon has-text-light">
                         <i class="fa fa-folder fa-5x"></i>
                     </span>
@@ -61,8 +62,8 @@ var browsePaths = (function () {
                 apiError: null,
                 nameFilter: null,
                 timeout: null,
-                breadcrumbPathItems: [ "" ],
-                currentPathFolders: [ ],
+                currentPath: null,
+                currentPathFolders: [],
                 pager: getPager(),
                 playerData: sharedPlayerData
             });
@@ -72,45 +73,15 @@ var browsePaths = (function () {
                     el.focus();
                 }
             }
-        }, created: function() {
-            var self = this;
-            spieldoseAPI.searchPaths("", function(response) {
-                if (response.ok) {
-                    self.currentPathFolders = response.body.paths;
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                }
-            });
+        }, created: function () {
+            this.search("");
         }, methods: {
-            abortInstantSearch: function () {
-                this.nameFilter = null;
-            },
-            instantSearch: function () {
+            search: function (path) {
                 var self = this;
-                if (self.timeout) {
-                    clearTimeout(self.timeout);
-                }
-                self.timeout = setTimeout(function () {
-                    self.pager.actualPage = 1;
-                    self.search();
-                }, 256);
-            },
-            search: function () {
-                var self = this;
-                this.loading = true;
-                spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                this.currentPath = path;
+                spieldoseAPI.searchPaths(path, function (response) {
                     if (response.ok) {
-                        self.pager.actualPage = response.body.pagination.actualPage;
-                        self.pager.totalPages = response.body.pagination.totalPages;
-                        self.pager.totalResults = response.body.pagination.totalResults;
-                        if (response.body.playlists && response.body.playlists.length > 0) {
-                            self.playlists = response.body.playlists;
-                        } else {
-                            self.playlists = [];
-                        }
-                        self.loading = false;
+                        self.currentPathFolders = response.body.paths;
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();

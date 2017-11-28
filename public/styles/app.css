@@ -426,6 +426,7 @@ p.playlist-item-icon
 p.path-item-icon
 {
     margin-top: 1em;
+    cursor: pointer;
 }
 
 /* playlist thumb */
