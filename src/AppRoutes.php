@@ -229,10 +229,16 @@
 
             /* path */
 
-            $this->get('/path/search', function (Request $request, Response $response, array $args) {
+            $this->post('/path/search', function (Request $request, Response $response, array $args) {
+                $paths = \Spieldose\Path::getPaths(
+                    new \Spieldose\Database\DB($this),
+                    array(
+                        "path" => $request->getParam("path", "")
+                    )
+                );
                 return $response->withJson(
                     [
-                        'paths' => \Spieldose\Path::getPaths(new \Spieldose\Database\DB($this))
+                        'paths' => $paths
                     ],
                     200
                 );
@@ -336,7 +342,7 @@
                     $request->getParam("actualPage", 1),
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
-                        "text" => $request->getParam("text", "")
+                        "partialName" => $request->getParam("text", "")
                     ),
                     $request->getParam("orderBy", "")
                 );
@@ -345,7 +351,7 @@
                     $request->getParam("actualPage", 1),
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
-                        "text" => $request->getParam("text", "")
+                        "partialName" => $request->getParam("text", "")
                     ),
                     $request->getParam("orderBy", "")
                 );
