@@ -6,13 +6,44 @@ var browseAlbums = (function () {
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Browse albums</i></p>
         <div v-if="! errors">
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+            <div class="field has-addons">
+                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-focus v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
                 </div>
+                <p class="control">
+                    <a class="button is-info" v-on:click.prevent="advancedSearch = ! advancedSearch;">
+                        <span class="icon">
+                            <i v-if="advancedSearch" class="fa fa-search-minus" aria-hidden="true"></i>
+                            <i v-else="advancedSearch" class="fa fa-search-plus" aria-hidden="true"></i>
+                        </span>
+                        <span>toggle advanced search</span>
+                    </a>
+                </p>
+            </div>
+            <div class="field has-addons" v-if="advancedSearch">
+                <p class="control has-icons-left">
+                    <input v-model.number="filterByYear" class="input" :disabled="loading" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </p>
+                <p class="control is-expanded has-icons-left">
+                    <input v-model.trim="filterByArtist" class="input" :disabled="loading" type="text" placeholder="search album artist name...">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                </p>
+                <p class="control">
+                    <a class="button is-info" v-on:click="search();">
+                        <span class="icon">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </span>
+                        <span>search</span>
+                    </a>
+                </p>
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
             <!--
@@ -50,7 +81,10 @@ var browseAlbums = (function () {
                 timeout: null,
                 albums: [],
                 pager: getPager(),
+                advancedSearch: false,
                 playerData: sharedPlayerData,
+                filterByArtist: null,
+                filterByYear: null
             });
         },
         watch: {
@@ -72,12 +106,14 @@ var browseAlbums = (function () {
             this.search();
         }, directives: {
             focus: {
+                /*
                 inserted: function(el) {
                     el.focus();
                 },
                 update: function (el) {
                     el.focus();
                 }
+                */
             }
         }, methods: {
             abortInstantSearch: function () {
@@ -88,20 +124,18 @@ var browseAlbums = (function () {
                 if (self.timeout) {
                     clearTimeout(self.timeout);
                 }
-                self.timeout = setTimeout(function () {
-                    self.pager.actualPage = 1;
-                    self.search();
-                }, 256);
+                if (! this.advancedSearch) {
+                    self.timeout = setTimeout(function () {
+                        self.pager.actualPage = 1;
+                        self.search();
+                    }, 256);
+                }
             },
             search: function () {
                 var self = this;
                 self.loading = true;
                 self.errors = false;
-                var d = {};
-                if (self.nameFilter) {
-                    d.text = self.nameFilter;
-                }
-                spieldoseAPI.searchAlbums(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.searchAlbums(self.nameFilter, self.filterByArtist, self.filterByYear, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;

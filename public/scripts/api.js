@@ -161,13 +161,19 @@ const spieldoseAPI = {
             }
         );
     },
-    searchAlbums: function (name, actualPage, resultsPage, callback) {
+    searchAlbums: function (name, artist, year, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
             resultsPage: initialState.defaultResultsPage
         };
         if (name) {
             params.partialName = name;
+        }
+        if (artist) {
+            params.partialArtist = artist;
+        }
+        if (year && year > 1000 && year < 9999) {
+            params.year = year;
         }
         if (actualPage) {
             params.actualPage = parseInt(actualPage);
