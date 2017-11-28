@@ -24,26 +24,28 @@
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
+                $conditions = array();
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $whereCondition = " AND COALESCE(MBA.album, F.album_name) LIKE :partialName ";
+                    $conditions[] = " COALESCE(MBA.album, F.album_name) LIKE :partialName ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
                 }
                 if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $whereCondition = " AND COALESCE(MBA.album, F.album_name) LIKE :name ";
+                    $conditions[] = " COALESCE(MBA.album, F.album_name) LIKE :name ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
                 if (isset($filter["partialArtist"]) && ! empty($filter["partialArtist"])) {
-                    $whereCondition = " AND (MBA.artist LIKE :partialArtist OR F.album_artist LIKE :partialArtist OR F.track_artist LIKE :partialArtist) ";
+                    $conditions[] = " (MBA.artist LIKE :partialArtist OR F.album_artist LIKE :partialArtist OR F.track_artist LIKE :partialArtist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialArtist", "%" . $filter["partialArtist"] . "%");
                 }
                 if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                    $whereCondition = " AND (MBA.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
+                    $conditions[] = " (MBA.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
                 }
                 if (isset($filter["year"]) && ! empty($filter["year"])) {
-                    $whereCondition = " AND COALESCE(MBA.year, F.year) = :year ";
+                    $conditions[] = " COALESCE(MBA.year, F.year) = :year ";
                     $params[] = (new \Spieldose\Database\DBParam())->int(":year", intval($filter["year"]));
                 }
+                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
                 SELECT
