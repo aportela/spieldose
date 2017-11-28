@@ -259,6 +259,20 @@ const spieldoseAPI = {
             }
         );
     },
+    searchPaths: function(path, callback) {
+        var params = {};
+        if (path) {
+            params.path = path;
+        }
+        Vue.http.post("api/path/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     loveTrack: function (trackId, callback) {
         var params = {};
         Vue.http.post("api/track/" + trackId + "/love", params).then(

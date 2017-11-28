@@ -307,6 +307,11 @@ const routes = [
                 ]
             },
             {
+                path: 'paths',
+                name: 'paths',
+                component: browsePaths
+            },
+            {
                 path: 'playlists',
                 name: 'playlists',
                 component: browsePlaylists,
