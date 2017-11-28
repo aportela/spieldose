@@ -42,19 +42,19 @@
             if (isset($filter)) {
                 $conditions = array();
                 if (isset($filter["text"]) && ! empty($filter["text"])) {
-                    $conditions[] = " (COALESCE(MBT.track, F.track_name) LIKE :text OR COALESCE(MBA2.artist, F.track_artist) LIKE :text OR COALESCE(MBA1.album, F.album_name) LIKE :text) ";
+                    $conditions[] = " ( COALESCE(MBT.track, F.track_name) LIKE :text OR COALESCE(MBA2.artist, F.track_artist) LIKE :text OR COALESCE(MBA1.album, F.album_name) LIKE :text ) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
                 }
                 if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                    $conditions[] = " COALESCE(MBA2.artist, F.track_artist) = :artist ";
+                    $conditions[] = " ( MBA1.artist = :artist OR MBA2.artist = :artist OR F.track_artist = :artist OR F.album_artist = :artist ) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
                 }
                 if (isset($filter["album"]) && ! empty($filter["album"])) {
-                    $conditions[] = " COALESCE(MBA1.album, F.album_name) = :album ";
+                    $conditions[] = " ( MBA1.album = :album OR F.album_name = :album ) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":album", $filter["album"]);
                 }
                 if (isset($filter["year"]) && ! empty($filter["year"])) {
-                    $conditions[] = " COALESCE(MBA1.year, F.year) = :year ";
+                    $conditions[] = " ( MBA1.year = :year OR F.year = :year ) ";
                     $params[] = (new \Spieldose\Database\DBParam())->int(":year", intval($filter["year"]));
                 }
                 if (isset($filter["playlist"]) && ! empty($filter["playlist"])) {
