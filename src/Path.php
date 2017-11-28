@@ -11,17 +11,21 @@
         public static function getPaths(\Spieldose\Database\DB $dbh, $filter = array()) {
             $whereCondition = "";
             $params = array();
-            if (isset($filter["path"]) && ! empty($filter["path"])) {
-                $params[] = (new \Spieldose\Database\DBParam())->str(":path", $filter["path"] . "\\%");
-                $params[] = (new \Spieldose\Database\DBParam())->str(":currentPath", $filter["path"] . "\\");
-                $whereCondition = ' WHERE F.base_path LIKE :path ';
-            } else {
-                $params[] = (new \Spieldose\Database\DBParam())->str(":currentPath", "");
-                $whereCondition = ' WHERE F.base_path NOT LIKE "%\%\%" ';
+            if (isset($filter)) {
+                $conditions = array();
+                if (isset($filter["name"]) && ! empty($filter["name"])) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
+                    $conditions[] = ' F.base_path LIKE :name ';
+                }
+                if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
+                    $conditions[] = ' F.base_path LIKE :partialName ';
+                }
+                $whereCondition = count($conditions) > 0 ? " WHERE " .  implode(" AND ", $conditions) : "";
             }
             $query = '
                 SELECT
-                    DISTINCT REPLACE(F.base_path, :currentPath, "") AS path, TMP_PT.totalTracks
+                    DISTINCT F.base_path AS path, TMP_PT.totalTracks
                 FROM FILE F
                 LEFT JOIN (
                     SELECT

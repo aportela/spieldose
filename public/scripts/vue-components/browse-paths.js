@@ -14,39 +14,25 @@ var browsePaths = (function () {
                     </span>
                 </div>
             </div>
-            <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
-                <ul>
-                    <li><a href="#"><span>Current path:</span></a></li>
-                    <li><a href="#" v-on:click.prevent="search('');">Root</a></li>
-                    <li v-if="currentPath"><a href="#">{{ currentPath }}</a></li>
-                </ul>
-            </nav>
-            <div class="path-item box has-text-centered" v-for="item in currentPathFolders" v-show="! loading">
-                <p class="path-item-icon" v-on:click.prevent="search(item.path);">
-                    <span class="icon has-text-light">
-                        <i class="fa fa-folder fa-5x"></i>
-                    </span>
-                </p>
-                <p class="path-info">
-                    <strong>“{{ item.path }}”</strong>
-                </p>
-                <p class="content is-small">{{ item.totalTracks }} tracks</p>
-                <div class="field has-addons">
-                    <p class="control">
-                        <a class="button is-small is-link" v-on:click.prevent="play(item.path);">
-                            <span class="icon is-small"><i class="fa fa-play"></i></span>
-                            <span>play</span>
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-small is-info" v-on:click.prevent="enqueue(item.path);">
-                            <span class="icon is-small"><i class="fa fa-plus-square"></i></span>
-                            <span>enqueue</span>
-                        </a>
-                    </p>
-                </div>
-            </div>
-            <div class="is-clearfix"></div>
+            <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="! loading">
+                <thead>
+                        <tr class="is-unselectable">
+                            <th>Path</th>
+                            <th>Tracks</th>
+                            <th>Actions</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in paths">
+                        <td>{{ item.path }}</td>
+                        <td>{{ item.totalTracks }}</td>
+                        <td>
+                            <i v-on:click="play(item.path);" class="cursor-pointer fa fa-play" title="play this path"></i>
+                            <i v-on:click="enqueue(item.path);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
     </div>
@@ -62,8 +48,7 @@ var browsePaths = (function () {
                 apiError: null,
                 nameFilter: null,
                 timeout: null,
-                currentPath: null,
-                currentPathFolders: [],
+                paths: [],
                 pager: getPager(),
                 playerData: sharedPlayerData
             });
@@ -74,14 +59,35 @@ var browsePaths = (function () {
                 }
             }
         }, created: function () {
-            this.search("");
+            this.search();
+        }, directives: {
+            focus: {
+                inserted: function(el) {
+                    el.focus();
+                }
+            }
         }, methods: {
-            search: function (path) {
+            abortInstantSearch: function () {
+                this.nameFilter = null;
+            },
+            instantSearch: function () {
                 var self = this;
-                this.currentPath = path;
-                spieldoseAPI.searchPaths(path, function (response) {
+                if (self.timeout) {
+                    clearTimeout(self.timeout);
+                }
+                self.timeout = setTimeout(function () {
+                    self.pager.actualPage = 1;
+                    self.search();
+                }, 256);
+            },
+            search: function () {
+                var self = this;
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.searchPaths(self.nameFilter, function (response) {
                     if (response.ok) {
-                        self.currentPathFolders = response.body.paths;
+                        self.loading = false;
+                        self.paths = response.body.paths;
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();

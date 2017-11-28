@@ -234,7 +234,8 @@
                 $paths = \Spieldose\Path::getPaths(
                     new \Spieldose\Database\DB($this),
                     array(
-                        "path" => $request->getParam("path", "")
+                        "name" => $request->getParam("name", ""),
+                        "partialName" => $request->getParam("partialName", "")
                     )
                 );
                 return $response->withJson(

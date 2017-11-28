@@ -281,7 +281,7 @@ const spieldoseAPI = {
     searchPaths: function(path, callback) {
         var params = {};
         if (path) {
-            params.path = path;
+            params.partialName = path;
         }
         Vue.http.post("api/path/search", params).then(
             response => {
