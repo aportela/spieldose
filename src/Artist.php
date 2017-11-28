@@ -107,14 +107,16 @@
             $params = array();
             $whereCondition = "";
             if (isset($filter)) {
+                $conditions = array();
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $whereCondition = " AND COALESCE(MBA.artist, F.track_artist) LIKE :partialName ";
+                    $conditions[] = " COALESCE(MBA.artist, F.track_artist) LIKE :partialName ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
                 }
                 if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $whereCondition = " AND COALESCE(MBA.artist, F.track_artist) LIKE :name ";
+                    $conditions[] = " COALESCE(MBA.artist, F.track_artist) LIKE :name ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
+                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
                 SELECT
