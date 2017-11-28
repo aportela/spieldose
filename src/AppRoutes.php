@@ -150,7 +150,8 @@
                         "text" => $request->getParam("text", ""),
                         "artist" => $request->getParam("artist", ""),
                         "album" => $request->getParam("album", ""),
-                        "year" => $request->getParam("year", "")
+                        "year" => $request->getParam("year", ""),
+                        "path" => $request->getParam("path", "")
                     ),
                     $request->getParam("orderBy", "")
                 );
