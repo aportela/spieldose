@@ -106,6 +106,19 @@ const spieldoseAPI = {
             }
         );
     },
+    getPathTracks: function(path, callback) {
+        var params = {
+            path: path
+        };
+        Vue.http.post("api/track/search", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     searchTracks: function (text, artist, album, actualPage, resultsPage, order, callback) {
         var params = {
             actualPage: 1,

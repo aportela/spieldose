@@ -32,13 +32,13 @@ var browsePaths = (function () {
                 <p class="content is-small">{{ item.totalTracks }} tracks</p>
                 <div class="field has-addons">
                     <p class="control">
-                        <a class="button is-small is-link">
+                        <a class="button is-small is-link" v-on:click.prevent="play(item.path);">
                             <span class="icon is-small"><i class="fa fa-play"></i></span>
                             <span>play</span>
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-small is-info">
+                        <a class="button is-small is-info" v-on:click.prevent="enqueue(item.path);">
                             <span class="icon is-small"><i class="fa fa-plus-square"></i></span>
                             <span>enqueue</span>
                         </a>
@@ -118,33 +118,29 @@ var browsePaths = (function () {
                     }
                 });
             },
-            loadPlayList: function (playListId) {
+            play: function (path) {
                 var self = this;
-                spieldoseAPI.getPlayList(playListId, function (response) {
+                spieldoseAPI.getPathTracks(path, function (response) {
                     if (response.ok) {
-                        self.playerData.replace(response.body.playlist.tracks);
-                        self.playerData.setCurrentPlayList(playListId, response.body.playlist.name);
-                        self.$router.push({ name: 'nowPlaying' });
+                        if (response.body.tracks && response.body.tracks.length > 0) {
+                            self.playerData.replace(response.body.tracks);
+                        }
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
-                        self.loading = false;
                     }
                 });
             },
-            removePlayList: function(playListId) {
+            enqueue: function (path) {
                 var self = this;
-                spieldoseAPI.removePlaylist(playListId, function (response) {
+                spieldoseAPI.getPathTracks(path, function (response) {
                     if (response.ok) {
-                        if (self.playerData.currentPlaylistId == playListId) {
-                            self.playerData.unsetCurrentPlayList();
-
+                        if (response.body.tracks && response.body.tracks.length > 0) {
+                            self.playerData.enqueue(response.body.tracks);
                         }
-                        self.search();
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
-                        self.loading = false;
                     }
                 });
             }
