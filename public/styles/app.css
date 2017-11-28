@@ -218,7 +218,7 @@ aside.menu ul.menu-list li a.is-active
 
 /* album thumb */
 
-div.browse-album-item, div.playlist-item
+div.browse-album-item, div.playlist-item, div.path-item
 {
     width: 174px;
     float: left;
@@ -397,7 +397,7 @@ div.browse-artist-item div.artist-info
     overflow: hidden;
 }
 
-div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info
+div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info
 {
     margin: 0px;
     font-size: 13px;
@@ -415,6 +415,15 @@ div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playli
 /* playlist thumb */
 
 p.playlist-item-icon
+{
+    margin-top: 1em;
+}
+
+/* playlist thumb */
+
+/* playlist thumb */
+
+p.path-item-icon
 {
     margin-top: 1em;
 }
