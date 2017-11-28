@@ -16,7 +16,6 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":currentPath", $filter["path"] . "\\");
                 $whereCondition = ' WHERE F.base_path LIKE :path ';
             } else {
-                $params[] = (new \Spieldose\Database\DBParam())->str(":path", "");
                 $params[] = (new \Spieldose\Database\DBParam())->str(":currentPath", "");
                 $whereCondition = ' WHERE F.base_path NOT LIKE "%\%\%" ';
             }

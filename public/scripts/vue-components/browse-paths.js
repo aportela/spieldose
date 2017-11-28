@@ -61,7 +61,7 @@ var browsePaths = (function () {
                 apiError: null,
                 nameFilter: null,
                 timeout: null,
-                breadcrumbPathItems: ["m:\\", "one", "two", "three"],
+                breadcrumbPathItems: [ "" ],
                 currentPathFolders: [ ],
                 pager: getPager(),
                 playerData: sharedPlayerData
@@ -74,7 +74,7 @@ var browsePaths = (function () {
             }
         }, created: function() {
             var self = this;
-            spieldoseAPI.searchPaths("m:\\GAMES", function(response) {
+            spieldoseAPI.searchPaths("", function(response) {
                 if (response.ok) {
                     self.currentPathFolders = response.body.paths;
                 } else {
