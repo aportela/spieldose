@@ -17,7 +17,7 @@
          * @param array $filter the condition filter
          * @param string $order results order
          */
-        public static function getPaths(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
+        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             $whereCondition = "";
             $params = array();
             if (isset($filter)) {

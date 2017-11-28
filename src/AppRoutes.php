@@ -231,7 +231,7 @@
             /* path */
 
             $this->post('/path/search', function (Request $request, Response $response, array $args) {
-                $data = \Spieldose\Path::getPaths(
+                $data = \Spieldose\Path::search(
                     new \Spieldose\Database\DB($this),
                     $request->getParam("actualPage", 1),
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
