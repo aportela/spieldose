@@ -29,8 +29,8 @@ var browsePaths = (function () {
                         <td>{{ item.path }}</td>
                         <td class="has-text-right">{{ item.totalTracks }}</td>
                         <td class="has-text-centered">
-                            <i v-on:click="play(item.path);" class="cursor-pointer fa fa-play" title="play this path"></i>
-                            <i v-on:click="enqueue(item.path);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
+                            <i v-on:click="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
+                            <i v-on:click="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
                         </td>
                     </tr>
                 </tbody>
@@ -118,9 +118,9 @@ var browsePaths = (function () {
                     }
                 });
             },
-            play: function (path) {
+            play: function (path, trackCount) {
                 var self = this;
-                spieldoseAPI.getPathTracks(path, function (response) {
+                spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.replace(response.body.tracks);
@@ -131,9 +131,9 @@ var browsePaths = (function () {
                     }
                 });
             },
-            enqueue: function (path) {
+            enqueue: function (path, trackCount) {
                 var self = this;
-                spieldoseAPI.getPathTracks(path, function (response) {
+                spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.enqueue(response.body.tracks);
