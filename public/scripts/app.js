@@ -309,7 +309,14 @@ const routes = [
             {
                 path: 'paths',
                 name: 'paths',
-                component: browsePaths
+                component: browsePaths,
+                children: [
+                    {
+                        path: 'page/:page',
+                        name: 'pathsPaged',
+                        component: browsePaths
+                    }
+                ]
             },
             {
                 path: 'playlists',

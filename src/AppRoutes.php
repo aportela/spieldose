@@ -231,16 +231,25 @@
             /* path */
 
             $this->post('/path/search', function (Request $request, Response $response, array $args) {
-                $paths = \Spieldose\Path::getPaths(
+                $data = \Spieldose\Path::getPaths(
                     new \Spieldose\Database\DB($this),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
                         "name" => $request->getParam("name", ""),
                         "partialName" => $request->getParam("partialName", "")
-                    )
+                    ),
+                    $request->getParam("orderBy", "")
                 );
                 return $response->withJson(
                     [
-                        'paths' => $paths
+                        'paths' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'actualPage' => $data->actualPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
                     ],
                     200
                 );

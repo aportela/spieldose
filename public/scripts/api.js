@@ -278,10 +278,16 @@ const spieldoseAPI = {
             }
         );
     },
-    searchPaths: function(path, callback) {
+    searchPaths: function(path, actualPage, resultsPage, callback) {
         var params = {};
         if (path) {
             params.partialName = path;
+        }
+        if (actualPage) {
+            params.actualPage = parseInt(actualPage);
+        }
+        if (resultsPage) {
+            params.resultsPage = parseInt(resultsPage);
         }
         Vue.http.post("api/path/search", params).then(
             response => {
