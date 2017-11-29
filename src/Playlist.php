@@ -214,8 +214,6 @@
             $data->totalResults = $result[0]->total;
             $data->totalPages = ceil($data->totalResults / $resultsPage);
             if ($data->totalResults > 0) {
-
-
                 $sqlOrder = "";
                 switch($order) {
                     case "random":
