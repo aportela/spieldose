@@ -29,8 +29,10 @@ var browsePaths = (function () {
                         <td>{{ item.path }}</td>
                         <td class="has-text-right">{{ item.totalTracks }}</td>
                         <td class="has-text-centered">
-                            <i v-on:click="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
-                            <i v-on:click="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
+                            <div v-if="item.totalTracks > 0">
+                                <i v-on:click="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
+                                <i v-on:click="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
