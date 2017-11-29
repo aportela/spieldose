@@ -15,12 +15,12 @@
                 " S.user_id = :user_id "
             );
             if (isset($filter["fromDate"]) && ! empty($filter["fromDate"]) && isset($filter["toDate"]) && ! empty($filter["toDate"])) {
-                $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate  AND :toDate ";
+                $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate AND :toDate ";
                 $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
             }
             if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                $queryConditions[] = " COALESCE(MB.artist, F.track_artist) = :artist ";
+                $queryConditions[] = " ( MB.artist LIKE :artist OR F.track_artist LIKE :artist OR MBA1.artist LIKE :artist OR F.album_artist LIKE :artist ) ";
                 $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
             }
             $query = sprintf('
