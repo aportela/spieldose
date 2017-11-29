@@ -205,7 +205,11 @@ var player = (function () {
                         self.$refs.player.play();
                         break;
                     case "all":
-                        self.playerData.playAtIdx(0);
+                        if (self.playerData.isLastTrack()) {
+                            self.playerData.playAtIdx(0);
+                        } else {
+                            self.playerData.advancePlayList();
+                        }
                         break;
                     default:
                         self.playerData.advancePlayList();

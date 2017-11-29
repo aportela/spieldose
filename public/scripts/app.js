@@ -38,6 +38,17 @@ const getPlayerData = function () {
     playerData.hasTracks = function () {
         return (playerData.tracks && playerData.tracks.length > 0);
     };
+    playerData.isLastTrack = function() {
+        if (playerData.tracks.length > 0) {
+            if (playerData.actualTrackIdx < playerData.tracks.length - 1) {
+                return(false);
+            } else {
+                return(true);
+            }
+        } else {
+            return(true);
+        }
+    };
     playerData.loadRandomTracks = function (count, callback) {
         playerData.isPaused = false;
         playerData.isPlaying = false;
@@ -80,18 +91,18 @@ const getPlayerData = function () {
             }
         }
     };
-    playerData.hasCurrentPlayList = function() {
+    playerData.hasCurrentPlayList = function () {
         if (playerData.currentPlaylistId) {
-            return(true);
+            return (true);
         } else {
-            return(false);
+            return (false);
         }
     };
-    playerData.setCurrentPlayList = function(id, name) {
+    playerData.setCurrentPlayList = function (id, name) {
         playerData.currentPlaylistId = id;
         playerData.currentPlaylistName = name;
     };
-    playerData.unsetCurrentPlayList = function() {
+    playerData.unsetCurrentPlayList = function () {
         playerData.currentPlaylistId = null;
         playerData.currentPlaylistName = null;
     };
@@ -241,14 +252,14 @@ const getPlayerData = function () {
         if (playerData.hasTracks()) {
             playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);
         }
-    },
-        playerData.advancePlayList = function () {
-            if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-                playerData.playAtIdx(playerData.actualTrackIdx + 1);
-            } else {
-                playerData.stop();
-            }
-        };
+    };
+    playerData.advancePlayList = function () {
+        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
+            playerData.playAtIdx(playerData.actualTrackIdx + 1);
+        } else {
+            playerData.stop();
+        }
+    };
     return (playerData);
 }
 
@@ -441,7 +452,7 @@ const app = new Vue({
         bus.$on("signOut", function () {
             self.signOut();
         });
-        if (! initialState.upgradeAvailable) {
+        if (!initialState.upgradeAvailable) {
             if (!initialState.logged) {
                 self.$router.push({ name: 'signin' });
             } else {
