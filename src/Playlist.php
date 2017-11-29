@@ -193,10 +193,10 @@
             if (isset($filter)) {
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
                     $queryConditions[] = " P.name LIKE :partialName ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%". $filter["partialName"] . "%");
                 }
                 if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $conditions[] = " P.name LIKE :name ";
+                    $queryConditions[] = " P.name LIKE :name ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
             }
