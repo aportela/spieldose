@@ -121,21 +121,22 @@
         }
 
         public function get(\Spieldose\Database\DB $dbh) {
-            if (isset($this->id) && ! empty($this->id)) {
+            if (! empty($this->id)) {
                 $params = array();
                 $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
                 $query = sprintf('
-                    SELECT P.name
+                    SELECT P.id, P.name
                     FROM PLAYLIST P
                     WHERE P.id = :id
                     '
                 );
                 $data = $dbh->query($query, $params);
                 if (count($data) == 1) {
+                    $this->id = $data[0]->id;
                     $this->name = $data[0]->name;
                     $this->tracks = $this->getPlaylistTracks($dbh);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                    throw new \Spieldose\Exception\NotFoundException("");
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
@@ -190,46 +191,60 @@
             );
             $whereCondition = "";
             if (isset($filter)) {
-                if (isset($filter["text"]) && ! empty($filter["text"])) {
-                    $queryConditions[] = " P.name LIKE :text ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":text", "%" . $filter["text"] . "%");
+                if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
+                    $queryConditions[] = " P.name LIKE :partialName ";
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
+                }
+                if (isset($filter["name"]) && ! empty($filter["name"])) {
+                    $conditions[] = " P.name LIKE :name ";
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
             }
+            $whereCondition = count($queryConditions) > 0 ? " WHERE " .  implode(" AND ", $queryConditions) : "";
             $queryCount = sprintf('
                 SELECT
                     COUNT (P.id) AS total
                 FROM PLAYLIST P
                 %s
-            ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
+            ', $whereCondition);
             $result = $dbh->query($queryCount, $params);
             $data = new \stdClass();
             $data->actualPage = $page;
             $data->resultsPage = $resultsPage;
             $data->totalResults = $result[0]->total;
             $data->totalPages = ceil($data->totalResults / $resultsPage);
-            $sqlOrder = "";
-            if (! empty($order) && $order == "random") {
-                $sqlOrder = " ORDER BY RANDOM() ";
+            if ($data->totalResults > 0) {
+
+
+                $sqlOrder = "";
+                switch($order) {
+                    case "random":
+                        $sqlOrder = " ORDER BY RANDOM() ";
+                    break;
+                    default:
+                        $sqlOrder = " ORDER BY P.name COLLATE NOCASE ASC ";
+                    break;
+                }
+                $query = sprintf('
+                    SELECT P.id, P.name, TMP_COUNT.total AS trackCount
+                    FROM PLAYLIST P
+                    LEFT JOIN (
+                        SELECT COUNT(file_id) AS total, playlist_id
+                        FROM PLAYLIST_TRACK
+                        GROUP BY playlist_id
+                    ) TMP_COUNT ON TMP_COUNT.playlist_id = P.id
+                    %s
+                    %s
+                    LIMIT %d OFFSET %d
+                    ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''),
+                    $sqlOrder,
+                    $resultsPage,
+                    $resultsPage * ($page -1)
+                );
+                $data->results = $dbh->query($query, $params);
             } else {
-                $sqlOrder = " ORDER BY P.name COLLATE NOCASE ASC ";
+                $data->results = array();
             }
-            $query = sprintf('
-                SELECT P.id, P.name, TMP_COUNT.total AS trackCount
-                FROM PLAYLIST P
-                LEFT JOIN (
-                    SELECT COUNT(file_id) AS total, playlist_id
-                    FROM PLAYLIST_TRACK
-                    GROUP BY playlist_id
-                ) TMP_COUNT ON TMP_COUNT.playlist_id = P.id
-                %s
-                %s
-                LIMIT %d OFFSET %d
-                ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''),
-                $sqlOrder,
-                $resultsPage,
-                $resultsPage * ($page -1)
-            );
-            $data->results = $dbh->query($query, $params);
             return($data);
         }
     }
