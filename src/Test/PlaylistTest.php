@@ -163,6 +163,10 @@
             $this->assertInstanceOf("stdclass", \Spieldose\Playlist::search(self::$dbh, 1, 16, array(), ""));
         }
 
+        public function testSearchOrderByRandom(): void {
+            $this->assertInstanceOf("stdclass", \Spieldose\Playlist::search(self::$dbh, 1, 16, array(), "random"));
+        }
+
         public function testSearchWithPartialNameFilter(): void {
             $this->assertInstanceOf("stdclass", \Spieldose\Playlist::search(self::$dbh, 1, 16, array("partialName" => "condition"), ""));
         }
