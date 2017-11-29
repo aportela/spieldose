@@ -6,7 +6,7 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class PathTest extends \PHPUnit\Framework\TestCase
+    final class MetricsTest extends \PHPUnit\Framework\TestCase
     {
         static private $app = null;
         static private $container = null;
