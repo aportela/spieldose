@@ -135,38 +135,42 @@ var search = (function () {
                 }
             },
             search: function () {
-                var self = this;
-                self.loading = true;
-                self.errors = false;
-                spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
-                    if (response.ok) {
-                        if (response.body.artists && response.body.artists.length > 0) {
-                            self.artists = response.body.artists;
+                if (this.textFilter) {
+                    var self = this;
+                    self.loading = true;
+                    self.errors = false;
+                    spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
+                        if (response.ok) {
+                            if (response.body.artists && response.body.artists.length > 0) {
+                                self.artists = response.body.artists;
+                            } else {
+                                self.artists = [];
+                            }
+                            if (response.body.albums && response.body.albums.length > 0) {
+                                self.albums = response.body.albums;
+                            } else {
+                                self.albums = [];
+                            }
+                            if (response.body.tracks && response.body.tracks.length > 0) {
+                                self.tracks = response.body.tracks;
+                            } else {
+                                self.tracks = [];
+                            }
+                            if (response.body.playlists && response.body.playlists.length > 0) {
+                                self.playlists = response.body.playlists;
+                            } else {
+                                self.playlists = [];
+                            }
+                            self.loading = false;
                         } else {
-                            self.artists = [];
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
                         }
-                        if (response.body.albums && response.body.albums.length > 0) {
-                            self.albums = response.body.albums;
-                        } else {
-                            self.albums = [];
-                        }
-                        if (response.body.tracks && response.body.tracks.length > 0) {
-                            self.tracks = response.body.tracks;
-                        } else {
-                            self.tracks = [];
-                        }
-                        if (response.body.playlists && response.body.playlists.length > 0) {
-                            self.playlists = response.body.playlists;
-                        } else {
-                            self.playlists = [];
-                        }
-                        self.loading = false;
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
-                    }
-                });
+                    });
+                } else {
+                    this.abortInstantSearch();
+                }
             },
             highlight: function (text) {
                 if (text && this.textFilter) {
