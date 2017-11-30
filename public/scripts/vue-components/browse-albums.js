@@ -8,7 +8,7 @@ var browseAlbums = (function () {
         <div v-if="! errors">
             <div class="field has-addons">
                 <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-focus v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
@@ -51,7 +51,7 @@ var browseAlbums = (function () {
                 https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
             -->
             <div class="browse-album-item" v-for="album in albums" v-show="! loading">
-                <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
+                <a class="play-album" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                     <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>
                     <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
                     <i class="fa fa-play fa-4x"></i>
@@ -104,15 +104,6 @@ var browseAlbums = (function () {
                 self.pager.actualPage = parseInt(this.$route.params.page);
             }
             this.search();
-        }, directives: {
-            focus: {
-                inserted: function(el) {
-                    el.focus();
-                },
-                update: function (el) {
-                    el.focus();
-                }
-            }
         }, methods: {
             abortInstantSearch: function () {
                 this.nameFilter = null;
@@ -154,6 +145,7 @@ var browseAlbums = (function () {
             enqueueAlbumTracks: function (album, artist, year) {
                 var self = this;
                 spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                    /*
                     self.playerData.emptyPlayList();
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
@@ -165,6 +157,7 @@ var browseAlbums = (function () {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
                     }
+                    */
                 });
             }
         }

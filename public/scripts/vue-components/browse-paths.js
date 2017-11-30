@@ -9,7 +9,7 @@ var browsePaths = (function () {
         <div v-if="! errors">
             <div class="field">
                 <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-focus v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
@@ -30,8 +30,8 @@ var browsePaths = (function () {
                         <td class="has-text-right">{{ item.totalTracks }}</td>
                         <td class="has-text-centered">
                             <div v-if="item.totalTracks > 0">
-                                <i v-on:click="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
-                                <i v-on:click="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
+                                <i v-on:click.prevent="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
+                                <i v-on:click.prevent="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
                             </div>
                         </td>
                     </tr>
@@ -81,15 +81,6 @@ var browsePaths = (function () {
                 self.pager.actualPage = parseInt(this.$route.params.page);
             }
             this.search();
-        }, directives: {
-            focus: {
-                inserted: function (el) {
-                    el.focus();
-                },
-                update: function (el) {
-                    el.focus();
-                }
-            }
         }, methods: {
             abortInstantSearch: function () {
                 this.nameFilter = null;
