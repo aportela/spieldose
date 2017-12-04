@@ -137,11 +137,11 @@ var browseArtist = (function () {
             }
         }, created: function () {
             this.getArtist(this.$route.params.artist);
+            var self = this;
+            this.pager.refresh = function () {
+                self.$router.push({ name: 'artistTracksPaged', params: { page: self.pager.actualPage } });
+            }
             if (this.$route.name == "artistTracks" || this.$route.name == "artistTracksPaged") {
-                var self = this;
-                this.pager.refresh = function () {
-                    self.$router.push({ name: 'artistTracksPaged', params: { page: self.pager.actualPage } });
-                }
                 if (this.$route.params.page) {
                     this.pager.actualPage = parseInt(this.$route.params.page);
                 }
