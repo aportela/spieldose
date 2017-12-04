@@ -70,7 +70,7 @@
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT(COALESCE(MBT.track, F.track_name))) AS total
+                    COUNT (F.id) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_TRACK MBT ON MBT.mbid = F.track_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
