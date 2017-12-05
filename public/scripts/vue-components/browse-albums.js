@@ -145,7 +145,6 @@ var browseAlbums = (function () {
             enqueueAlbumTracks: function (album, artist, year) {
                 var self = this;
                 spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                    /*
                     self.playerData.emptyPlayList();
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
@@ -157,7 +156,6 @@ var browseAlbums = (function () {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
                     }
-                    */
                 });
             }
         }
