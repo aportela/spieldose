@@ -260,6 +260,23 @@
             }
         }
 
+        public function getAllDatabaseFiles(): array {
+            $results = array();
+            $query = " SELECT id, base_path AS path, file_name as filename FROM FILE ORDER BY base_path, file_name ";
+            $results = $this->dbh->query($query);
+            return($results);
+        }
+
+        public function removeDatabaseReferences(string $fileId) {
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":file_id", $fileId)
+            );
+            $this->dbh->execute(" DELETE FROM STATS WHERE file_id = :file_id ", $params);
+            $this->dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE file_id = :file_id ", $params);
+            $this->dbh->execute(" DELETE FROM LOVED_FILE WHERE file_id = :file_id ", $params);
+            $this->dbh->execute(" DELETE FROM FILE WHERE id = :file_id ", $params);
+        }
+
     }
 
 ?>
