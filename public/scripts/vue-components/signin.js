@@ -22,7 +22,7 @@ var signInUp = (function () {
                                 </g>
                             </svg>
                         </div>
-                        <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music rainbow-transition" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music rainbow-transition" aria-hidden="true"></i></span></h1>
+                        <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span></h1>
                         <h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
 
                         <div class="tabs is-boxed is-toggle" v-if="allowSignUp">
