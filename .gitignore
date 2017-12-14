@@ -1,6 +1,7 @@
 /data/spieldose.sqlite3
 /data/spieldose.sqlite3-shm
 /data/spieldose.sqlite3-wal
+/data/thumbnails/*
 /vendor/
 /logs/*
 !/logs/README.md
