@@ -8,7 +8,7 @@ var browseArtist = (function () {
         <p v-else="! loading" class="title is-1 has-text-centered">Artist details</p>
         <div class="media" v-if="! errors && ! loading">
             <figure class="image media-left">
-                <img v-bind:src="artist.image" alt="Image" class="artist_avatar" v-if="artist.image">
+                <img v-bind:src="'api/thumbnail?url='+artist.image" alt="Image" class="artist_avatar" v-if="artist.image">
                 <img alt="Image" class="artist_avatar" src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" v-else />
             </figure>
             <div class="media-content is-light">
