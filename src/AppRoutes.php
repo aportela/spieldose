@@ -137,7 +137,7 @@
                             ->write($data);
                     }
                 } else {
-                    throw new \Spieldose\NotFoundException("id");
+                    throw new \Spieldose\Exception\NotFoundException("id");
                 }
             });
 
