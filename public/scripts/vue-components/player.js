@@ -35,12 +35,12 @@ var player = (function () {
                         <i title="play" class="fa fa-play"></i>
                     </span>
                 </span>
-                <span class="button" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
+                <span class="button" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
                     <span class="icon">
                         <i title="pause" class="fa fa-play player-active-control"></i>
                     </span>
                 </span>
-                <span class="button" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
+                <span class="button" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
                     <span class="icon">
                         <i title="resume" class="fa fa-pause player-active-control"></i>
                     </span>

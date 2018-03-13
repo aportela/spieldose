@@ -97,17 +97,17 @@ var nowPlaying = (function () {
                         </span>
                         <span>play</span>
                     </a>
-                    <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
+                    <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
                         <span class="icon is-small">
                             <i class="fa fa-play"></i>
                         </span>
-                        <span>play</span>
+                        <span>resume</span>
                     </a>
-                    <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
+                    <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
                         <span class="icon is-small">
                             <i class="fa fa-pause"></i>
                         </span>
-                        <span>resume</span>
+                        <span>pause</span>
                     </a>
                 </p>
                 <p class="control">
