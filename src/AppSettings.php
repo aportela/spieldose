@@ -53,7 +53,13 @@
                 'name' => 'spieldose-scraper',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
                 'level' => \Monolog\Logger::DEBUG
+            ],
+            'thumbnailLogger' => [
+                'name' => 'spieldose-thumbnail',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
+                'level' => \Monolog\Logger::DEBUG
             ]
+
         ],
     ];
 ?>
