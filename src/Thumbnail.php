@@ -61,11 +61,11 @@
         }
 
         public static function getThumbnailUrls(\Spieldose\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(thumbnail) FROM POST WHERE thumbnail IS NOT NULL ORDER BY RANDOM() ";
+            $query = " SELECT DISTINCT(image) FROM MB_CACHE_ALBUM WHERE image IS NOT NULL ORDER BY RANDOM() ";
             $results = $dbh->query($query, array());
             $thumbnails = array();
             foreach($results as $result) {
-                $thumbnails[] = $result->thumbnail;
+                $thumbnails[] = $result->image;
             }
             return($thumbnails);
         }
