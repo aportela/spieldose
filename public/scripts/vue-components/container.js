@@ -4,7 +4,7 @@ var container = (function () {
     var template = function () {
         return `
         <div class="is-light is-bold">
-
+            <!--
             <nav class="navbar is-hidden-tablet" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand is-unselectable">
                     <a class="navbar-item has-text-weight-bold" href="https://github.com/aportela/spieldose">
@@ -33,6 +33,57 @@ var container = (function () {
                     </section>
                 </div>
             </div>
+
+            -->
+
+            <section class="hero is-fullheight">
+                <div class="hero-body is-paddingless">
+                    <div class="container is-fullwidth is-vcentered">
+                        <div class="tabs is-centered is-medium is-toggle">
+                            <ul>
+                                <li class="is-active">
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-headphones"></i></span>
+                                    <span>Now playing</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-search"></i></span>
+                                    <span>Search</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-user"></i></span>
+                                    <span>Browse artists</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-circle"></i></span>
+                                    <span>Browse albums</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-folder-open"></i></span>
+                                    <span>Browse paths</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                    <span class="icon is-small"><i class="fa fa-list-alt"></i></span>
+                                    <span>Browse paths</span>
+                                    </a>
+                                </li>
+                            </ul>
+                    </div>
+                    <keep-alive>
+                        <router-view></router-view>
+                    </keep-alive>
+                </div>
+            </section>
 
         </div>
     `;

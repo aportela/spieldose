@@ -38,15 +38,15 @@ const getPlayerData = function () {
     playerData.hasTracks = function () {
         return (playerData.tracks && playerData.tracks.length > 0);
     };
-    playerData.isLastTrack = function() {
+    playerData.isLastTrack = function () {
         if (playerData.tracks.length > 0) {
             if (playerData.actualTrackIdx < playerData.tracks.length - 1) {
-                return(false);
+                return (false);
             } else {
-                return(true);
+                return (true);
             }
         } else {
-            return(true);
+            return (true);
         }
     };
     playerData.loadRandomTracks = function (count, callback) {
@@ -61,10 +61,28 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        spieldoseAPI.searchTracks("", "", "", 1, initialState.defaultResultsPage, "random", function (response) {
+        spieldoseAPI.searchTracks("", "", "", 1, 128, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
+                    let songs = [];
+                    for (let i = 0; i < playerData.tracks.length; i++) {
+                        songs.push(
+                        {
+                            "id": playerData.tracks[i].id,
+                            "playtimeString": playerData.tracks[i].playtimeString,
+                            "name": playerData.tracks[i].title,
+                            "artist": playerData.tracks[i].artist,
+                            "albumArtist": playerData.tracks[i].albumArtist,
+                            "album": playerData.tracks[i].album,
+                            "year": playerData.tracks[i].year,
+                            "genre": playerData.tracks[i].genre,
+                            "url": "http://localhost/api/track/get/" + playerData.tracks[i].id,
+                            "cover_art_url": playerData.tracks[i].image
+                        }
+                    );
+                    }
+                    bus.$emit("setPlayList", songs);
                 }
                 playerData.loading = false;
                 if (callback && typeof callback === "function") {
@@ -279,6 +297,11 @@ const routes = [
         component: container,
         children: [
             {
+                path: 'player',
+                name : 'player',
+                component: player
+            },
+            {
                 path: 'search',
                 name: 'search',
                 component: search
@@ -457,7 +480,8 @@ const app = new Vue({
                 self.$router.push({ name: 'signin' });
             } else {
                 if (!self.$route.name) {
-                    self.$router.push({ name: 'dashboard' });
+                    //self.$router.push({ name: 'dashboard' });
+                    self.$router.push({ name: 'player' });
                 }
             }
         } else {
