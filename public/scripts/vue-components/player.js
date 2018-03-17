@@ -6,21 +6,21 @@ var player = (function () {
             <div class="columns">
                 <div class="column is-5">
                     <div id="player" class="box is-paddingless is-radiusless	">
-                        <img id="album-cover" amplitude-song-info="cover_art_url" amplitude-main-song-info="true" src="https://lastfm-img2.akamaized.net/i/u/300x300/05668b8da51f4163bb0f87273ab0e10c.png">
-                        <canvas id="spectrum-analyzer"></canvas>
+                        <img id="album-cover" amplitude-song-info2="cover_art_url" amplitude-main-song-info2="true" v-bind:src="coverSrc">
+                        <canvas id="canvas"></canvas>
 
                         <div id="player-progress-bar-container">
                             <progress id="song-played-progress" amplitude-main-song-played-progress="true" class="amplitude-song-played-progress"></progress>
                         </div>
                         <div id="player-time-container" class="is-clearfix">
-                            <span id="song-current-time" class="is-pulled-left has-text-grey"><span amplitude-main-current-minutes="true" class="amplitude-current-minutes">01</span>:<span amplitude-main-current-seconds="true" class="amplitude-current-seconds">16</span></span>
-                            <span id="song-duration" class="is-pulled-right has-text-grey"><span amplitude-main-duration-minutes="true" class="amplitude-duration-minutes">03</span>:<span amplitude-main-duration-seconds="true" class="amplitude-duration-seconds">08</span></span>
+                            <span id="song-current-time" class="is-pulled-left has-text-grey"><span amplitude-main-current-minutes="true" class="amplitude-current-minutes">00</span>:<span amplitude-main-current-seconds="true" class="amplitude-current-seconds">00</span></span>
+                            <span id="song-duration" class="is-pulled-right has-text-grey"><span amplitude-main-duration-minutes="true" class="amplitude-duration-minutes">00</span>:<span amplitude-main-duration-seconds="true" class="amplitude-duration-seconds">00</span></span>
                         </div>
                         <div id="player-metadata-container" class="has-text-centered">
                             <p v-if="currentTrack && currentTrack.name" class="title is-4 has-text-light">{{ currentTrack.name }}</p>
-                            <p v-else class="title is-4 has-text-light">[unknown song title]</p>
+                            <p v-else class="title is-4 has-text-light">&nbsp;</p>
                             <p v-if="currentTrack && currentTrack.artist" class="subtitle is-5 has-text-grey-light">{{ currentTrack.artist }}</p>
-                            <p v-else class="subtitle is-5 has-text-grey-light">[unknown song artist]</p>
+                            <p v-else class="subtitle is-5 has-text-grey-light">&nbsp;</p>
                         </div>
                         <div id="player-controls">
                             <div class="has-text-centered" id="player-buttons">
@@ -85,10 +85,10 @@ var player = (function () {
                 return (this.playerData.isStopped);
             },
             coverSrc: function () {
-                if ((this.playerData.isPlaying || this.playerData.isPaused) && this.playerData.actualTrack.image) {
-                    return ("api/thumbnail?url=" + this.playerData.actualTrack.image);
+                if (this.currentTrack && this.currentTrack.image) {
+                    return ("/api/thumbnail?url=" + this.currentTrack.image);
                 } else {
-                    return ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7dCBAAAAAICg/akXKYQKAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBQA1T5AAHVwlcsAAAAAElFTkSuQmCC');
+                    return('images/vinyl.png');
                 }
             },
             streamUrl: function () {
@@ -209,13 +209,11 @@ var player = (function () {
                 self.playlist = songs;
                 Amplitude.init({
                     "songs": songs,
-                    "volume": .35,
+                    "volume": 1,
                     "autoplay": true,
-                    "default_album_art": "http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png",
                     "callbacks": {
                         "before_play": function() {
-                            //self.currentTrack = self.songs[Amplitude.getActiveIndex()];
-                            initializeVisualizer(document.getElementById("canvas"), Amplitude.audio());
+                            initializeVisualizer(document.getElementById("canvas2"), Amplitude.audio());
                             self.currentTrack = self.playlist[Amplitude.getActiveIndex()];
                        }
                     }
@@ -223,7 +221,6 @@ var player = (function () {
 
 
             });
-
         }
     });
 
