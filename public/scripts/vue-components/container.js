@@ -3,7 +3,7 @@ var container = (function () {
 
     var template = function () {
         return `
-            <section class="hero is-fullheight">
+            <section class="hero is-fullheight is-light is-bold">
                 <div class="hero-body is-paddingless">
                     <div class="container is-fullwidth is-vcentered">
                         <div class="tabs is-centered is-medium is-toggle">
