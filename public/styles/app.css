@@ -602,7 +602,7 @@ img#album-cover
 
 /* spectrum analyzer */
 
-canvas#spectrum-analyzer
+canvas#canvas
 {
     width: 100%;
     height: 24px;
