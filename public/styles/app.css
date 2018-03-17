@@ -699,6 +699,52 @@ div#player-buttons span
     cursor: pointer;
 }
 
+div#player-buttons span.amplitude-play-pause.amplitude-playing i.fa-play
+{
+    display: block;
+}
+
+div#player-buttons span.amplitude-play-pause.amplitude-playing i.fa-pause
+{
+    display: none;
+}
+
+div#player-buttons span.amplitude-play-pause.amplitude-paused i.fa-play
+{
+    display: none;
+}
+
+div#player-buttons span.amplitude-play-pause.amplitude-paused i.fa-pause
+{
+    display: block;
+}
+
+div#player-volume-control span.amplitude-mute
+{
+    cursor: pointer;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-muted i.fa-volume-up
+{
+    display: none !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-muted i.fa-volume-off
+{
+    display: block !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-not-muted i.fa-volume-up
+{
+    display: block !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-not-muted i.fa-volume-off
+{
+    display: none !important;
+}
+
+
 div#player-buttons span:hover {
     color: #ccc;
 }
@@ -714,36 +760,6 @@ div#player-buttons span.icon, div#volume-container span.icon
     height: 4rem !important;
 }
 
-div#player-volume-control input[type=range]{
-    -webkit-appearance: none;
-}
-
-div#player-volume-control input[type=range]::-webkit-slider-runnable-track {
-    width: 90%;
-    height: 5px;
-    background: #ddd;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-div#player-volume-control input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #fff;
-    margin-top: -4px;
-}
-
-div#player-volume-control input[type=range]:focus {
-    outline: none;
-}
-
-div#player-volume-control input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #ccc;
-}
 
 /* player controls */
 

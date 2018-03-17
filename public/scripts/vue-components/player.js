@@ -1,14 +1,13 @@
 var player = (function () {
     "use strict";
 
-    var template = function() {
+    var template = function () {
         return `
             <div class="columns">
                 <div class="column is-5">
                     <div id="player" class="box is-paddingless is-radiusless	">
                         <img id="album-cover" amplitude-song-info2="cover_art_url" amplitude-main-song-info2="true" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
-
                         <div id="player-progress-bar-container">
                             <progress id="song-played-progress" amplitude-main-song-played-progress="true" class="amplitude-song-played-progress"></progress>
                         </div>
@@ -24,24 +23,27 @@ var player = (function () {
                         </div>
                         <div id="player-controls">
                             <div class="has-text-centered" id="player-buttons">
-                                <span class="icon amplitude-shuffle amplitude-shuffle-off"><i class="fa fa-2x fa-random"></i></span>
-                                <span class="icon amplitude-repeat amplitude-repeat-of"><i class="fa fa-2x fa-repeat"></i></span>
-                                <span class="icon amplitude-prev "><i class="fa fa-2x fa-step-backward"></i></span>
-                                <span class="icon amplitude-play-pause amplitude-playing has-text-white-bis" amplitude-main-play-pause="true"><i class="fa fa-2x fa-play"></i></span>
-                                <span class="icon amplitude-next"><i class="fa fa-2x fa-step-forward"></i></span>
-                                <span class="icon"><i class="fa fa-2x fa-heart"></i></span>
-                                <span class="icon"><i class="fa fa-2x fa-save"></i></span>
+                                <span id="btn-shuffle" class="icon amplitude-shuffle amplitude-shuffle-off"><i class="fa fa-2x fa-random"></i></span>
+                                <span id="btn-repeat" class="icon amplitude-repeat amplitude-repeat-of"><i class="fa fa-2x fa-repeat"></i></span>
+                                <span id="btn-previous" class="icon amplitude-prev "><i class="fa fa-2x fa-step-backward"></i></span>
+                                <span id="btn-play-pause" class="icon amplitude-play-pause amplitude-playing has-text-white-bis" amplitude-main-play-pause="true"><i class="fa fa-2x fa-play"></i><i class="fa fa-2x fa-pause"></i></span>
+                                <span id="btn-next" class="icon amplitude-next"><i class="fa fa-2x fa-step-forward"></i></span>
+                                <span id="btn-love" class="icon"><i class="fa fa-2x fa-heart"></i></span>
+                                <span id="btn-download"class="icon" title="Download current track"><i class="fa fa-2x fa-save"></i></span>
                             </div>
                             <div id="player-volume-control">
-                                <span class="icon"><i class="fa fa-2x fa-volume-up"></i></span>
-                                <input type="range" list="tickmarks" class="amplitude-volume-slider" step=".1">
+                                <span class="icon amplitude-mute amplitude-not-muted">
+                                    <i class="fa fa-2x fa-volume-up"></i>
+                                    <i class="fa fa-2x fa-volume-off"></i>
+                                </span>
+                                <input type="range" class="amplitude-volume-slider" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="column is-7">
                     <div id="playlist" class="box is-paddingless is-radiusless	">
-                        <div v-for="(track, index) in playlist"  class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': currentTrack && currentTrack.id == track.id}">
+                        <div v-for="(track, index) in playlist" class="song amplitude-play-pause playlist-element is-clearfix has-text-light is-size-7" amplitude-song-index="2" v-bind:class="{ 'current': currentTrack && currentTrack.id == track.id}">
                             <span v-if="currentTrack && currentTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
                             <span v-else class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
                             <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
@@ -55,7 +57,6 @@ var player = (function () {
             </div>
     `;
     };
-
 
     var module = Vue.component('spieldose-player-component', {
         template: template(),
@@ -88,7 +89,7 @@ var player = (function () {
                 if (this.currentTrack && this.currentTrack.image) {
                     return ("/api/thumbnail?url=" + this.currentTrack.image);
                 } else {
-                    return('images/vinyl.png');
+                    return ('images/vinyl.png');
                 }
             },
             streamUrl: function () {
@@ -200,7 +201,6 @@ var player = (function () {
             */
         },
         mounted: function () {
-        }, created: function() {
             var self = this;
             self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
                 //self.playerData.play();
@@ -208,21 +208,38 @@ var player = (function () {
             bus.$on("setPlayList", function (songs) {
                 self.playlist = songs;
                 Amplitude.init({
+                    "debug": true,
                     "songs": songs,
-                    "volume": 1,
+                    "volume": 100,
                     "autoplay": true,
+                    "bindings": {
+                        37: 'prev',
+                        39: 'next',
+                        32: 'play_pause'
+                      },
                     "callbacks": {
-                        "before_play": function() {
-                            initializeVisualizer(document.getElementById("canvas2"), Amplitude.audio());
+                        "before_play": function () {
+                            initializeVisualizer(document.getElementById("canvas"), Amplitude.audio());
                             self.currentTrack = self.playlist[Amplitude.getActiveIndex()];
-                       }
+                        }
                     }
+                });
+                document.getElementById('song-played-progress').addEventListener('click', function (e) {
+                    var offset = this.getBoundingClientRect();
+                    var x = e.pageX - offset.left;
+                    Amplitude.setSongPlayedPercentage((parseFloat(x) / parseFloat(this.offsetWidth)) * 100);
                 });
 
 
             });
+
+        }, created: function () {
         }
     });
 
     return (module);
 })();
+
+window.onkeydown = function(e) {
+    return !(e.keyCode == 32);
+};
