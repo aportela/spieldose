@@ -77,8 +77,8 @@ const getPlayerData = function () {
                             "album": playerData.tracks[i].album,
                             "year": playerData.tracks[i].year,
                             "genre": playerData.tracks[i].genre,
-                            "url": "http://localhost/api/track/get/" + playerData.tracks[i].id,
-                            "cover_art_url": playerData.tracks[i].image
+                            "url": "/api/track/get/" + playerData.tracks[i].id,
+                            "image": playerData.tracks[i].image
                         }
                     );
                     }
