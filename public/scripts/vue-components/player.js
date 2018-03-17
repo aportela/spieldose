@@ -3,57 +3,56 @@ var player = (function () {
 
     var template = function() {
         return `
+            <div class="columns">
+                <div class="column is-5">
+                    <div id="player" class="box is-paddingless is-radiusless	">
+                        <img id="album-cover" amplitude-song-info="cover_art_url" amplitude-main-song-info="true" src="https://lastfm-img2.akamaized.net/i/u/300x300/05668b8da51f4163bb0f87273ab0e10c.png">
+                        <canvas id="spectrum-analyzer"></canvas>
 
-                    <div class="columns">
-                        <div class="column is-5">
-                            <div id="player" class="box is-paddingless is-radiusless	">
-                                <img id="album-cover" amplitude-song-info="cover_art_url" amplitude-main-song-info="true" src="https://lastfm-img2.akamaized.net/i/u/300x300/05668b8da51f4163bb0f87273ab0e10c.png">
-                                <canvas id="spectrum-analyzer"></canvas>
-
-                                <div id="player-progress-bar-container">
-                                    <progress id="song-played-progress" amplitude-main-song-played-progress="true" class="amplitude-song-played-progress"></progress>
-                                </div>
-                                <div id="player-time-container" class="is-clearfix">
-                                    <span id="song-current-time" class="is-pulled-left has-text-grey"><span amplitude-main-current-minutes="true" class="amplitude-current-minutes">01</span>:<span amplitude-main-current-seconds="true" class="amplitude-current-seconds">16</span></span>
-                                    <span id="song-duration" class="is-pulled-right has-text-grey"><span amplitude-main-duration-minutes="true" class="amplitude-duration-minutes">03</span>:<span amplitude-main-duration-seconds="true" class="amplitude-duration-seconds">08</span></span>
-                                </div>
-                                <div id="player-metadata-container" class="has-text-centered">
-                                    <p v-if="currentTrack && currentTrack.name" class="title is-4 has-text-light">{{ currentTrack.name }}</p>
-                                    <p v-else class="title is-4 has-text-light">[unknown song title]</p>
-                                    <p v-if="currentTrack && currentTrack.artist" class="subtitle is-5 has-text-grey-light">{{ currentTrack.artist }}</p>
-                                    <p v-else class="subtitle is-5 has-text-grey-light">[unknown song artist]</p>
-                                </div>
-                                <div id="player-controls">
-                                    <div class="has-text-centered" id="player-buttons">
-                                        <span class="icon amplitude-shuffle amplitude-shuffle-off"><i class="fa fa-2x fa-random"></i></span>
-                                        <span class="icon amplitude-repeat amplitude-repeat-of"><i class="fa fa-2x fa-repeat"></i></span>
-                                        <span class="icon amplitude-prev "><i class="fa fa-2x fa-step-backward"></i></span>
-                                        <span class="icon amplitude-play-pause amplitude-playing has-text-white-bis" amplitude-main-play-pause="true"><i class="fa fa-2x fa-play"></i></span>
-                                        <span class="icon amplitude-next"><i class="fa fa-2x fa-step-forward"></i></span>
-                                        <span class="icon"><i class="fa fa-2x fa-heart"></i></span>
-                                        <span class="icon"><i class="fa fa-2x fa-save"></i></span>
-                                    </div>
-                                    <div id="player-volume-control">
-                                        <span class="icon"><i class="fa fa-2x fa-volume-up"></i></span>
-                                        <input type="range" list="tickmarks" class="amplitude-volume-slider" step=".1">
-                                    </div>
-                                </div>
-                            </div>
+                        <div id="player-progress-bar-container">
+                            <progress id="song-played-progress" amplitude-main-song-played-progress="true" class="amplitude-song-played-progress"></progress>
                         </div>
-                        <div class="column is-7">
-                            <div id="playlist" class="box is-paddingless is-radiusless	">
-                                <div v-for="(track, index) in playlist"  class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': currentTrack && currentTrack.id == track.id}">
-                                    <span v-if="currentTrack && currentTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
-                                    <span v-else class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
-                                    <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
-                                    <p class="is-pulled-left is-size-6">
-                                        <span class="song-name">{{ track.name }}</span><br><span class="artist-name">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
-                                    </p>
-                                    <span class="is-pulled-right is-size-6">{{ track.playtimeString }}</span>
-                                </div>
+                        <div id="player-time-container" class="is-clearfix">
+                            <span id="song-current-time" class="is-pulled-left has-text-grey"><span amplitude-main-current-minutes="true" class="amplitude-current-minutes">01</span>:<span amplitude-main-current-seconds="true" class="amplitude-current-seconds">16</span></span>
+                            <span id="song-duration" class="is-pulled-right has-text-grey"><span amplitude-main-duration-minutes="true" class="amplitude-duration-minutes">03</span>:<span amplitude-main-duration-seconds="true" class="amplitude-duration-seconds">08</span></span>
+                        </div>
+                        <div id="player-metadata-container" class="has-text-centered">
+                            <p v-if="currentTrack && currentTrack.name" class="title is-4 has-text-light">{{ currentTrack.name }}</p>
+                            <p v-else class="title is-4 has-text-light">[unknown song title]</p>
+                            <p v-if="currentTrack && currentTrack.artist" class="subtitle is-5 has-text-grey-light">{{ currentTrack.artist }}</p>
+                            <p v-else class="subtitle is-5 has-text-grey-light">[unknown song artist]</p>
+                        </div>
+                        <div id="player-controls">
+                            <div class="has-text-centered" id="player-buttons">
+                                <span class="icon amplitude-shuffle amplitude-shuffle-off"><i class="fa fa-2x fa-random"></i></span>
+                                <span class="icon amplitude-repeat amplitude-repeat-of"><i class="fa fa-2x fa-repeat"></i></span>
+                                <span class="icon amplitude-prev "><i class="fa fa-2x fa-step-backward"></i></span>
+                                <span class="icon amplitude-play-pause amplitude-playing has-text-white-bis" amplitude-main-play-pause="true"><i class="fa fa-2x fa-play"></i></span>
+                                <span class="icon amplitude-next"><i class="fa fa-2x fa-step-forward"></i></span>
+                                <span class="icon"><i class="fa fa-2x fa-heart"></i></span>
+                                <span class="icon"><i class="fa fa-2x fa-save"></i></span>
+                            </div>
+                            <div id="player-volume-control">
+                                <span class="icon"><i class="fa fa-2x fa-volume-up"></i></span>
+                                <input type="range" list="tickmarks" class="amplitude-volume-slider" step=".1">
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="column is-7">
+                    <div id="playlist" class="box is-paddingless is-radiusless	">
+                        <div v-for="(track, index) in playlist"  class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': currentTrack && currentTrack.id == track.id}">
+                            <span v-if="currentTrack && currentTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
+                            <span v-else class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
+                            <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
+                            <p class="is-pulled-left is-size-6">
+                                <span class="song-name">{{ track.name }}</span><br><span class="artist-name">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
+                            </p>
+                            <span class="is-pulled-right is-size-6">{{ track.playtimeString }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
     `;
     };
 
@@ -210,7 +209,7 @@ var player = (function () {
                 self.playlist = songs;
                 Amplitude.init({
                     "songs": songs,
-                    "volume": 1,
+                    "volume": .35,
                     "autoplay": true,
                     "default_album_art": "http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png",
                     "callbacks": {
