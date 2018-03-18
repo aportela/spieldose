@@ -52,7 +52,7 @@ var player = (function () {
                 </div>
                 <div class="column is-7">
                     <div id="playlist" class="box is-paddingless is-radiusless	">
-                        <div v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
+                        <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
                             <span v-else v-on:click="playerData.playAtIdx(index);" class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
                             <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
@@ -225,6 +225,12 @@ var player = (function () {
                     } else {
                         //initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                     }
+                    if (this.playerData.actualTrackIdx >= 0) {
+                        var element = document.getElementById("playlist-item-" + this.playerData.actualTrackIdx);
+                        if (element) {
+                            element.scrollIntoView();
+                        }
+                    }
                 } else {
                     this.$refs.player.pause();
                 }
@@ -275,6 +281,9 @@ var player = (function () {
                 aa.addEventListener("volumechange", function (v) {
                     self.volume = aa.volume;
                 });
+
+
+
             });
             /*
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
