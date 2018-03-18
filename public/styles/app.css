@@ -667,6 +667,11 @@ div#player-buttons span
     opacity: 0.5;
 }
 
+div#player-volume-control span
+{
+    cursor: pointer;
+}
+
 div#player-buttons span#btn-play, div#player-buttons span#btn-pause
 {
     color: #fff;
