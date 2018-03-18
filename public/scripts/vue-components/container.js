@@ -44,6 +44,12 @@ var container = (function () {
                                         <span>Browse paths</span>
                                     </a>
                                 </li>
+                                <li v-bind:class="{ 'is-active': $route.name == 'dashboard'}">
+                                    <a v-on:click.prevent="$router.push({ name: 'dashboard' })">
+                                        <span class="icon is-small"><i class="fa fa-line-chart"></i></span>
+                                        <span>Stats</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <keep-alive>
