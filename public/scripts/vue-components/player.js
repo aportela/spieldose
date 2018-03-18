@@ -7,9 +7,13 @@ var player = (function () {
                 <div class="column is-5">
                     <div id="player" class="box is-paddingless is-radiusless">
                         <img id="album-cover" v-bind:src="coverSrc">
+                        <!--
                         <canvas id="canvas"></canvas>
+                        -->
                         <audio id="audio" ref="player" class="" controls autoplay v-bind:src="streamUrl" />
+                        <!--
                         <progress id="song-played-progress" v-bind:value="progressv" max="1"></progress>
+                        -->
                         <div id="player-time-container" class="is-clearfix">
                             <span id="song-current-time" class="is-pulled-left has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
                             <span id="song-duration" class="is-pulled-right has-text-grey">{{ nowPlayingLength }}</span>
@@ -46,7 +50,7 @@ var player = (function () {
                     <div id="playlist" class="box is-paddingless is-radiusless	">
                         <div v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
-                            <span v-else class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
+                            <span v-else v-on:click="playerData.playAtIdx(index);" class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
                             <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
                             <p class="is-pulled-left is-size-6">
                                 <span class="song-name">{{ track.title }}</span><br><span class="artist-name">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
@@ -191,11 +195,11 @@ var player = (function () {
                     var playPromise = this.$refs.player.play();
                     if (playPromise !== undefined) {
                         playPromise.then(function () {
-                            initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
+                            //initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                         }).catch(function (error) {
                         });
                     } else {
-                        initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
+                        //initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                     }
                 } else {
                     this.$refs.player.pause();
@@ -223,7 +227,7 @@ var player = (function () {
         mounted: function () {
             var self = this;
             self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
-                initializeVisualizer(document.getElementById("canvas"), document.getElementById("audio"));
+                //initializeVisualizer(document.getElementById("canvas"), document.getElementById("audio"));
                 self.playerData.play();
                 /*
                 function formatTime(seconds) {
@@ -245,12 +249,13 @@ var player = (function () {
                     self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
                 });
             });
-
+            /*
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
                 var x = e.pageX - offset.left;
                 self.$refs.player.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.$refs.player.duration / 100;
             });
+            */
         }, created: function () {
         }
     });
