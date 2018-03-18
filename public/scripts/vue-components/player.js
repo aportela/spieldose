@@ -6,7 +6,7 @@ var player = (function () {
             <div class="columns">
                 <div class="column is-5">
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-                        <img id="album-cover" v-bind:src="coverSrc">
+                        <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
                         <nav class="level is-marginless">
                             <div class="level-left">
@@ -93,7 +93,8 @@ var player = (function () {
                 progressv: 0,
                 volume: 1,
                 preMuteVolume: 1,
-                audio: null
+                audio: null,
+                vinylRotationEffect: true
             });
         },
         filters: {
