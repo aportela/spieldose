@@ -681,7 +681,8 @@ div#player-buttons span
     cursor: pointer;
 }
 
-div#player-buttons span#btn-is-loved, span#btn-repeat-on {
+div#player-buttons span.btn-active
+{
     color: deeppink;
 }
 
