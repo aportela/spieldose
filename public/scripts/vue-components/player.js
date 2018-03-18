@@ -33,7 +33,7 @@ var player = (function () {
                                 <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fa fa-2x fa-step-forward"></i></span>
                                 <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fa fa-2x fa-heart"></i></span>
                                 <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fa fa-2x fa-heart"></i></span>
-                                <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"title="Download current track"><i class="fa fa-2x fa-save"></i></span>
+                                <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();><i class="fa fa-2x fa-save"></i></span>
                             </div>
                             <div id="player-volume-control">
                                 <div class="columns">
@@ -123,7 +123,7 @@ var player = (function () {
                 return (this.playerData.isPaused);
             },
             isMuted: function () {
-                return (this.audio && this.audio.muted);
+                return(false);
             },
             isStopped: function () {
                 return (this.playerData.isStopped);
@@ -279,7 +279,6 @@ var player = (function () {
                 self.volume = aa.volume;
             });
             initializeVisualizer(document.getElementById("canvas"), self.audio);
-
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
                 var x = e.pageX - offset.left;
