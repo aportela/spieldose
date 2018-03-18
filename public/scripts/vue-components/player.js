@@ -5,22 +5,24 @@ var player = (function () {
         return `
             <div class="columns">
                 <div class="column is-5">
-                    <div id="player" class="box is-paddingless is-radiusless">
+                    <div id="player" class="box is-paddingless is-radiusless is-unselectable">
                         <img id="album-cover" v-bind:src="coverSrc">
-                        <!--
                         <canvas id="canvas"></canvas>
-                        -->
-                        <audio id="audio" ref="player" class="" controls autoplay v-bind:src="streamUrl" />
-                        <!--
-                        <progress id="song-played-progress" v-bind:value="progressv" max="1"></progress>
-                        -->
-                        <div id="player-time-container" class="is-clearfix">
-                            <span id="song-current-time" class="is-pulled-left has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
-                            <span id="song-duration" class="is-pulled-right has-text-grey">{{ nowPlayingLength }}</span>
-                        </div>
+                        <audio id="audio" ref="player" class="is-hidden" controls autoplay v-bind:src="streamUrl" />
+                        <nav class="level is-marginless">
+                            <div class="level-left">
+                                <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
+                            </div>
+                            <div class="level-item">
+                                <input id="song-played-progress" class="is-pulled-left" type="range" v-model="progressv" min="0" max="1" step="0.01" />
+                            </div>
+                            <div class="level-right">
+                                <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
+                            </div>
+                        </nav>
                         <div id="player-metadata-container" class="has-text-centered">
-                            <p class="title is-4 has-text-light">{{ nowPlayingTitle }}</p>
-                            <p class="subtitle is-5 has-text-grey-light">{{ nowPlayingArtist }}</p>
+                            <h1 class="title is-4 has-text-light">{{ nowPlayingTitle }}</h1>
+                            <h2 class="subtitle is-5 has-text-grey-light">{{ nowPlayingArtist }}</h2>
                         </div>
                         <div id="player-controls" class="is-unselectable">
                             <div class="has-text-centered" id="player-buttons">
@@ -53,9 +55,16 @@ var player = (function () {
                 <div class="column is-7">
                     <div id="playlist" class="box is-paddingless is-radiusless	">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
-                            <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light"><span class="icon"><i class="fa fa-2x fa-volume-up"></i></span></span>
-                            <span v-else v-on:click="playerData.playAtIdx(index);" class="is-pulled-left has-text-grey-light"><span class="icon"><i class="fa fa-2x fa-play"></i></span></span>
-                            <span class="is-pulled-left has-text-grey-light is-size-7">{{ index + 1 }}</span>
+                            <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
+                                <span class="icon">
+                                    <i class="fa fa-2x fa-volume-up"></i>
+                                </span>
+                            </span>
+                            <span v-else v-on:click="playerData.playAtIdx(index);" class="is-pulled-left has-text-grey-light">
+                                <span class="icon">
+                                    {{ index + 1 }}
+                                </span>
+                            </span>
                             <p class="is-pulled-left is-size-6">
                                 <span class="song-name">{{ track.title }}</span><br><span class="artist-name">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
                             </p>
@@ -219,11 +228,8 @@ var player = (function () {
                     var playPromise = this.$refs.player.play();
                     if (playPromise !== undefined) {
                         playPromise.then(function () {
-                            //initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                         }).catch(function (error) {
                         });
-                    } else {
-                        //initializeVisualizer(document.getElementById("canvas"), document.getElementById("player-audio"));
                     }
                     if (this.playerData.actualTrackIdx >= 0) {
                         var element = document.getElementById("playlist-item-" + this.playerData.actualTrackIdx);
@@ -281,17 +287,16 @@ var player = (function () {
                 aa.addEventListener("volumechange", function (v) {
                     self.volume = aa.volume;
                 });
+                initializeVisualizer(document.getElementById("canvas"), aa);
 
 
 
             });
-            /*
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
                 var x = e.pageX - offset.left;
                 self.$refs.player.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.$refs.player.duration / 100;
             });
-            */
         }, created: function () {
         }
     });

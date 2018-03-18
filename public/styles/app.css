@@ -621,26 +621,11 @@ canvas#canvas
 
 /* song progress */
 
-progress
+input#song-played-progress
 {
-    width: 100%;
-    -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  height: 4px;
-  cursor: pointer;
-  background: transparent;
+    width: 70%;
+    cursor: pointer;
 }
-
-progress[value]::-webkit-progress-bar {
-    background: none;
-  }
-  progress[value]::-webkit-progress-value {
-    background: deeppink;
-  }
-  progress[value]::-moz-progress-bar {
-    background: deeppink;
-  }
 
 /* song progress */
 
@@ -714,34 +699,6 @@ div#player-volume-control
 div#player-volume-control input#volume-range
 {
     width: 100%;
-    margin-bottom: 2px;
-}
-
-
-input[type=range]{
-    -webkit-appearance: none;
-}
-
-input[type=range]::-webkit-slider-runnable-track {
-    width: 300px;
-    height: 2px;
-    background: #4a4a4a;
-    border: none;
-}
-
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: none;
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background: #fff;
-    margin-top: -5px;
-    cursor: pointer;
-}
-
-input[type=range]:focus {
-    outline: none;
 }
 
 div#player-volume-control span.amplitude-mute
@@ -784,7 +741,6 @@ div#player-buttons span.icon, div#volume-container span.icon
     width: 4rem !important;
     height: 4rem !important;
 }
-
 
 /* player controls */
 
