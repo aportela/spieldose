@@ -667,14 +667,15 @@ div#player-buttons span
     opacity: 0.5;
 }
 
-div#player-buttons span:hover {
-    color: #ccc;
+div#player-buttons span#btn-play, div#player-buttons span#btn-pause
+{
+    color: #fff;
     opacity: 1;
+
 }
 
-div#player-buttons span.amplitude-play-pause
-{
-    border: 4px solid hsl(0, 0%, 98%);
+div#player-buttons span:hover {
+    color: #fff;
     opacity: 1;
 }
 
@@ -687,26 +688,6 @@ div#player-buttons span.icon, div#volume-container span.icon
 div#player-buttons span.btn-active
 {
     color: deeppink;
-}
-
-div#player-buttons span.amplitude-play-pause.amplitude-playing i.fa-play
-{
-    display: block;
-}
-
-div#player-buttons span.amplitude-play-pause.amplitude-playing i.fa-pause
-{
-    display: none;
-}
-
-div#player-buttons span.amplitude-play-pause.amplitude-paused i.fa-play
-{
-    display: none;
-}
-
-div#player-buttons span.amplitude-play-pause.amplitude-paused i.fa-pause
-{
-    display: block;
 }
 
 div#player-volume-control
