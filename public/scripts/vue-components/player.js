@@ -20,8 +20,8 @@ var player = (function () {
                             </div>
                         </nav>
                         <div id="player-metadata-container" class="has-text-centered">
-                            <h1 class="title is-4 has-text-light">{{ nowPlayingTitle }}</h1>
-                            <h2 class="subtitle is-5 has-text-grey-light">{{ nowPlayingArtist }}</h2>
+                            <h1 class="title is-4 has-text-light cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
+                            <h2 class="subtitle is-5 has-text-grey-light cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
                         </div>
                         <div id="player-controls" class="is-unselectable">
                             <div class="has-text-centered" id="player-buttons">

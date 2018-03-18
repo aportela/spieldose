@@ -643,11 +643,11 @@ span#song-duration {
 
 /* song metadata */
 
-div#player-metadata-container p
+div#player-metadata-container h1, div#player-metadata-container h2
 {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    line-height: normal;
 }
 
 /* song metadata */
