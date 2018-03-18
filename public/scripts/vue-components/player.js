@@ -8,7 +8,6 @@ var player = (function () {
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable">
                         <img id="album-cover" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
-                        <audio id="audio" ref="player" class="is-hidden" controls autoplay v-bind:src="streamUrl" />
                         <nav class="level is-marginless">
                             <div class="level-left">
                                 <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
@@ -73,7 +72,7 @@ var player = (function () {
                     </div>
                 </div>
             </div>
-    `;
+        `;
     };
 
     var module = Vue.component('spieldose-player-component', {
@@ -93,6 +92,7 @@ var player = (function () {
                 currentPlayedSeconds: null,
                 progressv: 0,
                 volume: 1,
+                audio: null
             });
         },
         filters: {
@@ -122,8 +122,8 @@ var player = (function () {
             isPaused: function () {
                 return (this.playerData.isPaused);
             },
-            isMuted: function() {
-                return(this.$refs.player && this.$refs.player.muted);
+            isMuted: function () {
+                return (this.audio && this.audio.muted);
             },
             isStopped: function () {
                 return (this.playerData.isStopped);
@@ -203,8 +203,8 @@ var player = (function () {
         },
 
         methods: {
-            toggleMute: function() {
-                this.$refs.player.muted = ! this.$refs.player.muted;
+            toggleMute: function () {
+                this.audio.muted = !this.audio.muted;
             }
         },
         watch: {
@@ -215,17 +215,18 @@ var player = (function () {
                 }
             },
             */
-            volume: function(value) {
-                this.$refs.player.volume = value;
+            volume: function (value) {
+                this.audio.volume = value;
             },
             streamUrl: function (value) {
                 if (value) {
+                    this.audio.src = this.streamUrl;
                     if (this.isPlaying || this.isPaused) {
-                        this.$refs.player.pause();
-                        this.$refs.player.currentTime = 0;
+                        this.audio.pause();
+                        this.audio.currentTime = 0;
                     }
-                    this.$refs.player.load();
-                    var playPromise = this.$refs.player.play();
+                    this.audio.load();
+                    var playPromise = this.audio.play();
                     if (playPromise !== undefined) {
                         playPromise.then(function () {
                         }).catch(function (error) {
@@ -238,66 +239,58 @@ var player = (function () {
                         }
                     }
                 } else {
-                    this.$refs.player.pause();
+                    this.audio.pause();
                 }
             },
             isPlaying: function (newValue) {
                 if (newValue) {
-                    this.$refs.player.play();
+                    this.audio.play();
                 }
             },
             isPaused: function (newValue) {
                 if (newValue == false) {
-                    this.$refs.player.play();
+                    this.audio.play();
                 } else {
-                    this.$refs.player.pause();
+                    this.audio.pause();
                 }
             },
             isStopped: function (newValue) {
                 if (newValue) {
-                    this.$refs.player.pause();
-                    this.$refs.player.currentTime = 0;
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
                 }
             }
         },
         mounted: function () {
             var self = this;
-            self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
-                //initializeVisualizer(document.getElementById("canvas"), document.getElementById("audio"));
-                self.playerData.play();
-                /*
-                function formatTime(seconds) {
-                    var minutes = Math.floor(seconds / 60);
-                    minutes = (minutes >= 10) ? minutes : "0" + minutes;
-                    var seconds = Math.floor(seconds % 60);
-                    seconds = (seconds >= 10) ? seconds : "0" + seconds;
-                    return minutes + ":" + seconds;
-                  }
-                  */
-                let aa = document.getElementsByTagName("audio")[0];
-                aa.addEventListener("timeupdate", function (track) {
-                    var currentProgress = aa.currentTime / aa.duration;
-                    if (!isNaN(currentProgress)) {
-                        self.progressv = currentProgress.toFixed(2);
-                    } else {
-                        self.progressv = 0;
-                    }
-                    self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
-                });
-                aa.addEventListener("volumechange", function (v) {
-                    self.volume = aa.volume;
-                });
-                initializeVisualizer(document.getElementById("canvas"), aa);
+            this.audio = document.createElement('audio');
 
-
-
+            let aa = self.audio;
+            aa.addEventListener("timeupdate", function (track) {
+                var currentProgress = aa.currentTime / aa.duration;
+                if (!isNaN(currentProgress)) {
+                    self.progressv = currentProgress.toFixed(2);
+                } else {
+                    self.progressv = 0;
+                }
+                self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
             });
+            aa.addEventListener("volumechange", function (v) {
+                self.volume = aa.volume;
+            });
+            initializeVisualizer(document.getElementById("canvas"), self.audio);
+
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
                 var x = e.pageX - offset.left;
-                self.$refs.player.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.$refs.player.duration / 100;
+                self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
             });
         }, created: function () {
+            var self = this;
+            self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
+                self.playerData.play();
+            });
+
         }
     });
 
