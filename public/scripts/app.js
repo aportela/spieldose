@@ -147,7 +147,7 @@ const getPlayerData = function () {
         }
     };
     playerData.toggleShuffleMode = function () {
-        playerData.shuffleTracks = !playerData.shuffleTracks
+        playerData.shuffleTracks = !playerData.shuffleTracks;
     };
     playerData.playPreviousTrack = function () {
         if (playerData.actualTrackIdx > 0) {
