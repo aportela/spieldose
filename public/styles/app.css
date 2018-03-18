@@ -768,13 +768,9 @@ div.playlist-element.current
     background-color: #30363e;
 }
 
-div.playlist-element p
+div.playlist-element span.icon
 {
-    margin: 0px 8px;
-}
-
-div.playlist-element span.is-pulled-right
-{
+    cursor: pointer;
 }
 
 div.playlist-element:not(:last-child) {
@@ -792,7 +788,7 @@ div.playlist-element p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
+    margin: 0px 8px;
 }
 
 div#playlist::-webkit-scrollbar-track
@@ -804,7 +800,6 @@ div#playlist::-webkit-scrollbar-track
 div#playlist::-webkit-scrollbar
 {
 	width: 10px;
-
 	background-color: #000000;
 }
 
