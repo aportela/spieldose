@@ -28,8 +28,8 @@ var player = (function () {
                                 <span v-bind:class="{ 'btn-active': playerData.shuffleTracks }" v-on:click.prevent="playerData.toggleShuffleMode();" class="icon"><i class="fa fa-2x fa-random"></i></span>
                                 <span v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fa fa-2x fa-repeat"></i></span>
                                 <span id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fa fa-2x fa-step-backward"></i></span>
-                                <span id="btn-play-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon has-text-white-bis"><i class="fa fa-2x fa-pause"></i></span>
-                                <span id="btn-play-play" v-on:click.prevent="playerData.play();" v-else class="icon has-text-white-bis"><i class="fa fa-2x fa-play"></i></span>
+                                <span id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon has-text-white-bis"><i class="fa fa-2x fa-pause"></i></span>
+                                <span id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon has-text-white-bis"><i class="fa fa-2x fa-play"></i></span>
                                 <span id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fa fa-2x fa-step-forward"></i></span>
                                 <span v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fa fa-2x fa-heart"></i></span>
                                 <span v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fa fa-2x fa-heart"></i></span>
