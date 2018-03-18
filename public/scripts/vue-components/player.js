@@ -92,6 +92,7 @@ var player = (function () {
                 currentPlayedSeconds: null,
                 progressv: 0,
                 volume: 1,
+                preMuteVolume: 1,
                 audio: null
             });
         },
@@ -204,17 +205,16 @@ var player = (function () {
 
         methods: {
             toggleMute: function () {
+                if (! this.audio.muted) {
+                    this.preMuteVolume = this.audio.volume;
+                    this.audio.volume = 0;
+                } else {
+                    this.audio.volume = this.preMuteVolume
+                }
                 this.audio.muted = !this.audio.muted;
             }
         },
         watch: {
-            /*
-            isMuted: function(value) {
-                if (value) {
-                    this.volume = 0;
-                }
-            },
-            */
             volume: function (value) {
                 this.audio.volume = value;
             },
