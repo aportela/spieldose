@@ -65,6 +65,7 @@ const getPlayerData = function () {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
+                    /*
                     let songs = [];
                     for (let i = 0; i < playerData.tracks.length; i++) {
                         songs.push(
@@ -83,6 +84,7 @@ const getPlayerData = function () {
                     );
                     }
                     bus.$emit("setPlayList", songs);
+                    */
                 }
                 playerData.loading = false;
                 if (callback && typeof callback === "function") {
