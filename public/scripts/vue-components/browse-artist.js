@@ -75,9 +75,9 @@ var browseArtist = (function () {
                     <div class="browse-album-item" v-for="album in artist.albums" v-show="! loading">
                         <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                             <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image"/>
-                            <img class="album-thumbnail" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                            <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
                             <i class="fa fa-play fa-4x"></i>
-                            <img class="vinyl no-cover" src="http://fc08.deviantart.net/fs17/f/2007/170/9/8/Vinyl_Disc_Icon_Updated_by_jordygreen.png" />
+                            <img class="vinyl no-cover" src="images/vinyl.png" />
                         </a>
                         <div class="album-info">
                             <p class="album-name">{{ album.name }}</p>

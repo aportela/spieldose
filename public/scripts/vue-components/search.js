@@ -39,7 +39,7 @@ var search = (function () {
                         <div class="media-left">
                             <figure class="image is-48x48">
                                 <img class="border-radius-50" v-if="item.image" v-bind:src="item.image"/>
-                                <img class="border-radius-50" v-else="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                                <img class="border-radius-50" v-else="" src="images/image-album-not-set.png"/>
                             </figure>
                         </div>
                         <div class="media-content">
