@@ -35,13 +35,17 @@ var player = (function () {
                                 <span id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"title="Download current track"><i class="fa fa-2x fa-save"></i></span>
                             </div>
                             <div id="player-volume-control">
-                                <span class="icon">
-                                    <i class="fa fa-2x fa-volume-up"></i>
-                                    <!--
-                                    <i class="fa fa-2x fa-volume-off"></i>
-                                    -->
-                                </span>
-                                <input type="range" />
+                                <div class="columns">
+                                    <div class="column is-narrow">
+                                        <span class="icon has-text-white-bis" v-on:click.prevent="toggleMute">
+                                            <i v-if="volume > 0" class="fa fa-2x fa-volume-up"></i>
+                                            <i v-else class="fa fa-2x fa-volume-off"></i>
+                                        </span>
+                                    </div>
+                                    <div class="column">
+                                        <input id="volume-range" type="range" v-model="volume" min="0" max="1" step="0.05" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,6 +83,7 @@ var player = (function () {
                 currentTrack: null,
                 currentPlayedSeconds: null,
                 progressv: 0,
+                volume: 1,
             });
         },
         filters: {
@@ -108,12 +113,15 @@ var player = (function () {
             isPaused: function () {
                 return (this.playerData.isPaused);
             },
+            isMuted: function() {
+                return(this.$refs.player && this.$refs.player.muted);
+            },
             isStopped: function () {
                 return (this.playerData.isStopped);
             },
             coverSrc: function () {
-                if (this.currentTrack && this.currentTrack.image) {
-                    return ("/api/thumbnail?url=" + this.currentTrack.image);
+                if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
+                    return ("/api/thumbnail?url=" + this.playerData.actualTrack.image);
                 } else {
                     return ('images/vinyl.png');
                 }
@@ -184,7 +192,23 @@ var player = (function () {
                 return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             }
         },
+
+        methods: {
+            toggleMute: function() {
+                this.$refs.player.muted = ! this.$refs.player.muted;
+            }
+        },
         watch: {
+            /*
+            isMuted: function(value) {
+                if (value) {
+                    this.volume = 0;
+                }
+            },
+            */
+            volume: function(value) {
+                this.$refs.player.volume = value;
+            },
             streamUrl: function (value) {
                 if (value) {
                     if (this.isPlaying || this.isPaused) {
@@ -247,6 +271,9 @@ var player = (function () {
                         self.progressv = 0;
                     }
                     self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+                });
+                aa.addEventListener("volumechange", function (v) {
+                    self.volume = aa.volume;
                 });
             });
             /*
