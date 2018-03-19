@@ -132,7 +132,7 @@ var player = (function () {
             },
             coverSrc: function () {
                 if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
-                    return ("/api/thumbnail?url=" + this.playerData.actualTrack.image);
+                    return ("api/thumbnail?url=" + this.playerData.actualTrack.image);
                 } else {
                     return ('images/vinyl.png');
                 }
