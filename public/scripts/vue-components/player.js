@@ -282,6 +282,15 @@ var player = (function () {
             aa.addEventListener("ended", function() {
                 self.playerData.playNextTrack();
             });
+            aa.addEventListener("error", function(e) {
+                // try to load next song on playlist if errors found
+                self.playerData.playNextTrack();
+                // TODO
+                /*
+                switch (e.target.error.code) {
+                }
+                */
+            });
             initializeVisualizer(document.getElementById("canvas"), self.audio);
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
