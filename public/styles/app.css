@@ -572,15 +572,15 @@ div#debug
 
 
 
-
-
-/************* */
-div#player, div#playlist
+.app-content
 {
-    /* border-radius: 10px !important; */
     height: 800px;
     overflow: hidden;
 
+}
+
+.app-content-scroll {
+    overflow-y: scroll;
 }
 
 div#player

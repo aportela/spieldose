@@ -3,7 +3,7 @@ var browseAlbums = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box">
+    <div class="container is-fluid box app-content app-content-scroll">
         <p class="title is-1 has-text-centered">Browse albums</i></p>
         <div v-if="! errors">
             <div class="field has-addons">
