@@ -4,7 +4,7 @@ var player = (function () {
     var template = function () {
         return `
             <div class="columns">
-                <div class="column is-5">
+                <div class="column is-4">
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable app-content">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
@@ -33,7 +33,7 @@ var player = (function () {
                                 <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fa fa-2x fa-step-forward"></i></span>
                                 <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fa fa-2x fa-heart"></i></span>
                                 <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fa fa-2x fa-heart"></i></span>
-                                <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();><i class="fa fa-2x fa-save"></i></span>
+                                <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"><i class="fa fa-2x fa-save"></i></span>
                             </div>
                             <div id="player-volume-control">
                                 <div class="columns">
@@ -51,7 +51,7 @@ var player = (function () {
                         </div>
                     </div>
                 </div>
-                <div class="column is-7">
+                <div class="column is-8">
                     <div id="playlist" class="box is-paddingless is-radiusless app-content">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
