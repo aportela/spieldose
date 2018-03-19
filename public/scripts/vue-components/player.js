@@ -5,7 +5,7 @@ var player = (function () {
         return `
             <div class="columns">
                 <div class="column is-5">
-                    <div id="player" class="box is-paddingless is-radiusless is-unselectable">
+                    <div id="player" class="box is-paddingless is-radiusless is-unselectable app-content">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
                         <nav class="level is-marginless">
@@ -52,7 +52,7 @@ var player = (function () {
                     </div>
                 </div>
                 <div class="column is-7">
-                    <div id="playlist" class="box is-paddingless is-radiusless	">
+                    <div id="playlist" class="box is-paddingless is-radiusless app-content">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
                                 <span class="icon">
@@ -94,7 +94,7 @@ var player = (function () {
                 volume: 1,
                 preMuteVolume: 1,
                 audio: null,
-                vinylRotationEffect: true
+                vinylRotationEffect: false
             });
         },
         filters: {
@@ -279,6 +279,9 @@ var player = (function () {
             aa.addEventListener("volumechange", function (v) {
                 self.volume = aa.volume;
             });
+            aa.addEventListener("ended", function() {
+                self.playerData.playNextTrack();
+            });
             initializeVisualizer(document.getElementById("canvas"), self.audio);
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 var offset = this.getBoundingClientRect();
@@ -296,7 +299,3 @@ var player = (function () {
 
     return (module);
 })();
-
-window.onkeydown = function (e) {
-    return !(e.keyCode == 32);
-};
