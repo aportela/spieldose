@@ -576,7 +576,9 @@ div#debug
 {
     height: 800px;
     overflow: hidden;
-
+    -webkit-box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
+    box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
+    border-radius: 12px !important;
 }
 
 .app-content-scroll {
