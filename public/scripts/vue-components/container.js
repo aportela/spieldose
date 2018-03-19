@@ -34,13 +34,13 @@ var container = (function () {
                                 </li>
                                 <li v-bind:class="{ 'is-active': $route.name == 'playlists'}">
                                     <a v-on:click.prevent="$router.push({ name: 'playlists' })">
-                                        <span class="icon is-small"><i class="fa fa-folder-open"></i></span>
-                                        <span>Browse paths</span>
+                                        <span class="icon is-small"><i class="fa fa-list-alt"></i></span>
+                                        <span>Browse playlists</span>
                                     </a>
                                 </li>
                                 <li v-bind:class="{ 'is-active': $route.name == 'paths'}">
                                     <a v-on:click.prevent="$router.push({ name: 'paths' })">
-                                        <span class="icon is-small"><i class="fa fa-list-alt"></i></span>
+                                        <span class="icon is-small"><i class="fa fa-folder-open"></i></span>
                                         <span>Browse paths</span>
                                     </a>
                                 </li>
