@@ -4,7 +4,7 @@ var player = (function () {
     var template = function () {
         return `
             <div class="columns">
-                <div class="column is-5">
+                <div class="column is-narrow">
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable app-content">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
@@ -51,7 +51,7 @@ var player = (function () {
                         </div>
                     </div>
                 </div>
-                <div class="column is-7">
+                <div class="column">
                     <div id="playlist" class="box is-paddingless is-radiusless app-content">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">

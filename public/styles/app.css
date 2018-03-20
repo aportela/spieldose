@@ -590,6 +590,7 @@ div#debug
 div#player
 {
     background-color: #242B33;
+    width: 512px;
 }
 
 div#playlist
