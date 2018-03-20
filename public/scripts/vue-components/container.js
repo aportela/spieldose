@@ -50,6 +50,12 @@ var container = (function () {
                                         <span>Stats</span>
                                     </a>
                                 </li>
+                                <li>
+                                    <a v-on:click.prevent="signout();">
+                                        <span class="icon is-small"><i class="fa fa-sign-out"></i></span>
+                                        <span>signout</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <keep-alive>
@@ -58,7 +64,7 @@ var container = (function () {
                     </div>
                 </div>
             </section>
-    `;
+        `;
     };
 
     var module = Vue.component('spieldose-app-component', {
@@ -77,6 +83,12 @@ var container = (function () {
                 self.playerData.play();
             });
             */
+        }, methods: {
+            signout: function (e) {
+                bus.$emit("signOut");
+            }, changeSection(routeName) {
+                this.$router.push({ name: routeName });
+            }
         }
     });
 
