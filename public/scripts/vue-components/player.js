@@ -4,7 +4,7 @@ var player = (function () {
     var template = function () {
         return `
             <div class="columns">
-                <div class="column is-4">
+                <div class="column is-5">
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable app-content">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
@@ -51,7 +51,7 @@ var player = (function () {
                         </div>
                     </div>
                 </div>
-                <div class="column is-8">
+                <div class="column is-7">
                     <div id="playlist" class="box is-paddingless is-radiusless app-content">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
@@ -65,7 +65,7 @@ var player = (function () {
                                 </span>
                             </span>
                             <p class="is-pulled-left is-size-6">
-                                <span class="song-name">{{ track.title }}</span><br><span class="artist-name">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
+                                <span class="song-name">{{ track.title }}</span><br><span class="artist-name" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: track.artist } })">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
                             </p>
                             <span class="is-pulled-right is-size-6">{{ track.playtimeString }}</span>
                         </div>
@@ -203,7 +203,6 @@ var player = (function () {
                 return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             }
         },
-
         methods: {
             toggleMute: function () {
                 if (! this.audio.muted) {
