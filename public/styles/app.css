@@ -275,7 +275,7 @@ div.browse-album-item div.album-info p
     text-overflow: ellipsis;
 }
 
-div.browse-album-item div.album-info p.artist-name *
+div.browse-album-item div.album-info p. *
 {
     color: #939aa0;
 }
@@ -336,7 +336,7 @@ div.browse-artist-item div.artist-info
     overflow: hidden;
 }
 
-div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info
+div.browse-artist-item div.artist-info p., div.playlist-item p.playlist-info, div.path-item p.path-info
 {
     margin: 0px;
     font-size: 13px;
@@ -576,9 +576,11 @@ div#debug
 {
     height: 800px;
     overflow: hidden;
+    /*
     -webkit-box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
     box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
     border-radius: 12px !important;
+    */
 }
 
 .app-content-scroll {
@@ -780,6 +782,11 @@ div.playlist-element:not(:last-child) {
 div.playlist-element span.song-name
 {
     color: #55b560;
+}
+
+div.playlist-element span.artist-name
+{
+    cursor: pointer;
 }
 
 div.playlist-element p {
