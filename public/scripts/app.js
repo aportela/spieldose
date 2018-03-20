@@ -482,7 +482,6 @@ const app = new Vue({
                 self.$router.push({ name: 'signin' });
             } else {
                 if (!self.$route.name) {
-                    //self.$router.push({ name: 'dashboard' });
                     self.$router.push({ name: 'player' });
                 }
             }
