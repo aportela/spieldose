@@ -3,6 +3,7 @@ var container = (function () {
 
     var template = function () {
         return `
+            <!--
             <section class="hero is-fullheight is-light is-bold">
                 <div class="hero-body is-paddingless">
                     <div class="container is-fullwidth is-vcentered">
@@ -58,6 +59,20 @@ var container = (function () {
                                 </li>
                             </ul>
                         </div>
+                        <keep-alive>
+                            <router-view></router-view>
+                        </keep-alive>
+                    </div>
+                </div>
+            </section>
+            -->
+            <section class="section is-fullheight is-light is-bold">
+                <div class="columns">
+                    <div class="is-narrow column">
+                        <spieldose-player-component></spieldose-player-component>
+                        <spieldose-menu-component></spieldose-menu-component>
+                    </div>
+                    <div class="column">
                         <keep-alive>
                             <router-view></router-view>
                         </keep-alive>

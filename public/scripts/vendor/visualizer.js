@@ -1,7 +1,7 @@
 //Note: bins needs to be a power of 2
 let displayBins = 512;
-let backgroundColour = "#111111";
-let barColour = "#eee";
+let backgroundColour = "#dbdbdb";
+let barColour = "#7a7a7a";
 let songFont = "15px 'Open Sans'";
 //Where the bottom of the waveform is rendered at (out of 255). I recommend
 //leaving it at 96 since it seems to work well, basically any volume will push

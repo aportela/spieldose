@@ -3,7 +3,7 @@ var search = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box app-content app-content-scroll">
+    <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Search artists, albums, tracks, playlists</p>
         <div v-if="! errors">
             <div class="field">

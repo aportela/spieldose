@@ -138,7 +138,7 @@ var signInUp = (function () {
                 self.errors = false;
                 spieldoseAPI.signIn(this.signInEmail, this.signInPassword, function (response) {
                     if (response.ok) {
-                        self.$router.push({ name: 'player' });
+                        self.$router.push({ name: 'dashboard' });
                     } else {
                         switch (response.status) {
                             case 400:

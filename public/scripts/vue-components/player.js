@@ -3,9 +3,7 @@ var player = (function () {
 
     var template = function () {
         return `
-            <div class="columns">
-                <div class="column is-narrow">
-                    <div id="player" class="box is-paddingless is-radiusless is-unselectable app-content">
+                    <div id="player" class="box is-paddingless is-radiusless is-unselectable">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
                         <canvas id="canvas"></canvas>
                         <nav class="level is-marginless">
@@ -20,16 +18,16 @@ var player = (function () {
                             </div>
                         </nav>
                         <div id="player-metadata-container" class="has-text-centered">
-                            <h1 class="title is-4 has-text-light cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
-                            <h2 class="subtitle is-5 has-text-grey-light cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
+                            <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
+                            <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
                         </div>
                         <div id="player-controls" class="is-unselectable">
                             <div class="has-text-centered" id="player-buttons">
                                 <span title="toggle shuffle mode" v-bind:class="{ 'btn-active': playerData.shuffleTracks }" v-on:click.prevent="playerData.toggleShuffleMode();" class="icon"><i class="fa fa-2x fa-random"></i></span>
                                 <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fa fa-2x fa-repeat"></i></span>
                                 <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fa fa-2x fa-step-backward"></i></span>
-                                <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon has-text-white-bis"><i class="fa fa-2x fa-pause"></i></span>
-                                <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon has-text-white-bis"><i class="fa fa-2x fa-play"></i></span>
+                                <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fa fa-2x fa-pause"></i></span>
+                                <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon"><i class="fa fa-2x fa-play"></i></span>
                                 <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fa fa-2x fa-step-forward"></i></span>
                                 <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fa fa-2x fa-heart"></i></span>
                                 <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fa fa-2x fa-heart"></i></span>
@@ -38,7 +36,7 @@ var player = (function () {
                             <div id="player-volume-control">
                                 <div class="columns">
                                     <div class="column is-narrow">
-                                        <span title="mute/unmute volume" class="icon has-text-white-bis" v-on:click.prevent="toggleMute">
+                                        <span title="mute/unmute volume" class="icon" v-on:click.prevent="toggleMute">
                                             <i v-if="volume > 0" class="fa fa-2x fa-volume-up"></i>
                                             <i v-else class="fa fa-2x fa-volume-off"></i>
                                         </span>
@@ -50,9 +48,10 @@ var player = (function () {
                             </div>
                         </div>
                     </div>
+                    <!--
                 </div>
                 <div class="column">
-                    <div id="playlist" class="box is-paddingless is-radiusless app-content">
+                    <div id="playlist" class="box is-paddingless is-radiusless">
                         <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
                             <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
                                 <span class="icon">
@@ -72,7 +71,8 @@ var player = (function () {
                     </div>
                 </div>
             </div>
-        `;
+            -->
+            `;
     };
 
     var module = Vue.component('spieldose-player-component', {

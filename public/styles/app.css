@@ -564,39 +564,12 @@ div#debug
     text-decoration: none !important;
 }
 
-.no-border
-{
-    border: none;
-}
-
-
-
-
-.app-content
-{
-    height: 800px;
-    overflow: hidden;
-    /*
-    -webkit-box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
-    box-shadow: 8px 8px 12px 4px rgba(34,34,34,0.7);
-    border-radius: 12px !important;
-    */
-}
-
-.app-content-scroll {
-    overflow-y: scroll;
-}
-
 div#player
 {
-    background-color: #242B33;
+    background-color: whitesmoke;
     width: 512px;
 }
 
-div#playlist
-{
-    background-color: #242B33;
-}
 
 img#album-cover
 {
@@ -682,6 +655,7 @@ div#player-buttons, div#volume-control
 div#player-buttons span
 {
     border: 4px solid #202136;
+    border: 4px solid #dbdbdb;
     border-radius: 40px !important;
     cursor: pointer;
     opacity: 0.5;
@@ -694,13 +668,10 @@ div#player-volume-control span
 
 div#player-buttons span#btn-play, div#player-buttons span#btn-pause
 {
-    color: #fff;
     opacity: 1;
-
 }
 
 div#player-buttons span:hover {
-    color: #fff;
     opacity: 1;
 }
 
@@ -712,7 +683,6 @@ div#player-buttons span.icon, div#volume-container span.icon
 
 div#player-buttons span.btn-active
 {
-    color: deeppink;
 }
 
 div#player-volume-control
@@ -753,7 +723,14 @@ div#player-volume-control span.amplitude-mute.amplitude-not-muted i.fa-volume-of
 /* player controls */
 
 
+
 /* playlist */
+
+div#playlist
+{
+    background-color: #242B33;
+}
+
 
 div#playlist
 {

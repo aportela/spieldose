@@ -35,6 +35,12 @@ const getPlayerData = function () {
         currentPlaylistName: null,
         tracks: []
     };
+    playerData.dispose = function() {
+        this.stop();
+        this.actualTrackIdx = 0;
+        this.actualTrack = null;
+        this.tracks = [];
+    };
     playerData.hasTracks = function () {
         return (playerData.tracks && playerData.tracks.length > 0);
     };
@@ -299,11 +305,6 @@ const routes = [
         component: container,
         children: [
             {
-                path: 'player',
-                name : 'player',
-                component: player
-            },
-            {
                 path: 'search',
                 name: 'search',
                 component: search
@@ -482,7 +483,7 @@ const app = new Vue({
                 self.$router.push({ name: 'signin' });
             } else {
                 if (!self.$route.name) {
-                    self.$router.push({ name: 'player' });
+                    self.$router.push({ name: 'dashboard' });
                 }
             }
         } else {

@@ -3,20 +3,44 @@ var menu = (function () {
 
     var template = function () {
         return `
-    <aside class="menu">
-        <hr class="dropdown-divider">
-        <ul class="menu-list">
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'search' }" v-on:click.prevent="$router.push({ name: 'search' })"><i class="fa fa-search"></i> Search</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'dashboard' }" v-on:click.prevent="$router.push({ name: 'dashboard' })"><i class="fa fa-home"></i> dashboard</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'nowPlaying' }" v-on:click.prevent="$router.push({ name: 'nowPlaying' })"><i class="fa fa-headphones"></i> now playing</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'artist' || actualRouteName == 'artists' }" v-on:click.prevent="$router.push({ name: 'artists' })"><i class="fa fa-user"></i> browse artists</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'albums' }" v-on:click.prevent="$router.push({ name: 'albums' })"><i class="fa fa-circle"></i> browse albums</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'paths' }" v-on:click.prevent="$router.push({ name: 'paths' })"><i class="fa fa-folder-open"></i> browse paths</a></li>
-            <li><a v-bind:class="{ 'is-active': actualRouteName == 'playlists' }" v-on:click.prevent="$router.push({ name: 'playlists' })"><i class="fa fa-list-alt"></i> browse playlists</a></li>
-            <li><a v-on:click.prevent="signout();"><i class="fa fa-sign-out"></i> signout</a></li>
-        </ul>
-    </aside>
-    `;
+        <nav class="panel is-unselectable">
+            <p class="panel-heading">
+            Menu
+            </p>
+            <a v-on:click.prevent="$router.push({ name: 'dashboard' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'dashboard'}">
+            <span class="panel-icon"><i class="fa fa-line-chart"></i></span>
+            dashboard
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'nowPlaying' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'nowPlaying'}">
+            <span class="panel-icon"><i class="fa fa-headphones"></i></span>
+            current playlist
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'search' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'search'}">
+            <span class="panel-icon"><i class="fa fa-search"></i></span>
+            search
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'artists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'artists'}">
+            <span class="panel-icon"><i class="fa fa-user"></i></span>
+            browse artists
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'albums' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'albums'}">
+            <span class="panel-icon"><i class="fa fa-circle"></i></span>
+            browse albums
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'paths' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'paths'}">
+            <span class="panel-icon"><i class="fa fa-folder-open"></i></span>
+            browse paths
+            </a>
+            <a v-on:click.prevent="$router.push({ name: 'playlists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'playlists'}">
+            <span class="panel-icon"><i class="fa fa-list-alt"></i></span>
+            browse playlists
+            </a>
+            <a v-on:click.prevent="signout();" class="panel-block">
+            <span class="panel-icon"><i class="fa fa-sign-out"></i></span>
+            signout
+            </a>
+        </nav>
+        `;
     };
 
     /* app (logged) menu component */
@@ -24,6 +48,7 @@ var menu = (function () {
         template: template(),
         data: function () {
             return ({
+                playerData: sharedPlayerData,
                 actualRouteName: null
             });
         },
@@ -37,6 +62,7 @@ var menu = (function () {
         },
         methods: {
             signout: function (e) {
+                this.playerData.dispose();
                 bus.$emit("signOut");
             }, changeSection(routeName) {
                 this.$router.push({ name: routeName });
