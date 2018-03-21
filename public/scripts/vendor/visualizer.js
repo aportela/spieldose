@@ -1,5 +1,5 @@
 //Note: bins needs to be a power of 2
-let displayBins = 1024;
+let displayBins = 512;
 let backgroundColour = "#111111";
 let barColour = "#eee";
 let songFont = "15px 'Open Sans'";
@@ -9,7 +9,7 @@ let songFont = "15px 'Open Sans'";
 let floorLevel = 96;
 
 //Whether to draw the frequencies directly, or scale the x-axis logarithmically and show pitch instead.
-let drawPitch = false;
+let drawPitch = true;
 //Whether to draw the visualisation as a curve instead of discrete bars
 let drawCurved = false;
 //If drawCurved is enabled, this flag fills the area beneath the curve (the same colour as the line)
