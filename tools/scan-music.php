@@ -51,9 +51,6 @@
             }
             $c["scanLogger"]->info("Scanner finished");
             */
-            $params = array();
-            $params[] = (new \Spieldose\Database\DBParam())->str(":base_path", $basePath);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":file_name", basename($filePath));
             $failed = array();
             $directories = \Spieldose\FileSystem::getRecursiveDirectories($musicPath);
             $totalDirectories = count($directories);
