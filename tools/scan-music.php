@@ -21,6 +21,7 @@
             $c = $app->getContainer();
             $c["scanLogger"]->info("Scanner started");
             $dbh = new \Spieldose\Database\DB($c);
+            /*
             if ((new \Spieldose\Database\Version($dbh, $c->get("settings")['database']['type']))->hasUpgradeAvailable()) {
                 $c["scanLogger"]->warning("Process stopped: upgrade database before continue");
                 echo "New database version available, an upgrade is required before continue." . PHP_EOL;
@@ -49,14 +50,7 @@
                 }
             }
             $c["scanLogger"]->info("Scanner finished");
-
-            $fileArray = glob($basePath . '/*', GLOB_NOSORT);
-            foreach($fileArray as $file) {
-                echo $file . PHP_EOL;
-                if (in_array(strtolower($file), array("cover.jpg"))) {
-                    die($file);
-                }
-            }
+            */
             $params = array();
             $params[] = (new \Spieldose\Database\DBParam())->str(":base_path", $basePath);
             $params[] = (new \Spieldose\Database\DBParam())->str(":file_name", basename($filePath));
