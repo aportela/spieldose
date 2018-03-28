@@ -79,9 +79,10 @@
                         COALESCE(MBA.album, F.album_name) as name,
                         COALESCE(MBA.artist, F.album_artist, F.track_artist) AS artist,
                         COALESCE(MBA.year, F.year) AS year,
-                        MBA.image
+                        COALESCE(MBA.image, LOCAL_PATH_ALBUM_COVER.id) AS image
                     FROM FILE F
                     LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
+                    LEFT JOIN LOCAL_PATH_ALBUM_COVER ON LOCAL_PATH_ALBUM_COVER.base_path = F.base_path
                     WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
                     %s
                     %s
@@ -99,6 +100,40 @@
             return($data);
         }
 
+        /**
+         * save local album cover reference
+         *
+         * @param \Spieldose\Database\DB $dbh database handler
+         * @param string $path directory path
+         * @param string $filename album cover filename
+         */
+        public static function saveLocalAlbumCover(\Spieldose\Database\DB $dbh, string $path = "", string $filename = "") {
+            if (! empty($path) && file_exists($path)) {
+                if (! empty($filename) && file_exists($path . DIRECTORY_SEPARATOR . $filename)) {
+                    $params = array(
+                        (new \Spieldose\Database\DBParam())->str(":id", sha1($path)),
+                        (new \Spieldose\Database\DBParam())->str(":base_path", $path),
+                        (new \Spieldose\Database\DBParam())->str(":file_name", $filename),
+                    );
+                    return($dbh->execute("REPLACE INTO LOCAL_PATH_ALBUM_COVER (id, base_path, file_name) VALUES (:id, :base_path, :file_name);", $params));
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("filename");
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("path");
+            }
+        }
+
+        public static function getLocalPath(\Spieldose\Database\DB $dbh, string $id = "") {
+            $results = $dbh->query(" SELECT base_path AS directory, file_name AS filename FROM LOCAL_PATH_ALBUM_COVER WHERE id = :id ", array(
+                (new \Spieldose\Database\DBParam())->str(":id", $id)
+            ));
+            if (count($results) > 0) {
+                return($results[0]->directory . DIRECTORY_SEPARATOR . $results[0]->filename);
+            } else {
+                throw new \Spieldose\Exception\NotFoundException("");
+            }
+        }
     }
 
 ?>
