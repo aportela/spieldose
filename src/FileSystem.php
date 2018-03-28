@@ -22,6 +22,47 @@
             }
             return($files);
         }
+
+        /**
+         * get directory names (recursive)
+         *
+         * @params $path string path of the directory
+         */
+        public static function getRecursiveDirectories(string $path) {
+            $directories = array($path);
+            $rdi = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $path,
+                    \RecursiveDirectoryIterator::SKIP_DOTS
+                ),
+                \RecursiveIteratorIterator::SELF_FIRST,
+                \RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+            );
+            foreach ($rdi as $path => $dir) {
+                if ($dir->isDir()) {
+                    $directories[] = $path;
+                }
+            }
+            return($directories);
+        }
+
+        /**
+         * get mime type of image file
+         */
+        public static function getImageMimeSimple(string $filename) {
+            $mime = "application/octet-stream";
+            $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            switch($extension) {
+                case "jpg":
+                case "jpeg":
+                    $mime = image_type_to_mime_type(IMAGETYPE_JPEG);
+                break;
+                case "png":
+                    $mime = image_type_to_mime_type(IMAGETYPE_PNG);
+                break;
+            }
+            return($mime);
+        }
     }
 
 ?>
