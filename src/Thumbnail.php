@@ -60,6 +60,28 @@
             }
         }
 
+        public static function getLocal(\Spieldose\Database\DB $dbh, string $hash = "") {
+            if (! empty($hash)) {
+                $localPath = \Spieldose\Album::getLocalPath($dbh, $hash);
+                $dir = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . substr($hash, 0, 1) . DIRECTORY_SEPARATOR . substr($hash, 1, 1);
+                $filename = sprintf("%s.jpg", $hash);
+                $thumbPath = sprintf("%s%s%s", $dir, DIRECTORY_SEPARATOR, $filename);
+                if (! file_exists($thumbPath)) {
+                    $thumb = ImageWorkshop::initFromPath($localPath);
+                    if ($thumb->getWidth() > 640) {
+                        $thumb->resizeInPixel(640, null, true);
+                    }
+                    $createFolders = true;
+                    $backgroundColor = null;
+                    $imageQuality = 95;
+                    $thumb->save($dir, $filename, $createFolders, $backgroundColor, $imageQuality);
+                }
+                return($thumbPath);
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("url");
+            }
+        }
+
         public static function getThumbnailUrls(\Spieldose\Database\DB $dbh): array {
             $query = " SELECT DISTINCT(image) FROM MB_CACHE_ALBUM WHERE image IS NOT NULL ORDER BY RANDOM() ";
             $results = $dbh->query($query, array());
