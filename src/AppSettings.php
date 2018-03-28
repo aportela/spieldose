@@ -59,7 +59,7 @@
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
                 'level' => \Monolog\Logger::DEBUG
             ],
-            'albumCoverPathValidFilenames' => [ 'cover.jpg', 'cover.jpeg' , 'cover.png' ]
+            'albumCoverPathValidFilenames' => '{cover, Cover, COVER}.{jpg, JPG, jpeg, JPEG, png, PNG}'
         ],
     ];
 ?>
