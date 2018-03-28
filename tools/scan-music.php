@@ -49,6 +49,33 @@
                 }
             }
             $c["scanLogger"]->info("Scanner finished");
+
+            $fileArray = glob($basePath . '/*', GLOB_NOSORT);
+            foreach($fileArray as $file) {
+                echo $file . PHP_EOL;
+                if (in_array(strtolower($file), array("cover.jpg"))) {
+                    die($file);
+                }
+            }
+            $params = array();
+            $params[] = (new \Spieldose\Database\DBParam())->str(":base_path", $basePath);
+            $params[] = (new \Spieldose\Database\DBParam())->str(":file_name", basename($filePath));
+            $failed = array();
+            $directories = \Spieldose\FileSystem::getRecursiveDirectories($musicPath);
+            $totalDirectories = count($directories);
+            echo sprintf("Scanning %d directories from path: %s%s", $totalDirectories, $musicPath, PHP_EOL);
+            for ($i = 0; $i < $totalDirectories; $i++) {
+                try {
+                    $c["scanLogger"]->debug("Processing " . $directories[$i]);
+                    foreach(glob($directories[$i] . '\\{' . implode(", ",$c["settings"]["albumCoverPathValidFilenames"]) . '}', GLOB_BRACE) as $file) {
+                        \Spieldose\Album::saveLocalAlbumCover($dbh, dirname($file), basename($file));
+                    }
+                } catch (\Throwable $e) {
+                    $c["scanLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
+                    $failed[] = $directories[$i];
+                }
+                \Spieldose\Utils::showProgressBar($i + 1, $totalDirectories, 20);
+            }
         } else {
             echo "Invalid music path" . PHP_EOL;
         }
