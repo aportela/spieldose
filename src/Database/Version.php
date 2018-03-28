@@ -136,6 +136,15 @@
                             PRIMARY KEY([playlist_id], [file_id])
                         );
                     ',
+                ),
+                "1.04" => array(
+                    '
+                        CREATE TABLE `LOCAL_PATH_ALBUM_COVER` (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [base_path] VARCHAR(2048) UNIQUE NOT NULL,
+                            [file_name] VARCHAR(512) NOT NULL
+                        );
+                    '
                 )
             ),
             "PDO_MARIADB" => array(
@@ -234,6 +243,15 @@
                             PRIMARY KEY(`playlist_id`, `file_id`)
                         );
                     ',
+                ),
+                "1.04" => array(
+                    '
+                        CREATE TABLE `LOCAL_PATH_ALBUM_COVER` (
+                            `id` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            `base_path` VARCHAR(2048) UNIQUE NOT NULL,
+                            `file_name` VARCHAR(512) NOT NULL
+                        );
+                    '
                 )
             )
         );
