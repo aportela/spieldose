@@ -72,19 +72,40 @@
         /* user */
 
         $this->get('/thumbnail', function (Request $request, Response $response, array $args) {
-            $file = \Spieldose\Thumbnail::Get($request->getParam("url", ""));
-            if (! empty($file) && file_exists($file)) {
-                $filesize = filesize($file);
-                $f = fopen($file, 'r');
-                fseek($f, 0);
-                $data = fread($f, $filesize);
-                fclose($f);
-                return $response->withStatus(200)
-                ->withHeader('Content-Type', "image/jpeg")
-                ->withHeader('Content-Length', $filesize)
-                ->write($data);
+            $url = $request->getParam("url", "");
+            $hash = $request->getParam("hash", "");
+            if (! empty($url)) {
+                $file = \Spieldose\Thumbnail::Get($url);
+                if (! empty($file) && file_exists($file)) {
+                    $filesize = filesize($file);
+                    $f = fopen($file, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    return $response->withStatus(200)
+                    ->withHeader('Content-Type', "image/jpeg")
+                    ->withHeader('Content-Length', $filesize)
+                    ->write($data);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("url");
+                }
+            } else if (! empty($hash)) {
+                $file = \Spieldose\Thumbnail::GetLocal(new \Spieldose\Database\DB($this), $hash);
+                if (! empty($file) && file_exists($file)) {
+                    $filesize = filesize($file);
+                    $f = fopen($file, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    return $response->withStatus(200)
+                    ->withHeader('Content-Type', "image/jpeg")
+                    ->withHeader('Content-Length', $filesize)
+                    ->write($data);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("hash");
+                }
             } else {
-                return $response->withStatus(302)->withHeader('Location', $request->getParam("url", ""));
+                throw new \Spieldose\Exception\InvalidParamsException("url|hash");
             }
         });
 
