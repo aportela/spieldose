@@ -102,7 +102,7 @@
             $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
             $query = sprintf('
                 SELECT DISTINCT
-                    id,
+                    F.id,
                     F.track_number AS number,
                     COALESCE(MBT.track, F.track_name) AS title,
                     COALESCE(MBA2.artist, F.track_artist) AS artist,
@@ -111,7 +111,7 @@
                     COALESCE(MBA1.year, F.year) AS year,
                     playtime_seconds AS playtimeSeconds,
                     playtime_string AS playtimeString,
-                    MBA1.image AS image,
+                    COALESCE(MBA1.image, LOCAL_PATH_ALBUM_COVER.id) AS image,
                     genre,
                     mime,
                     COALESCE(LF.loved, 0) AS loved
@@ -120,6 +120,7 @@
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
                 LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
                 LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
+                LEFT JOIN LOCAL_PATH_ALBUM_COVER ON LOCAL_PATH_ALBUM_COVER.base_path = F.base_path
                 WHERE COALESCE(MBT.track, F.track_name) IS NOT NULL
                 %s
                 %s
