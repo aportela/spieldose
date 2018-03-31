@@ -52,7 +52,7 @@ var browseAlbums = (function () {
             -->
             <div class="browse-album-item" v-for="album in albums" v-show="! loading">
                 <a class="play-album" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
-                    <img class="album-thumbnail" v-if="album.image" v-bind:src="'api/thumbnail?url=' + album.image"/>
+                    <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | parseAlbumImage" />
                     <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
                     <i class="fa fa-play fa-4x"></i>
                     <img class="vinyl no-cover" src="images/vinyl.png" />
@@ -157,6 +157,14 @@ var browseAlbums = (function () {
                         self.apiError = response.getApiErrorData();
                     }
                 });
+            }
+        }, filters: {
+            parseAlbumImage: function(value) {
+                if (value.indexOf("http") == 0) {
+                    return ("api/thumbnail?url=" + value);
+                } else {
+                    return ("api/thumbnail?hash=" + value);
+                }
             }
         }
     });
