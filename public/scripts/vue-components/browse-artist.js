@@ -129,7 +129,7 @@ var browseArtist = (function () {
                         this.getArtist(to.params.artist);
                         this.activeTab = "albums";
                     break;
-                    default:
+                    case "artist":
                         this.getArtist(to.params.artist);
                         this.activeTab = "overview";
                     break;
