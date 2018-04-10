@@ -18,6 +18,7 @@
             curl_setopt($curl, CURLOPT_HEADER, 0);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
             curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36");
             curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
             $image = curl_exec($curl);
