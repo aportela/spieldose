@@ -94,7 +94,7 @@ var signInUp = (function () {
                             </div>
                         </form>
                         <p class="has-text-centered spieldose-margin-top-1rem">
-                            <a href="https://github.com/aportela/spieldose"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
+                            <a href="https://github.com/aportela/spieldose" target="_blank"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> | <a href="https://github.com/aportela" target="_blank">by alex</a>
                         </p>
                     </div>
                 </div>
