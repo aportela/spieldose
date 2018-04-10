@@ -67,14 +67,18 @@
                 $filename = sprintf("%s.jpg", $hash);
                 $thumbPath = sprintf("%s%s%s", $dir, DIRECTORY_SEPARATOR, $filename);
                 if (! file_exists($thumbPath)) {
-                    $thumb = ImageWorkshop::initFromPath($localPath);
-                    if ($thumb->getWidth() > 640) {
-                        $thumb->resizeInPixel(640, null, true);
+                    try {
+                        $thumb = ImageWorkshop::initFromPath($localPath);
+                        if ($thumb->getWidth() > 640) {
+                            $thumb->resizeInPixel(640, null, true);
+                        }
+                        $createFolders = true;
+                        $backgroundColor = null;
+                        $imageQuality = 95;
+                        $thumb->save($dir, $filename, $createFolders, $backgroundColor, $imageQuality);
+                    } catch (\Throwable $e) {
+                        // TODO: save error on log
                     }
-                    $createFolders = true;
-                    $backgroundColor = null;
-                    $imageQuality = 95;
-                    $thumb->save($dir, $filename, $createFolders, $backgroundColor, $imageQuality);
                 }
                 return($thumbPath);
             } else {
