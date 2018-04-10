@@ -46,7 +46,7 @@ var signInUp = (function () {
                             <div class="box">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignInUsername }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidSignInUsername }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
+                                    <input class="input" type="email" ref="signInEmail" name="email" maxlength="255" required v-bind:class="{ 'is-danger': invalidSignInUsername }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                                     <span class="icon is-small is-right" v-show="invalidSignInUsername"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="invalidSignInUsername">Invalid email</p>
@@ -71,7 +71,7 @@ var signInUp = (function () {
                             <div class="box">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignUpUsername }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidSignUpUsername }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
+                                    <input class="input" type="email" name="email" maxlength="255" required v-bind:class="{ 'is-danger': invalidSignUpUsername }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                                     <span class="icon is-small is-right" v-show="invalidSignUpUsername"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="invalidSignUpUsername">Email already used</p>
@@ -111,6 +111,7 @@ var signInUp = (function () {
     var module = Vue.component('spieldose-signin-component', {
         template: template(),
         created: function () {
+            this.$nextTick(() => this.$refs.signInEmail.focus());
         },
         data: function () {
             return ({
