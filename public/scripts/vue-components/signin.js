@@ -25,7 +25,7 @@ var signInUp = (function () {
                         <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span></h1>
                         <h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
 
-                        <div class="tabs is-boxed is-toggle" v-if="allowSignUp">
+                        <div class="tabs is-toggle is-radiusless spieldose-tabs-without-margin-bottom" v-if="allowSignUp">
                             <ul>
                                 <li v-bind:class="tab == 'signin' ? 'is-active': ''">
                                     <a v-on:click.prevent="tab = 'signin';">
@@ -43,7 +43,7 @@ var signInUp = (function () {
                         </div>
 
                         <form v-on:submit.prevent="submitSignIn" v-if="tab == 'signin'">
-                            <div class="box">
+                            <div class="box is-radiusless">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignInUsername }">
                                     <input class="input" type="email" ref="signInEmail" name="email" maxlength="255" required v-bind:class="{ 'is-danger': invalidSignInUsername }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
@@ -68,7 +68,7 @@ var signInUp = (function () {
                             </div>
                         </form>
                         <form v-on:submit.prevent="submitSignUp" v-if="tab == 'signup'">
-                            <div class="box">
+                            <div class="box is-radiusless">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignUpUsername }">
                                     <input class="input" type="email" name="email" maxlength="255" required v-bind:class="{ 'is-danger': invalidSignUpUsername }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
@@ -93,7 +93,7 @@ var signInUp = (function () {
                                 </p>
                             </div>
                         </form>
-                        <p class="has-text-centered">
+                        <p class="has-text-centered spieldose-margin-top-1rem">
                             <a href="https://github.com/aportela/spieldose"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
                         </p>
                     </div>
