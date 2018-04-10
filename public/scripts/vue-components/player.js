@@ -4,7 +4,7 @@ var player = (function () {
     var template = function () {
         return `
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-                        <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc">
+                        <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
                         <canvas id="canvas"></canvas>
                         <nav class="level is-marginless">
                             <div class="level-left">
@@ -208,6 +208,11 @@ var player = (function () {
             }
         },
         methods: {
+            replaceAlbumThumbnailWithLoadError: function() {
+                if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
+                    this.playerData.actualTrack.image = null;
+                }
+            },
             toggleMute: function () {
                 if (! this.audio.muted) {
                     this.preMuteVolume = this.audio.volume;
