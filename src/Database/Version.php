@@ -28,7 +28,7 @@
             "PDO_MARIADB" => array(
                     '
                     CREATE TABLE `VERSION` (
-                        `num`	FLOAT NOT NULL UNIQUE,
+                        `num`	FLOAT NOT NULL,
                         `date`	TIMESTAMP NOT NULL,
                         PRIMARY KEY(`num`)
                     );
