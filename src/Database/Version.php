@@ -34,7 +34,7 @@
                     );
                 ',
                 '
-                    INSERT INTO `VERSION` VALUES ("1.00", utc_timestamp);
+                    INSERT INTO `VERSION` VALUES (1.00, current_timestamp);
                 '
             )
         );
