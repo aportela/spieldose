@@ -151,14 +151,14 @@
                 "1.01" => array(
                     '
                         CREATE TABLE `USER` (
-                            `id` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            `email` VARCHAR(255) UNIQUE NOT NULL,
+                            `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+                            `email` VARCHAR(255) NOT NULL,
                             `password_hash` VARCHAR(60) NOT NULL
                         );
                     ',
                     '
                         CREATE TABLE `FILE` (
-                            `id` VARCHAR(40) UNIQUE NOT NULL PRIMARY KEY,
+                            `id` VARCHAR(40) NOT NULL PRIMARY KEY,
                             `local_path` VARCHAR(2048) NOT NULL,
                             `base_path` VARCHAR(2048) NOT NULL,
                             `file_name` VARCHAR(512) NOT NULL,
@@ -183,7 +183,7 @@
                     ',
                     '
                         CREATE TABLE `MB_CACHE_ARTIST` (
-                            `mbid` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            `mbid` VARCHAR(36) NOT NULL PRIMARY KEY,
                             `artist` VARCHAR(128) NOT NULL,
                             `image` VARCHAR(8192),
                             `bio` TEXT,
@@ -192,7 +192,7 @@
                     ',
                     '
                         CREATE TABLE `MB_CACHE_ALBUM` (
-                            `mbid` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            `mbid` VARCHAR(36) NOT NULL PRIMARY KEY,
                             `album` VARCHAR(128) NOT NULL,
                             `artist` VARCHAR(36) NOT NULL,
                             `image` VARCHAR(8192),
@@ -202,7 +202,7 @@
                     ',
                     '
                         CREATE TABLE `MB_CACHE_TRACK` (
-                            `mbid` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            `mbid` VARCHAR(36) NOT NULL PRIMARY KEY,
                             `track` VARCHAR(128) NOT NULL,
                             `artist_mbid` VARCHAR(36) NOT NULL,
                             `artist_mbname` VARCHAR(36) NOT NULL,
@@ -231,7 +231,7 @@
                 "1.03" => array(
                     '
                         CREATE TABLE `PLAYLIST` (
-                            `id` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            `id` VARCHAR(36) NOT NULL PRIMARY KEY,
                             `user_id` VARCHAR(36) NOT NULL,
                             `name` VARCHAR(32) NOT NULL
                         );
@@ -247,8 +247,8 @@
                 "1.04" => array(
                     '
                         CREATE TABLE `LOCAL_PATH_ALBUM_COVER` (
-                            `id` VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            `base_path` VARCHAR(2048) UNIQUE NOT NULL,
+                            `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+                            `base_path` VARCHAR(2048) NOT NULL,
                             `file_name` VARCHAR(512) NOT NULL
                         );
                     '
