@@ -310,10 +310,10 @@ div.browse-artist-item a
     overflow: hidden;
 }
 
+
 div.browse-artist-item a img
 {
     width: 128px;
-    height: 128px;
     border: 0px;
     z-index: 0;
 }
@@ -345,7 +345,7 @@ div.browse-artist-item div.artist-info
     overflow: hidden;
 }
 
-div.browse-artist-item div.artist-info p., div.playlist-item p.playlist-info, div.path-item p.path-info
+div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info
 {
     margin: 0px;
     font-size: 13px;
