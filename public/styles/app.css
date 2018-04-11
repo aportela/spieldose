@@ -583,8 +583,8 @@ div#player
 img#album-cover
 {
     display: block;
-    width: 100%;
-    height: auto;
+    width: 512px;
+    height: 512px;
 }
 
 @-webkit-keyframes rotate
