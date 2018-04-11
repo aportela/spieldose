@@ -21,7 +21,7 @@ var search = (function () {
                     <article class="media" v-for="item, i in artists">
                         <div class="media-left">
                             <figure class="image is-48x48">
-                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image" />
+                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image" v-on:error="item.image = null;"/>
                                 <img class="border-radius-50" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
                             </figure>
                         </div>
@@ -38,7 +38,7 @@ var search = (function () {
                     <article class="media" v-for="item, i in albums">
                         <div class="media-left">
                             <figure class="image is-48x48">
-                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image"/>
+                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image" v-on:error="item.image = null;"/>
                                 <img class="border-radius-50" v-else="" src="images/image-album-not-set.png"/>
                             </figure>
                         </div>
