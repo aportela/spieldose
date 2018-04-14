@@ -82,6 +82,7 @@
                     FROM FILE F
                     LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
                     WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
+                    AND MBA.mbid IS NOT NULL
                 ');
                 $data = $dbh->query($query, $params);
                 if ($data) {
