@@ -123,6 +123,9 @@
             $whereCondition = "";
             if (isset($filter)) {
                 $conditions = array();
+                if (isset($filter["withoutMbid"]) && $filter["withoutMbid"]) {
+                    $conditions[] = " MBA.mbid IS NULL ";
+                }
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
                     $conditions[] = " COALESCE(MBA.artist, F.track_artist) LIKE :partialName ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");

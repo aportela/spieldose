@@ -207,7 +207,8 @@
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
                         "partialName" => $request->getParam("partialName", ""),
-                        "name" => $request->getParam("name", "")
+                        "name" => $request->getParam("name", ""),
+                        "withoutMbid" => $request->getParam("withoutMbid", false)
                     ),
                     $request->getParam("orderBy", "")
                 );

@@ -167,11 +167,14 @@ const spieldoseAPI = {
             }
         );
     },
-    searchArtists: function (name, actualPage, resultsPage, callback) {
+    searchArtists: function (name, withoutMbid, actualPage, resultsPage, callback) {
         var params = {
             actualPage: 1,
             resultsPage: initialState.defaultResultsPage
         };
+        if (withoutMbid) {
+            params.withoutMbid = true
+        }
         if (name) {
             params.partialName = name;
         }

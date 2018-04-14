@@ -6,12 +6,20 @@ var browseArtists = (function () {
     <div class="container is-fluid box">
         <p class="title is-1 has-text-centered">Browse artists</i></p>
         <div v-if="! errors">
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+            <div class="field is-expanded has-addons">
+                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search artist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                     </span>
+                </div>
+                <div class="control">
+                    <div class="select">
+                        <select v-model="searchScraped" v-on:change="instantSearch();">
+                            <option value="false">All artists</option>
+                            <option value="true">Artists not scraped</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
@@ -47,6 +55,7 @@ var browseArtists = (function () {
                 nameFilter: null,
                 timeout: null,
                 artists: [],
+                searchScraped: false,
                 pager: getPager()
             });
         },
@@ -89,7 +98,7 @@ var browseArtists = (function () {
                 if (self.nameFilter) {
                     d.text = self.nameFilter;
                 }
-                spieldoseAPI.searchArtists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.searchArtists(self.nameFilter, self.searchScraped, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;
