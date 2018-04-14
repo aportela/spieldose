@@ -139,7 +139,7 @@
             if (isset($this->id) && ! empty($this->id)) {
                 $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
                 $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-                return($dbh->execute('INSERT INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
+                return($dbh->execute('REPLACE INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
