@@ -114,7 +114,7 @@ var browseArtist = (function () {
                             <div class="field-body">
                                 <div class="field is-expanded has-addons">
                                     <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
-                                        <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" placeholder="search artist name...">
+                                        <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" placeholder="set artist music brainz id">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-search"></i>
                                         </span>
@@ -290,7 +290,7 @@ var browseArtist = (function () {
                 });
             },
             searchMusicBrainz(artistName) {
-                window.open('https://musicbrainz.org/search?query=' + encodeURI(this.artist.name) + '&type=artist&limit=5&method=indexed');
+                window.open('https://musicbrainz.org/search?query=' + encodeURI(this.artist.name) + '&type=artist&limit=16&method=indexed');
             },
             overwriteMusicBrainzArtist(name, mbid) {
                 var self = this;
