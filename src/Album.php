@@ -38,7 +38,7 @@
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialArtist", "%" . $filter["partialArtist"] . "%");
                 }
                 if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                    $conditions[] = " (MBA.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
+                    $conditions[] = " (MBA.artist LIKE :artist OR MBA2.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
                 }
                 if (isset($filter["year"]) && ! empty($filter["year"])) {
@@ -52,6 +52,7 @@
                     COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(MBA.artist, F.album_artist, F.track_artist, "") || COALESCE(MBA.year, F.year, 0)) AS total
                 FROM FILE F
                 LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
+                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
                 WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
                 ' . $whereCondition . '
             ';
@@ -82,6 +83,7 @@
                         COALESCE(MBA.image, LOCAL_PATH_ALBUM_COVER.id) AS image
                     FROM FILE F
                     LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
+                    LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
                     LEFT JOIN LOCAL_PATH_ALBUM_COVER ON LOCAL_PATH_ALBUM_COVER.base_path = F.base_path
                     WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
                     %s
