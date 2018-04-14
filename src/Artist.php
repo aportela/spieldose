@@ -39,7 +39,7 @@
                     WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
                 ';
                 $data = $dbh->query($query, $params);
-                if ($data && $data[0]->total == 1) {
+                if ($data && $data[0]->total > 0) {
                     $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
                     $query = '
                         SELECT
