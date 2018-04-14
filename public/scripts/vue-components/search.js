@@ -38,7 +38,7 @@ var search = (function () {
                     <article class="media" v-for="item, i in albums">
                         <div class="media-left">
                             <figure class="image is-48x48">
-                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image" v-on:error="item.image = null;"/>
+                                <img class="border-radius-50" v-if="item.image" v-bind:src="item.image | parseAlbumImage" v-on:error="item.image = null;"/>
                                 <img class="border-radius-50" v-else="" src="images/image-album-not-set.png"/>
                             </figure>
                         </div>
@@ -111,6 +111,14 @@ var search = (function () {
                 },
                 update: function (el) {
                     el.focus();
+                }
+            }
+        }, filters: {
+            parseAlbumImage: function(value) {
+                if (value.indexOf("http") == 0) {
+                    return ("api/thumbnail?url=" + value);
+                } else {
+                    return ("api/thumbnail?hash=" + value);
                 }
             }
         }, methods: {
