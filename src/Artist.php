@@ -95,6 +95,20 @@
         }
 
         /**
+         * ovewrite artist music brainz id
+         */
+        public static function overwriteMusicBrainz(\Spieldose\Database\DB $dbh, string $name, string $mbid) {
+            $mbArtist = \Spieldose\MusicBrainz\Artist::getFromMBId($mbid);
+            if (! empty($mbArtist->mbId)) {
+                $mbArtist->save($dbh);
+                $params = array();
+                $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $name);
+                $dbh->execute(" UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist ", $params);
+            }
+        }
+
+        /**
          * search artists
          *
          * @param \Spieldose\Database\DB $dbh database handler

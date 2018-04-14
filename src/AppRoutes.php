@@ -232,6 +232,16 @@
                 return $response->withJson(['artist' => $artist], 200);
             });
 
+            $this->put('/artist/{name}/mbid', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                \Spieldose\Artist::overwriteMusicBrainz(
+                    new \Spieldose\Database\DB($this),
+                    $route->getArgument("name"),
+                    $request->getParam("mbid", "")
+                );
+                return $response->withJson([], 200);
+            });
+
             /* artist */
 
             /* album */

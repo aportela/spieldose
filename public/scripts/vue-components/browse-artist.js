@@ -21,6 +21,7 @@ var browseArtist = (function () {
                         <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a v-on:click.prevent="$router.push({ name: 'artistBio' })">Bio</a></li>
                         <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a v-on:click.prevent="$router.push({ name: 'artistTracks' })">Tracks</a></li>
                         <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a v-on:click.prevent="$router.push({ name: 'artistAlbums' })">Albums</a></li>
+                        <li v-bind:class="{ 'is-active' : activeTab == 'update' }"><a v-on:click.prevent="$router.push({ name: 'artistUpdate' })">Update artist</a></li>
                     </ul>
                 </div>
                 <div class="panel" v-if="activeTab == 'overview'">
@@ -86,6 +87,46 @@ var browseArtist = (function () {
                     </div>
                     <div class="is-clearfix"></div>
                 </div>
+                <div class="panel" v-if="activeTab == 'update'">
+                    <div class="content is-clearfix">
+                        <div class="field is-horizontal has-addons">
+                            <div class="field-label is-normal">
+                                <label class="label">Artist name:</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field is-expanded has-addons">
+                                    <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
+                                        <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" placeholder="search artist name...">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                    <div class="control">
+                                        <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">Search on Music Brainz</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field is-horizontal has-addons">
+                            <div class="field-label is-normal">
+                                <label class="label">Music Brainz id:</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field is-expanded has-addons">
+                                    <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
+                                        <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" placeholder="search artist name...">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                    <div class="control">
+                                        <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">Save</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <spieldose-api-error-component v-if="errors" v-bind:apiError="apiError"></spieldose-api-error-component>
@@ -109,7 +150,9 @@ var browseArtist = (function () {
                 pager: getPager(),
                 tracks: [],
                 nameFilter: null,
-                timeout: null
+                timeout: null,
+                updateArtistName: null,
+                updateArtistMBId: null
             });
         },
         watch: {
@@ -132,6 +175,10 @@ var browseArtist = (function () {
                     case "artist":
                         this.getArtist(to.params.artist);
                         this.activeTab = "overview";
+                    break;
+                    case "artistUpdate":
+                        this.getArtist(to.params.artist);
+                        this.activeTab = "update";
                     break;
                 }
             }
@@ -239,6 +286,23 @@ var browseArtist = (function () {
                     } else {
                         self.errors = true;
                         self.apiError = response.getApiErrorData();
+                    }
+                });
+            },
+            searchMusicBrainz(artistName) {
+                window.open('https://musicbrainz.org/search?query=' + encodeURI(this.artist.name) + '&type=artist&limit=5&method=indexed');
+            },
+            overwriteMusicBrainzArtist(name, mbid) {
+                var self = this;
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.overwriteMusicBrainzArtist(name, mbid, function (response) {
+                    if (response.ok) {
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
                     }
                 });
             }

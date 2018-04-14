@@ -393,6 +393,11 @@ const routes = [
                         path: 'albums',
                         name: 'artistAlbums',
                         component: browseArtist
+                    },
+                    {
+                        path: 'update',
+                        name: 'artistUpdate',
+                        component: browseArtist
                     }
                 ]
             }]
