@@ -15,9 +15,9 @@ var browseArtists = (function () {
                 </div>
                 <div class="control">
                     <div class="select">
-                        <select v-model="searchScraped" v-on:change="instantSearch();">
-                            <option value="false">All artists</option>
-                            <option value="true">Artists not scraped</option>
+                        <select v-model="filterNotScraped" v-on:change="instantSearch();">
+                            <option value="0">All artists</option>
+                            <option value="1">Artists not scraped</option>
                         </select>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ var browseArtists = (function () {
                 nameFilter: null,
                 timeout: null,
                 artists: [],
-                searchScraped: false,
+                filterNotScraped: 0,
                 pager: getPager()
             });
         },
@@ -98,7 +98,7 @@ var browseArtists = (function () {
                 if (self.nameFilter) {
                     d.text = self.nameFilter;
                 }
-                spieldoseAPI.searchArtists(self.nameFilter, self.searchScraped, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.searchArtists(self.nameFilter, self.filterNotScraped == 1, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;
