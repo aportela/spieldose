@@ -202,6 +202,9 @@ var browseArtist = (function () {
                     case "artistAlbums":
                         this.activeTab = "albums";
                     break;
+                    case "artistUpdate":
+                        this.activeTab = "update";
+                    break;
                     default:
                         this.activeTab = "overview";
                     break;
