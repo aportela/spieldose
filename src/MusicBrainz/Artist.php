@@ -76,7 +76,11 @@
                     $image = isset($result->artist->image) ? self::getBestImage($result->artist->image) : "";
                     return(new \Spieldose\MusicBrainz\Artist($result->artist->mbid, $result->artist->name, $result->artist->bio->content, $image, $json));
                 } else {
-                    throw new \Exception("MusicBrainz error: " . $result->error);
+                    if ($result->error == 6) {
+                        throw new \Spieldose\Exception\NotFoundException("mbId");
+                    } else {
+                        throw new \Exception("MusicBrainz error: " . $result->error);
+                    }
                 }
             }
         }
@@ -92,7 +96,11 @@
                     $image = isset($result->artist->image) ? self::getBestImage($result->artist->image) : "";
                     return(new \Spieldose\MusicBrainz\Artist(isset($result->artist->mbid) ? $result->artist->mbid: "", isset($result->artist->name) ? $result->artist->name: "", isset($result->artist->bio->content) ? $result->artist->bio->content: "", $image, $json));
                 } else {
-                    throw new \Exception("MusicBrainz error: " . $result->error);
+                    if ($result->error == 6) {
+                        throw new \Spieldose\Exception\NotFoundException("mbId");
+                    } else {
+                        throw new \Exception("MusicBrainz error: " . $result->error);
+                    }
                 }
             }
         }
