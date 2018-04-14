@@ -225,7 +225,7 @@
                 );
             });
 
-            $this->get('/artist/{name}', function (Request $request, Response $response, array $args) {
+            $this->get('/artist/{name:.*}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
                 $artist = new \Spieldose\Artist($route->getArgument("name"));
                 $artist->get(new \Spieldose\Database\DB($this));
