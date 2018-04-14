@@ -99,6 +99,16 @@ const spieldoseAPI = {
             }
         );
     },
+    clearMusicBrainzArtist: function(name, mbid, callback) {
+        Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getAlbumTracks: function (album, artist, year, callback) {
         var params = {};
         if (album) {

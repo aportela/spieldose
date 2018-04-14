@@ -97,6 +97,10 @@
 
         /**
          * ovewrite artist music brainz id
+         *
+         * @param \Spieldose\Database\DB $dbh database handler
+         * @param string $name artist name
+         * @param string $mbid artist music brainz id
          */
         public static function overwriteMusicBrainz(\Spieldose\Database\DB $dbh, string $name, string $mbid) {
             $mbArtist = \Spieldose\MusicBrainz\Artist::getFromMBId($mbid);
@@ -107,6 +111,18 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $name);
                 $dbh->execute(" UPDATE FILE SET artist_mbid = :artist_mbid WHERE track_artist = :track_artist ", $params);
             }
+        }
+
+        /**
+         * clear artist music brainz id
+         *
+         * @param \Spieldose\Database\DB $dbh database handler
+         * @param string $name artist name
+         */
+        public static function clearMusicBrainz(\Spieldose\Database\DB $dbh, string $name) {
+            $params = array();
+            $params[] = (new \Spieldose\Database\DBParam())->str(":name", $name);
+            $dbh->execute(" UPDATE FILE SET artist_mbid = NULL WHERE EXISTS (SELECT MBA.mbid FROM MB_CACHE_ARTIST MBA WHERE MBA.artist LIKE :name AND MBA.mbid = FILE.artist_mbid ) ", $params);
         }
 
         /**

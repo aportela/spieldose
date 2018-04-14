@@ -122,6 +122,9 @@ var browseArtist = (function () {
                                     <div class="control">
                                         <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">Save</a>
                                     </div>
+                                    <div class="control">
+                                        <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">Clear</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,6 +303,20 @@ var browseArtist = (function () {
                 self.loading = true;
                 self.errors = false;
                 spieldoseAPI.overwriteMusicBrainzArtist(name, mbid, function (response) {
+                    if (response.ok) {
+                        self.loading = false;
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
+                    }
+                });
+            },
+            clearMusicBrainzArtist: function(name, mbid) {
+                var self = this;
+                self.loading = true;
+                self.errors = false;
+                spieldoseAPI.clearMusicBrainzArtist(name, mbid, function (response) {
                     if (response.ok) {
                         self.loading = false;
                     } else {

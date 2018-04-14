@@ -235,11 +235,19 @@
 
             $this->put('/artist/{name:.*}/mbid', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
-                \Spieldose\Artist::overwriteMusicBrainz(
-                    new \Spieldose\Database\DB($this),
-                    $route->getArgument("name"),
-                    $request->getParam("mbid", "")
-                );
+                $mbid = $request->getParam("mbid", "");
+                if (! empty($mbid)) {
+                    \Spieldose\Artist::overwriteMusicBrainz(
+                        new \Spieldose\Database\DB($this),
+                        $route->getArgument("name"),
+                        $mbid
+                    );
+                } else {
+                    \Spieldose\Artist::clearMusicBrainz(
+                        new \Spieldose\Database\DB($this),
+                        $route->getArgument("name")
+                    );
+                }
                 return $response->withJson([], 200);
             });
 
