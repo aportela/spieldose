@@ -13,6 +13,8 @@ start php web server instance: php -S 0.0.0.0:8080 -t public
 browse http://localhost:8080
 ```
 
+KNOWN BUG (using embedded php web server) with routes matching names with ".", ex: /artist/The.Band (https://github.com/slimphp/Slim/issues/359) -> always return "not found" (404)
+
 ## Screenshots (for the impatient)
 ### sign in
 ![Alt text](https://i.imgur.com/m2WyqH6l.png "signin")
