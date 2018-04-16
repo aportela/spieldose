@@ -9,11 +9,9 @@ create database: php tools/install-upgrade-db.php
 scan music path: php tools/scan-music.php --path m:\SOUNDTRACKS
 scrap (optional) artist/album data: php tools/scrap-music.php --all
 create user (optional, can be done from web): php tools/set-credential.php --email foo@bar --password secret
-start php web server instance: php -S 0.0.0.0:8080 -t public
+start php web server instance: cd public && php -S 0.0.0.0:8080 cli-server.php
 browse http://localhost:8080
 ```
-
-KNOWN BUG (using embedded php web server) with routes matching names with ".", ex: /artist/The.Band (https://github.com/slimphp/Slim/issues/359) -> always return "not found" (404)
 
 ## Screenshots (for the impatient)
 ### sign in
