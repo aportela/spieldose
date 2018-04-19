@@ -5,7 +5,7 @@ var apiError = (function () {
         return `
     <article class="message is-danger">
         <div class="message-header">
-            <p><i class="fa fa-bomb" aria-hidden="true"></i> Error</p>
+            <p><i class="fas fa-bomb" aria-hidden="true"></i> Error</p>
         </div>
         <div class="message-body">
             <div class="content">
@@ -17,8 +17,8 @@ var apiError = (function () {
                     <hr>
                     <div class="tabs is-medium is-toggle">
                         <ul>
-                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'request' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeTab('request');"><span class="icon is-small"><i class="fa fa-upload"></i></span><span>Request</span></a></li>
-                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'response' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeTab('response');"><span class="icon is-small"><i class="fa fa-download"></i></span><span>Response</span></a></li>
+                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'request' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeTab('request');"><span class="icon is-small"><i class="fas fa-upload"></i></span><span>Request</span></a></li>
+                            <li class="is-marginless" v-bind:class="{ 'is-active' : activeTab == 'response' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeTab('response');"><span class="icon is-small"><i class="fas fa-download"></i></span><span>Response</span></a></li>
                         </ul>
                     </div>
                     <div class="panel" v-if="activeTab == 'request'">
@@ -26,8 +26,8 @@ var apiError = (function () {
                         <pre>{{ apiError.request.method }} {{ apiError.request.url }}</pre>
                         <div class="tabs is-small is-toggle">
                             <ul>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeRequestTab == 'body' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeRequestTab('body');"><span class="icon is-small"><i class="fa fa-file-text-o"></i></span><span>Body</span></a></li>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeRequestTab == 'headers' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeRequestTab('headers');"><span class="icon is-small"><i class="fa fa-list"></i></span><span>Headers</span></a></li>
+                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeRequestTab == 'body' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeRequestTab('body');"><span class="icon is-small"><i class="fas fa-file-text-o"></i></span><span>Body</span></a></li>
+                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeRequestTab == 'headers' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeRequestTab('headers');"><span class="icon is-small"><i class="fas fa-list"></i></span><span>Headers</span></a></li>
                             </ul>
                         </div>
                         <div v-if="activeRequestTab == 'body'">
@@ -42,8 +42,8 @@ var apiError = (function () {
                     <div class="panel" v-if="activeTab == 'response'">
                         <div class="tabs is-small is-toggle">
                             <ul>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeResponseTab == 'text' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeResponseTab('text');"><span class="icon is-small"><i class="fa fa-file-text-o"></i></span><span>Body</span></a></li>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeResponseTab == 'headers' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeResponseTab('headers');"><span class="icon is-small"><i class="fa fa-list"></i></span><span>Headers</span></a></li>
+                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeResponseTab == 'text' }"><a class="no-text-decoration" href="#" v-on:click.prevent="changeResponseTab('text');"><span class="icon is-small"><i class="fas fa-file-text-o"></i></span><span>Body</span></a></li>
+                                <li class="is-marginless" v-bind:class="{ 'is-active' : activeResponseTab == 'headers' }"><a class="no-text-decoration"href="#" v-on:click.prevent="changeResponseTab('headers');"><span class="icon is-small"><i class="fas fa-list"></i></span><span>Headers</span></a></li>
                             </ul>
                         </div>
                         <div v-if="activeResponseTab == 'text'">

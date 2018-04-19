@@ -10,14 +10,14 @@ var browseAlbums = (function () {
                 <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
+                        <i class="fas fa-search"></i>
                     </span>
                 </div>
                 <p class="control">
                     <a class="button is-info" v-on:click.prevent="advancedSearch = ! advancedSearch;">
                         <span class="icon">
-                            <i v-if="advancedSearch" class="fa fa-search-minus" aria-hidden="true"></i>
-                            <i v-else="advancedSearch" class="fa fa-search-plus" aria-hidden="true"></i>
+                            <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
+                            <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
                         </span>
                         <span>toggle advanced search</span>
                     </a>
@@ -27,19 +27,19 @@ var browseAlbums = (function () {
                 <p class="control has-icons-left">
                     <input v-model.number="filterByYear" class="input" :disabled="loading" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-calendar"></i>
+                        <i class="fas fa-calendar"></i>
                     </span>
                 </p>
                 <p class="control is-expanded has-icons-left">
                     <input v-model.trim="filterByArtist" class="input" :disabled="loading" type="text" placeholder="search album artist name...">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-user"></i>
+                        <i class="fas fa-user"></i>
                     </span>
                 </p>
                 <p class="control">
                     <a class="button is-info" v-on:click="search();">
                         <span class="icon">
-                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <i class="fas fa-search" aria-hidden="true"></i>
                         </span>
                         <span>search</span>
                     </a>
@@ -54,7 +54,7 @@ var browseAlbums = (function () {
                 <a class="play-album" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                     <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | parseAlbumImage" v-on:error="replaceAlbumThumbnailWithLoadError(album);" />
                     <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
-                    <i class="fa fa-play fa-4x"></i>
+                    <i class="fas fa-play fa-4x"></i>
                     <img class="vinyl no-cover" src="images/vinyl.png" />
                 </a>
                 <div class="album-info">

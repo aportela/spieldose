@@ -5,8 +5,8 @@ var dashboardToplist = (function () {
         return `
     <section class="panel chart">
         <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fa fa-exclamation-triangle"></i><i v-else class="fa fa-list"></i></span> {{ title }}
-            <a v-on:click.prevent="load();" title="refresh data" class="icon pull-right"><i class="fa fa-refresh fa-fw"></i></a>
+            <span class="icon"><i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fas fa-exclamation-triangle"></i><i v-else class="fas fa-list"></i></span> {{ title }}
+            <a v-on:click.prevent="load();" title="refresh data" class="icon is-pulled-right"><i class="fas fa-redo fa-fw2"></i></a>
         </p>
         <p class="panel-tabs">
             <a href="#" v-bind:class="{ 'is-active' : interval == 0 }" v-on:click.prevent="changeInterval(0)">All Time</a>

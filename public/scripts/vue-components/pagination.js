@@ -5,8 +5,8 @@ var pagination = (function () {
         return `
         <div>
             <nav class="pagination is-centered level" v-if="visible">
-                <a :disabled=loading class="button is-link pagination-previous" v-on:click.prevent="previous"><span class="icon is-small"><i class="fa fa-caret-left" aria-hidden="true"></i></span>Previous</a>
-                <a :disabled=loading class="button is-link pagination-next" v-on:click.prevent="next">Next<span class="icon is-small"><i class="fa fa-caret-right" aria-hidden="true"></i></span></a>
+                <a :disabled=loading class="button is-link pagination-previous" v-on:click.prevent="previous"><span class="icon is-small"><i class="fas fa-caret-left" aria-hidden="true"></i></span>Previous</a>
+                <a :disabled=loading class="button is-link pagination-next" v-on:click.prevent="next">Next<span class="icon is-small"><i class="fas fa-caret-right" aria-hidden="true"></i></span></a>
                 <ul class="pagination-list">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
                     <li v-for="pageNumber in data.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - data.actualPage) < 3 || data.totalPages - 2 < pageNumber">

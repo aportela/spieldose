@@ -10,13 +10,13 @@ var nowPlaying = (function () {
                 <div class="control has-icons-left is-expanded">
                     <input v-model.trim="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-list-alt"></i>
+                        <i class="fas fa-list-alt"></i>
                     </span>
                 </div>
                 <div class="control">
                     <a class="button is-success" v-bind:class="savingPlaylist ? 'is-loading': ''"  v-on:click.prevent="savePlayList();" :disabled="! currentPlaylistName || savingPlaylist">
                         <span class="icon is-small">
-                        <i class="fa fa-check"></i>
+                        <i class="fas fa-check"></i>
                         </span>
                         <span>Save as new playlist</span>
                     </a>
@@ -27,13 +27,13 @@ var nowPlaying = (function () {
                 <div class="control has-icons-left is-expanded">
                     <input v-model.trim="currentPlaylistName" class="input" type="text" placeholder="Playlist name" required :disabled="savingPlaylist">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-list-alt"></i>
+                        <i class="fas fa-list-alt"></i>
                     </span>
                 </div>
                 <div class="control">
                     <a class="button is-success" v-bind:class="savingPlaylist ? 'is-loading': ''" v-on:click.prevent="savePlayList();" :disabled="! currentPlaylistName || savingPlaylist">
                         <span class="icon is-small">
-                        <i class="fa fa-check"></i>
+                        <i class="fas fa-check"></i>
                         </span>
                         <span>Save playlist</span>
                     </a>
@@ -44,8 +44,8 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="loadRandom();" :disabled="playerData.loading">
                         <span class="icon is-small">
-                            <i v-if="playerData.loading" class="fa fa-cog fa-spin fa-fw"></i>
-                            <i v-else class="fa fa-clone"></i>
+                            <i v-if="playerData.loading" class="fas fa-cog fa-spin fa-fw"></i>
+                            <i v-else class="fas fa-clone"></i>
                         </span>
                         <span>load random playlist</span>
                     </a>
@@ -53,7 +53,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
                         <span class="icon is-small">
-                            <i class="fa fa-eraser"></i>
+                            <i class="fas fa-eraser"></i>
                         </span>
                         <span>clear playlist</span>
                     </a>
@@ -61,7 +61,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
                         <span class="icon is-small">
-                            <i class="fa fa-refresh"></i>
+                            <i class="fas fa-redo"></i>
                         </span>
                         <span>repeat: {{ playerData.repeatTracksMode }}</span>
                     </a>
@@ -69,7 +69,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="playerData.shuffleTracks ? 'is-primary': ''">
                         <span class="icon is-small">
-                            <i class="fa fa-random"></i>
+                            <i class="fas fa-random"></i>
                         </span>
                         <span>shuffle: {{ playerData.shuffleTracks ? "true": "false" }}</span>
                     </a>
@@ -77,7 +77,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
                         <span class="icon is-small">
-                            <i class="fa fa-backward"></i>
+                            <i class="fas fa-backward"></i>
                         </span>
                         <span>previous</span>
                     </a>
@@ -85,7 +85,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
                         <span class="icon is-small">
-                            <i class="fa fa-forward"></i>
+                            <i class="fas fa-forward"></i>
                         </span>
                         <span>next</span>
                     </a>
@@ -93,19 +93,19 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
                         <span class="icon is-small">
-                            <i class="fa fa-play"></i>
+                            <i class="fas fa-play"></i>
                         </span>
                         <span>play</span>
                     </a>
                     <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
                         <span class="icon is-small">
-                            <i class="fa fa-play"></i>
+                            <i class="fas fa-play"></i>
                         </span>
                         <span>resume</span>
                     </a>
                     <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
                         <span class="icon is-small">
-                            <i class="fa fa-pause"></i>
+                            <i class="fas fa-pause"></i>
                         </span>
                         <span>pause</span>
                     </a>
@@ -113,7 +113,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-bind:class="playerData.isStopped ? 'is-primary': ''" v-on:click.prevent="playerData.stop();">
                         <span class="icon is-small">
-                            <i class="fa fa-stop"></i>
+                            <i class="fas fa-stop"></i>
                         </span>
                         <span>stop</span>
                     </a>
@@ -121,13 +121,13 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unLoveActualTrack();" :disabled="playerData.loading">
                         <span class="icon is-small">
-                            <i class="fa fa-heart"></i>
+                            <i class="fas fa-heart"></i>
                         </span>
                         <span>love</span>
                     </a>
                     <a class="button is-light" v-else v-on:click.prevent="playerData.loveActualTrack();" :disabled="playerData.loading">
                         <span class="icon is-small">
-                            <i class="fa fa-heart"></i>
+                            <i class="fas fa-heart"></i>
                         </span>
                         <span>love</span>
                     </a>
@@ -135,7 +135,7 @@ var nowPlaying = (function () {
                 <p class="control">
                     <a class="button is-light" v-on:click.prevent="playerData.downloadActualTrack();">
                         <span class="icon is-small">
-                            <i class="fa fa-save"></i>
+                            <i class="fas fa-save"></i>
                         </span>
                         <span>download</span>
                     </a>
@@ -155,9 +155,9 @@ var nowPlaying = (function () {
                 <tbody>
                     <tr v-for="track, i in playerData.tracks" v-bind:class="playerData.actualTrack && playerData.actualTrackIdx == i ? 'is-selected': ''">
                         <td>
-                            <i v-if="iconAction(i) == 'play'" title="play this track" class="fa fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
-                            <i v-else-if="iconAction(i) == 'none'" title="now playing, click to pause" class="fa fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
-                            <i v-else-if="iconAction(i) == 'unPause'" title="paused, click to resume" class="fa fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
+                            <i v-if="iconAction(i) == 'play'" title="play this track" class="fas fa-play cursor-pointer" aria-hidden="true" v-on:click="playerData.playAtIdx(i);"></i>
+                            <i v-else-if="iconAction(i) == 'none'" title="now playing, click to pause" class="fas fa-headphones cursor-pointer" aria-hidden="true" v-on:click="playerData.pause();"></i>
+                            <i v-else-if="iconAction(i) == 'unPause'" title="paused, click to resume" class="fas fa-pause cursor-pointer" aria-hidden="true" v-on:click="playerData.resume();"></i>
                             <span> {{ track.title}}</span>
                         </td>
                         <td><a v-if="track.artist" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: track.artist } })" v-bind:title="'click to open artist section'">{{ track.artist }}</a></td>
@@ -165,9 +165,9 @@ var nowPlaying = (function () {
                         <td><span>{{ track.genre }}</span></td>
                         <td><span>{{ track.year }}</span></td>
                         <td class="is-unselectable">
-                            <i title="move up this track on playlist" class="fa fa-caret-up cursor-pointer" aria-hidden="true" v-on:click="playerData.moveUpIdx(i);"></i>
-                            <i title="move down this track playlist" class="fa fa-caret-down cursor-pointer" aria-hidden="true" v-on:click="playerData.moveDownIdx(i);"></i>
-                            <i title="remove this track from playlist" class="fa fa-remove cursor-pointer" aria-hidden="true" v-on:click="playerData.removeAtIdx(i); $forceUpdate();"></i>
+                            <i title="move up this track on playlist" class="fas fa-caret-up cursor-pointer" aria-hidden="true" v-on:click="playerData.moveUpIdx(i);"></i>
+                            <i title="move down this track playlist" class="fas fa-caret-down cursor-pointer" aria-hidden="true" v-on:click="playerData.moveDownIdx(i);"></i>
+                            <i title="remove this track from playlist" class="fas fa-times cursor-pointer" aria-hidden="true" v-on:click="playerData.removeAtIdx(i); $forceUpdate();"></i>
                         </td>
                     </tr>
                 </tbody>

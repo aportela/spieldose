@@ -11,7 +11,7 @@ var browsePaths = (function () {
                 <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
+                        <i class="fas fa-search"></i>
                     </span>
                 </div>
             </div>

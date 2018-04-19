@@ -4,7 +4,7 @@ var browseArtist = (function () {
     var template = function () {
         return `
     <div class="container is-fluid box">
-        <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fa fa-cog fa-spin fa-fw"></i></p>
+        <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i></p>
         <p v-else="! loading" class="title is-1 has-text-centered">Artist details</p>
         <div class="media" v-if="! errors && ! loading">
             <figure class="image media-left">
@@ -40,7 +40,7 @@ var browseArtist = (function () {
                         <div class="control has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
                             <input class="input" :disabled="loadingTracks" v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                             <span class="icon is-small is-left">
-                                <i class="fa fa-search"></i>
+                                <i class="fas fa-search"></i>
                             </span>
                         </div>
                     </div>
@@ -77,7 +77,7 @@ var browseArtist = (function () {
                         <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
                             <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | parseAlbumImage" v-on:error="replaceAlbumThumbnailWithLoadError(album);" />
                             <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
-                            <i class="fa fa-play fa-4x"></i>
+                            <i class="fas fa-play fa-4x"></i>
                             <img class="vinyl no-cover" src="images/vinyl.png" />
                         </a>
                         <div class="album-info">
@@ -98,7 +98,7 @@ var browseArtist = (function () {
                                     <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
                                         <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" placeholder="search artist name...">
                                         <span class="icon is-small is-left">
-                                            <i class="fa fa-search"></i>
+                                            <i class="fas fa-search"></i>
                                         </span>
                                     </div>
                                     <div class="control">
@@ -116,7 +116,7 @@ var browseArtist = (function () {
                                     <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
                                         <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" placeholder="set artist music brainz id">
                                         <span class="icon is-small is-left">
-                                            <i class="fa fa-search"></i>
+                                            <i class="fas fa-search"></i>
                                         </span>
                                     </div>
                                     <div class="control">

@@ -10,7 +10,7 @@ var browsePlaylists = (function () {
                 <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
+                        <i class="fas fa-search"></i>
                     </span>
                 </div>
             </div>
@@ -18,7 +18,7 @@ var browsePlaylists = (function () {
             <div class="playlist-item box has-text-centered" v-for="playlist in playlists" v-show="! loading">
                 <p class="playlist-item-icon">
                     <span class="icon has-text-light">
-                        <i class="fa fa-list-alt fa-5x"></i>
+                        <i class="fas fa-list-alt fa-5x"></i>
                     </span>
                 </p>
                 <p class="playlist-info">
@@ -28,13 +28,13 @@ var browsePlaylists = (function () {
                 <div class="field has-addons">
                     <p class="control">
                         <a class="button is-small is-link" v-on:click.prevent="loadPlayList(playlist.id);">
-                            <span class="icon is-small"><i class="fa fa-play"></i></span>
+                            <span class="icon is-small"><i class="fas fa-play"></i></span>
                             <span>play</span>
                         </a>
                     </p>
                     <p class="control">
                         <a class="button is-small is-danger" v-on:click.prevent="removePlayList(playlist.id);">
-                            <span class="icon is-small"><i class="fa fa-remove"></i></span>
+                            <span class="icon is-small"><i class="fas fa-remove"></i></span>
                             <span>remove</span>
                         </a>
                     </p>

@@ -10,7 +10,7 @@ var browseArtists = (function () {
                 <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                     <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search artist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
                     <span class="icon is-small is-left">
-                        <i class="fa fa-search"></i>
+                        <i class="fas fa-search"></i>
                     </span>
                 </div>
                 <div class="control">
@@ -31,7 +31,7 @@ var browseArtists = (function () {
                 <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: artist.name } })" v-bind:title="'click to open artist section'">
                     <img v-if="artist.image" v-bind:src="'api/thumbnail?url=' + artist.image" v-on:error="artist.image=null;"/>
                     <img v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
-                    <i class="fa fa-search fa-4x"></i>
+                    <i class="fas fa-search fa-4x"></i>
                 </a>
                 <div class="artist-info is-clipped">
                     <p class="artist-name has-text-centered">{{ artist.name }}</p>

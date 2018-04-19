@@ -9,22 +9,22 @@ var upgrade = (function () {
             <div class="container">
                 <div class="columns is-vcentered">
                     <div class="column is-4 is-offset-4">
-                        <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fa fa-music" aria-hidden="true"></i></span></h1>
+                        <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fas fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fas fa-music" aria-hidden="true"></i></span></h1>
                         <h2 class="subtitle is-6 has-text-centered"><cite>...music for the Masses</cite></h2>
 
                         <div class="notification is-warning" v-if="upgradeAvailable">
-                            <p class="title is-5"><span class="icon"><i class="fa fa-warning"></i></span> New database version available</p>
+                            <p class="title is-5"><span class="icon"><i class="fas fa-warning"></i></span> New database version available</p>
                             <hr>
                             <p class="subtitle is-5">An upgrade is required</p>
                             <p>Execute this commandline:</p>
                             <p>php tools/install-upgrade-db.php</p>
                         </div>
                         <div class="notification is-success" v-else>
-                            <p class="title is-5"><span class="icon"><i class="fa fa-ok"></i></span> Your system is up to date</p>
+                            <p class="title is-5"><span class="icon"><i class="fas fa-ok"></i></span> Your system is up to date</p>
                         </div>
 
                         <p class="has-text-centered">
-                            <a href="https://github.com/aportela/spieldose"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
+                            <a href="https://github.com/aportela/spieldose"><span class="icon is-small"><i class="fas fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
                         </p>
                     </div>
                 </div>

@@ -8,35 +8,35 @@ var menu = (function () {
             Menu
             </p>
             <a v-on:click.prevent="$router.push({ name: 'dashboard' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'dashboard'}">
-            <span class="panel-icon"><i class="fa fa-line-chart"></i></span>
+            <span class="panel-icon"><i class="fas fa-chart-line"></i></span>
             dashboard
             </a>
             <a v-on:click.prevent="$router.push({ name: 'nowPlaying' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'nowPlaying'}">
-            <span class="panel-icon"><i class="fa fa-headphones"></i></span>
+            <span class="panel-icon"><i class="fas fa-headphones"></i></span>
             current playlist
             </a>
             <a v-on:click.prevent="$router.push({ name: 'search' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'search'}">
-            <span class="panel-icon"><i class="fa fa-search"></i></span>
+            <span class="panel-icon"><i class="fas fa-search"></i></span>
             search
             </a>
             <a v-on:click.prevent="$router.push({ name: 'artists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'artists'}">
-            <span class="panel-icon"><i class="fa fa-user"></i></span>
+            <span class="panel-icon"><i class="fas fa-user"></i></span>
             browse artists
             </a>
             <a v-on:click.prevent="$router.push({ name: 'albums' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'albums'}">
-            <span class="panel-icon"><i class="fa fa-circle"></i></span>
+            <span class="panel-icon"><i class="fas fa-circle"></i></span>
             browse albums
             </a>
             <a v-on:click.prevent="$router.push({ name: 'paths' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'paths'}">
-            <span class="panel-icon"><i class="fa fa-folder-open"></i></span>
+            <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
             browse paths
             </a>
             <a v-on:click.prevent="$router.push({ name: 'playlists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'playlists'}">
-            <span class="panel-icon"><i class="fa fa-list-alt"></i></span>
+            <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
             browse playlists
             </a>
             <a v-on:click.prevent="signout();" class="panel-block">
-            <span class="panel-icon"><i class="fa fa-sign-out"></i></span>
+            <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
             signout
             </a>
         </nav>
