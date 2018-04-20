@@ -3,7 +3,7 @@ var browsePaths = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box">
+    <div class="container is-fluid box is-marginless">
         <p class="title is-1 has-text-centered">Browse paths</i></p>
 
         <div v-if="! errors">

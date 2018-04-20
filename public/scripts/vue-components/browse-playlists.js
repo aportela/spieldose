@@ -3,7 +3,7 @@ var browsePlaylists = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box">
+    <div class="container is-fluid box is-marginless">
         <p class="title is-1 has-text-centered">Browse playlists</i></p>
         <div v-if="! errors">
             <div class="field">

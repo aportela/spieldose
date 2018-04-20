@@ -3,7 +3,7 @@ var browseArtist = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box">
+    <div class="container is-fluid box is-marginless">
         <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i></p>
         <p v-else="! loading" class="title is-1 has-text-centered">Artist details</p>
         <div class="media" v-if="! errors && ! loading">
