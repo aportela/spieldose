@@ -67,11 +67,11 @@ var nowPlaying = (function () {
                     </a>
                 </p>
                 <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.toggleShuffleMode();" v-bind:class="playerData.shuffleTracks ? 'is-primary': ''">
+                    <a class="button is-light" v-on:click.prevent="playerData.shufflePlayList();">
                         <span class="icon is-small">
                             <i class="fas fa-random"></i>
                         </span>
-                        <span>shuffle: {{ playerData.shuffleTracks ? "true": "false" }}</span>
+                        <span>shuffle playlist</span>
                     </a>
                 </p>
                 <p class="control">

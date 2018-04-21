@@ -23,7 +23,7 @@ var player = (function () {
                         </div>
                         <div id="player-controls" class="is-unselectable">
                             <div class="has-text-centered" id="player-buttons">
-                                <span title="toggle shuffle mode" v-bind:class="{ 'btn-active': playerData.shuffleTracks }" v-on:click.prevent="playerData.toggleShuffleMode();" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                                <span title="shuffle playlist" v-on:click.prevent="playerData.shufflePlayList();" class="icon"><i class="fas fa-2x fa-random"></i></span>
                                 <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
                                 <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
                                 <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>

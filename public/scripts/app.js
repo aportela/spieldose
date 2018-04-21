@@ -28,7 +28,6 @@ const getPlayerData = function () {
         isPaused: false,
         isStopped: true,
         repeatTracksMode: 'none', // none | track | all
-        shuffleTracks: false,
         actualTrackIdx: 0,
         actualTrack: null,
         currentPlaylistId: null,
@@ -152,8 +151,23 @@ const getPlayerData = function () {
                 break;
         }
     };
-    playerData.toggleShuffleMode = function () {
-        playerData.shuffleTracks = !playerData.shuffleTracks;
+    /**
+     * https://stackoverflow.com/a/6274381
+     * @param {*} a
+     */
+    function shuffle(a) {
+        var j, x, i;
+        for (i = a.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = a[i];
+            a[i] = a[j];
+            a[j] = x;
+        }
+        return a;
+    };
+    playerData.shufflePlayList = function () {
+        shuffle(playerData.tracks);
+        playerData.playAtIdx(0);
     };
     playerData.playPreviousTrack = function () {
         if (playerData.actualTrackIdx > 0) {
