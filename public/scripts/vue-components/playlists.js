@@ -3,7 +3,7 @@ var nowPlaying = (function () {
 
     var template = function () {
         return `
-    <div class="container is-fluid box">
+    <div class="container is-fluid box is-marginless">
         <p class="title is-1 has-text-centered">Now playing</p>
         <div v-if="! errors">
             <div v-if="! currentPlaylistName" class="field has-addons">
