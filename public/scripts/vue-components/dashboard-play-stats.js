@@ -26,6 +26,7 @@ var dashboardPlayStats = (function () {
     };
 
     const commonChartOptions = {
+        maintainAspectRatio: false,
         legend: {
             display: false
         },
@@ -51,6 +52,7 @@ var dashboardPlayStats = (function () {
         template: template(),
         data: function () {
             return ({
+                chart: null,
                 loading: false,
                 errors: false,
                 interval: "hour",
@@ -75,7 +77,10 @@ var dashboardPlayStats = (function () {
                         for (var i = 0; i < response.body.metrics.length; i++) {
                             data[response.body.metrics[i].hour] = response.body.metrics[i].total;
                         }
-                        new Chart(document.getElementById("playcount-metrics-chart-hour"), {
+                        if (self.chart) {
+                            self.chart.destroy();
+                        }
+                        self.chart = new Chart(document.getElementById("playcount-metrics-chart-hour"), {
                             type: 'line',
                             data: {
                                 labels: hourNames,
@@ -111,7 +116,10 @@ var dashboardPlayStats = (function () {
                             data.push(response.body.metrics[i].total);
                             weekDays.push(weekDayNames[response.body.metrics[i].weekDay ]);
                         }
-                        new Chart(document.getElementById("playcount-metrics-chart-weekday"), {
+                        if (self.chart) {
+                            self.chart.destroy();
+                        }
+                        self.chart = new Chart(document.getElementById("playcount-metrics-chart-weekday"), {
                             type: 'bar',
                             data: {
                                 labels: weekDays,
@@ -145,7 +153,10 @@ var dashboardPlayStats = (function () {
                             data.push(response.body.metrics[i].total);
                             months.push(monthNames[response.body.metrics[i].month - 1]);
                         }
-                        new Chart(document.getElementById("playcount-metrics-chart-month"), {
+                        if (self.chart) {
+                            self.chart.destroy();
+                        }
+                        self.chart = new Chart(document.getElementById("playcount-metrics-chart-month"), {
                             type: 'bar',
                             data: {
                                 labels: months,
@@ -178,7 +189,10 @@ var dashboardPlayStats = (function () {
                             data.push(response.body.metrics[i].total);
                             years.push(response.body.metrics[i].year);
                         }
-                        new Chart(document.getElementById("playcount-metrics-chart-year"), {
+                        if (self.chart) {
+                            self.chart.destroy();
+                        }
+                        self.chart = new Chart(document.getElementById("playcount-metrics-chart-year"), {
                             type: 'bar',
                             data: {
                                 labels: years,
