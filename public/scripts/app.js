@@ -34,7 +34,7 @@ const getPlayerData = function () {
         currentPlaylistName: null,
         tracks: []
     };
-    playerData.dispose = function() {
+    playerData.dispose = function () {
         this.stop();
         this.actualTrackIdx = 0;
         this.actualTrack = null;
@@ -66,7 +66,7 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        spieldoseAPI.searchTracks("", "", "", 1, 32, "random", function (response) {
+        spieldoseAPI.searchTracks("", "", "", 1, count, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
@@ -476,6 +476,16 @@ Vue.http.interceptors.push((request, next) => {
             };
         }
         return (response);
+    });
+});
+
+const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.intersectionRatio > 0) {
+            bus.$emit("hidePlayerNavbar");
+        } else {
+            bus.$emit("showPlayerNavBar");
+        }
     });
 });
 

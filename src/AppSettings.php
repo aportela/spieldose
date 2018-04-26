@@ -12,7 +12,7 @@
             'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring', 'curl'),
             //
             'common' => [
-                'defaultResultsPage' => 32,
+                'defaultResultsPage' => 128,
                 'allowSignUp' => true
             ],
             // database settings

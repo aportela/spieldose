@@ -5,6 +5,9 @@ var player = (function () {
         return `
                     <div id="player" class="box is-paddingless is-radiusless is-unselectable">
                         <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
+                        <!--
+                        <vumeter v-bind:audio="audio"></vumeter>
+                        -->
                         <canvas id="canvas"></canvas>
                         <nav class="level is-marginless">
                             <div class="level-left">
@@ -22,7 +25,7 @@ var player = (function () {
                             <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
                         </div>
                         <div id="player-controls" class="is-unselectable">
-                            <div class="has-text-centered" id="player-buttons">
+                            <div class="has-text-centered player-buttons">
                                 <span title="shuffle playlist" v-on:click.prevent="playerData.shufflePlayList();" class="icon"><i class="fas fa-2x fa-random"></i></span>
                                 <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
                                 <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
@@ -305,12 +308,14 @@ var player = (function () {
                 var x = e.pageX - offset.left;
                 self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
             });
+
+            // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
+            playerVisibilityObserver.observe(document.getElementById("player-controls"));
         }, created: function () {
             var self = this;
             self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
                 self.playerData.play();
             });
-
         }
     });
 
