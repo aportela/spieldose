@@ -128,7 +128,7 @@ var player = (function () {
                 return (this.playerData.isPaused);
             },
             isMuted: function () {
-                return(false);
+                return (false);
             },
             isStopped: function () {
                 return (this.playerData.isStopped);
@@ -211,13 +211,13 @@ var player = (function () {
             }
         },
         methods: {
-            replaceAlbumThumbnailWithLoadError: function() {
+            replaceAlbumThumbnailWithLoadError: function () {
                 if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
                     this.playerData.actualTrack.image = null;
                 }
             },
             toggleMute: function () {
-                if (! this.audio.muted) {
+                if (!this.audio.muted) {
                     this.preMuteVolume = this.audio.volume;
                     this.audio.volume = 0;
                 } else {
@@ -290,10 +290,10 @@ var player = (function () {
             aa.addEventListener("volumechange", function (v) {
                 self.volume = aa.volume;
             });
-            aa.addEventListener("ended", function() {
+            aa.addEventListener("ended", function () {
                 self.playerData.playNextTrack();
             });
-            aa.addEventListener("error", function(e) {
+            aa.addEventListener("error", function (e) {
                 // try to load next song on playlist if errors found
                 self.playerData.playNextTrack();
                 // TODO
@@ -309,7 +309,17 @@ var player = (function () {
                 self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
             });
 
-            if (typeof playerVisibilityObserver !== "undefined") {
+            if (typeof window.IntersectionObserver !== "undefined") {
+                const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.intersectionRatio > 0) {
+                            bus.$emit("hidePlayerNavbar");
+                        } else {
+                            bus.$emit("showPlayerNavBar");
+                        }
+                    });
+                });
+
                 // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
                 playerVisibilityObserver.observe(document.getElementById("player-controls"));
             }

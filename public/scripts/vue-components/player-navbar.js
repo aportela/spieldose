@@ -75,10 +75,12 @@ var playerNavBar = (function () {
         data: function () {
             return ({
                 showPlayerNavBar: false,
-                playerData: sharedPlayerData
+                playerData: sharedPlayerData,
+                playerVisibilityObserver: null
             });
         },
         created: function () {
+
             var self = this;
             bus.$on("showPlayerNavBar", function () {
                 var rootEl = document.documentElement;

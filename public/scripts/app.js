@@ -479,19 +479,6 @@ Vue.http.interceptors.push((request, next) => {
     });
 });
 
-
-if (typeof window.IntersectionObserver !== "undefined") {
-    const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.intersectionRatio > 0) {
-                bus.$emit("hidePlayerNavbar");
-            } else {
-                bus.$emit("showPlayerNavBar");
-            }
-        });
-    });
-}
-
 /**
  * main app component
  */
