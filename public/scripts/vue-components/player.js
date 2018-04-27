@@ -309,8 +309,10 @@ var player = (function () {
                 self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
             });
 
-            // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
-            playerVisibilityObserver.observe(document.getElementById("player-controls"));
+            if (typeof playerVisibilityObserver !== "undefined") {
+                // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
+                playerVisibilityObserver.observe(document.getElementById("player-controls"));
+            }
         }, created: function () {
             var self = this;
             self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
