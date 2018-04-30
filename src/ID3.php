@@ -75,23 +75,23 @@
 		}
 
         public function getTrackTitle(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "title"));
+            return(mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "title"), 'UTF-8', 'UTF-8'));
         }
 
         public function getTrackArtistName(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "artist"));
+            return(mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "artist"), 'UTF-8', 'UTF-8'));
         }
 
         public function getAlbumArtistName(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "band"));
+            return(mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "band"), 'UTF-8', 'UTF-8'));
         }
 
         public function getAlbum(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "album"));
+            return(mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "album"), 'UTF-8', 'UTF-8'));
         }
 
         public function getGenre(): string {
-            return((string)$this->getTagFieldValue($this->tagData, "genre"));
+            return(mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "genre"), 'UTF-8', 'UTF-8'));
         }
 
         public function getTrackNumber(): string {
