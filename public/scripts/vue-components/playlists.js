@@ -47,7 +47,7 @@ var nowPlaying = (function () {
                             <i v-if="playerData.loading" class="fas fa-cog fa-spin fa-fw"></i>
                             <i v-else class="fas fa-clone"></i>
                         </span>
-                        <span>load random playlist</span>
+                        <span class="is-hidden-touch">load random playlist</span>
                     </a>
                 </p>
                 <p class="control">
@@ -55,7 +55,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-eraser"></i>
                         </span>
-                        <span>clear playlist</span>
+                        <span class="is-hidden-touch">clear playlist</span>
                     </a>
                 </p>
                 <p class="control">
@@ -63,7 +63,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-redo"></i>
                         </span>
-                        <span>repeat: {{ playerData.repeatTracksMode }}</span>
+                        <span class="is-hidden-touch">repeat: {{ playerData.repeatTracksMode }}</span>
                     </a>
                 </p>
                 <p class="control">
@@ -71,7 +71,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-random"></i>
                         </span>
-                        <span>shuffle playlist</span>
+                        <span class="is-hidden-touch">shuffle playlist</span>
                     </a>
                 </p>
                 <p class="control">
@@ -79,7 +79,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-backward"></i>
                         </span>
-                        <span>previous</span>
+                        <span class="is-hidden-touch">previous</span>
                     </a>
                 </p>
                 <p class="control">
@@ -87,7 +87,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-forward"></i>
                         </span>
-                        <span>next</span>
+                        <span class="is-hidden-touch">next</span>
                     </a>
                 </p>
                 <p class="control">
@@ -95,19 +95,19 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-play"></i>
                         </span>
-                        <span>play</span>
+                        <span class="is-hidden-touch">play</span>
                     </a>
                     <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
                         <span class="icon is-small">
                             <i class="fas fa-play"></i>
                         </span>
-                        <span>resume</span>
+                        <span class="is-hidden-touch">resume</span>
                     </a>
                     <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
                         <span class="icon is-small">
                             <i class="fas fa-pause"></i>
                         </span>
-                        <span>pause</span>
+                        <span class="is-hidden-touch">pause</span>
                     </a>
                 </p>
                 <p class="control">
@@ -115,7 +115,7 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-stop"></i>
                         </span>
-                        <span>stop</span>
+                        <span class="is-hidden-touch">stop</span>
                     </a>
                 </p>
                 <p class="control">
@@ -123,13 +123,13 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-heart"></i>
                         </span>
-                        <span>love</span>
+                        <span class="is-hidden-touch">love</span>
                     </a>
                     <a class="button is-light" v-else v-on:click.prevent="playerData.loveActualTrack();" :disabled="playerData.loading">
                         <span class="icon is-small">
                             <i class="fas fa-heart"></i>
                         </span>
-                        <span>love</span>
+                        <span class="is-hidden-touch">love</span>
                     </a>
                 </p>
                 <p class="control">
@@ -137,11 +137,12 @@ var nowPlaying = (function () {
                         <span class="icon is-small">
                             <i class="fas fa-save"></i>
                         </span>
-                        <span>download</span>
+                        <span class="is-hidden-touch">download</span>
                     </a>
                 </p>
             </div>
-            <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="tab == 0">
+
+            <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth">
                 <thead>
                         <tr class="is-unselectable">
                             <th>Track</th>
@@ -182,7 +183,6 @@ var nowPlaying = (function () {
         template: template(),
         data: function () {
             return ({
-                tab: 0,
                 loading: false,
                 errors: false,
                 apiError: null,
