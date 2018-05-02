@@ -145,7 +145,7 @@ const spieldoseAPI = {
             }
         );
     },
-    searchTracks: function (text, artist, album, actualPage, resultsPage, order, callback) {
+    searchTracks: function (text, artist, album, loved, actualPage, resultsPage, order, callback) {
         var params = {
             actualPage: 1,
             resultsPage: initialState.defaultResultsPage
@@ -159,6 +159,9 @@ const spieldoseAPI = {
         if (album) {
             params.album = album;
         }
+        if (loved) {
+            params.loved = 1;
+        }
         if (actualPage) {
             params.actualPage = actualPage;
         }
@@ -170,10 +173,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/track/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },

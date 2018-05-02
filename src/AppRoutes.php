@@ -182,14 +182,15 @@
                 $filter = array();
                 $data = \Spieldose\Track::search(
                     new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    intval($request->getParam("actualPage", 1)),
+                    intval($request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage'])),
                     array(
                         "text" => $request->getParam("text", ""),
                         "artist" => $request->getParam("artist", ""),
                         "album" => $request->getParam("album", ""),
                         "year" => $request->getParam("year", ""),
-                        "path" => $request->getParam("path", "")
+                        "path" => $request->getParam("path", ""),
+                        "loved" => $request->getParam("loved", "")
                     ),
                     $request->getParam("orderBy", "")
                 );

@@ -33,8 +33,8 @@ var browsePlaylists = (function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-small is-danger" v-on:click.prevent="removePlayList(playlist.id);">
-                            <span class="icon is-small"><i class="fas fa-remove"></i></span>
+                        <a class="button is-small is-danger" v-bind:disabled="! playlist.id" v-on:click.prevent="removePlayList(playlist.id);">
+                            <span class="icon is-small"><i class="fas fa-times"></i></span>
                             <span>remove</span>
                         </a>
                     </p>
@@ -116,33 +116,48 @@ var browsePlaylists = (function () {
             },
             loadPlayList: function (playListId) {
                 var self = this;
-                spieldoseAPI.getPlayList(playListId, function (response) {
-                    if (response.ok) {
-                        self.playerData.replace(response.body.playlist.tracks);
-                        self.playerData.setCurrentPlayList(playListId, response.body.playlist.name);
-                        self.$router.push({ name: 'nowPlaying' });
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
-                    }
-                });
-            },
-            removePlayList: function(playListId) {
-                var self = this;
-                spieldoseAPI.removePlaylist(playListId, function (response) {
-                    if (response.ok) {
-                        if (self.playerData.currentPlaylistId == playListId) {
-                            self.playerData.unsetCurrentPlayList();
-
+                if (playListId) {
+                    spieldoseAPI.getPlayList(playListId, function (response) {
+                        if (response.ok) {
+                            self.playerData.replace(response.body.playlist.tracks);
+                            self.playerData.setCurrentPlayList(playListId, response.body.playlist.name);
+                            self.$router.push({ name: 'nowPlaying' });
+                        } else {
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
                         }
-                        self.search();
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
-                    }
-                });
+                    });
+                } else {
+                    spieldoseAPI.searchTracks("", "", "", true, 1, 1024, "random", function (response) {
+                        if (response.ok) {
+                            self.playerData.replace(response.body.tracks);
+                            self.$router.push({ name: 'nowPlaying' });
+                        } else {
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
+                        }
+                    });
+                }
+            },
+            removePlayList: function (playListId) {
+                if (playListId) {
+                    var self = this;
+                    spieldoseAPI.removePlaylist(playListId, function (response) {
+                        if (response.ok) {
+                            if (self.playerData.currentPlaylistId == playListId) {
+                                self.playerData.unsetCurrentPlayList();
+
+                            }
+                            self.search();
+                        } else {
+                            self.errors = true;
+                            self.apiError = response.getApiErrorData();
+                            self.loading = false;
+                        }
+                    });
+                }
             }
         }
     });

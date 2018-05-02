@@ -257,7 +257,7 @@ var browseArtist = (function () {
                 self.loadingTracks = true;
                 self.errors = false;
                 var text = this.nameFilter ? this.nameFilter : "";
-                spieldoseAPI.searchTracks(text, artist, "", self.pager.actualPage, self.pager.resultsPage, "", function (response) {
+                spieldoseAPI.searchTracks(text, artist, "", false, self.pager.actualPage, self.pager.resultsPage, "", function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.actualPage;
                         self.pager.totalPages = response.body.totalPages;
