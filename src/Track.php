@@ -66,6 +66,11 @@
                     $conditions[] = " ( F.base_path = :path ) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":path", $filter["path"]);
                 }
+                if (isset($filter["loved"]) && ! empty($filter["loved"])) {
+                    // TODO: check permissions
+                    $conditions[] = " EXISTS ( SELECT * FROM LOVED_FILE WHERE file_id = F.id AND loved = 1 AND user_id = :user_id ) ";
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
