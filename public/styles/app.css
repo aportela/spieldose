@@ -702,6 +702,7 @@ div.player-buttons span.icon, div#volume-container span.icon
 
 div.player-buttons span.btn-active
 {
+    opacity: 1;
 }
 
 div#player-volume-control
