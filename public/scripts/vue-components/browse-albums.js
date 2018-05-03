@@ -25,19 +25,19 @@ var browseAlbums = (function () {
             </div>
             <div class="field has-addons" v-if="advancedSearch">
                 <p class="control has-icons-left">
-                    <input v-model.number="filterByYear" class="input" :disabled="loading" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4">
+                    <input v-model.number="filterByYear" class="input" :disabled="loading" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4" v-on:keyup.enter="search(true);">
                     <span class="icon is-small is-left">
                         <i class="fas fa-calendar"></i>
                     </span>
                 </p>
                 <p class="control is-expanded has-icons-left">
-                    <input v-model.trim="filterByArtist" class="input" :disabled="loading" type="text" placeholder="search album artist name...">
+                    <input v-model.trim="filterByArtist" class="input" :disabled="loading" type="text" placeholder="search album artist name..." v-on:keyup.enter="search(true);">
                     <span class="icon is-small is-left">
                         <i class="fas fa-user"></i>
                     </span>
                 </p>
                 <p class="control">
-                    <a class="button is-info" v-on:click="search();">
+                    <a class="button is-info" v-on:click="search(true);">
                         <span class="icon">
                             <i class="fas fa-search" aria-hidden="true"></i>
                         </span>
@@ -91,7 +91,7 @@ var browseAlbums = (function () {
             '$route'(to, from) {
                 if (to.name == "albums" || to.name == "albumsPaged") {
                     this.pager.actualPage = parseInt(to.params.page);
-                    this.search();
+                    this.search(false);
                 }
             }
         },
@@ -103,7 +103,7 @@ var browseAlbums = (function () {
             if (this.$route.params.page) {
                 self.pager.actualPage = parseInt(this.$route.params.page);
             }
-            this.search();
+            this.search(true);
         }, methods: {
             replaceAlbumThumbnailWithLoadError: function(album) {
                 album.image = null;
@@ -119,14 +119,17 @@ var browseAlbums = (function () {
                 if (! this.advancedSearch) {
                     self.timeout = setTimeout(function () {
                         self.pager.actualPage = 1;
-                        self.search();
+                        self.search(true);
                     }, 256);
                 }
             },
-            search: function () {
+            search: function (resetPager) {
                 var self = this;
                 self.loading = true;
                 self.errors = false;
+                if (resetPager) {
+                    self.pager.actualPage = 1;
+                }
                 spieldoseAPI.searchAlbums(self.nameFilter, self.filterByArtist, self.filterByYear, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
