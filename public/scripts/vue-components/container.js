@@ -5,7 +5,7 @@ var container = (function () {
         return `
             <div>
                 <section class="section is-fullheight is-light is-bold">
-                    <div class="columns">
+                    <div class="columns is-desktop">
                         <div class="is-narrow column">
                             <spieldose-player-component></spieldose-player-component>
                             <spieldose-menu-component></spieldose-menu-component>
