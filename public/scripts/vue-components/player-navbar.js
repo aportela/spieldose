@@ -3,11 +3,11 @@ var playerNavBar = (function () {
 
     var template = function () {
         return `
-            <nav class="navbar is-light is-fixed-bottom" role="navigation" aria-label="main navigation" v-show="showPlayerNavBar">
+            <nav class="navbar is-light is-fixed-bottom is-unselectable" role="navigation" aria-label="main navigation" v-show="showPlayerNavBar">
                 <div class="navbar-menu">
                     <div class="navbar-start">
                         <div class="navbar-item has-dropdown has-dropdown-up is-hoverable">
-                            <a class="navbar-link" href="/documentation/overview/start/">
+                            <a class="navbar-link">
                                 <span class="icon"><i class="fas fa-bars"></i></span>
                                 <span>Menu</span>
                             </a>
