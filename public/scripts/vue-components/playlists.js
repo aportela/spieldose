@@ -40,106 +40,86 @@ var nowPlaying = (function () {
                 </div>
             </div>
 
-            <div class="field is-grouped">
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="loadRandom();" :disabled="playerData.loading">
-                        <span class="icon is-small">
-                            <i v-if="playerData.loading" class="fas fa-cog fa-spin fa-fw"></i>
-                            <i v-else class="fas fa-clone"></i>
-                        </span>
-                        <span class="is-hidden-touch">load random playlist</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
-                        <span class="icon is-small">
-                            <i class="fas fa-eraser"></i>
-                        </span>
-                        <span class="is-hidden-touch">clear playlist</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
-                        <span class="icon is-small">
-                            <i class="fas fa-redo"></i>
-                        </span>
-                        <span class="is-hidden-touch">repeat: {{ playerData.repeatTracksMode }}</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.shufflePlayList();">
-                        <span class="icon is-small">
-                            <i class="fas fa-random"></i>
-                        </span>
-                        <span class="is-hidden-touch">shuffle playlist</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
-                        <span class="icon is-small">
-                            <i class="fas fa-backward"></i>
-                        </span>
-                        <span class="is-hidden-touch">previous</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
-                        <span class="icon is-small">
-                            <i class="fas fa-forward"></i>
-                        </span>
-                        <span class="is-hidden-touch">next</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
-                        <span class="icon is-small">
-                            <i class="fas fa-play"></i>
-                        </span>
-                        <span class="is-hidden-touch">play</span>
-                    </a>
-                    <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
-                        <span class="icon is-small">
-                            <i class="fas fa-play"></i>
-                        </span>
-                        <span class="is-hidden-touch">resume</span>
-                    </a>
-                    <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
-                        <span class="icon is-small">
-                            <i class="fas fa-pause"></i>
-                        </span>
-                        <span class="is-hidden-touch">pause</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-bind:class="playerData.isStopped ? 'is-primary': ''" v-on:click.prevent="playerData.stop();">
-                        <span class="icon is-small">
-                            <i class="fas fa-stop"></i>
-                        </span>
-                        <span class="is-hidden-touch">stop</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unLoveActualTrack();" :disabled="playerData.loading">
-                        <span class="icon is-small">
-                            <i class="fas fa-heart"></i>
-                        </span>
-                        <span class="is-hidden-touch">love</span>
-                    </a>
-                    <a class="button is-light" v-else v-on:click.prevent="playerData.loveActualTrack();" :disabled="playerData.loading">
-                        <span class="icon is-small">
-                            <i class="fas fa-heart"></i>
-                        </span>
-                        <span class="is-hidden-touch">love</span>
-                    </a>
-                </p>
-                <p class="control">
-                    <a class="button is-light" v-on:click.prevent="playerData.downloadActualTrack();">
-                        <span class="icon is-small">
-                            <i class="fas fa-save"></i>
-                        </span>
-                        <span class="is-hidden-touch">download</span>
-                    </a>
-                </p>
+            <div class="buttons">
+                <a class="button is-light" v-on:click.prevent="loadRandom();" :disabled="playerData.loading">
+                    <span class="icon is-small">
+                        <i v-if="playerData.loading" class="fas fa-cog fa-spin fa-fw"></i>
+                        <i v-else class="fas fa-clone"></i>
+                    </span>
+                    <span class="is-hidden-touch">load random playlist</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
+                    <span class="icon is-small">
+                        <i class="fas fa-eraser"></i>
+                    </span>
+                    <span class="is-hidden-touch">clear playlist</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.toggleRepeatMode();" v-bind:class="playerData.repeatTracksMode != 'none' ? 'is-primary': ''">
+                    <span class="icon is-small">
+                        <i class="fas fa-redo"></i>
+                    </span>
+                    <span class="is-hidden-touch">repeat: {{ playerData.repeatTracksMode }}</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.shufflePlayList();">
+                    <span class="icon is-small">
+                        <i class="fas fa-random"></i>
+                    </span>
+                    <span class="is-hidden-touch">shuffle playlist</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
+                    <span class="icon is-small">
+                        <i class="fas fa-backward"></i>
+                    </span>
+                    <span class="is-hidden-touch">previous</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
+                    <span class="icon is-small">
+                        <i class="fas fa-forward"></i>
+                    </span>
+                    <span class="is-hidden-touch">next</span>
+                </a>
+                <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
+                    <span class="icon is-small">
+                        <i class="fas fa-play"></i>
+                    </span>
+                    <span class="is-hidden-touch">play</span>
+                </a>
+                <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
+                    <span class="icon is-small">
+                        <i class="fas fa-play"></i>
+                    </span>
+                    <span class="is-hidden-touch">resume</span>
+                </a>
+                <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
+                    <span class="icon is-small">
+                        <i class="fas fa-pause"></i>
+                    </span>
+                    <span class="is-hidden-touch">pause</span>
+                </a>
+                <a class="button is-light" v-bind:class="playerData.isStopped ? 'is-primary': ''" v-on:click.prevent="playerData.stop();">
+                    <span class="icon is-small">
+                        <i class="fas fa-stop"></i>
+                    </span>
+                    <span class="is-hidden-touch">stop</span>
+                </a>
+                <a class="button is-light is-primary" v-if="playerData.hasTracks() && playerData.tracks[playerData.actualTrackIdx].loved == '1'" v-on:click.prevent="playerData.unLoveActualTrack();" :disabled="playerData.loading">
+                    <span class="icon is-small">
+                        <i class="fas fa-heart"></i>
+                    </span>
+                    <span class="is-hidden-touch">love</span>
+                </a>
+                <a class="button is-light" v-else v-on:click.prevent="playerData.loveActualTrack();" :disabled="playerData.loading">
+                    <span class="icon is-small">
+                        <i class="fas fa-heart"></i>
+                    </span>
+                    <span class="is-hidden-touch">love</span>
+                </a>
+                <a class="button is-light" v-on:click.prevent="playerData.downloadActualTrack();">
+                    <span class="icon is-small">
+                        <i class="fas fa-save"></i>
+                    </span>
+                    <span class="is-hidden-touch">download</span>
+                </a>
             </div>
 
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth">
