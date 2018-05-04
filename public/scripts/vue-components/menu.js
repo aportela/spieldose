@@ -3,7 +3,7 @@ var menu = (function () {
 
     var template = function () {
         return `
-        <nav class="panel is-unselectable">
+        <nav id="menu" class="panel is-unselectable">
             <p class="panel-heading">
             Menu
             </p>
