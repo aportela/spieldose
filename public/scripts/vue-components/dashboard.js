@@ -4,7 +4,7 @@ var dashboard = (function () {
     var template = function () {
         return `
     <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
-    <div class="container is-fluid box is-marginless">
+    <div class="container is-fluid box is-marginless is-unselectable">
         <p class="title is-1 has-text-centered">Dashboard</p>
         <div class="columns is-mobile is-multiline">
             <div class="column is-one-third-desktop is-full-mobile">
