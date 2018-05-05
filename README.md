@@ -49,6 +49,26 @@ server {
 }
 ```
 
+#### apache
+
+```
+<VirtualHost *:80>
+        ServerName www.mydomain.com
+
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/spieldose/
+
+        <Directory /var/www/spieldose/>
+                Options +Indexes +FollowSymLinks
+                AllowOverride All
+                Require all granted
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/spieldose-error.log
+        CustomLog ${APACHE_LOG_DIR}/spieldose-access.log combined
+</VirtualHost>
+```
+
 ## Screenshots (for the impatient)
 ### sign in
 ![Alt text](https://i.imgur.com/m2WyqH6l.png "signin")
