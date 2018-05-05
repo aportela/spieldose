@@ -54,6 +54,7 @@ var browsePaths = (function () {
 
     var module = Vue.component('spieldose-browse-paths', {
         template: template(),
+        mixins: [mixinLiveSearches],
         data: function () {
             return ({
                 loading: false,
@@ -151,10 +152,6 @@ var browsePaths = (function () {
                         self.apiError = response.getApiErrorData();
                     }
                 });
-            }
-        }, computed: {
-            liveSearch: function () {
-                return (initialState.liveSearch);
             }
         }
     });

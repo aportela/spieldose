@@ -56,6 +56,7 @@ var browseArtists = (function () {
 
     var module = Vue.component('spieldose-browse-artists', {
         template: template(),
+        mixins: [mixinLiveSearches],
         data: function () {
             return ({
                 loading: false,
@@ -124,10 +125,6 @@ var browseArtists = (function () {
                         self.loading = false;
                     }
                 });
-            }
-        }, computed: {
-            liveSearch: function() {
-                return(initialState.liveSearch);
             }
         }
     });

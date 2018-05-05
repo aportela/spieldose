@@ -84,7 +84,7 @@ var browseArtist = (function () {
                 <div class="panel" v-if="activeTab == 'albums'">
                     <div class="browse-album-item" v-for="album in artist.albums" v-show="! loading">
                         <a class="play-album" v-on:click="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
-                            <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | parseAlbumImage" v-on:error="replaceAlbumThumbnailWithLoadError(album);" />
+                            <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | albumThumbnailUrlToCacheUrl" v-on:error="replaceAlbumThumbnailWithLoadError(album);" />
                             <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
                             <i class="fas fa-play fa-4x"></i>
                             <img class="vinyl no-cover" src="images/vinyl.png" />
@@ -148,6 +148,7 @@ var browseArtist = (function () {
 
     var module = Vue.component('spieldose-browse-artist', {
         template: template(),
+        mixins: [mixinLiveSearches, mixinAlbums],
         data: function () {
             return ({
                 loading: false,
@@ -169,29 +170,29 @@ var browseArtist = (function () {
         },
         watch: {
             '$route'(to, from) {
-                switch(to.name) {
+                switch (to.name) {
                     case "artistBio":
                         this.getArtist(to.params.artist);
                         this.activeTab = "bio";
-                    break;
+                        break;
                     case "artistTracks":
                     case "artistTracksPaged":
                         this.pager.actualPage = parseInt(to.params.page);
                         this.searchArtistTracks(to.params.artist);
                         this.activeTab = "tracks";
-                    break;
+                        break;
                     case "artistAlbums":
                         this.getArtist(to.params.artist);
                         this.activeTab = "albums";
-                    break;
+                        break;
                     case "artist":
                         this.getArtist(to.params.artist);
                         this.activeTab = "overview";
-                    break;
+                        break;
                     case "artistUpdate":
                         this.getArtist(to.params.artist);
                         this.activeTab = "update";
-                    break;
+                        break;
                 }
             }
         }, created: function () {
@@ -207,23 +208,23 @@ var browseArtist = (function () {
                 this.searchArtistTracks(this.$route.params.artist);
                 this.activeTab = "tracks";
             } else {
-                switch(this.$route.name) {
+                switch (this.$route.name) {
                     case "artistBio":
                         this.activeTab = "bio";
-                    break;
+                        break;
                     case "artistAlbums":
                         this.activeTab = "albums";
-                    break;
+                        break;
                     case "artistUpdate":
                         this.activeTab = "update";
-                    break;
+                        break;
                     default:
                         this.activeTab = "overview";
-                    break;
+                        break;
                 }
             }
         }, methods: {
-            replaceAlbumThumbnailWithLoadError: function(album) {
+            replaceAlbumThumbnailWithLoadError: function (album) {
                 album.image = null;
             },
             getArtist: function (artist) {
@@ -261,7 +262,7 @@ var browseArtist = (function () {
                     self.searchArtistTracks(self.$route.params.artist);
                 }, 256);
             },
-            search: function() {
+            search: function () {
                 this.searchArtistTracks(this.$route.params.artist);
             },
             searchArtistTracks: function (artist) {
@@ -324,7 +325,7 @@ var browseArtist = (function () {
                     }
                 });
             },
-            clearMusicBrainzArtist: function(name, mbid) {
+            clearMusicBrainzArtist: function (name, mbid) {
                 var self = this;
                 self.loading = true;
                 self.errors = false;
@@ -338,18 +339,10 @@ var browseArtist = (function () {
                     }
                 });
             }
-        }, filters: {
-            parseAlbumImage: function(value) {
-                if (value.indexOf("http") == 0) {
-                    return ("api/thumbnail?url=" + value);
-                } else {
-                    return ("api/thumbnail?hash=" + value);
-                }
-            }
         },
         computed: {
-            liveSearch: function() {
-                return(initialState.liveSearch);
+            liveSearch: function () {
+                return (initialState.liveSearch);
             }
         }
     });
