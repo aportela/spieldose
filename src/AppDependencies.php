@@ -12,6 +12,14 @@
         return ($view);
     };
 
+    // enable routes in a subfolder
+    // https://github.com/slimphp/Slim/issues/2294#issuecomment-341887867
+    $container['environment'] = function () {
+        $scriptName = $_SERVER['SCRIPT_NAME'];
+        $_SERVER['SCRIPT_NAME'] = dirname(dirname($scriptName)) . '/' . basename($scriptName);
+        return new Slim\Http\Environment($_SERVER);
+    };
+
     $container['logger'] = function ($c) {
         $settings = $c->get('settings')['logger'];
         $logger = new \Monolog\Logger($settings['name']);
