@@ -99,7 +99,7 @@ const spieldoseAPI = {
             }
         );
     },
-    clearMusicBrainzArtist: function(name, mbid, callback) {
+    clearMusicBrainzArtist: function (name, mbid, callback) {
         Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
             response => {
                 callback(response);
@@ -129,7 +129,7 @@ const spieldoseAPI = {
             }
         );
     },
-    getPathTracks: function(path, trackCount, callback) {
+    getPathTracks: function (path, trackCount, callback) {
         var params = {
             path: path
         };
@@ -262,7 +262,7 @@ const spieldoseAPI = {
             }
         );
     },
-    addPlaylist: function(name, tracks, callback) {
+    addPlaylist: function (name, tracks, callback) {
         var params = {
             name: name,
             tracks: tracks
@@ -276,7 +276,7 @@ const spieldoseAPI = {
             }
         );
     },
-    updatePlaylist: function(id, name, tracks, callback) {
+    updatePlaylist: function (id, name, tracks, callback) {
         var params = {
             id: id,
             name: name,
@@ -291,7 +291,7 @@ const spieldoseAPI = {
             }
         );
     },
-    removePlaylist: function(id, callback) {
+    removePlaylist: function (id, callback) {
         var params = {
             id: id
         };
@@ -304,7 +304,7 @@ const spieldoseAPI = {
             }
         );
     },
-    getPlayList: function(playlistId, callback) {
+    getPlayList: function (playlistId, callback) {
         Vue.http.get("api/playlist/" + playlistId).then(
             response => {
                 callback(response);
@@ -314,7 +314,7 @@ const spieldoseAPI = {
             }
         );
     },
-    searchPaths: function(path, actualPage, resultsPage, callback) {
+    searchPaths: function (path, actualPage, resultsPage, callback) {
         var params = {};
         if (path) {
             params.partialName = path;
