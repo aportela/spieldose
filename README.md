@@ -20,6 +20,10 @@ browse http://localhost:8080
 
 #### nginx
 
+TODO: access through sub-folder
+
+If you want to use a virtual host, the configuration would be the following:
+
 ```
 server {
     # server listening port
@@ -50,6 +54,10 @@ server {
 ```
 
 #### apache
+
+If you want to access through a sub-folder of the server (example http://www.mydomain.com/spieldose) you do not have to do anything. Just unzip the package in the webserver root path folder, ex: /var/www/spieldose)
+
+If you want to use a virtual host, the configuration would be the following:
 
 ```
 <VirtualHost *:80>
