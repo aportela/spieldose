@@ -111,9 +111,3 @@ HTTP 500 - For more information you must activate the debug in the configuration
 **Request method**: GET
 
 **Request URL**: api/user/poll
-
-**Available response codes**:
-
-#### SUCCESS
-
-HTTP 200 - The user session started successfully
