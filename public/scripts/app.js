@@ -474,6 +474,12 @@ Vue.http.interceptors.push((request, next) => {
             response.getApiErrorData = function () {
                 return (getApiErrorDataFromResponse(response));
             };
+            if (response.status == 400 || response.status == 409) {
+                // helper for find invalid fields on api response
+                response.isFieldInvalid = function (fieldName) {
+                    return (response.body.invalidOrMissingParams.indexOf(fieldName) > -1);
+                }
+            }
         }
         return (response);
     });
