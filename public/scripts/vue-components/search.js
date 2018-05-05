@@ -6,15 +6,24 @@ var search = (function () {
     <div class="container is-fluid box is-marginless">
         <p class="title is-1 has-text-centered">Search artists, albums, tracks, playlists</p>
         <div v-if="! errors">
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-focus v-model.trim="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+            <div class="field has-addons">
+                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+                    <input v-if="liveSearch" class="input" :disabled="loading" v-focus v-model.trim="textFilter" type="text" placeholder="search..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input v-else class="input" :disabled="loading" v-focus v-model.trim="textFilter" type="text" placeholder="search..." v-on:keyup.enter="search();">
                     <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
+                <p class="control" v-if="! liveSearch">
+                    <a class="button is-info" v-on:click.prevent="search();">
+                        <span class="icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                        <span>search</span>
+                    </a>
+                </p>
             </div>
-            <div class="columns">
+            <div class="columns is-desktop">
                 <div class="column is-one-quarter is-clipped">
                     <h1 class="title is-6 has-text-centered">Artists</h1>
                     <hr class="dropdown-divider">
@@ -231,6 +240,10 @@ var search = (function () {
                         self.loading = false;
                     }
                 });
+            }
+        }, computed: {
+            liveSearch: function() {
+                return(initialState.liveSearch);
             }
         }
     });

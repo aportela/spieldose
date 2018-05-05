@@ -6,13 +6,22 @@ var browsePlaylists = (function () {
     <div class="container is-fluid box is-marginless">
         <p class="title is-1 has-text-centered">Browse playlists</i></p>
         <div v-if="! errors">
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+            <div class="field has-addons">
+                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+                    <input class="input" :disabled="loading" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-else v-model.trim="nameFilter" type="text" placeholder="search playlist name..." v-on:keyup.enter="search();">
                     <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
+                <p class="control" v-if="! liveSearch">
+                    <a class="button is-info" v-on:click.prevent="search();">
+                        <span class="icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                        <span>search</span>
+                    </a>
+                </p>
             </div>
             <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
             <div class="playlist-item box has-text-centered" v-for="playlist in playlists" v-show="! loading">
@@ -158,6 +167,10 @@ var browsePlaylists = (function () {
                         }
                     });
                 }
+            }
+        }, computed: {
+            liveSearch: function() {
+                return(initialState.liveSearch);
             }
         }
     });

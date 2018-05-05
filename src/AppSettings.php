@@ -12,8 +12,9 @@
             'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring', 'curl'),
             //
             'common' => [
-                'defaultResultsPage' => 128,
-                'allowSignUp' => true
+                'defaultResultsPage' => 64,
+                'allowSignUp' => true,
+                'liveSearch' => true
             ],
             // database settings
             'database' => [

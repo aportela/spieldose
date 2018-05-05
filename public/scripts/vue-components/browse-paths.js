@@ -7,13 +7,22 @@ var browsePaths = (function () {
         <p class="title is-1 has-text-centered">Browse paths</i></p>
 
         <div v-if="! errors">
-            <div class="field">
-                <div class="control has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+            <div class="field has-addons">
+                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
+                    <input class="input" :disabled="loading" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-else v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.enter="search();">
                     <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
+                <p class="control" v-if="! liveSearch">
+                    <a class="button is-info" v-on:click.prevent="search();">
+                        <span class="icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                        <span>search</span>
+                    </a>
+                </p>
             </div>
             <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="! loading">
@@ -58,7 +67,7 @@ var browsePaths = (function () {
             });
         }, directives: {
             focus: {
-                inserted: function(el) {
+                inserted: function (el) {
                     el.focus();
                 },
                 update: function (el) {
@@ -142,6 +151,10 @@ var browsePaths = (function () {
                         self.apiError = response.getApiErrorData();
                     }
                 });
+            }
+        }, computed: {
+            liveSearch: function () {
+                return (initialState.liveSearch);
             }
         }
     });

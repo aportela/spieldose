@@ -8,18 +8,27 @@ var browseAlbums = (function () {
         <div v-if="! errors">
             <div class="field has-addons">
                 <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <input class="input" :disabled="loading" v-else v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.enter="search();">
                     <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
                 <p class="control">
-                    <a class="button is-info" v-on:click.prevent="advancedSearch = ! advancedSearch;">
+                    <a class="button is-default" v-on:click.prevent="advancedSearch = ! advancedSearch;">
                         <span class="icon">
                             <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
                             <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
                         </span>
                         <span>toggle advanced search</span>
+                    </a>
+                </p>
+                <p class="control" v-if="! liveSearch">
+                    <a class="button is-info" v-on:click.prevent="search();">
+                        <span class="icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                        <span>search</span>
                     </a>
                 </p>
             </div>
@@ -171,6 +180,10 @@ var browseAlbums = (function () {
                 } else {
                     return ("api/thumbnail?hash=" + value);
                 }
+            }
+        }, computed: {
+            liveSearch: function() {
+                return(initialState.liveSearch);
             }
         }
     });

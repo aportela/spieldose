@@ -15,7 +15,8 @@
                     "logged" => \Spieldose\User::isLogged(),
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                    "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                    "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
+                    "liveSearch" => $this->get('settings')['common']['liveSearch']
                 )
             )
         ));

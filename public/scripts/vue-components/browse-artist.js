@@ -36,13 +36,22 @@ var browseArtist = (function () {
                     <div class="content is-clearfix" id="bio" v-html="artist.bio"></div>
                 </div>
                 <div class="panel" v-if="activeTab == 'tracks'">
-                    <div class="field">
-                        <div class="control has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
-                            <input class="input" :disabled="loadingTracks" v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                    <div class="field has-addons">
+                        <div class="control is-expanded has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
+                            <input class="input" :disabled="loadingTracks" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                            <input class="input" :disabled="loadingTracks" v-else v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
+                        <p class="control" v-if="! liveSearch">
+                            <a class="button is-info" v-on:click.prevent="search();">
+                                <span class="icon">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                                <span>search</span>
+                            </a>
+                        </p>
                     </div>
                     <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager"></spieldose-pagination>
                     <table class="table is-bordered is-striped is-narrow is-fullwidth">
@@ -252,6 +261,9 @@ var browseArtist = (function () {
                     self.searchArtistTracks(self.$route.params.artist);
                 }, 256);
             },
+            search: function() {
+                this.searchArtistTracks(this.$route.params.artist);
+            },
             searchArtistTracks: function (artist) {
                 var self = this;
                 self.loadingTracks = true;
@@ -333,6 +345,11 @@ var browseArtist = (function () {
                 } else {
                     return ("api/thumbnail?hash=" + value);
                 }
+            }
+        },
+        computed: {
+            liveSearch: function() {
+                return(initialState.liveSearch);
             }
         }
     });
