@@ -121,9 +121,11 @@ let dashboardToplist = (function () {
                     self.loading = false;
                 });
             }, changeInterval: function (interval) {
-                if (interval && this.activeInterval != interval) {
-                    this.activeInterval = interval;
-                    this.load();
+                if (!this.loading) {
+                    if (interval && this.activeInterval != interval) {
+                        this.activeInterval = interval;
+                        this.load();
+                    }
                 }
             }, load: function () {
                 this.clearAPIErrors();

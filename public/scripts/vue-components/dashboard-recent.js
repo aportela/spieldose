@@ -194,9 +194,11 @@ let dashboardRecent = (function () {
                 }
             },
             changeEntity: function (entity) {
-                if (entity && entity != this.actualEntity) {
-                    this.actualEntity = entity;
-                    this.load();
+                if (!this.loading) {
+                    if (entity && entity != this.actualEntity) {
+                        this.actualEntity = entity;
+                        this.load();
+                    }
                 }
             },
             playAlbum: function (album) {
