@@ -3,67 +3,54 @@ var menu = (function () {
 
     var template = function () {
         return `
-        <nav id="menu" class="panel is-unselectable">
-            <p class="panel-heading">
-            Menu
-            </p>
-            <a v-on:click.prevent="$router.push({ name: 'dashboard' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'dashboard'}">
-            <span class="panel-icon"><i class="fas fa-chart-line"></i></span>
-            dashboard
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'nowPlaying' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'nowPlaying'}">
-            <span class="panel-icon"><i class="fas fa-headphones"></i></span>
-            current playlist
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'search' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'search'}">
-            <span class="panel-icon"><i class="fas fa-search"></i></span>
-            search
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'artists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'artists'}">
-            <span class="panel-icon"><i class="fas fa-user"></i></span>
-            browse artists
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'albums' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'albums'}">
-            <span class="panel-icon"><i class="fas fa-circle"></i></span>
-            browse albums
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'paths' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'paths'}">
-            <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
-            browse paths
-            </a>
-            <a v-on:click.prevent="$router.push({ name: 'playlists' })" class="panel-block" v-bind:class="{ 'is-active': $route.name == 'playlists'}">
-            <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
-            browse playlists
-            </a>
-            <a v-on:click.prevent="signout();" class="panel-block">
-            <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
-            signout
-            </a>
-        </nav>
+            <nav id="menu" class="panel is-unselectable">
+                <p class="panel-heading">Menu</p>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('dashboard') }" v-on:click.prevent="changeSection('dashboard');">
+                    <span class="panel-icon"><i class="fas fa-chart-line"></i></span>
+                    <span>dashboard</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('nowPlaying') }" v-on:click.prevent="changeSection('nowPlaying');">
+                    <span class="panel-icon"><i class="fas fa-headphones"></i></span>
+                    <span>current playlist</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('search') }" v-on:click.prevent="changeSection('search');">
+                    <span class="panel-icon"><i class="fas fa-search"></i></span>
+                    <span>search</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('artists') }" v-on:click.prevent="changeSection('artists');">
+                    <span class="panel-icon"><i class="fas fa-user"></i></span>
+                    <span>browse artists</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('albums') }" v-on:click.prevent="changeSection('albums');">
+                    <span class="panel-icon"><i class="fas fa-circle"></i></span>
+                    <span>browse albums</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('paths') }" v-on:click.prevent="changeSection('paths');">
+                    <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
+                    <span>browse paths</span>
+                </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('playlists') }" v-on:click.prevent="changeSection('playlists');">
+                    <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
+                    <span>browse playlists</span>
+                </a>
+                <a class="panel-block" v-on:click.prevent="signout();">
+                    <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span>signout</span>
+                </a>
+            </nav>
         `;
     };
 
     /* app (logged) menu component */
     var module = Vue.component('spieldose-menu-component', {
         template: template(),
-        data: function () {
-            return ({
-                playerData: sharedPlayerData,
-                actualRouteName: null
-            });
-        },
-        watch: {
-            '$route'(to, from) {
-                this.actualRouteName = to.name;
-            }
-        },
-        created: function () {
-            this.actualRouteName = this.$route.name;
-        },
+        mixins: [mixinPlayer],
         methods: {
             signout: function (e) {
-                this.playerData.dispose();
                 bus.$emit("signOut");
+
+            }, isSectionActive: function (section) {
+                return (this.$route.name == section);
             }, changeSection(routeName) {
                 this.$router.push({ name: routeName });
             }
