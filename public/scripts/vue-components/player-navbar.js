@@ -46,7 +46,6 @@ let playerNavBar = (function () {
                                 </a>
                             </div>
                         </div>
-
                         <div class="navbar-item">
                             <img v-bind:src="coverSrc" style="width: 64px; max-height: 64px;">
                         </div>
@@ -56,13 +55,27 @@ let playerNavBar = (function () {
                             <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
                             <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
                         </div>
-
                         <div class="navbar-item">
                             <div>
                                 <p class="title is-3">{{ nowPlayingTitle }}</p>
                                 <p class="subtitle is-5">{{nowPlayingArtist }}</p>
                             </div>
                         </div>
+                        <!--
+                        <div class="navbar-item">
+                            <nav class="level is-marginless">
+                                <div class="level-left">
+                                    <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
+                                </div>
+                                <div class="level-item">
+                                    <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" />
+                                </div>
+                                <div class="level-right">
+                                    <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
+                                </div>
+                            </nav>
+                        </div>
+                        -->
                     </div>
                 </div>
             </nav>
@@ -72,10 +85,10 @@ let playerNavBar = (function () {
     /* small fixed navbar player controls component */
     let module = Vue.component('player-navbar', {
         template: template(),
+        mixins: [mixinPlayer],
         data: function () {
             return ({
                 showPlayerNavBar: false,
-                playerData: sharedPlayerData,
                 playerVisibilityObserver: null
             });
         },
@@ -102,34 +115,6 @@ let playerNavBar = (function () {
                     }
                 } else {
                     return ('images/vinyl.png');
-                }
-            },
-            isPlaying: function () {
-                return (this.playerData.isPlaying);
-            },
-            isPaused: function () {
-                return (this.playerData.isPaused);
-            },
-            nowPlayingTitle: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.title) {
-                        return (this.playerData.actualTrack.title);
-                    } else {
-                        return ("track title unknown");
-                    }
-                } else {
-                    return ("track title");
-                }
-            },
-            nowPlayingArtist: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.artist) {
-                        return (this.playerData.actualTrack.artist);
-                    } else {
-                        return ("artist unknown");
-                    }
-                } else {
-                    return ("artist");
                 }
             }
         }, methods: {
