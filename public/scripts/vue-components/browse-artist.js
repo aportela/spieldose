@@ -338,11 +338,6 @@ var browseArtist = (function () {
                     }
                 });
             }
-        },
-        computed: {
-            liveSearch: function () {
-                return (initialState.liveSearch);
-            }
         }
     });
 

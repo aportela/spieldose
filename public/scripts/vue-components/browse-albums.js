@@ -81,7 +81,7 @@ var browseAlbums = (function () {
 
     var module = Vue.component('spieldose-browse-albums', {
         template: template(),
-        mixins: [ mixinPagination, mixinAlbums],
+        mixins: [ mixinPagination, mixinLiveSearches, mixinAlbums],
         data: function () {
             return ({
                 loading: false,
@@ -166,10 +166,6 @@ var browseAlbums = (function () {
                         self.apiError = response.getApiErrorData();
                     }
                 });
-            }
-        }, computed: {
-            liveSearch: function() {
-                return(initialState.liveSearch);
             }
         }
     });

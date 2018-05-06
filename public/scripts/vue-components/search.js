@@ -100,6 +100,7 @@ var search = (function () {
 
     var module = Vue.component('spieldose-search', {
         template: template(),
+        mixins: [ mixinLiveSearches ],
         data: function () {
             return ({
                 loading: false,
@@ -240,10 +241,6 @@ var search = (function () {
                         self.loading = false;
                     }
                 });
-            }
-        }, computed: {
-            liveSearch: function() {
-                return(initialState.liveSearch);
             }
         }
     });
