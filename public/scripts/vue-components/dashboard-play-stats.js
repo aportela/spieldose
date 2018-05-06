@@ -52,7 +52,7 @@ let dashboardPlayStats = (function () {
         }
     };
 
-    /* app chart (test) component */
+    /* play stats (hour/week/month/year) graph component */
     let module = Vue.component('spieldose-dashboard-play-stats', {
         template: template(),
         mixins: [mixinAPIError],
