@@ -14,9 +14,9 @@ let dashboardRecent = (function () {
                     <a class="icon is-pulled-right" title="refresh data" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw"></i></a>
                 </p>
                 <p class="panel-tabs">
-                    <a v-bind:class="{ 'is-active' : isTrackEntity }" v-on:click.prevent="changeEntity('tracks')">Tracks</a>
-                    <a v-bind:class="{ 'is-active' : isArtistEntity }" v-on:click.prevent="changeEntity('artists')">Artists</a>
-                    <a v-bind:class="{ 'is-active' : isAlbumEntity }" v-on:click.prevent="changeEntity('albums')">Albums</a>
+                    <a v-bind:class="{ 'is-active' : isTrackEntity }" v-on:click.prevent="changeEntity('tracks');">Tracks</a>
+                    <a v-bind:class="{ 'is-active' : isArtistEntity }" v-on:click.prevent="changeEntity('artists');">Artists</a>
+                    <a v-bind:class="{ 'is-active' : isAlbumEntity }" v-on:click.prevent="changeEntity('albums');">Albums</a>
                 </p>
                 <div class="panel-block cut-text">
                     <ol v-if="hasItems">
@@ -44,20 +44,19 @@ let dashboardRecent = (function () {
     };
 
     /* recent played (track/artist/album) component */
-    var module = Vue.component('spieldose-dashboard-recent', {
+    let module = Vue.component('spieldose-dashboard-recent', {
         template: template(),
-        mixins: [mixinAPIError, mixinPlayer],
+        mixins: [mixinAPIError, mixinTopRecentCharts, mixinPlayer],
         data: function () {
             return ({
                 loading: false,
-                items: [],
                 actualEntity: 'tracks'
             });
         },
-        props: ['type', 'title', 'listItemCount'],
-        created: function () {
-            this.load();
-        }, computed: {
+        props: [
+            'type', 'title', 'listItemCount'
+        ],
+        computed: {
             isTrackEntity: function () {
                 return (this.actualEntity == 'tracks');
             },
@@ -67,17 +66,9 @@ let dashboardRecent = (function () {
             isAlbumEntity: function () {
                 return (this.actualEntity == 'albums');
             },
-            hasItems: function () {
-                return (this.items && this.items.length > 0);
-            }
         }, methods: {
-            navigateToArtistPage: function (artist) {
-                if (artist) {
-                    this.$router.push({ name: 'artist', params: { artist: artist } });
-                }
-            },
             loadRecentAddedTracks: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentAddedTracks(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -90,7 +81,7 @@ let dashboardRecent = (function () {
                 });
             },
             loadRecentAddedArtists: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentAddedArtists(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -103,7 +94,7 @@ let dashboardRecent = (function () {
                 });
             },
             loadRecentAddedAlbums: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentAddedAlbums(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -116,7 +107,7 @@ let dashboardRecent = (function () {
                 });
             },
             loadRecentPlayedTracks: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentPlayedTracks(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -129,7 +120,7 @@ let dashboardRecent = (function () {
                 });
             },
             loadRecentPlayedArtists: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentPlayedArtists(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -142,7 +133,7 @@ let dashboardRecent = (function () {
                 });
             },
             loadRecentPlayedAlbums: function () {
-                var self = this;
+                let self = this;
                 spieldoseAPI.getRecentPlayedAlbums(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
@@ -207,13 +198,11 @@ let dashboardRecent = (function () {
                     this.actualEntity = entity;
                     this.load();
                 }
-            }, playTrack: function (track) {
-                this.playerData.replace([track]);
-            }, enqueueTrack: function (track) {
-                this.playerData.enqueue([track]);
-            }, playAlbum: function (album) {
+            },
+            playAlbum: function (album) {
                 // TODO
-            }, enqueueAlbum: function (album) {
+            },
+            enqueueAlbum: function (album) {
                 // TODO
             }
         }

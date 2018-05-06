@@ -1,102 +1,134 @@
-var dashboardToplist = (function () {
+let dashboardToplist = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
-    <section class="panel chart">
-        <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fas fa-exclamation-triangle"></i><i v-else class="fas fa-list"></i></span> {{ title }}
-            <a v-on:click.prevent="load();" title="refresh data" class="icon is-pulled-right"><i class="fas fa-redo fa-fw2"></i></a>
-        </p>
-        <p class="panel-tabs">
-            <a href="#" v-bind:class="{ 'is-active' : interval == 0 }" v-on:click.prevent="changeInterval(0)">All Time</a>
-            <a href="#" v-bind:class="{ 'is-active' : interval == 1 }" v-on:click.prevent="changeInterval(1)">Past week</a>
-            <a href="#" v-bind:class="{ 'is-active' : interval == 2 }" v-on:click.prevent="changeInterval(2)">Past month</a>
-            <a href="#" v-bind:class="{ 'is-active' : interval == 3 }" v-on:click.prevent="changeInterval(3)">Past semester</a>
-            <a href="#" v-bind:class="{ 'is-active' : interval == 4 }" v-on:click.prevent="changeInterval(4)">Past Year</a>
-        </p>
-        <div class="panel-block cut-text">
-            <ol v-if="items.length > 0">
-                <li class="is-small" v-if="type == 'topTracks'" v-for="item, i in items"><i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i> <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-plus-square" title="enqueue this track"></i> {{ item.title }}<span v-if="item.artist"> / <a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }}</a></span><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
-                <li class="is-small" v-if="type == 'topArtists'" v-for="item, i in items"><a v-on:click.prevent="$router.push({ name: 'artist', params: { artist: item.artist } })">{{ item.artist }}</a><span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
-                <li class="is-small" v-if="type == 'topGenres'" v-for="item, i in items">{{ item.genre }}<span v-if="showPlayCount == true"> ({{ item.total }} plays)</span></li>
-            </ol>
-            <p v-else-if="items.length == 0 && ! loading && ! errors">not enough data for the stats</p>
-            <p v-else-if="errors">error loading data (invalid response from server)</p>
-        </div>
-    </section>
-    `;
+            <section class="panel chart">
+                <p class="panel-heading">
+                    <span class="icon">
+                        <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
+                        <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                        <i class="fas fa-list" v-else></i>
+                    </span>
+                    <span>{{ title }}</span>
+                    <a class="icon is-pulled-right" title="refresh data" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw2"></i></a>
+                </p>
+                <p class="panel-tabs">
+                    <a v-bind:class="{ 'is-active' : isAllTimeInterval }" v-on:click.prevent="changeInterval(0);">All Time</a>
+                    <a v-bind:class="{ 'is-active' : isPastWeekInterval }" v-on:click.prevent="changeInterval(1);">Past week</a>
+                    <a v-bind:class="{ 'is-active' : isPastMonthInterval }" v-on:click.prevent="changeInterval(2);">Past month</a>
+                    <a v-bind:class="{ 'is-active' : isPastSemesterInterval }" v-on:click.prevent="changeInterval(3);">Past semester</a>
+                    <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">Past Year</a>
+                </p>
+                <div class="panel-block cut-text">
+                    <ol v-if="items.length > 0">
+                        <li class="is-small" v-if="isTopTracksType" v-for="item in items" v-bind:key="item.id">
+                            <i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i>
+                            <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-plus-square" title="enqueue this track"></i>
+                            <span>{{ item.title }}</span>
+                            <span v-if="item.artist"> / <a v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
+                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                        </li>
+                        <li class="is-small" v-if="isTopArtistsType" v-for="item in items">
+                            <a v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                        </li>
+                        <li class="is-small" v-if="isTopGenresType" v-for="item in items">
+                            <span>{{ item.genre }}</span>
+                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                        </li>
+                    </ol>
+                    <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">not enough data for the stats</p>
+                    <p v-else-if="hasAPIErrors">error loading data (invalid response from server)</p>
+                </div>
+            </section>
+        `;
     };
 
-    /* app chart (test) component */
-    var module = Vue.component('spieldose-dashboard-toplist', {
+    /* top played (track/artist/genres) component */
+    let module = Vue.component('spieldose-dashboard-toplist', {
         template: template(),
+        mixins: [mixinAPIError, mixinTopRecentCharts, mixinPlayer],
         data: function () {
             return ({
                 loading: false,
-                errors: false,
-                interval: 0,
-                items: [],
-                playerData: sharedPlayerData,
+                activeInterval: 0
             });
         },
-        created: function () {
-            this.load();
+        props: [
+            'type', 'title', 'listItemCount', 'showPlayCount', 'artist'
+        ],
+        computed: {
+            isAllTimeInterval: function () {
+                return (this.activeInterval == 0);
+            },
+            isPastWeekInterval: function () {
+                return (this.activeInterval == 1);
+            },
+            isPastMonthInterval: function () {
+                return (this.activeInterval == 2);
+            },
+            isPastSemesterInterval: function () {
+                return (this.activeInterval == 3);
+            },
+            isPastYearInterval: function () {
+                return (this.activeInterval == 4);
+            },
+            isTopTracksType: function () {
+                return (this.type == 'topTracks');
+            },
+            isTopArtistsType: function () {
+                return (this.type == 'topArtists');
+            },
+            isTopGenresType: function () {
+                return (this.type == 'topGenres');
+            }
         }, methods: {
             loadTopPlayedTracks: function () {
-                var self = this;
-                self.loading = true;
-                self.errors = false;
-                self.items = [];
+                let self = this;
                 spieldoseAPI.getTopPlayedTracks(this.interval, self.artist, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
                         }
-                        self.loading = false;
                     } else {
-                        self.loading = false;
-                        self.errors = true;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             }, loadTopPlayedArtists: function () {
-                var self = this;
-                self.loading = true;
-                self.errors = false;
-                self.items = [];
+                let self = this;
                 spieldoseAPI.getTopPlayedArtists(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
                         }
-                        self.loading = false;
                     } else {
-                        self.loading = false;
-                        self.errors = true;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             }, loadTopPlayedGenres: function () {
-                var self = this;
-                self.loading = true;
-                self.errors = false;
-                self.items = [];
+                let self = this;
                 spieldoseAPI.getTopPlayedGenres(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
                         }
-                        self.loading = false;
                     } else {
-                        self.loading = false;
-                        self.errors = true;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
-            }, changeInterval: function (i) {
-                if (this.interval != i) {
-                    this.interval = i;
+            }, changeInterval: function (interval) {
+                if (interval && this.activeInterval != interval) {
+                    this.activeInterval = interval;
+                    this.load();
                 }
-                this.load();
             }, load: function () {
+                this.clearAPIErrors();
+                this.loading = true;
+                this.items = [];
                 switch (this.type) {
                     case "topTracks":
                         this.loadTopPlayedTracks();
@@ -107,14 +139,12 @@ var dashboardToplist = (function () {
                     case "topGenres":
                         this.loadTopPlayedGenres();
                         break;
+                    default:
+                        this.loading = false;
+                        break;
                 }
-            }, playTrack: function (track) {
-                this.playerData.replace([track]);
-            }, enqueueTrack: function (track) {
-                this.playerData.enqueue([track]);
             }
-        },
-        props: ['type', 'title', 'listItemCount', 'showPlayCount', 'artist']
+        }
     });
 
     return (module);
