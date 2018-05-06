@@ -55,7 +55,7 @@ let browsePaths = (function () {
     let module = Vue.component('spieldose-browse-paths', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinFocus, mixinPagination, mixinLiveSearches, mixinPlayer
+            mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
         ],
         data: function () {
             return ({
