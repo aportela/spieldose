@@ -56,7 +56,7 @@ var browseArtists = (function () {
 
     var module = Vue.component('spieldose-browse-artists', {
         template: template(),
-        mixins: [mixinLiveSearches],
+        mixins: [mixinPagination, mixinLiveSearches],
         data: function () {
             return ({
                 loading: false,
@@ -65,8 +65,7 @@ var browseArtists = (function () {
                 nameFilter: null,
                 timeout: null,
                 artists: [],
-                filterNotScraped: 0,
-                pager: getPager()
+                filterNotScraped: 0
             });
         },
         watch: {
@@ -87,8 +86,11 @@ var browseArtists = (function () {
             }
             this.search();
         }, methods: {
-            abortInstantSearch: function () {
+            clearFilters: function() {
                 this.nameFilter = null;
+            },
+            abortInstantSearch: function () {
+                this.clearFilters();
             },
             instantSearch: function () {
                 var self = this;
