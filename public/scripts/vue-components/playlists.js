@@ -169,7 +169,6 @@ var nowPlaying = (function () {
                 nameFilter: null,
                 playlists: [],
                 savingPlaylist: false,
-                pager: getPager(),
                 currentPlaylistName: null,
                 playerData: sharedPlayerData,
             });
