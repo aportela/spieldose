@@ -10,7 +10,6 @@ let inputTypeahead = (function () {
     /* input typeahead component */
     let module = Vue.component('spieldose-input-typeahead', {
         template: template(),
-        mixins: [],
         data: function () {
             return ({
                 text: null,
