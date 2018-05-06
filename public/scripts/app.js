@@ -520,6 +520,7 @@ const app = new Vue({
             var self = this;
             self.loading = true;
             self.errors = false;
+            this.playerData.dispose();
             spieldoseAPI.signOut(function (response) {
                 if (response.ok) {
                     self.$router.push({ path: '/signin' });
