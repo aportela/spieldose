@@ -234,9 +234,11 @@ let dashboardPlayStats = (function () {
                 }
             },
             changeInterval: function (interval) {
-                if (interval && interval != this.activeInterval) {
-                    this.activeInterval = interval;
-                    this.loadChart();
+                if (!this.loading) {
+                    if (interval && interval != this.activeInterval) {
+                        this.activeInterval = interval;
+                        this.loadChart();
+                    }
                 }
             }
         }
