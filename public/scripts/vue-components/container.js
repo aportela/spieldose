@@ -1,11 +1,12 @@
-var container = (function () {
+let container = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
             <div>
                 <section class="section is-fullheight is-light is-bold">
                     <div class="columns is-desktop">
+                        <!-- TODO: test class "is-hidden-touch" for mobile -->
                         <div class="is-narrow column">
                             <spieldose-player-component></spieldose-player-component>
                             <spieldose-menu-component></spieldose-menu-component>
@@ -20,15 +21,9 @@ var container = (function () {
         `;
     };
 
-    var module = Vue.component('spieldose-app-component', {
-        template: template(),
-        methods: {
-            signout: function (e) {
-                bus.$emit("signOut");
-            }, changeSection(routeName) {
-                this.$router.push({ name: routeName });
-            }
-        }
+    /* main app container component */
+    let module = Vue.component('spieldose-app-component', {
+        template: template()
     });
 
     return (module);
