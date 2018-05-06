@@ -45,3 +45,25 @@ const mixinValidations = {
         });
     }
 };
+
+/**
+ * api error common mixins
+ */
+const mixinAPIError = {
+    data: function () {
+        return ({
+            apiError: null
+        });
+    }, computed: {
+        hasAPIErrors() {
+            return(this.apiError != null);
+        }
+    }, methods: {
+        clearAPIErrors() {
+            this.apiError = null;
+        },
+        setAPIError(err) {
+            this.apiError = err;
+        }
+    }
+};
