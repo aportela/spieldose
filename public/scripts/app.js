@@ -382,7 +382,7 @@ const app = new Vue({
             this.playerData.dispose();
             var self = this;
             self.clearAPIErrors();
-            spieldoseAPI.signOut(function (response) {
+            spieldoseAPI.session.signOut(function (response) {
                 if (response.ok) {
                     self.$router.push({ path: '/signin' });
                 } else {
@@ -392,7 +392,7 @@ const app = new Vue({
         },
         poll: function (callback) {
             var self = this;
-            spieldoseAPI.poll(function (response) {
+            spieldoseAPI.session.poll(function (response) {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
@@ -403,6 +403,6 @@ const app = new Vue({
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
 setInterval(function () {
-    spieldoseAPI.poll(function () { });
+    spieldoseAPI.session.poll(function () { });
 }, 300000 // 5 mins * 60 * 1000
 );

@@ -141,7 +141,7 @@ let signInUp = (function () {
                 self.loading = true;
                 self.validator.clear();
                 self.clearAPIErrors();
-                spieldoseAPI.signIn(this.signInEmail, this.signInPassword, function (response) {
+                spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, function (response) {
                     if (response.ok) {
                         self.$router.push({ name: 'dashboard' });
                     } else {
@@ -175,7 +175,7 @@ let signInUp = (function () {
                 self.invalidSignUpPassword = false;
                 self.loading = true;
                 self.clearAPIErrors();
-                spieldoseAPI.signUp(this.signUpEmail, this.signUpPassword, function (response) {
+                spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, function (response) {
                     if (response.ok) {
                         self.signInEmail = self.signUpEmail;
                         self.signInPassword = self.signUpPassword;
