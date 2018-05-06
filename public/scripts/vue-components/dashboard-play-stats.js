@@ -1,28 +1,33 @@
-var dashboardPlayStats = (function () {
+let dashboardPlayStats = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
-    <section class="panel">
-        <p class="panel-heading">
-            <span class="icon"><i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i><i v-else-if="errors" class="fas fa-exclamation-triangle"></i><i v-else class="fas fa-chart-line"></i></span> Play statistics
-            <a v-on:click.prevent="loadChart();" title="refresh data" class="icon is-pulled-right"><i class="fas fa-redo fa-fw"></i></a>
-        </p>
-        <p class="panel-tabs">
-            <a v-bind:class="interval == 'hour' ? 'is-active': ''" v-on:click.prevent="changeInterval('hour');">by hour</a>
-            <a v-bind:class="interval == 'weekDay' ? 'is-active': ''" v-on:click.prevent="changeInterval('weekDay');">by weekday</a>
-            <a v-bind:class="interval == 'month' ? 'is-active': ''" v-on:click.prevent="changeInterval('month');">by month</a>
-            <a v-bind:class="interval == 'year' ? 'is-active': ''" v-on:click.prevent="changeInterval('year');">by year</a>
-        </p>
-        <div class="panel-block" v-if="! errors">
-            <canvas v-if="interval == 'hour'" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
-            <canvas v-if="interval == 'weekDay'" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
-            <canvas v-if="interval == 'month'" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
-            <canvas v-if="interval == 'year'" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
-        </div>
-        <div class="panel-block" v-else>error loading data (invalid response from server)</div>
-    </section>
-    `;
+            <section class="panel">
+                <p class="panel-heading">
+                    <span class="icon">
+                        <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
+                        <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                        <i class="fas fa-chart-line" v-else></i>
+                    </span>
+                    <span>Play statistics</span>
+                    <a class="icon is-pulled-right" title="refresh data" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
+                </p>
+                <p class="panel-tabs">
+                    <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">by hour</a>
+                    <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">by weekday</a>
+                    <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">by month</a>
+                    <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">by year</a>
+                </p>
+                <div class="panel-block" v-if="! hasAPIErrors">
+                    <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
+                    <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
+                    <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
+                    <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
+                </div>
+                <div class="panel-block" v-else>error loading data (invalid response from server)</div>
+            </section>
+        `;
     };
 
     const commonChartOptions = {
@@ -48,33 +53,41 @@ var dashboardPlayStats = (function () {
     };
 
     /* app chart (test) component */
-    var module = Vue.component('spieldose-dashboard-play-stats', {
+    let module = Vue.component('spieldose-dashboard-play-stats', {
         template: template(),
+        mixins: [mixinAPIError],
         data: function () {
             return ({
                 chart: null,
                 loading: false,
-                errors: false,
-                interval: "hour",
+                activeInterval: "hour",
                 items: []
             });
         },
         created: function () {
             this.loadChart();
-        }, methods: {
-            randomColorGenerator: function () {
-                return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
+        },
+        computed: {
+            isHourInterval: function () {
+                return (this.activeInterval == 'hour');
             },
+            isWeekDayInterval: function () {
+                return (this.activeInterval == 'weekDay');
+            },
+            isMonthInterval: function () {
+                return (this.activeInterval == 'month');
+            },
+            isYearInterval: function () {
+                return (this.activeInterval == 'year');
+            }
+        }, methods: {
             loadMetricsByHourChart: function () {
-                var self = this;
-                var d = {};
-                self.loading = true;
-                self.errors = false;
+                let self = this;
                 spieldoseAPI.getPlayStatMetricsByHour(function (response) {
                     if (response.ok) {
-                        var hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-                        var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        for (var i = 0; i < response.body.metrics.length; i++) {
+                        const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+                        let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for (let i = 0; i < response.body.metrics.length; i++) {
                             data[response.body.metrics[i].hour] = response.body.metrics[i].total;
                         }
                         if (self.chart) {
@@ -95,26 +108,22 @@ var dashboardPlayStats = (function () {
                                 ]
                             }, options: commonChartOptions
                         });
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             loadMetricsByWeekDayChart: function () {
-                var self = this;
-                var d = {};
-                self.loading = true;
-                self.errors = false;
+                let self = this;
                 spieldoseAPI.getPlayStatMetricsByWeekDay(function (response) {
                     if (response.ok) {
-                        var weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                        var weekDays = [];
-                        var data = [];
-                        for (var i = 0; i < response.body.metrics.length; i++) {
+                        const weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        let weekDays = [];
+                        let data = [];
+                        for (let i = 0; i < response.body.metrics.length; i++) {
                             data.push(response.body.metrics[i].total);
-                            weekDays.push(weekDayNames[response.body.metrics[i].weekDay ]);
+                            weekDays.push(weekDayNames[response.body.metrics[i].weekDay]);
                         }
                         if (self.chart) {
                             self.chart.destroy();
@@ -132,24 +141,20 @@ var dashboardPlayStats = (function () {
                                 ]
                             }, options: commonChartOptions
                         });
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             loadMetricsByMonthChart: function () {
-                var self = this;
-                var d = {};
-                self.loading = true;
-                self.errors = false;
+                let self = this;
                 spieldoseAPI.getPlayStatMetricsByMonth(function (response) {
                     if (response.ok) {
-                        var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                        var months = [];
-                        var data = [];
-                        for (var i = 0; i < response.body.metrics.length; i++) {
+                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        let months = [];
+                        let data = [];
+                        for (let i = 0; i < response.body.metrics.length; i++) {
                             data.push(response.body.metrics[i].total);
                             months.push(monthNames[response.body.metrics[i].month - 1]);
                         }
@@ -169,23 +174,19 @@ var dashboardPlayStats = (function () {
                                 ]
                             }, options: commonChartOptions
                         });
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             loadMetricsByYearChart: function () {
-                var self = this;
-                var d = {};
-                self.loading = true;
-                self.errors = false;
+                let self = this;
                 spieldoseAPI.getPlayStatMetricsByYear(function (response) {
                     if (response.ok) {
-                        var years = [];
-                        var data = [];
-                        for (var i = 0; i < response.body.metrics.length; i++) {
+                        let years = [];
+                        let data = [];
+                        for (let i = 0; i < response.body.metrics.length; i++) {
                             data.push(response.body.metrics[i].total);
                             years.push(response.body.metrics[i].year);
                         }
@@ -205,15 +206,16 @@ var dashboardPlayStats = (function () {
                                 ]
                             }, options: commonChartOptions
                         });
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             loadChart: function () {
-                switch (this.interval) {
+                this.clearAPIErrors();
+                this.loading = true;
+                switch (this.activeInterval) {
                     case "hour":
                         this.loadMetricsByHourChart();
                         break;
@@ -226,11 +228,14 @@ var dashboardPlayStats = (function () {
                     case "year":
                         this.loadMetricsByYearChart();
                         break;
+                    default:
+                        this.loading = false;
+                        break;
                 }
             },
-            changeInterval: function (i) {
-                if (i && i != this.interval) {
-                    this.interval = i;
+            changeInterval: function (interval) {
+                if (interval && interval != this.activeInterval) {
+                    this.activeInterval = interval;
                     this.loadChart();
                 }
             }
