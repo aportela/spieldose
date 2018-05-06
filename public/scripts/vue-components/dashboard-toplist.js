@@ -122,7 +122,7 @@ let dashboardToplist = (function () {
                 });
             }, changeInterval: function (interval) {
                 if (!this.loading) {
-                    if (interval && this.activeInterval != interval) {
+                    if (this.activeInterval != interval) {
                         this.activeInterval = interval;
                         this.load();
                     }
