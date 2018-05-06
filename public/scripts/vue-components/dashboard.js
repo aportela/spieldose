@@ -1,7 +1,7 @@
-var dashboard = (function () {
+let dashboard = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
             <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
             <div class="container is-fluid box is-marginless is-unselectable">
@@ -34,7 +34,7 @@ var dashboard = (function () {
         `;
     };
 
-    var module = Vue.component('spieldose-dashboard', {
+    let module = Vue.component('spieldose-dashboard', {
         template: template()
     });
 
