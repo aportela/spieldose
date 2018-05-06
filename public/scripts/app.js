@@ -6,19 +6,6 @@
 const bus = new Vue();
 
 /**
- * create & return a pagination object
- */
-const getPager = function () {
-    return ({
-        actualPage: 1,
-        previousPage: 1,
-        nextPage: 1,
-        totalPages: 0,
-        resultsPage: initialState.defaultResultsPage
-    });
-}
-
-/**
  * create & return a player data object
  */
 const getPlayerData = function () {

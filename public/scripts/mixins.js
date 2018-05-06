@@ -56,7 +56,7 @@ const mixinAPIError = {
         });
     }, computed: {
         hasAPIErrors() {
-            return(this.apiError != null);
+            return (this.apiError != null);
         }
     }, methods: {
         clearAPIErrors() {
@@ -65,5 +65,22 @@ const mixinAPIError = {
         setAPIError(err) {
             this.apiError = err;
         }
+    }
+};
+
+/**
+ * pagination common mixins
+ */
+const mixinPagination = {
+    data: function () {
+        return ({
+            pager: {
+                actualPage: 1,
+                previousPage: 1,
+                nextPage: 1,
+                totalPages: 0,
+                resultsPage: initialState.defaultResultsPage
+            }
+        });
     }
 };

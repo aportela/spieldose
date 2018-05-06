@@ -148,7 +148,7 @@ var browseArtist = (function () {
 
     var module = Vue.component('spieldose-browse-artist', {
         template: template(),
-        mixins: [mixinLiveSearches, mixinAlbums],
+        mixins: [mixinPagination, mixinLiveSearches, mixinAlbums],
         data: function () {
             return ({
                 loading: false,
@@ -160,7 +160,6 @@ var browseArtist = (function () {
                 truncatedBio: null,
                 detailedView: false,
                 playerData: sharedPlayerData,
-                pager: getPager(),
                 tracks: [],
                 nameFilter: null,
                 timeout: null,

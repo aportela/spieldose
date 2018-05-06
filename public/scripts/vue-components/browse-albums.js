@@ -81,7 +81,7 @@ var browseAlbums = (function () {
 
     var module = Vue.component('spieldose-browse-albums', {
         template: template(),
-        mixins: [ mixinAlbums],
+        mixins: [ mixinPagination, mixinAlbums],
         data: function () {
             return ({
                 loading: false,
@@ -90,7 +90,6 @@ var browseAlbums = (function () {
                 nameFilter: null,
                 timeout: null,
                 albums: [],
-                pager: getPager(),
                 advancedSearch: false,
                 playerData: sharedPlayerData,
                 filterByArtist: null,

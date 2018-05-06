@@ -54,7 +54,7 @@ var browsePaths = (function () {
 
     var module = Vue.component('spieldose-browse-paths', {
         template: template(),
-        mixins: [mixinLiveSearches],
+        mixins: [mixinPagination, mixinLiveSearches],
         data: function () {
             return ({
                 loading: false,
@@ -63,7 +63,6 @@ var browsePaths = (function () {
                 nameFilter: null,
                 timeout: null,
                 paths: [],
-                pager: getPager(),
                 playerData: sharedPlayerData
             });
         }, directives: {

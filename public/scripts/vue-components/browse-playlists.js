@@ -58,7 +58,7 @@ var browsePlaylists = (function () {
 
     var module = Vue.component('spieldose-browse-playlists', {
         template: template(),
-        mixins: [mixinLiveSearches],
+        mixins: [mixinPagination, mixinLiveSearches],
         data: function () {
             return ({
                 loading: false,
@@ -67,7 +67,6 @@ var browsePlaylists = (function () {
                 nameFilter: null,
                 timeout: null,
                 playlists: [],
-                pager: getPager(),
                 playerData: sharedPlayerData
             });
         },
