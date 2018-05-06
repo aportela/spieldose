@@ -1,7 +1,7 @@
-var playerNavBar = (function () {
+let playerNavBar = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
             <nav class="navbar is-light is-fixed-bottom is-unselectable" role="navigation" aria-label="main navigation" v-show="showPlayerNavBar">
                 <div class="navbar-menu">
@@ -69,8 +69,8 @@ var playerNavBar = (function () {
         `;
     };
 
-    /* signIn component */
-    var module = Vue.component('player-navbar', {
+    /* small fixed navbar player controls component */
+    let module = Vue.component('player-navbar', {
         template: template(),
         data: function () {
             return ({
@@ -80,15 +80,14 @@ var playerNavBar = (function () {
             });
         },
         created: function () {
-
-            var self = this;
+            let self = this;
             bus.$on("showPlayerNavBar", function () {
-                var rootEl = document.documentElement;
+                const rootEl = document.documentElement;
                 rootEl.classList.add('has-navbar-fixed-bottom');
                 self.showPlayerNavBar = true;
             });
             bus.$on("hidePlayerNavbar", function () {
-                var rootEl = document.documentElement;
+                const rootEl = document.documentElement;
                 rootEl.classList.remove('has-navbar-fixed-bottom');
                 self.showPlayerNavBar = false;
             });
