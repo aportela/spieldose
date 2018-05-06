@@ -1,79 +1,69 @@
-var browsePaths = (function () {
+let browsePaths = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
-    <div class="container is-fluid box is-marginless">
-        <p class="title is-1 has-text-centered">Browse paths</i></p>
-
-        <div v-if="! errors">
-            <div class="field has-addons">
-                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
-                    <input class="input" :disabled="loading" v-else v-model.trim="nameFilter" type="text" placeholder="search path name..." v-on:keyup.enter="search();">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-search"></i>
-                    </span>
+            <div class="container is-fluid box is-marginless">
+                <p class="title is-1 has-text-centered">Browse paths</i></p>
+                <div v-if="! hasAPIErrors">
+                    <div class="field has-addons">
+                        <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
+                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search path name...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                            <input class="input" type="text" placeholder="search path name..." v-bind:disabled="loading" v-else v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <p class="control" v-if="! liveSearch">
+                            <a class="button is-info" v-on:click.prevent="search();">
+                                <span class="icon">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                                <span>search</span>
+                            </a>
+                        </p>
+                    </div>
+                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                    <table class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable" v-show="! loading">
+                        <thead>
+                            <tr>
+                                <th>Path</th>
+                                <th>Tracks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in paths" v-bind:key="item.path">
+                                <td>{{ item.path }}</td>
+                                <td class="has-text-right">{{ item.totalTracks }}</td>
+                                <td class="has-text-centered">
+                                    <div v-if="item.totalTracks > 0">
+                                        <i class="cursor-pointer fa fa-play" title="play this path" v-on:click.prevent="play(item.path, item.totalTracks);"></i>
+                                        <i class="cursor-pointer fa fa-plus-square" title="enqueue this path" v-on:click.prevent="enqueue(item.path, item.totalTracks);"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <p class="control" v-if="! liveSearch">
-                    <a class="button is-info" v-on:click.prevent="search();">
-                        <span class="icon">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
-                        <span>search</span>
-                    </a>
-                </p>
+                <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
-            <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="! loading">
-                <thead>
-                        <tr class="is-unselectable">
-                            <th>Path</th>
-                            <th>Tracks</th>
-                            <th>Actions</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in paths">
-                        <td>{{ item.path }}</td>
-                        <td class="has-text-right">{{ item.totalTracks }}</td>
-                        <td class="has-text-centered">
-                            <div v-if="item.totalTracks > 0">
-                                <i v-on:click.prevent="play(item.path, item.totalTracks);" class="cursor-pointer fa fa-play" title="play this path"></i>
-                                <i v-on:click.prevent="enqueue(item.path, item.totalTracks);" class="cursor-pointer fa fa-plus-square" title="enqueue this path"></i>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
-    </div>
-    `;
+        `;
     };
 
-    var module = Vue.component('spieldose-browse-paths', {
+    /* browse path section component */
+    let module = Vue.component('spieldose-browse-paths', {
         template: template(),
-        mixins: [mixinPagination, mixinLiveSearches],
+        mixins: [
+            mixinAPIError, mixinFocus, mixinPagination, mixinLiveSearches, mixinPlayer
+        ],
         data: function () {
             return ({
                 loading: false,
-                errors: false,
-                apiError: null,
                 nameFilter: null,
                 timeout: null,
-                paths: [],
-                playerData: sharedPlayerData
+                paths: []
             });
-        }, directives: {
-            focus: {
-                inserted: function (el) {
-                    el.focus();
-                },
-                update: function (el) {
-                    el.focus();
-                }
-            }
         }, watch: {
             '$route'(to, from) {
                 if (to.name == "paths" || to.name == "pathsPaged") {
@@ -82,26 +72,17 @@ var browsePaths = (function () {
                 }
             }
         }, methods: {
-            onPaginationChanged: function(currentPage) {
+            onPaginationChanged: function (currentPage) {
                 this.$router.push({ name: 'pathsPaged', params: { page: currentPage } });
             },
-            abortInstantSearch: function () {
-                this.nameFilter = null;
-            },
-            instantSearch: function () {
-                var self = this;
-                if (self.timeout) {
-                    clearTimeout(self.timeout);
-                }
-                self.timeout = setTimeout(function () {
-                    self.pager.actualPage = 1;
-                    self.search();
-                }, 256);
+            onTypeahead: function (text) {
+                this.nameFilter = text;
+                this.search();
             },
             search: function () {
                 var self = this;
                 self.loading = true;
-                self.errors = false;
+                self.clearAPIErrors();
                 spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
@@ -112,38 +93,38 @@ var browsePaths = (function () {
                         } else {
                             self.paths = [];
                         }
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             play: function (path, trackCount) {
                 var self = this;
+                self.clearAPIErrors();
                 spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.replace(response.body.tracks);
                         }
                     } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             },
             enqueue: function (path, trackCount) {
                 var self = this;
+                self.clearAPIErrors();
                 spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.enqueue(response.body.tracks);
                         }
                     } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
+                        self.setAPIError(response.getApiErrorData());
                     }
+                    self.loading = false;
                 });
             }
         }
