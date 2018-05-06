@@ -1,7 +1,7 @@
-var menu = (function () {
+let menu = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
             <nav id="menu" class="panel is-unselectable">
                 <p class="panel-heading">Menu</p>
@@ -41,14 +41,13 @@ var menu = (function () {
         `;
     };
 
-    /* app (logged) menu component */
-    var module = Vue.component('spieldose-menu-component', {
+    /* section menu component */
+    let module = Vue.component('spieldose-menu-component', {
         template: template(),
         mixins: [mixinPlayer],
         methods: {
-            signout: function (e) {
+            signout: function () {
                 bus.$emit("signOut");
-
             }, isSectionActive: function (section) {
                 return (this.$route.name == section);
             }, changeSection(routeName) {
