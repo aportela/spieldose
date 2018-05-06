@@ -1,137 +1,69 @@
-var player = (function () {
+let player = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
-                    <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-                        <img id="album-cover" v-bind:class="{ 'rotate-album': vinylRotationEffect && coverSrc == 'images/vinyl.png'}" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
-                        <!--
-                        <vumeter v-bind:audio="audio"></vumeter>
-                        -->
-                        <canvas id="canvas"></canvas>
-                        <nav class="level is-marginless">
-                            <div class="level-left">
-                                <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
-                            </div>
-                            <div class="level-item">
-                                <input id="song-played-progress" class="is-pulled-left" type="range" v-model="progressv" min="0" max="1" step="0.01" />
-                            </div>
-                            <div class="level-right">
-                                <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
-                            </div>
-                        </nav>
-                        <div id="player-metadata-container" class="has-text-centered">
-                            <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
-                            <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
-                        </div>
-                        <div id="player-controls" class="is-unselectable">
-                            <div class="has-text-centered player-buttons">
-                                <span title="shuffle playlist" v-on:click.prevent="playerData.shufflePlayList();" class="icon"><i class="fas fa-2x fa-random"></i></span>
-                                <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                                <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                                <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                                <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                                <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                                <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                                <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                                <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"><i class="fas fa-2x fa-save"></i></span>
-                            </div>
-                            <div id="player-volume-control">
-                                <div class="columns">
-                                    <div class="column is-narrow">
-                                        <span title="mute/unmute volume" class="icon" v-on:click.prevent="toggleMute">
-                                            <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
-                                            <i v-else class="fas fa-2x fa-volume-off"></i>
-                                        </span>
-                                    </div>
-                                    <div class="column">
-                                        <input id="volume-range" type="range" v-model="volume" min="0" max="1" step="0.05" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div id="player" class="box is-paddingless is-radiusless is-unselectable">
+                <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
+                <canvas id="canvas"></canvas>
+                <nav class="level is-marginless">
+                    <div class="level-left">
+                        <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
                     </div>
-                    <!--
+                    <div class="level-item">
+                        <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" />
+                    </div>
+                    <div class="level-right">
+                        <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
+                    </div>
+                </nav>
+                <div id="player-metadata-container" class="has-text-centered">
+                    <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
+                    <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
                 </div>
-                <div class="column">
-                    <div id="playlist" class="box is-paddingless is-radiusless">
-                        <div v-bind:id="'playlist-item-' + index" v-for="(track, index) in playerData.tracks" class="playlist-element is-clearfix has-text-light is-size-7" v-bind:class="{ 'current': playerData.actualTrack && playerData.actualTrack.id == track.id}">
-                            <span v-if="playerData.actualTrack && playerData.actualTrack.id == track.id" class="is-pulled-left has-text-light">
-                                <span class="icon">
-                                    <i class="fas fa-2x fa-volume-up"></i>
+                <div id="player-controls" class="is-unselectable">
+                    <div class="has-text-centered player-buttons">
+                        <span title="shuffle playlist" v-on:click.prevent="playerData.shufflePlayList();" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                        <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
+                        <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                        <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                        <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                        <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                        <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                        <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"><i class="fas fa-2x fa-save"></i></span>
+                    </div>
+                    <div id="player-volume-control">
+                        <div class="columns">
+                            <div class="column is-narrow">
+                                <span title="mute/unmute volume" class="icon" v-on:click.prevent="toggleMute">
+                                    <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
+                                    <i v-else class="fas fa-2x fa-volume-off"></i>
                                 </span>
-                            </span>
-                            <span v-else v-on:click="playerData.playAtIdx(index);" class="is-pulled-left has-text-grey-light">
-                                <span class="icon">
-                                    {{ index + 1 }}
-                                </span>
-                            </span>
-                            <p class="is-pulled-left is-size-6">
-                                <span class="song-name">{{ track.title }}</span><br><span class="artist-name" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: track.artist } })">{{ track.artist }}</span> - <span class="album-name">{{ track.album }}</span> <span class="album-year">({{ track.year }})</span>
-                            </p>
-                            <span class="is-pulled-right is-size-6">{{ track.playtimeString }}</span>
+                            </div>
+                            <div class="column">
+                                <input id="volume-range" type="range" v-model="volume" min="0" max="1" step="0.05" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            -->
-            `;
+        `;
     };
 
-    var module = Vue.component('spieldose-player-component', {
+    let module = Vue.component('spieldose-player-component', {
         template: template(),
+        mixins: [mixinPlayer],
         data: function () {
             return ({
-                playing: false,
-                url: "",
-                nowPlayingTrack: null,
-                playList: [],
-                repeat: false,
-                shuffle: false,
-                autoPlay: true,
-                playerData: sharedPlayerData,
-                playlist: [],
-                currentTrack: null,
-                currentPlayedSeconds: null,
-                progressv: 0,
-                volume: 1,
                 preMuteVolume: 1,
                 audio: null,
                 vinylRotationEffect: false
             });
         },
-        filters: {
-            formatSeconds: function (seconds) {
-                // https://stackoverflow.com/a/11234208
-                function formatSecondsAsTime(secs, format) {
-                    var hr = Math.floor(secs / 3600);
-                    var min = Math.floor((secs - (hr * 3600)) / 60);
-                    var sec = Math.floor(secs - (hr * 3600) - (min * 60));
-
-                    if (min < 10) {
-                        min = "0" + min;
-                    }
-                    if (sec < 10) {
-                        sec = "0" + sec;
-                    }
-
-                    return min + ':' + sec;
-                }
-                return (formatSecondsAsTime(seconds));
-            }
-        },
         computed: {
-            isPlaying: function () {
-                return (this.playerData.isPlaying);
-            },
-            isPaused: function () {
-                return (this.playerData.isPaused);
-            },
-            isMuted: function () {
-                return (false);
-            },
-            isStopped: function () {
-                return (this.playerData.isStopped);
+            hasRotateVinylClass: function () {
+                return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
             },
             coverSrc: function () {
                 if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
@@ -150,64 +82,6 @@ var player = (function () {
                 } else {
                     return ("");
                 }
-            },
-            nowPlayingTitle: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.title) {
-                        return (this.playerData.actualTrack.title);
-                    } else {
-                        return ("track title unknown");
-                    }
-                } else {
-                    return ("track title");
-                }
-            },
-            nowPlayingLength: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.playtimeString) {
-                        return (this.playerData.actualTrack.playtimeString);
-                    } else {
-                        return ("00:00");
-                    }
-                } else {
-                    return ("00:00");
-                }
-            },
-            nowPlayingArtist: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.artist) {
-                        return (this.playerData.actualTrack.artist);
-                    } else {
-                        return ("artist unknown");
-                    }
-                } else {
-                    return ("artist");
-                }
-            },
-            nowPlayingArtistAlbum: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.album) {
-                        return (" / " + this.playerData.actualTrack.album);
-                    } else {
-                        return ("album unknown");
-                    }
-                } else {
-                    return ("album");
-                }
-            },
-            nowPlayingYear: function () {
-                if (this.isPlaying || this.isPaused) {
-                    if (this.playerData.actualTrack.year) {
-                        return (" (" + this.playerData.actualTrack.year + ")");
-                    } else {
-                        return (" (year unknown)");
-                    }
-                } else {
-                    return (" (year)");
-                }
-            },
-            nowPlayingLoved: function () {
-                return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             }
         },
         methods: {
@@ -238,14 +112,14 @@ var player = (function () {
                         this.audio.currentTime = 0;
                     }
                     this.audio.load();
-                    var playPromise = this.audio.play();
+                    let playPromise = this.audio.play();
                     if (playPromise !== undefined) {
                         playPromise.then(function () {
                         }).catch(function (error) {
                         });
                     }
                     if (this.playerData.actualTrackIdx >= 0) {
-                        var element = document.getElementById("playlist-item-" + this.playerData.actualTrackIdx);
+                        const element = document.getElementById("playlist-item-" + this.playerData.actualTrackIdx);
                         if (element) {
                             element.scrollIntoView();
                         }
@@ -274,16 +148,16 @@ var player = (function () {
             }
         },
         mounted: function () {
-            var self = this;
+            let self = this;
             this.audio = document.createElement('audio');
 
-            let aa = self.audio;
+            let aa = this.audio;
             aa.addEventListener("timeupdate", function (track) {
-                var currentProgress = aa.currentTime / aa.duration;
+                const currentProgress = aa.currentTime / aa.duration;
                 if (!isNaN(currentProgress)) {
-                    self.progressv = currentProgress.toFixed(2);
+                    self.songProgress = currentProgress.toFixed(2);
                 } else {
-                    self.progressv = 0;
+                    self.songProgress = 0;
                 }
                 self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
             });
@@ -304,8 +178,8 @@ var player = (function () {
             });
             initializeVisualizer(document.getElementById("canvas"), self.audio);
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
-                var offset = this.getBoundingClientRect();
-                var x = e.pageX - offset.left;
+                const offset = this.getBoundingClientRect();
+                const x = e.pageX - offset.left;
                 self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
             });
 
@@ -324,7 +198,7 @@ var player = (function () {
                 playerVisibilityObserver.observe(document.getElementById("player-controls"));
             }
         }, created: function () {
-            var self = this;
+            let self = this;
             self.playerData.loadRandomTracks(initialState.defaultResultsPage, function () {
                 self.playerData.play();
             });
