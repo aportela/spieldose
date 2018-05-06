@@ -490,9 +490,9 @@ Vue.http.interceptors.push((request, next) => {
  */
 const app = new Vue({
     router,
+    mixins: [mixinAPIError, mixinPlayer],
     data: function () {
         return ({
-            loading: false,
             logged: false,
             errors: false,
             apiError: null
@@ -517,26 +517,20 @@ const app = new Vue({
     },
     methods: {
         signOut: function () {
-            var self = this;
-            self.loading = true;
-            self.errors = false;
             this.playerData.dispose();
+            var self = this;
+            self.clearAPIErrors();
             spieldoseAPI.signOut(function (response) {
                 if (response.ok) {
                     self.$router.push({ path: '/signin' });
                 } else {
-                    self.apiError = response.getApiErrorData();
-                    self.errors = true;
-                    self.loading = false;
-                    // TODO: show error
+                    self.setAPIError(response.getApiErrorData());
                 }
             });
         },
         poll: function (callback) {
             var self = this;
-            self.loading = true;
             spieldoseAPI.poll(function (response) {
-                self.loading = false;
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
