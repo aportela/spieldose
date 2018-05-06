@@ -24,7 +24,7 @@ var browsePaths = (function () {
                     </a>
                 </p>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
             <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth" v-show="! loading">
                 <thead>
                         <tr class="is-unselectable">
@@ -81,16 +81,10 @@ var browsePaths = (function () {
                     this.search();
                 }
             }
-        }, created: function () {
-            var self = this;
-            this.pager.refresh = function () {
-                self.$router.push({ name: 'pathsPaged', params: { page: self.pager.actualPage } });
-            }
-            if (this.$route.params.page) {
-                self.pager.actualPage = parseInt(this.$route.params.page);
-            }
-            this.search();
         }, methods: {
+            onPaginationChanged: function(currentPage) {
+                this.$router.push({ name: 'pathsPaged', params: { page: currentPage } });
+            },
             abortInstantSearch: function () {
                 this.nameFilter = null;
             },

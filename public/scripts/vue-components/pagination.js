@@ -44,8 +44,7 @@ let pagination = (function () {
                 if (!this.loading) {
                     if (this.data.actualPage > 1) {
                         this.data.actualPage--;
-                        this.data.refresh();
-                        //this.$emit("pagination-changed", this.data.actualPage);
+                        this.$emit("pagination-changed", this.data.actualPage);
                     }
                 }
             },
@@ -53,8 +52,7 @@ let pagination = (function () {
                 if (!this.loading) {
                     if (this.data.actualPage < this.data.totalPages) {
                         this.data.actualPage++;
-                        this.data.refresh();
-                        //this.$emit("pagination-changed", this.data.actualPage);
+                        this.$emit("pagination-changed", this.data.actualPage);
                     }
                 }
             },
@@ -62,8 +60,7 @@ let pagination = (function () {
                 if (!this.loading) {
                     if (pageIdx > 0 && pageIdx <= this.data.totalPages) {
                         this.data.actualPage = pageIdx;
-                        this.data.refresh();
-                        //this.$emit("pagination-changed", this.data.actualPage);
+                        this.$emit("pagination-changed", this.data.actualPage);
                     }
                 }
             },

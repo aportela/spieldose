@@ -31,7 +31,7 @@ var browseArtists = (function () {
                     </a>
                 </p>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
             <!--
                 Music band icon credits: adiante apps (http://www.adianteapps.com/)
                 https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon
@@ -75,17 +75,10 @@ var browseArtists = (function () {
                     this.search();
                 }
             }
-        },
-        created: function () {
-            var self = this;
-            this.pager.refresh = function () {
-                self.$router.push({ name: 'artistsPaged', params: { page: self.pager.actualPage } });
-            }
-            if (this.$route.params.page) {
-                self.pager.actualPage = parseInt(this.$route.params.page);
-            }
-            this.search();
         }, methods: {
+            onPaginationChanged: function(currentPage) {
+                this.$router.push({ name: 'artistsPaged', params: { page: currentPage } });
+            },
             clearFilters: function() {
                 this.nameFilter = null;
             },

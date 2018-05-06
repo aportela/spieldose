@@ -54,7 +54,7 @@ var browseAlbums = (function () {
                     </a>
                 </p>
             </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
             <!--
                 Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
                 https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
@@ -104,16 +104,10 @@ var browseAlbums = (function () {
                 }
             }
         },
-        created: function () {
-            var self = this;
-            this.pager.refresh = function () {
-                self.$router.push({ name: 'albumsPaged', params: { page: self.pager.actualPage } });
-            }
-            if (this.$route.params.page) {
-                self.pager.actualPage = parseInt(this.$route.params.page);
-            }
-            this.search(true);
-        }, methods: {
+        methods: {
+            onPaginationChanged: function(currentPage) {
+                this.$router.push({ name: 'albumsPaged', params: { page: currentPage } });
+            },
             replaceAlbumThumbnailWithLoadError: function(album) {
                 album.image = null;
             },

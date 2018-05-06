@@ -82,6 +82,14 @@ const mixinPagination = {
                 resultsPage: initialState.defaultResultsPage
             }
         });
+    },
+    created: function() {
+        if (this.$route.params.page) {
+            this.pager.actualPage = parseInt(this.$route.params.page);
+        }
+        if (typeof this.search === "function") {
+            this.search(true);
+        }
     }
 };
 

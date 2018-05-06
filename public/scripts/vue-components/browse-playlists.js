@@ -23,7 +23,7 @@ var browsePlaylists = (function () {
                     </a>
                 </p>
             </div>
-            <spieldose-pagination v-bind:data="pager"></spieldose-pagination>
+            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
             <div class="playlist-item box has-text-centered" v-for="playlist in playlists" v-show="! loading">
                 <p class="playlist-item-icon">
                     <span class="icon has-text-light">
@@ -77,17 +77,10 @@ var browsePlaylists = (function () {
                     this.search();
                 }
             }
-        },
-        created: function () {
-            var self = this;
-            this.pager.refresh = function () {
-                self.$router.push({ name: 'playlistsPaged', params: { page: self.pager.actualPage } });
-            }
-            if (this.$route.params.page) {
-                self.pager.actualPage = parseInt(this.$route.params.page);
-            }
-            this.search();
         }, methods: {
+            onPaginationChanged: function(currentPage) {
+                this.$router.push({ name: 'playlistsPaged', params: { page: currentPage } });
+            },
             abortInstantSearch: function () {
                 this.nameFilter = null;
             },
