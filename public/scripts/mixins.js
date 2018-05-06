@@ -84,3 +84,35 @@ const mixinPagination = {
         });
     }
 };
+
+/**
+ * top & recent dashboard charts mixins
+ */
+const mixinTopRecentCharts = {
+    data: function () {
+        return ({
+            items: []
+        });
+    },
+    created: function () {
+        this.load();
+    },
+    computed: {
+        hasItems: function () {
+            return (this.items && this.items.length > 0);
+        }
+    },
+    methods: {
+        navigateToArtistPage: function (artist) {
+            if (artist) {
+                this.$router.push({ name: 'artist', params: { artist: artist } });
+            }
+        },
+        playTrack: function (track) {
+            this.playerData.replace([track]);
+        },
+        enqueueTrack: function (track) {
+            this.playerData.enqueue([track]);
+        }
+    }
+};
