@@ -1,7 +1,7 @@
-var signInUp = (function () {
+let signInUp = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
             <!-- template credits: daniel (https://github.com/dansup) -->
             <section class="hero is-fullheight is-light is-bold">
@@ -105,7 +105,7 @@ var signInUp = (function () {
     };
 
     /* signIn component */
-    var module = Vue.component('spieldose-signin-component', {
+    let module = Vue.component('spieldose-signin-component', {
         template: template(),
         mixins: [mixinValidations, mixinAPIError],
         created: function () {
@@ -137,7 +137,7 @@ var signInUp = (function () {
                 }
             },
             submitSignIn: function () {
-                var self = this;
+                let self = this;
                 self.loading = true;
                 self.validator.clear();
                 self.clearAPIErrors();
@@ -170,7 +170,7 @@ var signInUp = (function () {
                 });
             },
             submitSignUp: function () {
-                var self = this;
+                let self = this;
                 self.invalidSignUpUsername = false;
                 self.invalidSignUpPassword = false;
                 self.loading = true;
