@@ -31,7 +31,103 @@ const mixinPlayer = {
     data: function () {
         return ({
             playerData: sharedPlayerData,
+            currentPlayedSeconds: null,
+            volume: 1,
+            songProgress: 0
         });
+    },
+    computed: {
+        isPlaying: function () {
+            return (this.playerData.isPlaying);
+        },
+        isPaused: function () {
+            return (this.playerData.isPaused);
+        },
+        isMuted: function () {
+            return (false);
+        },
+        isStopped: function () {
+            return (this.playerData.isStopped);
+        },
+        nowPlayingTitle: function () {
+            if (this.isPlaying || this.isPaused) {
+                if (this.playerData.actualTrack.title) {
+                    return (this.playerData.actualTrack.title);
+                } else {
+                    return ("track title unknown");
+                }
+            } else {
+                return ("track title");
+            }
+        },
+        nowPlayingSeconds: function () {
+            return (this.currentPlayedSeconds);
+        },
+        nowPlayingLength: function () {
+            if (this.isPlaying || this.isPaused) {
+                if (this.playerData.actualTrack.playtimeString) {
+                    return (this.playerData.actualTrack.playtimeString);
+                } else {
+                    return ("00:00");
+                }
+            } else {
+                return ("00:00");
+            }
+        },
+        nowPlayingArtist: function () {
+            if (this.isPlaying || this.isPaused) {
+                if (this.playerData.actualTrack.artist) {
+                    return (this.playerData.actualTrack.artist);
+                } else {
+                    return ("artist unknown");
+                }
+            } else {
+                return ("artist");
+            }
+        },
+        nowPlayingArtistAlbum: function () {
+            if (this.isPlaying || this.isPaused) {
+                if (this.playerData.actualTrack.album) {
+                    return (" / " + this.playerData.actualTrack.album);
+                } else {
+                    return ("album unknown");
+                }
+            } else {
+                return ("album");
+            }
+        },
+        nowPlayingYear: function () {
+            if (this.isPlaying || this.isPaused) {
+                if (this.playerData.actualTrack.year) {
+                    return (" (" + this.playerData.actualTrack.year + ")");
+                } else {
+                    return (" (year unknown)");
+                }
+            } else {
+                return (" (year)");
+            }
+        },
+        nowPlayingLoved: function () {
+            return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
+        }
+    },
+    filters: {
+        formatSeconds: function (seconds) {
+            // https://stackoverflow.com/a/11234208
+            function formatSecondsAsTime(secs, format) {
+                const hr = Math.floor(secs / 3600);
+                let min = Math.floor((secs - (hr * 3600)) / 60);
+                let sec = Math.floor(secs - (hr * 3600) - (min * 60));
+                if (min < 10) {
+                    min = "0" + min;
+                }
+                if (sec < 10) {
+                    sec = "0" + sec;
+                }
+                return (min + ':' + sec);
+            }
+            return (formatSecondsAsTime(seconds));
+        }
     }
 };
 
@@ -83,7 +179,7 @@ const mixinPagination = {
             }
         });
     },
-    created: function() {
+    created: function () {
         if (this.$route.params.page) {
             this.pager.actualPage = parseInt(this.$route.params.page);
         }
