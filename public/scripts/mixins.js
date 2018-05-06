@@ -1,5 +1,5 @@
 /**
- * vuejs mixin for live searches
+ * live searches common mixins
  */
 const mixinLiveSearches = {
     computed: {
@@ -10,7 +10,7 @@ const mixinLiveSearches = {
 };
 
 /**
- * vuejs mixin for albums
+ * album entity common mixins
  */
 const mixinAlbums = {
     filters: {
@@ -21,5 +21,27 @@ const mixinAlbums = {
                 return ("api/thumbnail?hash=" + value);
             }
         }
+    }
+};
+
+/**
+ * player common mixins
+ */
+const mixinPlayer = {
+    data: function () {
+        return ({
+            playerData: sharedPlayerData,
+        });
+    }
+};
+
+/**
+ * validator common mixins
+ */
+const mixinValidations = {
+    data: function () {
+        return ({
+            validator: getValidator()
+        });
     }
 };
