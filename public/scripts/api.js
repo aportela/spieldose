@@ -9,10 +9,14 @@ const spieldoseAPI = {
         poll: function (callback) {
             Vue.http.get("api/user/poll").then(
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 },
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
             );
         },
@@ -23,10 +27,14 @@ const spieldoseAPI = {
             }
             Vue.http.post("api/user/signup", params).then(
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 },
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
             );
         },
@@ -37,20 +45,28 @@ const spieldoseAPI = {
             }
             Vue.http.post("api/user/signin", params).then(
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 },
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
             );
         },
         signOut: function (callback) {
             Vue.http.get("api/user/signout").then(
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 },
                 response => {
-                    callback(response);
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
             );
         }
@@ -71,20 +87,28 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/search/global", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getArtist: function (name, callback) {
         Vue.http.get("api/artist/" + encodeURIComponent(name)).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -94,20 +118,28 @@ const spieldoseAPI = {
         }
         Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     clearMusicBrainzArtist: function (name, mbid, callback) {
         Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -124,10 +156,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/track/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -140,10 +176,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/track/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -205,10 +245,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/artist/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -234,10 +278,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/album/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -257,10 +305,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/playlist/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -271,10 +323,14 @@ const spieldoseAPI = {
         };
         Vue.http.post("api/playlist/add", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -286,10 +342,14 @@ const spieldoseAPI = {
         };
         Vue.http.post("api/playlist/update", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -299,20 +359,28 @@ const spieldoseAPI = {
         };
         Vue.http.post("api/playlist/remove", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getPlayList: function (playlistId, callback) {
         Vue.http.get("api/playlist/" + playlistId).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -329,10 +397,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/path/search", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -340,10 +412,14 @@ const spieldoseAPI = {
         var params = {};
         Vue.http.post("api/track/" + trackId + "/love", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -351,10 +427,14 @@ const spieldoseAPI = {
         var params = {};
         Vue.http.post("api/track/" + trackId + "/unlove", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -385,10 +465,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/top_played_tracks", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -416,10 +500,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/top_artists", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -447,10 +535,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/top_genres", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -480,10 +572,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_added", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -513,10 +609,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_added", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -546,10 +646,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_added", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -579,10 +683,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_played", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -612,10 +720,14 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_played", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -645,54 +757,70 @@ const spieldoseAPI = {
         }
         Vue.http.post("api/metrics/recently_played", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getPlayStatMetricsByHour: function (callback) {
-        var params = {};
-        Vue.http.post("api/metrics/play_stats_by_hour", params).then(
+        Vue.http.post("api/metrics/play_stats_by_hour", {}).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getPlayStatMetricsByWeekDay: function (callback) {
-        var params = {};
-        Vue.http.post("api/metrics/play_stats_by_weekday", params).then(
+        Vue.http.post("api/metrics/play_stats_by_weekday", {}).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getPlayStatMetricsByMonth: function (callback) {
-        var params = {};
-        Vue.http.post("api/metrics/play_stats_by_month", params).then(
+        Vue.http.post("api/metrics/play_stats_by_month", {}).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     getPlayStatMetricsByYear: function (callback) {
-        var params = {};
-        Vue.http.post("api/metrics/play_stats_by_year", params).then(
+        Vue.http.post("api/metrics/play_stats_by_year", {}).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     }
