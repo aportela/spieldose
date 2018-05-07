@@ -38,8 +38,8 @@ let browsePaths = (function () {
                                 <td class="has-text-right">{{ item.totalTracks }}</td>
                                 <td class="has-text-centered">
                                     <div v-if="item.totalTracks > 0">
-                                        <i class="cursor-pointer fa fa-play" title="play this path" v-on:click.prevent="play(item.path, item.totalTracks);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square" title="enqueue this path" v-on:click.prevent="enqueue(item.path, item.totalTracks);"></i>
+                                        <i class="cursor-pointer fa fa-play" title="play this path" v-on:click.prevent="playPathTracks(item.path);"></i>
+                                        <i class="cursor-pointer fa fa-plus-square" title="enqueue this path" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
                                     </div>
                                 </td>
                             </tr>
@@ -61,16 +61,8 @@ let browsePaths = (function () {
             return ({
                 loading: false,
                 nameFilter: null,
-                timeout: null,
                 paths: []
             });
-        }, watch: {
-            '$route'(to, from) {
-                if (to.name == "paths" || to.name == "pathsPaged") {
-                    this.pager.actualPage = parseInt(to.params.page);
-                    this.search();
-                }
-            }
         }, methods: {
             onPaginationChanged: function (currentPage) {
                 this.$router.push({ name: 'pathsPaged', params: { page: currentPage } });
@@ -80,7 +72,7 @@ let browsePaths = (function () {
                 this.search();
             },
             search: function () {
-                var self = this;
+                let self = this;
                 self.loading = true;
                 self.clearAPIErrors();
                 spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
@@ -92,34 +84,6 @@ let browsePaths = (function () {
                             self.paths = response.body.paths;
                         } else {
                             self.paths = [];
-                        }
-                    } else {
-                        self.setAPIError(response.getApiErrorData());
-                    }
-                    self.loading = false;
-                });
-            },
-            play: function (path, trackCount) {
-                var self = this;
-                self.clearAPIErrors();
-                spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
-                    if (response.ok) {
-                        if (response.body.tracks && response.body.tracks.length > 0) {
-                            self.playerData.replace(response.body.tracks);
-                        }
-                    } else {
-                        self.setAPIError(response.getApiErrorData());
-                    }
-                    self.loading = false;
-                });
-            },
-            enqueue: function (path, trackCount) {
-                var self = this;
-                self.clearAPIErrors();
-                spieldoseAPI.getPathTracks(path, parseInt(trackCount), function (response) {
-                    if (response.ok) {
-                        if (response.body.tracks && response.body.tracks.length > 0) {
-                            self.playerData.enqueue(response.body.tracks);
                         }
                     } else {
                         self.setAPIError(response.getApiErrorData());
