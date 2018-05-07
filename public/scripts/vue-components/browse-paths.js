@@ -9,7 +9,7 @@ let browsePaths = (function () {
                     <div class="field has-addons">
                         <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
                             <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search path name...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input class="input" type="text" placeholder="search path name..." v-bind:disabled="loading" v-else v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <input type="text" class="input" placeholder="search path name..." v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
