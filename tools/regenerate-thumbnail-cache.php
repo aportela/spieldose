@@ -27,7 +27,7 @@
         for ($i = 0; $i < $totalThumbnails; $i++) {
             try {
                 $c["thumbnailLogger"]->debug("Processing " . $thumbnailUrls[$i]);
-                \Spieldose\Thumbnail::Get($thumbnailUrls[$i]);
+                \Spieldose\Thumbnail::getCachedLocalPathFromUrl($thumbnailUrls[$i]);
             } catch (\Throwable $e) {
                 $c["thumbnailLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
                 $failed[] = $thumbnailUrls[$i];

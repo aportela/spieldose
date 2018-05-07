@@ -13,6 +13,7 @@
             'initialState' => json_encode(
                 array(
                     "logged" => \Spieldose\User::isLogged(),
+                    "sessionExpireMinutes" => session_cache_expire(),
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                     "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
@@ -76,7 +77,7 @@
             $url = $request->getParam("url", "");
             $hash = $request->getParam("hash", "");
             if (! empty($url)) {
-                $file = \Spieldose\Thumbnail::Get($url);
+                $file = \Spieldose\Thumbnail::getCachedLocalPathFromUrl($url);
                 if (! empty($file) && file_exists($file)) {
                     $filesize = filesize($file);
                     $f = fopen($file, 'r');
@@ -91,7 +92,7 @@
                     throw new \Spieldose\Exception\NotFoundException("url");
                 }
             } else if (! empty($hash)) {
-                $file = \Spieldose\Thumbnail::GetLocal(new \Spieldose\Database\DB($this), $hash);
+                $file = \Spieldose\Thumbnail::getCachedLocalPathFromHash(new \Spieldose\Database\DB($this), $hash);
                 if (! empty($file) && file_exists($file)) {
                     $filesize = filesize($file);
                     $f = fopen($file, 'r');
