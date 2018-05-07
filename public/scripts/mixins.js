@@ -129,7 +129,7 @@ const mixinPlayer = {
             return (formatSecondsAsTime(seconds));
         }
     }, methods: {
-        playPathTracks: function(path) {
+        playPathTracks: function (path) {
             let self = this;
             self.clearAPIErrors();
             spieldoseAPI.getPathTracks(path, function (response) {
@@ -156,6 +156,82 @@ const mixinPlayer = {
                 }
                 self.loading = false;
             });
+        },
+        playAlbumTracks: function (album, artist, year) {
+            let self = this;
+            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                self.playerData.emptyPlayList();
+                if (response.ok) {
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.playerData.tracks = response.body.tracks;
+                        self.playerData.play();
+                    }
+                } else {
+                    self.setAPIError(response.getApiErrorData());
+                }
+            });
+        },
+        enqueueAlbumTracks: function (album, artist, year) {
+            let self = this;
+            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                if (response.ok) {
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.playerData.enqueue(response.body.tracks);
+                    }
+                } else {
+                    self.setAPIError(response.getApiErrorData());
+                }
+            });
+        },
+        playPlaylistTracks: function(id) {
+            let self = this;
+            if (id) {
+                spieldoseAPI.getPlayList(id, function (response) {
+                    if (response.ok) {
+                        self.playerData.replace(response.body.playlist.tracks);
+                        self.playerData.setCurrentPlayList(id, response.body.playlist.name);
+                        self.$router.push({ name: 'nowPlaying' });
+                    } else {
+                        self.setAPIError(response.getApiErrorData());
+                    }
+                });
+            } else {
+                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", function (response) {
+                    if (response.ok) {
+                        self.playerData.replace(response.body.tracks);
+                        self.playerData.unsetCurrentPlayList();
+                        self.$router.push({ name: 'nowPlaying' });
+                    } else {
+                        self.setAPIError(response.getApiErrorData());
+                    }
+                });
+            }
+        },
+        enqueuePlaylistTracks: function(id) {
+            let self = this;
+            if (id) {
+                spieldoseAPI.getPlayList(id, function (response) {
+                    if (response.ok) {
+                        self.playerData.enqueue(response.body.playlist.tracks);
+                    } else {
+                        self.setAPIError(response.getApiErrorData());
+                    }
+                });
+            } else {
+                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", function (response) {
+                    if (response.ok) {
+                        self.playerData.enqueue(response.body.tracks);
+                    } else {
+                        self.setAPIError(response.getApiErrorData());
+                    }
+                });
+            }
+        },
+        playTrack: function(track) {
+            this.playerData.replace([track]);
+        },
+        enqueueTrack: function(track) {
+            this.playerData.enqueue([track]);
         }
     }
 };
@@ -246,16 +322,40 @@ const mixinTopRecentCharts = {
         }
     },
     methods: {
-        navigateToArtistPage: function (artist) {
-            if (artist) {
-                this.$router.push({ name: 'artist', params: { artist: artist } });
-            }
-        },
         playTrack: function (track) {
             this.playerData.replace([track]);
         },
         enqueueTrack: function (track) {
             this.playerData.enqueue([track]);
+        }
+    }
+};
+
+/**
+ * navigation mixins
+ */
+const mixinNavigation = {
+    methods: {
+        navigateToArtistPage: function (artist) {
+            if (artist) {
+                this.$router.push({ name: 'artist', params: { artist: artist } });
+            }
+        }
+    }
+};
+
+/**
+ * focus control mixins
+ */
+const mixinFocus = {
+    directives: {
+        focus: {
+            inserted: function (el) {
+                el.focus();
+            },
+            update: function (el) {
+                el.focus();
+            }
         }
     }
 };
