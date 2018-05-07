@@ -167,13 +167,11 @@ const spieldoseAPI = {
             }
         );
     },
-    getPathTracks: function (path, trackCount, callback) {
+    getPathTracks: function (path, callback) {
         var params = {
-            path: path
+            path: path,
+            resultsPage: 0
         };
-        if (trackCount) {
-            params.resultsPage = trackCount;
-        }
         Vue.http.post("api/track/search", params).then(
             response => {
                 if (callback && typeof callback === "function") {
