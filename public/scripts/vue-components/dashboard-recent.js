@@ -46,7 +46,9 @@ let dashboardRecent = (function () {
     /* recent played (track/artist/album) component */
     let module = Vue.component('spieldose-dashboard-recent', {
         template: template(),
-        mixins: [mixinAPIError, mixinTopRecentCharts, mixinPlayer],
+        mixins: [
+            mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer
+        ],
         data: function () {
             return ({
                 loading: false,

@@ -48,7 +48,9 @@ let dashboardToplist = (function () {
     /* top played (track/artist/genres) component */
     let module = Vue.component('spieldose-dashboard-toplist', {
         template: template(),
-        mixins: [mixinAPIError, mixinTopRecentCharts, mixinPlayer],
+        mixins: [
+            mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer
+        ],
         data: function () {
             return ({
                 loading: false,
