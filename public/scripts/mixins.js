@@ -128,6 +128,35 @@ const mixinPlayer = {
             }
             return (formatSecondsAsTime(seconds));
         }
+    }, methods: {
+        playPathTracks: function(path) {
+            let self = this;
+            self.clearAPIErrors();
+            spieldoseAPI.getPathTracks(path, function (response) {
+                if (response.ok) {
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.playerData.replace(response.body.tracks);
+                    }
+                } else {
+                    self.setAPIError(response.getApiErrorData());
+                }
+                self.loading = false;
+            });
+        },
+        enqueuePathTracks: function (path) {
+            let self = this;
+            self.clearAPIErrors();
+            spieldoseAPI.getPathTracks(path, function (response) {
+                if (response.ok) {
+                    if (response.body.tracks && response.body.tracks.length > 0) {
+                        self.playerData.enqueue(response.body.tracks);
+                    }
+                } else {
+                    self.setAPIError(response.getApiErrorData());
+                }
+                self.loading = false;
+            });
+        }
     }
 };
 
@@ -184,7 +213,17 @@ const mixinPagination = {
             this.pager.actualPage = parseInt(this.$route.params.page);
         }
         if (typeof this.search === "function") {
-            this.search(true);
+            this.search();
+        }
+    },
+    watch: {
+        '$route'(to, from) {
+            if (to.params.page) {
+                this.pager.actualPage = parseInt(to.params.page);
+                if (typeof this.search === "function") {
+                    this.search();
+                }
+            }
         }
     }
 };
