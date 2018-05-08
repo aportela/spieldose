@@ -23,16 +23,18 @@ let inputTypeahead = (function () {
             'placeholder', 'loading'
         ],
         methods: {
-            onClear: function() {
+            onClear: function () {
                 this.text = null;
             },
-            onChange: function() {
-                if (this.timeout) {
-                    clearTimeout(this.timeout);
+            onChange: function (e) {
+                if (e.key != "Alt" && e.key != "Tab" && e.key != "Control" && e.key != "Shift" && e.key != "CapsLock" && e.key != "AltGraph" && e.key != "Enter" && e.key != "ArrowLeft" && e.key != "ArrowRight" && e.key != "ArrowUp" && e.key != "ArrowDown") {
+                    if (this.timeout) {
+                        clearTimeout(this.timeout);
+                    }
+                    this.timeout = setTimeout(() => {
+                        this.$emit("on-value-change", this.text);
+                    }, 256);
                 }
-                this.timeout = setTimeout(() => {
-                    this.$emit("on-value-change", this.text);
-                }, 256);
             }
         }
     });
