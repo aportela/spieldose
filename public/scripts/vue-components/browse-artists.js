@@ -16,7 +16,7 @@ let browseArtists = (function () {
                         </div>
                         <div class="control">
                             <div class="select">
-                                <select v-model="filterNotScraped" v-on:change="search();">
+                                <select v-model="filterNotScraped">
                                     <option value="0">All artists</option>
                                     <option value="1">Artists not scraped</option>
                                 </select>
@@ -60,6 +60,13 @@ let browseArtists = (function () {
                 artists: [],
                 filterNotScraped: 0
             });
+        },
+        watch: {
+            filterNotScraped: function (v) {
+                if (this.liveSearch) {
+                    this.search();
+                }
+            }
         },
         methods: {
             onPaginationChanged: function (currentPage) {
