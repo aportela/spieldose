@@ -1,135 +1,106 @@
-var browseAlbums = (function () {
+let browseAlbums = (function () {
     "use strict";
 
-    var template = function () {
+    const template = function () {
         return `
-    <div class="container is-fluid box is-marginless">
-        <p class="title is-1 has-text-centered">Browse albums</i></p>
-        <div v-if="! errors">
-            <div class="field has-addons">
-                <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                    <input class="input" :disabled="loading" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
-                    <input class="input" :disabled="loading" v-else v-model.trim="nameFilter" type="text" placeholder="search album name..." v-on:keyup.enter="search();">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-search"></i>
-                    </span>
+            <div class="container is-fluid box is-marginless">
+                <p class="title is-1 has-text-centered">Browse albums</i></p>
+                <div v-if="! hasAPIErrors">
+                    <div class="field has-addons">
+                        <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
+                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search album name...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                            <input type="text" class="input" placeholder="search album name..." v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <p class="control">
+                            <a class="button is-default" v-on:click.prevent="advancedSearch = ! advancedSearch;">
+                                <span class="icon">
+                                    <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
+                                    <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
+                                </span>
+                                <span>toggle advanced search</span>
+                            </a>
+                        </p>
+                        <p class="control" v-if="! liveSearch">
+                            <a class="button is-info" v-on:click.prevent="search();">
+                                <span class="icon">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                                <span>search</span>
+                            </a>
+                        </p>
+                    </div>
+                    <div class="field has-addons" v-if="advancedSearch">
+                        <p class="control has-icons-left">
+                            <input class="input" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4" v-bind:disabled="loading" v-on:keyup.enter="search(true);" v-model.number="filterByYear" >
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </p>
+                        <p class="control is-expanded has-icons-left">
+                            <input class="input" type="text" placeholder="search album artist name..." v-bind:disabled="loading" v-on:keyup.enter="search(true);" v-model.trim="filterByArtist">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </p>
+                        <p class="control">
+                            <a class="button is-info" v-on:click="search(true);">
+                                <span class="icon">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                                <span>search</span>
+                            </a>
+                        </p>
+                    </div>
+                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                    <div class="browse-album-item" v-for="album in albums" v-show="! loading">
+                        <a class="play-album" title="click to play album" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                            <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;">
+                            <i class="fas fa-play fa-4x"></i>
+                            <img class="vinyl no-cover" src="images/vinyl.png" />
+                        </a>
+                        <div class="album-info">
+                            <p class="album-name">{{ album.name }}</p>
+                            <p v-if="album.artist" class="artist-name"><a title="click to open artist section" v-on:click.prevent="navigateToArtistPage(album.artist);">by {{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                            <p v-else class="artist-name">unknown artist</p>
+                        </div>
+                    </div>
+                    <div class="is-clearfix"></div>
                 </div>
-                <p class="control">
-                    <a class="button is-default" v-on:click.prevent="advancedSearch = ! advancedSearch;">
-                        <span class="icon">
-                            <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
-                            <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
-                        </span>
-                        <span>toggle advanced search</span>
-                    </a>
-                </p>
-                <p class="control" v-if="! liveSearch">
-                    <a class="button is-info" v-on:click.prevent="search();">
-                        <span class="icon">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
-                        <span>search</span>
-                    </a>
-                </p>
+                <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
             </div>
-            <div class="field has-addons" v-if="advancedSearch">
-                <p class="control has-icons-left">
-                    <input v-model.number="filterByYear" class="input" :disabled="loading" type="text" pattern="[0-9]*" placeholder="year (4 digits)" maxlength="4" v-on:keyup.enter="search(true);">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-calendar"></i>
-                    </span>
-                </p>
-                <p class="control is-expanded has-icons-left">
-                    <input v-model.trim="filterByArtist" class="input" :disabled="loading" type="text" placeholder="search album artist name..." v-on:keyup.enter="search(true);">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-user"></i>
-                    </span>
-                </p>
-                <p class="control">
-                    <a class="button is-info" v-on:click="search(true);">
-                        <span class="icon">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
-                        <span>search</span>
-                    </a>
-                </p>
-            </div>
-            <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
-            <!--
-                Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
-                https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
-            -->
-            <div class="browse-album-item" v-for="album in albums" v-show="! loading">
-                <a class="play-album" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year)" v-bind:title="'click to play album'">
-                    <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | albumThumbnailUrlToCacheUrl" v-on:error="replaceAlbumThumbnailWithLoadError(album);" />
-                    <img class="album-thumbnail" v-else="" src="images/image-album-not-set.png"/>
-                    <i class="fas fa-play fa-4x"></i>
-                    <img class="vinyl no-cover" src="images/vinyl.png" />
-                </a>
-                <div class="album-info">
-                    <p class="album-name">{{ album.name }}</p>
-                    <p v-if="album.artist" class="artist-name"><a v-bind:title="'click to open artist section'" v-on:click.prevent="$router.push({ name: 'artist', params: { artist: album.artist } })">by {{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
-                    <p v-else class="artist-name">unknown artist</p>
-                </div>
-            </div>
-            <div class="is-clearfix"></div>
-        </div>
-        <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
-    </div>
-    `;
+        `;
     };
 
-    var module = Vue.component('spieldose-browse-albums', {
+    let module = Vue.component('spieldose-browse-albums', {
         template: template(),
-        mixins: [ mixinPagination, mixinLiveSearches, mixinAlbums],
+        mixins: [
+            mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists
+        ],
         data: function () {
             return ({
                 loading: false,
-                errors: false,
-                apiError: null,
                 nameFilter: null,
-                timeout: null,
                 albums: [],
                 advancedSearch: false,
-                playerData: sharedPlayerData,
                 filterByArtist: null,
                 filterByYear: null
             });
         },
-        watch: {
-            '$route'(to, from) {
-                if (to.name == "albums" || to.name == "albumsPaged") {
-                    this.pager.actualPage = parseInt(to.params.page);
-                    this.search(false);
-                }
-            }
-        },
         methods: {
-            onPaginationChanged: function(currentPage) {
+            onPaginationChanged: function (currentPage) {
                 this.$router.push({ name: 'albumsPaged', params: { page: currentPage } });
             },
-            replaceAlbumThumbnailWithLoadError: function(album) {
-                album.image = null;
-            },
-            abortInstantSearch: function () {
-                this.nameFilter = null;
-            },
-            instantSearch: function () {
-                var self = this;
-                if (self.timeout) {
-                    clearTimeout(self.timeout);
-                }
-                if (! this.advancedSearch) {
-                    self.timeout = setTimeout(function () {
-                        self.pager.actualPage = 1;
-                        self.search(true);
-                    }, 256);
-                }
+            onTypeahead: function (text) {
+                this.nameFilter = text;
+                this.search();
             },
             search: function (resetPager) {
-                var self = this;
+                let self = this;
                 self.loading = true;
-                self.errors = false;
+                self.clearAPIErrors();
                 if (resetPager) {
                     self.pager.actualPage = 1;
                 }
@@ -143,28 +114,10 @@ var browseAlbums = (function () {
                         } else {
                             self.albums = [];
                         }
-                        self.loading = false;
                     } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                        self.loading = false;
+                        self.setAPIError(response.getApiErrorData());
                     }
-                });
-            },
-            enqueueAlbumTracks: function (album, artist, year) {
-                var self = this;
-                spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                    self.playerData.emptyPlayList();
-                    if (response.ok) {
-                        if (response.body.tracks && response.body.tracks.length > 0) {
-                            self.playerData.unsetCurrentPlayList();
-                            self.playerData.tracks = response.body.tracks;
-                            self.playerData.play();
-                        }
-                    } else {
-                        self.errors = true;
-                        self.apiError = response.getApiErrorData();
-                    }
+                    self.loading = false;
                 });
             }
         }
