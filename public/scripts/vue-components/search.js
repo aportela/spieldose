@@ -46,8 +46,7 @@ let search = (function () {
                             <article class="media" v-for="album, i in albums" v-bind:key="i">
                                 <div class="media-left">
                                     <figure class="image is-48x48">
-                                        <img class="border-radius-50" v-if="album.image" v-bind:src="album.image | albumThumbnailUrlToCacheUrl" v-on:error="album.image = null;"/>
-                                        <img class="border-radius-50" v-else src="images/image-album-not-set.png"/>
+                                        <img class="border-radius-50" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;"/>
                                     </figure>
                                 </div>
                                 <div class="media-content">
