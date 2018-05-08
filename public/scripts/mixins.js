@@ -128,7 +128,8 @@ const mixinPlayer = {
             }
             return (formatSecondsAsTime(seconds));
         }
-    }, methods: {
+    },
+    methods: {
         playPathTracks: function (path) {
             let self = this;
             self.clearAPIErrors();
