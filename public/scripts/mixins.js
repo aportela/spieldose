@@ -14,11 +14,19 @@ const mixinLiveSearches = {
  */
 const mixinAlbums = {
     filters: {
-        albumThumbnailUrlToCacheUrl: function (value) {
-            if (value.indexOf("http") == 0) {
-                return ("api/thumbnail?url=" + value);
+        getAlbumImageUrl: function(value) {
+            if (value) {
+                if (value.indexOf("http") == 0) {
+                    return ("api/thumbnail?url=" + value);
+                } else {
+                    return ("api/thumbnail?hash=" + value);
+                }
             } else {
-                return ("api/thumbnail?hash=" + value);
+                /**
+                 * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
+                 * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
+                 */
+                return ("images/image-album-not-set.png");
             }
         }
     }
@@ -29,9 +37,9 @@ const mixinAlbums = {
  */
 const mixinArtists = {
     filters: {
-        getImageUrl: function (v) {
-            if (v) {
-                return ("api/thumbnail?url=" + v);
+        getArtistImageUrl: function (value) {
+            if (value) {
+                return ("api/thumbnail?url=" + value);
             } else {
                 /**
                  * Music band icon credits: adiante apps (http://www.adianteapps.com/)

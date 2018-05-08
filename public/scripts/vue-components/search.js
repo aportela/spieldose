@@ -30,7 +30,7 @@ let search = (function () {
                             <article class="media" v-for="artist, i in artists" v-bind:key="i">
                                 <div class="media-left">
                                     <figure class="image is-48x48">
-                                        <img class="border-radius-50" v-bind:src="artist.image | getImageUrl" v-on:error="artist.image = null;">
+                                        <img class="border-radius-50" v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
                                     </figure>
                                 </div>
                                 <div class="media-content">

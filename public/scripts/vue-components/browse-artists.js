@@ -34,7 +34,7 @@ let browseArtists = (function () {
                     <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
                     <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
                         <a title="click to open artist section" v-on:click.prevent="navigateToArtistPage(artist.name);">
-                            <img v-bind:src="artist.image | getImageUrl" v-on:error="artist.image = null;">
+                            <img v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
                             <i class="fas fa-search fa-4x"></i>
                         </a>
                         <div class="artist-info is-clipped">
