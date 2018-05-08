@@ -25,6 +25,25 @@ const mixinAlbums = {
 };
 
 /**
+ * artist entity common mixins
+ */
+const mixinArtists = {
+    filters: {
+        getImageUrl: function (v) {
+            if (v) {
+                return ("api/thumbnail?url=" + v);
+            } else {
+                /**
+                 * Music band icon credits: adiante apps (http://www.adianteapps.com/)
+                 * https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon
+                 */
+                return ("images/image-artist-not-set.png");
+            }
+        }
+    }
+};
+
+/**
  * player common mixins
  */
 const mixinPlayer = {
@@ -184,7 +203,7 @@ const mixinPlayer = {
                 }
             });
         },
-        playPlaylistTracks: function(id) {
+        playPlaylistTracks: function (id) {
             let self = this;
             if (id) {
                 spieldoseAPI.getPlayList(id, function (response) {
@@ -208,7 +227,7 @@ const mixinPlayer = {
                 });
             }
         },
-        enqueuePlaylistTracks: function(id) {
+        enqueuePlaylistTracks: function (id) {
             let self = this;
             if (id) {
                 spieldoseAPI.getPlayList(id, function (response) {
@@ -228,10 +247,10 @@ const mixinPlayer = {
                 });
             }
         },
-        playTrack: function(track) {
+        playTrack: function (track) {
             this.playerData.replace([track]);
         },
-        enqueueTrack: function(track) {
+        enqueueTrack: function (track) {
             this.playerData.enqueue([track]);
         }
     }
