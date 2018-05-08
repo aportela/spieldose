@@ -30,9 +30,7 @@ let search = (function () {
                             <article class="media" v-for="artist, i in artists" v-bind:key="i">
                                 <div class="media-left">
                                     <figure class="image is-48x48">
-                                        <!-- TODO -->
-                                        <img class="border-radius-50" v-if="artist.image" v-bind:src="artist.image" v-on:error="artist.image = null;"/>
-                                        <img class="border-radius-50" v-else src="https://cdn2.iconfinder.com/data/icons/app-types-in-grey/128/app_type_festival_512px_GREY.png" />
+                                        <img class="border-radius-50" v-bind:src="artist.image | getImageUrl" v-on:error="artist.image = null;">
                                     </figure>
                                 </div>
                                 <div class="media-content">
@@ -109,7 +107,7 @@ let search = (function () {
     let module = Vue.component('spieldose-search', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinFocus, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums
+            mixinAPIError, mixinFocus, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums, mixinArtists
         ],
         data: function () {
             return ({
