@@ -9,7 +9,7 @@ let search = (function () {
                     <div class="field has-addons">
                         <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                             <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search tracks/artists/albums/playlists...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input type="text" class="input" placeholder="search tracks/artists/albums/playlists...." v-else v-bind:disabled="loading"  v-focus v-model.trim="textFilter" v-on:keyup.enter="search();">
+                            <input type="text" class="input" placeholder="search tracks/artists/albums/playlists...." v-else v-bind:disabled="loading" v-model.trim="textFilter" v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
@@ -107,7 +107,7 @@ let search = (function () {
     let module = Vue.component('spieldose-search', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinFocus, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums, mixinArtists
+            mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums, mixinArtists
         ],
         data: function () {
             return ({

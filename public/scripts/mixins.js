@@ -363,19 +363,3 @@ const mixinNavigation = {
         }
     }
 };
-
-/**
- * focus control mixins
- */
-const mixinFocus = {
-    directives: {
-        focus: {
-            inserted: function (el) {
-                el.focus();
-            },
-            update: function (el) {
-                el.focus();
-            }
-        }
-    }
-};
