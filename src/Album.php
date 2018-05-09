@@ -23,6 +23,7 @@
         public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             $params = array();
             $whereCondition = "";
+            $filteredByArtist = false;
             if (isset($filter)) {
                 $conditions = array();
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
@@ -36,10 +37,12 @@
                 if (isset($filter["partialArtist"]) && ! empty($filter["partialArtist"])) {
                     $conditions[] = " (MBA.artist LIKE :partialArtist OR F.album_artist LIKE :partialArtist OR F.track_artist LIKE :partialArtist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialArtist", "%" . $filter["partialArtist"] . "%");
+                    $filteredByArtist = true;
                 }
                 if (isset($filter["artist"]) && ! empty($filter["artist"])) {
                     $conditions[] = " (MBA.artist LIKE :artist OR MBA2.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
+                    $filteredByArtist = true;
                 }
                 if (isset($filter["year"]) && ! empty($filter["year"])) {
                     $conditions[] = " COALESCE(MBA.year, F.year) = :year ";
@@ -69,10 +72,14 @@
                         $sqlOrder = " ORDER BY RANDOM() ";
                     break;
                     case "year":
-                        $sqlOrder = " ORDER BY COALESCE(MBA.year, F.year) ASC ";
+                        $sqlOrder = " ORDER BY COALESCE(MBA.year, F.year) ASC, COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
                     break;
                     default:
-                        $sqlOrder = " ORDER BY COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
+                        if ($filteredByArtist) {
+                            $sqlOrder = " ORDER BY COALESCE(MBA.artist, F.album_artist, F.track_artist) COLLATE NOCASE ASC, COALESCE(MBA.year, F.year) ASC, COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
+                        } else {
+                            $sqlOrder = " ORDER BY COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
+                        }
                     break;
                 }
                 $query = sprintf('
