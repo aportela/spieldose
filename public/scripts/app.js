@@ -361,38 +361,35 @@ const app = new Vue({
         });
     },
     created: function () {
-        var self = this;
-        bus.$on("signOut", function () {
-            self.signOut();
+        bus.$on("signOut", () => {
+            this.signOut();
         });
         if (!initialState.upgradeAvailable) {
             if (!initialState.logged) {
-                self.$router.push({ name: 'signin' });
+                this.$router.push({ name: 'signin' });
             } else {
-                if (!self.$route.name) {
-                    self.$router.push({ name: 'dashboard' });
+                if (!this.$route.name) {
+                    this.$router.push({ name: 'dashboard' });
                 }
             }
         } else {
-            self.$router.push({ name: 'upgrade' });
+            this.$router.push({ name: 'upgrade' });
         }
     },
     methods: {
         signOut: function () {
             this.playerData.dispose();
-            var self = this;
-            self.clearAPIErrors();
-            spieldoseAPI.session.signOut(function (response) {
+            this.clearAPIErrors();
+            spieldoseAPI.session.signOut((response) => {
                 if (response.ok) {
-                    self.$router.push({ path: '/signin' });
+                    this.$router.push({ path: '/signin' });
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
         poll: function (callback) {
-            var self = this;
-            spieldoseAPI.session.poll(function (response) {
+            spieldoseAPI.session.poll((response) => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
