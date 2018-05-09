@@ -44,16 +44,7 @@ let menu = (function () {
     /* section menu component */
     let module = Vue.component('spieldose-menu-component', {
         template: template(),
-        mixins: [mixinPlayer],
-        methods: {
-            signout: function () {
-                bus.$emit("signOut");
-            }, isSectionActive: function (section) {
-                return (this.$route.name == section);
-            }, changeSection(routeName) {
-                this.$router.push({ name: routeName });
-            }
-        }
+        mixins: [mixinNavigation, mixinSession]
     });
 
     return (module);

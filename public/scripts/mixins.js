@@ -14,7 +14,7 @@ const mixinLiveSearches = {
  */
 const mixinAlbums = {
     filters: {
-        getAlbumImageUrl: function(value) {
+        getAlbumImageUrl: function (value) {
             if (value) {
                 if (value.indexOf("http") == 0) {
                     return ("api/thumbnail?url=" + value);
@@ -364,10 +364,27 @@ const mixinTopRecentCharts = {
  */
 const mixinNavigation = {
     methods: {
+        isSectionActive: function (section) {
+            return (this.$route.name == section);
+        },
+        changeSection(routeName) {
+            this.$router.push({ name: routeName });
+        },
         navigateToArtistPage: function (artist) {
             if (artist) {
                 this.$router.push({ name: 'artist', params: { artist: artist } });
             }
+        }
+    }
+};
+
+/**
+ * session mixins
+ */
+const mixinSession = {
+    methods: {
+        signout: function () {
+            bus.$emit("signOut");
         }
     }
 };
