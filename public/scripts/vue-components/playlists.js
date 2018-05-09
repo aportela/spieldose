@@ -21,6 +21,14 @@ let nowPlaying = (function () {
                                 <span>Save playlist</span>
                             </a>
                         </div>
+                        <div class="control" v-if="isPlaylisted">
+                            <a class="button is-info" v-bind:class="{ 'is-loading': savingPlaylist }" v-bind:disabled="isSavePlaylistDisabled" v-on:click.prevent="unsetPlaylist();">
+                                <span class="icon is-small">
+                                <i class="fas fa-check-square"></i>
+                                </span>
+                                <span>Unset playlist</span>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="buttons">
@@ -105,7 +113,7 @@ let nowPlaying = (function () {
                         </a>
                     </div>
 
-                    <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth unselectable">
+                    <table id="playlist-now-playing" class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable">
                         <thead>
                             <tr>
                                 <th>Track</th>
@@ -159,6 +167,9 @@ let nowPlaying = (function () {
             this.currentPlaylistName = this.playerData.currentPlaylistName;
         },
         computed: {
+            isPlaylisted: function() {
+                return(this.playerData.currentPlaylistName);
+            },
             isLovedActive: function () {
                 return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
             },
@@ -181,8 +192,11 @@ let nowPlaying = (function () {
                     }
                 }
             },
-            loadRandom: function () {
+            unsetPlaylist: function() {
                 this.playerData.unsetCurrentPlayList();
+                this.currentPlaylistName = null;
+            },
+            loadRandom: function () {
                 this.playerData.loadRandomTracks(initialState.defaultResultsPage);
             },
             savePlayList: function () {
