@@ -14,7 +14,8 @@
             'common' => [
                 'defaultResultsPage' => 64,
                 'allowSignUp' => true,
-                'liveSearch' => true
+                'liveSearch' => true,
+                'locale' => 'en'
             ],
             // database settings
             'database' => [

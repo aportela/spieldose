@@ -352,6 +352,7 @@ Vue.http.interceptors.push((request, next) => {
  */
 const app = new Vue({
     router,
+    i18n,
     mixins: [mixinAPIError, mixinPlayer],
     data: function () {
         return ({
