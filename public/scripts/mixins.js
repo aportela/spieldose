@@ -158,99 +158,95 @@ const mixinPlayer = {
     },
     methods: {
         playPathTracks: function (path) {
-            let self = this;
-            self.clearAPIErrors();
-            spieldoseAPI.getPathTracks(path, function (response) {
+            this.clearAPIErrors();
+            spieldoseAPI.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.replace(response.body.tracks);
+                        this.playerData.replace(response.body.tracks);
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
             });
         },
         enqueuePathTracks: function (path) {
-            let self = this;
-            self.clearAPIErrors();
-            spieldoseAPI.getPathTracks(path, function (response) {
+            this.clearAPIErrors();
+            spieldoseAPI.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.enqueue(response.body.tracks);
+                        this.playerData.enqueue(response.body.tracks);
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
             });
         },
         playAlbumTracks: function (album, artist, year) {
-            let self = this;
-            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                self.playerData.emptyPlayList();
+            this.clearAPIErrors();
+            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, (response) => {
+                this.playerData.emptyPlayList();
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.tracks = response.body.tracks;
-                        self.playerData.play();
+                        this.playerData.tracks = response.body.tracks;
+                        this.playerData.play();
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
         enqueueAlbumTracks: function (album, artist, year) {
-            let self = this;
-            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+            this.clearAPIErrors();
+            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.enqueue(response.body.tracks);
+                        this.playerData.enqueue(response.body.tracks);
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
         playPlaylistTracks: function (id) {
-            let self = this;
+            this.clearAPIErrors();
             if (id) {
-                spieldoseAPI.getPlayList(id, function (response) {
+                spieldoseAPI.getPlayList(id, (response) => {
                     if (response.ok) {
-                        self.playerData.replace(response.body.playlist.tracks);
-                        self.playerData.setCurrentPlayList(id, response.body.playlist.name);
-                        self.$router.push({ name: 'nowPlaying' });
+                        this.playerData.replace(response.body.playlist.tracks);
+                        this.playerData.setCurrentPlayList(id, response.body.playlist.name);
+                        this.$router.push({ name: 'nowPlaying' });
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
                 });
             } else {
-                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", function (response) {
+                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
-                        self.playerData.replace(response.body.tracks);
-                        self.playerData.unsetCurrentPlayList();
-                        self.$router.push({ name: 'nowPlaying' });
+                        this.playerData.replace(response.body.tracks);
+                        this.playerData.unsetCurrentPlayList();
+                        this.$router.push({ name: 'nowPlaying' });
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
                 });
             }
         },
         enqueuePlaylistTracks: function (id) {
-            let self = this;
+            this.clearAPIErrors();
             if (id) {
-                spieldoseAPI.getPlayList(id, function (response) {
+                spieldoseAPI.getPlayList(id, (response) => {
                     if (response.ok) {
-                        self.playerData.enqueue(response.body.playlist.tracks);
+                        this.playerData.enqueue(response.body.playlist.tracks);
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
                 });
             } else {
-                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", function (response) {
+                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
-                        self.playerData.enqueue(response.body.tracks);
+                        this.playerData.enqueue(response.body.tracks);
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
                 });
             }
@@ -367,7 +363,7 @@ const mixinNavigation = {
         isSectionActive: function (section) {
             return (this.$route.name == section);
         },
-        changeSection(routeName) {
+        changeSection: function (routeName) {
             this.$router.push({ name: routeName });
         },
         navigateToArtistPage: function (artist) {
