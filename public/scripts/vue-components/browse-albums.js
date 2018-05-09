@@ -77,7 +77,7 @@ let browseAlbums = (function () {
     let module = Vue.component('spieldose-browse-albums', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists
+            mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists, mixinPlayer
         ],
         data: function () {
             return ({
