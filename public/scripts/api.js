@@ -98,50 +98,52 @@ const spieldoseAPI = {
             }
         );
     },
-    getArtist: function (name, callback) {
-        Vue.http.get("api/artist/" + encodeURIComponent(name)).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
+    artist: {
+        get: function (name, callback) {
+            Vue.http.get("api/artist/" + encodeURIComponent(name)).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
+            );
+        },
+        overwriteMusicBrainz: function (name, mbid, callback) {
+            var params = {
+                mbid: mbid
             }
-        );
-    },
-    overwriteMusicBrainzArtist: function (name, mbid, callback) {
-        var params = {
-            mbid: mbid
+            Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        clearMusicBrainz: function (name, mbid, callback) {
+            Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
-        Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    clearMusicBrainzArtist: function (name, mbid, callback) {
-        Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
     },
     getAlbumTracks: function (album, artist, year, callback) {
         var params = {};

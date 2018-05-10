@@ -224,7 +224,7 @@ let browseArtist = (function () {
                 let self = this;
                 self.loading = true;
                 self.errors = false;
-                spieldoseAPI.getArtist(artist, function (response) {
+                spieldoseAPI.artist.get(artist, function (response) {
                     if (response.ok) {
                         self.artist = response.body.artist;
                         if (self.artist.bio) {
@@ -309,7 +309,7 @@ let browseArtist = (function () {
                 let self = this;
                 self.loading = true;
                 self.errors = false;
-                spieldoseAPI.overwriteMusicBrainzArtist(name, mbid, function (response) {
+                spieldoseAPI.artist.overwriteMusicBrainz(name, mbid, function (response) {
                     if (response.ok) {
                     } else {
                         self.setAPIError(response.getApiErrorData());
@@ -321,7 +321,7 @@ let browseArtist = (function () {
                 let self = this;
                 self.loading = true;
                 self.errors = false;
-                spieldoseAPI.clearMusicBrainzArtist(name, mbid, function (response) {
+                spieldoseAPI.artist.clearMusicBrainz(name, mbid, function (response) {
                     if (response.ok) {
                     } else {
                         self.setAPIError(response.getApiErrorData());
