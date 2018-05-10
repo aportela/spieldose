@@ -90,7 +90,7 @@ let browsePlaylists = (function () {
                     let self = this;
                     self.loading = true;
                     self.clearAPIErrors();
-                    spieldoseAPI.removePlaylist(id, function (response) {
+                    spieldoseAPI.playlist.remove(id, function (response) {
                         if (response.ok) {
                             if (self.playerData.currentPlaylistId == id) {
                                 self.playerData.unsetCurrentPlayList();
@@ -112,7 +112,7 @@ let browsePlaylists = (function () {
                 let self = this;
                 self.loading = true;
                 self.clearAPIErrors();
-                spieldoseAPI.searchPlaylists(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.playlist.search(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;

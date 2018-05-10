@@ -289,100 +289,102 @@ const spieldoseAPI = {
             }
         );
     },
-    searchPlaylists: function (name, actualPage, resultsPage, callback) {
-        var params = {
-            actualPage: 1,
-            resultsPage: initialState.defaultResultsPage
-        };
-        if (name) {
-            params.partialName = name;
+    playlist: {
+        search: function (name, actualPage, resultsPage, callback) {
+            var params = {
+                actualPage: 1,
+                resultsPage: initialState.defaultResultsPage
+            };
+            if (name) {
+                params.partialName = name;
+            }
+            if (actualPage) {
+                params.actualPage = parseInt(actualPage);
+            }
+            if (resultsPage) {
+                params.resultsPage = parseInt(resultsPage);
+            }
+            Vue.http.post("api/playlist/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        add: function (name, tracks, callback) {
+            var params = {
+                name: name,
+                tracks: tracks
+            };
+            Vue.http.post("api/playlist/add", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (id, name, tracks, callback) {
+            var params = {
+                id: id,
+                name: name,
+                tracks: tracks
+            };
+            Vue.http.post("api/playlist/update", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        remove: function (id, callback) {
+            var params = {
+                id: id
+            };
+            Vue.http.post("api/playlist/remove", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        get: function (playlistId, callback) {
+            Vue.http.get("api/playlist/" + playlistId).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
-        if (actualPage) {
-            params.actualPage = parseInt(actualPage);
-        }
-        if (resultsPage) {
-            params.resultsPage = parseInt(resultsPage);
-        }
-        Vue.http.post("api/playlist/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    addPlaylist: function (name, tracks, callback) {
-        var params = {
-            name: name,
-            tracks: tracks
-        };
-        Vue.http.post("api/playlist/add", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    updatePlaylist: function (id, name, tracks, callback) {
-        var params = {
-            id: id,
-            name: name,
-            tracks: tracks
-        };
-        Vue.http.post("api/playlist/update", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    removePlaylist: function (id, callback) {
-        var params = {
-            id: id
-        };
-        Vue.http.post("api/playlist/remove", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPlayList: function (playlistId, callback) {
-        Vue.http.get("api/playlist/" + playlistId).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
     },
     searchPaths: function (path, actualPage, resultsPage, callback) {
         var params = {};

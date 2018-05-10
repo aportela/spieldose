@@ -209,7 +209,7 @@ let nowPlaying = (function () {
                     trackIds.push(this.playerData.tracks[i].id);
                 }
                 if (this.playerData.hasCurrentPlayList()) {
-                    spieldoseAPI.updatePlaylist(this.playerData.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
+                    spieldoseAPI.playlist.update(this.playerData.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
                             self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);
@@ -219,7 +219,7 @@ let nowPlaying = (function () {
                         self.loading = false;
                     });
                 } else {
-                    spieldoseAPI.addPlaylist(this.currentPlaylistName, trackIds, function (response) {
+                    spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
                             self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);

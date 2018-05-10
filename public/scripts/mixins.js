@@ -210,7 +210,7 @@ const mixinPlayer = {
         playPlaylistTracks: function (id) {
             this.clearAPIErrors();
             if (id) {
-                spieldoseAPI.getPlayList(id, (response) => {
+                spieldoseAPI.playlist.get(id, (response) => {
                     if (response.ok) {
                         this.playerData.replace(response.body.playlist.tracks);
                         this.playerData.setCurrentPlayList(id, response.body.playlist.name);
@@ -234,7 +234,7 @@ const mixinPlayer = {
         enqueuePlaylistTracks: function (id) {
             this.clearAPIErrors();
             if (id) {
-                spieldoseAPI.getPlayList(id, (response) => {
+                spieldoseAPI.playlist.get(id, (response) => {
                     if (response.ok) {
                         this.playerData.enqueue(response.body.playlist.tracks);
                     } else {
