@@ -71,7 +71,7 @@ let dashboardRecent = (function () {
         }, methods: {
             loadRecentAddedTracks: function () {
                 let self = this;
-                spieldoseAPI.getRecentAddedTracks(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentAddedTracks(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -84,7 +84,7 @@ let dashboardRecent = (function () {
             },
             loadRecentAddedArtists: function () {
                 let self = this;
-                spieldoseAPI.getRecentAddedArtists(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentAddedArtists(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -97,7 +97,7 @@ let dashboardRecent = (function () {
             },
             loadRecentAddedAlbums: function () {
                 let self = this;
-                spieldoseAPI.getRecentAddedAlbums(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentAddedAlbums(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -110,7 +110,7 @@ let dashboardRecent = (function () {
             },
             loadRecentPlayedTracks: function () {
                 let self = this;
-                spieldoseAPI.getRecentPlayedTracks(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentPlayedTracks(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -123,7 +123,7 @@ let dashboardRecent = (function () {
             },
             loadRecentPlayedArtists: function () {
                 let self = this;
-                spieldoseAPI.getRecentPlayedArtists(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentPlayedArtists(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -136,7 +136,7 @@ let dashboardRecent = (function () {
             },
             loadRecentPlayedAlbums: function () {
                 let self = this;
-                spieldoseAPI.getRecentPlayedAlbums(this.interval, function (response) {
+                spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;

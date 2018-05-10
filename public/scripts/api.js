@@ -438,390 +438,392 @@ const spieldoseAPI = {
             }
         );
     },
-    getTopPlayedTracks: function (interval, artist, callback) {
-        var params = {};
-        if (artist) {
-            params.artist = artist;
+    metrics: {
+        getTopPlayedTracks: function (interval, artist, callback) {
+            var params = {};
+            if (artist) {
+                params.artist = artist;
+            }
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/top_played_tracks", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getTopPlayedArtists: function (interval, callback) {
+            var params = {};
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/top_artists", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getTopPlayedGenres: function (interval, callback) {
+            var params = {};
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/top_genres", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentAddedTracks: function (interval, callback) {
+            var params = {
+                entity: "tracks"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_added", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentAddedArtists: function (interval, callback) {
+            var params = {
+                entity: "artists"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_added", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentAddedAlbums: function (interval, callback) {
+            var params = {
+                entity: "albums"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_added", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentPlayedTracks: function (interval, callback) {
+            var params = {
+                entity: "tracks"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_played", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentPlayedArtists: function (interval, callback) {
+            var params = {
+                entity: "albums"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_played", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getRecentPlayedAlbums: function (interval, callback) {
+            var params = {
+                entity: "albums"
+            };
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = moment().format('YYYYMMDD');
+                    break;
+            }
+            Vue.http.post("api/metrics/recently_played", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getPlayStatMetricsByHour: function (callback) {
+            Vue.http.post("api/metrics/play_stats_by_hour", {}).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getPlayStatMetricsByWeekDay: function (callback) {
+            Vue.http.post("api/metrics/play_stats_by_weekday", {}).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getPlayStatMetricsByMonth: function (callback) {
+            Vue.http.post("api/metrics/play_stats_by_month", {}).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getPlayStatMetricsByYear: function (callback) {
+            Vue.http.post("api/metrics/play_stats_by_year", {}).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/top_played_tracks", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getTopPlayedArtists: function (interval, callback) {
-        var params = {};
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/top_artists", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getTopPlayedGenres: function (interval, callback) {
-        var params = {};
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/top_genres", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentAddedTracks: function (interval, callback) {
-        var params = {
-            entity: "tracks"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_added", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentAddedArtists: function (interval, callback) {
-        var params = {
-            entity: "artists"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_added", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentAddedAlbums: function (interval, callback) {
-        var params = {
-            entity: "albums"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_added", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentPlayedTracks: function (interval, callback) {
-        var params = {
-            entity: "tracks"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_played", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentPlayedArtists: function (interval, callback) {
-        var params = {
-            entity: "albums"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_played", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getRecentPlayedAlbums: function (interval, callback) {
-        var params = {
-            entity: "albums"
-        };
-        switch (interval) {
-            case 0:
-                break;
-            case 1:
-                params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 2:
-                params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 3:
-                params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-            case 4:
-                params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                params.toDate = moment().format('YYYYMMDD');
-                break;
-        }
-        Vue.http.post("api/metrics/recently_played", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPlayStatMetricsByHour: function (callback) {
-        Vue.http.post("api/metrics/play_stats_by_hour", {}).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPlayStatMetricsByWeekDay: function (callback) {
-        Vue.http.post("api/metrics/play_stats_by_weekday", {}).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPlayStatMetricsByMonth: function (callback) {
-        Vue.http.post("api/metrics/play_stats_by_month", {}).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPlayStatMetricsByYear: function (callback) {
-        Vue.http.post("api/metrics/play_stats_by_year", {}).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
     }
 };

@@ -83,7 +83,7 @@ let dashboardPlayStats = (function () {
         }, methods: {
             loadMetricsByHourChart: function () {
                 let self = this;
-                spieldoseAPI.getPlayStatMetricsByHour(function (response) {
+                spieldoseAPI.metrics.getPlayStatMetricsByHour(function (response) {
                     if (response.ok) {
                         const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
                         let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -116,7 +116,7 @@ let dashboardPlayStats = (function () {
             },
             loadMetricsByWeekDayChart: function () {
                 let self = this;
-                spieldoseAPI.getPlayStatMetricsByWeekDay(function (response) {
+                spieldoseAPI.metrics.getPlayStatMetricsByWeekDay(function (response) {
                     if (response.ok) {
                         const weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                         let weekDays = [];
@@ -149,7 +149,7 @@ let dashboardPlayStats = (function () {
             },
             loadMetricsByMonthChart: function () {
                 let self = this;
-                spieldoseAPI.getPlayStatMetricsByMonth(function (response) {
+                spieldoseAPI.metrics.getPlayStatMetricsByMonth(function (response) {
                     if (response.ok) {
                         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                         let months = [];
@@ -182,7 +182,7 @@ let dashboardPlayStats = (function () {
             },
             loadMetricsByYearChart: function () {
                 let self = this;
-                spieldoseAPI.getPlayStatMetricsByYear(function (response) {
+                spieldoseAPI.metrics.getPlayStatMetricsByYear(function (response) {
                     if (response.ok) {
                         let years = [];
                         let data = [];
