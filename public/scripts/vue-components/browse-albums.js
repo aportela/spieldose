@@ -104,7 +104,7 @@ let browseAlbums = (function () {
                 if (resetPager) {
                     self.pager.actualPage = 1;
                 }
-                spieldoseAPI.searchAlbums(self.nameFilter, self.filterByArtist, self.filterByYear, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.album.search(self.nameFilter, self.filterByArtist, self.filterByYear, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;

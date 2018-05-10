@@ -256,38 +256,40 @@ const spieldoseAPI = {
             }
         );
     },
-    searchAlbums: function (name, artist, year, actualPage, resultsPage, callback) {
-        var params = {
-            actualPage: 1,
-            resultsPage: initialState.defaultResultsPage
-        };
-        if (name) {
-            params.partialName = name;
-        }
-        if (artist) {
-            params.partialArtist = artist;
-        }
-        if (year && year > 1000 && year < 9999) {
-            params.year = year;
-        }
-        if (actualPage) {
-            params.actualPage = parseInt(actualPage);
-        }
-        if (resultsPage) {
-            params.resultsPage = parseInt(resultsPage);
-        }
-        Vue.http.post("api/album/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
+    album: {
+        search: function (name, artist, year, actualPage, resultsPage, callback) {
+            var params = {
+                actualPage: 1,
+                resultsPage: initialState.defaultResultsPage
+            };
+            if (name) {
+                params.partialName = name;
             }
-        );
+            if (artist) {
+                params.partialArtist = artist;
+            }
+            if (year && year > 1000 && year < 9999) {
+                params.year = year;
+            }
+            if (actualPage) {
+                params.actualPage = parseInt(actualPage);
+            }
+            if (resultsPage) {
+                params.resultsPage = parseInt(resultsPage);
+            }
+            Vue.http.post("api/album/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
     },
     playlist: {
         search: function (name, actualPage, resultsPage, callback) {
