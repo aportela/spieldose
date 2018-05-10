@@ -113,6 +113,36 @@ const spieldoseAPI = {
                 }
             );
         },
+        search: function (name, withoutMbid, actualPage, resultsPage, callback) {
+            var params = {
+                actualPage: 1,
+                resultsPage: initialState.defaultResultsPage
+            };
+            if (withoutMbid) {
+                params.withoutMbid = true
+            }
+            if (name) {
+                params.partialName = name;
+            }
+            if (actualPage) {
+                params.actualPage = parseInt(actualPage);
+            }
+            if (resultsPage) {
+                params.resultsPage = parseInt(resultsPage);
+            }
+            Vue.http.post("api/artist/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
         overwriteMusicBrainz: function (name, mbid, callback) {
             var params = {
                 mbid: mbid
@@ -214,36 +244,6 @@ const spieldoseAPI = {
             params.orderBy = order;
         }
         Vue.http.post("api/track/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    searchArtists: function (name, withoutMbid, actualPage, resultsPage, callback) {
-        var params = {
-            actualPage: 1,
-            resultsPage: initialState.defaultResultsPage
-        };
-        if (withoutMbid) {
-            params.withoutMbid = true
-        }
-        if (name) {
-            params.partialName = name;
-        }
-        if (actualPage) {
-            params.actualPage = parseInt(actualPage);
-        }
-        if (resultsPage) {
-            params.resultsPage = parseInt(resultsPage);
-        }
-        Vue.http.post("api/artist/search", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);

@@ -80,7 +80,7 @@ let browseArtists = (function () {
                 let self = this;
                 self.loading = true;
                 self.clearAPIErrors();
-                spieldoseAPI.searchArtists(self.nameFilter, self.filterNotScraped == 1, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                spieldoseAPI.artist.search(self.nameFilter, self.filterNotScraped == 1, self.pager.actualPage, self.pager.resultsPage, function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.pagination.actualPage;
                         self.pager.totalPages = response.body.pagination.totalPages;
