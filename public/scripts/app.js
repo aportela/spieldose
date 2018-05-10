@@ -42,8 +42,7 @@ const getPlayerData = function () {
         }
     };
     playerData.loadRandomTracks = function (count, callback) {
-        playerData.isPaused = false;
-        playerData.isPlaying = false;
+        playerData.stop();
         playerData.tracks = [];
         playerData.loading = true;
         playerData.actualTrackIdx = 0;
@@ -57,6 +56,7 @@ const getPlayerData = function () {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
+                    playerData.play();
                     /*
                     let songs = [];
                     for (let i = 0; i < playerData.tracks.length; i++) {
