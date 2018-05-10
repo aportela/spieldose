@@ -175,86 +175,118 @@ const spieldoseAPI = {
             );
         }
     },
-    getAlbumTracks: function (album, artist, year, callback) {
-        var params = {};
-        if (album) {
-            params.album = album;
-        }
-        if (artist) {
-            params.artist = artist;
-        }
-        if (year) {
-            params.year = year;
-        }
-        Vue.http.post("api/track/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
+    track: {
+        getAlbumTracks: function (album, artist, year, callback) {
+            var params = {};
+            if (album) {
+                params.album = album;
             }
-        );
-    },
-    getPathTracks: function (path, callback) {
-        var params = {
-            path: path,
-            resultsPage: 0
-        };
-        Vue.http.post("api/track/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
+            if (artist) {
+                params.artist = artist;
             }
-        );
-    },
-    searchTracks: function (text, artist, album, loved, actualPage, resultsPage, order, callback) {
-        var params = {
-            actualPage: 1,
-            resultsPage: initialState.defaultResultsPage
-        };
-        if (text) {
-            params.text = text;
-        }
-        if (artist) {
-            params.artist = artist;
-        }
-        if (album) {
-            params.album = album;
-        }
-        if (loved) {
-            params.loved = 1;
-        }
-        if (actualPage) {
-            params.actualPage = actualPage;
-        }
-        if (resultsPage) {
-            params.resultsPage = resultsPage;
-        }
-        if (order) {
-            params.orderBy = order;
-        }
-        Vue.http.post("api/track/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
+            if (year) {
+                params.year = year;
             }
-        );
+            Vue.http.post("api/track/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        getPathTracks: function (path, callback) {
+            var params = {
+                path: path,
+                resultsPage: 0
+            };
+            Vue.http.post("api/track/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        searchTracks: function (text, artist, album, loved, actualPage, resultsPage, order, callback) {
+            var params = {
+                actualPage: 1,
+                resultsPage: initialState.defaultResultsPage
+            };
+            if (text) {
+                params.text = text;
+            }
+            if (artist) {
+                params.artist = artist;
+            }
+            if (album) {
+                params.album = album;
+            }
+            if (loved) {
+                params.loved = 1;
+            }
+            if (actualPage) {
+                params.actualPage = actualPage;
+            }
+            if (resultsPage) {
+                params.resultsPage = resultsPage;
+            }
+            if (order) {
+                params.orderBy = order;
+            }
+            Vue.http.post("api/track/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        love: function (trackId, callback) {
+            var params = {};
+            Vue.http.post("api/track/" + trackId + "/love", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        unlove: function (trackId, callback) {
+            var params = {};
+            Vue.http.post("api/track/" + trackId + "/unlove", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
     },
     album: {
         search: function (name, artist, year, actualPage, resultsPage, callback) {
@@ -400,36 +432,6 @@ const spieldoseAPI = {
             params.resultsPage = parseInt(resultsPage);
         }
         Vue.http.post("api/path/search", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    loveTrack: function (trackId, callback) {
-        var params = {};
-        Vue.http.post("api/track/" + trackId + "/love", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    unLoveTrack: function (trackId, callback) {
-        var params = {};
-        Vue.http.post("api/track/" + trackId + "/unlove", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);

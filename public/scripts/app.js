@@ -52,7 +52,7 @@ const getPlayerData = function () {
             resultsPage: count,
             orderBy: "random"
         };
-        spieldoseAPI.searchTracks("", "", "", false, 1, count, "random", function (response) {
+        spieldoseAPI.track.searchTracks("", "", "", false, 1, count, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
@@ -248,7 +248,7 @@ const getPlayerData = function () {
     };
     playerData.love = function (track) {
         this.loading = true;
-        spieldoseAPI.loveTrack(track.id, function (response) {
+        spieldoseAPI.track.love(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
                 track.loved = response.body.loved;
@@ -265,7 +265,7 @@ const getPlayerData = function () {
     };
     playerData.unlove = function (track) {
         this.loading = true;
-        spieldoseAPI.unLoveTrack(track.id, function (response) {
+        spieldoseAPI.track.unlove(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
                 track.loved = response.body.loved;

@@ -263,7 +263,7 @@ let browseArtist = (function () {
                 self.loadingTracks = true;
                 self.clearAPIErrors();
                 let text = this.nameFilter ? this.nameFilter : "";
-                spieldoseAPI.searchTracks(text, artist, "", false, self.pager.actualPage, self.pager.resultsPage, "", function (response) {
+                spieldoseAPI.track.searchTracks(text, artist, "", false, self.pager.actualPage, self.pager.resultsPage, "", function (response) {
                     if (response.ok) {
                         self.pager.actualPage = response.body.actualPage;
                         self.pager.totalPages = response.body.totalPages;
@@ -289,7 +289,7 @@ let browseArtist = (function () {
                 let self = this;
                 self.loading = true;
                 self.clearAPIErrors();
-                spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, function (response) {
+                spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, function (response) {
                     self.playerData.emptyPlayList();
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {

@@ -159,7 +159,7 @@ const mixinPlayer = {
     methods: {
         playPathTracks: function (path) {
             this.clearAPIErrors();
-            spieldoseAPI.getPathTracks(path, (response) => {
+            spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.replace(response.body.tracks);
@@ -171,7 +171,7 @@ const mixinPlayer = {
         },
         enqueuePathTracks: function (path) {
             this.clearAPIErrors();
-            spieldoseAPI.getPathTracks(path, (response) => {
+            spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.enqueue(response.body.tracks);
@@ -183,7 +183,7 @@ const mixinPlayer = {
         },
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
-            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, (response) => {
+            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 this.playerData.emptyPlayList();
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
@@ -197,7 +197,7 @@ const mixinPlayer = {
         },
         enqueueAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
-            spieldoseAPI.getAlbumTracks(album || null, artist || null, year || null, (response) => {
+            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.enqueue(response.body.tracks);
@@ -220,7 +220,7 @@ const mixinPlayer = {
                     }
                 });
             } else {
-                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", (response) => {
+                spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
                         this.playerData.replace(response.body.tracks);
                         this.playerData.unsetCurrentPlayList();
@@ -242,7 +242,7 @@ const mixinPlayer = {
                     }
                 });
             } else {
-                spieldoseAPI.searchTracks("", "", "", true, 1, 0, "random", (response) => {
+                spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
                         this.playerData.enqueue(response.body.tracks);
                     } else {
