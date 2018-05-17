@@ -78,8 +78,8 @@ const mixinPlayer = {
         },
         nowPlayingTitle: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.actualTrack.title) {
-                    return (this.playerData.actualTrack.title);
+                if (this.playerData.currentTrack.track.title) {
+                    return (this.playerData.currentTrack.track.title);
                 } else {
                     return ("track title unknown");
                 }
@@ -92,8 +92,8 @@ const mixinPlayer = {
         },
         nowPlayingLength: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.actualTrack.playtimeString) {
-                    return (this.playerData.actualTrack.playtimeString);
+                if (this.playerData.currentTrack.track.playtimeString) {
+                    return (this.playerData.currentTrack.track.playtimeString);
                 } else {
                     return ("00:00");
                 }
@@ -103,8 +103,8 @@ const mixinPlayer = {
         },
         nowPlayingArtist: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.actualTrack.artist) {
-                    return (this.playerData.actualTrack.artist);
+                if (this.playerData.currentTrack.track.artist) {
+                    return (this.playerData.currentTrack.track.artist);
                 } else {
                     return ("artist unknown");
                 }
@@ -114,8 +114,8 @@ const mixinPlayer = {
         },
         nowPlayingArtistAlbum: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.actualTrack.album) {
-                    return (" / " + this.playerData.actualTrack.album);
+                if (this.playerData.currentTrack.track.album) {
+                    return (" / " + this.playerData.currentTrack.track.album);
                 } else {
                     return ("album unknown");
                 }
@@ -125,8 +125,8 @@ const mixinPlayer = {
         },
         nowPlayingYear: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.actualTrack.year) {
-                    return (" (" + this.playerData.actualTrack.year + ")");
+                if (this.playerData.currentTrack.track.year) {
+                    return (" (" + this.playerData.currentTrack.track.year + ")");
                 } else {
                     return (" (year unknown)");
                 }

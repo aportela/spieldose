@@ -66,19 +66,19 @@ let player = (function () {
                 return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
             },
             coverSrc: function () {
-                if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
-                    if (this.playerData.actualTrack.image.indexOf("http") == 0) {
-                        return ("api/thumbnail?url=" + this.playerData.actualTrack.image);
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
+                    if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
+                        return ("api/thumbnail?url=" + this.playerData.currentTrack.track.image);
                     } else {
-                        return ("api/thumbnail?hash=" + this.playerData.actualTrack.image);
+                        return ("api/thumbnail?hash=" + this.playerData.currentTrack.track.image);
                     }
                 } else {
                     return ('images/vinyl.png');
                 }
             },
             streamUrl: function () {
-                if (this.playerData.actualTrack && this.playerData.actualTrack.id) {
-                    return ("api/track/get/" + this.playerData.actualTrack.id);
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.id) {
+                    return ("api/track/get/" + this.playerData.currentTrack.track.id);
                 } else {
                     return ("");
                 }
@@ -86,8 +86,8 @@ let player = (function () {
         },
         methods: {
             replaceAlbumThumbnailWithLoadError: function () {
-                if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
-                    this.playerData.actualTrack.image = null;
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
+                    this.playerData.currentTrack.track.image = null;
                 }
             },
             toggleMute: function () {

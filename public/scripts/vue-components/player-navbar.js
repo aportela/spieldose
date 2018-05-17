@@ -107,11 +107,11 @@ let playerNavBar = (function () {
         },
         computed: {
             coverSrc: function () {
-                if (this.playerData.actualTrack && this.playerData.actualTrack.image) {
-                    if (this.playerData.actualTrack.image.indexOf("http") == 0) {
-                        return ("api/thumbnail?url=" + this.playerData.actualTrack.image);
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
+                    if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
+                        return ("api/thumbnail?url=" + this.playerData.currentTrack.track.image);
                     } else {
-                        return ("api/thumbnail?hash=" + this.playerData.actualTrack.image);
+                        return ("api/thumbnail?hash=" + this.playerData.currentTrack.track.image);
                     }
                 } else {
                     return ('images/vinyl.png');

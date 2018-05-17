@@ -10,7 +10,6 @@ const getPlayerData = (function () {
         isPaused: false,
         isStopped: true,
         repeatTracksMode: 'none', // none | track | all
-        actualTrack: null,
         currentPlaylist: {},
         currentTrack: {
             index: 0,
@@ -42,9 +41,8 @@ const getPlayerData = (function () {
      * unset current track
      */
     playerData.currentTrack.unset = () => {
-        playerData.actualTrack = null;
-        this.index = 0;
-        this.track = null;
+        playerData.currentTrackindex = 0;
+        playerData.currentTrack.track = null;
     };
     /**
      * unset current playlist references
@@ -88,8 +86,7 @@ const getPlayerData = (function () {
         playerData.stop();
         playerData.tracks = [];
         playerData.loading = true;
-        playerData.currentTrack.index = 0;
-        playerData.actualTrack = null;
+        playerData.currentTrack.unset();
         var d = {
             actualPage: 1,
             resultsPage: count,
@@ -164,8 +161,7 @@ const getPlayerData = (function () {
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
         playerData.isPlaying = false;
-        playerData.currentTrack.index = 0;
-        playerData.actualTrack = null;
+        playerData.currentTrack.unset();
         playerData.tracks = [];
     };
     playerData.toggleRepeatMode = function () {
@@ -188,7 +184,7 @@ const getPlayerData = (function () {
     playerData.playPreviousTrack = function () {
         if (playerData.currentTrack.index > 0) {
             playerData.currentTrack.index--;
-            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
+            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             if (playerData.isPaused) {
                 playerData.isPaused = false;
                 playerData.isPlaying = true;
@@ -198,7 +194,7 @@ const getPlayerData = (function () {
     playerData.playNextTrack = function () {
         if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
             playerData.currentTrack.index++;
-            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
+            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             if (playerData.isPaused) {
                 playerData.isPaused = false;
                 playerData.isPlaying = true;
@@ -207,7 +203,7 @@ const getPlayerData = (function () {
     };
     playerData.play = function () {
         if (playerData.tracks.length > 0) {
-            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
+            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
             playerData.isPaused = false;
             playerData.isStopped = false;
@@ -216,7 +212,7 @@ const getPlayerData = (function () {
     playerData.playAtIdx = function (idx) {
         if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
             playerData.currentTrack.index = idx;
-            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
+            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
             playerData.isPaused = false;
             playerData.isStopped = false;
@@ -272,7 +268,7 @@ const getPlayerData = (function () {
     };
     playerData.downloadActualTrack = function () {
         if (playerData.hasTracks()) {
-            playerData.download(playerData.tracks[playerData.currentTrack.index].id);
+            playerData.download(playerData.currentTrack.track.id);
         }
     };
     playerData.love = function (track) {
