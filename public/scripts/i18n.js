@@ -44,11 +44,11 @@ const messages = {
                 recentlyAdded: 'Recently added',
                 recentlyPlayed: 'Recently played',
                 playStatistics: 'Play statistics',
-                byHour: 'by hour',
-                playStatsByWeekday: 'play stats by weekday',
-                byWeekday: 'by weekday',
-                byMonth: 'by month',
-                byYear: 'by year',
+                byHour: 'By hour',
+                playStatsByWeekday: 'Play stats by weekday',
+                byWeekday: 'By weekday',
+                byMonth: 'By month',
+                byYear: 'By year',
                 monday: 'Monday',
                 tuesday: 'Tuesday',
                 wednesday: 'Wednesday',
@@ -56,7 +56,7 @@ const messages = {
                 friday: 'Friday',
                 saturday: 'Saturday',
                 sunday: 'Sunday',
-                playStatsByMonth: 'play stats by month',
+                playStatsByMonth: 'Play stats by month',
                 january: 'January',
                 february: 'February',
                 march: 'March',
@@ -69,10 +69,23 @@ const messages = {
                 october: 'October',
                 november: 'November',
                 december: 'December',
-                playStatsByYear: 'play stats by year'
+                playStatsByYear: 'Play stats by year'
             },
             errors: {
-                notEnoughData: 'there is not enough data to calculate the statistics'
+                notEnoughData: 'There is not enough data to calculate the statistics'
+            }
+        },
+        menu: {
+            labels: {
+                header: 'Menu',
+                dashboard: 'Dashboard',
+                currentPlaylist: 'Current playlist',
+                search: 'Search',
+                browseArtists: 'Browse artists',
+                browseAlbums: 'Browse albums',
+                browsePaths: 'Browse paths',
+                browsePlaylists: 'Browse playlists',
+                signOut: 'Sign out'
             }
         },
         commonErrors: {
@@ -83,14 +96,14 @@ const messages = {
             slogan: '...music for the Masses',
             projectPageLinkLabel: 'Project page',
             authorLinkLabel: 'by alex',
-            playThisTrack: 'play this track',
-            enqueueThisTrack: 'enqueue this track',
-            navigateToArtistPage: 'navigate to artist page',
-            playThisAlbum: 'play this album',
-            enqueueThisAlbum: 'enqueue this album'
+            playThisTrack: 'Play this track',
+            enqueueThisTrack: 'Enqueue this track',
+            navigateToArtistPage: 'Bavigate to artist page',
+            playThisAlbum: 'Play this album',
+            enqueueThisAlbum: 'Enqueue this album'
         },
         commonMessages: {
-            refreshData: 'refresh data'
+            refreshData: 'Refresh data'
         }
     }
 };
