@@ -119,7 +119,6 @@ let playerNavBar = (function () {
             }
         }, methods: {
             signout: function (e) {
-                this.playerData.dispose();
                 bus.$emit("signOut");
             }
         }
