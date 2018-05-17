@@ -153,14 +153,13 @@ let nowPlaying = (function () {
     let module = Vue.component('spieldose-nowplaying', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinPlayer, mixinNavigation
+            mixinAPIError, mixinPlayer, mixinNavigation, mixinPlayer
         ],
         data: function () {
             return ({
                 loading: false,
                 savingPlaylist: false,
-                currentPlaylistName: null,
-                playerData: sharedPlayerData,
+                currentPlaylistName: null
             });
         },
         created: function () {
