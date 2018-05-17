@@ -69,7 +69,7 @@ const getPlayerData = (function () {
     };
 
     playerData.currentTrack.unset = () => {
-        playerData.currentTrackindex = 0;
+        playerData.currentTrack.index = 0;
         playerData.currentTrack.track = null;
     };
     playerData.currentTrack.download = function () {
@@ -130,11 +130,6 @@ const getPlayerData = (function () {
         playerData.tracks = [];
         playerData.loading = true;
         playerData.currentTrack.unset();
-        var d = {
-            actualPage: 1,
-            resultsPage: count,
-            orderBy: "random"
-        };
         spieldoseAPI.track.searchTracks("", "", "", false, 1, count, "random", function (response) {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
