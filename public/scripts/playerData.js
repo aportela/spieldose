@@ -68,7 +68,6 @@ const getPlayerData = (function () {
         });
     };
 
-
     playerData.currentTrack.unset = () => {
         playerData.currentTrackindex = 0;
         playerData.currentTrack.track = null;
@@ -100,7 +99,7 @@ const getPlayerData = (function () {
     playerData.currentPlaylist.replace = function (tracks) {
         playerData.currentPlaylist.empty();
         playerData.tracks = tracks;
-        playerData.play();
+        playerData.playback.play();
     };
     playerData.currentPlaylist.enqueue = function (tracks) {
         if (tracks.length > 0) {
@@ -126,26 +125,8 @@ const getPlayerData = (function () {
         playerData.currentTrack.unset();
         playerData.tracks = [];
     };
-
-    playerData.dispose = function () {
-        this.stop();
-        playerData.currentPlaylist.unset();
-        playerData.currentPlaylist.empty();
-    };
-
-    playerData.isLastTrack = function () {
-        if (playerData.tracks.length > 0) {
-            if (playerData.currentTrack.index < playerData.tracks.length - 1) {
-                return (false);
-            } else {
-                return (true);
-            }
-        } else {
-            return (true);
-        }
-    };
-    playerData.loadRandomTracks = function (count, callback) {
-        playerData.stop();
+    playerData.currentPlaylist.loadRandomTracks = function (count, callback) {
+        playerData.playback.stop();
         playerData.tracks = [];
         playerData.loading = true;
         playerData.currentTrack.unset();
@@ -158,7 +139,7 @@ const getPlayerData = (function () {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
-                    playerData.play();
+                    playerData.playback.play();
                     /*
                     let songs = [];
                     for (let i = 0; i < playerData.tracks.length; i++) {
@@ -193,23 +174,48 @@ const getPlayerData = (function () {
             }
         });
     };
-    playerData.toggleRepeatMode = function () {
-        switch (playerData.repeatTracksMode) {
-            case "none":
-                playerData.repeatTracksMode = "track";
-                break;
-            case "track":
-                playerData.repeatTracksMode = "all";
-                break;
-            default:
-                playerData.repeatTracksMode = "none";
-                break;
+    playerData.currentPlaylist.playAtIdx = function (idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
+            playerData.currentTrack.index = idx;
+            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
+            playerData.isPlaying = true;
+            playerData.isPaused = false;
+            playerData.isStopped = false;
         }
     };
-    playerData.shufflePlayList = function () {
+    playerData.currentPlaylist.shuffle = function () {
         shuffle(playerData.tracks);
-        playerData.playAtIdx(0);
+        playerData.currentPlaylist.playAtIdx(0);
     };
+    playerData.currentPlaylist.moveItemUp = function (idx) {
+        if (playerData.tracks.length > 0 && idx > 0) {
+            var tmpTrack = playerData.tracks[idx - 1];
+            playerData.tracks.splice(idx - 1, 1);
+            playerData.tracks.splice(idx, 0, tmpTrack);
+        }
+    };
+    playerData.currentPlaylist.moveItemDown = function (idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length - 1) {
+            var tmpTrack = playerData.tracks[idx];
+            playerData.tracks.splice(idx, 1);
+            playerData.tracks.splice(idx + 1, 0, tmpTrack);
+        }
+    };
+    playerData.currentPlaylist.removeItem = function (idx) {
+        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
+            if (idx == playerData.currentTrack.index && (playerData.isPlaying || playerData.isPaused)) {
+                playerData.playNextTrack();
+            }
+            playerData.tracks.splice(idx, 1);
+        }
+    };
+
+    playerData.dispose = function () {
+        this.playback.stop();
+        playerData.currentPlaylist.unset();
+        playerData.currentPlaylist.empty();
+    };
+
     playerData.playPreviousTrack = function () {
         if (playerData.currentTrack.index > 0) {
             playerData.currentTrack.index--;
@@ -230,73 +236,51 @@ const getPlayerData = (function () {
             }
         }
     };
-    playerData.play = function () {
+
+    playerData.playback.play = function() {
         if (playerData.tracks.length > 0) {
             playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
             playerData.isPaused = false;
             playerData.isStopped = false;
         }
+
     };
-    playerData.playAtIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
-            playerData.currentTrack.index = idx;
-            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
-            playerData.isPlaying = true;
-            playerData.isPaused = false;
-            playerData.isStopped = false;
-        }
-    };
-    playerData.moveUpIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx > 0) {
-            var tmpTrack = playerData.tracks[idx - 1];
-            playerData.tracks.splice(idx - 1, 1);
-            playerData.tracks.splice(idx, 0, tmpTrack);
-        }
-    };
-    playerData.moveDownIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx < playerData.tracks.length - 1) {
-            var tmpTrack = playerData.tracks[idx];
-            playerData.tracks.splice(idx, 1);
-            playerData.tracks.splice(idx + 1, 0, tmpTrack);
-        }
-    };
-    playerData.removeAtIdx = function (idx) {
-        if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
-            if (idx == playerData.currentTrack.index && (playerData.isPlaying || playerData.isPaused)) {
-                playerData.playNextTrack();
-            }
-            playerData.tracks.splice(idx, 1);
-        }
-    };
-    playerData.pause = function () {
-        if (playerData.isPlaying) {
-            playerData.isPaused = true;
-            playerData.isPlaying = false;
-            playerData.isStopped = false;
-        }
-    };
-    playerData.resume = function () {
-        if (playerData.isPaused) {
-            playerData.isPaused = false;
-            playerData.isPlaying = true;
-            playerData.isStopped = false;
-        }
-    };
-    playerData.stop = function () {
+    playerData.playback.stop = function () {
         if (playerData.isPlaying || playerData.isPaused) {
             playerData.isPaused = false;
             playerData.isPlaying = false;
             playerData.isStopped = true;
         }
     };
-    playerData.advancePlayList = function () {
-        if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
-            playerData.playAtIdx(playerData.currentTrack.index + 1);
-        } else {
-            playerData.stop();
+    playerData.playback.pause = function () {
+        if (playerData.isPlaying) {
+            playerData.isPaused = true;
+            playerData.isPlaying = false;
+            playerData.isStopped = false;
         }
     };
+    playerData.playback.resume = function () {
+        if (playerData.isPaused) {
+            playerData.isPaused = false;
+            playerData.isPlaying = true;
+            playerData.isStopped = false;
+        }
+    };
+    playerData.playback.toggleRepeatMode = function () {
+        switch (playerData.repeatTracksMode) {
+            case "none":
+                playerData.repeatTracksMode = "track";
+                break;
+            case "track":
+                playerData.repeatTracksMode = "all";
+                break;
+            default:
+                playerData.repeatTracksMode = "none";
+                break;
+        }
+    };
+
     return (playerData);
 });
 

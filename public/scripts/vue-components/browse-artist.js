@@ -294,7 +294,7 @@ let browseArtist = (function () {
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.tracks = response.body.tracks;
-                            self.playerData.play();
+                            self.playerData.playback.play();
                         }
                     } else {
                         self.setAPIError(response.getApiErrorData());

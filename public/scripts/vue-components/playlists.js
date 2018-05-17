@@ -45,13 +45,13 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">clear playlist</span>
                         </a>
-                        <a class="button is-light" v-bind:class="{ 'is-primary': isRepeatActive }" v-on:click.prevent="playerData.toggleRepeatMode();">
+                        <a class="button is-light" v-bind:class="{ 'is-primary': isRepeatActive }" v-on:click.prevent="playerData.playback.toggleRepeatMode();">
                             <span class="icon is-small">
                                 <i class="fas fa-redo"></i>
                             </span>
                             <span class="is-hidden-touch">repeat: {{ playerData.repeatTracksMode }}</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.shufflePlayList();">
+                        <a class="button is-light" v-on:click.prevent="playerData.currentPlaylist.shuffle();">
                             <span class="icon is-small">
                                 <i class="fas fa-random"></i>
                             </span>
@@ -69,25 +69,25 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">next</span>
                         </a>
-                        <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.play();">
+                        <a class="button is-light" v-if="playerData.isStopped" v-on:click.prevent="playerData.playback.play();">
                             <span class="icon is-small">
                                 <i class="fas fa-play"></i>
                             </span>
                             <span class="is-hidden-touch">play</span>
                         </a>
-                        <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.resume();">
+                        <a class="button is-light is-primary" v-else-if="playerData.isPaused" v-on:click.prevent="playerData.playback.resume();">
                             <span class="icon is-small">
                                 <i class="fas fa-play"></i>
                             </span>
                             <span class="is-hidden-touch">resume</span>
                         </a>
-                        <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.pause();">
+                        <a class="button is-light is-primary" v-else-if="playerData.isPlaying" v-on:click.prevent="playerData.playback.pause();">
                             <span class="icon is-small">
                                 <i class="fas fa-pause"></i>
                             </span>
                             <span class="is-hidden-touch">pause</span>
                         </a>
-                        <a class="button is-light" v-bind:class="{ 'is-primary': playerData.isStopped }" v-on:click.prevent="playerData.stop();">
+                        <a class="button is-light" v-bind:class="{ 'is-primary': playerData.isStopped }" v-on:click.prevent="playerData.playback.stop();">
                             <span class="icon is-small">
                                 <i class="fas fa-stop"></i>
                             </span>
@@ -127,9 +127,9 @@ let nowPlaying = (function () {
                         <tbody>
                             <tr v-bind:class="{ 'is-selected': playerData.currentTrack.index == i }" v-for="track, i in playerData.tracks" v-bind:key="track.id">
                                 <td>
-                                    <i class="fas fa-play cursor-pointer" title="play this track" aria-hidden="true" v-if="iconAction(i) == 'play'" v-on:click="playerData.playAtIdx(i);"></i>
-                                    <i class="fas fa-headphones cursor-pointer" title="now playing, click to pause" aria-hidden="true" v-else-if="iconAction(i) == 'none'" v-on:click="playerData.pause();"></i>
-                                    <i class="fas fa-pause cursor-pointer" title="paused, click to resume" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" v-on:click="playerData.resume();"></i>
+                                    <i class="fas fa-play cursor-pointer" title="play this track" aria-hidden="true" v-if="iconAction(i) == 'play'" v-on:click="playerData.currentPlaylist.playAtIdx(i);"></i>
+                                    <i class="fas fa-headphones cursor-pointer" title="now playing, click to pause" aria-hidden="true" v-else-if="iconAction(i) == 'none'" v-on:click="playerData.playback.pause();"></i>
+                                    <i class="fas fa-pause cursor-pointer" title="paused, click to resume" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" v-on:click="playerData.playback.resume();"></i>
                                     <span>{{ track.title}}</span>
                                 </td>
                                 <td><a title="click to open artist section" v-if="track.artist" v-on:click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></td>
@@ -137,9 +137,9 @@ let nowPlaying = (function () {
                                 <td><span>{{ track.genre }}</span></td>
                                 <td><span>{{ track.year }}</span></td>
                                 <td>
-                                    <i class="fas fa-caret-up cursor-pointer" title="move up this track on playlist"  aria-hidden="true" v-on:click="playerData.moveUpIdx(i);"></i>
-                                    <i class="fas fa-caret-down cursor-pointer" title="move down this track playlist" aria-hidden="true" v-on:click="playerData.moveDownIdx(i);"></i>
-                                    <i class="fas fa-times cursor-pointer" title="remove this track from playlist"  aria-hidden="true" v-on:click="playerData.removeAtIdx(i); $forceUpdate();"></i>
+                                    <i class="fas fa-caret-up cursor-pointer" title="move up this track on playlist"  aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemUp(i);"></i>
+                                    <i class="fas fa-caret-down cursor-pointer" title="move down this track playlist" aria-hidden="true" v-on:click="playerData.moveItemDown(i);"></i>
+                                    <i class="fas fa-times cursor-pointer" title="remove this track from playlist"  aria-hidden="true" v-on:click="playerData.removeItem(i); $forceUpdate();"></i>
                                 </td>
                             </tr>
                         </tbody>
@@ -200,7 +200,7 @@ let nowPlaying = (function () {
                 this.currentPlaylistName = null;
             },
             loadRandom: function () {
-                this.playerData.loadRandomTracks(initialState.defaultResultsPage);
+                this.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage);
             },
             savePlayList: function () {
                 let self = this;

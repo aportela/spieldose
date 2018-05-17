@@ -188,7 +188,7 @@ const mixinPlayer = {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.tracks = response.body.tracks;
-                        this.playerData.play();
+                        this.playerData.playback.play();
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
