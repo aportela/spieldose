@@ -5,7 +5,7 @@ let dashboard = (function () {
         return `
             <!-- dashboard template inspired by daniel (https://github.com/dansup) -->
             <div class="container is-fluid box is-marginless is-unselectable">
-                <p class="title is-1 has-text-centered">Dashboard</p>
+                <p class="title is-1 has-text-centered">{{ $t("menu.labels.dashboard") }}</p>
                 <div class="columns is-mobile is-multiline">
                     <div class="column is-one-third-desktop is-full-mobile">
                         <spieldose-dashboard-toplist v-bind:type="'topTracks'" v-bind:title="$t('dashboard.labels.topPlayedTracks')" v-bind:listItemCount="5" v-bind:showPlayCount="false"></spieldose-dashboard-toplist>
