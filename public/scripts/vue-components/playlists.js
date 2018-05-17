@@ -163,11 +163,15 @@ let nowPlaying = (function () {
             });
         },
         created: function () {
-            this.currentPlaylistName = this.playerData.currentPlaylistName;
+            this.currentPlaylistName = this.playerData.currentPlaylist.name;
         },
         computed: {
             isPlaylisted: function() {
-                return(this.playerData.currentPlaylistName);
+                if (this.playerData.currentPlaylist.name) {
+                    return(true);
+                } else {
+                    return(false);
+                }
             },
             isLovedActive: function () {
                 return (this.playerData.currentTrack.track && this.playerData.currentTrack.track == '1');
@@ -208,7 +212,7 @@ let nowPlaying = (function () {
                     trackIds.push(this.playerData.tracks[i].id);
                 }
                 if (this.playerData.hasCurrentPlayList()) {
-                    spieldoseAPI.playlist.update(this.playerData.currentPlaylistId, this.currentPlaylistName, trackIds, function (response) {
+                    spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
                             self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);

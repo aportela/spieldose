@@ -10,13 +10,14 @@ const getPlayerData = (function () {
         isPaused: false,
         isStopped: true,
         repeatTracksMode: 'none', // none | track | all
-        currentPlaylist: {},
+        currentPlaylist: {
+            id: null,
+            name: null
+        },
         currentTrack: {
             index: 0,
             track: null
         },
-        currentPlaylistId: null,
-        currentPlaylistName: null,
         playback: {},
         tracks: []
     };
@@ -48,8 +49,8 @@ const getPlayerData = (function () {
      * unset current playlist references
      */
     playerData.currentPlaylist.unset = () => {
-        playerData.currentPlaylistId = null;
-        playerData.currentPlaylistName = null;
+        playerData.currentPlaylist.id = null;
+        playerData.currentPlaylist.name = null;
     };
     /**
      * empty current playlist
@@ -144,19 +145,19 @@ const getPlayerData = (function () {
         }
     };
     playerData.hasCurrentPlayList = function () {
-        if (playerData.currentPlaylistId) {
+        if (playerData.currentPlaylist.id) {
             return (true);
         } else {
             return (false);
         }
     };
     playerData.setCurrentPlayList = function (id, name) {
-        playerData.currentPlaylistId = id;
-        playerData.currentPlaylistName = name;
+        playerData.currentPlaylist.id = id;
+        playerData.currentPlaylist.name = name;
     };
     playerData.unsetCurrentPlayList = function () {
-        playerData.currentPlaylistId = null;
-        playerData.currentPlaylistName = null;
+        playerData.currentPlaylist.id = null;
+        playerData.currentPlaylist.name = null;
     };
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
