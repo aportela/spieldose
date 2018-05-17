@@ -125,7 +125,7 @@ let nowPlaying = (function () {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-bind:class="{ 'is-selected': playerData.actualTrack && playerData.actualTrackIdx == i }" v-for="track, i in playerData.tracks" v-bind:key="track.id">
+                            <tr v-bind:class="{ 'is-selected': playerData.currentTrack.index == i }" v-for="track, i in playerData.tracks" v-bind:key="track.id">
                                 <td>
                                     <i class="fas fa-play cursor-pointer" title="play this track" aria-hidden="true" v-if="iconAction(i) == 'play'" v-on:click="playerData.playAtIdx(i);"></i>
                                     <i class="fas fa-headphones cursor-pointer" title="now playing, click to pause" aria-hidden="true" v-else-if="iconAction(i) == 'none'" v-on:click="playerData.pause();"></i>
@@ -170,7 +170,7 @@ let nowPlaying = (function () {
                 return(this.playerData.currentPlaylistName);
             },
             isLovedActive: function () {
-                return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
+                return (this.playerData.currentTrack.track && this.playerData.currentTrack.track == '1');
             },
             isRepeatActive: function () {
                 return (this.playerData.repeatTracksMode != 'none');
@@ -181,10 +181,10 @@ let nowPlaying = (function () {
         },
         methods: {
             iconAction: function (index) {
-                if (this.playerData.isPaused && this.playerData.actualTrackIdx == index) {
+                if (this.playerData.isPaused && this.playerData.currentTrack.index == index) {
                     return ('unPause');
                 } else {
-                    if (this.playerData.isPlaying && this.playerData.actualTrackIdx == index) {
+                    if (this.playerData.isPlaying && this.playerData.currentTrack.index == index) {
                         return ('none');
                     } else {
                         return ('play');

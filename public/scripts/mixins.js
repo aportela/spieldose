@@ -135,7 +135,7 @@ const mixinPlayer = {
             }
         },
         nowPlayingLoved: function () {
-            return (this.playerData.hasTracks() && this.playerData.tracks[this.playerData.actualTrackIdx].loved == '1');
+            return (this.playerData.currentTrack.track && this.playerData.currentTrack.track.loved == '1');
         }
     },
     filters: {

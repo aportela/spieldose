@@ -10,10 +10,12 @@ const getPlayerData = (function () {
         isPaused: false,
         isStopped: true,
         repeatTracksMode: 'none', // none | track | all
-        actualTrackIdx: 0,
         actualTrack: null,
         currentPlaylist: {},
-        currentTrack: {},
+        currentTrack: {
+            index: 0,
+            track: null
+        },
         currentPlaylistId: null,
         currentPlaylistName: null,
         playback: {},
@@ -40,8 +42,9 @@ const getPlayerData = (function () {
      * unset current track
      */
     playerData.currentTrack.unset = () => {
-        playerData.actualTrackIdx = 0;
         playerData.actualTrack = null;
+        this.index = 0;
+        this.track = null;
     };
     /**
      * unset current playlist references
@@ -72,7 +75,7 @@ const getPlayerData = (function () {
     };
     playerData.isLastTrack = function () {
         if (playerData.tracks.length > 0) {
-            if (playerData.actualTrackIdx < playerData.tracks.length - 1) {
+            if (playerData.currentTrack.index < playerData.tracks.length - 1) {
                 return (false);
             } else {
                 return (true);
@@ -85,7 +88,7 @@ const getPlayerData = (function () {
         playerData.stop();
         playerData.tracks = [];
         playerData.loading = true;
-        playerData.actualTrackIdx = 0;
+        playerData.currentTrack.index = 0;
         playerData.actualTrack = null;
         var d = {
             actualPage: 1,
@@ -161,7 +164,7 @@ const getPlayerData = (function () {
     playerData.emptyPlayList = function () {
         playerData.isPaused = false;
         playerData.isPlaying = false;
-        playerData.actualTrackIdx = 0;
+        playerData.currentTrack.index = 0;
         playerData.actualTrack = null;
         playerData.tracks = [];
     };
@@ -183,9 +186,9 @@ const getPlayerData = (function () {
         playerData.playAtIdx(0);
     };
     playerData.playPreviousTrack = function () {
-        if (playerData.actualTrackIdx > 0) {
-            playerData.actualTrackIdx--;
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+        if (playerData.currentTrack.index > 0) {
+            playerData.currentTrack.index--;
+            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
             if (playerData.isPaused) {
                 playerData.isPaused = false;
                 playerData.isPlaying = true;
@@ -193,9 +196,9 @@ const getPlayerData = (function () {
         }
     };
     playerData.playNextTrack = function () {
-        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-            playerData.actualTrackIdx++;
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+        if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
+            playerData.currentTrack.index++;
+            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
             if (playerData.isPaused) {
                 playerData.isPaused = false;
                 playerData.isPlaying = true;
@@ -204,7 +207,7 @@ const getPlayerData = (function () {
     };
     playerData.play = function () {
         if (playerData.tracks.length > 0) {
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
             playerData.isPaused = false;
             playerData.isStopped = false;
@@ -212,8 +215,8 @@ const getPlayerData = (function () {
     };
     playerData.playAtIdx = function (idx) {
         if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
-            playerData.actualTrackIdx = idx;
-            playerData.actualTrack = playerData.tracks[playerData.actualTrackIdx];
+            playerData.currentTrack.index = idx;
+            playerData.actualTrack = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
             playerData.isPaused = false;
             playerData.isStopped = false;
@@ -235,7 +238,7 @@ const getPlayerData = (function () {
     };
     playerData.removeAtIdx = function (idx) {
         if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
-            if (idx == playerData.actualTrackIdx && (playerData.isPlaying || playerData.isPaused)) {
+            if (idx == playerData.currentTrack.index && (playerData.isPlaying || playerData.isPaused)) {
                 playerData.playNextTrack();
             }
             playerData.tracks.splice(idx, 1);
@@ -269,7 +272,7 @@ const getPlayerData = (function () {
     };
     playerData.downloadActualTrack = function () {
         if (playerData.hasTracks()) {
-            playerData.download(playerData.tracks[playerData.actualTrackIdx].id);
+            playerData.download(playerData.tracks[playerData.currentTrack.index].id);
         }
     };
     playerData.love = function (track) {
@@ -286,7 +289,7 @@ const getPlayerData = (function () {
     };
     playerData.loveActualTrack = function () {
         if (playerData.hasTracks()) {
-            playerData.love(playerData.tracks[playerData.actualTrackIdx]);
+            playerData.love(playerData.tracks[playerData.currentTrack.index]);
         }
     };
     playerData.unlove = function (track) {
@@ -303,12 +306,12 @@ const getPlayerData = (function () {
     };
     playerData.unLoveActualTrack = function () {
         if (playerData.hasTracks()) {
-            playerData.unlove(playerData.tracks[playerData.actualTrackIdx]);
+            playerData.unlove(playerData.tracks[playerData.currentTrack.index]);
         }
     };
     playerData.advancePlayList = function () {
-        if (playerData.tracks.length > 0 && playerData.actualTrackIdx < playerData.tracks.length - 1) {
-            playerData.playAtIdx(playerData.actualTrackIdx + 1);
+        if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
+            playerData.playAtIdx(playerData.currentTrack.index + 1);
         } else {
             playerData.stop();
         }

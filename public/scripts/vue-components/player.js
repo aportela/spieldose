@@ -118,8 +118,8 @@ let player = (function () {
                         }).catch(function (error) {
                         });
                     }
-                    if (this.playerData.actualTrackIdx >= 0) {
-                        const element = document.getElementById("playlist-item-" + this.playerData.actualTrackIdx);
+                    if (this.playerData.currentTrack.index >= 0) {
+                        const element = document.getElementById("playlist-item-" + this.playerData.currentTrack.index);
                         if (element) {
                             element.scrollIntoView();
                         }
