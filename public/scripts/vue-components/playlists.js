@@ -138,8 +138,8 @@ let nowPlaying = (function () {
                                 <td><span>{{ track.year }}</span></td>
                                 <td>
                                     <i class="fas fa-caret-up cursor-pointer" title="move up this track on playlist"  aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemUp(i);"></i>
-                                    <i class="fas fa-caret-down cursor-pointer" title="move down this track playlist" aria-hidden="true" v-on:click="playerData.moveItemDown(i);"></i>
-                                    <i class="fas fa-times cursor-pointer" title="remove this track from playlist"  aria-hidden="true" v-on:click="playerData.removeItem(i); $forceUpdate();"></i>
+                                    <i class="fas fa-caret-down cursor-pointer" title="move down this track playlist" aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemDown(i);"></i>
+                                    <i class="fas fa-times cursor-pointer" title="remove this track from playlist"  aria-hidden="true" v-on:click="playerData.currentPlaylist.removeItem(i); $forceUpdate();"></i>
                                 </td>
                             </tr>
                         </tbody>
