@@ -1,7 +1,9 @@
 /**
  * create & return a player data object
  */
-const getPlayerData = function () {
+const getPlayerData = (function () {
+    "use strict";
+
     var playerData = {
         loading: false,
         isPlaying: false,
@@ -10,15 +12,28 @@ const getPlayerData = function () {
         repeatTracksMode: 'none', // none | track | all
         actualTrackIdx: 0,
         actualTrack: null,
+        currentPlaylist: {},
+        currentTrack: {},
         currentPlaylistId: null,
         currentPlaylistName: null,
         tracks: []
     };
+    playerData.currentTrack.unset = () => {
+        playerData.actualTrackIdx = 0;
+        playerData.actualTrack = null;
+    };
+    playerData.currentPlaylist.unset = () => {
+        playerData.currentPlaylistId = null;
+        playerData.currentPlaylistName = null;
+    };
+    playerData.currentPlaylist.empty = () => {
+        playerData.currentTrack.unset();
+        playerData.tracks = [];
+    };
     playerData.dispose = function () {
         this.stop();
-        this.actualTrackIdx = 0;
-        this.actualTrack = null;
-        this.tracks = [];
+        playerData.currentPlaylist.unset();
+        playerData.hasCurrentPlayList.empty();
     };
     playerData.hasTracks = function () {
         return (playerData.tracks && playerData.tracks.length > 0);
@@ -281,6 +296,6 @@ const getPlayerData = function () {
         }
     };
     return (playerData);
-};
+});
 
 const sharedPlayerData = getPlayerData();
