@@ -25,10 +25,10 @@ let player = (function () {
                     <div class="has-text-centered player-buttons">
                         <span title="shuffle playlist" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
                         <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                        <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.playPreviousTrack();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                        <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                        <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
                         <span title="play track" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                        <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                        <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
                         <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
                         <span title="love this track" v-else v-on:click.prevent="playerData.playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
                         <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
@@ -165,11 +165,11 @@ let player = (function () {
                 self.volume = aa.volume;
             });
             aa.addEventListener("ended", function () {
-                self.playerData.playNextTrack();
+                self.playerData.currentPlaylist.playNext();
             });
             aa.addEventListener("error", function (e) {
                 // try to load next song on playlist if errors found
-                self.playerData.playNextTrack();
+                self.playerData.currentPlaylist.playNext();
                 // TODO
                 /*
                 switch (e.target.error.code) {

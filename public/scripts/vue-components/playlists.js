@@ -57,13 +57,13 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">shuffle playlist</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.playPreviousTrack();">
+                        <a class="button is-light" v-on:click.prevent="playerData.currentPlaylist.playPrevious();">
                             <span class="icon is-small">
                                 <i class="fas fa-backward"></i>
                             </span>
                             <span class="is-hidden-touch">previous</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.playNextTrack();">
+                        <a class="button is-light" v-on:click.prevent="playerData.currentPlaylist.playNext();">
                             <span class="icon is-small">
                                 <i class="fas fa-forward"></i>
                             </span>

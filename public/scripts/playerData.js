@@ -38,13 +38,13 @@ const getPlayerData = (function () {
         return a;
     };
 
-    playerData.download = function(trackId) {
+    playerData.download = function (trackId) {
         if (trackId) {
             window.location = "api/track/get/" + trackId;
         }
     };
     playerData.love = function (track) {
-        this.loading = true;
+        playerData.loading = true;
         spieldoseAPI.track.love(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
@@ -56,7 +56,7 @@ const getPlayerData = (function () {
         });
     };
     playerData.unlove = function (track) {
-        this.loading = true;
+        playerData.loading = true;
         spieldoseAPI.track.unlove(track.id, function (response) {
             if (response.ok) {
                 playerData.loading = false;
@@ -77,22 +77,22 @@ const getPlayerData = (function () {
             download(playerData.currentTrack.track.id);
         }
     };
-    playerData.currentTrack.setLoved = function() {
+    playerData.currentTrack.setLoved = function () {
         if (playerData.currentTrack.track) {
             playerData.love(playerData.currentTrack.track);
         }
     };
-    playerData.currentTrack.unSetLoved = function() {
+    playerData.currentTrack.unSetLoved = function () {
         if (playerData.currentTrack.track) {
             playerData.unlove(playerData.currentTrack.track);
         }
     };
 
-    playerData.currentPlaylist.unset = () => {
+    playerData.currentPlaylist.unset = function () {
         playerData.currentPlaylist.id = null;
         playerData.currentPlaylist.name = null;
     };
-    playerData.currentPlaylist.empty = () => {
+    playerData.currentPlaylist.empty = function () {
         playerData.currentTrack.unset();
         playerData.tracks = [];
     };
@@ -109,7 +109,7 @@ const getPlayerData = (function () {
         }
     };
     playerData.currentPlaylist.isSet = function () {
-        return(playerData.currentPlaylist.id ? true: false);
+        return (playerData.currentPlaylist.id ? true : false);
     };
     playerData.currentPlaylist.set = function (id, name) {
         playerData.currentPlaylist.id = id;
@@ -204,19 +204,12 @@ const getPlayerData = (function () {
     playerData.currentPlaylist.removeItem = function (idx) {
         if (playerData.tracks.length > 0 && idx < playerData.tracks.length) {
             if (idx == playerData.currentTrack.index && (playerData.isPlaying || playerData.isPaused)) {
-                playerData.playNextTrack();
+                playerData.currentPlaylist.playNext();
             }
             playerData.tracks.splice(idx, 1);
         }
     };
-
-    playerData.dispose = function () {
-        this.playback.stop();
-        playerData.currentPlaylist.unset();
-        playerData.currentPlaylist.empty();
-    };
-
-    playerData.playPreviousTrack = function () {
+    playerData.currentPlaylist.playPrevious = function () {
         if (playerData.currentTrack.index > 0) {
             playerData.currentTrack.index--;
             playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
@@ -226,7 +219,7 @@ const getPlayerData = (function () {
             }
         }
     };
-    playerData.playNextTrack = function () {
+    playerData.currentPlaylist.playNext = function () {
         if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
             playerData.currentTrack.index++;
             playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
@@ -237,7 +230,7 @@ const getPlayerData = (function () {
         }
     };
 
-    playerData.playback.play = function() {
+    playerData.playback.play = function () {
         if (playerData.tracks.length > 0) {
             playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
             playerData.isPlaying = true;
@@ -279,6 +272,12 @@ const getPlayerData = (function () {
                 playerData.repeatTracksMode = "none";
                 break;
         }
+    };
+
+    playerData.dispose = function () {
+        playerData.playback.stop();
+        playerData.currentPlaylist.unset();
+        playerData.currentPlaylist.empty();
     };
 
     return (playerData);
