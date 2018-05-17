@@ -139,29 +139,9 @@ const getPlayerData = (function () {
             if (response.ok) {
                 if (response.body.tracks && response.body.tracks.length > 0) {
                     playerData.tracks = response.body.tracks;
-                    playerData.playback.play();
-                    /*
-                    let songs = [];
-                    for (let i = 0; i < playerData.tracks.length; i++) {
-                        songs.push(
-                        {
-                            "id": playerData.tracks[i].id,
-                            "playtimeString": playerData.tracks[i].playtimeString,
-                            "name": playerData.tracks[i].title,
-                            "artist": playerData.tracks[i].artist,
-                            "albumArtist": playerData.tracks[i].albumArtist,
-                            "album": playerData.tracks[i].album,
-                            "year": playerData.tracks[i].year,
-                            "genre": playerData.tracks[i].genre,
-                            "url": "/api/track/get/" + playerData.tracks[i].id,
-                            "image": playerData.tracks[i].image
-                        }
-                    );
-                    }
-                    bus.$emit("setPlayList", songs);
-                    */
                 }
                 playerData.loading = false;
+                playerData.playback.play();
                 if (callback && typeof callback === "function") {
                     callback();
                 }
@@ -220,12 +200,23 @@ const getPlayerData = (function () {
         }
     };
     playerData.currentPlaylist.playNext = function () {
-        if (playerData.tracks.length > 0 && playerData.currentTrack.index < playerData.tracks.length - 1) {
-            playerData.currentTrack.index++;
-            playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
-            if (playerData.isPaused) {
-                playerData.isPaused = false;
-                playerData.isPlaying = true;
+        if (playerData.tracks.length > 0) {
+            if (playerData.repeatTracksMode != "track") {
+                if (playerData.currentTrack.index < playerData.tracks.length - 1) {
+                    playerData.currentTrack.index++;
+                    playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
+                    if (playerData.isPaused) {
+                        playerData.isPaused = false;
+                        playerData.isPlaying = true;
+                    }
+                } else if (playerData.repeatTracksMode == "all") {
+                    playerData.currentTrack.index = 0;
+                    playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
+                    if (playerData.isPaused) {
+                        playerData.isPaused = false;
+                        playerData.isPlaying = true;
+                    }
+                }
             }
         }
     };
@@ -237,14 +228,11 @@ const getPlayerData = (function () {
             playerData.isPaused = false;
             playerData.isStopped = false;
         }
-
     };
     playerData.playback.stop = function () {
-        if (playerData.isPlaying || playerData.isPaused) {
-            playerData.isPaused = false;
-            playerData.isPlaying = false;
-            playerData.isStopped = true;
-        }
+        playerData.isPaused = false;
+        playerData.isPlaying = false;
+        playerData.isStopped = true;
     };
     playerData.playback.pause = function () {
         if (playerData.isPlaying) {

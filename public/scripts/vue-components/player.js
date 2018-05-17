@@ -125,6 +125,7 @@ let player = (function () {
                         }
                     }
                 } else {
+                    this.audio.currentTime = 0;
                     this.audio.pause();
                 }
             },
@@ -165,7 +166,13 @@ let player = (function () {
                 self.volume = aa.volume;
             });
             aa.addEventListener("ended", function () {
-                self.playerData.currentPlaylist.playNext();
+                if (self.playerData.repeatTracksMode == "track") {
+                    self.audio.pause();
+                    self.audio.currentTime = 0;
+                    self.audio.play();
+                } else {
+                    self.playerData.currentPlaylist.playNext();
+                }
             });
             aa.addEventListener("error", function (e) {
                 // try to load next song on playlist if errors found
@@ -199,9 +206,7 @@ let player = (function () {
             }
         }, created: function () {
             let self = this;
-            self.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () {
-                self.playerData.playback.play();
-            });
+            self.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
         }
     });
 
