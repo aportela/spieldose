@@ -290,7 +290,7 @@ let browseArtist = (function () {
                 self.loading = true;
                 self.clearAPIErrors();
                 spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                    self.playerData.playlist.empty();
+                    self.playerData.currentPlaylist.empty();
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.tracks = response.body.tracks;

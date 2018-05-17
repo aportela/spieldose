@@ -184,7 +184,7 @@ const mixinPlayer = {
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                this.playerData.playlist.empty();
+                this.playerData.currentPlaylist.empty();
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.tracks = response.body.tracks;

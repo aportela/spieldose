@@ -39,7 +39,7 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">load random playlist</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.playlist.empty();">
+                        <a class="button is-light" v-on:click.prevent="playerData.currentPlaylist.empty();">
                             <span class="icon is-small">
                                 <i class="fas fa-eraser"></i>
                             </span>
