@@ -39,7 +39,7 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">load random playlist</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.emptyPlayList();">
+                        <a class="button is-light" v-on:click.prevent="playerData.playlist.empty();">
                             <span class="icon is-small">
                                 <i class="fas fa-eraser"></i>
                             </span>
@@ -93,19 +93,19 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">stop</span>
                         </a>
-                        <a class="button is-light is-primary" v-if="isLovedActive" v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.unLoveActualTrack();">
+                        <a class="button is-light is-primary" v-if="isLovedActive" v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();">
                             <span class="icon is-small">
                                 <i class="fas fa-heart"></i>
                             </span>
                             <span class="is-hidden-touch">love</span>
                         </a>
-                        <a class="button is-light" v-else v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.loveActualTrack();">
+                        <a class="button is-light" v-else v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.playerData.currentTrack.setLoved();">
                             <span class="icon is-small">
                                 <i class="fas fa-heart"></i>
                             </span>
                             <span class="is-hidden-touch">love</span>
                         </a>
-                        <a class="button is-light" v-on:click.prevent="playerData.downloadActualTrack();">
+                        <a class="button is-light" v-on:click.prevent="playerData.currentTrack.download();">
                             <span class="icon is-small">
                                 <i class="fas fa-save"></i>
                             </span>
@@ -196,7 +196,7 @@ let nowPlaying = (function () {
                 }
             },
             unsetPlaylist: function() {
-                this.playerData.unsetCurrentPlayList();
+                this.playerData.currentPlaylist.unset();
                 this.currentPlaylistName = null;
             },
             loadRandom: function () {
@@ -211,11 +211,11 @@ let nowPlaying = (function () {
                 for (let i = 0; i < this.playerData.tracks.length; i++) {
                     trackIds.push(this.playerData.tracks[i].id);
                 }
-                if (this.playerData.hasCurrentPlayList()) {
+                if (this.playerData.currentPlaylist.isSet()) {
                     spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
-                            self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);
+                            self.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
                         } else {
                             self.setAPIError(response.getApiErrorData());
                         }
@@ -225,7 +225,7 @@ let nowPlaying = (function () {
                     spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, function (response) {
                         self.savingPlaylist = false;
                         if (response.ok) {
-                            self.playerData.setCurrentPlayList(response.body.playlist.id, response.body.playlist.name);
+                            self.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
                         } else {
                             self.setAPIError(response.getApiErrorData());
                         }

@@ -38,40 +38,101 @@ const getPlayerData = (function () {
         return a;
     };
 
-    /**
-     * unset current track
-     */
+    playerData.download = function(trackId) {
+        if (trackId) {
+            window.location = "api/track/get/" + trackId;
+        }
+    };
+    playerData.love = function (track) {
+        this.loading = true;
+        spieldoseAPI.track.love(track.id, function (response) {
+            if (response.ok) {
+                playerData.loading = false;
+                track.loved = response.body.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
+        });
+    };
+    playerData.unlove = function (track) {
+        this.loading = true;
+        spieldoseAPI.track.unlove(track.id, function (response) {
+            if (response.ok) {
+                playerData.loading = false;
+                track.loved = response.body.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
+        });
+    };
+
+
     playerData.currentTrack.unset = () => {
         playerData.currentTrackindex = 0;
         playerData.currentTrack.track = null;
     };
-    /**
-     * unset current playlist references
-     */
+    playerData.currentTrack.download = function () {
+        if (playerData.currentTrack.track) {
+            download(playerData.currentTrack.track.id);
+        }
+    };
+    playerData.currentTrack.setLoved = function() {
+        if (playerData.currentTrack.track) {
+            playerData.love(playerData.currentTrack.track);
+        }
+    };
+    playerData.currentTrack.unSetLoved = function() {
+        if (playerData.currentTrack.track) {
+            playerData.unlove(playerData.currentTrack.track);
+        }
+    };
+
     playerData.currentPlaylist.unset = () => {
         playerData.currentPlaylist.id = null;
         playerData.currentPlaylist.name = null;
     };
-    /**
-     * empty current playlist
-     */
     playerData.currentPlaylist.empty = () => {
         playerData.currentTrack.unset();
         playerData.tracks = [];
     };
+    playerData.currentPlaylist.replace = function (tracks) {
+        playerData.currentPlaylist.empty();
+        playerData.tracks = tracks;
+        playerData.play();
+    };
+    playerData.currentPlaylist.enqueue = function (tracks) {
+        if (tracks.length > 0) {
+            for (var i = 0; i < tracks.length; i++) {
+                playerData.tracks.push(tracks[i]);
+            }
+        }
+    };
+    playerData.currentPlaylist.isSet = function () {
+        return(playerData.currentPlaylist.id ? true: false);
+    };
+    playerData.currentPlaylist.set = function (id, name) {
+        playerData.currentPlaylist.id = id;
+        playerData.currentPlaylist.name = name;
+    };
+    playerData.currentPlaylist.unset = function () {
+        playerData.currentPlaylist.id = null;
+        playerData.currentPlaylist.name = null;
+    };
+    playerData.currentPlaylist.empty = function () {
+        playerData.isPaused = false;
+        playerData.isPlaying = false;
+        playerData.currentTrack.unset();
+        playerData.tracks = [];
+    };
 
-    /**
-     * dispose player resources
-     */
     playerData.dispose = function () {
         this.stop();
         playerData.currentPlaylist.unset();
         playerData.currentPlaylist.empty();
     };
 
-    playerData.hasTracks = function () {
-        return (playerData.tracks && playerData.tracks.length > 0);
-    };
     playerData.isLastTrack = function () {
         if (playerData.tracks.length > 0) {
             if (playerData.currentTrack.index < playerData.tracks.length - 1) {
@@ -131,39 +192,6 @@ const getPlayerData = (function () {
                 }
             }
         });
-    };
-    playerData.replace = function (tracks) {
-        playerData.emptyPlayList();
-        playerData.tracks = tracks;
-        playerData.play();
-    };
-    playerData.enqueue = function (tracks) {
-        if (tracks.length > 0) {
-            for (var i = 0; i < tracks.length; i++) {
-                playerData.tracks.push(tracks[i]);
-            }
-        }
-    };
-    playerData.hasCurrentPlayList = function () {
-        if (playerData.currentPlaylist.id) {
-            return (true);
-        } else {
-            return (false);
-        }
-    };
-    playerData.setCurrentPlayList = function (id, name) {
-        playerData.currentPlaylist.id = id;
-        playerData.currentPlaylist.name = name;
-    };
-    playerData.unsetCurrentPlayList = function () {
-        playerData.currentPlaylist.id = null;
-        playerData.currentPlaylist.name = null;
-    };
-    playerData.emptyPlayList = function () {
-        playerData.isPaused = false;
-        playerData.isPlaying = false;
-        playerData.currentTrack.unset();
-        playerData.tracks = [];
     };
     playerData.toggleRepeatMode = function () {
         switch (playerData.repeatTracksMode) {
@@ -260,50 +288,6 @@ const getPlayerData = (function () {
             playerData.isPaused = false;
             playerData.isPlaying = false;
             playerData.isStopped = true;
-        }
-    };
-    playerData.download = function (trackId) {
-        if (trackId) {
-            window.location = "api/track/get/" + trackId;
-        }
-    };
-    playerData.downloadActualTrack = function () {
-        if (playerData.hasTracks()) {
-            playerData.download(playerData.currentTrack.track.id);
-        }
-    };
-    playerData.love = function (track) {
-        this.loading = true;
-        spieldoseAPI.track.love(track.id, function (response) {
-            if (response.ok) {
-                playerData.loading = false;
-                track.loved = response.body.loved;
-            } else {
-                // TODO: ERRORS
-                playerData.loading = false;
-            }
-        });
-    };
-    playerData.loveActualTrack = function () {
-        if (playerData.hasTracks()) {
-            playerData.love(playerData.tracks[playerData.currentTrack.index]);
-        }
-    };
-    playerData.unlove = function (track) {
-        this.loading = true;
-        spieldoseAPI.track.unlove(track.id, function (response) {
-            if (response.ok) {
-                playerData.loading = false;
-                track.loved = response.body.loved;
-            } else {
-                // TODO: ERRORS
-                playerData.loading = false;
-            }
-        });
-    };
-    playerData.unLoveActualTrack = function () {
-        if (playerData.hasTracks()) {
-            playerData.unlove(playerData.tracks[playerData.currentTrack.index]);
         }
     };
     playerData.advancePlayList = function () {

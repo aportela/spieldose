@@ -29,9 +29,9 @@ let player = (function () {
                         <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
                         <span title="play track" id="btn-play" v-on:click.prevent="playerData.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
                         <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.playNextTrack();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                        <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.unLoveActualTrack();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                        <span title="love this track" v-else v-on:click.prevent="playerData.loveActualTrack();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                        <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.downloadActualTrack();"><i class="fas fa-2x fa-save"></i></span>
+                        <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                        <span title="love this track" v-else v-on:click.prevent="playerData.playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                        <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                     </div>
                     <div id="player-volume-control">
                         <div class="columns">

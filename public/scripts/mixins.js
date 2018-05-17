@@ -162,7 +162,7 @@ const mixinPlayer = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.replace(response.body.tracks);
+                        this.playerData.currentPlaylist.replace(response.body.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -174,7 +174,7 @@ const mixinPlayer = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.enqueue(response.body.tracks);
+                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -184,7 +184,7 @@ const mixinPlayer = {
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                this.playerData.emptyPlayList();
+                this.playerData.playlist.empty();
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
                         this.playerData.tracks = response.body.tracks;
@@ -200,7 +200,7 @@ const mixinPlayer = {
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.enqueue(response.body.tracks);
+                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -212,8 +212,8 @@ const mixinPlayer = {
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
                     if (response.ok) {
-                        this.playerData.replace(response.body.playlist.tracks);
-                        this.playerData.setCurrentPlayList(id, response.body.playlist.name);
+                        this.playerData.currentPlaylist.replace(response.body.playlist.tracks);
+                        this.playerData.currentPlaylist.set(id, response.body.playlist.name);
                         this.$router.push({ name: 'nowPlaying' });
                     } else {
                         this.setAPIError(response.getApiErrorData());
@@ -222,8 +222,8 @@ const mixinPlayer = {
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
-                        this.playerData.replace(response.body.tracks);
-                        this.playerData.unsetCurrentPlayList();
+                        this.playerData.currentPlaylist.replace(response.body.tracks);
+                        this.playerData.currentPlaylist.unset();
                         this.$router.push({ name: 'nowPlaying' });
                     } else {
                         this.setAPIError(response.getApiErrorData());
@@ -236,7 +236,7 @@ const mixinPlayer = {
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
                     if (response.ok) {
-                        this.playerData.enqueue(response.body.playlist.tracks);
+                        this.playerData.currentPlaylist.enqueue(response.body.playlist.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -244,7 +244,7 @@ const mixinPlayer = {
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.ok) {
-                        this.playerData.enqueue(response.body.tracks);
+                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -252,10 +252,10 @@ const mixinPlayer = {
             }
         },
         playTrack: function (track) {
-            this.playerData.replace([track]);
+            this.playerData.currentPlaylist.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.playerData.enqueue([track]);
+            this.playerData.currentPlaylist.enqueue([track]);
         }
     }
 };
@@ -347,10 +347,10 @@ const mixinTopRecentCharts = {
     },
     methods: {
         playTrack: function (track) {
-            this.playerData.replace([track]);
+            this.playerData.currentPlaylist.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.playerData.enqueue([track]);
+            this.playerData.currentPlaylist.enqueue([track]);
         }
     }
 };

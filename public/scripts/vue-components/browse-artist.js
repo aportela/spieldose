@@ -72,8 +72,8 @@ let browseArtist = (function () {
                                             <span> {{ track.title}}</span>
                                         </td>
                                         <td>
-                                            <i class="cursor-pointer fa fa-play" title="play this track" v-on:click.prevent="playerData.replace([track]);"></i>
-                                            <i class="cursor-pointer fa fa-plus-square" title="enqueue this track" v-on:click.prevent="playerData.enqueue([track]);"></i>
+                                            <i class="cursor-pointer fa fa-play" title="play this track" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
+                                            <i class="cursor-pointer fa fa-plus-square" title="enqueue this track" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
                                             <i class="cursor-pointer fa fa-save" title="download this track" v-on:click.prevent="playerData.download(track.id);"></i>
                                         </td>
                                     </tr>
@@ -290,7 +290,7 @@ let browseArtist = (function () {
                 self.loading = true;
                 self.clearAPIErrors();
                 spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                    self.playerData.emptyPlayList();
+                    self.playerData.playlist.empty();
                     if (response.ok) {
                         if (response.body.tracks && response.body.tracks.length > 0) {
                             self.playerData.tracks = response.body.tracks;

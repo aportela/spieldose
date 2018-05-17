@@ -93,7 +93,7 @@ let browsePlaylists = (function () {
                     spieldoseAPI.playlist.remove(id, function (response) {
                         if (response.ok) {
                             if (self.playerData.currentPlaylist.id == id) {
-                                self.playerData.unsetCurrentPlayList();
+                                self.playerData.currentPlaylist.unset();
                             }
                             self.search();
                         } else {
