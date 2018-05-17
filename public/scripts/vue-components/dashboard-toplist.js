@@ -11,35 +11,35 @@ let dashboardToplist = (function () {
                         <i class="fas fa-list" v-else></i>
                     </span>
                     <span>{{ title }}</span>
-                    <a class="icon is-pulled-right" title="refresh data" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw2"></i></a>
+                    <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw2"></i></a>
                 </p>
                 <p class="panel-tabs">
-                    <a v-bind:class="{ 'is-active' : isAllTimeInterval }" v-on:click.prevent="changeInterval(0);">All Time</a>
-                    <a v-bind:class="{ 'is-active' : isPastWeekInterval }" v-on:click.prevent="changeInterval(1);">Past week</a>
-                    <a v-bind:class="{ 'is-active' : isPastMonthInterval }" v-on:click.prevent="changeInterval(2);">Past month</a>
-                    <a v-bind:class="{ 'is-active' : isPastSemesterInterval }" v-on:click.prevent="changeInterval(3);">Past semester</a>
-                    <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">Past Year</a>
+                    <a v-bind:class="{ 'is-active' : isAllTimeInterval }" v-on:click.prevent="changeInterval(0);">{{ $t("dashboard.labels.allTimeInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastWeekInterval }" v-on:click.prevent="changeInterval(1);">{{ $t("dashboard.labels.pastWeekInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastMonthInterval }" v-on:click.prevent="changeInterval(2);">{{ $t("dashboard.labels.pastMonthInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastSemesterInterval }" v-on:click.prevent="changeInterval(3);">{{ $t("dashboard.labels.pastSemesterInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">{{ $t("dashboard.labels.pastYearInterval") }}</a>
                 </p>
                 <div class="panel-block cut-text">
                     <ol v-if="items.length > 0">
                         <li class="is-small" v-if="isTopTracksType" v-for="item in items" v-bind:key="item.id">
-                            <i v-on:click="playTrack(item);" class="cursor-pointer fa fa-play" title="play this track"></i>
-                            <i v-on:click="enqueueTrack(item);" class="cursor-pointer fa fa-plus-square" title="enqueue this track"></i>
+                            <i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
+                            <i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                             <span>{{ item.title }}</span>
-                            <span v-if="item.artist"> / <a v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
-                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                            <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                         </li>
                         <li class="is-small" v-if="isTopArtistsType" v-for="item in items">
-                            <a v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
-                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                            <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                         </li>
                         <li class="is-small" v-if="isTopGenresType" v-for="item in items">
                             <span>{{ item.genre }}</span>
-                            <span v-if="showPlayCount"> ({{ item.total }} plays)</span>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                         </li>
                     </ol>
-                    <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">not enough data for the stats</p>
-                    <p v-else-if="hasAPIErrors">error loading data (invalid response from server)</p>
+                    <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">{{ $t("dashboard.errors.notEnoughData") }}</p>
+                    <p v-else-if="hasAPIErrors">{{ $t("commonErrors.invalidAPIResponse") }}</p>
                 </div>
             </section>
         `;

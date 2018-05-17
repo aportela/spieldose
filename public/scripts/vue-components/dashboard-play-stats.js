@@ -10,14 +10,14 @@ let dashboardPlayStats = (function () {
                         <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
                         <i class="fas fa-chart-line" v-else></i>
                     </span>
-                    <span>Play statistics</span>
-                    <a class="icon is-pulled-right" title="refresh data" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
+                    <span>{{ $t("dashboard.labels.playStatistics") }}</span>
+                    <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
                 </p>
                 <p class="panel-tabs">
-                    <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">by hour</a>
-                    <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">by weekday</a>
-                    <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">by month</a>
-                    <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">by year</a>
+                    <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
+                    <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
+                    <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
+                    <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
                 </p>
                 <div class="panel-block" v-if="! hasAPIErrors">
                     <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
@@ -25,7 +25,7 @@ let dashboardPlayStats = (function () {
                     <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
                     <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
                 </div>
-                <div class="panel-block" v-else>error loading data (invalid response from server)</div>
+                <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
             </section>
         `;
     };
@@ -118,7 +118,15 @@ let dashboardPlayStats = (function () {
                 let self = this;
                 spieldoseAPI.metrics.getPlayStatMetricsByWeekDay(function (response) {
                     if (response.ok) {
-                        const weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        const weekDayNames = [
+                            self.$t("dashboard.labels.sunday"),
+                            self.$t("dashboard.labels.monday"),
+                            self.$t("dashboard.labels.tuesday"),
+                            self.$t("dashboard.labels.wednesday"),
+                            self.$t("dashboard.labels.thursday"),
+                            self.$t("dashboard.labels.friday"),
+                            self.$t("dashboard.labels.saturday")
+                        ];
                         let weekDays = [];
                         let data = [];
                         for (let i = 0; i < response.body.metrics.length; i++) {
@@ -134,7 +142,7 @@ let dashboardPlayStats = (function () {
                                 labels: weekDays,
                                 datasets: [
                                     {
-                                        "label": "play stats by weekday",
+                                        "label": self.$t("dashboard.labels.playStatsByWeekday"),
                                         "data": data,
                                         "backgroundColor": "#3273dc"
                                     }
@@ -151,7 +159,20 @@ let dashboardPlayStats = (function () {
                 let self = this;
                 spieldoseAPI.metrics.getPlayStatMetricsByMonth(function (response) {
                     if (response.ok) {
-                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        const monthNames = [
+                            self.$t("dashboard.labels.january"),
+                            self.$t("dashboard.labels.february"),
+                            self.$t("dashboard.labels.march"),
+                            self.$t("dashboard.labels.april"),
+                            self.$t("dashboard.labels.may"),
+                            self.$t("dashboard.labels.june"),
+                            self.$t("dashboard.labels.july"),
+                            self.$t("dashboard.labels.august"),
+                            self.$t("dashboard.labels.september"),
+                            self.$t("dashboard.labels.october"),
+                            self.$t("dashboard.labels.november"),
+                            self.$t("dashboard.labels.december")
+                        ];
                         let months = [];
                         let data = [];
                         for (let i = 0; i < response.body.metrics.length; i++) {
@@ -167,7 +188,7 @@ let dashboardPlayStats = (function () {
                                 labels: months,
                                 datasets: [
                                     {
-                                        "label": "play stats by month",
+                                        "label": self.$t("dashboard.labels.playStatsByMonth"),
                                         "data": data,
                                         "backgroundColor": "#3273dc"
                                     }
@@ -199,7 +220,7 @@ let dashboardPlayStats = (function () {
                                 labels: years,
                                 datasets: [
                                     {
-                                        "label": "play stats by year",
+                                        "label": self.$t("dashboard.labels.playStatsByYear"),
                                         "data": data,
                                         "backgroundColor": "#3273dc"
                                     }
