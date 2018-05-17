@@ -4,7 +4,7 @@
 const getPlayerData = (function () {
     "use strict";
 
-    var playerData = {
+    let playerData = {
         loading: false,
         isPlaying: false,
         isPaused: false,
@@ -16,25 +16,57 @@ const getPlayerData = (function () {
         currentTrack: {},
         currentPlaylistId: null,
         currentPlaylistName: null,
+        playback: {},
         tracks: []
     };
+
+    /**
+     * shuffle array
+     * https://stackoverflow.com/a/6274381
+     * @param {*} a
+     */
+    function shuffle(a) {
+        var j, x, i;
+        for (i = a.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = a[i];
+            a[i] = a[j];
+            a[j] = x;
+        }
+        return a;
+    };
+
+    /**
+     * unset current track
+     */
     playerData.currentTrack.unset = () => {
         playerData.actualTrackIdx = 0;
         playerData.actualTrack = null;
     };
+    /**
+     * unset current playlist references
+     */
     playerData.currentPlaylist.unset = () => {
         playerData.currentPlaylistId = null;
         playerData.currentPlaylistName = null;
     };
+    /**
+     * empty current playlist
+     */
     playerData.currentPlaylist.empty = () => {
         playerData.currentTrack.unset();
         playerData.tracks = [];
     };
+
+    /**
+     * dispose player resources
+     */
     playerData.dispose = function () {
         this.stop();
         playerData.currentPlaylist.unset();
-        playerData.hasCurrentPlayList.empty();
+        playerData.currentPlaylist.empty();
     };
+
     playerData.hasTracks = function () {
         return (playerData.tracks && playerData.tracks.length > 0);
     };
@@ -145,20 +177,6 @@ const getPlayerData = (function () {
                 playerData.repeatTracksMode = "none";
                 break;
         }
-    };
-    /**
-     * https://stackoverflow.com/a/6274381
-     * @param {*} a
-     */
-    function shuffle(a) {
-        var j, x, i;
-        for (i = a.length - 1; i > 0; i--) {
-            j = Math.floor(Math.random() * (i + 1));
-            x = a[i];
-            a[i] = a[j];
-            a[j] = x;
-        }
-        return a;
     };
     playerData.shufflePlayList = function () {
         shuffle(playerData.tracks);
