@@ -79,10 +79,22 @@ If you want to use a virtual host, the configuration would be the following:
 
 ## Screenshots (for the impatient)
 ### sign in
-![Alt text](https://i.imgur.com/m2WyqH6l.png "signin")
+![Alt text](https://i.imgur.com/jG4FxfJ.png "signin")
 ### dashboard
-![Alt text](https://i.imgur.com/fyMqFD1l.png "dashboard")
+![Alt text](https://i.imgur.com/hpJKF91.png "dashboard")
+### search
+![Alt text](https://i.imgur.com/tLfXN74.png "search")
 ### browse artists
-![Alt text](https://i.imgur.com/3zK5jiZl.jpg "browse artists")
+![Alt text](https://i.imgur.com/HuOn7W5.jpg "browse artists")
+### artist resume
+![Alt text](https://i.imgur.com/db3uoIm.png "artist resume")
+### artist bio
+![Alt text](https://i.imgur.com/yzqXQOq.jpg "artist bio")
+### artist tracks
+![Alt text](https://i.imgur.com/PAe7hRO.png "artist tracks")
+### artist albums
+![Alt text](https://i.imgur.com/lCCk888.jpg "artist albums")
 ### browse albums
-![Alt text](https://i.imgur.com/TOIuMFNl.jpg "browse albums")
+![Alt text](https://i.imgur.com/QjrftdQ.jpg "browse albums")
+### browse playlists
+![Alt text](https://i.imgur.com/FsghrUc.png "browse playlists")
