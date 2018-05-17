@@ -125,7 +125,7 @@ let nowPlaying = (function () {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-bind:class="{ 'is-selected': playerData.currentTrack.index == i }" v-for="track, i in playerData.tracks" v-bind:key="track.id">
+                            <tr v-bind:class="{ 'is-selected': playerData.currentTrack.index == i }" v-for="track, i in playerData.tracks" v-bind:key="i">
                                 <td>
                                     <i class="fas fa-play cursor-pointer" title="play this track" aria-hidden="true" v-if="iconAction(i) == 'play'" v-on:click="playerData.currentPlaylist.playAtIdx(i);"></i>
                                     <i class="fas fa-headphones cursor-pointer" title="now playing, click to pause" aria-hidden="true" v-else-if="iconAction(i) == 'none'" v-on:click="playerData.playback.pause();"></i>
