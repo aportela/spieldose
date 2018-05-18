@@ -152,7 +152,7 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT DISTINCT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, F.playtime_seconds AS playtimeSeconds, F.playtime_string AS playtimeString
+                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, F.playtime_seconds AS playtimeSeconds, F.playtime_string AS playtimeString
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
@@ -176,13 +176,14 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT DISTINCT COALESCE(MB.artist, F.track_artist) AS artist
+                SELECT COALESCE(MB.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 WHERE COALESCE(MB.artist, F.track_artist) IS NOT NULL
                 %s
-                ORDER BY S.played DESC
+                GROUP BY COALESCE(MB.artist, F.track_artist)
+                ORDER BY MAX(S.played) DESC
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
@@ -198,14 +199,15 @@
                 " S.user_id = :user_id "
             );
             $query = sprintf('
-                SELECT DISTINCT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, F.album_artist, MB1.artist, F.track_artist) AS artist
+                SELECT COALESCE(MB2.album, F.album_name) AS album, COALESCE(MB2.artist, F.album_artist, MB1.artist, F.track_artist) AS artist
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB1 ON MB1.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MB2 ON MB2.mbid = F.album_mbid
                 WHERE COALESCE(MB2.album, F.album_name) IS NOT NULL
                 %s
-                ORDER BY S.played DESC
+                GROUP BY COALESCE(MB2.album, F.album_name), COALESCE(MB2.artist, F.album_artist, MB1.artist, F.track_artist)
+                ORDER BY MAX(S.played) DESC
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
