@@ -22,7 +22,7 @@ let dashboardToplist = (function () {
                 </p>
                 <div class="panel-block cut-text">
                     <ol v-if="items.length > 0">
-                        <li class="is-small" v-if="isTopTracksType" v-for="item in items" v-bind:key="item.id">
+                        <li class="is-small" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
                             <i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
                             <i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                             <span>{{ item.title }}</span>

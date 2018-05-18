@@ -20,7 +20,7 @@ let dashboardRecent = (function () {
                 </p>
                 <div class="panel-block cut-text">
                     <ol v-if="hasItems">
-                        <li class="is-small" v-if="isTrackEntity" v-for="item in items" v-bind:key="item.id">
+                        <li class="is-small" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
                             <i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
                             <i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                             <span>{{ item.title }}</span>
