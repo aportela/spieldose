@@ -96,6 +96,16 @@ const messages = {
                 signOut: 'Sign out'
             }
         },
+        deleteConfirmationModal: {
+            labels: {
+                modalTitle: 'Confirmation required',
+                modalBody: 'Are you sure you want to permanently remove this item ?'
+            },
+            buttons: {
+                ok: 'Ok',
+                cancel: 'Cancel'
+            }
+        },
         commonErrors: {
             invalidAPIParam: 'API ERROR: invalid param',
             invalidAPIResponse: 'API ERROR: invalid server response'
