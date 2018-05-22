@@ -7,10 +7,10 @@ let pagination = (function () {
                 <nav class="pagination is-centered level" v-if="visible">
                     <a class="button is-link pagination-previous" v-bind:disabled="loading" v-on:click.prevent="previous();">
                         <span class="icon is-small"><i class="fas fa-caret-left" aria-hidden="true"></i></span>
-                        <span>Previous</span>
+                        <span>{{ $t("pagination.buttons.previousPage") }}</span>
                         </a>
                     <a class="button is-link pagination-next" v-bind:disabled="loading" v-on:click.prevent="next();">
-                        <span>Next</span>
+                        <span>{{ $t("pagination.buttons.nextPage") }}</span>
                         <span class="icon is-small"><i class="fas fa-caret-right" aria-hidden="true"></i></span>
                     </a>
                     <ul class="pagination-list">
@@ -20,7 +20,7 @@ let pagination = (function () {
                         </li>
                     </ul>
                 </nav>
-                <div class="notification is-warning" v-if="invalidPage">The specified page is incorrect or there are no results to display</div>
+                <div class="notification is-warning" v-if="invalidPage">{{ $t("pagination.labels.invalidPageOrNoResults") }}</div>
                 <div class="is-clearfix" v-else></div>
             </div>
         `;

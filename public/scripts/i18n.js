@@ -96,6 +96,15 @@ const messages = {
                 signOut: 'Sign out'
             }
         },
+        pagination: {
+            labels: {
+                invalidPageOrNoResults: 'The specified page is incorrect or there are no results to display'
+            },
+            buttons: {
+                previousPage: 'Previous',
+                nextPage: 'Next'
+            }
+        },
         deleteConfirmationModal: {
             labels: {
                 modalTitle: 'Confirmation required',
