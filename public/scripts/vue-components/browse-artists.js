@@ -4,12 +4,12 @@ let browseArtists = (function () {
     const template = function () {
         return `
             <div class="container is-fluid box is-marginless">
-                <p class="title is-1 has-text-centered">Browse artists</i></p>
+                <p class="title is-1 has-text-centered">{{ $t("browseArtists.labels.sectionName") }}</p>
                 <div v-if="! hasAPIErrors">
                     <div class="field is-expanded has-addons">
                         <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search artist name...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input type="text" class="input" placeholder="search artist name..." v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                            <input type="text" class="input" placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
@@ -17,8 +17,8 @@ let browseArtists = (function () {
                         <div class="control">
                             <div class="select">
                                 <select v-model="filterNotScraped">
-                                    <option value="0">All artists</option>
-                                    <option value="1">Artists not scraped</option>
+                                    <option value="0">{{ $t("browseArtists.dropdowns.filterAllArtists") }}</option>
+                                    <option value="1">{{ $t("browseArtists.dropdowns.filterNotScrapedArtists") }}</option>
                                 </select>
                             </div>
                         </div>
@@ -27,13 +27,13 @@ let browseArtists = (function () {
                                 <span class="icon">
                                     <i class="fas fa-search" aria-hidden="true"></i>
                                 </span>
-                                <span>search</span>
+                                <span>{{ $t("browseArtists.buttons.search") }}</span>
                             </a>
                         </p>
                     </div>
                     <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
                     <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
-                        <a title="click to open artist section" v-on:click.prevent="navigateToArtistPage(artist.name);">
+                        <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(artist.name);">
                             <img v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
                             <i class="fas fa-search fa-4x"></i>
                         </a>

@@ -115,6 +115,21 @@ const messages = {
                 cancel: 'Cancel'
             }
         },
+        browseArtists: {
+            labels: {
+                sectionName: 'Browse artists',
+            },
+            inputs: {
+                artistNamePlaceholder: 'search artist name...'
+            },
+            buttons: {
+                search: 'search'
+            },
+            dropdowns: {
+                filterAllArtists: 'All artists',
+                filterNotScrapedArtists: 'Artists not scraped'
+            }
+        },
         commonErrors: {
             invalidAPIParam: 'API ERROR: invalid param',
             invalidAPIResponse: 'API ERROR: invalid server response'
