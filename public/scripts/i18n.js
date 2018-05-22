@@ -27,6 +27,14 @@ const messages = {
                 emailAlreadyUsed: 'Email already used'
             }
         },
+        upgrade: {
+            labels: {
+                newDatabaseVersionAvailable: 'New database version available',
+                upgradeRequired: 'An upgrade is required',
+                executeThisCommandline: 'Execute this commandline:',
+                updateNotRequired: 'Your system is up to date'
+            }
+        },
         dashboard: {
             labels: {
                 allTimeInterval: 'All Time',
