@@ -130,6 +130,22 @@ const messages = {
                 filterNotScrapedArtists: 'Artists not scraped'
             }
         },
+        browseAlbums: {
+            labels: {
+                sectionName: 'Browse albums',
+                unknownArtist: 'unknown artist',
+                by: 'by'
+            },
+            inputs: {
+                albumNamePlaceholder: 'search album name...',
+                yearPlaceholder: 'year (4 digits)',
+                artistNamePlaceholder: 'search album artist name...'
+            },
+            buttons: {
+                toggleAdvancedSearch: 'toggle advanced search',
+                search: 'search'
+            },
+        },
         commonErrors: {
             invalidAPIParam: 'API ERROR: invalid param',
             invalidAPIResponse: 'API ERROR: invalid server response'
