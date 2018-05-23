@@ -5,22 +5,22 @@ let browseArtist = (function () {
         return `
             <div class="container is-fluid box is-marginless">
                 <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i></p>
-                <p v-else="! loading" class="title is-1 has-text-centered">Artist details</p>
+                <p v-else="! loading" class="title is-1 has-text-centered">{{ $t("browseArtist.labels.sectionName") }}</p>
                 <div class="media" v-if="! hasAPIErrors && ! loading">
                     <figure class="image media-left">
                         <img class="artist_avatar" v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
                     </figure>
                     <div class="media-content is-light">
                         <p class="title is-1">{{ artist.name }}</p>
-                        <p class="subtitle is-6" v-if="artist.playCount > 0">{{ artist.playCount }} plays</p>
-                        <p class="subtitle is-6" v-else>not played yet</p>
+                        <p class="subtitle is-6" v-if="artist.playCount > 0">{{ artist.playCount }} {{ $t("browseArtist.labels.plays") }}</p>
+                        <p class="subtitle is-6" v-else>{{ $t("browseArtist.labels.notPlayedYet") }}</p>
                         <div class="tabs is-medium">
                             <ul>
-                                <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a v-on:click.prevent="$router.push({ name: 'artist', params: { 'artist': $route.params.artist } })">Overview</a></li>
-                                <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a v-on:click.prevent="$router.push({ name: 'artistBio' })">Bio</a></li>
-                                <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a v-on:click.prevent="$router.push({ name: 'artistTracks' })">Tracks</a></li>
-                                <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a v-on:click.prevent="$router.push({ name: 'artistAlbums' })">Albums</a></li>
-                                <li v-bind:class="{ 'is-active' : activeTab == 'update' }"><a v-on:click.prevent="$router.push({ name: 'artistUpdate' })">Update artist</a></li>
+                                <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a v-on:click.prevent="$router.push({ name: 'artist', params: { 'artist': $route.params.artist } })">{{ $t("browseArtist.tabs.overview") }}</a></li>
+                                <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a v-on:click.prevent="$router.push({ name: 'artistBio' })">{{ $t("browseArtist.tabs.bio") }}</a></li>
+                                <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a v-on:click.prevent="$router.push({ name: 'artistTracks' })">{{ $t("browseArtist.tabs.tracks") }}</a></li>
+                                <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a v-on:click.prevent="$router.push({ name: 'artistAlbums' })">{{ $t("browseArtist.tabs.albums") }}</a></li>
+                                <li v-bind:class="{ 'is-active' : activeTab == 'update' }"><a v-on:click.prevent="$router.push({ name: 'artistUpdate' })">{{ $t("browseArtist.tabs.updateArtist") }}</a></li>
                             </ul>
                         </div>
                         <div class="panel" v-if="activeTab == 'overview'">
@@ -48,7 +48,7 @@ let browseArtist = (function () {
                                         <span class="icon">
                                             <i class="fas fa-search" aria-hidden="true"></i>
                                         </span>
-                                        <span>search</span>
+                                        <span>{{ $t("browseArtist.buttons.search") }}</span>
                                     </a>
                                 </p>
                             </div>
@@ -56,11 +56,11 @@ let browseArtist = (function () {
                             <table class="table is-bordered is-striped is-narrow is-fullwidth">
                                 <thead>
                                         <tr class="is-unselectable">
-                                            <th>Album</th>
-                                            <th>Year</th>
-                                            <th>Number</th>
-                                            <th>Track</th>
-                                            <th>Actions</th>
+                                            <th>{{ $t("browseArtist.labels.tracksAlbumTableHeader") }}</th>
+                                            <th>{{ $t("browseArtist.labels.tracksSectionYearTableHeader") }}</th>
+                                            <th>{{ $t("browseArtist.labels.tracksSectionNumberTableHeader") }}</th>
+                                            <th>{{ $t("browseArtist.labels.tracksSectionTitleTableHeader") }}</th>
+                                            <th>{{ $t("browseArtist.labels.tracksSectionActionTableHeader") }}</th>
                                         </tr>
                                 </thead>
                                 <tbody>
@@ -72,9 +72,9 @@ let browseArtist = (function () {
                                             <span> {{ track.title}}</span>
                                         </td>
                                         <td>
-                                            <i class="cursor-pointer fa fa-play" title="play this track" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
-                                            <i class="cursor-pointer fa fa-plus-square" title="enqueue this track" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
-                                            <i class="cursor-pointer fa fa-save" title="download this track" v-on:click.prevent="playerData.download(track.id);"></i>
+                                            <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
+                                            <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
+                                            <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="playerData.download(track.id);"></i>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -82,7 +82,7 @@ let browseArtist = (function () {
                         </div>
                         <div class="panel" v-if="activeTab == 'albums'">
                             <div class="browse-album-item" v-show="! loading" v-for="album, i in artist.albums" v-bind:key="i">
-                            <a class="play-album" title="click to play album" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                            <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
                                     <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;">
                                     <i class="fas fa-play fa-4x"></i>
                                     <img class="vinyl no-cover" src="images/vinyl.png" />
@@ -98,39 +98,39 @@ let browseArtist = (function () {
                             <div class="content is-clearfix">
                                 <div class="field is-horizontal has-addons">
                                     <div class="field-label is-normal">
-                                        <label class="label">Artist name:</label>
+                                        <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistName") }}</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field is-expanded has-addons">
                                             <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
-                                                <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" placeholder="search artist name...">
+                                                <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistNamePlaceholder')">
                                                 <span class="icon is-small is-left">
                                                     <i class="fas fa-search"></i>
                                                 </span>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">Search on Music Brainz</a>
+                                                <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">{{ $t("browseArtist.buttons.searchOnMusicBrainz") }}</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="field is-horizontal has-addons">
                                     <div class="field-label is-normal">
-                                        <label class="label">Music Brainz id:</label>
+                                        <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistMBId") }}</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field is-expanded has-addons">
                                             <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
-                                                <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" placeholder="set artist music brainz id">
+                                                <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistMBIdPlaceholder')">
                                                 <span class="icon is-small is-left">
                                                     <i class="fas fa-search"></i>
                                                 </span>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">Save</a>
+                                                <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.save") }}</a>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">Clear</a>
+                                                <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.clear") }}</a>
                                             </div>
                                         </div>
                                     </div>

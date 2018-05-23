@@ -130,6 +130,35 @@ const messages = {
                 filterNotScrapedArtists: 'Artists not scraped'
             }
         },
+        browseArtist: {
+            labels: {
+                sectionName: 'Artist details',
+                plays: 'plays',
+                notPlayedYet: 'not played yet',
+                tracksAlbumTableHeader: 'Album',
+                tracksSectionYearTableHeader: 'Year',
+                tracksSectionNumberTableHeader: 'Number',
+                tracksSectionTitleTableHeader: 'Track',
+                tracksSectionActionTableHeader: 'Actions',
+                musicBrainzSearchArtistName: 'Artist name:',
+                musicBrainzSearchArtistNamePlaceholder: 'search artist name...',
+                musicBrainzSearchArtistMBId: 'Music Brainz id:',
+                musicBrainzSearchArtistMBIdPlaceholder: 'set artist music brainz id"'
+            },
+            tabs: {
+                overview: 'Overview',
+                bio: 'Bio',
+                tracks: 'Tracks',
+                albums: 'Albums',
+                updateArtist: 'Update artist'
+            },
+            buttons: {
+                search: 'search',
+                searchOnMusicBrainz: 'Search on Music Brainz',
+                save: 'save',
+                clear: 'clear'
+            }
+        },
         browseAlbums: {
             labels: {
                 sectionName: 'Browse albums',
@@ -144,7 +173,7 @@ const messages = {
             buttons: {
                 toggleAdvancedSearch: 'toggle advanced search',
                 search: 'search'
-            },
+            }
         },
         browsePaths: {
             labels: {
@@ -190,6 +219,7 @@ const messages = {
             authorLinkLabel: 'by alex',
             playThisTrack: 'Play this track',
             enqueueThisTrack: 'Enqueue this track',
+            downloadThisTrack: 'Download this track',
             navigateToArtistPage: 'Navigate to artist page',
             playThisAlbum: 'Play this album',
             enqueueThisAlbum: 'Enqueue this album'
