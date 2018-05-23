@@ -156,7 +156,7 @@ const messages = {
             authorLinkLabel: 'by alex',
             playThisTrack: 'Play this track',
             enqueueThisTrack: 'Enqueue this track',
-            navigateToArtistPage: 'Bavigate to artist page',
+            navigateToArtistPage: 'Navigate to artist page',
             playThisAlbum: 'Play this album',
             enqueueThisAlbum: 'Enqueue this album'
         },
