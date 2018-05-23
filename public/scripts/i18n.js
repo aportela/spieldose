@@ -146,6 +146,22 @@ const messages = {
                 search: 'search'
             },
         },
+        browsePaths: {
+            labels: {
+                sectionName: 'Browse paths',
+                pathNameTableHeader: 'Path',
+                trackCountTableHeader: 'Tracks',
+                actionsTableHeader: 'Actions',
+                playThisPath: 'Play this path',
+                enqueueThisPath: 'Enqueue this path'
+            },
+            inputs: {
+                pathNamePlaceholder: 'search path name...'
+            },
+            buttons: {
+                search: 'search'
+            }
+        },
         commonErrors: {
             invalidAPIParam: 'API ERROR: invalid param',
             invalidAPIResponse: 'API ERROR: invalid server response'
