@@ -162,6 +162,24 @@ const messages = {
                 search: 'search'
             }
         },
+        browsePlaylists: {
+            labels: {
+                sectionName: 'Browse playlists',
+                pathNameTableHeader: 'Path',
+                trackCountTableHeader: 'Tracks',
+                actionsTableHeader: 'Actions',
+                playThisPath: 'Play this path',
+                enqueueThisPath: 'Enqueue this path'
+            },
+            inputs: {
+                playlistNamePlaceholder: 'search playlist name...'
+            },
+            buttons: {
+                search: 'search',
+                play: 'play',
+                remove: 'remove'
+            }
+        },
         commonErrors: {
             invalidAPIParam: 'API ERROR: invalid param',
             invalidAPIResponse: 'API ERROR: invalid server response'

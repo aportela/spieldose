@@ -4,12 +4,12 @@ let browsePlaylists = (function () {
     const template = function () {
         return `
             <div class="container is-fluid box is-marginless">
-                <p class="title is-1 has-text-centered">Browse playlists</i></p>
+            <p class="title is-1 has-text-centered">{{ $t("browsePlaylists.labels.sectionName") }}</p>
                 <div v-if="! hasAPIErrors">
                     <div class="field has-addons">
                         <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="'search path name...'" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input type="text" class="input" placeholder="search path name..." v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                            <input type="text" class="input" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
@@ -19,7 +19,7 @@ let browsePlaylists = (function () {
                                 <span class="icon">
                                     <i class="fas fa-search" aria-hidden="true"></i>
                                 </span>
-                                <span>search</span>
+                                <span>{{ $t("browsePlaylists.buttons.search") }}</span>
                             </a>
                         </p>
                     </div>
@@ -38,13 +38,13 @@ let browsePlaylists = (function () {
                             <p class="control">
                                 <a class="button is-small is-link" v-on:click.prevent="playPlaylistTracks(playlist.id);">
                                     <span class="icon is-small"><i class="fas fa-play"></i></span>
-                                    <span>play</span>
+                                    <span>{{ $t("browsePlaylists.buttons.play") }}</span>
                                 </a>
                             </p>
                             <p class="control">
                                 <a class="button is-small is-danger" v-bind:disabled="! playlist.id" v-on:click.prevent="onShowDeleteModal(playlist.id);">
                                     <span class="icon is-small"><i class="fas fa-times"></i></span>
-                                    <span>remove</span>
+                                    <span>{{ $t("browsePlaylists.buttons.remove") }}</span>
                                 </a>
                             </p>
                         </div>
