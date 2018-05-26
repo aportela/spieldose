@@ -74,7 +74,7 @@ const getPlayerData = (function () {
     };
     playerData.currentTrack.download = function () {
         if (playerData.currentTrack.track) {
-            download(playerData.currentTrack.track.id);
+            playerData.download(playerData.currentTrack.track.id);
         }
     };
     playerData.currentTrack.setLoved = function () {
