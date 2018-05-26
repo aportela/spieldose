@@ -23,20 +23,20 @@ let player = (function () {
                 </div>
                 <div id="player-controls" class="is-unselectable">
                     <div class="has-text-centered player-buttons">
-                        <span title="shuffle playlist" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
-                        <span title="toggle repeat mode" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                        <span title="go to previous track" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                        <span title="pause track" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                        <span title="play track" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                        <span title="go to next track" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                        <span title="unlove this track" v-if="nowPlayingLoved" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                        <span title="love this track" v-else v-on:click.prevent="playerData.playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                        <span title="download this track" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
+                        <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                        <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
+                        <span v-bind:title="$t('player.buttons.previousTrack')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                        <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                        <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                        <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                        <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else v-on:click.prevent="playerData.playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                        <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                     </div>
                     <div id="player-volume-control">
                         <div class="columns">
                             <div class="column is-narrow">
-                                <span title="mute/unmute volume" class="icon" v-on:click.prevent="toggleMute">
+                                <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" v-on:click.prevent="toggleMute">
                                     <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
                                     <i v-else class="fas fa-2x fa-volume-off"></i>
                                 </span>

@@ -83,6 +83,20 @@ const messages = {
                 notEnoughData: 'There is not enough data to calculate the statistics'
             }
         },
+        player: {
+            buttons: {
+                shufflePlaylistHint: 'shuffle playlist',
+                toggleRepeatHint: 'toggle repeat mode',
+                previousTrack: 'go to previous track',
+                pauseTrackHint: 'pause track',
+                playTrackHint: 'play track',
+                nextTrackHint: 'go to next track',
+                unloveTrackHint: 'unlove this track',
+                loveTrackHint: 'love this track',
+                downloadTrackHint: 'download this track',
+                toggleMuteHint: 'toggle mute'
+            }
+        },
         menu: {
             labels: {
                 header: 'Menu',
