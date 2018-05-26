@@ -63,8 +63,8 @@ let browseAlbums = (function () {
                         </a>
                         <div class="album-info">
                             <p class="album-name">{{ album.name }}</p>
-                            <p v-if="album.artist" class="artist-name">{{ $t("browseAlbums.labels.by") }} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
-                            <p v-else class="artist-name">{{ $t("browseAlbums.labels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
+                            <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                            <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
                         </div>
                     </div>
                     <div class="is-clearfix"></div>

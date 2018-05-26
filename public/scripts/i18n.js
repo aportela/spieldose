@@ -115,6 +115,23 @@ const messages = {
                 cancel: 'Cancel'
             }
         },
+        search: {
+            labels: {
+                sectionName: 'Search artists, albums, tracks, playlists'
+            },
+            tabs: {
+                artists: 'Artists',
+                albums: 'Albums',
+                tracks: 'Tracks',
+                playlists: 'Playlists'
+            },
+            inputs: {
+                searchTextPlaceholder: 'search tracks/artists/albums/playlists....'
+            },
+            buttons: {
+                search: 'search'
+            }
+        },
         browseArtists: {
             labels: {
                 sectionName: 'Browse artists',
@@ -162,8 +179,7 @@ const messages = {
         browseAlbums: {
             labels: {
                 sectionName: 'Browse albums',
-                unknownArtist: 'unknown artist',
-                by: 'by'
+                unknownArtist: 'unknown artist'
             },
             inputs: {
                 albumNamePlaceholder: 'search album name...',
@@ -222,7 +238,11 @@ const messages = {
             downloadThisTrack: 'Download this track',
             navigateToArtistPage: 'Navigate to artist page',
             playThisAlbum: 'Play this album',
-            enqueueThisAlbum: 'Enqueue this album'
+            enqueueThisAlbum: 'Enqueue this album',
+            playThisPlaylist: 'Play this playlist',
+            enqueueThisPlaylist: 'Enqueue this playlist',
+            by: 'by',
+            tracksCount: 'tracks'
         },
         commonMessages: {
             refreshData: 'Refresh data'
