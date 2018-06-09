@@ -152,6 +152,7 @@ const messages = {
                 savePlaylist: 'save playlist',
                 unsetPlaylist: 'unset playlist',
                 loadRandom: 'load random',
+                clearPlaylist: 'clear playlist',
                 shufflePlaylist: 'shuffle',
                 previousTrack: 'previous',
                 nextTrack: 'next',
@@ -175,7 +176,7 @@ const messages = {
                 playlists: 'Playlists'
             },
             inputs: {
-                searchTextPlaceholder: 'search tracks/artists/albums/playlists....'
+                searchTextPlaceholder: 'search tracks, artists, albums, playlists'
             },
             buttons: {
                 search: 'search'

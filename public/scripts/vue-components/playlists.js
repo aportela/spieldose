@@ -43,7 +43,7 @@ let nowPlaying = (function () {
                             <span class="icon is-small">
                                 <i class="fas fa-eraser"></i>
                             </span>
-                            <span class="is-hidden-touch">clear playlist</span>
+                            <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.clearPlaylist') }}</span>
                         </a>
                         <a class="button is-light" v-bind:class="{ 'is-primary': isRepeatActive }" v-on:click.prevent="playerData.playback.toggleRepeatMode();">
                             <span class="icon is-small">
