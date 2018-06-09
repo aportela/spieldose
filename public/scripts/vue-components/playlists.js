@@ -93,7 +93,7 @@ let nowPlaying = (function () {
                             </span>
                             <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.stopTrack') }}</span>
                         </a>
-                        <a class="button is-light is-primary" v-if="isLovedActive" v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();">
+                        <a class="button is-light is-primary" v-if="nowPlayingLoved" v-bind:disabled="playerData.loading" v-on:click.prevent="playerData.playerData.currentTrack.unSetLoved();">
                             <span class="icon is-small">
                                 <i class="fas fa-heart"></i>
                             </span>
@@ -172,9 +172,6 @@ let nowPlaying = (function () {
                 } else {
                     return(false);
                 }
-            },
-            isLovedActive: function () {
-                return (this.playerData.currentTrack.track && this.playerData.currentTrack.track == '1');
             },
             isRepeatActive: function () {
                 return (this.playerData.repeatTracksMode != 'none');
