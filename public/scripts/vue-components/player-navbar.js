@@ -50,7 +50,7 @@ let playerNavBar = (function () {
                             <img v-bind:src="coverSrc" style="width: 64px; max-height: 64px;">
                         </div>
                         <div class="navbar-item player-buttons">
-                            <span v-bind:title="$t('player.buttons.previousTrack')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                            <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
                             <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
                             <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
                             <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>

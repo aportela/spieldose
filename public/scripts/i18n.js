@@ -87,7 +87,7 @@ const messages = {
             buttons: {
                 shufflePlaylistHint: 'shuffle playlist',
                 toggleRepeatHint: 'toggle repeat mode',
-                previousTrack: 'go to previous track',
+                previousTrackHint: 'go to previous track',
                 pauseTrackHint: 'pause track',
                 playTrackHint: 'play track',
                 nextTrackHint: 'go to next track',
@@ -127,6 +127,41 @@ const messages = {
             buttons: {
                 ok: 'Ok',
                 cancel: 'Cancel'
+            }
+        },
+        currentPlaylist: {
+            labels: {
+                sectionName: 'Now playing',
+                tableHeaderTrack: 'Track',
+                tableHeaderArtist: 'Artist',
+                tableHeaderAlbum: 'Album',
+                tableHeaderGenre: 'Genre',
+                tableHeaderYear: 'Year',
+                tableHeaderActions: 'Actions',
+                moveElementUpHint: 'move up this track on playlist',
+                moveElementDownHint: 'move down this track playlist',
+                removeElementHint: 'remove this track from playlist',
+                playThisTrackHint: 'play this track',
+                nowPlayingClickToPauseHint: 'now playing, click to pause',
+                pausedClickToResumeHint: 'paused, click to resume'
+            },
+            inputs: {
+                playlistNamePlaceholder: 'type playlist name'
+            },
+            buttons: {
+                savePlaylist: 'save playlist',
+                unsetPlaylist: 'unset playlist',
+                loadRandom: 'load random',
+                shufflePlaylist: 'shuffle',
+                previousTrack: 'previous',
+                nextTrack: 'next',
+                playTrack: 'play',
+                resumeTrack: 'resume',
+                pauseTrack: 'pause',
+                stopTrack: 'stop',
+                loveTrack: 'love',
+                unloveTrack: 'unlove',
+                downloadTrack: 'download',
             }
         },
         search: {

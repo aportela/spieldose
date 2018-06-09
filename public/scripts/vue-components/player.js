@@ -25,7 +25,7 @@ let player = (function () {
                     <div class="has-text-centered player-buttons">
                         <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
                         <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                        <span v-bind:title="$t('player.buttons.previousTrack')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
                         <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
                         <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
                         <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
