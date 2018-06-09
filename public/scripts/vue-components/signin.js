@@ -35,7 +35,7 @@ let signInUp = (function () {
                                         <li v-bind:class="{ 'is-active': isSignUpTabActive }">
                                             <a v-on:click.prevent="changeTab('signup');">
                                                 <span class="icon is-small"><i class="fas fa-user-plus"></i></span>
-                                                <span>{{ $t("signIn.labels.tabLink") }}</span>
+                                                <span>{{ $t("signUp.labels.tabLink") }}</span>
                                             </a>
                                         </li>
                                     </ul>
