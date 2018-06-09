@@ -27,7 +27,7 @@ let browseArtist = (function () {
                             <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
                             <div class="columns">
                                 <div class="column is-half is-full-mobile">
-                                    <spieldose-dashboard-toplist v-if="activeTab == 'overview' && artist.name" v-bind:type="'topTracks'" title="Top played tracks" v-bind:listItemCount="10" v-bind:showPlayCount="true" :key="$route.params.artist" v-bind:artist="$route.params.artist"></spieldose-dashboard-toplist>
+                                    <spieldose-dashboard-toplist v-if="activeTab == 'overview' && artist.name" v-bind:type="'topTracks'" v-bind:title="$t('dashboard.labels.topPlayedTracks')" v-bind:listItemCount="10" v-bind:showPlayCount="true" :key="$route.params.artist" v-bind:artist="$route.params.artist"></spieldose-dashboard-toplist>
                                 </div>
                             </div>
                         </div>
