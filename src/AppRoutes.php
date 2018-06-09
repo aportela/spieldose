@@ -10,6 +10,7 @@
         $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($this), $this->get('settings')['database']['type']);
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"],
+            "locale" => $this->get('settings')['common']['locale'],
             'initialState' => json_encode(
                 array(
                     "logged" => \Spieldose\User::isLogged(),
