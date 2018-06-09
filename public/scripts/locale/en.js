@@ -210,7 +210,7 @@ const messages = {
                 musicBrainzSearchArtistName: 'Artist name:',
                 musicBrainzSearchArtistNamePlaceholder: 'search artist name...',
                 musicBrainzSearchArtistMBId: 'Music Brainz id:',
-                musicBrainzSearchArtistMBIdPlaceholder: 'set artist music brainz id"'
+                musicBrainzSearchArtistMBIdPlaceholder: 'set artist Music Brainz id'
             },
             tabs: {
                 overview: 'Overview',
@@ -259,12 +259,7 @@ const messages = {
         },
         browsePlaylists: {
             labels: {
-                sectionName: 'Browse playlists',
-                pathNameTableHeader: 'Path',
-                trackCountTableHeader: 'Tracks',
-                actionsTableHeader: 'Actions',
-                playThisPath: 'Play this path',
-                enqueueThisPath: 'Enqueue this path'
+                sectionName: 'Browse playlists'
             },
             inputs: {
                 playlistNamePlaceholder: 'search playlist name...'
