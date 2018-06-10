@@ -153,6 +153,7 @@ const messages = {
                 unsetPlaylist: 'desenlazar lista',
                 loadRandom: 'cargar canciones aleatorias',
                 clearPlaylist: 'vaciar lista',
+                repeat: 'repetir',
                 shufflePlaylist: 'reordenar aleatoriamente',
                 previousTrack: 'anterior',
                 nextTrack: 'siguiente',
@@ -287,7 +288,10 @@ const messages = {
             playThisPlaylist: 'Escuchar esta lista de reproducción',
             enqueueThisPlaylist: 'Añadir esta lista de reproducción a la cola de reproducción actual',
             by: 'por',
-            tracksCount: 'canciones'
+            tracksCount: 'canciones',
+            repeatModeNone: 'nada',
+            repeatModeTrack: 'canción',
+            repeatModeAll: 'todo'
         },
         commonMessages: {
             refreshData: 'Refrescar datos'

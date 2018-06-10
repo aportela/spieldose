@@ -49,7 +49,7 @@ let nowPlaying = (function () {
                             <span class="icon is-small">
                                 <i class="fas fa-redo"></i>
                             </span>
-                            <span class="is-hidden-touch">repeat: {{ playerData.repeatTracksMode }}</span>
+                            <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.repeat') }}: {{ repeatMode }}</span>
                         </a>
                         <a class="button is-light" v-on:click.prevent="playerData.currentPlaylist.shuffle();">
                             <span class="icon is-small">
@@ -178,7 +178,20 @@ let nowPlaying = (function () {
             },
             isSavePlaylistDisabled: function () {
                 return (!this.currentPlaylistName || this.savingPlaylist);
+            },
+            repeatMode: function() {
+                let mode = this.$t("commonLabels.repeatModeNone");
+                switch(this.playerData.repeatTracksMode) {
+                    case "track":
+                    mode= this.$t("commonLabels.repeatModeTrack");
+                    break;
+                    case "all":
+                    mode = this.$t("commonLabels.repeatModeAll");
+                    break;
+                }
+                return(mode);
             }
+
         },
         methods: {
             iconAction: function (index) {

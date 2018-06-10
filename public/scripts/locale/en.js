@@ -153,6 +153,7 @@ const messages = {
                 unsetPlaylist: 'unset playlist',
                 loadRandom: 'load random',
                 clearPlaylist: 'clear playlist',
+                repeat: 'repeat',
                 shufflePlaylist: 'shuffle',
                 previousTrack: 'previous',
                 nextTrack: 'next',
@@ -287,7 +288,10 @@ const messages = {
             playThisPlaylist: 'Play this playlist',
             enqueueThisPlaylist: 'Enqueue this playlist',
             by: 'by',
-            tracksCount: 'tracks'
+            tracksCount: 'tracks',
+            repeatModeNone: 'none',
+            repeatModeTrack: 'track',
+            repeatModeAll: 'all'
         },
         commonMessages: {
             refreshData: 'Refresh data'
