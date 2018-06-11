@@ -320,7 +320,8 @@ const messages = {
             tracksCount: 'tracks',
             repeatModeNone: 'none',
             repeatModeTrack: 'track',
-            repeatModeAll: 'all'
+            repeatModeAll: 'all',
+            remoteRadioStation: 'Remote radio station'
         },
         commonMessages: {
             refreshData: 'Refresh data'

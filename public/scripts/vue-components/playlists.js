@@ -132,7 +132,12 @@ let nowPlaying = (function () {
                                     <i class="fas fa-pause cursor-pointer" v-bind:title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" v-on:click="playerData.playback.resume();"></i>
                                     <span>{{ track.title}}</span>
                                 </td>
-                                <td><a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" v-on:click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></td>
+                                <td v-if="! track.radioStation">
+                                    <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" v-on:click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a>
+                                </td>
+                                <td v-else>
+                                    {{ track.artist }}
+                                </td>
                                 <td><span>{{ track.album }}</span></td>
                                 <td><span>{{ track.genre }}</span></td>
                                 <td><span>{{ track.year }}</span></td>

@@ -259,11 +259,12 @@ const mixinPlayer = {
         },
         playRadioStation: function(id) {
             this.clearAPIErrors();
+            let self = this;
             spieldoseAPI.radioStation.get(id, (response) => {
                 if (response.ok) {
                     let track = {
                         title: response.body.radioStation.name,
-                        artist: "Remote radio station",
+                        artist: self.$t("commonLabels.remoteRadioStation"),
                         radioStation: response.body.radioStation
                     };
                     this.playerData.currentPlaylist.replace([track]);
