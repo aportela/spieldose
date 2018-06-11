@@ -98,8 +98,14 @@ let player = (function () {
         },
         methods: {
             replaceAlbumThumbnailWithLoadError: function () {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    this.playerData.currentTrack.track.image = null;
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
+                    if (this.playerData.currentTrack.track.radioStation.image) {
+                        this.playerData.currentTrack.track.radioStation.image = null;
+                    }
+                } else {
+                    if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
+                        this.playerData.currentTrack.track.image = null;
+                    }
                 }
             },
             toggleMute: function () {
