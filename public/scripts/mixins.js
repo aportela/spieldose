@@ -214,7 +214,6 @@ const mixinPlayer = {
                     if (response.ok) {
                         this.playerData.currentPlaylist.replace(response.body.playlist.tracks);
                         this.playerData.currentPlaylist.set(id, response.body.playlist.name);
-                        this.$router.push({ name: 'nowPlaying' });
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -224,7 +223,6 @@ const mixinPlayer = {
                     if (response.ok) {
                         this.playerData.currentPlaylist.replace(response.body.tracks);
                         this.playerData.currentPlaylist.unset();
-                        this.$router.push({ name: 'nowPlaying' });
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
