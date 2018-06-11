@@ -171,18 +171,12 @@ aside.menu ul.menu-list li a.is-active
 
 /* album thumb */
 
-div.browse-album-item, div.playlist-item, div.path-item, div.radio-station-item
+div.browse-album-item, div.playlist-item, div.path-item
 {
     width: 174px;
     float: left;
     margin: 0px 24px;
     margin-bottom: 16px;
-}
-
-div.radio-station-item
-{
-
-    width: 256px;
 }
 
 div.browse-album-item a.play-album
@@ -356,7 +350,7 @@ div.browse-artist-item div.artist-info
     overflow: hidden;
 }
 
-div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info
+div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info, div.browse-radio-station-item p.radio-station-info
 {
     margin: 0px;
     font-size: 13px;
@@ -392,11 +386,27 @@ p.path-item-icon
 
 /* radio station thumb */
 
+div.browse-radio-station-item
+{
+    width: 256px;
+    margin: 0px 24px;
+    margin-bottom: 16px;
+    float: left;
+}
+
 p.radio-station-item-icon
 {
     margin-top: 1em;
     cursor: pointer;
 }
+
+div.browse-radio-station-item img
+{
+    width: 128px;
+    border: 0px;
+    z-index: 0;
+}
+
 
 /* radio station thumb */
 
