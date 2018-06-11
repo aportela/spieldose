@@ -274,17 +274,30 @@ const messages = {
         },
         browseRadioStations: {
             labels: {
-                sectionName: 'Browse radio stations'
+                sectionName: 'Browse radio stations',
+                radioStationName: 'Radio station name:',
+                radioStationUrl: 'Url:',
+                radioStationImage: 'Image:'
             },
             inputs: {
-                radioStationNamePlaceholder: 'search radio station name...'
+                radioStationSearchNamePlaceholder: 'search radio station name...',
+                radioStationNamePlaceholder: 'type radio station name',
+                radioStationPlaceholderUrl: 'type radio station url (direct stream / m3u, pls playlist formats)',
+                radioStationPlaceholderImage: 'type (optional) remote image url',
+            },
+            selects: {
+                optionDirectStream: 'Station type: Direct stream',
+                optionM3U: 'Station type: m3u (format) playlist',
+                optionPLS: 'Station type: pls (format) playlist',
             },
             buttons: {
                 add: 'add',
                 search: 'search',
                 play: 'play',
                 update: 'update',
-                remove: 'remove'
+                remove: 'remove',
+                save: 'save',
+                cancel: 'cancel'
             }
         },
         commonErrors: {

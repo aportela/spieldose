@@ -274,17 +274,30 @@ const messages = {
         },
         browseRadioStations: {
             labels: {
-                sectionName: 'Estaciones de radio'
+                sectionName: 'Estaciones de radio',
+                radioStationName: 'Nombre de la estación:',
+                radioStationUrl: 'Dirección:',
+                radioStationImage: 'Imagen:'
             },
             inputs: {
-                radioStationNamePlaceholder: 'buscar estación de radio por nombre...'
+                radioStationSearchNamePlaceholder: 'buscar estación de radio por nombre...',
+                radioStationNamePlaceholder: 'teclee el nombre de la estación de radio',
+                radioStationPlaceholderUrl: 'teclee la dirección de la estación de radio (stream directo / lista de reproducción, formatos: m3u, pls)',
+                radioStationPlaceholderImage: 'teclee (opcional) la dirección de la imagen',
+            },
+            selects: {
+                optionDirectStream: 'Tipo de la estación: Stream directo',
+                optionM3U: 'Tipo de la estación: lista de reproducción (formato m3u)',
+                optionPLS: 'Tipo de la estación: Lista de reproducción (formato pls)',
             },
             buttons: {
                 add: 'añadir',
                 search: 'buscar',
                 play: 'escuchar',
-                update: 'editar',
-                remove: 'eliminar'
+                update: 'actualizar',
+                remove: 'eliminar',
+                save: 'grabar',
+                cancel: 'cancelar'
             }
         },
         commonErrors: {
