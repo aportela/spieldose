@@ -66,21 +66,33 @@ let player = (function () {
                 return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
             },
             coverSrc: function () {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
-                        return ("api/thumbnail?url=" + this.playerData.currentTrack.track.image);
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
+                    if (this.playerData.currentTrack.track.radioStation.image) {
+                        return ("api/thumbnail?url=" + encodeURIComponent(this.playerData.currentTrack.track.radioStation.image));
                     } else {
-                        return ("api/thumbnail?hash=" + this.playerData.currentTrack.track.image);
+                        return ('images/vinyl.png');
                     }
                 } else {
-                    return ('images/vinyl.png');
+                    if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
+                        if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
+                            return ("api/thumbnail?url=" + encodeURIComponent(this.playerData.currentTrack.track.image));
+                        } else {
+                            return ("api/thumbnail?hash=" + this.playerData.currentTrack.track.image);
+                        }
+                    } else {
+                        return ('images/vinyl.png');
+                    }
                 }
             },
             streamUrl: function () {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.id) {
-                    return ("api/track/get/" + this.playerData.currentTrack.track.id);
+                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
+                    return(this.playerData.currentTrack.track.radioStation.streamUrls[0]);
                 } else {
-                    return ("");
+                    if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.id) {
+                        return ("api/track/get/" + this.playerData.currentTrack.track.id);
+                    } else {
+                        return ("");
+                    }
                 }
             }
         },
@@ -183,7 +195,10 @@ let player = (function () {
                 }
                 */
             });
-            initializeVisualizer(document.getElementById("canvas"), self.audio);
+            // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
+            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
+                initializeVisualizer(document.getElementById("canvas"), self.audio);
+            }
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 const offset = this.getBoundingClientRect();
                 const x = e.pageX - offset.left;
