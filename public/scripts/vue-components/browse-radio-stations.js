@@ -8,8 +8,8 @@ let browseRadioStations = (function () {
                 <div v-if="! hasAPIErrors">
                     <div class="field has-addons">
                         <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input type="text" class="input" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                            <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                            <input type="text" class="input" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-search"></i>
                             </span>
@@ -34,21 +34,21 @@ let browseRadioStations = (function () {
                     <div v-if="showForm">
                         <div class="field is-horizontal">
                             <div class="field-label">
-                                <label class="label">Name:</label>
+                                <label class="label">{{ $t("browseRadioStations.labels.radioStationName") }}</label>
                             </div>
                             <div class="field-body">
                                 <div class="field">
                                     <div class="control">
-                                        <input class="input" type="text" placeholder="" v-model.trim="formRadioStationName">
+                                        <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationNamePlaceholder')" v-model.trim="formRadioStationName">
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="control">
                                         <div class="select">
                                             <select v-model.number="formRadioStationType">
-                                                <option value="0">Type: Direct stream</option>
-                                                <option value="1">Type: m3u (format) playlist</option>
-                                                <option value="2">Type: pls (format) playlist</option>
+                                                <option value="0">{{ $t("browseRadioStations.selects.optionDirectStream") }}</option>
+                                                <option value="1">{{ $t("browseRadioStations.selects.optionM3U") }}</option>
+                                                <option value="2">{{ $t("browseRadioStations.selects.optionPLS") }}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -57,24 +57,24 @@ let browseRadioStations = (function () {
                         </div>
                         <div class="field is-horizontal">
                             <div class="field-label">
-                                <label class="label">Url:</label>
+                                <label class="label">{{ $t("browseRadioStations.labels.radioStationUrl") }}</label>
                             </div>
                             <div class="field-body">
                                 <div class="field">
                                     <div class="control">
-                                        <input class="input" type="text" placeholder="" v-model.trim="formRadioStationUrl">
+                                        <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderUrl')" v-model.trim="formRadioStationUrl">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="field is-horizontal">
                             <div class="field-label">
-                                <label class="label">Image:</label>
+                                <label class="label">{{ $t("browseRadioStations.labels.radioStationImage") }}</label>
                             </div>
                             <div class="field-body">
                                 <div class="field">
                                     <div class="control">
-                                        <input class="input" type="text" placeholder="" v-model.trim="formRadioStationImage">
+                                        <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderImage')" v-model.trim="formRadioStationImage">
                                     </div>
                                 </div>
                             </div>
@@ -85,11 +85,11 @@ let browseRadioStations = (function () {
                             <div class="field-body">
                                 <div class="field is-grouped">
                                     <div class="control">
-                                        <a class="button is-link" v-on:click.prevent="save();">
+                                        <a class="button is-link" v-on:click.prevent="save();" v-bind:disabled="! allowSave">
                                             <span class="icon">
                                                 <i class="fas fa-save" aria-hidden="true"></i>
                                             </span>
-                                            <span>Save</span>
+                                            <span>{{ $t("browseRadioStations.buttons.save") }}</span>
                                         </a>
                                     </div>
                                     <div class="control">
@@ -97,7 +97,7 @@ let browseRadioStations = (function () {
                                             <span class="icon">
                                                 <i class="fas fa-ban" aria-hidden="true"></i>
                                             </span>
-                                            <span>Cancel</span>
+                                            <span>{{ $t("browseRadioStations.buttons.cancel") }}</span>
                                         </a>
                                     </div>
                                 </div>
@@ -106,12 +106,8 @@ let browseRadioStations = (function () {
                     </div>
                     <div v-else>
                         <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
-                        <div class="radio-station-item box has-text-centered" v-for="radioStation in radioStations" v-show="! loading">
-                            <p class="radio-station-item-icon">
-                                <span class="icon has-text-light">
-                                    <i class="fas fa-list-alt fa-5x"></i>
-                                </span>
-                            </p>
+                        <div class="radio-station-item browse-radio-station-item box has-text-centered" v-for="radioStation in radioStations" v-show="! loading">
+                            <img class="radio-station-thumbnail" v-bind:src="radioStation.image | getAlbumImageUrl" v-on:error="radioStation.image = null;">
                             <p class="radio-station-info">
                                 <strong>“{{ radioStation.name }}”</strong>
                             </p>
@@ -148,7 +144,7 @@ let browseRadioStations = (function () {
     let module = Vue.component('spieldose-browse-radio-stations', {
         template: template(),
         mixins: [
-            mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
+            mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer, mixinAlbums
         ],
         data: function () {
             return ({
@@ -164,6 +160,11 @@ let browseRadioStations = (function () {
                 formRadioStationType: 0,
                 formRadioStationImage: null
             });
+        },
+        computed: {
+            allowSave: function() {
+                return(this.formRadioStationName && this.formRadioStationUrl);
+            }
         },
         methods: {
             onPaginationChanged: function (currentPage) {
