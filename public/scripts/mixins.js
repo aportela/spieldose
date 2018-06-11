@@ -17,7 +17,7 @@ const mixinAlbums = {
         getAlbumImageUrl: function (value) {
             if (value) {
                 if (value.indexOf("http") == 0) {
-                    return ("api/thumbnail?url=" + value);
+                    return ("api/thumbnail?url=" + encodeURIComponent(value));
                 } else {
                     return ("api/thumbnail?hash=" + value);
                 }
