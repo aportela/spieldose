@@ -74,6 +74,18 @@ const routes = [
                 ]
             },
             {
+                path: 'radio_stations',
+                name: 'radioStations',
+                component: browseRadioStations,
+                children: [
+                    {
+                        path: 'page/:page',
+                        name: 'radioStationsPaged',
+                        component: browseRadioStations
+                    }
+                ]
+            },
+            {
                 path: 'artist/:artist',
                 name: 'artist',
                 component: browseArtist,

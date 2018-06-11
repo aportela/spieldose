@@ -107,6 +107,7 @@ const messages = {
                 browseAlbums: 'Browse albums',
                 browsePaths: 'Browse paths',
                 browsePlaylists: 'Browse playlists',
+                browseRadioStations: 'Browse radio stations',
                 signOut: 'Sign out'
             }
         },
@@ -268,6 +269,21 @@ const messages = {
             buttons: {
                 search: 'search',
                 play: 'play',
+                remove: 'remove'
+            }
+        },
+        browseRadioStations: {
+            labels: {
+                sectionName: 'Browse radio stations'
+            },
+            inputs: {
+                radioStationNamePlaceholder: 'search radio station name...'
+            },
+            buttons: {
+                add: 'add',
+                search: 'search',
+                play: 'play',
+                update: 'update',
                 remove: 'remove'
             }
         },

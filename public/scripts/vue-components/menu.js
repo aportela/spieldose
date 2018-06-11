@@ -33,6 +33,10 @@ let menu = (function () {
                     <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
                     <span>{{ $t("menu.labels.browsePlaylists") }}</span>
                 </a>
+                <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('radioStations') }" v-on:click.prevent="changeSection('radioStations');">
+                    <span class="panel-icon"><i class="fas fa-broadcast-tower"></i></span>
+                    <span>{{ $t("menu.labels.browseRadioStations") }}</span>
+                </a>
                 <a class="panel-block" v-on:click.prevent="signout();">
                     <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
                     <span>{{ $t("menu.labels.signOut") }}</span>

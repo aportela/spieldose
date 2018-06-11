@@ -408,6 +408,106 @@
 
             /* playlist */
 
+            /* radio stations */
+
+            $this->get('/radio_station/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $radioStation = new \Spieldose\RadioStation($route->getArgument("id"), "", "", 0, "");
+                $dbh = new \Spieldose\Database\DB($this);
+                if ($radioStation->isAllowed($dbh)) {
+                    $radioStation->get($dbh);
+                    return $response->withJson(['radioStation' => $radioStation], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
+            });
+
+            $this->post('/radio_station/search', function (Request $request, Response $response, array $args) {
+                $data = \Spieldose\RadioStation::search(
+                    new \Spieldose\Database\DB($this),
+                    $request->getParam("actualPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    array(
+                        "name" => $request->getParam("name", ""),
+                        "partialName" => $request->getParam("partialName", "")
+                    ),
+                    $request->getParam("orderBy", "")
+                );
+                return $response->withJson(
+                    [
+                        'radioStations' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'actualPage' => $data->actualPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ],
+                    200
+                );
+            });
+
+            $this->post('/radio_station/add', function (Request $request, Response $response, array $args) {
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                $name = $request->getParam("name", "");
+                $url = $request->getParam("url", "");
+                $urlType = intval($request->getParam("urlType", 0));
+                $image = $request->getParam("image", "");
+                $radioStation = new \Spieldose\RadioStation(
+                    $id,
+                    $name,
+                    $url,
+                    $urlType,
+                    $image
+                );
+                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this);
+                $radioStation->add($dbh);
+                return $response->withJson([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ], 200);
+            });
+
+            $this->post('/radio_station/update', function (Request $request, Response $response, array $args) {
+                $id = $request->getParam("id", "");
+                $name = $request->getParam("name", "");
+                $url = $request->getParam("url", "");
+                $urlType = intval($request->getParam("urlType", 0));
+                $image = $request->getParam("image", "");
+                $radioStation = new \Spieldose\RadioStation(
+                    $id,
+                    $name,
+                    $url,
+                    $urlType,
+                    $image
+                );
+                $dbh = new \Spieldose\Database\DB($this);
+                if ($radioStation->isAllowed($dbh)) {
+                    $radioStation->update($dbh);
+                    return $response->withJson([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
+            });
+
+            $this->post('/radio_station/remove', function (Request $request, Response $response, array $args) {
+                $id = $request->getParam("id", "");
+                $radioStation = new \Spieldose\RadioStation(
+                    $id,
+                    "",
+                    "",
+                    0,
+                    ""
+                );
+                $dbh = new \Spieldose\Database\DB($this);
+                if ($radioStation->isAllowed($dbh)) {
+                    $radioStation->remove($dbh);
+                    return $response->withJson([ ], 200);
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
+            });
+
+            /* radio stations */
+
             /* global search */
 
             $this->post('/search/global', function (Request $request, Response $response, array $args) {

@@ -256,6 +256,21 @@ const mixinPlayer = {
         },
         enqueueTrack: function (track) {
             this.playerData.currentPlaylist.enqueue([track]);
+        },
+        playRadioStation: function(id) {
+            this.clearAPIErrors();
+            spieldoseAPI.radioStation.get(id, (response) => {
+                if (response.ok) {
+                    let track = {
+                        title: response.body.radioStation.name,
+                        artist: "Remote radio station",
+                        radioStation: response.body.radioStation
+                    };
+                    this.playerData.currentPlaylist.replace([track]);
+                } else {
+                    this.setAPIError(response.getApiErrorData());
+                }
+            });
         }
     }
 };

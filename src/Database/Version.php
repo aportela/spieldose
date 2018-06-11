@@ -145,6 +145,18 @@
                             [file_name] VARCHAR(512) NOT NULL
                         );
                     '
+                ),
+                "1.05" => array(
+                    '
+                        CREATE TABLE [RADIO_STATION] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [user_id] VARCHAR(36) NOT NULL,
+                            [name] VARCHAR(64) NOT NULL,
+                            [url] VARCHAR(8192),
+                            [url_type] INTEGER NOT NULL,
+                            [image] VARCHAR(8192)
+                        );
+                    '
                 )
             ),
             "PDO_MARIADB" => array(
@@ -250,6 +262,18 @@
                             `id` VARCHAR(36) NOT NULL PRIMARY KEY,
                             `base_path` VARCHAR(2048) NOT NULL,
                             `file_name` VARCHAR(512) NOT NULL
+                        );
+                    '
+                ),
+                "1.05" => array(
+                    '
+                        CREATE TABLE [RADIO_STATION] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [user_id] VARCHAR(36) NOT NULL,
+                            [name] VARCHAR(64) NOT NULL,
+                            [url] VARCHAR(8192),
+                            [url_type] INTEGER NOT NULL,
+                            [image] VARCHAR(8192)
                         );
                     '
                 )

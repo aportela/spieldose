@@ -420,6 +420,107 @@ const spieldoseAPI = {
             );
         }
     },
+    radioStation: {
+        search: function (name, actualPage, resultsPage, callback) {
+            var params = {
+                actualPage: 1,
+                resultsPage: initialState.defaultResultsPage
+            };
+            if (name) {
+                params.partialName = name;
+            }
+            if (actualPage) {
+                params.actualPage = parseInt(actualPage);
+            }
+            if (resultsPage) {
+                params.resultsPage = parseInt(resultsPage);
+            }
+            Vue.http.post("api/radio_station/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        add: function (name, url, urlType, image, callback) {
+            var params = {
+                name: name,
+                url: url,
+                urlType: urlType,
+                image: image
+            };
+            Vue.http.post("api/radio_station/add", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (id, name, url, urlType, image, callback) {
+            var params = {
+                id: id,
+                name: name,
+                url: url,
+                urlType: urlType,
+                image: image
+            };
+            Vue.http.post("api/radio_station/update", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        remove: function (id, callback) {
+            var params = {
+                id: id
+            };
+            Vue.http.post("api/radio_station/remove", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        get: function (id, callback) {
+            Vue.http.get("api/radio_station/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
+    },
     searchPaths: function (path, actualPage, resultsPage, callback) {
         var params = {};
         if (path) {

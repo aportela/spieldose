@@ -171,12 +171,18 @@ aside.menu ul.menu-list li a.is-active
 
 /* album thumb */
 
-div.browse-album-item, div.playlist-item, div.path-item
+div.browse-album-item, div.playlist-item, div.path-item, div.radio-station-item
 {
     width: 174px;
     float: left;
     margin: 0px 24px;
     margin-bottom: 16px;
+}
+
+div.radio-station-item
+{
+
+    width: 256px;
 }
 
 div.browse-album-item a.play-album
@@ -383,6 +389,16 @@ p.path-item-icon
 }
 
 /* playlist thumb */
+
+/* radio station thumb */
+
+p.radio-station-item-icon
+{
+    margin-top: 1em;
+    cursor: pointer;
+}
+
+/* radio station thumb */
 
 /* player playlist */
 
