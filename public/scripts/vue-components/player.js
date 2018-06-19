@@ -5,7 +5,9 @@ let player = (function () {
         return `
             <div id="player" class="box is-paddingless is-radiusless is-unselectable">
                 <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
+                <!--
                 <canvas id="canvas"></canvas>
+                -->
                 <nav class="level is-marginless">
                     <div class="level-left">
                         <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
@@ -202,9 +204,7 @@ let player = (function () {
                 */
             });
             // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                initializeVisualizer(document.getElementById("canvas"), self.audio);
-            }
+            //initializeVisualizer(document.getElementById("canvas"), self.audio);
             document.getElementById('song-played-progress').addEventListener('click', function (e) {
                 const offset = this.getBoundingClientRect();
                 const x = e.pageX - offset.left;
