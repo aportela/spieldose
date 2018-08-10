@@ -88,7 +88,7 @@ let dashboardToplist = (function () {
         }, methods: {
             loadTopPlayedTracks: function () {
                 let self = this;
-                spieldoseAPI.metrics.getTopPlayedTracks(this.interval, self.artist, function (response) {
+                spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, self.artist, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -100,7 +100,7 @@ let dashboardToplist = (function () {
                 });
             }, loadTopPlayedArtists: function () {
                 let self = this;
-                spieldoseAPI.metrics.getTopPlayedArtists(this.interval, function (response) {
+                spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
@@ -112,7 +112,7 @@ let dashboardToplist = (function () {
                 });
             }, loadTopPlayedGenres: function () {
                 let self = this;
-                spieldoseAPI.metrics.getTopPlayedGenres(this.interval, function (response) {
+                spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, function (response) {
                     if (response.ok) {
                         if (response.body.metrics && response.body.metrics.length > 0) {
                             self.items = response.body.metrics;
