@@ -6,8 +6,8 @@
             'displayErrorDetails' => true, // set to false in production
             'addContentLengthHeader' => false, // Allow the web server to send the content-length header
             'twigParams' => [
-                'production' => false,
-                'localVendorAssets' => true // use local vendor assets (vs remote cdn)
+                'production' => true,
+                'localVendorAssets' => false // use local vendor assets (vs remote cdn)
             ],
             'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring', 'curl'),
             //
