@@ -15,18 +15,22 @@
         <title>Spieldose</title>
         {% if settings.localVendorAssets %}
             {% if settings.production %}
-        <link rel="stylesheet" href="vendor/bulma-0.7.4/css/bulma.min.css" integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="vendor/bulma-0.7.5/css/bulma.min.css" integrity="sha256-vK3UTo/8wHbaUn+dTQD0X6dzidqc5l7gczvH+Bnowwk=" crossorigin="anonymous" />
             {% else %}
-        <link rel="stylesheet" href="vendor/bulma-0.7.4/css/bulma.css" integrity="sha256-aan9tQnm7lVach/6JxYyrQRlheajRD+UBDwwWo3tAHQ=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="vendor/bulma-0.7.5/css/bulma.css" integrity="sha256-ujE/ZUB6CMZmyJSgQjXGCF4sRRneOimQplBVLu8OU5w=" crossorigin="anonymous" />
             {% endif %}
         {% else %}
             {% if settings.production %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" integrity="sha256-vK3UTo/8wHbaUn+dTQD0X6dzidqc5l7gczvH+Bnowwk=" crossorigin="anonymous" />
             {% else %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.css" integrity="sha256-aan9tQnm7lVach/6JxYyrQRlheajRD+UBDwwWo3tAHQ=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" integrity="sha256-ujE/ZUB6CMZmyJSgQjXGCF4sRRneOimQplBVLu8OU5w=" crossorigin="anonymous" />
             {% endif %}
         {% endif %}
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        {% if settings.production %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha256-UzFD2WYH2U1dQpKDjjZK72VtPeWP50NoJjd26rnAdUI=" crossorigin="anonymous" />
+        {% else %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css" integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
+        {% endif %}
         <link rel="stylesheet" href="styles/app.css">
     </head>
     <body>
@@ -44,37 +48,36 @@
 
         {% if settings.localVendorAssets %}
             {% if settings.production %}
-        <script src="vendor/vue-2.6.6/vue.min.js" crossorigin="anonymous"></script>
-        <script src="vendor/vue-router-3.0.2/vue-router.min.js" crossorigin="anonymous"></script>
+        <script src="vendor/vue-2.6.10/vue.min.js" integrity="sha256-chlNFSVx3TdcQ2Xlw7SvnbLAavAQLO0Y/LBiWX04viY=" crossorigin="anonymous"></script>
+        <script src="vendor/vue-router-3.1.1/vue-router.min.js" integrity="sha256-k1wdlx4sR+jzWoZ05XEH18784zGJf/gcyazonqbPxRQ=" crossorigin="anonymous"></script>
         <script src="vendor/vue-resource-1.5.1/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
-        <script src="vendor/vue-i18n-8.8.1/vue-i18n.min.js" integrity="sha256-MpMPtkbpsmdLSU2V1tmC71e9xf8ta6nqS9cGBV0kEEw=" crossorigin="anonymous"></script>
+        <script src="vendor/vue-i18n-8.12.0/vue-i18n.min.js" integrity="sha256-h+arpL0lvkGWrX8mmmLegjJCq+EF31OPIY1ObiaPdM4=" crossorigin="anonymous"></script>
         <script src="vendor/moment.js-2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
-        <script src="vendor/chartjs-2.7.3/Chart.min.js" integrity="sha256-oSgtFCCmHWRPQ/JmR4OoZ3Xke1Pw4v50uh6pLcu+fIc=" crossorigin="anonymous"></script>
+        <script src="vendor/chartjs-2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
             {% else %}
-        <script src="vendor/vue-2.6.6/vue.js" crossorigin="anonymous"></script>
-        <script src="vendor/vue-router-3.0.2/vue-router.js" integrity="sha256-ZXuDnCcIq0+1FwNaovtHEPcdRFEQK10rzx+lYtxxJh8=" crossorigin="anonymous"></script>
+        <script src="vendor/vue-2.6.10/vue.js" integrity="sha256-ufGElb3TnOtzl5E4c/qQnZFGP+FYEZj5kbSEdJNrw0A=" crossorigin="anonymous"></script>
+        <script src="vendor/vue-router-3.1.1/vue-router.js" integrity="sha256-9aqv4DiKSP96V8YF42zUAUNC5JJ0KRDN1Zii2EfKGVE=" crossorigin="anonymous"></script>
         <script src="vendor/vue-resource-1.5.1/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
-        <script src="vendor/vue-i18n-8.8.1/vue-i18n.js" integrity="sha256-ill8APnDAfbMzzMH2cmIefLaWsKoIGq13hO5lDdiFCI=" crossorigin="anonymous"></script>
+        <script src="vendor/vue-i18n-8.12.0/vue-i18n.js" integrity="sha256-r4VGwb1k8QS7YCkvOfrZ6fTBdbdMz0jZHizfhMyrUGU=" crossorigin="anonymous"></script>
         <script src="vendor/moment.js-2.24.0/moment.js" integrity="sha256-H9jAz//QLkDOy/nzE9G4aYijQtkLt9FvGmdUTwBk6gs=" crossorigin="anonymous"></script>
-        <script src="vendor/chartjs-2.7.3/Chart.js" integrity="sha256-rjYnB0Bull7k2XkbJ03UNGqMuMieR769uQVGSSlsi6A=" crossorigin="anonymous"></script>
+        <script src="vendor/chartjs-2.8.0/Chart.js" integrity="sha256-arMsf+3JJK2LoTGqxfnuJPFTU4hAK57MtIPdFpiHXOU=" crossorigin="anonymous"></script>
             {% endif %}
+        <script src="vendor/dayjs-1.8.15/dayjs.min.js" integrity="sha256-O8jJkrGlyXxcQlI/zhrWlA8u5+sfP/XrtOTzH+gjk2Y=" crossorigin="anonymous"></script>
         {% else %}
             {% if settings.production %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.2/vue-router.min.js" integrity="sha256-DbgluxFcJqBgeVJwF1idcvA2aeayczQBWJPGn4KZIEc=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js" integrity="sha256-chlNFSVx3TdcQ2Xlw7SvnbLAavAQLO0Y/LBiWX04viY=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.1.1/vue-router.min.js" integrity="sha256-k1wdlx4sR+jzWoZ05XEH18784zGJf/gcyazonqbPxRQ=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.8.1/vue-i18n.min.js" integrity="sha256-MpMPtkbpsmdLSU2V1tmC71e9xf8ta6nqS9cGBV0kEEw=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" integrity="sha256-oSgtFCCmHWRPQ/JmR4OoZ3Xke1Pw4v50uh6pLcu+fIc=" crossorigin="anonymous"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.12.0/vue-i18n.min.js" integrity="sha256-h+arpL0lvkGWrX8mmmLegjJCq+EF31OPIY1ObiaPdM4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
             {% else %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.2/vue-router.js" integrity="sha256-ZXuDnCcIq0+1FwNaovtHEPcdRFEQK10rzx+lYtxxJh8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" integrity="sha256-ufGElb3TnOtzl5E4c/qQnZFGP+FYEZj5kbSEdJNrw0A=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.1.1/vue-router.js" integrity="sha256-9aqv4DiKSP96V8YF42zUAUNC5JJ0KRDN1Zii2EfKGVE=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.8.1/vue-i18n.js" integrity="sha256-ill8APnDAfbMzzMH2cmIefLaWsKoIGq13hO5lDdiFCI=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js" integrity="sha256-H9jAz//QLkDOy/nzE9G4aYijQtkLt9FvGmdUTwBk6gs=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js" integrity="sha256-rjYnB0Bull7k2XkbJ03UNGqMuMieR769uQVGSSlsi6A=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.12.0/vue-i18n.js" integrity="sha256-r4VGwb1k8QS7YCkvOfrZ6fTBdbdMz0jZHizfhMyrUGU=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js" integrity="sha256-arMsf+3JJK2LoTGqxfnuJPFTU4hAK57MtIPdFpiHXOU=" crossorigin="anonymous"></script>
             {% endif %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.8.15/dayjs.min.js" integrity="sha256-O8jJkrGlyXxcQlI/zhrWlA8u5+sfP/XrtOTzH+gjk2Y=" crossorigin="anonymous"></script>
         {% endif %}
 
         <script src="vendor/visualizer.js"></script>
