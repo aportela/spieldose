@@ -555,20 +555,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/top_played_tracks", params).then(
@@ -590,20 +590,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/top_artists", params).then(
@@ -625,20 +625,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/top_genres", params).then(
@@ -662,20 +662,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_added", params).then(
@@ -699,20 +699,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_added", params).then(
@@ -736,20 +736,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_added", params).then(
@@ -773,20 +773,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_played", params).then(
@@ -810,20 +810,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_played", params).then(
@@ -847,20 +847,20 @@ const spieldoseAPI = {
                 case 0:
                     break;
                 case 1:
-                    params.fromDate = moment().subtract(7, 'days').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 2:
-                    params.fromDate = moment().subtract(1, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 3:
-                    params.fromDate = moment().subtract(6, 'months').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
                 case 4:
-                    params.fromDate = moment().subtract(1, 'year').format('YYYYMMDD');
-                    params.toDate = moment().format('YYYYMMDD');
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
             Vue.http.post("api/metrics/recently_played", params).then(
