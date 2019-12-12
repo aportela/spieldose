@@ -403,6 +403,7 @@ p.radio-station-item-icon
 div.browse-radio-station-item img
 {
     width: 128px;
+    height: 128px;
     border: 0px;
     z-index: 0;
 }
