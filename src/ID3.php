@@ -116,7 +116,7 @@
         }
 
         public function getPlaytimeSeconds(): int {
-			return((int)ceil($this->getTagFieldValue($this->tagData, "playtime_seconds")));
+			return(intval(ceil((float)$this->getTagFieldValue($this->tagData, "playtime_seconds"))));
         }
 
         public function getPlaytimeString(): string {
