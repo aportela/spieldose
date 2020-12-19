@@ -24,23 +24,23 @@
         /**
          * Called once just like normal constructor
          */
-        public static function setUpBeforeClass () { }
+        public static function setUpBeforeClass (): void { }
 
         /**
          * Clean up the whole test class
          */
-        public static function tearDownAfterClass() { }
+        public static function tearDownAfterClass(): void { }
 
         /**
          * Initialize the test case
          * Called for every defined test
          */
-        protected function setUp() { }
+        protected function setUp(): void { }
 
         /**
          * Clean up the test case, called for every defined test
          */
-        protected function tearDown() {
+        protected function tearDown(): void {
             $this->response = null;
         }
 
@@ -61,7 +61,7 @@
                 'REQUEST_URI' => $url,
                 'REQUEST_METHOD' => $method,
                 'SERVER_NAME' => 'localhost',
-                'CONTENT_TYPE' => 'application/json;charset=utf8'
+                'CONTENT_TYPE' => 'application/json'
             ]);
 
             $parts = explode('?', $url);

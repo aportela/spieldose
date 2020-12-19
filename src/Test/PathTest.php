@@ -15,7 +15,7 @@
         /**
          * Called once just like normal constructor
          */
-        public static function setUpBeforeClass () {
+        public static function setUpBeforeClass (): void {
             self::$app = (new \Spieldose\App())->get();
             self::$container = self::$app->getContainer();
             self::$dbh = new \Spieldose\Database\DB(self::$container);
@@ -25,21 +25,21 @@
          * Initialize the test case
          * Called for every defined test
          */
-        public function setUp() {
+        public function setUp(): void {
             self::$dbh->beginTransaction();
         }
 
         /**
          * Clean up the test case, called for every defined test
          */
-        public function tearDown() {
+        public function tearDown(): void {
             self::$dbh->rollBack();
         }
 
         /**
          * Clean up the whole test class
          */
-        public static function tearDownAfterClass() {
+        public static function tearDownAfterClass(): void {
             self::$dbh = null;
             self::$container = null;
             self::$app = null;

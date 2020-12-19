@@ -11,23 +11,23 @@
         /**
          * Called once just like normal constructor
          */
-        public static function setUpBeforeClass () { }
+        public static function setUpBeforeClass (): void { }
 
         /**
          * Clean up the whole test class
          */
-        public static function tearDownAfterClass() { }
+        public static function tearDownAfterClass(): void { }
 
         /**
          * Initialize the test case
          * Called for every defined test
          */
-        protected function setUp() { }
+        protected function setUp(): void { }
 
         /**
          * Clean up the test case, called for every defined test
          */
-        protected function tearDown() { }
+        protected function tearDown(): void { }
 
         public function testRootPath(): void {
             $this->request('GET', "/");
@@ -37,7 +37,7 @@
         public function testUserPoll(): void {
             $this->request('GET', "/api/user/poll");
             $this->assertThatResponseHasStatus(200);
-            $this->assertThatResponseHasContentType("application/json;charset=utf-8");
+            $this->assertThatResponseHasContentType("application/json");
         }
     }
 ?>
