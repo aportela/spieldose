@@ -123,6 +123,7 @@ let player = (function () {
         watch: {
             volume: function (value) {
                 this.audio.volume = value;
+                spieldoseSettings.setCurrentSessionVolume(value);
             },
             streamUrl: function (value) {
                 if (value) {
@@ -171,7 +172,7 @@ let player = (function () {
         mounted: function () {
             let self = this;
             this.audio = document.createElement('audio');
-
+            this.audio.volume = spieldoseSettings.getCurrentSessionVolume();
             let aa = this.audio;
             aa.addEventListener("timeupdate", function (track) {
                 const currentProgress = aa.currentTime / aa.duration;
