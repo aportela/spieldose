@@ -21,7 +21,7 @@ let player = (function () {
                 </nav>
                 <div id="player-metadata-container" class="has-text-centered">
                     <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
-                    <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">{{ nowPlayingArtist }}</h2>
+                    <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist"><a href="#" v-on:click.prevent="navigateToArtistPage(nowPlayingArtist);">{{ nowPlayingArtist }}</a></h2>
                 </div>
                 <div id="player-controls" class="is-unselectable">
                     <div class="has-text-centered player-buttons">
@@ -55,7 +55,7 @@ let player = (function () {
 
     let module = Vue.component('spieldose-player-component', {
         template: template(),
-        mixins: [mixinPlayer],
+        mixins: [ mixinPlayer, mixinNavigation],
         data: function () {
             return ({
                 preMuteVolume: 1,
