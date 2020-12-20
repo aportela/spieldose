@@ -77,7 +77,9 @@ const app = new Vue({
         });
         if (!initialState.upgradeAvailable) {
             if (!initialState.logged) {
-                this.$router.push({ name: 'signin' });
+                if (this.$route.name != 'signin') {
+                    this.$router.push({ name: 'signin' });
+                }
             } else {
                 if (!this.$route.name) {
                     this.$router.push({ name: 'dashboard' });
