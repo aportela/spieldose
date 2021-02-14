@@ -28,7 +28,7 @@
 
         public static function search(string $album = "", int $limit = 1): array {
             $results = array();
-            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $album, $limit);
+            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, urlencode($album), $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
             if (! isset($result->error)) {
@@ -44,7 +44,7 @@
         }
 
         public static function searchMusicBrainzId(string $name = "", string $artist = "", int $limit = 1): array {
-            $url = sprintf(self::MUSICBRAINZ_API_BASE_URL, $name, $artist, $limit);
+            $url = sprintf(self::MUSICBRAINZ_API_BASE_URL, urlencode($name), urlencode($artist), $limit);
             $result = \Spieldose\Net::httpRequest($url, self::USER_AGENT);
             $result = json_decode($result);
             $mbIds = array();
@@ -89,7 +89,7 @@
             else if (empty($artist)) {
                 throw new \Spieldose\Exception\InvalidParamsException("artist");
             } else {
-                $url = sprintf(self::API_GET_URL_FROM_ALBUM_AND_ARTIST, \Spieldose\LastFM::API_KEY, $album, $artist);
+                $url = sprintf(self::API_GET_URL_FROM_ALBUM_AND_ARTIST, \Spieldose\LastFM::API_KEY, urlencode($album), urlencode($artist));
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
                 if (! isset($result->error)) {

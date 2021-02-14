@@ -26,7 +26,7 @@
 
         public static function search(string $track = "", string $artist = "", int $limit = 1): array {
             $results = array();
-            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, $track, $artist, $limit);
+            $url = sprintf(self::API_SEARCH_URL, \Spieldose\LastFM::API_KEY, urlencode($track), urlencode($artist), $limit);
             $result = \Spieldose\Net::httpRequest($url);
             $result = json_decode($result);
             if (! isset($result->error)) {
@@ -63,7 +63,7 @@
             else if (empty($artist)) {
                 throw new \Spieldose\Exception\InvalidParamsException("artist");
             } else {
-                $url = sprintf(self::API_GET_URL_FROM_TRACK_AND_ARTIST, \Spieldose\LastFM::API_KEY, $track, $artist);
+                $url = sprintf(self::API_GET_URL_FROM_TRACK_AND_ARTIST, \Spieldose\LastFM::API_KEY, urlencode($track), urlencode($artist));
                 $json = \Spieldose\Net::httpRequest($url);
                 $result = json_decode($json, false);
                 if (! isset($result->error)) {
