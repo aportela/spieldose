@@ -3,6 +3,8 @@
 /data/spieldose.sqlite3-wal
 /data/thumbnails/*
 /vendor/
+/node_modules/
 /logs/*
 !/logs/README.md
 composer.lock
+package-lock.json

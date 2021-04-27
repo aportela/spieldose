@@ -77,7 +77,11 @@
         <!--
         <script src="vendor/visualizer.js"></script>
         -->
+        {% if settings.production %}
+        <script type="module" src="scripts/app-bundle.min.js?25da9bb273410a741d4c"></script>
+        {% else %}
         <script type="module" src="scripts/app.js"></script>
+        {% endif %}
 
     </body>
 </html>
