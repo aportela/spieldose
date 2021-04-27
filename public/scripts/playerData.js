@@ -1,3 +1,5 @@
+import { default as spieldoseAPI } from './api.js';
+
 /**
  * create & return a player data object
  */
@@ -267,3 +269,5 @@ const getPlayerData = (function () {
 });
 
 const sharedPlayerData = getPlayerData();
+
+export default sharedPlayerData;

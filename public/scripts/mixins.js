@@ -1,7 +1,12 @@
+import { bus } from './bus.js';
+import { default as spieldoseAPI } from './api.js';
+import { default as sharedPlayerData } from './playerData.js';
+import { default as getValidator } from './validator.js';
+
 /**
  * live searches common mixins
  */
-const mixinLiveSearches = {
+export const mixinLiveSearches = {
     computed: {
         liveSearch: function () {
             return (initialState.liveSearch);
@@ -12,7 +17,7 @@ const mixinLiveSearches = {
 /**
  * album entity common mixins
  */
-const mixinAlbums = {
+ export const mixinAlbums = {
     filters: {
         getAlbumImageUrl: function (value) {
             if (value) {
@@ -35,7 +40,7 @@ const mixinAlbums = {
 /**
  * artist entity common mixins
  */
-const mixinArtists = {
+ export const mixinArtists = {
     filters: {
         getArtistImageUrl: function (value) {
             if (value) {
@@ -54,7 +59,7 @@ const mixinArtists = {
 /**
  * player common mixins
  */
-const mixinPlayer = {
+ export const mixinPlayer = {
     data: function () {
         return ({
             playerData: sharedPlayerData,
@@ -277,10 +282,10 @@ const mixinPlayer = {
 /**
  * validator common mixins
  */
-const mixinValidations = {
+ export const mixinValidations = {
     data: function () {
         return ({
-            validator: getValidator()
+            validator: getValidator
         });
     }
 };
@@ -288,7 +293,7 @@ const mixinValidations = {
 /**
  * api error common mixins
  */
-const mixinAPIError = {
+export const mixinAPIError = {
     data: function () {
         return ({
             apiError: null
@@ -310,7 +315,7 @@ const mixinAPIError = {
 /**
  * pagination common mixins
  */
-const mixinPagination = {
+ export const mixinPagination = {
     data: function () {
         return ({
             pager: {
@@ -345,7 +350,7 @@ const mixinPagination = {
 /**
  * top & recent dashboard charts mixins
  */
-const mixinTopRecentCharts = {
+ export const mixinTopRecentCharts = {
     data: function () {
         return ({
             items: []
@@ -372,7 +377,7 @@ const mixinTopRecentCharts = {
 /**
  * navigation mixins
  */
-const mixinNavigation = {
+ export const mixinNavigation = {
     methods: {
         isSectionActive: function (section) {
             return (this.$route.name == section);
@@ -391,7 +396,7 @@ const mixinNavigation = {
 /**
  * session mixins
  */
-const mixinSession = {
+ export const mixinSession = {
     methods: {
         signout: function () {
             bus.$emit("signOut");

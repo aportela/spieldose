@@ -1,4 +1,15 @@
-"use strict";
+import { default as upgrade } from './vue-components/upgrade.js';
+import { default as signInUp } from './vue-components/signin.js';
+import { default as container } from './vue-components/container.js';
+import { default as search } from './vue-components/search.js';
+import { default as dashboard } from './vue-components/dashboard.js';
+import { default as nowPlaying } from './vue-components/playlists.js';
+import { default as browseArtists } from './vue-components/browse-artists.js';
+import { default as browseAlbums } from './vue-components/browse-albums.js';
+import { default as browsePaths } from './vue-components/browse-paths.js';
+import { default as browsePlaylists } from './vue-components/browse-playlists.js';
+import { default as browseRadioStations } from './vue-components/browse-radio-stations.js';
+import { default as browseArtist } from './vue-components/browse-artist.js';
 
 /**
  * vue-router route definitions
@@ -136,3 +147,5 @@ router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
     next();
 });
+
+export default router;

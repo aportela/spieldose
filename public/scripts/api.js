@@ -1,10 +1,6 @@
 "use strict";
 
-/**
- * common object for interact with API
- * all methods return callback with vue-resource response object
- */
-const spieldoseAPI = {
+export default {
     session: {
         poll: function (callback) {
             Vue.http.get("api/user/poll").then(

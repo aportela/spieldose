@@ -1,9 +1,8 @@
-"use strict";
-
-/**
- * global object for events between vuejs components
- */
-const bus = new Vue();
+import { default as router } from './routes.js';
+import { default as i18n } from './i18n.js';
+import { default as spieldoseAPI } from './api.js';
+import { bus } from './bus.js';
+import { mixinAPIError, mixinPlayer } from './mixins.js';
 
 /**
  * parse vue-resource (custom) resource and return valid object for api-error component

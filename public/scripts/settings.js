@@ -47,4 +47,5 @@ const getSpieldoseSettings = function() {
     return (module);
 };
 
-const spieldoseSettings = getSpieldoseSettings();
+let settings = getSpieldoseSettings();
+export default settings;

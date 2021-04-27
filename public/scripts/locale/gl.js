@@ -1,4 +1,4 @@
-const messages = {
+export default {
     gl: {
         signIn: {
             labels: {

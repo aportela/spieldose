@@ -1,98 +1,96 @@
-let browsePaths = (function () {
-    "use strict";
+import { default as spieldoseAPI } from '../api.js';
+import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 
-    const template = function () {
-        return `
-            <div class="container is-fluid box is-marginless">
-            <p class="title is-1 has-text-centered">{{ $t("browsePaths.labels.sectionName") }}</p>
-                <div v-if="! hasAPIErrors">
-                    <div class="field has-addons">
-                        <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                            <input type="text" class="input" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-search"></i>
-                            </span>
-                        </div>
-                        <p class="control" v-if="! liveSearch">
-                            <a class="button is-info" v-on:click.prevent="search();">
-                                <span class="icon">
-                                    <i class="fas fa-search" aria-hidden="true"></i>
-                                </span>
-                                <span>{{ $t("browsePaths.buttons.search") }}</span>
-                            </a>
-                        </p>
+const template = function () {
+    return `
+        <div class="container is-fluid box is-marginless">
+        <p class="title is-1 has-text-centered">{{ $t("browsePaths.labels.sectionName") }}</p>
+            <div v-if="! hasAPIErrors">
+                <div class="field has-addons">
+                    <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
+                    <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-search"></i>
+                        </span>
                     </div>
-                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
-                    <table class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable" v-show="! loading">
-                        <thead>
-                            <tr>
-                                <th>{{ $t("browsePaths.labels.pathNameTableHeader") }}</th>
-                                <th>{{ $t("browsePaths.labels.trackCountTableHeader") }}</th>
-                                <th>{{ $t("browsePaths.labels.actionsTableHeader") }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="item in paths" v-bind:key="item.path">
-                                <td>{{ item.path }}</td>
-                                <td class="has-text-right">{{ item.totalTracks }}</td>
-                                <td class="has-text-centered">
-                                    <div v-if="item.totalTracks > 0">
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" v-on:click.prevent="playPathTracks(item.path);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <p class="control" v-if="! liveSearch">
+                        <a class="button is-info" v-on:click.prevent="search();">
+                            <span class="icon">
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                            </span>
+                            <span>{{ $t("browsePaths.buttons.search") }}</span>
+                        </a>
+                    </p>
                 </div>
-                <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
+                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <table class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable" v-show="! loading">
+                    <thead>
+                        <tr>
+                            <th>{{ $t("browsePaths.labels.pathNameTableHeader") }}</th>
+                            <th>{{ $t("browsePaths.labels.trackCountTableHeader") }}</th>
+                            <th>{{ $t("browsePaths.labels.actionsTableHeader") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in paths" v-bind:key="item.path">
+                            <td>{{ item.path }}</td>
+                            <td class="has-text-right">{{ item.totalTracks }}</td>
+                            <td class="has-text-centered">
+                                <div v-if="item.totalTracks > 0">
+                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" v-on:click.prevent="playPathTracks(item.path);"></i>
+                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        `;
-    };
+            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
+        </div>
+    `;
+};
 
-    /* browse path section component */
-    let module = Vue.component('spieldose-browse-paths', {
-        template: template(),
-        mixins: [
-            mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
-        ],
-        data: function () {
-            return ({
-                loading: false,
-                nameFilter: null,
-                paths: []
-            });
-        }, methods: {
-            onPaginationChanged: function (currentPage) {
-                this.$router.push({ name: 'pathsPaged', params: { page: currentPage } });
-            },
-            onTypeahead: function (text) {
-                this.nameFilter = text;
-                this.search();
-            },
-            search: function () {
-                let self = this;
-                self.loading = true;
-                self.clearAPIErrors();
-                spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                    if (response.ok) {
-                        self.pager.actualPage = response.body.pagination.actualPage;
-                        self.pager.totalPages = response.body.pagination.totalPages;
-                        self.pager.totalResults = response.body.pagination.totalResults;
-                        if (response.body.paths && response.body.paths.length > 0) {
-                            self.paths = response.body.paths;
-                        } else {
-                            self.paths = [];
-                        }
+export default {
+    name: 'spieldose-browse-paths',
+    template: template(),
+    mixins: [
+        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
+    ],
+    data: function () {
+        return ({
+            loading: false,
+            nameFilter: null,
+            paths: []
+        });
+    },
+    methods: {
+        onPaginationChanged: function (currentPage) {
+            this.$router.push({ name: 'pathsPaged', params: { page: currentPage } });
+        },
+        onTypeahead: function (text) {
+            this.nameFilter = text;
+            this.search();
+        },
+        search: function () {
+            let self = this;
+            self.loading = true;
+            self.clearAPIErrors();
+            spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+                if (response.ok) {
+                    self.pager.actualPage = response.body.pagination.actualPage;
+                    self.pager.totalPages = response.body.pagination.totalPages;
+                    self.pager.totalResults = response.body.pagination.totalResults;
+                    if (response.body.paths && response.body.paths.length > 0) {
+                        self.paths = response.body.paths;
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        self.paths = [];
                     }
-                    self.loading = false;
-                });
-            }
+                } else {
+                    self.setAPIError(response.getApiErrorData());
+                }
+                self.loading = false;
+            });
         }
-    });
-
-    return (module);
-})();
+    }
+}
