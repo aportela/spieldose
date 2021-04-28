@@ -5,7 +5,7 @@ import { default as i18n } from '../i18n.js';
 const template = function () {
     return `
         <!-- template credits: daniel (https://github.com/dansup) -->
-        <section class="hero is-fullheight is-light is-bold">
+        <section class="hero is-fullheight">
             <div class="hero-body">
                 <div class="container">
                     <div class="columns is-vcentered">

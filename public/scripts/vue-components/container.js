@@ -5,7 +5,7 @@ import { default as playerNavBar } from './player-navbar.js';
 const template = function () {
     return `
         <div>
-            <section class="section is-fullheight is-light is-bold">
+            <section class="section is-fullheight">
                 <div class="columns is-desktop">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column">
