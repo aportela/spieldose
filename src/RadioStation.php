@@ -39,7 +39,6 @@
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
                 }
-                return($allowed);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
@@ -54,7 +53,7 @@
                             (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
                             (new \Spieldose\Database\DBParam())->str(":name", $this->name),
                             (new \Spieldose\Database\DBParam())->str(":url", $this->url),
-                            (new \Spieldose\Database\DBParam())->str(":url_type", $this->urlType),
+                            (new \Spieldose\Database\DBParam())->int(":url_type", $this->urlType),
                             (new \Spieldose\Database\DBParam())->str(":image", $this->image)
                         );
                         return($dbh->execute(" INSERT INTO RADIO_STATION (id, user_id, name, url, url_type, image) VALUES(:id, :user_id, :name, :url, :url_type, :image) ", $params));
@@ -78,7 +77,7 @@
                             (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
                             (new \Spieldose\Database\DBParam())->str(":name", $this->name),
                             (new \Spieldose\Database\DBParam())->str(":url", $this->url),
-                            (new \Spieldose\Database\DBParam())->str(":url_type", $this->urlType),
+                            (new \Spieldose\Database\DBParam())->int(":url_type", $this->urlType),
                             (new \Spieldose\Database\DBParam())->str(":image", $this->image)
                         );
                         return($dbh->execute(" UPDATE RADIO_STATION SET name = :name, url = :url, url_type = :url_type, image = :image WHERE id = :id AND user_id = :user_id ", $params));
