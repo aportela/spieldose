@@ -3,7 +3,7 @@ import { mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer } fro
 
 const template = function () {
     return `
-        <section class="panel chart">
+        <section class="panel chart height-100">
             <p class="panel-heading">
                 <span class="icon">
                     <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>

@@ -845,3 +845,8 @@ div#playlist::-webkit-scrollbar-thumb
 }
 
 /* playlist */
+
+.height-100
+{
+    height: 100%;
+}
