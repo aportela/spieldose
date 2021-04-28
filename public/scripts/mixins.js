@@ -383,7 +383,7 @@ export const mixinAPIError = {
             return (this.$route.name == section);
         },
         changeSection: function (routeName) {
-            this.$router.push({ name: routeName });
+            this.$router.push({ name: routeName }).catch(err => {});
         },
         navigateToArtistPage: function (artist) {
             if (artist) {
