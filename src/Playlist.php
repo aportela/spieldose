@@ -33,7 +33,6 @@
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
                 }
-                return($allowed);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("id");
             }
