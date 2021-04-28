@@ -1,5 +1,8 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists, mixinPlayer } from '../mixins.js';
+import { default as inputTypeAHead } from './input-typeahead.js';
+import { default as pagination } from './pagination';
+import { default as apiError } from './api-error.js';
 
 const template = function () {
     return `
@@ -89,6 +92,11 @@ export default {
             filterByArtist: null,
             filterByYear: null
         });
+    },
+    components: {
+        'spieldose-input-typeahead': inputTypeAHead,
+        'spieldose-pagination': pagination,
+        'spieldose-api-error-component': apiError
     },
     methods: {
         onPaginationChanged: function (currentPage) {

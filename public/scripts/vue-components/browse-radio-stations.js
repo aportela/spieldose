@@ -1,5 +1,9 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer, mixinAlbums } from '../mixins.js';
+import { default as inputTypeAHead } from './input-typeahead.js';
+import { default as pagination } from './pagination';
+import { default as apiError } from './api-error.js';
+import { default as deleteConfirmationModal } from './delete-confirmation-modal.js';
 
 const template = function () {
     return `
@@ -166,6 +170,12 @@ export default {
         allowSave: function () {
             return (this.formRadioStationName && this.formRadioStationUrl);
         }
+    },
+    components: {
+        'spieldose-input-typeahead': inputTypeAHead,
+        'spieldose-pagination': pagination,
+        'spieldose-api-error-component': apiError,
+        'delete-confirmation-modal': deleteConfirmationModal
     },
     methods: {
         onPaginationChanged: function (currentPage) {
