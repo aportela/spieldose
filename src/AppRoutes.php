@@ -461,7 +461,6 @@
                     $image
                 );
                 $dbh = new \Spieldose\Database\DB($this);
-                $dbh = new \Spieldose\Database\DB($this);
                 $radioStation->add($dbh);
                 return $response->withJson([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ], 200);
             });
