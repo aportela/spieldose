@@ -25,6 +25,7 @@ const template = function () {
                     </div>
                     <div class="panel" v-if="activeTab == 'overview'">
                         <div class="content is-clearfix" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
+                        <div class="content is-clearfix" id="bio" v-else>Artist biography not found / not scraped</div>
                         <div class="columns">
                             <div class="column is-half is-full-mobile">
                                 <spieldose-dashboard-toplist v-if="activeTab == 'overview' && artist.name" v-bind:type="'topTracks'" v-bind:title="$t('dashboard.labels.topPlayedTracks')" v-bind:listItemCount="10" v-bind:showPlayCount="true" :key="$route.params.artist" v-bind:artist="$route.params.artist"></spieldose-dashboard-toplist>
@@ -95,42 +96,44 @@ const template = function () {
                         <div class="is-clearfix"></div>
                     </div>
                     <div class="panel" v-if="activeTab == 'update'">
-                        <div class="content is-clearfix">
-                            <div class="field is-horizontal has-addons">
-                                <div class="field-label is-normal">
-                                    <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistName") }}</label>
-                                </div>
-                                <div class="field-body">
-                                    <div class="field is-expanded has-addons">
-                                        <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
-                                            <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistNamePlaceholder')">
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-search"></i>
-                                            </span>
-                                        </div>
-                                        <div class="control">
-                                            <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">{{ $t("browseArtist.buttons.searchOnMusicBrainz") }}</a>
+                        <div class="panel-block">
+                            <div class="content is-clearfix">
+                                <div class="field is-horizontal has-addons">
+                                    <div class="field-label is-normal">
+                                        <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistName") }}</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field is-expanded has-addons">
+                                            <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
+                                                <input class="input" :disabled="loading" v-model.trim="artist.name" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistNamePlaceholder')">
+                                                <span class="icon is-small is-left">
+                                                    <i class="fas fa-search"></i>
+                                                </span>
+                                            </div>
+                                            <div class="control">
+                                                <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">{{ $t("browseArtist.buttons.searchOnMusicBrainz") }}</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="field is-horizontal has-addons">
-                                <div class="field-label is-normal">
-                                    <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistMBId") }}</label>
-                                </div>
-                                <div class="field-body">
-                                    <div class="field is-expanded has-addons">
-                                        <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
-                                            <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistMBIdPlaceholder')">
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-search"></i>
-                                            </span>
-                                        </div>
-                                        <div class="control">
-                                            <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.save") }}</a>
-                                        </div>
-                                        <div class="control">
-                                            <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.clear") }}</a>
+                                <div class="field is-horizontal has-addons">
+                                    <div class="field-label is-normal">
+                                        <label class="label">{{ $t("browseArtist.labels.musicBrainzSearchArtistMBId") }}</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field is-expanded has-addons">
+                                            <div class="control has-icons-left is-expanded" v-bind:class="loading ? 'is-loading': ''">
+                                                <input class="input" :disabled="loading" v-model.trim="artist.mbid" type="text" v-bind:placeholder="$t('browseArtist.labels.musicBrainzSearchArtistMBIdPlaceholder')">
+                                                <span class="icon is-small is-left">
+                                                    <i class="fas fa-search"></i>
+                                                </span>
+                                            </div>
+                                            <div class="control">
+                                                <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.save") }}</a>
+                                            </div>
+                                            <div class="control">
+                                                <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.clear") }}</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

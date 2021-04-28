@@ -8,9 +8,9 @@ const template = function () {
         <section class="hero is-fullheight">
             <div class="hero-body">
                 <div class="container">
-                    <div class="columns is-vcentered">
-                        <div class="column is-4 is-offset-4">
-                            <div class="columns is-centered">
+                    <div class="columns is-vcentered is-centered">
+                        <div class="column is-full-mobile is-one-quarter-fullhd">
+                            <div class="columns is-centered is-hidden-mobile">
                                 <!-- Apple Music Sound Equalizer in SVG by Geoff Graham (https://codepen.io/geoffgraham/pen/XmMJqj) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="equilizer" viewBox="0 0 128 128">
                                     <g>
@@ -43,16 +43,16 @@ const template = function () {
                             </div>
                             <form v-on:submit.prevent="submitSignIn" v-show="isSignInTabActive">
                                 <div class="box is-radiusless">
-                                    <label class="label">{{ $t("signIn.labels.email") }}</label>
-                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInEmail') }">
-                                        <input class="input" type="email" ref="signInEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInEmail') }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
+                                    <label class="label is-hidden-mobile">{{ $t("signIn.labels.email") }}</label>
+                                    <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInEmail') }">
+                                        <input class="input" type="email" ref="signInEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInEmail') }" v-bind:disabled="loading ? true: false" v-model="signInEmail" :placeholder="$t('signIn.labels.email')">
                                         <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
                                         <span class="icon is-small is-right" v-show="validator.hasInvalidField('signInEmail')"><i class="fas fa-warning"></i></span>
                                         <p class="help is-danger" v-show="validator.hasInvalidField('signInEmail')">{{ validator.getInvalidFieldMessage('signInEmail') }}</p>
                                     </p>
-                                    <label class="label">{{ $t("signIn.labels.password") }}</label>
-                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInPassword') }">
-                                        <input class="input" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInPassword') }" v-bind:disabled="loading ? true: false" v-model="signInPassword">
+                                    <label class="label is-hidden-mobile">{{ $t("signIn.labels.password") }}</label>
+                                    <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInPassword') }">
+                                        <input class="input" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInPassword') }" v-bind:disabled="loading ? true: false" v-model="signInPassword" :placeholder="$t('signIn.labels.password')">
                                         <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
                                         <span class="icon is-small is-right" v-show="validator.hasInvalidField('signInPassword')"><i class="fas fa-warning"></i></span>
                                         <p class="help is-danger" v-show="validator.hasInvalidField('signInPassword')">{{ validator.getInvalidFieldMessage('signInPassword') }}</p>
