@@ -125,57 +125,14 @@ body {
 
 /* signin vu-meter effect */
 
-/* signin right block (album image mosaic, inspiration from https://github.com/adriancast/Bulma-login-template) */
-
-.container_tiles
-{
-    box-shadow: inset 24px 4px 64px -24px rgba(71,71,71,1);
-    background-color: #666;
-    height: 100vh;
-    overflow: hidden;
-    filter: blur(6px);
-    transition: filter 0.3s ease-in;
-}
-
-.row_tiles
-{
-    display: -ms-flexbox; /* IE10 */
-    display: flex;
-    -ms-flex-wrap: wrap; /* IE10 */
-    flex-wrap: wrap;
-    padding: 0 4px;
-}
-
-.column_tiles
-{
-    -ms-flex: 20%; /* IE10 */
-    flex: 20%;
-    max-width: 20%;
-    padding: 0px;
-}
-
-.column_tiles img {
-    margin-top: 8px;
-    vertical-align: middle;
-    width: 100%;
-}
-
-.fade-enter-active
-{
-    transition: opacity .5s
-}
-
-.fade-leave-active
-{
-    opacity: 0;
-}
+/* signin right block (album image mosaic) */
 
 .blur
 {
     opacity: 0.5;
 }
 
-/* signin right block (album image mosaic, inspiration from https://github.com/adriancast/Bulma-login-template) */
+/* signin right block (album image mosaic) */
 
 div#main_container
 {
