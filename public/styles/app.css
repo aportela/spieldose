@@ -1,0 +1,904 @@
+body {
+}
+
+/* signin vu-meter effect */
+
+.equilizer
+{
+    height: 100px;
+    width: 100%;
+    transform: rotate(180deg);
+}
+
+.bar
+{
+    fill: #dfd8d9;
+    width: 18px;
+    animation: equalize 1.25s steps(25, end) 0s infinite;
+}
+
+.bar:nth-child(1)
+{
+    animation-duration: 1.9s;
+}
+
+.bar:nth-child(2)
+{
+    animation-duration: 2s;
+}
+
+.bar:nth-child(3)
+{
+    animation-duration: 2.3s;
+}
+
+.bar:nth-child(4)
+{
+    animation-duration: 2.4s;
+}
+
+.bar:nth-child(5)
+{
+    animation-duration: 2.1s;
+}
+
+@keyframes equalize {
+    0% {
+        height: 60px;
+    }
+    4% {
+        height: 50px;
+    }
+    8% {
+        height: 40px;
+    }
+    12% {
+        height: 30px;
+    }
+    16% {
+        height: 20px;
+    }
+    20% {
+        height: 30px;
+    }
+    24% {
+        height: 40px;
+    }
+    28% {
+        height: 10px;
+    }
+    32% {
+        height: 40px;
+    }
+    36% {
+        height: 60px;
+    }
+    40% {
+        height: 20px;
+    }
+    44% {
+        height: 40px;
+    }
+    48% {
+        height: 70px;
+    }
+    52% {
+        height: 30px;
+    }
+    56% {
+        height: 10px;
+    }
+    60% {
+        height: 30px;
+    }
+    64% {
+        height: 50px;
+    }
+    68% {
+        height: 60px;
+    }
+    72% {
+        height: 70px;
+    }
+    76% {
+        height: 80px;
+    }
+    80% {
+        height: 70px;
+    }
+    84% {
+        height: 60px;
+    }
+    88% {
+        height: 50px;
+    }
+    92% {
+        height: 60px;
+    }
+    96% {
+        height: 70px;
+    }
+    100% {
+        height: 80px;
+    }
+}
+
+/* signin vu-meter effect */
+
+/* signin right block (album image mosaic, inspiration from https://github.com/adriancast/Bulma-login-template) */
+
+.container_tiles
+{
+    box-shadow: inset 24px 4px 64px -24px rgba(71,71,71,1);
+    background-color: #666;
+    height: 100vh;
+    overflow: hidden;
+    filter: blur(6px);
+    transition: filter 0.3s ease-in;
+}
+
+.row_tiles
+{
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+
+.column_tiles
+{
+    -ms-flex: 20%; /* IE10 */
+    flex: 20%;
+    max-width: 20%;
+    padding: 0px;
+}
+
+.column_tiles img {
+    margin-top: 8px;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.fade-enter-active
+{
+    transition: opacity .5s
+}
+
+.fade-leave-active
+{
+    opacity: 0;
+}
+
+.blur
+{
+    opacity: 0.5;
+}
+
+/* signin right block (album image mosaic, inspiration from https://github.com/adriancast/Bulma-login-template) */
+
+div#main_container
+{
+    margin-top: 24px;
+}
+
+div#app .section
+{
+    padding: 1.5rem;
+}
+
+/* sidebar player cover */
+
+/*
+p#player-cover-header
+{
+    background-color: #16171b;
+    z-index: 1;
+    opacity: 0.62;
+    padding: 0.2rem;
+}
+
+*/
+
+div.spieldose-tabs-without-margin-bottom
+{
+    margin-bottom: 0rem !important;
+}
+
+.spieldose-margin-top-1rem
+{
+    margin-top: 1rem !important;
+}
+
+/* sidebar player controls */
+
+/* menu color fix*/
+
+aside.menu ul.menu-list li a.is-active
+{
+    color: #fff !important;
+}
+
+/* menu color fix*/
+
+/* album thumb */
+
+div.browse-album-item, div.playlist-item, div.path-item
+{
+    width: 174px;
+    float: left;
+    margin: 0px 24px;
+    margin-bottom: 16px;
+}
+
+div.browse-album-item a.play-album
+{
+    width: 174px;
+    height: 174px;
+    display: block;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+div.browse-album-item a.play-album img.no-cover
+{
+    display: block !important;
+}
+
+div.browse-album-item a.play-album img.album-thumbnail, div.browse-album-item a img.vynil
+{
+    width: 174px;
+    height: 174px;
+    border: 0px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+/* album cover effect (hover -> move to left) */
+
+div.browse-album-item a.play-album img.album-thumbnail
+{
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+    background: #000;
+}
+
+div.browse-album-item a.play-album:hover img.album-thumbnail
+{
+    left: -80px;
+}
+
+/* album cover effect (hover -> move to left) */
+
+/* album (internal) vinyl effect (hover -> rotate) */
+
+div.browse-album-item a.play-album img.vinyl
+{
+    z-index: 0;
+    display: none;
+    width: 174px;
+    height: 174px;
+    -webkit-transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    -o-transition: all 1s ease-out;
+    transition: all 1s ease-out;
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
+}
+
+div.browse-album-item a.play-album:hover img.vinyl
+{
+    z-index: 0;
+    display: block;
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+}
+
+/* album (internal) vinyl effect (hover -> rotate) */
+
+/* play icon (hover cover) */
+
+div.browse-album-item a.play-album i
+{
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 72px;
+    z-index: 2;
+    color: #ccc;
+}
+
+div.browse-album-item a.play-album:hover i
+{
+    display: block;
+}
+
+/* artist / album name (below cover) */
+
+div.browse-album-item div.album_info
+{
+    padding: 8px;
+    overflow: hidden;
+}
+
+div.browse-album-item div.album-info p
+{
+    margin: 0px;
+    font-size: 13px;
+    font-family: Tahoma;
+    width: 100%;
+    height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+div.browse-album-item div.album-info p. *
+{
+    color: #939aa0;
+}
+
+/* album thumb */
+
+/* artist thumb */
+
+div.browse-artist-item
+{
+    width: 128px;
+    margin: 0px 24px;
+    margin-bottom: 16px;
+}
+
+div.browse-artist-item a
+{
+    width: 128px;
+    height: 128px;
+    display: block;
+    position: relative;
+    border-radius: 16%;
+    overflow: hidden;
+}
+
+
+div.browse-artist-item a img
+{
+    width: 128px;
+    border: 0px;
+    z-index: 0;
+}
+
+div.browse-artist-item a:hover img
+{
+    opacity: 0.5;
+}
+
+div.browse-artist-item a i
+{
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    z-index: 1;
+    color: #4F5B69
+}
+
+div.browse-artist-item a:hover i
+{
+    display: block;
+    opacity: 0.8;
+}
+
+div.browse-artist-item div.artist-info
+{
+    padding: 4px;
+    overflow: hidden;
+}
+
+div.browse-artist-item div.artist-info p.artist-name, div.playlist-item p.playlist-info, div.path-item p.path-info, div.browse-radio-station-item p.radio-station-info
+{
+    margin: 0px;
+    font-size: 13px;
+    font-family: Tahoma;
+    width: 100%;
+    height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #545a5f;
+    text-overflow: ellipsis;
+}
+
+/* artist thumb */
+
+/* playlist thumb */
+
+p.playlist-item-icon
+{
+    margin-top: 1em;
+}
+
+/* playlist thumb */
+
+/* playlist thumb */
+
+p.path-item-icon
+{
+    margin-top: 1em;
+    cursor: pointer;
+}
+
+/* playlist thumb */
+
+/* radio station thumb */
+
+div.browse-radio-station-item
+{
+    width: 256px;
+    margin: 0px 24px;
+    margin-bottom: 16px;
+    float: left;
+}
+
+p.radio-station-item-icon
+{
+    margin-top: 1em;
+    cursor: pointer;
+}
+
+div.browse-radio-station-item img
+{
+    width: 128px;
+    height: 128px;
+    border: 0px;
+    z-index: 0;
+}
+
+
+/* radio station thumb */
+
+/* player playlist */
+
+ul#player-playlist {
+    background: #181F24;
+    width: 100%;
+    padding-left: 0px;
+    margin-bottom: 0px;
+    list-style-type: none;
+}
+ul#player-playlist li {
+    clear: both;
+    overflow: hidden;
+}
+ul#player-playlist li a {
+    border-left: 3px solid #232c32;
+    display: block;
+    color: #9b9c9f;
+    text-decoration: none;
+    font-size: 12px;
+    text-align: left;
+    display: block;
+    width: 100%;
+    font-size: 13px;
+    height: 26px;
+    padding: 4px;
+    border-bottom: 1px solid #434E5A;
+    cursor: pointer;
+}
+ul#player-playlist li a.selected {
+    background: #232c32;
+    border-left: 3px solid #d19b3d;
+}
+ul#player-playlist li a:hover {
+    background-color: #4f5b69;
+    border-left: 3px solid #4f5b69;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+}
+ul#player-playlist li a.selected:hover {
+    background-color: #4f5b69;
+    border-left: 3px solid #d19b3d;
+}
+ul#player-playlist li a span.title {
+    float: left;
+    display: block;
+    width: 246px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+}
+ul#player-playlist li a span.duration {
+    float: right;
+    width: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* player playlist */
+
+/* dashboard charts */
+
+section.chart {
+    background: #fff;
+}
+section.chart ol {
+    margin-left: 1em;
+    font-size: 0.875em;
+    color: #363636;
+}
+/* dashboard charts */
+
+/* global search results */
+
+table#t-search-results tbody tr td i {
+    cursor: pointer;
+    vertical-align: middle;
+}
+span.highlight {
+    color: #222;
+    font-weight: bold;
+}
+/* global search results */
+
+div#bio
+{
+    font-size: 0.875em;
+}
+
+img.artist_avatar
+{
+    object-fit: cover;
+    border-radius:50%;
+    width: 150px;
+    height: 150px;
+}
+
+/* vuejs router transitions */
+
+.fade-enter-active, .fade-leave-active
+{
+    transition-property: opacity;
+    transition-duration: .25s;
+}
+
+.fade-enter-active
+{
+    transition-delay: .25s;
+}
+
+.fade-enter, .fade-leave-active
+{
+    opacity: 0
+}
+
+/* vuejs router transitions */
+
+/* global search dropdown results */
+
+div#dropdown_search_results
+{
+    position: absolute;
+    z-index: 5000;
+    background: #fff;
+    color: #222;
+    width: 200%;
+    padding: 1.25rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
+}
+
+div#dropdown_search_results img
+{
+    max-height: 64px !important;
+    border-radius:50%;
+}
+
+div#dropdown_search_results div.content
+{
+    margin-top: 10px;
+}
+
+div#dropdown_search_results div.content a
+{
+    color: #222;
+}
+/* global search dropdown results */
+
+
+.hero .tabs ul
+{
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.border-radius-50
+{
+    border-radius: 50%;
+}
+
+.cut-text
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cursor-pointer
+{
+    cursor: pointer;
+}
+
+canvas.play-stats-metrics-graph
+{
+    width: 100%;
+    height: 200px;
+}
+
+div#debug
+{
+    z-index: 2000;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 100%;
+    font-weight: bold;
+    padding: 0.2rem;
+}
+
+.no-text-decoration
+{
+    text-decoration: none !important;
+}
+
+div#player
+{
+    background-color: whitesmoke;
+    width:400px;
+}
+
+nav#menu
+{
+    width:400px;
+}
+
+img#album-cover
+{
+    display: block;
+    width: 400px;
+    height: 400px;
+}
+
+@-webkit-keyframes rotate
+{
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
+img#album-cover.rotate-album
+{
+    animation: rotate 1s steps(360, end) 0s infinite;
+}
+
+/* audio */
+
+audio {
+    width: 100%;
+}
+
+/* audio */
+
+/* spectrum analyzer */
+
+canvas#canvas
+{
+    width: 100%;
+    height: 24px;
+    background: #000;
+}
+
+/* spectrum analyzer */
+
+/* song progress */
+
+input#song-played-progress
+{
+    width: 70%;
+    cursor: pointer;
+}
+
+/* song progress */
+
+/* song time */
+
+span#song-current-time {
+    margin-left: 0.5rem;
+}
+
+span#song-duration {
+    margin-right: 0.5rem;
+}
+
+/* song time */
+
+/* song metadata */
+
+div#player-metadata-container h1, div#player-metadata-container h2
+{
+    padding-left: 1rem;
+    padding-right: 1rem;
+    line-height: normal;
+}
+
+/* song metadata */
+
+/* player controls */
+
+div.player-buttons, div#volume-control
+{
+    margin: 1rem 0rem;
+}
+
+div.player-buttons span
+{
+    border: 4px solid #202136;
+    border: 4px solid #dbdbdb;
+    border-radius: 40px !important;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+div.player-buttons span.icon i.fa-2x
+{
+    font-size: 1.5rem;
+}
+
+div#player-volume-control span
+{
+    cursor: pointer;
+}
+
+div.player-buttons span#btn-play, div.player-buttons span#btn-pause
+{
+    opacity: 1;
+}
+
+div.player-buttons span:hover {
+    opacity: 1;
+}
+
+div.player-buttons span.icon, div#volume-container span.icon
+{
+    width: 3rem !important;
+    height: 3rem !important;
+}
+
+div.player-buttons span.btn-active
+{
+    opacity: 1;
+}
+
+div#player-volume-control
+{
+    padding: 0rem 5rem;
+}
+
+div#player-volume-control input#volume-range
+{
+    width: 100%;
+}
+
+div#player-volume-control span.amplitude-mute
+{
+    cursor: pointer;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-muted i.fa-volume-up
+{
+    display: none !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-muted i.fa-volume-off
+{
+    display: block !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-not-muted i.fa-volume-up
+{
+    display: block !important;
+}
+
+div#player-volume-control span.amplitude-mute.amplitude-not-muted i.fa-volume-off
+{
+    display: none !important;
+}
+
+/* player controls */
+
+
+
+/* playlist */
+
+div#playlist
+{
+    background-color: #242B33;
+}
+
+
+div#playlist
+{
+    overflow-y: scroll;
+}
+
+div.playlist-element
+{
+    padding: 8px;
+}
+
+div.playlist-element.current
+{
+    background-color: #30363e;
+}
+
+div.playlist-element span.icon
+{
+    cursor: pointer;
+}
+
+div.playlist-element:not(:last-child) {
+
+    border-bottom: 1px solid #000;
+}
+
+div.playlist-element span.song-name
+{
+    color: #55b560;
+}
+
+div.playlist-element span.artist-name
+{
+    cursor: pointer;
+}
+
+div.playlist-element p {
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0px 8px;
+}
+
+div#playlist::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #000000;
+}
+
+div#playlist::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #000000;
+}
+
+div#playlist::-webkit-scrollbar-thumb
+{
+    background-color: #55b560;
+    border: 2px solid #555555;
+}
+
+/* playlist */
+
+.height-100
+{
+    height: 100%;
+}
