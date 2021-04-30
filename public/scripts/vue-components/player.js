@@ -172,34 +172,33 @@ export default {
         }
     },
     mounted: function () {
-        let self = this;
         this.audio = document.createElement('audio');
         this.audio.volume = spieldoseSettings.getCurrentSessionVolume();
         let aa = this.audio;
-        aa.addEventListener('timeupdate', function (track) {
+        aa.addEventListener('timeupdate', (track) => {
             const currentProgress = aa.currentTime / aa.duration;
             if (!isNaN(currentProgress)) {
-                self.songProgress = currentProgress.toFixed(2);
+                this.songProgress = currentProgress.toFixed(2);
             } else {
-                self.songProgress = 0;
+                this.songProgress = 0;
             }
-            self.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+            this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
         });
-        aa.addEventListener('volumechange', function (v) {
-            self.volume = aa.volume;
+        aa.addEventListener('volumechange', (v) => {
+            this.volume = aa.volume;
         });
-        aa.addEventListener('ended', function () {
-            if (self.playerData.repeatTracksMode == 'track') {
-                self.audio.pause();
-                self.audio.currentTime = 0;
-                self.audio.play();
+        aa.addEventListener('ended', () => {
+            if (this.playerData.repeatTracksMode == 'track') {
+                this.audio.pause();
+                this.audio.currentTime = 0;
+                this.audio.play();
             } else {
-                self.playerData.currentPlaylist.playNext();
+                this.playerData.currentPlaylist.playNext();
             }
         });
-        aa.addEventListener('error', function (e) {
+        aa.addEventListener('error', (e) => {
             // try to load next song on playlist if errors found
-            self.playerData.currentPlaylist.playNext();
+            this.playerData.currentPlaylist.playNext();
             // TODO
             /*
             switch (e.target.error.code) {
@@ -207,11 +206,11 @@ export default {
             */
         });
         // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
-        //initializeVisualizer(document.getElementById("canvas"), self.audio);
-        document.getElementById('song-played-progress').addEventListener('click', function (e) {
-            const offset = this.getBoundingClientRect();
+        //initializeVisualizer(document.getElementById("canvas"), this.audio);
+        document.getElementById('song-played-progress').addEventListener('click', (e) => {
+            const offset = e.target.getBoundingClientRect();
             const x = e.pageX - offset.left;
-            self.audio.currentTime = ((parseFloat(x) / parseFloat(this.offsetWidth)) * 100) * self.audio.duration / 100;
+            this.audio.currentTime = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.audio.duration / 100;
         });
 
         if (typeof window.IntersectionObserver !== 'undefined') {
@@ -230,7 +229,6 @@ export default {
         }
     },
     created: function () {
-        let self = this;
-        self.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
+        this.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
     }
 }

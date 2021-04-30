@@ -86,23 +86,22 @@ export default {
             this.search();
         },
         search: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.artist.search(self.nameFilter, self.filterNotScraped == 1, self.pager.actualPage, self.pager.resultsPage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.artist.search(this.nameFilter, this.filterNotScraped == 1, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
+                    this.pager.actualPage = response.body.pagination.actualPage;
+                    this.pager.totalPages = response.body.pagination.totalPages;
+                    this.pager.totalResults = response.body.pagination.totalResults;
                     if (response.body.artists && response.body.artists.length > 0) {
-                        self.artists = response.body.artists;
+                        this.artists = response.body.artists;
                     } else {
-                        self.artists = [];
+                        this.artists = [];
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }
     }

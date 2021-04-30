@@ -107,26 +107,25 @@ export default {
             this.search();
         },
         search: function (resetPager) {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
+            this.loading = true;
+            this.clearAPIErrors();
             if (resetPager) {
-                self.pager.actualPage = 1;
+                this.pager.actualPage = 1;
             }
-            spieldoseAPI.album.search(self.nameFilter, self.filterByArtist, self.filterByYear, self.pager.actualPage, self.pager.resultsPage, function (response) {
+            spieldoseAPI.album.search(this.nameFilter, this.filterByArtist, this.filterByYear, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
+                    this.pager.actualPage = response.body.pagination.actualPage;
+                    this.pager.totalPages = response.body.pagination.totalPages;
+                    this.pager.totalResults = response.body.pagination.totalResults;
                     if (response.body.albums && response.body.albums.length > 0) {
-                        self.albums = response.body.albums;
+                        this.albums = response.body.albums;
                     } else {
-                        self.albums = [];
+                        this.albums = [];
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }
     }

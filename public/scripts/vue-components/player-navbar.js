@@ -93,16 +93,15 @@ export default {
         });
     },
     created: function () {
-        let self = this;
         bus.$on('showPlayerNavBar', function () {
             const rootEl = document.documentElement;
             rootEl.classList.add('has-navbar-fixed-bottom');
-            self.showPlayerNavBar = true;
+            this.showPlayerNavBar = true;
         });
         bus.$on('hidePlayerNavbar', function () {
             const rootEl = document.documentElement;
             rootEl.classList.remove('has-navbar-fixed-bottom');
-            self.showPlayerNavBar = false;
+            this.showPlayerNavBar = false;
         });
     },
     computed: {

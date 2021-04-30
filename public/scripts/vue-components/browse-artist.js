@@ -198,7 +198,6 @@ export default {
     },
     created: function () {
         this.getArtist(this.$route.params.artist);
-        let self = this;
         if (this.$route.name == 'artistTracks' || this.$route.name == 'artistTracksPaged') {
             if (this.$route.params.page) {
                 this.pager.actualPage = parseInt(this.$route.params.page);
@@ -227,22 +226,21 @@ export default {
             this.$router.push({ name: 'artistTracksPaged', params: { page: currentPage } });
         },
         getArtist: function (artist) {
-            let self = this;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.artist.get(artist, function (response) {
+            this.loading = true;
+            this.errors = false;
+            spieldoseAPI.artist.get(artist, (response) => {
                 if (response.ok) {
-                    self.artist = response.body.artist;
-                    if (self.artist.bio) {
-                        self.artist.bio = self.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                        self.truncatedBio = self.truncate(self.artist.bio);
-                        //self.activeTab = "overview";
+                    this.artist = response.body.artist;
+                    if (this.artist.bio) {
+                        this.artist.bio = this.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                        this.truncatedBio = this.truncate(this.artist.bio);
+                        //this.activeTab = "overview";
                     }
-                    self.loading = false;
+                    this.loading = false;
                 } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
+                    this.errors = true;
+                    this.apiError = response.getApiErrorData();
+                    this.loading = false;
                 }
             });
         },
@@ -251,39 +249,37 @@ export default {
             clearTimeout(this.timeout);
         },
         instantSearch: function () {
-            let self = this;
-            if (self.timeout) {
-                clearTimeout(self.timeout);
+            if (this.timeout) {
+                clearTimeout(this.timeout);
             }
-            self.timeout = setTimeout(function () {
-                self.pager.actualPage = 1;
-                self.searchArtistTracks(self.$route.params.artist);
+            this.timeout = setTimeout(function () {
+                this.pager.actualPage = 1;
+                this.searchArtistTracks(this.$route.params.artist);
             }, 256);
         },
         searchTracks: function () {
             this.searchArtistTracks(this.$route.params.artist);
         },
         searchArtistTracks: function (artist) {
-            let self = this;
-            self.loading = true;
-            self.loadingTracks = true;
-            self.clearAPIErrors();
+            this.loading = true;
+            this.loadingTracks = true;
+            this.clearAPIErrors();
             let text = this.nameFilter ? this.nameFilter : '';
-            spieldoseAPI.track.searchTracks(text, artist, '', false, self.pager.actualPage, self.pager.resultsPage, '', function (response) {
+            spieldoseAPI.track.searchTracks(text, artist, '', false, this.pager.actualPage, this.pager.resultsPage, '', (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.actualPage;
-                    self.pager.totalPages = response.body.totalPages;
-                    self.pager.totalResults = response.body.totalResults;
+                    this.pager.actualPage = response.body.actualPage;
+                    this.pager.totalPages = response.body.totalPages;
+                    this.pager.totalResults = response.body.totalResults;
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.tracks = response.body.tracks;
+                        this.tracks = response.body.tracks;
                     } else {
-                        self.tracks = [];
+                        this.tracks = [];
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loadingTracks = false;
-                self.loading = false;
+                this.loadingTracks = false;
+                this.loading = false;
             });
         },
         changeTab: function (tab) {
@@ -292,47 +288,44 @@ export default {
             return (text.substring(0, 500));
         },
         enqueueAlbumTracks: function (album, artist, year) {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, function (response) {
-                self.playerData.currentPlaylist.empty();
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
+                this.playerData.currentPlaylist.empty();
                 if (response.ok) {
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.playerData.tracks = response.body.tracks;
-                        self.playerData.playback.play();
+                        this.playerData.tracks = response.body.tracks;
+                        this.playerData.playback.play();
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         },
         searchMusicBrainz(artistName) {
             window.open('https://musicbrainz.org/search?query=' + encodeURI(this.artist.name) + '&type=artist&limit=16&method=indexed');
         },
         overwriteMusicBrainzArtist(name, mbid) {
-            let self = this;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.artist.overwriteMusicBrainz(name, mbid, function (response) {
+            this.loading = true;
+            this.errors = false;
+            spieldoseAPI.artist.overwriteMusicBrainz(name, mbid, (response) => {
                 if (response.ok) {
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         },
         clearMusicBrainzArtist: function (name, mbid) {
-            let self = this;
-            self.loading = true;
-            self.errors = false;
-            spieldoseAPI.artist.clearMusicBrainz(name, mbid, function (response) {
+            this.loading = true;
+            this.errors = false;
+            spieldoseAPI.artist.clearMusicBrainz(name, mbid, (response) => {
                 if (response.ok) {
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }
     }

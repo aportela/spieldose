@@ -88,40 +88,37 @@ export default {
     },
     methods: {
         loadTopPlayedTracks: function () {
-            let self = this;
-            spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, self.artist, function (response) {
+            spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist, (response) => {
                 if (response.ok) {
                     if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                        this.items = response.body.metrics;
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }, loadTopPlayedArtists: function () {
-            let self = this;
-            spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, function (response) {
+            spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, (response) => {
                 if (response.ok) {
                     if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                        this.items = response.body.metrics;
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }, loadTopPlayedGenres: function () {
-            let self = this;
-            spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, function (response) {
+            spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, (response) => {
                 if (response.ok) {
                     if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                        this.items = response.body.metrics;
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }, changeInterval: function (interval) {
             if (!this.loading) {

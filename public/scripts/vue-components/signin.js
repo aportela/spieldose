@@ -156,70 +156,68 @@ export default {
             }
         },
         submitSignIn: function () {
-            let self = this;
-            self.loading = true;
-            self.validator.clear();
-            self.clearAPIErrors();
-            spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, function (response) {
+            this.loading = true;
+            this.validator.clear();
+            this.clearAPIErrors();
+            spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, (response) => {
                 if (response.ok) {
-                    self.$router.push({ name: 'dashboard' });
+                    this.$router.push({ name: 'dashboard' });
                 } else {
                     switch (response.status) {
                         case 400:
                             if (response.isFieldInvalid('email')) {
-                                self.validator.setInvalid('signInEmail', self.$t('commonErrors.invalidAPIParam'));
+                                this.validator.setInvalid('signInEmail', this.$t('commonErrors.invalidAPIParam'));
                             } else if (response.isFieldInvalid("password")) {
-                                self.validator.setInvalid('signInPassword', self.$t('commonErrors.invalidAPIParam'));
+                                this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
                             } else {
-                                self.setAPIError(response.getApiErrorData());
+                                this.setAPIError(response.getApiErrorData());
                             }
                             break;
                         case 404:
-                            self.validator.setInvalid('signInEmail', self.$t('signIn.errorMessages.userNotFound'));
+                            this.validator.setInvalid('signInEmail', this.$t('signIn.errorMessages.userNotFound'));
                             break;
                         case 401:
-                            self.validator.setInvalid('signInPassword', self.$t('signIn.errorMessages.incorrectPassword'));
+                            this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
                             break;
                         default:
-                            self.setAPIError(response.getApiErrorData());
+                            this.setAPIError(response.getApiErrorData());
                             break;
                     }
-                    self.loading = false;
+                    this.loading = false;
                 }
             });
         },
         submitSignUp: function () {
-            let self = this;
-            self.invalidSignUpUsername = false;
-            self.invalidSignUpPassword = false;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, function (response) {
+            this.invalidSignUpUsername = false;
+            this.invalidSignUpPassword = false;
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, (response) => {
                 if (response.ok) {
-                    self.signInEmail = self.signUpEmail;
-                    self.signInPassword = self.signUpPassword;
-                    self.loading = false;
-                    self.tab = 'signin';
-                    self.submitSignIn();
+                    this.signInEmail = this.signUpEmail;
+                    this.signInPassword = this.signUpPassword;
+                    this.loading = false;
+                    this.tab = 'signin';
+                    this.submitSignIn();
                 } else {
                     switch (response.status) {
                         case 400:
                             if (response.isFieldInvalid('email')) {
-                                self.validator.setInvalid('signUpEmail', self.$t('commonErrors.invalidAPIParam'));
+                                this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
                             } else if (response.isFieldInvalid('password')) {
-                                self.validator.setInvalid('signUpPassword', self.$t('commonErrors.invalidAPIParam'));
+                                this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
                             } else {
-                                self.setAPIError(response.getApiErrorData());
+                                this.setAPIError(response.getApiErrorData());
                             }
                             break;
                         case 409:
-                            self.validator.setInvalid('signUpEmail', self.$t('signUp.errorMessages.emailAlreadyUsed'));
+                            this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
                             break;
                         default:
-                            self.setAPIError(response.getApiErrorData());
+                            this.setAPIError(response.getApiErrorData());
                             break;
                     }
-                    self.loading = false;
+                    this.loading = false;
                 }
             });
         }

@@ -98,20 +98,19 @@ export default {
         },
         onConfirmDelete: function (id) {
             if (id) {
-                let self = this;
-                self.loading = true;
-                self.clearAPIErrors();
-                spieldoseAPI.playlist.remove(id, function (response) {
+                this.loading = true;
+                this.clearAPIErrors();
+                spieldoseAPI.playlist.remove(id, (response) => {
                     if (response.ok) {
-                        if (self.playerData.currentPlaylist.id == id) {
-                            self.playerData.currentPlaylist.unset();
+                        if (this.playerData.currentPlaylist.id == id) {
+                            this.playerData.currentPlaylist.unset();
                         }
-                        self.search();
+                        this.search();
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
-                    self.showDeleteConfirmationModal = false;
-                    self.deleteItemId = null;
+                    this.showDeleteConfirmationModal = false;
+                    this.deleteItemId = null;
                 });
             }
         },
@@ -120,24 +119,23 @@ export default {
             this.deleteItemId = null;
         },
         search: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.playlist.search(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.playlist.search(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
+                    this.pager.actualPage = response.body.pagination.actualPage;
+                    this.pager.totalPages = response.body.pagination.totalPages;
+                    this.pager.totalResults = response.body.pagination.totalResults;
                     if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
+                        this.playlists = response.body.playlists;
                     } else {
-                        self.playlists = [];
+                        this.playlists = [];
                     }
-                    self.loading = false;
+                    this.loading = false;
                 } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
+                    this.errors = true;
+                    this.apiError = response.getApiErrorData();
+                    this.loading = false;
                 }
             });
         }

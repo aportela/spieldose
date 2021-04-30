@@ -129,35 +129,34 @@ export default {
             this.search();
         },
         search: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.globalSearch(this.textFilter, 1, 8, (response) => {
                 if (response.ok) {
                     if (response.body.artists && response.body.artists.length > 0) {
-                        self.artists = response.body.artists;
+                        this.artists = response.body.artists;
                     } else {
-                        self.artists = [];
+                        this.artists = [];
                     }
                     if (response.body.albums && response.body.albums.length > 0) {
-                        self.albums = response.body.albums;
+                        this.albums = response.body.albums;
                     } else {
-                        self.albums = [];
+                        this.albums = [];
                     }
                     if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.tracks = response.body.tracks;
+                        this.tracks = response.body.tracks;
                     } else {
-                        self.tracks = [];
+                        this.tracks = [];
                     }
                     if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
+                        this.playlists = response.body.playlists;
                     } else {
-                        self.playlists = [];
+                        this.playlists = [];
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }
     }

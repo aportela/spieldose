@@ -262,12 +262,11 @@ export const mixinLiveSearches = {
         },
         playRadioStation: function(id) {
             this.clearAPIErrors();
-            let self = this;
             spieldoseAPI.radioStation.get(id, (response) => {
                 if (response.ok) {
                     let track = {
                         title: response.body.radioStation.name,
-                        artist: self.$t("commonLabels.remoteRadioStation"),
+                        artist: this.$t("commonLabels.remoteRadioStation"),
                         radioStation: response.body.radioStation
                     };
                     this.playerData.currentPlaylist.replace([track]);

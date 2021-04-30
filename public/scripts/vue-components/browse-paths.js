@@ -81,23 +81,22 @@ export default {
             this.search();
         },
         search: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.searchPaths(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
+                    this.pager.actualPage = response.body.pagination.actualPage;
+                    this.pager.totalPages = response.body.pagination.totalPages;
+                    this.pager.totalResults = response.body.pagination.totalResults;
                     if (response.body.paths && response.body.paths.length > 0) {
-                        self.paths = response.body.paths;
+                        this.paths = response.body.paths;
                     } else {
-                        self.paths = [];
+                        this.paths = [];
                     }
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
-                self.loading = false;
+                this.loading = false;
             });
         }
     }

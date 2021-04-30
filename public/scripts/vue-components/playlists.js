@@ -219,33 +219,32 @@ export default {
             this.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage);
         },
         savePlayList: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
+            this.loading = true;
+            this.clearAPIErrors();
             let trackIds = [];
-            self.savingPlaylist = true;
+            this.savingPlaylist = true;
             for (let i = 0; i < this.playerData.tracks.length; i++) {
                 trackIds.push(this.playerData.tracks[i].id);
             }
             if (this.playerData.currentPlaylist.isSet()) {
-                spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, function (response) {
-                    self.savingPlaylist = false;
+                spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, (response) => {
+                    this.savingPlaylist = false;
                     if (response.ok) {
-                        self.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
+                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
-                    self.loading = false;
+                    this.loading = false;
                 });
             } else {
-                spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, function (response) {
-                    self.savingPlaylist = false;
+                spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, (response) => {
+                    this.savingPlaylist = false;
                     if (response.ok) {
-                        self.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
+                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
-                    self.loading = false;
+                    this.loading = false;
                 });
             }
         }

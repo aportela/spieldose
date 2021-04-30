@@ -193,17 +193,16 @@ export default {
         },
         onConfirmDelete: function (id) {
             if (id) {
-                let self = this;
-                self.loading = true;
-                self.clearAPIErrors();
-                spieldoseAPI.radioStation.remove(id, function (response) {
+                this.loading = true;
+                this.clearAPIErrors();
+                spieldoseAPI.radioStation.remove(id, (response) => {
                     if (response.ok) {
-                        self.search();
+                        this.search();
                     } else {
-                        self.setAPIError(response.getApiErrorData());
+                        this.setAPIError(response.getApiErrorData());
                     }
-                    self.showDeleteConfirmationModal = false;
-                    self.deleteItemId = null;
+                    this.showDeleteConfirmationModal = false;
+                    this.deleteItemId = null;
                 });
             }
         },
@@ -223,17 +222,16 @@ export default {
             this.showForm = false;
         },
         showUpdateRadioStationForm: function (id) {
-            let self = this;
             spieldoseAPI.radioStation.get(id, (response) => {
                 if (response.ok) {
-                    self.formRadioStationId = response.body.radioStation.id;
-                    self.formRadioStationName = response.body.radioStation.name;
-                    self.formRadioStationUrl = response.body.radioStation.url;
-                    self.formRadioStationType = response.body.radioStation.urlType;
-                    self.formRadioStationImage = response.body.radioStation.image;
-                    self.showForm = true;
+                    this.formRadioStationId = response.body.radioStation.id;
+                    this.formRadioStationName = response.body.radioStation.name;
+                    this.formRadioStationUrl = response.body.radioStation.url;
+                    this.formRadioStationType = response.body.radioStation.urlType;
+                    this.formRadioStationImage = response.body.radioStation.image;
+                    this.showForm = true;
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
@@ -245,50 +243,47 @@ export default {
             }
         },
         add: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.radioStation.add(self.formRadioStationName, self.formRadioStationUrl, self.formRadioStationType, self.formRadioStationImage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.radioStation.add(this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
                 if (response.ok) {
-                    self.showForm = false;
-                    self.search();
+                    this.showForm = false;
+                    this.search();
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
         update: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.radioStation.update(self.formRadioStationId, self.formRadioStationName, self.formRadioStationUrl, self.formRadioStationType, self.formRadioStationImage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.radioStation.update(this.formRadioStationId, this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
                 if (response.ok) {
-                    self.showForm = false;
-                    self.search();
+                    this.showForm = false;
+                    this.search();
                 } else {
-                    self.setAPIError(response.getApiErrorData());
+                    this.setAPIError(response.getApiErrorData());
                 }
             });
         },
         search: function () {
-            let self = this;
-            self.loading = true;
-            self.clearAPIErrors();
-            spieldoseAPI.radioStation.search(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.radioStation.search(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
+                    this.pager.actualPage = response.body.pagination.actualPage;
+                    this.pager.totalPages = response.body.pagination.totalPages;
+                    this.pager.totalResults = response.body.pagination.totalResults;
                     if (response.body.radioStations && response.body.radioStations.length > 0) {
-                        self.radioStations = response.body.radioStations;
+                        this.radioStations = response.body.radioStations;
                     } else {
-                        self.radioStations = [];
+                        this.radioStations = [];
                     }
-                    self.loading = false;
+                    this.loading = false;
                 } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
+                    this.errors = true;
+                    this.apiError = response.getApiErrorData();
+                    this.loading = false;
                 }
             });
         }
