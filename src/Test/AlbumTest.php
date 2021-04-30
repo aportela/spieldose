@@ -73,5 +73,9 @@
             $this->assertInstanceOf("stdclass", \Spieldose\Album::search(self::$dbh, 1, 16, array("year" => 2000), ""));
         }
 
+        public function testGetRandomAlbumCovers(): void {
+            $this->assertIsArray(\Spieldose\Album::getRandomAlbumCovers(self::$dbh, 32));
+        }
+
     }
 ?>

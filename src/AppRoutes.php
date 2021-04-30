@@ -113,6 +113,20 @@
             }
         });
 
+        $this->post('/random_album_covers', function (Request $request, Response $response, array $args) {
+            $count = $request->getParam("count", 128);
+            $data = \Spieldose\Album::getRandomAlbumCovers(
+                new \Spieldose\Database\DB($this),
+                intval($count)
+            );
+            return $response->withJson(
+                [
+                    'covers' => $data
+                ],
+                200
+            );
+        });
+
         $this->group("", function() {
 
             /* track */

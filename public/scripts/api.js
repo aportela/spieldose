@@ -317,6 +317,23 @@ export default {
                     }
                 }
             );
+        },
+        getRandomAlbumCovers: function(count, callback) {
+            const params = {
+                count: count
+            };
+            Vue.http.post("api/random_album_covers", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
     },
     playlist: {

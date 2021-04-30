@@ -143,6 +143,25 @@
                 throw new \Spieldose\Exception\NotFoundException("");
             }
         }
+
+        /**
+         * get album cover collection
+         */
+        public static function getRandomAlbumCovers(\Spieldose\Database\DB $dbh, int $count = 32) {
+            $results = $dbh->query(
+                "
+                    SELECT TMP.* FROM (
+                        SELECT LOCAL_PATH_ALBUM_COVER.id AS hash, NULL AS url FROM LOCAL_PATH_ALBUM_COVER
+                        UNION
+                        SELECT NULL as hash, MB_CACHE_ALBUM.image AS url FROM MB_CACHE_ALBUM
+                    ) TMP
+                    ORDER BY RANDOM()
+                    LIMIT :count
+                ", array(
+                (new \Spieldose\Database\DBParam())->int(":count", $count)
+            ));
+            return($results);
+        }
     }
 
 ?>
