@@ -6,7 +6,7 @@ const template = function () {
     return `
         <!-- template credits: daniel (https://github.com/dansup) -->
                     <div class="columns is-vcentered is-centered">
-                    <div class="column is-4-widescreen is-6-desktop is-8-tablet is-10-mobile">
+                    <div class="column is-4-widescreen is-6-desktop is-8-tablet is-12-mobile">
                     <section class="section">
                             <!-- Apple Music Sound Equalizer in SVG by Geoff Graham (https://codepen.io/geoffgraham/pen/XmMJqj) -->
                             <div class="columns is-centered">
