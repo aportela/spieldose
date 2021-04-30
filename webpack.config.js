@@ -8,12 +8,15 @@ module.exports = {
     output: {
         filename: 'app-bundle.min.js',
         path: path.resolve(__dirname, 'public/scripts/'),
-        publicPath: '/scripts/'
+        publicPath: '/scripts/',
+        clean: true
     },
     plugins: [
         new CopyPlugin({
             patterns: [
-                { from: path.resolve(__dirname, 'src-frontend/'), to: path.resolve(__dirname, 'public/') }
+                { from: path.resolve(__dirname, 'src-frontend/icons'), to: path.resolve(__dirname, 'public/icons') },
+                { from: path.resolve(__dirname, 'src-frontend/images'), to: path.resolve(__dirname, 'public/images') },
+                { from: path.resolve(__dirname, 'src-frontend/styles'), to: path.resolve(__dirname, 'public/styles') },
             ],
         }),
         new ReplaceHashInFileWebpackPlugin(
