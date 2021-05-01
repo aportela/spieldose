@@ -1,8 +1,16 @@
+import { default as Vue } from 'vue';
+import { default as VueRouter } from 'vue-router';
+import { default as VueI18n } from 'vue-i18n';
+import { default as VueResource } from 'vue-resource';
 import { default as router } from './routes.js';
 import { default as i18n } from './i18n.js';
 import { default as spieldoseAPI } from './api.js';
 import { bus } from './bus.js';
 import { mixinAPIError, mixinPlayer } from './mixins.js';
+
+Vue.use(VueRouter);
+//Vue.use(VueI18n);
+Vue.use(VueResource);
 
 /**
  * parse vue-resource (custom) resource and return valid object for api-error component

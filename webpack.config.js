@@ -1,15 +1,26 @@
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
-const ReplaceHashInFileWebpackPlugin = require('replace-hash-in-file-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'production',
-    entry: './src-frontend/scripts/app.js',
+    mode: 'development',
+    resolve: {
+        alias: {
+            vue: 'vue/dist/vue.esm.js'
+        }
+    },
+    entry: {
+        'app': {
+            import: './src-frontend/scripts/app.js',
+            dependOn: 'vendor'
+        },
+        'vendor': ['vue', 'vue-router', 'vue-resource', 'vue-i18n', 'chart.js', 'dayjs']
+    },
     output: {
-        filename: 'app-bundle.min.js',
         path: path.resolve(__dirname, 'public/scripts/'),
         publicPath: '/scripts/',
-        clean: true
+        filename: '[name]-bundle.min.js',
+        //clean: true
     },
     plugins: [
         new CopyPlugin({
@@ -19,19 +30,10 @@ module.exports = {
                 { from: path.resolve(__dirname, 'src-frontend/styles'), to: path.resolve(__dirname, 'public/styles') },
             ],
         }),
-        new ReplaceHashInFileWebpackPlugin(
-            [
-                {
-                    dir: 'templates',
-                    files: ['index.html.twig'],
-                    rules: [
-                        {
-                            search: /<script type="module" src="scripts\/app-bundle.min.js\?*[a-zA-Z0-9]*"><\/script>/,
-                            replace: '<script type="module" src="scripts/app-bundle.min.js?[hash]"></script>'
-                        }
-                    ]
-                }
-            ]
-        )
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, 'templates/index-webpack.html.twig'),
+            filename: path.resolve(__dirname, 'templates/index.html.twig'),
+            hash: true
+        })
     ]
 };

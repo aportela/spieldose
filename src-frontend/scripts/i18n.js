@@ -1,3 +1,4 @@
+//import { default as VueI18n } from 'vue-i18n';
 import { default as messagesES } from './locale/es.js';
 import { default as messagesEN } from './locale/en.js';
 import { default as messagesGL } from './locale/gl.js';

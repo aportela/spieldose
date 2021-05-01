@@ -1,5 +1,6 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError } from '../mixins.js';
+import Chart from 'chart.js/auto';
 
 const template = function () {
     return `

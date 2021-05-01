@@ -1,4 +1,5 @@
-"use strict";
+import { default as Vue } from 'vue';
+import * as dayjs from 'dayjs';
 
 export default {
     session: {
