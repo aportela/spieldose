@@ -85,11 +85,11 @@ export default {
     methods: {
         loadMetricsByHourChart: function () {
             spieldoseAPI.metrics.getPlayStatMetricsByHour((response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
                     let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data[response.body.metrics[i].hour] = response.body.metrics[i].total;
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data[response.data.metrics[i].hour] = response.data.metrics[i].total;
                     }
                     if (this.chart) {
                         this.chart.destroy();
@@ -110,14 +110,14 @@ export default {
                         }, options: commonChartOptions
                     });
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
         },
         loadMetricsByWeekDayChart: function () {
             spieldoseAPI.metrics.getPlayStatMetricsByWeekDay((response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     const weekDayNames = [
                         this.$t('dashboard.labels.sunday'),
                         this.$t('dashboard.labels.monday'),
@@ -129,9 +129,9 @@ export default {
                     ];
                     let weekDays = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        weekDays.push(weekDayNames[response.body.metrics[i].weekDay]);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
                     }
                     if (this.chart) {
                         this.chart.destroy();
@@ -150,14 +150,14 @@ export default {
                         }, options: commonChartOptions
                     });
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
         },
         loadMetricsByMonthChart: function () {
             spieldoseAPI.metrics.getPlayStatMetricsByMonth((response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     const monthNames = [
                         this.$t('dashboard.labels.january'),
                         this.$t('dashboard.labels.february'),
@@ -174,9 +174,9 @@ export default {
                     ];
                     let months = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        months.push(monthNames[response.body.metrics[i].month - 1]);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        months.push(monthNames[response.data.metrics[i].month - 1]);
                     }
                     if (this.chart) {
                         this.chart.destroy();
@@ -202,12 +202,12 @@ export default {
         },
         loadMetricsByYearChart: function () {
             spieldoseAPI.metrics.getPlayStatMetricsByYear((response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     let years = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        years.push(response.body.metrics[i].year);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        years.push(response.data.metrics[i].year);
                     }
                     if (this.chart) {
                         this.chart.destroy();
@@ -226,7 +226,7 @@ export default {
                         }, options: commonChartOptions
                     });
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
