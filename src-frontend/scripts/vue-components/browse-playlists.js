@@ -12,14 +12,14 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('browsePlaylists.inputs.playlistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -27,7 +27,7 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="playlist-item box has-text-centered" v-for="playlist in playlists" v-show="! loading">
                     <p class="playlist-item-icon">
                         <span class="icon has-text-light">
@@ -40,13 +40,13 @@ const template = function () {
                     <p class="content is-small">{{ playlist.trackCount }} tracks</p>
                     <div class="field has-addons">
                         <p class="control">
-                            <a class="button is-small is-link" v-on:click.prevent="playPlaylistTracks(playlist.id);">
+                            <a class="button is-small is-link" @click.prevent="playPlaylistTracks(playlist.id);">
                                 <span class="icon is-small"><i class="fas fa-play"></i></span>
                                 <span>{{ $t("browsePlaylists.buttons.play") }}</span>
                             </a>
                         </p>
                         <p class="control">
-                            <a class="button is-small is-danger" v-bind:disabled="! playlist.id" v-on:click.prevent="onShowDeleteModal(playlist.id);">
+                            <a class="button is-small is-danger" v-bind:disabled="! playlist.id" @click.prevent="onShowDeleteModal(playlist.id);">
                                 <span class="icon is-small"><i class="fas fa-times"></i></span>
                                 <span>{{ $t("browsePlaylists.buttons.remove") }}</span>
                             </a>
@@ -54,7 +54,7 @@ const template = function () {
                     </div>
                 </div>
                 <div class="is-clearfix"></div>
-                <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" v-on:confirm-delete="onConfirmDelete" v-on:cancel-delete="onCancelDelete"></delete-confirmation-modal>
+                <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" @confirm-delete="onConfirmDelete" @cancel-delete="onCancelDelete"></delete-confirmation-modal>
             </div>
             <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>

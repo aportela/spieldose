@@ -12,13 +12,13 @@ const template = function () {
                     <i class="fas fa-chart-line" v-else></i>
                 </span>
                 <span>{{ $t("dashboard.labels.playStatistics") }}</span>
-                <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
+                <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" @click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
             </p>
             <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
-                <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
-                <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
-                <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
+                <a v-bind:class="{ 'is-active': isHourInterval }" @click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
+                <a v-bind:class="{ 'is-active': isWeekDayInterval }" @click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
+                <a v-bind:class="{ 'is-active': isMonthInterval }" @click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
+                <a v-bind:class="{ 'is-active': isYearInterval }" @click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
             </p>
             <div class="panel-block" v-if="! hasAPIErrors">
                 <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>

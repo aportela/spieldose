@@ -29,13 +29,13 @@ const template = function () {
                                 <div class="tabs is-toggle is-radiusless spieldose-tabs-without-margin-bottom" v-if="allowSignUp">
                                     <ul>
                                         <li v-bind:class="{ 'is-active': isSignInTabActive }">
-                                            <a v-on:click.prevent="changeTab('signin');">
+                                            <a @click.prevent="changeTab('signin');">
                                                 <span class="icon is-small"><i class="fas fa-user"></i></span>
                                                 <span>{{ $t("signIn.labels.tabLink") }}</span>
                                             </a>
                                         </li>
                                         <li v-bind:class="{ 'is-active': isSignUpTabActive }">
-                                            <a v-on:click.prevent="changeTab('signup');">
+                                            <a @click.prevent="changeTab('signup');">
                                                 <span class="icon is-small"><i class="fas fa-user-plus"></i></span>
                                                 <span>{{ $t("signUp.labels.tabLink") }}</span>
                                             </a>
@@ -43,7 +43,7 @@ const template = function () {
                                     </ul>
                                 </div>
                             </div>
-                            <form v-on:submit.prevent="submitSignIn" v-show="isSignInTabActive">
+                            <form @submit.prevent="submitSignIn" v-show="isSignInTabActive">
                                 <div class="box is-radiusless is-shadowless">
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signIn.labels.email") }}</label>
@@ -71,7 +71,7 @@ const template = function () {
                                     </p>
                                 </div>
                             </form>
-                            <form v-on:submit.prevent="submitSignUp" v-show="isSignUpTabActive">
+                            <form @submit.prevent="submitSignUp" v-show="isSignUpTabActive">
                                 <div class="box is-radiusless is-shadowless">
                                     <label class="label is-hidden-mobile">{{ $t("signUp.labels.email") }}</label>
                                     <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpEmail') }">

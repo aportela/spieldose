@@ -5,7 +5,7 @@ import { default as spieldoseSettings } from '../settings.js';
 const template = function () {
     return `
         <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-            <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
+            <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
             <!--
             <canvas id="canvas"></canvas>
             -->
@@ -22,24 +22,24 @@ const template = function () {
             </nav>
             <div id="player-metadata-container" class="has-text-centered">
                 <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
-                <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist"><a href="#" v-on:click.prevent="navigateToArtistPage(nowPlayingArtist);">{{ nowPlayingArtist }}</a></h2>
+                <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist"><a href="#" @click.prevent="navigateToArtistPage(nowPlayingArtist);">{{ nowPlayingArtist }}</a></h2>
             </div>
             <div id="player-controls" class="is-unselectable">
                 <div class="has-text-centered player-buttons">
-                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
-                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" v-on:click.prevent="playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else v-on:click.prevent="playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
+                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" @click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" @click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
+                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                 </div>
                 <div id="player-volume-control">
                     <div class="columns">
                         <div class="column is-narrow">
-                            <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" v-on:click.prevent="toggleMute">
+                            <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="toggleMute">
                                 <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
                                 <i v-else class="fas fa-2x fa-volume-off"></i>
                             </span>

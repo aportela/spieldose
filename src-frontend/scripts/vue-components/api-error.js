@@ -9,19 +9,19 @@ const template = function () {
                     <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
                     <h2 v-if="serverReturnError">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiError.response.status }} - {{ apiError.response.statusText }})</h2>
                     <h2 v-else>Uh oh! ...can't connect, server unreachable</h2>
-                    <p v-show="! visibleDetails"><a v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
+                    <p v-show="! visibleDetails"><a @click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
                     <div v-show="visibleDetails">
                         <hr>
                         <div class="tabs is-medium is-toggle">
                             <ul>
                                 <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('request') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeTab('request');">
+                                    <a class="no-text-decoration" @click.prevent="changeTab('request');">
                                         <span class="icon is-small"><i class="fas fa-upload"></i></span>
                                         <span>Request</span>
                                     </a>
                                 </li>
                                 <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('response') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeTab('response');">
+                                    <a class="no-text-decoration" @click.prevent="changeTab('response');">
                                         <span class="icon is-small"><i class="fas fa-download"></i></span>
                                         <span>Response</span>
                                     </a>
@@ -34,13 +34,13 @@ const template = function () {
                             <div class="tabs is-small is-toggle">
                                 <ul>
                                     <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('body') }">
-                                        <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('body');">
+                                        <a class="no-text-decoration" @click.prevent="changeRequestTab('body');">
                                             <span class="icon is-small"><i class="fas fa-database"></i></span>
                                             <span>Body</span>
                                         </a>
                                     </li>
                                     <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('headers') }">
-                                        <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('headers');">
+                                        <a class="no-text-decoration" @click.prevent="changeRequestTab('headers');">
                                             <span class="icon is-small"><i class="fas fa-list"></i></span>
                                             <span>Headers</span>
                                         </a>
@@ -60,13 +60,13 @@ const template = function () {
                             <div class="tabs is-small is-toggle">
                                 <ul>
                                     <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('text') }">
-                                        <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('text');">
+                                        <a class="no-text-decoration" @click.prevent="changeResponseTab('text');">
                                             <span class="icon is-small"><i class="fas fa-file-text-o"></i></span>
                                             <span>Body</span>
                                         </a>
                                     </li>
                                     <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('headers') }">
-                                        <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('headers');">
+                                        <a class="no-text-decoration" @click.prevent="changeResponseTab('headers');">
                                             <span class="icon is-small"><i class="fas fa-list"></i></span>
                                             <span>Headers</span>
                                         </a>

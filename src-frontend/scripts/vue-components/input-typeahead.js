@@ -1,6 +1,6 @@
 const template = function () {
     return `
-        <input class="input" type="text" v-bind:placeholder="placeholder" v-bind:disabled="loading" v-model.trim="text" v-on:keyup.esc="onClear" v-on:keyup="onChange">
+        <input class="input" type="text" v-bind:placeholder="placeholder" v-bind:disabled="loading" v-model.trim="text" @keyup.esc="onClear" @keyup="onChange">
     `;
 };
 

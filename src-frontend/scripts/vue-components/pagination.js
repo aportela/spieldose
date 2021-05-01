@@ -2,18 +2,18 @@ const template = function () {
     return `
         <div>
             <nav class="pagination is-centered level" v-if="visible">
-                <a class="button is-link pagination-previous" v-bind:disabled="loading" v-on:click.prevent="previous();">
+                <a class="button is-link pagination-previous" v-bind:disabled="loading" @click.prevent="previous();">
                     <span class="icon is-small"><i class="fas fa-caret-left" aria-hidden="true"></i></span>
                     <span>{{ $t("pagination.buttons.previousPage") }}</span>
                     </a>
-                <a class="button is-link pagination-next" v-bind:disabled="loading" v-on:click.prevent="next();">
+                <a class="button is-link pagination-next" v-bind:disabled="loading" @click.prevent="next();">
                     <span>{{ $t("pagination.buttons.nextPage") }}</span>
                     <span class="icon is-small"><i class="fas fa-caret-right" aria-hidden="true"></i></span>
                 </a>
                 <ul class="pagination-list">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
                     <li v-for="pageNumber in data.totalPages" v-if="showIntermediatePage(pageNumber)">
-                        <a class="pagination-link" :class="{'is-current': isCurrentPage(pageNumber) }" v-bind:disabled="loading" v-on:click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</a>
+                        <a class="pagination-link" :class="{'is-current': isCurrentPage(pageNumber) }" v-bind:disabled="loading" @click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</a>
                     </li>
                 </ul>
             </nav>

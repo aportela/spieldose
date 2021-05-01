@@ -9,14 +9,14 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" v-on:keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -31,12 +31,12 @@ const template = function () {
                         <article class="media" v-for="artist, i in artists" v-bind:key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
-                                    <img class="border-radius-50" v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
+                                    <img class="border-radius-50" v-bind:src="artist.image | getArtistImageUrl" @error="artist.image = null;">
                                 </figure>
                             </div>
                             <div class="media-content">
                                 <div class="content">
-                                    <p class="subtitle is-6"><a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(artist.name);">{{ artist.name }}</a></p>
+                                    <p class="subtitle is-6"><a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(artist.name);">{{ artist.name }}</a></p>
                                 </div>
                             </div>
                         </article>
@@ -47,17 +47,17 @@ const template = function () {
                         <article class="media" v-for="album, i in albums" v-bind:key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
-                                    <img class="border-radius-50" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;"/>
+                                    <img class="border-radius-50" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;"/>
                                 </figure>
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
+                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);"></i>
+                                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
                                         <span>{{ album.name }}</span>
                                         <br>
-                                        <span v-if="album.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a></span>
+                                        <span v-if="album.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a></span>
                                     </p>
                                 </div>
                             </div>
@@ -71,11 +71,11 @@ const template = function () {
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
-                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playTrack(track);"></i>
-                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="enqueueTrack(track);"></i>
+                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playTrack(track);"></i>
+                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track);"></i>
                                     <span>{{ track.title }}</span>
                                     <br >
-                                    <span v-if="track.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></span> <span v-if="track.album"> / {{ track.album }}</span>
+                                    <span v-if="track.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></span> <span v-if="track.album"> / {{ track.album }}</span>
                                 </div>
                             </div>
                         </article>
@@ -89,8 +89,8 @@ const template = function () {
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                    <i v-on:click="playPlaylistTracks(playlist.id);" class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisPlaylist')"></i>
-                                    <i v-on:click="enqueuePlaylistTracks(playlist.id);" class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisPlaylist')"></i>
+                                    <i @click="playPlaylistTracks(playlist.id);" class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisPlaylist')"></i>
+                                    <i @click="enqueuePlaylistTracks(playlist.id);" class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisPlaylist')"></i>
                                     {{ playlist.name }} ({{ playlist.trackCount}} {{$t("commonLabels.tracksCount")}})
                                     </p>
                                 </div>

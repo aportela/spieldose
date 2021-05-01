@@ -12,14 +12,14 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -27,7 +27,7 @@ const template = function () {
                         </a>
                     </p>
                     <p class="control">
-                        <a class="button is-info" v-bind:disabled="showForm" v-on:click.prevent="showAddRadioStationForm();">
+                        <a class="button is-info" v-bind:disabled="showForm" @click.prevent="showAddRadioStationForm();">
                             <span class="icon">
                                 <i class="fas fa-plus" aria-hidden="true"></i>
                             </span>
@@ -89,7 +89,7 @@ const template = function () {
                         <div class="field-body">
                             <div class="field is-grouped">
                                 <div class="control">
-                                    <a class="button is-link" v-on:click.prevent="save();" v-bind:disabled="! allowSave">
+                                    <a class="button is-link" @click.prevent="save();" v-bind:disabled="! allowSave">
                                         <span class="icon">
                                             <i class="fas fa-save" aria-hidden="true"></i>
                                         </span>
@@ -97,7 +97,7 @@ const template = function () {
                                     </a>
                                 </div>
                                 <div class="control">
-                                    <a class="button is-info" v-on:click.prevent="hideAddRadioStationForm();">
+                                    <a class="button is-info" @click.prevent="hideAddRadioStationForm();">
                                         <span class="icon">
                                             <i class="fas fa-ban" aria-hidden="true"></i>
                                         </span>
@@ -109,27 +109,27 @@ const template = function () {
                     </div>
                 </div>
                 <div v-else>
-                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                     <div class="radio-station-item browse-radio-station-item box has-text-centered" v-for="radioStation in radioStations" v-show="! loading">
-                        <img class="radio-station-thumbnail" v-bind:src="radioStation.image | getAlbumImageUrl" v-on:error="radioStation.image = null;">
+                        <img class="radio-station-thumbnail" v-bind:src="radioStation.image | getAlbumImageUrl" @error="radioStation.image = null;">
                         <p class="radio-station-info">
                             <strong>“{{ radioStation.name }}”</strong>
                         </p>
                         <div class="field has-addons">
                             <p class="control">
-                                <a class="button is-small is-link" v-on:click.prevent="playRadioStation(radioStation.id);">
+                                <a class="button is-small is-link" @click.prevent="playRadioStation(radioStation.id);">
                                     <span class="icon is-small"><i class="fas fa-play"></i></span>
                                     <span>{{ $t("browseRadioStations.buttons.play") }}</span>
                                 </a>
                             </p>
                             <p class="control">
-                                <a class="button is-small is-info" v-on:click.prevent="showUpdateRadioStationForm(radioStation.id);">
+                                <a class="button is-small is-info" @click.prevent="showUpdateRadioStationForm(radioStation.id);">
                                     <span class="icon is-small"><i class="fas fa-edit"></i></span>
                                     <span>{{ $t("browseRadioStations.buttons.update") }}</span>
                                 </a>
                             </p>
                             <p class="control">
-                                <a class="button is-small is-danger" v-on:click.prevent="onShowDeleteModal(radioStation.id);">
+                                <a class="button is-small is-danger" @click.prevent="onShowDeleteModal(radioStation.id);">
                                     <span class="icon is-small"><i class="fas fa-times"></i></span>
                                     <span>{{ $t("browseRadioStations.buttons.remove") }}</span>
                                 </a>
@@ -138,7 +138,7 @@ const template = function () {
                     </div>
                     <div class="is-clearfix"></div>
                 </div>
-                <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" v-on:confirm-delete="onConfirmDelete" v-on:cancel-delete="onCancelDelete"></delete-confirmation-modal>
+                <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" @confirm-delete="onConfirmDelete" @cancel-delete="onCancelDelete"></delete-confirmation-modal>
             </div>
             <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>

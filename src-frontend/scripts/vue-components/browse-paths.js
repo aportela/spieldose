@@ -11,14 +11,14 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                    <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                    <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -26,7 +26,7 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <table class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable" v-show="! loading">
                     <thead>
                         <tr>
@@ -41,8 +41,8 @@ const template = function () {
                             <td class="has-text-right">{{ item.totalTracks }}</td>
                             <td class="has-text-centered">
                                 <div v-if="item.totalTracks > 0">
-                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" v-on:click.prevent="playPathTracks(item.path);"></i>
-                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
+                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" @click.prevent="playPathTracks(item.path);"></i>
+                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" @click.prevent="enqueuePathTracks(item.path);"></i>
                                 </div>
                             </td>
                         </tr>

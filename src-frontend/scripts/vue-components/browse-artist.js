@@ -8,7 +8,7 @@ const template = function () {
             <p v-else="! loading" class="title is-1 has-text-centered">{{ $t("browseArtist.labels.sectionName") }}</p>
             <div class="media" v-if="! hasAPIErrors && ! loading">
                 <figure class="image media-left">
-                    <img class="artist_avatar" v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
+                    <img class="artist_avatar" :src="artist.image | getArtistImageUrl" @error="artist.image = null;">
                 </figure>
                 <div class="media-content is-light">
                     <p class="title is-1">{{ artist.name }}</p>
@@ -16,11 +16,11 @@ const template = function () {
                     <p class="subtitle is-6" v-else>{{ $t("browseArtist.labels.notPlayedYet") }}</p>
                     <div class="tabs is-medium">
                         <ul>
-                            <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a v-on:click.prevent="$router.push({ name: 'artist', params: { 'artist': $route.params.artist } })">{{ $t("browseArtist.tabs.overview") }}</a></li>
-                            <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a v-on:click.prevent="$router.push({ name: 'artistBio' })">{{ $t("browseArtist.tabs.bio") }}</a></li>
-                            <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a v-on:click.prevent="$router.push({ name: 'artistTracks' })">{{ $t("browseArtist.tabs.tracks") }}</a></li>
-                            <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a v-on:click.prevent="$router.push({ name: 'artistAlbums' })">{{ $t("browseArtist.tabs.albums") }}</a></li>
-                            <li v-bind:class="{ 'is-active' : activeTab == 'update' }"><a v-on:click.prevent="$router.push({ name: 'artistUpdate' })">{{ $t("browseArtist.tabs.updateArtist") }}</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'overview' }"><a @click.prevent="$router.push({ name: 'artist', params: { 'artist': $route.params.artist } })">{{ $t("browseArtist.tabs.overview") }}</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'bio' }"><a @click.prevent="$router.push({ name: 'artistBio' })">{{ $t("browseArtist.tabs.bio") }}</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'tracks' }"><a @click.prevent="$router.push({ name: 'artistTracks' })">{{ $t("browseArtist.tabs.tracks") }}</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'albums' }"><a @click.prevent="$router.push({ name: 'artistAlbums' })">{{ $t("browseArtist.tabs.albums") }}</a></li>
+                            <li v-bind:class="{ 'is-active' : activeTab == 'update' }"><a @click.prevent="$router.push({ name: 'artistUpdate' })">{{ $t("browseArtist.tabs.updateArtist") }}</a></li>
                         </ul>
                     </div>
                     <div class="panel" v-if="activeTab == 'overview'">
@@ -38,14 +38,14 @@ const template = function () {
                     <div class="panel" v-if="activeTab == 'tracks'">
                         <div class="field has-addons">
                             <div class="control is-expanded has-icons-left" v-bind:class="loadingTracks ? 'is-loading': ''">
-                                <input class="input" :disabled="loadingTracks" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
-                                <input class="input" :disabled="loadingTracks" v-else v-model.trim="nameFilter" type="text" placeholder="search by text..." v-on:keyup.enter="searchTracks();">
+                                <input class="input" :disabled="loadingTracks" v-if="liveSearch" v-model.trim="nameFilter" type="text" placeholder="search by text..." @keyup.esc="abortInstantSearch();" @keyup="instantSearch();">
+                                <input class="input" :disabled="loadingTracks" v-else v-model.trim="nameFilter" type="text" placeholder="search by text..." @keyup.enter="searchTracks();">
                                 <span class="icon is-small is-left">
                                     <i class="fas fa-search"></i>
                                 </span>
                             </div>
                             <p class="control" v-if="! liveSearch">
-                                <a class="button is-info" v-on:click.prevent="searchTracks();">
+                                <a class="button is-info" @click.prevent="searchTracks();">
                                     <span class="icon">
                                         <i class="fas fa-search" aria-hidden="true"></i>
                                     </span>
@@ -53,7 +53,7 @@ const template = function () {
                                 </a>
                             </p>
                         </div>
-                        <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                        <spieldose-pagination v-bind:loading="loadingTracks" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                         <table class="table is-bordered is-striped is-narrow is-fullwidth">
                             <thead>
                                     <tr class="is-unselectable">
@@ -73,9 +73,9 @@ const template = function () {
                                         <span> {{ track.title}}</span>
                                     </td>
                                     <td>
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
-                                        <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="playerData.download(track.id);"></i>
+                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playerData.currentPlaylist.replace([track]);"></i>
+                                        <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
+                                        <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" @click.prevent="playerData.download(track.id);"></i>
                                     </td>
                                 </tr>
                             </tbody>
@@ -83,8 +83,8 @@ const template = function () {
                     </div>
                     <div class="panel" v-if="activeTab == 'albums'">
                         <div class="browse-album-item" v-show="! loading" v-for="album, i in artist.albums" v-bind:key="i">
-                        <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                                <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;">
+                        <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                                <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
                                 <i class="fas fa-play fa-4x"></i>
                                 <img class="vinyl no-cover" src="images/vinyl.png" />
                             </a>
@@ -111,7 +111,7 @@ const template = function () {
                                                 </span>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-info" v-on:click.prevent="searchMusicBrainz();">{{ $t("browseArtist.buttons.searchOnMusicBrainz") }}</a>
+                                                <a class="button is-info" @click.prevent="searchMusicBrainz();">{{ $t("browseArtist.buttons.searchOnMusicBrainz") }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -129,10 +129,10 @@ const template = function () {
                                                 </span>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-info" :disabled="! (artist.name && artist.mbid)" v-on:click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.save") }}</a>
+                                                <a class="button is-info" :disabled="! (artist.name && artist.mbid)" @click.prevent="overwriteMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.save") }}</a>
                                             </div>
                                             <div class="control">
-                                                <a class="button is-danger" v-on:click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.clear") }}</a>
+                                                <a class="button is-danger" @click.prevent="clearMusicBrainzArtist(artist.name, artist.mbid);">{{ $t("browseArtist.buttons.clear") }}</a>
                                             </div>
                                         </div>
                                     </div>

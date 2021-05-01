@@ -11,14 +11,14 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control">
-                        <a class="button is-default" v-on:click.prevent="advancedSearch = ! advancedSearch;">
+                        <a class="button is-default" @click.prevent="advancedSearch = ! advancedSearch;">
                             <span class="icon">
                                 <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
                                 <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
@@ -27,7 +27,7 @@ const template = function () {
                         </a>
                     </p>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -37,19 +37,19 @@ const template = function () {
                 </div>
                 <div class="field has-addons" v-if="advancedSearch">
                     <p class="control has-icons-left">
-                        <input class="input" type="text" pattern="[0-9]*" v-bind:placeholder="$t('browseAlbums.inputs.yearPlaceholder')" maxlength="4" v-bind:disabled="loading" v-on:keyup.enter="search(true);" v-model.number="filterByYear" >
+                        <input class="input" type="text" pattern="[0-9]*" v-bind:placeholder="$t('browseAlbums.inputs.yearPlaceholder')" maxlength="4" v-bind:disabled="loading" @keyup.enter="search(true);" v-model.number="filterByYear" >
                         <span class="icon is-small is-left">
                             <i class="fas fa-calendar"></i>
                         </span>
                     </p>
                     <p class="control is-expanded has-icons-left">
-                        <input class="input" type="text" v-bind:placeholder="$t('browseAlbums.inputs.artistNamePlaceholder')" v-bind:disabled="loading" v-on:keyup.enter="search(true);" v-model.trim="filterByArtist">
+                        <input class="input" type="text" v-bind:placeholder="$t('browseAlbums.inputs.artistNamePlaceholder')" v-bind:disabled="loading" @keyup.enter="search(true);" v-model.trim="filterByArtist">
                         <span class="icon is-small is-left">
                             <i class="fas fa-user"></i>
                         </span>
                     </p>
                     <p class="control">
-                        <a class="button is-info" v-on:click="search(true);">
+                        <a class="button is-info" @click="search(true);">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -57,16 +57,16 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-album-item" v-for="album in albums" v-show="! loading">
-                    <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                        <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" v-on:error="album.image = null;">
+                    <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                        <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
                         <i class="fas fa-play fa-4x"></i>
                         <img class="vinyl no-cover" src="images/vinyl.png" />
                     </a>
                     <div class="album-info">
                         <p class="album-name">{{ album.name }}</p>
-                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
                         <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
                     </div>
                 </div>

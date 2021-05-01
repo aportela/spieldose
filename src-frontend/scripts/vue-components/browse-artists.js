@@ -11,8 +11,8 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field is-expanded has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-on:on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" v-on:keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
@@ -26,7 +26,7 @@ const template = function () {
                         </div>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" v-on:click.prevent="search();">
+                        <a class="button is-info" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -34,10 +34,10 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
-                    <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(artist.name);">
-                        <img v-bind:src="artist.image | getArtistImageUrl" v-on:error="artist.image = null;">
+                    <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(artist.name);">
+                        <img v-bind:src="artist.image" @error="artist.image = null;">
                         <i class="fas fa-search fa-4x"></i>
                     </a>
                     <div class="artist-info is-clipped">
