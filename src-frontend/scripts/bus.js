@@ -1,6 +1,6 @@
-import { default as Vue } from 'vue';
+import mitt from 'mitt';
 
 /**
  * global object for events between vuejs components
  */
- export const bus = new Vue();
+ export const bus = mitt();
