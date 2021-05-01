@@ -160,7 +160,7 @@ export default {
             this.validator.clear();
             this.clearAPIErrors();
             spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, (response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     this.$router.push({ name: 'dashboard' });
                 } else {
                     switch (response.status) {
@@ -193,7 +193,7 @@ export default {
             this.loading = true;
             this.clearAPIErrors();
             spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, (response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     this.signInEmail = this.signUpEmail;
                     this.signInPassword = this.signUpPassword;
                     this.loading = false;

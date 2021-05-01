@@ -39,8 +39,8 @@ export default {
         },
         loadRandomAlbumImages: function () {
             spieldoseAPI.album.getRandomAlbumCovers(32, (response) => {
-                if (response.ok) {
-                    this.covers = response.body.covers.map((cover, idx) => { cover.id = idx; return (cover); });
+                if (response.status == 200) {
+                    this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
                 }
             });
         }

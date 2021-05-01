@@ -229,8 +229,8 @@ export default {
             if (this.playerData.currentPlaylist.isSet()) {
                 spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, (response) => {
                     this.savingPlaylist = false;
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -239,8 +239,8 @@ export default {
             } else {
                 spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, (response) => {
                     this.savingPlaylist = false;
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
