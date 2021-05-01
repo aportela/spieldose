@@ -165,9 +165,9 @@ export const mixinLiveSearches = {
         playPathTracks: function (path) {
             this.clearAPIErrors();
             spieldoseAPI.track.getPathTracks(path, (response) => {
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.currentPlaylist.replace(response.body.tracks);
+                if (response.status == 200) {
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.playerData.currentPlaylist.replace(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -177,9 +177,9 @@ export const mixinLiveSearches = {
         enqueuePathTracks: function (path) {
             this.clearAPIErrors();
             spieldoseAPI.track.getPathTracks(path, (response) => {
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
+                if (response.status == 200) {
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.playerData.currentPlaylist.enqueue(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -190,9 +190,9 @@ export const mixinLiveSearches = {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 this.playerData.currentPlaylist.empty();
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.tracks = response.body.tracks;
+                if (response.status == 200) {
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.playerData.tracks = response.data.tracks;
                         this.playerData.playback.play();
                     }
                 } else {
@@ -203,9 +203,9 @@ export const mixinLiveSearches = {
         enqueueAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
+                if (response.status == 200) {
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.playerData.currentPlaylist.enqueue(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -216,17 +216,17 @@ export const mixinLiveSearches = {
             this.clearAPIErrors();
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.replace(response.body.playlist.tracks);
-                        this.playerData.currentPlaylist.set(id, response.body.playlist.name);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.replace(response.data.playlist.tracks);
+                        this.playerData.currentPlaylist.set(id, response.data.playlist.name);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
                 });
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.replace(response.body.tracks);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.replace(response.data.tracks);
                         this.playerData.currentPlaylist.unset();
                     } else {
                         this.setAPIError(response.getApiErrorData());
@@ -238,16 +238,16 @@ export const mixinLiveSearches = {
             this.clearAPIErrors();
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.enqueue(response.body.playlist.tracks);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.enqueue(response.data.playlist.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
                 });
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.enqueue(response.body.tracks);
+                    if (response.status == 200) {
+                        this.playerData.currentPlaylist.enqueue(response.data.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -263,11 +263,11 @@ export const mixinLiveSearches = {
         playRadioStation: function(id) {
             this.clearAPIErrors();
             spieldoseAPI.radioStation.get(id, (response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     let track = {
-                        title: response.body.radioStation.name,
+                        title: response.data.radioStation.name,
                         artist: this.$t("commonLabels.remoteRadioStation"),
-                        radioStation: response.body.radioStation
+                        radioStation: response.data.radioStation
                     };
                     this.playerData.currentPlaylist.replace([track]);
                 } else {
@@ -398,7 +398,7 @@ export const mixinAPIError = {
  export const mixinSession = {
     methods: {
         signout: function () {
-            bus.$emit("signOut");
+            bus.emit("signOut");
         }
     }
 };
