@@ -1,16 +1,10 @@
-import { default as Vue } from 'vue';
-import { default as VueRouter } from 'vue-router';
-import { default as VueI18n } from 'vue-i18n';
-import { default as VueResource } from 'vue-resource';
+import { createApp } from 'vue';
 import { default as router } from './routes.js';
 import { default as i18n } from './i18n.js';
-import { default as spieldoseAPI } from './api.js';
 import { bus } from './bus.js';
+import axios from 'axios';
+import { default as spieldoseAPI } from './api.js';
 import { mixinAPIError, mixinPlayer } from './mixins.js';
-
-Vue.use(VueRouter);
-//Vue.use(VueI18n);
-Vue.use(VueResource);
 
 /**
  * parse vue-resource (custom) resource and return valid object for api-error component
@@ -43,6 +37,7 @@ const getApiErrorDataFromResponse = function (r) {
 /**
  * vue-resource interceptor for adding (on errors) custom get data function (used in api-error component) into response
  */
+/*
 Vue.http.interceptors.push((request, next) => {
     next((response) => {
         if (!response.ok) {
@@ -56,20 +51,19 @@ Vue.http.interceptors.push((request, next) => {
             if (response.status == 400 || response.status == 409) {
                 // helper for find invalid fields on api response
                 response.isFieldInvalid = function (fieldName) {
-                    return (response.body.invalidOrMissingParams.indexOf(fieldName) > -1);
+                    return (response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
                 }
             }
         }
         return (response);
     });
 });
+*/
 
 /**
  * main app component
  */
-const app = new Vue({
-    router,
-    i18n,
+const spieldoseApp = {
     mixins: [mixinAPIError, mixinPlayer],
     data: function () {
         return ({
@@ -79,7 +73,7 @@ const app = new Vue({
         });
     },
     created: function () {
-        bus.$on("signOut", () => {
+        bus.on("signOut", () => {
             this.signOut();
         });
         if (!initialState.upgradeAvailable) {
@@ -101,7 +95,7 @@ const app = new Vue({
             this.playerData.dispose();
             this.clearAPIErrors();
             spieldoseAPI.session.signOut((response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                     this.$router.push({ path: '/signin' });
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -116,10 +110,15 @@ const app = new Vue({
             });
         }
     }
-}).$mount('#app');
+};
+
+createApp(spieldoseApp).use(router).use(i18n).mount('#app');
+
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
-setInterval(function () {
-    spieldoseAPI.session.poll(function () { });
-}, 300000 // 5 mins * 60 * 1000
+setInterval(
+    function () {
+        spieldoseAPI.session.poll(function () { });
+    },
+    300000 // 5 mins * 60 * 1000
 );
