@@ -229,8 +229,8 @@ export default {
             this.loading = true;
             this.errors = false;
             spieldoseAPI.artist.get(artist, (response) => {
-                if (response.ok) {
-                    this.artist = response.body.artist;
+                if (response.status == 200) {
+                    this.artist = response.data.artist;
                     if (this.artist.bio) {
                         this.artist.bio = this.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
                         this.truncatedBio = this.truncate(this.artist.bio);
@@ -266,12 +266,12 @@ export default {
             this.clearAPIErrors();
             let text = this.nameFilter ? this.nameFilter : '';
             spieldoseAPI.track.searchTracks(text, artist, '', false, this.pager.actualPage, this.pager.resultsPage, '', (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.actualPage;
-                    this.pager.totalPages = response.body.totalPages;
-                    this.pager.totalResults = response.body.totalResults;
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.tracks = response.body.tracks;
+                if (response.status == 200) {
+                    this.pager.actualPage = response.data.actualPage;
+                    this.pager.totalPages = response.data.totalPages;
+                    this.pager.totalResults = response.data.totalResults;
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.tracks = response.data.tracks;
                     } else {
                         this.tracks = [];
                     }
@@ -292,9 +292,9 @@ export default {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 this.playerData.currentPlaylist.empty();
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.tracks = response.body.tracks;
+                if (response.status == 200) {
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        this.playerData.tracks = response.data.tracks;
                         this.playerData.playback.play();
                     }
                 } else {
@@ -310,7 +310,7 @@ export default {
             this.loading = true;
             this.errors = false;
             spieldoseAPI.artist.overwriteMusicBrainz(name, mbid, (response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                 } else {
                     this.setAPIError(response.getApiErrorData());
                 }
@@ -321,7 +321,7 @@ export default {
             this.loading = true;
             this.errors = false;
             spieldoseAPI.artist.clearMusicBrainz(name, mbid, (response) => {
-                if (response.ok) {
+                if (response.status == 200) {
                 } else {
                     this.setAPIError(response.getApiErrorData());
                 }

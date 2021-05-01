@@ -113,12 +113,12 @@ export default {
                 this.pager.actualPage = 1;
             }
             spieldoseAPI.album.search(this.nameFilter, this.filterByArtist, this.filterByYear, this.pager.actualPage, this.pager.resultsPage, (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.pagination.actualPage;
-                    this.pager.totalPages = response.body.pagination.totalPages;
-                    this.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.albums && response.body.albums.length > 0) {
-                        this.albums = response.body.albums;
+                if (response.status == 200) {
+                    this.pager.actualPage = response.data.pagination.actualPage;
+                    this.pager.totalPages = response.data.pagination.totalPages;
+                    this.pager.totalResults = response.data.pagination.totalResults;
+                    if (response.data.albums && response.data.albums.length > 0) {
+                        this.albums = response.data.albums;
                     } else {
                         this.albums = [];
                     }
