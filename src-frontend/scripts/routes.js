@@ -1,4 +1,4 @@
-import { default as VueRouter } from 'vue-router';
+import { createWebHashHistory, createRouter } from "vue-router";
 import { default as upgrade } from './vue-components/upgrade.js';
 import { default as signInUp } from './vue-components/signin.js';
 import { default as container } from './vue-components/container.js';
@@ -137,16 +137,19 @@ const routes = [
 /**
  * main vue-router component inicialization
  */
-const router = new VueRouter({
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 });
 
 /**
  * top scroll window before change router page
  */
+/*
 router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
     next();
 });
+*/
 
 export default router;
