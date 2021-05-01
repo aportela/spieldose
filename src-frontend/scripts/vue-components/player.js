@@ -217,9 +217,9 @@ export default {
             const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.intersectionRatio > 0) {
-                        bus.$emit('hidePlayerNavbar');
+                        bus.emit('hidePlayerNavbar');
                     } else {
-                        bus.$emit('showPlayerNavBar');
+                        bus.emit('showPlayerNavBar');
                     }
                 });
             });
