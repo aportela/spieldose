@@ -6,7 +6,7 @@ module.exports = {
     mode: 'development',
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.esm.js'
+            vue: 'vue/dist/vue.esm-bundler.js'
         }
     },
     entry: {
@@ -14,7 +14,7 @@ module.exports = {
             import: './src-frontend/scripts/app.js',
             dependOn: 'vendor'
         },
-        'vendor': ['vue', 'vue-router', 'vue-resource', 'vue-i18n', 'chart.js', 'dayjs']
+        'vendor': ['vue', 'vue-router', 'vue-i18n', 'chart.js', 'dayjs', 'axios']
     },
     output: {
         path: path.resolve(__dirname, 'public/scripts/'),
