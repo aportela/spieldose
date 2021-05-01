@@ -1,15 +1,16 @@
-import { default as Vue } from 'vue';
 import * as dayjs from 'dayjs';
+import axios from 'axios';
 
 export default {
     session: {
         poll: function (callback) {
-            Vue.http.get("api/user/poll").then(
+            axios.get("api/user/poll").then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -22,13 +23,14 @@ export default {
                 email: email,
                 password: password
             }
-            Vue.http.post("api/user/signup", params).then(
+            axios.post("api/user/signup", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
-                response => {
+                }
+            ).catch(
+                    response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
@@ -40,13 +42,14 @@ export default {
                 email: email,
                 password: password
             }
-            Vue.http.post("api/user/signin", params).then(
+            axios.post("api/user/signin", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
-                response => {
+                }
+            ).catch(
+                    response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
@@ -54,12 +57,13 @@ export default {
             );
         },
         signOut: function (callback) {
-            Vue.http.get("api/user/signout").then(
+            axios.get("api/user/signout").then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -82,12 +86,13 @@ export default {
         if (text) {
             params.text = text;
         }
-        Vue.http.post("api/search/global", params).then(
+        axios.post("api/search/global", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
-            },
+            }
+        ).catch(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
@@ -97,12 +102,13 @@ export default {
     },
     artist: {
         get: function (name, callback) {
-            Vue.http.get("api/artist/" + encodeURIComponent(name)).then(
+            axios.get("api/artist/" + encodeURIComponent(name)).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -127,12 +133,13 @@ export default {
             if (resultsPage) {
                 params.resultsPage = parseInt(resultsPage);
             }
-            Vue.http.post("api/artist/search", params).then(
+            axios.post("api/artist/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -144,12 +151,13 @@ export default {
             var params = {
                 mbid: mbid
             }
-            Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
+            axios.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -158,12 +166,13 @@ export default {
             );
         },
         clearMusicBrainz: function (name, mbid, callback) {
-            Vue.http.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
+            axios.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -184,12 +193,13 @@ export default {
             if (year) {
                 params.year = year;
             }
-            Vue.http.post("api/track/search", params).then(
+            axios.post("api/track/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -202,12 +212,13 @@ export default {
                 path: path,
                 resultsPage: 0
             };
-            Vue.http.post("api/track/search", params).then(
+            axios.post("api/track/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -241,12 +252,13 @@ export default {
             if (order) {
                 params.orderBy = order;
             }
-            Vue.http.post("api/track/search", params).then(
+            axios.post("api/track/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -256,12 +268,13 @@ export default {
         },
         love: function (trackId, callback) {
             var params = {};
-            Vue.http.post("api/track/" + trackId + "/love", params).then(
+            axios.post("api/track/" + trackId + "/love", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -271,12 +284,13 @@ export default {
         },
         unlove: function (trackId, callback) {
             var params = {};
-            Vue.http.post("api/track/" + trackId + "/unlove", params).then(
+            axios.post("api/track/" + trackId + "/unlove", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -306,12 +320,13 @@ export default {
             if (resultsPage) {
                 params.resultsPage = parseInt(resultsPage);
             }
-            Vue.http.post("api/album/search", params).then(
+            axios.post("api/album/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -323,12 +338,13 @@ export default {
             const params = {
                 count: count
             };
-            Vue.http.post("api/random_album_covers", params).then(
+            axios.post("api/random_album_covers", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -352,12 +368,13 @@ export default {
             if (resultsPage) {
                 params.resultsPage = parseInt(resultsPage);
             }
-            Vue.http.post("api/playlist/search", params).then(
+            axios.post("api/playlist/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -370,12 +387,13 @@ export default {
                 name: name,
                 tracks: tracks
             };
-            Vue.http.post("api/playlist/add", params).then(
+            axios.post("api/playlist/add", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -389,12 +407,13 @@ export default {
                 name: name,
                 tracks: tracks
             };
-            Vue.http.post("api/playlist/update", params).then(
+            axios.post("api/playlist/update", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -406,12 +425,13 @@ export default {
             var params = {
                 id: id
             };
-            Vue.http.post("api/playlist/remove", params).then(
+            axios.post("api/playlist/remove", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -420,12 +440,13 @@ export default {
             );
         },
         get: function (playlistId, callback) {
-            Vue.http.get("api/playlist/" + playlistId).then(
+            axios.get("api/playlist/" + playlistId).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -449,12 +470,13 @@ export default {
             if (resultsPage) {
                 params.resultsPage = parseInt(resultsPage);
             }
-            Vue.http.post("api/radio_station/search", params).then(
+            axios.post("api/radio_station/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -469,12 +491,13 @@ export default {
                 urlType: urlType,
                 image: image
             };
-            Vue.http.post("api/radio_station/add", params).then(
+            axios.post("api/radio_station/add", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -490,12 +513,13 @@ export default {
                 urlType: urlType,
                 image: image
             };
-            Vue.http.post("api/radio_station/update", params).then(
+            axios.post("api/radio_station/update", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -507,12 +531,13 @@ export default {
             var params = {
                 id: id
             };
-            Vue.http.post("api/radio_station/remove", params).then(
+            axios.post("api/radio_station/remove", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -521,12 +546,13 @@ export default {
             );
         },
         get: function (id, callback) {
-            Vue.http.get("api/radio_station/" + id).then(
+            axios.get("api/radio_station/" + id).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -546,12 +572,13 @@ export default {
         if (resultsPage) {
             params.resultsPage = parseInt(resultsPage);
         }
-        Vue.http.post("api/path/search", params).then(
+        axios.post("api/path/search", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
-            },
+            }
+        ).catch(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
@@ -585,12 +612,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/top_played_tracks", params).then(
+            axios.post("api/metrics/top_played_tracks", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -620,12 +648,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/top_artists", params).then(
+            axios.post("api/metrics/top_artists", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -655,12 +684,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/top_genres", params).then(
+            axios.post("api/metrics/top_genres", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -692,12 +722,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_added", params).then(
+            axios.post("api/metrics/recently_added", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -729,12 +760,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_added", params).then(
+            axios.post("api/metrics/recently_added", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -766,12 +798,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_added", params).then(
+            axios.post("api/metrics/recently_added", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -803,12 +836,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_played", params).then(
+            axios.post("api/metrics/recently_played", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -840,12 +874,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_played", params).then(
+            axios.post("api/metrics/recently_played", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -877,12 +912,13 @@ export default {
                     params.toDate = dayjs().format('YYYYMMDD');
                     break;
             }
-            Vue.http.post("api/metrics/recently_played", params).then(
+            axios.post("api/metrics/recently_played", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -891,12 +927,13 @@ export default {
             );
         },
         getPlayStatMetricsByHour: function (callback) {
-            Vue.http.post("api/metrics/play_stats_by_hour", {}).then(
+            axios.post("api/metrics/play_stats_by_hour", {}).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -905,12 +942,13 @@ export default {
             );
         },
         getPlayStatMetricsByWeekDay: function (callback) {
-            Vue.http.post("api/metrics/play_stats_by_weekday", {}).then(
+            axios.post("api/metrics/play_stats_by_weekday", {}).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -919,12 +957,13 @@ export default {
             );
         },
         getPlayStatMetricsByMonth: function (callback) {
-            Vue.http.post("api/metrics/play_stats_by_month", {}).then(
+            axios.post("api/metrics/play_stats_by_month", {}).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -933,12 +972,13 @@ export default {
             );
         },
         getPlayStatMetricsByYear: function (callback) {
-            Vue.http.post("api/metrics/play_stats_by_year", {}).then(
+            axios.post("api/metrics/play_stats_by_year", {}).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
-                },
+                }
+            ).catch(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
