@@ -23,8 +23,8 @@ const template = function () {
             <div class="panel-block cut-text">
                 <ol v-if="items.length > 0">
                     <li class="is-small" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
-                        <i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
-                        <i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
+                        <span class="icon"><i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
@@ -89,34 +89,34 @@ export default {
     methods: {
         loadTopPlayedTracks: function () {
             spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        this.items = response.data.metrics;
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
         }, loadTopPlayedArtists: function () {
             spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        this.items = response.data.metrics;
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
         }, loadTopPlayedGenres: function () {
             spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        this.items = response.data.metrics;
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    //this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
             });
