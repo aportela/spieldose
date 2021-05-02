@@ -2,18 +2,18 @@ const template = function () {
     return `
         <div>
             <nav class="pagination is-centered level" v-if="visible">
-                <a class="button is-link pagination-previous" v-bind:disabled="loading" @click.prevent="previous();">
+                <a class="button is-link pagination-previous" :class="{ 'disabled': loading }" @click.prevent="previous();">
                     <span class="icon is-small"><i class="fas fa-caret-left" aria-hidden="true"></i></span>
                     <span>{{ $t("pagination.buttons.previousPage") }}</span>
                     </a>
-                <a class="button is-link pagination-next" v-bind:disabled="loading" @click.prevent="next();">
+                <a class="button is-link pagination-next" :class="{ 'disabled': loading }" @click.prevent="next();">
                     <span>{{ $t("pagination.buttons.nextPage") }}</span>
                     <span class="icon is-small"><i class="fas fa-caret-right" aria-hidden="true"></i></span>
                 </a>
                 <ul class="pagination-list">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
-                    <li v-for="pageNumber in data.totalPages" v-if="showIntermediatePage(pageNumber)">
-                        <a class="pagination-link" :class="{'is-current': isCurrentPage(pageNumber) }" v-bind:disabled="loading" @click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</a>
+                    <li v-for="pageNumber in data.totalPages">
+                        <a class="pagination-link" v-if="showIntermediatePage(pageNumber)" :class="{'is-current': isCurrentPage(pageNumber), 'disabled': loading }" @click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</a>
                     </li>
                 </ul>
             </nav>
@@ -35,6 +35,17 @@ export default {
         },
         invalidPage: function () {
             return (this.data.totalPages > 0 && (this.data.actualPage < 1 || this.data.actualPage > this.data.totalPages));
+        }
+    },
+    created: function() {
+        console.log(this.loading);
+    },
+    watch: {
+        data: function(newValue) {
+            console.log(newValue);
+        },
+        loading: function(newValue) {
+            console.log(newValue);
         }
     },
     methods: {
