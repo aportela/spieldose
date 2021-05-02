@@ -30,11 +30,11 @@ const template = function () {
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
                     <li class="is-small" v-if="isTopArtistsType" v-for="item in items">
-                        <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                        <span class="icon"><i class="fas fa-compact-disc"></i></span><a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
                     <li class="is-small" v-if="isTopGenresType" v-for="item in items">
-                        <span>{{ item.genre }}</span>
+                        <span class="icon"><i class="fas fa-compact-disc"></i></span><span>{{ item.genre }}</span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
                 </ol>

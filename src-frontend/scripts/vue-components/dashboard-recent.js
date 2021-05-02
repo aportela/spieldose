@@ -27,7 +27,7 @@ const template = function () {
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                     </li>
                     <li class="is-small" v-if="isArtistEntity" v-for="item in items">
-                        <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                        <span class="icon"><i class="fas fa-compact-disc"></i></span><a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                     </li>
                     <li class="is-small" v-if="isAlbumEntity" v-for="item in items">
                         <span class="icon"><i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click="playAlbum(item);" ></i></span>
