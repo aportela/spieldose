@@ -2,7 +2,7 @@ import { default as spieldoseAPI } from '../api.js';
 
 const template = function () {
     return `
-        <div class="tile is-ancestor" id="container_tiles">
+        <div class="tile is-ancestor" id="container_tiles" v-if="! loading">
             <div class="tile is-2 is-vertical" v-for="column in [0,1,2,3,4,5]">
                 <div class="tile" v-for="row in [0,1,2,3,4,5]">
                     <img v-if="covers && covers.length > 0" :src="getImageSource(covers[(5 * column) + row])" style="width:100%" @error="$event.target.src='/images/vinyl.png'">
@@ -18,13 +18,12 @@ export default {
     template: template(),
     data: function () {
         return ({
+            loading: false,
             covers: []
         })
     },
     created: function () {
         this.loadRandomAlbumImages();
-    },
-    mounted: function () {
     },
     methods: {
         // https://stackoverflow.com/a/1484514
@@ -48,12 +47,14 @@ export default {
             }
         },
         loadRandomAlbumImages: function () {
+            this.loading = true;
             spieldoseAPI.album.getRandomAlbumCovers(32, (response) => {
                 if (response.status == 200) {
                     if (response.data.covers.length == 32) {
                         this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
                     }
                 }
+                this.loading = false;
             });
         }
     }
