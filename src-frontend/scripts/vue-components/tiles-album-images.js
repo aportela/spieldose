@@ -5,7 +5,8 @@ const template = function () {
         <div class="tile is-ancestor" id="container_tiles">
             <div class="tile is-2 is-vertical" v-for="column in [0,1,2,3,4,5]">
                 <div class="tile" v-for="row in [0,1,2,3,4,5]">
-                    <img :src="getImageSource(covers[(5 * column) + row])" style="width:100%" @error="$event.target.src='/images/vinyl.png'">
+                    <img v-if="covers && covers.length > 0" :src="getImageSource(covers[(5 * column) + row])" style="width:100%" @error="$event.target.src='/images/vinyl.png'">
+                        <div v-else style="width: 100%; height: auto;" :style="'background: ' + getRandomColor()"></div>
                 </div>
             </div>
         </div>
@@ -26,6 +27,15 @@ export default {
     mounted: function () {
     },
     methods: {
+        // https://stackoverflow.com/a/1484514
+        getRandomColor: function() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+              color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        },
         getImageSource: function (img) {
             if (img) {
                 if (img.hash) {
@@ -40,7 +50,9 @@ export default {
         loadRandomAlbumImages: function () {
             spieldoseAPI.album.getRandomAlbumCovers(32, (response) => {
                 if (response.status == 200) {
-                    this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
+                    if (response.data.covers.length == 32) {
+                        this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
+                    }
                 }
             });
         }
