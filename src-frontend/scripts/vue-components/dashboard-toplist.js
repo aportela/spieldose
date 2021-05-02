@@ -36,7 +36,7 @@ const template = function () {
                     <li class="is-small" v-if="isTopAlbumsType" v-for="item in items">
                         <span class="icon"><i class="cursor-pointer fa fa-play" @click="playAlbumTracks(item.album, item.artist);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
                         <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="enqueueAlbumTracks(item.album, item.artist);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
-                        <span>{{ item.album }}</span> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                        <span>{{ item.album }} <span v-if="item.year">({{ item.year }})</span></span> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
                     <li class="is-small" v-if="isTopGenresType" v-for="item in items">

@@ -82,13 +82,13 @@
                 $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
             }
             $query = sprintf('
-                SELECT COALESCE(MB.artist, F.track_artist) AS artist, COALESCE(MBA1.album, F.album_name) AS album, COUNT(S.played) AS total
+                SELECT COALESCE(MB.artist, F.track_artist) AS artist, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(F.year, MBA1.year) AS year, COUNT(S.played) AS total
                 FROM STATS S
                 LEFT JOIN FILE F ON F.id = S.file_id
                 LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
                 LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
                 %s
-                GROUP BY COALESCE(MB.artist, F.track_artist), COALESCE(MBA1.album, F.album_name)
+                GROUP BY COALESCE(MB.artist, F.track_artist), COALESCE(F.year, MBA1.year)
                 HAVING COALESCE(MBA1.album, F.album_name) NOT NULL
                 ORDER BY total DESC
                 LIMIT %d;
