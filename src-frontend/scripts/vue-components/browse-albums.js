@@ -11,7 +11,7 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" @change="onTypeahead"></spieldose-input-typeahead>
+                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
                         <input type="text" class="input" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
