@@ -8,7 +8,8 @@ const template = function () {
             <p v-else="! loading" class="title is-1 has-text-centered">{{ $t("browseArtist.labels.sectionName") }}</p>
             <div class="media" v-if="! hasAPIErrors && ! loading">
                 <figure class="image media-left">
-                    <img class="artist_avatar" :src="artist.image | getArtistImageUrl" @error="artist.image = null;">
+                    <img class="artist_avatar" v-if="artist.image" :src="artist.image | getArtistImageUrl" @error="artist.image = null;">
+                    <img class="artist_avatar" v-else src="images/image-artist-not-set.png">
                 </figure>
                 <div class="media-content is-light">
                     <p class="title is-1">{{ artist.name }}</p>
@@ -84,7 +85,8 @@ const template = function () {
                     <div class="panel" v-if="activeTab == 'albums'">
                         <div class="browse-album-item" v-show="! loading" v-for="album, i in artist.albums" v-bind:key="i">
                         <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                                <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
+                                <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
+                                <img class="album-thumbnail" v-else src="images/image-album-not-set.png">
                                 <i class="fas fa-play fa-4x"></i>
                                 <img class="vinyl no-cover" src="images/vinyl.png" />
                             </a>

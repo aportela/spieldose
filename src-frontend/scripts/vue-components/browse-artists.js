@@ -37,7 +37,8 @@ const template = function () {
                 <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-artist-item is-pulled-left" v-for="artist in artists" v-show="! loading">
                     <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(artist.name);">
-                        <img v-bind:src="artist.image" @error="artist.image = null;">
+                        <img v-if="artist.image" v-bind:src="artist.image" @error="artist.image = null;">
+                        <img v-else class="artist_avatar" v-else src="images/image-artist-not-set.png">
                         <i class="fas fa-search fa-4x"></i>
                     </a>
                     <div class="artist-info is-clipped">

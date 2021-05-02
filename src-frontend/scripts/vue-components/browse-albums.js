@@ -61,6 +61,7 @@ const template = function () {
                 <div class="browse-album-item" v-for="album in albums" v-show="! loading">
                     <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
                         <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
+                        <img class="album-thumbnail" v-else src="images/image-album-not-set.png">
                         <i class="fas fa-play fa-4x"></i>
                         <img class="vinyl no-cover" src="images/vinyl.png" />
                     </a>
