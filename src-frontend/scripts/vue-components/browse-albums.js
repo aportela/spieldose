@@ -2,6 +2,7 @@ import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
+import { default as imageAlbum } from './image-album.js';
 import { default as apiError } from './api-error.js';
 
 const template = function () {
@@ -60,8 +61,7 @@ const template = function () {
                 <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-album-item" v-for="album in albums" v-show="! loading">
                     <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                        <img class="album-thumbnail" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
-                        <img class="album-thumbnail" v-else src="images/image-album-not-set.png">
+                        <spieldose-image-album :src="album.image"></spieldose-image-album>
                         <i class="fas fa-play fa-4x"></i>
                         <img class="vinyl no-cover" src="images/vinyl.png" />
                     </a>
@@ -97,6 +97,7 @@ export default {
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
+        'spieldose-image-album': imageAlbum,
         'spieldose-api-error-component': apiError
     },
     methods: {

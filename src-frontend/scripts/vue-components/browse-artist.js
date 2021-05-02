@@ -1,6 +1,7 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
+import { default as imageAlbum } from './image-album.js';
 
 const template = function () {
     return `
@@ -85,8 +86,7 @@ const template = function () {
                     <div class="panel" v-if="activeTab == 'albums'">
                         <div class="browse-album-item" v-show="! loading" v-for="album, i in artist.albums" v-bind:key="i">
                         <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                                <img class="album-thumbnail" v-if="album.image" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;">
-                                <img class="album-thumbnail" v-else src="images/image-album-not-set.png">
+                                <spieldose-image-album :src="album.image"></spieldose-image-album>
                                 <i class="fas fa-play fa-4x"></i>
                                 <img class="vinyl no-cover" src="images/vinyl.png" />
                             </a>
@@ -171,7 +171,8 @@ export default {
         });
     },
     components: {
-        'spieldose-image-artist': imageArtist
+        'spieldose-image-artist': imageArtist,
+        'spieldose-image-album': imageAlbum,
     },
     watch: {
         '$route'(to, from) {
