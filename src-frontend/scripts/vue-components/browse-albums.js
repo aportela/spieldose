@@ -59,7 +59,7 @@ const template = function () {
                     </p>
                 </div>
                 <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
-                <div class="browse-album-item" v-for="album in albums" v-show="! loading">
+                <div class="browse-album-item" v-for="album in albums" :key="album.name+album.artist+album.year" v-show="! loading">
                     <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
                         <spieldose-image-album :src="album.image"></spieldose-image-album>
                         <i class="fas fa-play fa-4x"></i>
