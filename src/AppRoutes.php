@@ -592,6 +592,18 @@
                 return $response->withJson(['metrics' => $metrics], 200);
             });
 
+            $this->post('/metrics/top_albums', function (Request $request, Response $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetTopAlbums(
+                    new \Spieldose\Database\DB($this),
+                    array(
+                        "fromDate" => $request->getParam("fromDate", ""),
+                        "toDate" => $request->getParam("toDate", ""),
+                    ),
+                    $request->getParam("count", 5)
+                );
+                return $response->withJson(['metrics' => $metrics], 200);
+            });
+
             $this->post('/metrics/top_genres', function (Request $request, Response $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetTopGenres(
                     new \Spieldose\Database\DB($this),

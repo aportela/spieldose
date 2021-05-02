@@ -662,6 +662,42 @@ export default {
                 }
             );
         },
+        getTopPlayedAlbums: function (interval, callback) {
+            var params = {};
+            switch (interval) {
+                case 0:
+                    break;
+                case 1:
+                    params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
+                    break;
+                case 2:
+                    params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
+                    break;
+                case 3:
+                    params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
+                    break;
+                case 4:
+                    params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                    params.toDate = dayjs().format('YYYYMMDD');
+                    break;
+            }
+            axios.post("api/metrics/top_albums", params).then(
+                (response) => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            ).catch(
+                (error) => {
+                    if (callback && typeof callback === "function") {
+                        callback(error.response);
+                    }
+                }
+            );
+        },
         getTopPlayedGenres: function (interval, callback) {
             var params = {};
             switch (interval) {

@@ -48,6 +48,7 @@ export default {
                 entityAlbums: 'Albums',
                 topPlayedTracks: 'Top played tracks',
                 topPlayedArtists: 'Top played artists',
+                topPlayedAlbums: 'Top played albums',
                 topPlayedGenres: 'Top played genres',
                 recentlyAdded: 'Recently added',
                 recentlyPlayed: 'Recently played',

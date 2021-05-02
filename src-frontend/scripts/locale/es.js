@@ -48,6 +48,7 @@ export default {
                 entityAlbums: 'Álbumes',
                 topPlayedTracks: 'Canciones más escuchadas',
                 topPlayedArtists: 'Artistas más escuchados',
+                topPlayedAlbums: 'Albumes más escuchados',
                 topPlayedGenres: 'Géneros más escuchados',
                 recentlyAdded: 'Añadido/a recientemente',
                 recentlyPlayed: 'Escuchado/a recientemente',

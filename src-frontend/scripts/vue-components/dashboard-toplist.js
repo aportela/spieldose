@@ -33,6 +33,12 @@ const template = function () {
                         <span class="icon"><i class="fas fa-compact-disc"></i></span><a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
+                    <li class="is-small" v-if="isTopAlbumsType" v-for="item in items">
+                        <span class="icon"><i class="cursor-pointer fa fa-play" @click="playAlbumTracks(item.album, item.artist);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="enqueueAlbumTracks(item.album, item.artist);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
+                        <span>{{ item.album }}</span> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
+                        <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
+                    </li>
                     <li class="is-small" v-if="isTopGenresType" v-for="item in items">
                         <span class="icon"><i class="fas fa-compact-disc"></i></span><span>{{ item.genre }}</span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
@@ -82,6 +88,9 @@ export default {
         isTopArtistsType: function () {
             return (this.type == 'topArtists');
         },
+        isTopAlbumsType: function () {
+            return (this.type == 'topAlbums');
+        },
         isTopGenresType: function () {
             return (this.type == 'topGenres');
         }
@@ -100,6 +109,17 @@ export default {
             });
         }, loadTopPlayedArtists: function () {
             spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, (response) => {
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        this.items = response.data.metrics;
+                    }
+                } else {
+                    //this.setAPIError(response.getApiErrorData());
+                }
+                this.loading = false;
+            });
+        }, loadTopPlayedAlbums: function () {
+            spieldoseAPI.metrics.getTopPlayedAlbums(this.activeInterval, (response) => {
                 if (response.status == 200) {
                     if (response.data.metrics && response.data.metrics.length > 0) {
                         this.items = response.data.metrics;
@@ -137,6 +157,9 @@ export default {
                     break;
                 case 'topArtists':
                     this.loadTopPlayedArtists();
+                    break;
+                case 'topAlbums':
+                    this.loadTopPlayedAlbums();
                     break;
                 case 'topGenres':
                     this.loadTopPlayedGenres();

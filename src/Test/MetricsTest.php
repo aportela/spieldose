@@ -98,6 +98,15 @@
             $this->assertTrue(count($metrics) >= 0);
         }
 
+        public function testGetTopAlbums(): void {
+            $metrics = \Spieldose\Metrics::GetTopAlbums(
+                self::$dbh,
+                array(),
+                5
+            );
+            $this->assertTrue(count($metrics) >= 0);
+        }
+
         public function testGetTopGenresWithDateFilter(): void {
             $metrics = \Spieldose\Metrics::GetTopGenres(
                 self::$dbh,

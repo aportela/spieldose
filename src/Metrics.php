@@ -68,6 +68,35 @@
             return($metrics);
         }
 
+        public static function GetTopAlbums(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array {
+            $metrics = array();
+            $params = array(
+                (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            );
+            $queryConditions = array(
+                " S.user_id = :user_id "
+            );
+            if (isset($filter["fromDate"]) && ! empty($filter["fromDate"]) && isset($filter["toDate"]) && ! empty($filter["toDate"])) {
+                $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate  AND :toDate ";
+                $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
+                $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
+            }
+            $query = sprintf('
+                SELECT COALESCE(MB.artist, F.track_artist) AS artist, COALESCE(MBA1.album, F.album_name) AS album, COUNT(S.played) AS total
+                FROM STATS S
+                LEFT JOIN FILE F ON F.id = S.file_id
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
+                %s
+                GROUP BY COALESCE(MB.artist, F.track_artist), COALESCE(MBA1.album, F.album_name)
+                HAVING COALESCE(MBA1.album, F.album_name) NOT NULL
+                ORDER BY total DESC
+                LIMIT %d;
+            ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
+            $metrics = $dbh->query($query, $params);
+            return($metrics);
+        }
+
         public static function GetTopGenres(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array {
             $metrics = array();
             $params = array(
