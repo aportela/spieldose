@@ -2,7 +2,6 @@ import { createApp } from 'vue';
 import { default as router } from './routes.js';
 import { default as i18n } from './i18n.js';
 import { bus } from './bus.js';
-import axios from 'axios';
 import { default as spieldoseAPI } from './api.js';
 import { mixinAPIError, mixinPlayer } from './mixins.js';
 
@@ -82,9 +81,7 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                if (!this.$route.name) {
-                    this.$router.push({ name: 'dashboard' });
-                }
+                this.$router.push({ name: 'dashboard' });
             }
         } else {
             this.$router.push({ name: 'upgrade' });
