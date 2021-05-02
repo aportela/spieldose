@@ -1,5 +1,6 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums } from '../mixins.js';
+import { default as imageArtist } from './image-artist.js';
 
 const template = function () {
     return `
@@ -8,8 +9,7 @@ const template = function () {
             <p v-else="! loading" class="title is-1 has-text-centered">{{ $t("browseArtist.labels.sectionName") }}</p>
             <div class="media" v-if="! hasAPIErrors && ! loading">
                 <figure class="image media-left">
-                    <img class="artist_avatar" v-if="artist.image" :src="artist.image | getArtistImageUrl" @error="artist.image = null;">
-                    <img class="artist_avatar" v-else src="images/image-artist-not-set.png">
+                    <spieldose-image-artist :src="artist.image" :extraClass="'artist_avatar'"></spieldose-image-artist>
                 </figure>
                 <div class="media-content is-light">
                     <p class="title is-1">{{ artist.name }}</p>
@@ -169,6 +169,9 @@ export default {
             updateArtistName: null,
             updateArtistMBId: null
         });
+    },
+    components: {
+        'spieldose-image-artist': imageArtist
     },
     watch: {
         '$route'(to, from) {
