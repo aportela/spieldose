@@ -5,15 +5,15 @@ export default {
     session: {
         poll: function (callback) {
             axios.get("api/user/poll").then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -24,15 +24,15 @@ export default {
                 password: password
             }
             axios.post("api/user/signup", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                    response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -43,30 +43,30 @@ export default {
                 password: password
             }
             axios.post("api/user/signin", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(response, null);
                     }
                 }
             ).catch(
-                    response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         signOut: function (callback) {
             axios.get("api/user/signout").then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -87,15 +87,15 @@ export default {
             params.text = text;
         }
         axios.post("api/search/global", params).then(
-            response => {
+            (response) => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
             }
         ).catch(
-            response => {
+            (error) => {
                 if (callback && typeof callback === "function") {
-                    callback(response);
+                    callback(error.response);
                 }
             }
         );
@@ -103,15 +103,15 @@ export default {
     artist: {
         get: function (name, callback) {
             axios.get("api/artist/" + encodeURIComponent(name)).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -134,13 +134,13 @@ export default {
                 params.resultsPage = parseInt(resultsPage);
             }
             axios.post("api/artist/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
@@ -152,13 +152,13 @@ export default {
                 mbid: mbid
             }
             axios.put("api/artist/" + encodeURIComponent(name) + "/mbid", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
@@ -167,13 +167,13 @@ export default {
         },
         clearMusicBrainz: function (name, mbid, callback) {
             axios.put("api/artist/" + encodeURIComponent(name) + "/mbid").then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
@@ -194,15 +194,15 @@ export default {
                 params.year = year;
             }
             axios.post("api/track/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -213,15 +213,15 @@ export default {
                 resultsPage: 0
             };
             axios.post("api/track/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -253,15 +253,15 @@ export default {
                 params.orderBy = order;
             }
             axios.post("api/track/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -269,15 +269,15 @@ export default {
         love: function (trackId, callback) {
             var params = {};
             axios.post("api/track/" + trackId + "/love", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -285,15 +285,15 @@ export default {
         unlove: function (trackId, callback) {
             var params = {};
             axios.post("api/track/" + trackId + "/unlove", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -321,33 +321,33 @@ export default {
                 params.resultsPage = parseInt(resultsPage);
             }
             axios.post("api/album/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
-        getRandomAlbumCovers: function(count, callback) {
+        getRandomAlbumCovers: function (count, callback) {
             const params = {
                 count: count
             };
             axios.post("api/random_album_covers", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -369,15 +369,15 @@ export default {
                 params.resultsPage = parseInt(resultsPage);
             }
             axios.post("api/playlist/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -388,15 +388,15 @@ export default {
                 tracks: tracks
             };
             axios.post("api/playlist/add", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -408,15 +408,15 @@ export default {
                 tracks: tracks
             };
             axios.post("api/playlist/update", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -426,30 +426,30 @@ export default {
                 id: id
             };
             axios.post("api/playlist/remove", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         get: function (playlistId, callback) {
             axios.get("api/playlist/" + playlistId).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -471,15 +471,15 @@ export default {
                 params.resultsPage = parseInt(resultsPage);
             }
             axios.post("api/radio_station/search", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -492,15 +492,15 @@ export default {
                 image: image
             };
             axios.post("api/radio_station/add", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -514,15 +514,15 @@ export default {
                 image: image
             };
             axios.post("api/radio_station/update", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -532,30 +532,30 @@ export default {
                 id: id
             };
             axios.post("api/radio_station/remove", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         get: function (id, callback) {
             axios.get("api/radio_station/" + id).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -573,15 +573,15 @@ export default {
             params.resultsPage = parseInt(resultsPage);
         }
         axios.post("api/path/search", params).then(
-            response => {
+            (response) => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
             }
         ).catch(
-            response => {
+            (error) => {
                 if (callback && typeof callback === "function") {
-                    callback(response);
+                    callback(error.response);
                 }
             }
         );
@@ -613,15 +613,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/top_played_tracks", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -649,15 +649,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/top_artists", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -685,15 +685,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/top_genres", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -723,15 +723,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_added", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -761,15 +761,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_added", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -799,15 +799,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_added", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -837,15 +837,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_played", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -875,15 +875,15 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_played", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
@@ -913,75 +913,75 @@ export default {
                     break;
             }
             axios.post("api/metrics/recently_played", params).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         getPlayStatMetricsByHour: function (callback) {
             axios.post("api/metrics/play_stats_by_hour", {}).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         getPlayStatMetricsByWeekDay: function (callback) {
             axios.post("api/metrics/play_stats_by_weekday", {}).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         getPlayStatMetricsByMonth: function (callback) {
             axios.post("api/metrics/play_stats_by_month", {}).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
         },
         getPlayStatMetricsByYear: function (callback) {
             axios.post("api/metrics/play_stats_by_year", {}).then(
-                response => {
+                (response) => {
                     if (callback && typeof callback === "function") {
                         callback(response);
                     }
                 }
             ).catch(
-                response => {
+                (error) => {
                     if (callback && typeof callback === "function") {
-                        callback(response);
+                        callback(error.response);
                     }
                 }
             );
