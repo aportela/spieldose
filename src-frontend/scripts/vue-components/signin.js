@@ -64,7 +64,7 @@ const template = function () {
                                         </p>
                                     </div>
                                     <p class="control">
-                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading || ! signInEmail || ! signInPassword">
                                             <span class="icon"><i class="fas fa-lock"></i></span>
                                             <span>{{ $t("signIn.buttons.submit") }}</span>
                                         </button>
@@ -88,7 +88,7 @@ const template = function () {
                                         <p class="help is-danger" v-show="validator.hasInvalidField('signUpPassword')">{{ validator.getInvalidFieldMessage('signUpPassword') }}</p>
                                     </p>
                                     <p class="control">
-                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading || ! signUpEmail || ! signUpPassword">
                                             <span class="icon"><i class="fas fa-plus-circle"></i></span>
                                             <span>{{ $t("signUp.buttons.submit") }}</span>
                                         </button>
@@ -161,6 +161,7 @@ export default {
             this.clearAPIErrors();
             spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, (response) => {
                 if (response.status == 200) {
+                    this.loading = false;
                     this.$router.push({ name: 'dashboard' });
                 } else {
                     switch (response.status) {
@@ -170,7 +171,7 @@ export default {
                             } else if (response.isFieldInvalid("password")) {
                                 this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
                             } else {
-                                this.setAPIError(response.getApiErrorData());
+                                //this.setAPIError(response.getApiErrorData());
                             }
                             break;
                         case 404:
@@ -180,7 +181,7 @@ export default {
                             this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
                             break;
                         default:
-                            this.setAPIError(response.getApiErrorData());
+                            //this.setAPIError(response.getApiErrorData());
                             break;
                     }
                     this.loading = false;
