@@ -127,9 +127,11 @@ const template = function () {
                     <tbody>
                         <tr v-bind:class="{ 'is-selected': playerData.currentTrack.index == i }" v-for="track, i in playerData.tracks" v-bind:key="i">
                             <td>
-                                <i class="fas fa-play cursor-pointer" v-bind:title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="playerData.currentPlaylist.playAtIdx(i);"></i>
-                                <i class="fas fa-headphones cursor-pointer" v-bind:title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="playerData.playback.pause();"></i>
-                                <i class="fas fa-pause cursor-pointer" v-bind:title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="playerData.playback.resume();"></i>
+                                <span class="icon">
+                                    <i class="fas fa-play cursor-pointer" v-bind:title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="playerData.currentPlaylist.playAtIdx(i);"></i>
+                                    <i class="fas fa-headphones cursor-pointer" v-bind:title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="playerData.playback.pause();"></i>
+                                    <i class="fas fa-pause cursor-pointer" v-bind:title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="playerData.playback.resume();"></i>
+                                </span>
                                 <span>{{ track.title}}</span>
                             </td>
                             <td v-if="! track.radioStation">
