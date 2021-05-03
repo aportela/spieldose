@@ -149,7 +149,7 @@ export default {
     name: 'spieldose-browse-radio-stations',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer, mixinAlbums
+        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({
