@@ -38,7 +38,6 @@ export default {
         }
     },
     created: function() {
-        console.log(this.loading);
     },
     watch: {
         data: function(newValue) {
