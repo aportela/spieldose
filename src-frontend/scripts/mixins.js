@@ -15,48 +15,6 @@ export const mixinLiveSearches = {
 };
 
 /**
- * album entity common mixins
- */
- export const mixinAlbums = {
-    filters: {
-        getAlbumImageUrl: function (value) {
-            if (value) {
-                if (value.indexOf("http") == 0) {
-                    return ("api/thumbnail?url=" + encodeURIComponent(value));
-                } else {
-                    return ("api/thumbnail?hash=" + value);
-                }
-            } else {
-                /**
-                 * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
-                 * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
-                 */
-                return ("images/image-album-not-set.png");
-            }
-        }
-    }
-};
-
-/**
- * artist entity common mixins
- */
- export const mixinArtists = {
-    filters: {
-        getArtistImageUrl: function (value) {
-            if (value) {
-                return ("api/thumbnail?url=" + value);
-            } else {
-                /**
-                 * Music band icon credits: adiante apps (http://www.adianteapps.com/)
-                 * https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon
-                 */
-                return ("images/image-artist-not-set.png");
-            }
-        }
-    }
-};
-
-/**
  * player common mixins
  */
  export const mixinPlayer = {

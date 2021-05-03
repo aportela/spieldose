@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums, mixinArtists } from '../mixins.js';
+import { mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 
 const template = function () {
@@ -108,7 +108,7 @@ export default {
     name: 'spieldose-search',
     template: template(),
     mixins: [
-        mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer, mixinAlbums, mixinArtists
+        mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({

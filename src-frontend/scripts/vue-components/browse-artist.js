@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums } from '../mixins.js';
+import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
 import { default as imageAlbum } from './image-album.js';
 
@@ -153,7 +153,7 @@ export default {
     name: 'spieldose-browse-artist',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums
+        mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches
     ],
     data: function () {
         return ({
