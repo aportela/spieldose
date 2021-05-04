@@ -1,11 +1,10 @@
 import { default as spieldoseAPI } from './api.js';
 
-/**
- * create & return a player data object
- */
-const getPlayerData = (function () {
+let getPlayerData = (function () {
     "use strict";
-
+    /**
+     * create & return a player data object
+     */
     let playerData = {
         loading: false,
         isPlaying: false,
@@ -77,16 +76,6 @@ const getPlayerData = (function () {
     playerData.currentTrack.download = function () {
         if (playerData.currentTrack.track) {
             playerData.download(playerData.currentTrack.track.id);
-        }
-    };
-    playerData.currentTrack.setLoved = function () {
-        if (playerData.currentTrack.track) {
-            playerData.love(playerData.currentTrack.track);
-        }
-    };
-    playerData.currentTrack.unSetLoved = function () {
-        if (playerData.currentTrack.track) {
-            playerData.unlove(playerData.currentTrack.track);
         }
     };
 
@@ -199,6 +188,7 @@ const getPlayerData = (function () {
     playerData.currentPlaylist.playNext = function () {
         if (playerData.tracks.length > 0) {
             if (playerData.repeatTracksMode != "track") {
+
                 if (playerData.currentTrack.index < playerData.tracks.length - 1) {
                     playerData.currentTrack.index++;
                     playerData.currentTrack.track = playerData.tracks[playerData.currentTrack.index];
@@ -268,6 +258,6 @@ const getPlayerData = (function () {
     return (playerData);
 });
 
-const sharedPlayerData = getPlayerData();
+let sharedPlayerData = getPlayerData();
 
 export default sharedPlayerData;

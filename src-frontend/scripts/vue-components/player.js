@@ -1,51 +1,52 @@
 import { bus } from '../bus.js';
 import { mixinPlayer, mixinNavigation } from '../mixins.js';
 import { default as spieldoseSettings } from '../settings.js';
+//import { default as playerClass } from '../playerData.js';
 
 const template = function () {
     return `
-        <div id="player" class="box is-paddingless is-radiusless is-unselectable">
+        <div id="player" class="box is-paddingless is-radiusless is-unselectable" v-if="this.$player">
             <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
             <!--
             <canvas id="canvas"></canvas>
             -->
             <nav class="level is-marginless">
                 <div class="level-left">
-                    <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
+                    <span id="song-current-time" class="level-item has-text-grey">{{ this.$player.nowPlayingCurrentTime }}</span>
                 </div>
                 <div class="level-item">
-                    <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" />
+                    <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" :disabled="nowPlayingLength == '00:00'" />
                 </div>
                 <div class="level-right">
-                    <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
+                    <span id="song-duration" class="level-item has-text-grey">{{ this.$player.nowPlayingLength }}</span>
                 </div>
             </nav>
             <div id="player-metadata-container" class="has-text-centered">
-                <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
-                <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist"><a href="#" @click.prevent="navigateToArtistPage(nowPlayingArtist);">{{ nowPlayingArtist }}</a></h2>
+                <h1 class="title is-4 cut-text" v-bind:title="this.$player.nowPlayingTitle">{{ this.$player.nowPlayingTitle }}</h1>
+                <h2 class="subtitle is-5 cut-text" v-bind:title="this.$player.nowPlayingArtist"><a href="#" @click.prevent="navigateToArtistPage(this.$player.nowPlayingArtist);">{{ this.$player.nowPlayingArtist }}</a></h2>
             </div>
             <div id="player-controls" class="is-unselectable">
                 <div class="has-text-centered player-buttons">
-                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" @click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
-                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" @click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
+                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" @click.prevent="this.$player.shuffleCurrentPlayList()" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': this.$player.currentPlayList.repeatMode != 'none' }" @click.prevent="this.$player.currentPlayList.toggleRepeatMode()" class="icon"><i class="fas fa-2x fa-redo"></i></span>
+                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="this.$player.currentPlayList.playPreviousTrack()" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="this.$player.pause()" v-if="this.$player.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="this.$player.play()" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="this.$player.currentPlayList.playNextTrack()" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="this.$player.currentPlayList.unSetLovedCurrentTrack()" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="this.$player.currentPlayList.setLovedCurrentTrack()" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="player.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                 </div>
                 <div id="player-volume-control">
                     <div class="columns">
                         <div class="column is-narrow">
-                            <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="toggleMute">
+                            <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="this.$player.mute()">
                                 <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
                                 <i v-else class="fas fa-2x fa-volume-off"></i>
                             </span>
                         </div>
                         <div class="column">
-                            <input id="volume-range" type="range" v-model="volume" min="0" max="1" step="0.05" />
+                            <input id="volume-range" type="range" v-model="audioVolume" min="0" max="1" step="0.05" />
                         </div>
                     </div>
                 </div>
@@ -60,9 +61,9 @@ export default {
     mixins: [mixinPlayer, mixinNavigation],
     data: function () {
         return ({
-            preMuteVolume: 1,
-            audio: null,
-            vinylRotationEffect: false
+            vinylRotationEffect: false,
+            currentPlayedSeconds: "00:00",
+            audioVolume: 100
         });
     },
     computed: {
@@ -70,135 +71,100 @@ export default {
             return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
         },
         coverSrc: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                if (this.playerData.currentTrack.track.radioStation.image) {
-                    return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.radioStation.image));
-                } else {
-                    return ('images/vinyl.png');
-                }
-            } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
-                        return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.image));
+            if (this.$player.currentTrack) {
+                if (this.$player.currentTrack.radioStation && this.$player.currentTrack.radioStation.image) {
+                        return ('api/thumbnail?url=' + encodeURIComponent(this.$player.currentTrack.radioStation.image));
+                } else if (this.$player.currentTrack.image) {
+                    if (this.$player.currentTrack.image.indexOf("http") == 0) {
+                        return ('api/thumbnail?url=' + encodeURIComponent(this.$player.currentTrack.image));
                     } else {
-                        return ('api/thumbnail?hash=' + this.playerData.currentTrack.track.image);
+                        return ('api/thumbnail?hash=' + this.$player.currentTrack.image);
                     }
                 } else {
                     return ('images/vinyl.png');
                 }
+            } else {
+                return ('images/vinyl.png');
             }
         },
         streamUrl: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                return (this.playerData.currentTrack.track.radioStation.streamUrls[0]);
-            } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.id) {
-                    return ('api/track/get/' + this.playerData.currentTrack.track.id);
+            if (this.$player.currentTrack) {
+                if (this.$player.currentTrack.radioStation) {
+                    return (this.$player.currentTrack.radioStation.streamUrls[0]);
+                } else if (this.$player.currentTrack.id) {
+                    return ('api/track/get/' + this.$player.currentTrack.id);
                 } else {
                     return ('');
                 }
-            }
-        }
-    },
-    methods: {
-        replaceAlbumThumbnailWithLoadError: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                if (this.playerData.currentTrack.track.radioStation.image) {
-                    this.playerData.currentTrack.track.radioStation.image = null;
-                }
             } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    this.playerData.currentTrack.track.image = null;
-                }
+                return ('');
             }
         },
-        toggleMute: function () {
-            if (!this.audio.muted) {
-                this.preMuteVolume = this.audio.volume;
-                this.audio.volume = 0;
-            } else {
-                this.audio.volume = this.preMuteVolume
-            }
-            this.audio.muted = !this.audio.muted;
+        playerVolume: function() {
+            return(this.$player.audioSettings.currentVolume);
         }
     },
     watch: {
-        volume: function (value) {
-            this.audio.volume = value;
-            spieldoseSettings.setCurrentSessionVolume(value);
+        audioVolume: function (newValue, oldValue) {
+            console.log("cambio desde control desde " + oldValue + " a " + newValue);
+            this.$player.changeVolume(newValue);
         },
-        streamUrl: function (value) {
-            if (value) {
-                this.audio.src = this.streamUrl;
-                if (this.isPlaying || this.isPaused) {
-                    this.audio.pause();
-                    this.audio.currentTime = 0;
+        playerVolume: function(newValue, oldValue) {
+            console.log("cambio desde player reactive de " + oldValue + " a " + newValue);
+            this.audioVolume = newValue;
+        },
+        streamUrl: function (newValue) {
+            if (newValue) {
+                this.$player.audio.src = newValue;
+                if (this.$player.isPlaying || this.$player.isPaused) {
+                    this.$player.audio.pause();
+                    this.$player.audio.currentTime = 0;
                 }
-                this.audio.load();
-                let playPromise = this.audio.play();
+                this.$player.audio.load();
+                let playPromise = this.$player.audio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(function () {
                     }).catch(function (error) {
                     });
                 }
-                if (this.playerData.currentTrack.index >= 0) {
-                    const element = document.getElementById('playlist-item-' + this.playerData.currentTrack.index);
+                if (this.$player.currentPlayList.currentTrackIndex >= 0) {
+                    const element = document.getElementById('playlist-item-' + this.$player.currentTrackIndex);
                     if (element) {
                         element.scrollIntoView();
                     }
                 }
             } else {
-                this.audio.currentTime = 0;
-                this.audio.pause();
-            }
-        },
-        isPlaying: function (newValue) {
-            if (newValue) {
-                this.audio.play();
-            }
-        },
-        isPaused: function (newValue) {
-            if (newValue == false) {
-                this.audio.play();
-            } else {
-                this.audio.pause();
-            }
-        },
-        isStopped: function (newValue) {
-            if (newValue) {
-                this.audio.pause();
-                this.audio.currentTime = 0;
+                this.$player.audio.currentTime = 0;
+                this.$player.audio.pause();
             }
         }
     },
-    mounted: function () {
-        this.audio = document.createElement('audio');
-        this.audio.volume = spieldoseSettings.getCurrentSessionVolume();
-        let aa = this.audio;
-        aa.addEventListener('timeupdate', (track) => {
-            const currentProgress = aa.currentTime / aa.duration;
-            if (!isNaN(currentProgress)) {
-                this.songProgress = currentProgress.toFixed(2);
-            } else {
-                this.songProgress = 0;
-            }
-            this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
-        });
+    created: function () {
+        this.$player.init();
+        this.$player.loadRandomTracksIntoCurrentPlayList(32);
+    },
+    mounted: function ()
+    {
+        let aa = this.$player.audio;
         aa.addEventListener('volumechange', (v) => {
             this.volume = aa.volume;
         });
         aa.addEventListener('ended', () => {
-            if (this.playerData.repeatTracksMode == 'track') {
-                this.audio.pause();
-                this.audio.currentTime = 0;
-                this.audio.play();
+            if (this.$player.repeatTracksMode == 'track') {
+                this.$player.audio.pause();
+                this.$player.audio.currentTime = 0;
+                this.$player.audio.play();
             } else {
-                this.playerData.currentPlaylist.playNext();
+                this.$player.currentPlaylist.playNextTrack();
             }
         });
         aa.addEventListener('error', (e) => {
             // try to load next song on playlist if errors found
-            this.playerData.currentPlaylist.playNext();
+            if (this.$player.currentPlaylist) {
+                this.$player.currentPlaylist.playNextTrack();
+            } else {
+                console.error(this.$player);
+            }
             // TODO
             /*
             switch (e.target.error.code) {
@@ -206,13 +172,14 @@ export default {
             */
         });
         // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
-        //initializeVisualizer(document.getElementById("canvas"), this.audio);
+        //initializeVisualizer(document.getElementById("canvas"), this.$player.audio);
         document.getElementById('song-played-progress').addEventListener('click', (e) => {
             const offset = e.target.getBoundingClientRect();
             const x = e.pageX - offset.left;
-            this.audio.currentTime = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.audio.duration / 100;
+            this.$player.audio.currentTime = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.$player.audio.duration / 100;
         });
 
+        /*
         if (typeof window.IntersectionObserver !== 'undefined') {
             const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -227,8 +194,28 @@ export default {
             // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
             playerVisibilityObserver.observe(document.getElementById('player-controls'));
         }
+        */
     },
-    created: function () {
-        this.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
+    methods: {
+        replaceAlbumThumbnailWithLoadError: function () {
+            if (this.$player.currentTrack && this.$player.currentTrack.radioStation) {
+                if (this.$player.currentTrack.radioStation.image) {
+                    this.$player.currentTrack.radioStation.image = null;
+                }
+            } else {
+                if (this.$player.currentTrack && this.$player.currentTrack.image) {
+                    this.$player.currentTrack.image = null;
+                }
+            }
+        },
+        toggleMute: function () {
+            if (!this.$player.audio.muted) {
+                this.$player.audioSettings.preMuteVolume = this.$player.audio.volume;
+                this.audioVolume = 0;
+            } else {
+                this.audioVolume = this.$player.audioSettings.preMuteVolume;
+            }
+            this.$player.audio.muted = !this.$player.audio.muted;
+        }
     }
 }
