@@ -155,6 +155,9 @@ let reactivePlayer = reactive({
         if (this.currentPlayList.currentTrackIndex > 0) {
             this.currentPlayList.currentTrackIndex--;
             this.changeCurrentTime(0);
+            if (this.status == "paused") {
+                this.play();
+            }
         }
     },
     playNextTrack: function() {
@@ -162,9 +165,15 @@ let reactivePlayer = reactive({
             if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length -1) {
                 this.currentPlayList.currentTrackIndex++;
                 this.changeCurrentTime(0);
+                if (this.status == "paused") {
+                    this.play();
+                }
             } else if (this.repeatMode == 'all') {
                 this.currentPlayList.currentTrackIndex = 0;
                 this.changeCurrentTime(0);
+                if (this.status == "paused") {
+                    this.play();
+                }
             }
         }
     },
