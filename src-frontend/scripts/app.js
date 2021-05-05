@@ -264,20 +264,10 @@ let reactivePlayer = reactive({
         shuffleArray(this.currentPlayList.tracks);
     },
     init() {
-        console.log(this.audioSettings.currentVolume);
         this.audio.volume = this.audioSettings.currentVolume;
         this.audio.addEventListener('timeupdate', (track) => {
             this.nowPlayingCurrentTime = this.audio.currentTime;
             this.nowPlayingCurrentProgress = this.audio.currentTime / this.audio.duration;
-            /*
-            if (!isNaN(currentProgress)) {
-                this.nowPlayingCurrentTime = currentProgress.toFixed(2);
-            } else {
-                this.nowPlayingCurrentTime = 0;
-                this.changeCurrentTime(0);
-            }
-            console.log(this.nowPlayingCurrentTime);
-            */
         });
         this.audio.addEventListener('ended', () => {
             if (this.currentPlayList.repeatMode == 'track') {
@@ -287,9 +277,6 @@ let reactivePlayer = reactive({
             } else {
                 this.playNextTrack();
             }
-        });
-        this.audio.addEventListener('volumechange', (v) => {
-            //this.audioSettings.currentVolume = this.audioSettings.currentVolume;
         });
         this.audio.addEventListener('error', (e) => {
             // try to load next song on playlist if errors found
