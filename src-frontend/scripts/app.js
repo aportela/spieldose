@@ -299,13 +299,10 @@ let reactivePlayer = reactive({
         this.audioSettings.preMuteVolume = volume;
         spieldoseSettings.setCurrentSessionVolume(volume);
     },
-    mute: function() {
-        if (!this.audio.muted) {
-            this.audioSettings.preMuteVolume = this.audio.volume;
-            this.audioSettings.currentVolume = 0;
-        } else {
-            this.audioSettings.currentVolume = this.audioSettings.preMuteVolume;
-        }
+    get isAudioMuted() {
+        return(this.audio.muted);
+    },
+    toggleAudioMute: function() {
         this.audio.muted = !this.audio.muted;
     }
 });

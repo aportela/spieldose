@@ -42,13 +42,19 @@ const template = function () {
                 <div id="player-volume-control">
                     <div class="columns">
                         <div class="column is-narrow">
-                            <span v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="this.$player.mute()">
-                                <i v-if="volume > 0" class="fas fa-2x fa-volume-up"></i>
+                            <span v-if="! audioMuted" v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="onToggleMuteAudio">
+                                <i v-if="currentAudioVolumeControl > 0" class="fas fa-2x fa-volume-up"></i>
                                 <i v-else class="fas fa-2x fa-volume-off"></i>
+                            </span>
+                            <span v-else v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="onToggleMuteAudio">
+                                <span class="fa-stack fa-2x">
+                                    <i class="fas fa-stack-1x fa-volume-off"></i>
+                                    <i class="fas fa-ban fa-stack-1x has-text-danger"></i>
+                                </span>
                             </span>
                         </div>
                         <div class="column">
-                            <input id="volume-range" type="range" v-model="currentAudioVolumeControl" min="0" max="1" step="0.05" />
+                            <input id="volume-range" type="range" v-model="currentAudioVolumeControl" :disabled="audioMuted" min="0" max="1" step="0.05" />
                         </div>
                     </div>
                 </div>
@@ -67,7 +73,8 @@ export default {
             currentPlayedSeconds: "00:00",
             currentTrackProgressControl: 0,
             currentAudioVolumeControl: 1,
-            audioVolume: 100
+            audioVolume: 100,
+            audioMuted: false
         });
     },
     computed: {
@@ -197,6 +204,7 @@ export default {
     created: function () {
         this.$player.init();
         this.currentAudioVolumeControl = this.$player.audioSettings.currentVolume;
+        this.audioMuted = this.$player.isAudioMuted;
         this.$player.loadRandomTracksIntoCurrentPlayList(32);
     },
     mounted: function ()
@@ -234,6 +242,10 @@ export default {
         */
     },
     methods: {
+        onToggleMuteAudio: function() {
+            this.$player.toggleAudioMute();
+            this.audioMuted = this.$player.isAudioMuted;
+        },
         replaceAlbumThumbnailWithLoadError: function () {
             if (this.$player.currentTrack && this.$player.currentTrack.radioStation) {
                 if (this.$player.currentTrack.radioStation.image) {
