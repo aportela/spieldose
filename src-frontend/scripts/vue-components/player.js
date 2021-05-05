@@ -12,10 +12,10 @@ const template = function () {
             -->
             <nav class="level is-marginless">
                 <div class="level-left">
-                    <span id="song-current-time" class="level-item has-text-grey">{{ this.$player.nowPlayingCurrentTime }}</span>
+                    <span id="song-current-time" class="level-item has-text-grey">{{ playerCurrentTime }}</span>
                 </div>
                 <div class="level-item">
-                    <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" :disabled="nowPlayingLength == '00:00'" />
+                    <input id="song-played-progress" class="is-pulled-left" type="range" v-model="currentTrackProgressControl" min="0" max="1" step="0.01" :disabled="nowPlayingLength == '00:00'" />
                 </div>
                 <div class="level-right">
                     <span id="song-duration" class="level-item has-text-grey">{{ this.$player.nowPlayingLength }}</span>
@@ -29,12 +29,12 @@ const template = function () {
                 <div class="has-text-centered player-buttons">
                     <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" @click.prevent="this.$player.shuffleCurrentPlayList()" class="icon"><i class="fas fa-2x fa-random"></i></span>
                     <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': this.$player.currentPlayList.repeatMode != 'none' }" @click.prevent="this.$player.currentPlayList.toggleRepeatMode()" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="this.$player.currentPlayList.playPreviousTrack()" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="this.$player.playPreviousTrack()" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
                     <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="this.$player.pause()" v-if="this.$player.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
                     <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="this.$player.play()" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="this.$player.currentPlayList.playNextTrack()" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="this.$player.currentPlayList.unSetLovedCurrentTrack()" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="this.$player.currentPlayList.setLovedCurrentTrack()" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="this.$player.playNextTrack()" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="this.$player.unSetLovedCurrentTrack()" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="this.$player.setLovedCurrentTrack()" class="icon"><i class="fas fa-2x fa-heart"></i></span>
                     <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="player.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                 </div>
                 <div id="player-volume-control">
@@ -63,7 +63,8 @@ export default {
         return ({
             vinylRotationEffect: false,
             currentPlayedSeconds: "00:00",
-            audioVolume: 100
+            audioVolume: 100,
+            currentTrackProgressControl: 0
         });
     },
     computed: {
@@ -102,6 +103,24 @@ export default {
         },
         playerVolume: function() {
             return(this.$player.audioSettings.currentVolume);
+        },
+        playerCurrentTime: function() {
+            function formatSecondsAsTime(secs, format) {
+                const hr = Math.floor(secs / 3600);
+                let min = Math.floor((secs - (hr * 3600)) / 60);
+                let sec = Math.floor(secs - (hr * 3600) - (min * 60));
+                if (min < 10) {
+                    min = "0" + min;
+                }
+                if (sec < 10) {
+                    sec = "0" + sec;
+                }
+                return (min + ':' + sec);
+            }
+            return(formatSecondsAsTime(this.$player.nowPlayingCurrentTime.toString()));
+        },
+        playerCurrentProgress: function() {
+            return(this.$player.nowPlayingCurrentProgress);
         }
     },
     watch: {
@@ -137,6 +156,9 @@ export default {
                 this.$player.audio.currentTime = 0;
                 this.$player.audio.pause();
             }
+        },
+        playerCurrentProgress: function(newValue) {
+            this.currentTrackProgressControl = newValue;
         }
     },
     created: function () {
@@ -145,6 +167,15 @@ export default {
     },
     mounted: function ()
     {
+        document.getElementById('song-played-progress').addEventListener('click', (e) => {
+            const offset = e.target.getBoundingClientRect();
+            const x = e.pageX - offset.left;
+            const seconds = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.$player.audio.duration / 100;
+            this.$player.changeCurrentTime(seconds);
+        });
+
+                /*
+
         let aa = this.$player.audio;
         aa.addEventListener('volumechange', (v) => {
             this.volume = aa.volume;
@@ -158,28 +189,9 @@ export default {
                 this.$player.currentPlaylist.playNextTrack();
             }
         });
-        aa.addEventListener('error', (e) => {
-            // try to load next song on playlist if errors found
-            if (this.$player.currentPlaylist) {
-                this.$player.currentPlaylist.playNextTrack();
-            } else {
-                console.error(this.$player);
-            }
-            // TODO
-            /*
-            switch (e.target.error.code) {
-            }
-            */
-        });
         // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
         //initializeVisualizer(document.getElementById("canvas"), this.$player.audio);
-        document.getElementById('song-played-progress').addEventListener('click', (e) => {
-            const offset = e.target.getBoundingClientRect();
-            const x = e.pageX - offset.left;
-            this.$player.audio.currentTime = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.$player.audio.duration / 100;
-        });
 
-        /*
         if (typeof window.IntersectionObserver !== 'undefined') {
             const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {

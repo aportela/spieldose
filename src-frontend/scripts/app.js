@@ -149,52 +149,51 @@ let reactivePlayer = reactive({
                     this.repeatMode = "none";
                     break;
             }
-        },
-        playPreviousTrack: function() {
-            if (this.currentTrackIndex > 0) {
-                this.currentTrackIndex--;
-            }
-        },
-        playNextTrack: function() {
-            if (this.repeatMode != 'track') {
-                if (this.currentTrackIndex < this.tracks.length -1) {
-                    this.currentTrackIndex++;
-                } else if (this.repeatMode == 'all') {
-                    this.currentTrackIndex = 0;
-                }
-            }
-        },
-        setLovedCurrentTrack: function () {
-            console.log("loved");
-            if (this.currentTrackIndex != -1) {
-                spieldoseAPI.track.love(this.tracks[this.currentTrackIndex], (response) => {
-                    if (response.status == 200) {
-                        this.tracks[this.currentTrackIndex].loved = response.data.loved;
-                        console.log(response.data.loved);
-                    } else {
-                        // TODO: ERRORS
-                        playerData.loading = false;
-                    }
-                });
-            }
-        },
-        unSetLovedCurrentTrack: function () {
-            console.log("unloved");
-            if (this.currentTrackIndex != -1) {
-                spieldoseAPI.track.unlove(this.tracks[this.currentTrackIndex], (response) => {
-                    if (response.status == 200) {
-                        console.log(response.data.loved);
-                        this.tracks[this.currentTrackIndex].loved = response.data.loved;
-                    } else {
-                        // TODO: ERRORS
-                        playerData.loading = false;
-                    }
-                });
+        }
+    },
+    playPreviousTrack: function() {
+        if (this.currentPlayList.currentTrackIndex > 0) {
+            this.currentPlayList.currentTrackIndex--;
+            this.changeCurrentTime(0);
+        }
+    },
+    playNextTrack: function() {
+        if (this.currentPlayList.repeatMode != 'track') {
+            if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length -1) {
+                this.currentPlayList.currentTrackIndex++;
+                this.changeCurrentTime(0);
+            } else if (this.repeatMode == 'all') {
+                this.currentPlayList.currentTrackIndex = 0;
+                this.changeCurrentTime(0);
             }
         }
     },
+    setLovedCurrentTrack: function () {
+        if (this.currentPlayList.currentTrackIndex != -1) {
+            spieldoseAPI.track.love(this.tracks[this.currentPlayList.currentTrackIndex], (response) => {
+                if (response.status == 200) {
+                    this.currentPlayList.tracks[this.currentTrackIndex].loved = response.data.loved;
+                } else {
+                    // TODO: ERRORS
+                    playerData.loading = false;
+                }
+            });
+        }
+    },
+    unSetLovedCurrentTrack: function () {
+        if (this.currentPlayList.currentTrackIndex != -1) {
+            spieldoseAPI.track.unlove(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex], (response) => {
+                if (response.status == 200) {
+                    this.tracks[this.currentPlayList.currentTrackIndex].loved = response.data.loved;
+                } else {
+                    // TODO: ERRORS
+                    playerData.loading = false;
+                }
+            });
+        }
+    },
+    nowPlayingCurrentTime: 0,
     nowPlayingCurrentProgress: 0,
-    nowPlayingCurrentTime: "00:00",
     get nowPlayingLength() {
         if (this.currentTrack && this.currentTrack.playtimeString) {
             return (this.currentTrack.playtimeString);
@@ -204,47 +203,31 @@ let reactivePlayer = reactive({
     },
     /* computed properties */
     get nowPlayingTitle() {
-        if (this.isPlaying || this.isPaused) {
-            if (this.currentTrack && this.currentTrack.title) {
-                return (this.currentTrack.title);
-            } else {
-                return ("track title unknown");
-            }
+        if (this.currentTrack && this.currentTrack.title) {
+            return (this.currentTrack.title);
         } else {
-            return ("track title");
+            return ("track title unknown");
         }
     },
     get nowPlayingArtist() {
-        if (this.isPlaying || this.isPaused) {
-            if (this.currentTrack && this.currentTrack.artist) {
-                return (this.currentTrack.artist);
-            } else {
-                return ("artist unknown");
-            }
+        if (this.currentTrack && this.currentTrack.artist) {
+            return (this.currentTrack.artist);
         } else {
-            return ("artist");
+            return ("artist unknown");
         }
     },
     get nowPlayingAlbum() {
-        if (this.isPlaying || this.isPaused) {
-            if (this.currentTrack && this.currentTrack.album) {
-                return (" / " + this.currentTrack.album);
-            } else {
-                return ("album unknown");
-            }
+        if (this.currentTrack && this.currentTrack.album) {
+            return (" / " + this.currentTrack.album);
         } else {
-            return ("album");
+            return ("album unknown");
         }
     },
     get nowPlayingYear() {
-        if (this.isPlaying || this.isPaused) {
-            if (this.currentTrack && this.currentTrack.year) {
-                return (" (" + this.currentTrack.year + ")");
-            } else {
-                return (" (year unknown)");
-            }
+        if (this.currentTrack && this.currentTrack.year) {
+            return (" (" + this.currentTrack.year + ")");
         } else {
-            return (" (year)");
+            return (" (year unknown)");
         }
     },
     get nowPlayingLoved() {
@@ -259,13 +242,15 @@ let reactivePlayer = reactive({
     },
     play: function () {
         this.status = "playing";
+        this.audio.play();
     },
     stop: function () {
         this.status = "stopped";
+        this.changeCurrentTime(0);
     },
     pause: function () {
         this.status = "paused";
-        this.$player.audio.pause();
+        this.audio.pause();
     },
     setCurrentTrackFromPlayListIndex: function (index) {
         if (index < this.currentPlayList.tracks.length) {
@@ -283,7 +268,6 @@ let reactivePlayer = reactive({
                     if (response.data.tracks.length > 0) {
                         this.currentPlayList.tracks = response.data.tracks;
                         this.currentPlayList.currentTrackIndex = 0;
-                        //this.play();
                     }
                 }
                 this.loading = false;
@@ -309,26 +293,31 @@ let reactivePlayer = reactive({
     init() {
         this.audio.volume = this.audioSettings.currentVolume;
         this.audio.addEventListener('timeupdate', (track) => {
-            const currentProgress = this.audio.currentTime / this.audio.duration;
+            this.nowPlayingCurrentTime = this.audio.currentTime;
+            this.nowPlayingCurrentProgress = this.audio.currentTime / this.audio.duration;
+            /*
             if (!isNaN(currentProgress)) {
-                this.nowPlayingCurrentProgress = currentProgress.toFixed(2);
+                this.nowPlayingCurrentTime = currentProgress.toFixed(2);
             } else {
-                this.nowPlayingCurrentProgress = 0;
+                this.nowPlayingCurrentTime = 0;
+                this.changeCurrentTime(0);
             }
-            function formatSecondsAsTime(secs, format) {
-                const hr = Math.floor(secs / 3600);
-                let min = Math.floor((secs - (hr * 3600)) / 60);
-                let sec = Math.floor(secs - (hr * 3600) - (min * 60));
-                if (min < 10) {
-                    min = "0" + min;
-                }
-                if (sec < 10) {
-                    sec = "0" + sec;
-                }
-                return (min + ':' + sec);
-            }
-            this.nowPlayingCurrentTime = formatSecondsAsTime(Math.floor(this.audio.currentTime).toString());
+            console.log(this.nowPlayingCurrentTime);
+            */
         });
+        this.audio.addEventListener('error', (e) => {
+            // try to load next song on playlist if errors found
+            if (this.currentPlaylist) {
+                this.currentPlaylist.playNextTrack();
+            } else {
+                // TODO
+                console.error("player audio load error");
+                console.error(e);
+            }
+        });
+    },
+    changeCurrentTime: function(t) {
+        this.audio.currentTime = t;
     },
     changeVolume: function(volume) {
         this.audio.volume = volume;

@@ -22,8 +22,7 @@ export const mixinLiveSearches = {
         return ({
             player: playerClass,
             nowPlayingCurrentTime: "00:00",
-            volume: 1,
-            songProgress: 0
+            volume: 1
         });
     },
     computed: {

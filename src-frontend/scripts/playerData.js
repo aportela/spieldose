@@ -78,6 +78,16 @@ let getPlayerData = (function () {
             playerData.download(playerData.currentTrack.track.id);
         }
     };
+    playerData.currentTrack.setLoved = function () {
+        if (playerData.currentTrack.track) {
+            playerData.love(playerData.currentTrack.track);
+        }
+    };
+    playerData.currentTrack.unSetLoved = function () {
+        if (playerData.currentTrack.track) {
+            playerData.unlove(playerData.currentTrack.track);
+        }
+    };
 
     playerData.currentPlaylist.unset = function () {
         playerData.currentPlaylist.id = null;
