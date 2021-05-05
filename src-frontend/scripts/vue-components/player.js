@@ -48,7 +48,7 @@ const template = function () {
                             </span>
                         </div>
                         <div class="column">
-                            <input id="volume-range" type="range" v-model="audioVolume" min="0" max="1" step="0.05" />
+                            <input id="volume-range" type="range" v-model="currentAudioVolumeControl" min="0" max="1" step="0.05" />
                         </div>
                     </div>
                 </div>
@@ -65,8 +65,9 @@ export default {
         return ({
             vinylRotationEffect: false,
             currentPlayedSeconds: "00:00",
-            audioVolume: 100,
-            currentTrackProgressControl: 0
+            currentTrackProgressControl: 0,
+            currentAudioVolumeControl: 1,
+            audioVolume: 100
         });
     },
     computed: {
@@ -103,7 +104,7 @@ export default {
                 return ('');
             }
         },
-        playerVolume: function() {
+        playerCurrentVolume: function() {
             return(this.$player.audioSettings.currentVolume);
         },
         playerCurrentTime: function() {
@@ -134,7 +135,6 @@ export default {
         nowPlayingLoved: function() {
             return (this.$player.currentTrack && this.$player.currentTrack.loved == '1');
         },
-
         nowPlayingTitle: function () {
             if (this.$player.currentTrack && this.$player.currentTrack.title) {
                 return (this.$player.currentTrack.title);
@@ -162,18 +162,9 @@ export default {
             } else {
                 return (" (year unknown)");
             }
-        },
-
+        }
     },
     watch: {
-        audioVolume: function (newValue, oldValue) {
-            console.log("cambio desde control desde " + oldValue + " a " + newValue);
-            this.$player.changeVolume(newValue);
-        },
-        playerVolume: function(newValue, oldValue) {
-            console.log("cambio desde player reactive de " + oldValue + " a " + newValue);
-            this.audioVolume = newValue;
-        },
         streamUrl: function (newValue) {
             if (newValue) {
                 this.$player.audio.src = newValue;
@@ -205,6 +196,7 @@ export default {
     },
     created: function () {
         this.$player.init();
+        this.currentAudioVolumeControl = this.$player.audioSettings.currentVolume;
         this.$player.loadRandomTracksIntoCurrentPlayList(32);
     },
     mounted: function ()
@@ -216,21 +208,12 @@ export default {
             this.$player.changeCurrentTime(seconds);
         });
 
-                /*
+        document.getElementById('volume-range').addEventListener('click', (e) => {
+            this.$player.changeVolume(e.target.value);
+        });
 
-        let aa = this.$player.audio;
-        aa.addEventListener('volumechange', (v) => {
-            this.volume = aa.volume;
-        });
-        aa.addEventListener('ended', () => {
-            if (this.$player.repeatTracksMode == 'track') {
-                this.$player.audio.pause();
-                this.$player.audio.currentTime = 0;
-                this.$player.audio.play();
-            } else {
-                this.$player.currentPlaylist.playNextTrack();
-            }
-        });
+        /*
+        aa
         // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
         //initializeVisualizer(document.getElementById("canvas"), this.$player.audio);
 
@@ -265,9 +248,9 @@ export default {
         toggleMute: function () {
             if (!this.$player.audio.muted) {
                 this.$player.audioSettings.preMuteVolume = this.$player.audio.volume;
-                this.audioVolume = 0;
+                //this.audioVolume = 0;
             } else {
-                this.audioVolume = this.$player.audioSettings.preMuteVolume;
+                //this.audioVolume = this.$player.audioSettings.preMuteVolume;
             }
             this.$player.audio.muted = !this.$player.audio.muted;
         }
