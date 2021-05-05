@@ -37,16 +37,6 @@ export default {
             return (this.data.totalPages > 0 && (this.data.actualPage < 1 || this.data.actualPage > this.data.totalPages));
         }
     },
-    created: function() {
-    },
-    watch: {
-        data: function(newValue) {
-            console.log(newValue);
-        },
-        loading: function(newValue) {
-            console.log(newValue);
-        }
-    },
     methods: {
         previous: function () {
             if (!this.loading) {

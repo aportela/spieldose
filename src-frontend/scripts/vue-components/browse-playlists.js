@@ -102,8 +102,8 @@ export default {
                 this.clearAPIErrors();
                 spieldoseAPI.playlist.remove(id, (response) => {
                     if (response.status == 200) {
-                        if (this.playerData.currentPlaylist.id == id) {
-                            this.playerData.currentPlaylist.unset();
+                        if (this.player.currentPlaylist.id == id) {
+                            this.player.currentPlaylist.unset();
                         }
                         this.search();
                     } else {

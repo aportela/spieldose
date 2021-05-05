@@ -18,12 +18,14 @@ const template = function () {
                     <input id="song-played-progress" class="is-pulled-left" type="range" v-model="currentTrackProgressControl" min="0" max="1" step="0.01" :disabled="nowPlayingLength == '00:00'" />
                 </div>
                 <div class="level-right">
-                    <span id="song-duration" class="level-item has-text-grey">{{ this.$player.nowPlayingLength }}</span>
+                    <span id="song-duration" class="level-item has-text-grey">{{ nowPlayingLength }}</span>
                 </div>
             </nav>
             <div id="player-metadata-container" class="has-text-centered">
-                <h1 class="title is-4 cut-text" v-bind:title="this.$player.nowPlayingTitle">{{ this.$player.nowPlayingTitle }}</h1>
-                <h2 class="subtitle is-5 cut-text" v-bind:title="this.$player.nowPlayingArtist"><a href="#" @click.prevent="navigateToArtistPage(this.$player.nowPlayingArtist);">{{ this.$player.nowPlayingArtist }}</a></h2>
+                <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
+                <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">
+                    <router-link :to="{ name: 'artist', params: { artist: nowPlayingArtist }}">{{ nowPlayingArtist }}</router-link>
+                </h2>
             </div>
             <div id="player-controls" class="is-unselectable">
                 <div class="has-text-centered player-buttons">
@@ -121,7 +123,47 @@ export default {
         },
         playerCurrentProgress: function() {
             return(this.$player.nowPlayingCurrentProgress);
-        }
+        },
+        nowPlayingLength: function() {
+            if (this.$player.currentTrack && this.$player.currentTrack.playtimeString) {
+                return (this.$player.currentTrack.playtimeString);
+            } else {
+                return ("00:00");
+            }
+        },
+        nowPlayingLoved: function() {
+            return (this.$player.currentTrack && this.$player.currentTrack.loved == '1');
+        },
+
+        nowPlayingTitle: function () {
+            if (this.$player.currentTrack && this.$player.currentTrack.title) {
+                return (this.$player.currentTrack.title);
+            } else {
+                return ("track title unknown");
+            }
+        },
+        nowPlayingArtist: function() {
+            if (this.$player.currentTrack && this.$player.currentTrack.artist) {
+                return (this.$player.currentTrack.artist);
+            } else {
+                return ("artist unknown");
+            }
+        },
+        nowPlayingAlbum: function() {
+            if (this.$player.currentTrack && this.$player.currentTrack.album) {
+                return (" / " + this.$player.currentTrack.album);
+            } else {
+                return ("album unknown");
+            }
+        },
+        nowPlayingYear: function() {
+            if (this.$player.currentTrack && this.$player.currentTrack.year) {
+                return (" (" + this.$player.currentTrack.year + ")");
+            } else {
+                return (" (year unknown)");
+            }
+        },
+
     },
     watch: {
         audioVolume: function (newValue, oldValue) {

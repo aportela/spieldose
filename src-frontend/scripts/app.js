@@ -203,45 +203,7 @@ let reactivePlayer = reactive({
     },
     nowPlayingCurrentTime: 0,
     nowPlayingCurrentProgress: 0,
-    get nowPlayingLength() {
-        if (this.currentTrack && this.currentTrack.playtimeString) {
-            return (this.currentTrack.playtimeString);
-        } else {
-            return ("00:00");
-        }
-    },
     /* computed properties */
-    get nowPlayingTitle() {
-        if (this.currentTrack && this.currentTrack.title) {
-            return (this.currentTrack.title);
-        } else {
-            return ("track title unknown");
-        }
-    },
-    get nowPlayingArtist() {
-        if (this.currentTrack && this.currentTrack.artist) {
-            return (this.currentTrack.artist);
-        } else {
-            return ("artist unknown");
-        }
-    },
-    get nowPlayingAlbum() {
-        if (this.currentTrack && this.currentTrack.album) {
-            return (" / " + this.currentTrack.album);
-        } else {
-            return ("album unknown");
-        }
-    },
-    get nowPlayingYear() {
-        if (this.currentTrack && this.currentTrack.year) {
-            return (" (" + this.currentTrack.year + ")");
-        } else {
-            return (" (year unknown)");
-        }
-    },
-    get nowPlayingLoved() {
-        return (this.currentTrack && this.currentTrack.loved == '1');
-    },
     get currentTrack () {
         if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length) {
             return(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex]);
@@ -261,11 +223,13 @@ let reactivePlayer = reactive({
         this.status = "paused";
         this.audio.pause();
     },
+    /*
     setCurrentTrackFromPlayListIndex: function (index) {
         if (index < this.currentPlayList.tracks.length) {
             this.currentPlayList.currentTrackIndex = index;
         }
     },
+    */
     loadRandomTracksIntoCurrentPlayList: function (count3) {
         this.stop();
         this.currentPlayList.tracks = [];

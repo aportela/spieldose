@@ -50,10 +50,10 @@ const template = function () {
                         <img v-bind:src="coverSrc" style="width: 64px; max-height: 64px;">
                     </div>
                     <div class="navbar-item player-buttons">
-                        <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                        <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                        <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                        <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                        <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" @click.prevent="player.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" @click.prevent="player.playback.pause();" v-if="player.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                        <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" @click.prevent="player.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                        <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="player.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
                     </div>
                     <div class="navbar-item">
                         <div>
@@ -106,11 +106,11 @@ export default {
     },
     computed: {
         coverSrc: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                if (this.playerData.currentTrack.track.image.indexOf('http') == 0) {
-                    return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.image));
+            if (this.player.currentTrack.track && this.player.currentTrack.track.image) {
+                if (this.player.currentTrack.track.image.indexOf('http') == 0) {
+                    return ('api/thumbnail?url=' + encodeURIComponent(this.player.currentTrack.track.image));
                 } else {
-                    return ('api/thumbnail?hash=' + this.playerData.currentTrack.track.image);
+                    return ('api/thumbnail?hash=' + this.player.currentTrack.track.image);
                 }
             } else {
                 return ('images/vinyl.png');

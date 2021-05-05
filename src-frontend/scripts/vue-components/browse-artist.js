@@ -75,9 +75,9 @@ const template = function () {
                                         <span> {{ track.title}}</span>
                                     </td>
                                     <td>
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playerData.currentPlaylist.replace([track]);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
-                                        <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" @click.prevent="playerData.download(track.id);"></i>
+                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="player.currentPlaylist.replace([track]);"></i>
+                                        <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="player.currentPlaylist.enqueue([track]);"></i>
+                                        <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" @click.prevent="player.download(track.id);"></i>
                                     </td>
                                 </tr>
                             </tbody>
@@ -297,11 +297,11 @@ export default {
             this.loading = true;
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                this.playerData.currentPlaylist.empty();
+                this.player.currentPlaylist.empty();
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.playerData.tracks = response.data.tracks;
-                        this.playerData.playback.play();
+                        this.player.tracks = response.data.tracks;
+                        this.player.playback.play();
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
