@@ -47,9 +47,9 @@ const template = function () {
                                 <i v-else class="fas fa-2x fa-volume-off"></i>
                             </span>
                             <span v-else v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="onToggleMuteAudio">
-                                <span class="fa-stack fa-2x">
-                                    <i class="fas fa-stack-1x fa-volume-off"></i>
-                                    <i class="fas fa-ban fa-stack-1x has-text-danger"></i>
+                                <span class="fa-stack fa-1x">
+                                    <i class="fas fa-stack-2x fa-volume-off"></i>
+                                    <i class="fas fa-ban fa-stack-2x has-text-danger"></i>
                                 </span>
                             </span>
                         </div>
