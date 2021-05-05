@@ -91,7 +91,7 @@ export default {
             }
         },
         streamUrl: function () {
-            if (this.$player.currentTrack) {
+            if (this.$player.currentTrack && this.$player.status != "stopped") {
                 if (this.$player.currentTrack.radioStation) {
                     return (this.$player.currentTrack.radioStation.streamUrls[0]);
                 } else if (this.$player.currentTrack.id) {
