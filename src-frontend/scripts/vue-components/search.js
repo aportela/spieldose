@@ -36,7 +36,7 @@ const template = function () {
                             </div>
                             <div class="media-content">
                                 <div class="content">
-                                    <p class="subtitle is-6"><a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(artist.name);">{{ artist.name }}</a></p>
+                                    <p class="subtitle is-6"><router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: artist.name }}">{{ artist.name }}</router-link></p>
                                 </div>
                             </div>
                         </article>
@@ -57,7 +57,7 @@ const template = function () {
                                         <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
                                         <span>{{ album.name }}</span>
                                         <br>
-                                        <span v-if="album.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a></span>
+                                        <span v-if="album.artist">{{ $t("commonLabels.by" )}} <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link></span>
                                     </p>
                                 </div>
                             </div>
@@ -75,7 +75,7 @@ const template = function () {
                                     <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track);"></i>
                                     <span>{{ track.title }}</span>
                                     <br >
-                                    <span v-if="track.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></span> <span v-if="track.album"> / {{ track.album }}</span>
+                                    <span v-if="track.artist">{{ $t("commonLabels.by" )}} <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: track.artist }}">{{ track.artist }}</router-link></span> <span v-if="track.album"> / {{ track.album }}</span>
                                 </div>
                             </div>
                         </article>
