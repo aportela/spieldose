@@ -128,7 +128,7 @@ const template = function () {
                         <tr :class="{ 'is-selected': this.$player.currentPlayList.currentTrackIndex == i }" v-for="track, i in this.$player.currentPlayList.tracks" :key="track.id">
                             <td>
                                 <span class="icon">
-                                    <i class="fas fa-play cursor-pointer" :title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="this.$player.currentPlayList.currentTrackIndex = i"></i>
+                                    <i class="fas fa-play cursor-pointer" :title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="this.$player.currentPlayList.currentTrackIndex = i; this.$player.play()"></i>
                                     <i class="fas fa-headphones cursor-pointer" :title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="this.$player.pause();"></i>
                                     <i class="fas fa-pause cursor-pointer" :title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="this.$player.resume();"></i>
                                 </span>
