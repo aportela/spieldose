@@ -8,13 +8,13 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control has-icons-left is-expanded">
-                        <input class="input" type="text" v-bind:placeholder="$t('currentPlaylist.inputs.playlistNamePlaceholder')" required v-bind:disabled="savingPlaylist" v-model.trim="currentPlaylistName">
+                        <input class="input" type="text" :placeholder="$t('currentPlaylist.inputs.playlistNamePlaceholder')" required :disabled="savingPlaylist" v-model.trim="currentPlaylistName">
                         <span class="icon is-small is-left">
                             <i class="fas fa-list-alt"></i>
                         </span>
                     </div>
                     <div class="control">
-                        <a class="button is-success" v-bind:class="{ 'is-loading': savingPlaylist }" v-bind:disabled="isSavePlaylistDisabled" @click.prevent="savePlayList();">
+                        <a class="button is-success" :class="{ 'is-loading': savingPlaylist }" :disabled="isSavePlaylistDisabled" @click.prevent="savePlayList();">
                             <span class="icon is-small">
                             <i class="fas fa-check"></i>
                             </span>
@@ -22,7 +22,7 @@ const template = function () {
                         </a>
                     </div>
                     <div class="control" v-if="isPlaylisted">
-                        <a class="button is-info" v-bind:class="{ 'is-loading': savingPlaylist }" v-bind:disabled="isSavePlaylistDisabled" @click.prevent="unsetPlaylist();">
+                        <a class="button is-info" :class="{ 'is-loading': savingPlaylist }" :disabled="isSavePlaylistDisabled" @click.prevent="unsetPlaylist();">
                             <span class="icon is-small">
                             <i class="fas fa-check-square"></i>
                             </span>
@@ -32,80 +32,80 @@ const template = function () {
                 </div>
 
                 <div class="buttons">
-                    <a class="button is-light" v-bind:disabled="player.loading" @click.prevent="loadRandom();">
+                    <a class="button is-light" @click.prevent="onLoadRandom">
                         <span class="icon is-small">
-                            <i v-if="player.loading" class="fas fa-cog fa-spin fa-fw"></i>
+                            <i v-if="this.$player.loading" class="fas fa-cog fa-spin fa-fw"></i>
                             <i v-else class="fas fa-clone"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.loadRandom') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="player.currentPlaylist.empty();">
+                    <a class="button is-light" @click.prevent="this.$player.currentPlayList.clear()">
                         <span class="icon is-small">
                             <i class="fas fa-eraser"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.clearPlaylist') }}</span>
                     </a>
-                    <a class="button is-light" v-bind:class="{ 'is-primary': isRepeatActive }" @click.prevent="player.playback.toggleRepeatMode();">
+                    <a class="button is-light" :class="{ 'is-dark': isRepeatActive }" @click.prevent="this.$player.currentPlayList.toggleRepeatMode()">
                         <span class="icon is-small">
                             <i class="fas fa-redo"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.repeat') }}: {{ repeatMode }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="player.currentPlaylist.shuffle();">
+                    <a class="button is-light" @click.prevent="this.$player.shuffleCurrentPlayList()">
                         <span class="icon is-small">
                             <i class="fas fa-random"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.shufflePlaylist') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="player.currentPlaylist.playPrevious();">
+                    <a class="button is-light" @click.prevent="this.$player.playPreviousTrack()">
                         <span class="icon is-small">
                             <i class="fas fa-backward"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.previousTrack') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="player.currentPlaylist.playNext();">
-                        <span class="icon is-small">
-                            <i class="fas fa-forward"></i>
-                        </span>
-                        <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.nextTrack') }}</span>
-                    </a>
-                    <a class="button is-light" v-if="player.isStopped" @click.prevent="player.playback.play();">
+                    <a class="button is-light" v-if="this.$player.isStopped" @click.prevent="this.$player.play();">
                         <span class="icon is-small">
                             <i class="fas fa-play"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.playTrack') }}</span>
                     </a>
-                    <a class="button is-light is-primary" v-else-if="player.isPaused" @click.prevent="player.playback.resume();">
+                    <a class="button is-light" v-else-if="this.$player.isPaused" @click.prevent="this.$player.play()">
                         <span class="icon is-small">
                             <i class="fas fa-play"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.resumeTrack') }}</span>
                     </a>
-                    <a class="button is-light is-primary" v-else-if="player.isPlaying" @click.prevent="player.playback.pause();">
+                    <a class="button is-light" v-else-if="this.$player.isPlaying" @click.prevent="this.$player.pause()">
                         <span class="icon is-small">
                             <i class="fas fa-pause"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.pauseTrack') }}</span>
                     </a>
-                    <a class="button is-light" v-bind:class="{ 'is-primary': player.isStopped }" @click.prevent="player.playback.stop();">
+                    <a class="button is-light" @click.prevent="this.$player.stop()">
                         <span class="icon is-small">
                             <i class="fas fa-stop"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.stopTrack') }}</span>
                     </a>
-                    <a class="button is-light is-primary" v-if="nowPlayingLoved" v-bind:disabled="player.loading" @click.prevent="player.player.currentTrack.unSetLoved();">
+                    <a class="button is-light" @click.prevent="this.$player.playNextTrack()">
+                        <span class="icon is-small">
+                            <i class="fas fa-forward"></i>
+                        </span>
+                        <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.nextTrack') }}</span>
+                    </a>
+                    <a class="button is-dark" v-if="nowPlayingLoved" @click.prevent="this.$player.unSetLovedCurrentTrack();">
                         <span class="icon is-small">
                             <i class="fas fa-heart"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.unloveTrack') }}</span>
                     </a>
-                    <a class="button is-light" v-else v-bind:disabled="player.loading" @click.prevent="player.player.currentTrack.setLoved();">
+                    <a class="button is-light" v-else @click.prevent="this.$player.setLovedCurrentTrack();">
                         <span class="icon is-small">
                             <i class="fas fa-heart"></i>
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.loveTrack') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="player.currentTrack.download();">
+                    <a class="button is-light" @click.prevent="this.$player.downloadCurrentTrack()">
                         <span class="icon is-small">
                             <i class="fas fa-save"></i>
                         </span>
@@ -125,17 +125,17 @@ const template = function () {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-bind:class="{ 'is-selected': player.currentTrack.index == i }" v-for="track, i in player.tracks" v-bind:key="i">
+                        <tr :class="{ 'is-selected': this.$player.currentPlayList.currentTrackIndex == i }" v-for="track, i in this.$player.currentPlayList.tracks" :key="track.id">
                             <td>
                                 <span class="icon">
-                                    <i class="fas fa-play cursor-pointer" v-bind:title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="player.currentPlaylist.playAtIdx(i);"></i>
-                                    <i class="fas fa-headphones cursor-pointer" v-bind:title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="player.playback.pause();"></i>
-                                    <i class="fas fa-pause cursor-pointer" v-bind:title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="player.playback.resume();"></i>
+                                    <i class="fas fa-play cursor-pointer" :title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="player.currentPlaylist.playAtIdx(i);"></i>
+                                    <i class="fas fa-headphones cursor-pointer" :title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="player.playback.pause();"></i>
+                                    <i class="fas fa-pause cursor-pointer" :title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="player.playback.resume();"></i>
                                 </span>
                                 <span>{{ track.title}}</span>
                             </td>
                             <td v-if="! track.radioStation">
-                                <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" @click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a>
+                                <a :title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" @click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a>
                             </td>
                             <td v-else>
                                 {{ track.artist }}
@@ -144,15 +144,15 @@ const template = function () {
                             <td><span>{{ track.genre }}</span></td>
                             <td><span>{{ track.year }}</span></td>
                             <td>
-                                <i class="fas fa-caret-up cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementUpHint')"  aria-hidden="true" @click="player.currentPlaylist.moveItemUp(i);"></i>
-                                <i class="fas fa-caret-down cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" @click="player.currentPlaylist.moveItemDown(i);"></i>
-                                <i class="fas fa-times cursor-pointer" v-bind:title="$t('currentPlaylist.labels.removeElementHint')"  aria-hidden="true" @click="player.currentPlaylist.removeItem(i); $forceUpdate();"></i>
+                                <i class="fas fa-caret-up cursor-pointer" :title="$t('currentPlaylist.labels.moveElementUpHint')"  aria-hidden="true" @click="player.currentPlaylist.moveItemUp(i);"></i>
+                                <i class="fas fa-caret-down cursor-pointer" :title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" @click="player.currentPlaylist.moveItemDown(i);"></i>
+                                <i class="fas fa-times cursor-pointer" :title="$t('currentPlaylist.labels.removeElementHint')"  aria-hidden="true" @click="player.currentPlaylist.removeItem(i); $forceUpdate();"></i>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
+            <spieldose-api-error-component v-else :apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -171,25 +171,33 @@ export default {
         });
     },
     created: function () {
-        this.currentPlaylistName = this.player.currentPlaylist.name;
+        this.currentPlaylistName = this.$player.currentPlayList.name;
+        console.log(this.$player.loading);
     },
     computed: {
+        nowPlayingLoved: function() {
+            if (this.$player.currentPlayList.currentTrackIndex >= 0) {
+                return(this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].loved == "1");
+            } else {
+                return(false);
+            }
+        },
         isPlaylisted: function () {
-            if (this.player.currentPlaylist.name) {
+            if (this.$player.currentPlayList.name) {
                 return (true);
             } else {
                 return (false);
             }
         },
         isRepeatActive: function () {
-            return (this.player.repeatTracksMode != 'none');
+            return (this.$player.currentPlayList.repeatMode != 'none');
         },
         isSavePlaylistDisabled: function () {
             return (!this.currentPlaylistName || this.savingPlaylist);
         },
         repeatMode: function () {
             let mode = this.$t('commonLabels.repeatModeNone');
-            switch (this.player.repeatTracksMode) {
+            switch (this.$player.currentPlayList.repeatMode) {
                 case 'track':
                     mode = this.$t('commonLabels.repeatModeTrack');
                     break;
@@ -202,11 +210,14 @@ export default {
 
     },
     methods: {
+        onLoadRandom: function() {
+            this.$player.loadRandomTracksIntoCurrentPlayList(32);
+        },
         iconAction: function (index) {
-            if (this.player.isPaused && this.player.currentTrack.index == index) {
+            if (this.$player.isPaused && this.$player.currentPlayList.currentTrackIndex == index) {
                 return ('unPause');
             } else {
-                if (this.player.isPlaying && this.player.currentTrack.index == index) {
+                if (this.$player.isPlaying && this.$player.currentPlayList.currentTrackIndex == index) {
                     return ('none');
                 } else {
                     return ('play');
@@ -214,11 +225,8 @@ export default {
             }
         },
         unsetPlaylist: function () {
-            this.player.currentPlaylist.unset();
+            this.$player.currentPlaylist.unset();
             this.currentPlaylistName = null;
-        },
-        loadRandom: function () {
-            this.player.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage);
         },
         savePlayList: function () {
             this.loading = true;
@@ -228,8 +236,8 @@ export default {
             for (let i = 0; i < this.player.tracks.length; i++) {
                 trackIds.push(this.player.tracks[i].id);
             }
-            if (this.player.currentPlaylist.isSet()) {
-                spieldoseAPI.playlist.update(this.player.currentPlaylist.id, this.currentPlaylistName, trackIds, (response) => {
+            if (this.$player.currentPlayList.isSet()) {
+                spieldoseAPI.playlist.update(this.$player.currentPlayList.id, this.currentPlaylistName, trackIds, (response) => {
                     this.savingPlaylist = false;
                     if (response.status == 200) {
                         this.player.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);

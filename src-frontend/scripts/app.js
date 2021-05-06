@@ -83,7 +83,7 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                this.$router.push({ name: 'dashboard' });
+                this.$router.push({ name: 'nowPlaying' });
             }
         } else {
             this.$router.push({ name: 'upgrade' });
@@ -149,6 +149,16 @@ let reactivePlayer = reactive({
                     this.repeatMode = "none";
                     break;
             }
+        },
+        isSet: function() {
+            return(this.id ? true: false);
+        },
+        unset: function() {
+            this.id = null;
+            this.name = null;
+        },
+        clear: function() {
+            this.tracks = [];
         }
     },
     playPreviousTrack: function() {
@@ -179,25 +189,27 @@ let reactivePlayer = reactive({
     },
     setLovedCurrentTrack: function () {
         if (this.currentPlayList.currentTrackIndex != -1) {
-            spieldoseAPI.track.love(this.tracks[this.currentPlayList.currentTrackIndex], (response) => {
+            this.loading = true;
+            spieldoseAPI.track.love(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex].id, (response) => {
                 if (response.status == 200) {
-                    this.currentPlayList.tracks[this.currentTrackIndex].loved = response.data.loved;
+                    this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex].loved = response.data.loved;
                 } else {
                     // TODO: ERRORS
-                    playerData.loading = false;
                 }
+                this.loading = false;
             });
         }
     },
     unSetLovedCurrentTrack: function () {
         if (this.currentPlayList.currentTrackIndex != -1) {
-            spieldoseAPI.track.unlove(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex], (response) => {
+            this.loading = true;
+            spieldoseAPI.track.unlove(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex].id, (response) => {
                 if (response.status == 200) {
-                    this.tracks[this.currentPlayList.currentTrackIndex].loved = response.data.loved;
+                    this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex].loved = response.data.loved;
                 } else {
                     // TODO: ERRORS
-                    playerData.loading = false;
                 }
+                this.loading = false;
             });
         }
     },
@@ -243,11 +255,10 @@ let reactivePlayer = reactive({
                         this.currentPlayList.currentTrackIndex = 0;
                     }
                 }
-                this.loading = false;
             } else {
                 // TODO: errors
-                this.loading = false;
             }
+            this.loading = false;
         });
     },
     shuffleCurrentPlayList: function() {
