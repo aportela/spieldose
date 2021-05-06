@@ -2,6 +2,7 @@ import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
 import { default as imageAlbum } from './image-album.js';
+import { default as dashboardTopList } from './dashboard-toplist.js';
 
 const template = function () {
     return `
@@ -171,6 +172,7 @@ export default {
         });
     },
     components: {
+        'spieldose-dashboard-toplist': dashboardTopList,
         'spieldose-image-artist': imageArtist,
         'spieldose-image-album': imageAlbum,
     },
