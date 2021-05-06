@@ -14,7 +14,7 @@ const template = function () {
                         </span>
                     </div>
                     <div class="control">
-                        <a class="button is-success" :class="{ 'is-loading': savingPlaylist }" :disabled="isSavePlaylistDisabled" @click.prevent="savePlayList();">
+                        <a class="button is-dark" :class="{ 'is-loading': savingPlaylist }" @click.prevent="savePlayList();">
                             <span class="icon is-small">
                             <i class="fas fa-check"></i>
                             </span>
@@ -22,7 +22,7 @@ const template = function () {
                         </a>
                     </div>
                     <div class="control" v-if="isPlaylisted">
-                        <a class="button is-info" :class="{ 'is-loading': savingPlaylist }" :disabled="isSavePlaylistDisabled" @click.prevent="unsetPlaylist();">
+                        <a class="button is-info" :class="{ 'is-loading': savingPlaylist }" @click.prevent="unsetPlaylist();">
                             <span class="icon is-small">
                             <i class="fas fa-check-square"></i>
                             </span>
@@ -105,7 +105,7 @@ const template = function () {
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.loveTrack') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="this.$player.downloadCurrentTrack()">
+                    <a class="button is-light" @click.prevent="onDownloadCurrentTrack">
                         <span class="icon is-small">
                             <i class="fas fa-save"></i>
                         </span>
@@ -128,14 +128,14 @@ const template = function () {
                         <tr :class="{ 'is-selected': this.$player.currentPlayList.currentTrackIndex == i }" v-for="track, i in this.$player.currentPlayList.tracks" :key="track.id">
                             <td>
                                 <span class="icon">
-                                    <i class="fas fa-play cursor-pointer" :title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="player.currentPlaylist.playAtIdx(i);"></i>
-                                    <i class="fas fa-headphones cursor-pointer" :title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="player.playback.pause();"></i>
-                                    <i class="fas fa-pause cursor-pointer" :title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="player.playback.resume();"></i>
+                                    <i class="fas fa-play cursor-pointer" :title="$t('currentPlaylist.labels.playThisTrackHint')" aria-hidden="true" v-if="iconAction(i) == 'play'" @click="this.$player.currentPlayList.currentTrackIndex = i"></i>
+                                    <i class="fas fa-headphones cursor-pointer" :title="$t('currentPlaylist.labels.nowPlayingClickToPauseHint')" aria-hidden="true" v-else-if="iconAction(i) == 'none'" @click="this.$player.pause();"></i>
+                                    <i class="fas fa-pause cursor-pointer" :title="$t('currentPlaylist.labels.pausedClickToResumeHint')" aria-hidden="true" v-else-if="iconAction(i) == 'unPause'" @click="this.$player.resume();"></i>
                                 </span>
                                 <span>{{ track.title}}</span>
                             </td>
                             <td v-if="! track.radioStation">
-                                <a :title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" @click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a>
+                                <router-link :title="$t('commonLabels.navigateToArtistPage')" v-if="track.artist" :to="{ name: 'artist', params: { artist: track.artist }}">{{ track.artist }}</router-link>
                             </td>
                             <td v-else>
                                 {{ track.artist }}
@@ -144,9 +144,9 @@ const template = function () {
                             <td><span>{{ track.genre }}</span></td>
                             <td><span>{{ track.year }}</span></td>
                             <td>
-                                <i class="fas fa-caret-up cursor-pointer" :title="$t('currentPlaylist.labels.moveElementUpHint')"  aria-hidden="true" @click="player.currentPlaylist.moveItemUp(i);"></i>
-                                <i class="fas fa-caret-down cursor-pointer" :title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" @click="player.currentPlaylist.moveItemDown(i);"></i>
-                                <i class="fas fa-times cursor-pointer" :title="$t('currentPlaylist.labels.removeElementHint')"  aria-hidden="true" @click="player.currentPlaylist.removeItem(i); $forceUpdate();"></i>
+                                <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.moveElementUpHint')" aria-hidden="true" @click="this.$player.currentPlayList.moveItemUp(i)"><i class="fas fa-caret-up"></i></span>
+                                <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" @click="this.$player.currentPlayList.moveItemDown(i)"><i class="fas fa-caret-down"></i></span>
+                                <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.removeElementHint')" aria-hidden="true" @click="this.$player.currentPlayList.removeItem(i)"><i class="fas fa-times cursor-pointer"></i></span>
                             </td>
                         </tr>
                     </tbody>
@@ -172,7 +172,6 @@ export default {
     },
     created: function () {
         this.currentPlaylistName = this.$player.currentPlayList.name;
-        console.log(this.$player.loading);
     },
     computed: {
         nowPlayingLoved: function() {
@@ -212,6 +211,11 @@ export default {
     methods: {
         onLoadRandom: function() {
             this.$player.loadRandomTracksIntoCurrentPlayList(32);
+        },
+        onDownloadCurrentTrack: function() {
+            if (this.$player.currentPlayList.currentTrackIndex >= 0) {
+                this.$player.downloadTrack(this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].id);
+            }
         },
         iconAction: function (index) {
             if (this.$player.isPaused && this.$player.currentPlayList.currentTrackIndex == index) {

@@ -159,6 +159,29 @@ let reactivePlayer = reactive({
         },
         clear: function() {
             this.tracks = [];
+        },
+        moveItemUp: function (idx) {
+            if (this.tracks.length > 0 && idx > 0) {
+                var tmpTrack = this.tracks[idx - 1];
+                this.tracks.splice(idx - 1, 1);
+                this.tracks.splice(idx, 0, tmpTrack);
+            }
+        },
+        moveItemDown: function (idx) {
+            if (this.tracks.length > 0 && idx < this.tracks.length - 1) {
+                var tmpTrack = this.tracks[idx];
+                this.tracks.splice(idx, 1);
+                this.tracks.splice(idx + 1, 0, tmpTrack);
+            }
+        },
+        removeItem: function (idx) {
+            if (this.tracks.length > 0 && idx < this.tracks.length) {
+                if (idx == this.currentTrackIndex) {
+                    //playerData.currentPlaylist.playNext();
+                    console.log("TODO: play next track after remove")
+                }
+                this.tracks.splice(idx, 1);
+            }
         }
     },
     playPreviousTrack: function() {
@@ -212,6 +235,9 @@ let reactivePlayer = reactive({
                 this.loading = false;
             });
         }
+    },
+    downloadTrack: function(id) {
+        window.location = "api/track/get/" + id;
     },
     nowPlayingCurrentTime: 0,
     nowPlayingCurrentProgress: 0,
