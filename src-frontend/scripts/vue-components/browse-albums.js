@@ -67,7 +67,10 @@ const template = function () {
                     </a>
                     <div class="album-info">
                         <p class="album-name">{{ album.name }}</p>
-                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a><span v-show="album.year"> ({{ album.year }})</span></p>
+                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }}
+                            <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link>
+                            <span v-show="album.year"> ({{ album.year }})</span>
+                        </p>
                         <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
                     </div>
                 </div>
