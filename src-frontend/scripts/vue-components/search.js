@@ -53,8 +53,12 @@ const template = function () {
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
+                                        <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year)">
+                                            <i class="fa fa-play"></i>
+                                        </span>
+                                        <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year)">
+                                            <i class="fa fa-plus-square"></i>
+                                        </span>
                                         <span>{{ album.name }}</span>
                                         <br>
                                         <span v-if="album.artist">{{ $t("commonLabels.by" )}} <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link></span>
@@ -71,8 +75,12 @@ const template = function () {
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
-                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playTrack(track);"></i>
-                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track);"></i>
+                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playTrack(track)">
+                                        <i class="fa fa-play"></i>
+                                    </span>
+                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track)">
+                                        <i class="fa fa-plus-square"></i>
+                                    </span>
                                     <span>{{ track.title }}</span>
                                     <br >
                                     <span v-if="track.artist">{{ $t("commonLabels.by" )}} <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: track.artist }}">{{ track.artist }}</router-link></span> <span v-if="track.album"> / {{ track.album }}</span>
@@ -89,8 +97,12 @@ const template = function () {
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                    <i @click="playPlaylistTracks(playlist.id);" class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisPlaylist')"></i>
-                                    <i @click="enqueuePlaylistTracks(playlist.id);" class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisPlaylist')"></i>
+                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.playThisPlaylist')" @click="playPlaylistTracks(playlist.id);">
+                                        <i class="fa fa-play"></i>
+                                    </span>
+                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.enqueueThisPlaylist')" @click="enqueuePlaylistTracks(playlist.id)">
+                                        <i class="fa fa-plus-square"></i>
+                                    </span>
                                     {{ playlist.name }} ({{ playlist.trackCount}} {{$t("commonLabels.tracksCount")}})
                                     </p>
                                 </div>
