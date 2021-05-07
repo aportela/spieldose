@@ -83,7 +83,7 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                this.$router.push({ name: 'nowPlaying' });
+                this.$router.push({ name: 'artist', params: { artist: 'Dover' } });
             }
         } else {
             this.$router.push({ name: 'upgrade' });
@@ -137,7 +137,7 @@ let reactivePlayer = reactive({
         tracks: [],
         currentTrackIndex: -1,
         repeatMode: "none",
-        toggleRepeatMode: function() {
+        toggleRepeatMode: function () {
             switch (this.repeatMode) {
                 case "none":
                     this.repeatMode = "track";
@@ -150,14 +150,14 @@ let reactivePlayer = reactive({
                     break;
             }
         },
-        isSet: function() {
-            return(this.id ? true: false);
+        isSet: function () {
+            return (this.id ? true : false);
         },
-        unset: function() {
+        unset: function () {
             this.id = null;
             this.name = null;
         },
-        clear: function() {
+        clear: function () {
             this.tracks = [];
         },
         moveItemUp: function (idx) {
@@ -184,7 +184,7 @@ let reactivePlayer = reactive({
             }
         }
     },
-    playPreviousTrack: function() {
+    playPreviousTrack: function () {
         if (this.currentPlayList.currentTrackIndex > 0) {
             this.currentPlayList.currentTrackIndex--;
             this.changeCurrentTime(0);
@@ -193,9 +193,9 @@ let reactivePlayer = reactive({
             }
         }
     },
-    playNextTrack: function() {
+    playNextTrack: function () {
         if (this.currentPlayList.repeatMode != 'track') {
-            if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length -1) {
+            if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length - 1) {
                 this.currentPlayList.currentTrackIndex++;
                 this.changeCurrentTime(0);
                 if (this.status == "paused") {
@@ -236,17 +236,17 @@ let reactivePlayer = reactive({
             });
         }
     },
-    downloadTrack: function(id) {
+    downloadTrack: function (id) {
         window.location = "api/track/get/" + id;
     },
     nowPlayingCurrentTime: 0,
     nowPlayingCurrentProgress: 0,
     /* computed properties */
-    get currentTrack () {
+    get currentTrack() {
         if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length) {
-            return(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex]);
+            return (this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex]);
         } else {
-            return(null);
+            return (null);
         }
     },
     play: function () {
@@ -287,7 +287,7 @@ let reactivePlayer = reactive({
             this.loading = false;
         });
     },
-    shuffleCurrentPlayList: function() {
+    shuffleCurrentPlayList: function () {
         function shuffleArray(a) {
             var j, x, i;
             for (i = a.length - 1; i > 0; i--) {
@@ -326,20 +326,20 @@ let reactivePlayer = reactive({
             }
         });
     },
-    changeCurrentTime: function(t) {
+    changeCurrentTime: function (t) {
         this.nowPlayingCurrentProgress = t;
         this.audio.currentTime = t;
     },
-    changeVolume: function(volume) {
+    changeVolume: function (volume) {
         this.audio.volume = volume;
         this.audioSettings.currentVolume = volume;
         this.audioSettings.preMuteVolume = volume;
         spieldoseSettings.setCurrentSessionVolume(volume);
     },
     get isAudioMuted() {
-        return(this.audio.muted);
+        return (this.audio.muted);
     },
-    toggleAudioMute: function() {
+    toggleAudioMute: function () {
         this.audio.muted = !this.audio.muted;
     }
 });

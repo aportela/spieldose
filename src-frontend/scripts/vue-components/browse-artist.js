@@ -1,12 +1,237 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches } from '../mixins.js';
+import { mixinAPIError, mixinPlayer, mixinPagination, mixinAlbums, mixinLiveSearches } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
 import { default as imageAlbum } from './image-album.js';
 import { default as dashboardTopList } from './dashboard-toplist.js';
+import { default as pagination } from './pagination';
+import Chart from 'chart.js/auto';
 
 const template = function () {
     return `
-        <div class="container is-fluid box is-marginless">
+        <div>
+            <div>
+                <div id="artist-header-block">
+                    <div id="artist-header-block-background-image" v-if="artist && artist.image" :style="'background-image: url(api/thumbnail?url=' + artist.image + ')'"></div>
+                    <div id="artist-header-block-background-overlay"></div>
+                    <div id="artist-header-block-content">
+                        <div class="p-6">
+                            <p class="has-text-white title is-1">{{ artist.name }}</p>
+                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-users"></i> Listeners:</span> <span class="has-text-grey-lighter">204 users</span></p>
+                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-compact-disc"></i> Total plays:</span> <span class="has-text-grey-lighter">3945 times</span></p>
+                            <div class="columns">
+                                <div class="column is-half" v-if="latestAlbum">
+                                    <figure class="image is-96x96 is-pulled-left">
+                                        <spieldose-image-album :src="latestAlbum.image"></spieldose-image-album>
+                                    </figure>
+                                    <p style="margin-left: 110px; margin-top: 10px;">
+                                        <span class="is-size-7 has-text-grey">LATEST RELEASE
+                                        <br><strong class="is-size-6 has-text-grey-lighter">{{ latestAlbum.name }}</strong>
+                                        <br><span class="is-size-6 has-text-grey-light" v-if="latestAlbum.year">{{ latestAlbum.year }}</span>
+                                    </p>
+                                </div>
+                                <div class="column is-half" v-if="popularAlbum">
+                                    <figure class="image is-96x96 is-pulled-left">
+                                        <spieldose-image-album :src="popularAlbum.image"></spieldose-image-album>
+                                    </figure>
+                                    <p style="margin-left: 110px; margin-top: 10px;">
+                                        <span class="is-size-7 has-text-grey">POPULAR
+                                        <br><strong class="is-size-6 has-text-grey-lighter">{{ popularAlbum.name }}</strong>
+                                        <br><span class="is-size-6 has-text-grey-light" v-if="popularAlbum.year">{{ popularAlbum.year }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bottom">
+                            <div class="tabs is-centered is-small">
+                                <ul>
+                                    <li class="is-active"><a class="has-text-grey-lighter">Overview</a></li>
+                                    <li><a class="has-text-grey-lighter">Biography</a></li>
+                                    <li><a class="has-text-grey-lighter">Albums</a></li>
+                                    <li><a class="has-text-grey-lighter">Tracks</a></li>
+                                    <li><a class="has-text-grey-lighter">Similar artists</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container is-fluid box mt-3">
+                    <div class="columns">
+                        <div class="column is-8">
+                            <div class="content" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
+                            <div class="is-clearfix">
+                                <span class="title is-5 is-pulled-left">Top tracks</span>
+                                <div class="dropdown is-pulled-right">
+                                    <div class="dropdown-trigger">
+                                        <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
+                                            <span>Last 7 days</span>
+                                            <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                        <div class="dropdown-content">
+                                            <a href="#" class="dropdown-item">
+                                            Dropdown item
+                                            </a>
+                                            <a class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item is-active">
+                                            Active dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <hr class="dropdown-divider">
+                                            <a href="#" class="dropdown-item">
+                                            With a divider
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table is-unselectable is-clear-fix">
+                                <tbody>
+                                    <tr>
+                                        <td class="is-vcentered">1</td>
+                                        <td class="is-vcentered"><i class="fas fa-play cursor-pointer"></i></td>
+                                        <td class="is-vcentered">
+                                            <figure class="image is-32x32" v-if="latestAlbum">
+                                                <spieldose-image-album :src="latestAlbum.image"></spieldose-image-album>
+                                            </figure>
+                                        </td>
+                                        <td class="is-vcentered"><i class="fas fa-heart cursor-pointer"></i></td>
+                                        <td class="is-vcentered">Enter sandman</td>
+                                        <td class="is-vcentered">
+                                            <span class="has-text-dark has-background-light" style="display: block: width: 90%;">11,763 listeners </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="is-clearfix">
+                                <span class="title is-5 is-pulled-left">Albums</span>
+                                <div class="dropdown is-pulled-right">
+                                    <div class="dropdown-trigger">
+                                        <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
+                                            <span>Most popular</span>
+                                            <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                        <div class="dropdown-content">
+                                            <a href="#" class="dropdown-item">
+                                            Dropdown item
+                                            </a>
+                                            <a class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item is-active">
+                                            Active dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <hr class="dropdown-divider">
+                                            <a href="#" class="dropdown-item">
+                                            With a divider
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="is-clearfix">
+                                <div class="browse-album-item" v-for="album, i in artist.albums" :key="album.name+album.artist+album.year" v-show="! loading && i < 4">
+                                    <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                                        <spieldose-image-album :src="album.image"></spieldose-image-album>
+                                        <i class="fas fa-play fa-4x"></i>
+                                        <img class="vinyl no-cover" src="images/vinyl.png" />
+                                    </a>
+                                    <div class="album-info">
+                                        <p class="album-name">{{ album.name }}</p>
+                                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }}
+                                            <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link>
+                                            <span v-show="album.year"> ({{ album.year }})</span>
+                                        </p>
+                                        <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="is-clearfix">
+                                <span class="is-pulled-right">View all albums <i class="fas fa-angle-right"></i></span>
+                            </div>
+                        </div>
+                        <div class="column is-4">
+                            <div id="similar">
+                                <p class="title is-6">Similar to</p>
+                                <div class="columns is-size-6">
+                                    <div class="column is-4 has-text-grey is-centered">
+                                        <figure class="image is-96x96" style="margin: 0px auto;">
+                                            <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
+                                        </figure>
+                                        <p class="has-text-centered has-text-grey">Artist1</p>
+                                    </div>
+                                    <div class="column is-4">
+                                        <figure class="image is-96x96" style="margin: 0px auto;">
+                                            <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
+                                        </figure>
+                                        <p class="has-text-centered has-text-grey">Artist</p>
+                                    </div>
+                                    <div class="column is-4">
+                                        <figure class="image is-96x96" style="margin: 0px auto;">
+                                            <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
+                                        </figure>
+                                        <p class="has-text-centered has-text-grey">Artist</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="is-clearfix">
+                                <span class="title is-5 is-pulled-left">Play stats</span>
+                                <div class="dropdown is-pulled-right">
+                                    <div class="dropdown-trigger">
+                                        <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
+                                            <span>recent</span>
+                                            <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                        <div class="dropdown-content">
+                                            <a href="#" class="dropdown-item">
+                                            Dropdown item
+                                            </a>
+                                            <a class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item is-active">
+                                            Active dropdown item
+                                            </a>
+                                            <a href="#" class="dropdown-item">
+                                            Other dropdown item
+                                            </a>
+                                            <hr class="dropdown-divider">
+                                            <a href="#" class="dropdown-item">
+                                            With a divider
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas width="100%" height="200" id="play-stats"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            -->
+
+
+            <!--
             <p v-if="loading" class="title is-1 has-text-centered">Loading <i v-if="loading" class="fas fa-cog fa-spin fa-fw"></i></p>
             <p v-else="! loading" class="title is-1 has-text-centered">{{ $t("browseArtist.labels.sectionName") }}</p>
             <div class="media" v-if="! hasAPIErrors && ! loading">
@@ -145,10 +370,12 @@ const template = function () {
                     </div>
                 </div>
             </div>
+            -->
             <spieldose-api-error-component v-if="hasAPIErrors" v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
+
 
 export default {
     name: 'spieldose-browse-artist',
@@ -168,11 +395,29 @@ export default {
             nameFilter: null,
             timeout: null,
             updateArtistName: null,
-            updateArtistMBId: null
+            updateArtistMBId: null,
+            chart: null
         });
+    },
+    computed: {
+        latestAlbum: function () {
+            if (this.artist && this.artist.albums) {
+                return (this.artist.albums[this.artist.albums.length - 1]);
+            } else {
+                return (null);
+            }
+        },
+        popularAlbum: function () {
+            if (this.artist && this.artist.albums) {
+                return (this.artist.albums[0]);
+            } else {
+                return (null);
+            }
+        }
     },
     components: {
         'spieldose-dashboard-toplist': dashboardTopList,
+        'spieldose-pagination': pagination,
         'spieldose-image-artist': imageArtist,
         'spieldose-image-album': imageAlbum,
     },
@@ -227,6 +472,39 @@ export default {
                     this.activeTab = 'overview';
                     break;
             }
+        }
+    },
+    mounted: function () {
+        if (this.chart) {
+            this.chart.destroy();
+        }
+        const element = document.getElementById('play-stats');
+        if (element) {
+            this.chart = new Chart(element, {
+                type: 'line',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    datasets: [{
+                        label: 'Total plays',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#666666',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
     },
     methods: {
