@@ -255,6 +255,7 @@ export default {
         changeInterval: function (interval) {
             if (!this.loading) {
                 if (interval && interval != this.activeInterval) {
+                    this.loading = true;
                     this.activeInterval = interval;
                     this.loadChart();
                 }
