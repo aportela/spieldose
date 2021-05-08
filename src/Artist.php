@@ -9,11 +9,13 @@
         public $name;
         public $bio;
         public $albums;
+        public $totalListeners;
         public $playCount;
 
 	    public function __construct (string $name = "", array $albums = array()) {
             $this->name = $name;
             $this->albums = $albums;
+            $this->totalListeners = 0;
             $this->playCount = 0;
         }
 
@@ -40,19 +42,29 @@
                 ';
                 $data = $dbh->query($query, $params);
                 if ($data && $data[0]->total > 0) {
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
+                    $query = '
+                        SELECT
+                            COUNT(DISTINCT S.user_id) AS totalListeners
+                        FROM STATS S
+                        LEFT JOIN FILE F ON (F.id = S.file_id)
+                        LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                        AND COALESCE(MBA.artist, F.track_artist) LIKE :name
+                    ';
+                    $data = $dbh->query($query, $params);
+                    if ($data && $data[0]->totalListeners) {
+                        $this->totalListeners = intval($data[0]->totalListeners);
+                    }
                     $query = '
                         SELECT
                             COUNT(S.played) AS playCount
                         FROM STATS S
                         LEFT JOIN FILE F ON (F.id = S.file_id)
                         LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                        WHERE S.user_id = :user_id
                         AND COALESCE(MBA.artist, F.track_artist) LIKE :name
                     ';
                     $data = $dbh->query($query, $params);
                     if ($data && $data[0]->playCount) {
-                        $this->playCount = $data[0]->playCount;
+                        $this->playCount = intval($data[0]->playCount);
                     }
                     $this->getMusicBrainzMetadata($dbh);
                     $this->albums = (\Spieldose\Album::search($dbh, 1, 1024, array("artist" => $this->name), "year"))->results;

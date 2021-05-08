@@ -16,8 +16,8 @@ const template = function () {
                     <div id="artist-header-block-content">
                         <div class="p-6">
                             <p class="has-text-white title is-1">{{ artist.name }}</p>
-                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-users"></i> Listeners:</span> <span class="has-text-grey-lighter">204 users</span></p>
-                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-compact-disc"></i> Total plays:</span> <span class="has-text-grey-lighter">3945 times</span></p>
+                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-users"></i> Listeners:</span> <span class="has-text-grey-lighter">{{ artist.totalListeners }} user/s</span></p>
+                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-compact-disc"></i> Total plays:</span> <span class="has-text-grey-lighter">{{ artist.playCount }} times</span></p>
                             <div class="columns">
                                 <div class="column is-half" v-if="latestAlbum">
                                     <figure class="image is-96x96 is-pulled-left">
