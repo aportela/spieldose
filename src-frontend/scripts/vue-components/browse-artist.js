@@ -5,57 +5,15 @@ import { default as imageAlbum } from './image-album.js';
 import { default as dashboardTopList } from './dashboard-toplist.js';
 import { default as pagination } from './pagination';
 import Chart from 'chart.js/auto';
+import browseArtistHeader from './browse-artist-header.js';
 
 const template = function () {
     return `
         <div>
             <div>
-                <div id="artist-header-block">
-                    <div id="artist-header-block-background-image" v-if="artist && artist.image" :style="'background-image: url(api/thumbnail?url=' + artist.image + ')'"></div>
-                    <div id="artist-header-block-background-overlay"></div>
-                    <div id="artist-header-block-content">
-                        <div class="p-6">
-                            <p class="has-text-white title is-1">{{ artist.name }}</p>
-                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-users"></i> Listeners:</span> <span class="has-text-grey-lighter">{{ artist.totalListeners }} user/s</span></p>
-                            <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-compact-disc"></i> Total plays:</span> <span class="has-text-grey-lighter">{{ artist.playCount }} times</span></p>
-                            <div class="columns">
-                                <div class="column is-half" v-if="latestAlbum">
-                                    <figure class="image is-96x96 is-pulled-left">
-                                        <spieldose-image-album :src="latestAlbum.image"></spieldose-image-album>
-                                    </figure>
-                                    <p style="margin-left: 110px; margin-top: 10px;">
-                                        <span class="is-size-7 has-text-grey">LATEST RELEASE
-                                        <br><strong class="is-size-6 has-text-grey-lighter">{{ latestAlbum.name }}</strong>
-                                        <br><span class="is-size-6 has-text-grey-light" v-if="latestAlbum.year">{{ latestAlbum.year }}</span>
-                                    </p>
-                                </div>
-                                <div class="column is-half" v-if="popularAlbum">
-                                    <figure class="image is-96x96 is-pulled-left">
-                                        <spieldose-image-album :src="popularAlbum.image"></spieldose-image-album>
-                                    </figure>
-                                    <p style="margin-left: 110px; margin-top: 10px;">
-                                        <span class="is-size-7 has-text-grey">POPULAR
-                                        <br><strong class="is-size-6 has-text-grey-lighter">{{ popularAlbum.name }}</strong>
-                                        <br><span class="is-size-6 has-text-grey-light" v-if="popularAlbum.year">{{ popularAlbum.year }}</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="bottom">
-                            <div class="tabs is-centered is-small">
-                                <ul>
-                                    <li class="is-active"><a class="has-text-grey-lighter">Overview</a></li>
-                                    <li><a class="has-text-grey-lighter">Biography</a></li>
-                                    <li><a class="has-text-grey-lighter">Albums</a></li>
-                                    <li><a class="has-text-grey-lighter">Tracks</a></li>
-                                    <li><a class="has-text-grey-lighter">Similar artists</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <spieldose-browse-artist-header :artist="artist" :currentTab="activeTab" @change-tab="onChangeTab" ></spieldose-browse-artist-header>
 
-                <div class="container is-fluid box mt-3">
+                <div class="container is-fluid box mt-3" v-if="activeTab == 'overview'">
                     <div class="columns">
                         <div class="column is-8">
                             <div class="content" id="bio" v-if="artist.bio" v-html="truncatedBio"></div>
@@ -166,7 +124,10 @@ const template = function () {
                         </div>
                         <div class="column is-4">
                             <div id="similar">
-                                <p class="title is-6">Similar to</p>
+                                <div class="is-clearfix">
+                                    <span class="title is-5 is-pulled-left">Similar to</span>
+                                    <span class="is-pulled-right">Show more <i class="fas fa-angle-right"></i></span>
+                                </div>
                                 <div class="columns is-size-6">
                                     <div class="column is-4 has-text-grey is-centered">
                                         <figure class="image is-96x96" style="margin: 0px auto;">
@@ -228,7 +189,18 @@ const template = function () {
                 </div>
             </div>
 
-            -->
+            <div class="container is-fluid box mt-3" v-else-if="activeTab == 'biography'">
+            biography
+            </div>
+            <div class="container is-fluid box mt-3" v-else-if="activeTab == 'similarArtists'">
+            similar artists
+            </div>
+            <div class="container is-fluid box mt-3" v-else-if="activeTab == 'albums'">
+            albums
+            </div>
+            <div class="container is-fluid box mt-3" v-else-if="activeTab == 'tracks'">
+            tracks
+            </div>
 
 
             <!--
@@ -416,6 +388,7 @@ export default {
         }
     },
     components: {
+        'spieldose-browse-artist-header': browseArtistHeader,
         'spieldose-dashboard-toplist': dashboardTopList,
         'spieldose-pagination': pagination,
         'spieldose-image-artist': imageArtist,
@@ -508,6 +481,9 @@ export default {
         }
     },
     methods: {
+        onChangeTab: function(event) {
+            this.activeTab = event.tab;
+        },
         onPaginationChanged: function (currentPage) {
             this.$router.push({ name: 'artistTracksPaged', params: { page: currentPage } });
         },
