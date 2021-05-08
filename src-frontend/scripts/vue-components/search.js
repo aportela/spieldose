@@ -1,5 +1,7 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer } from '../mixins.js';
+import imageAlbum from './image-album.js';
+import imageArtist from './image-artist.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 
 const template = function () {
@@ -31,7 +33,7 @@ const template = function () {
                         <article class="media" v-for="artist, i in artists" v-bind:key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
-                                    <img class="border-radius-50" v-bind:src="artist.image | getArtistImageUrl" @error="artist.image = null;">
+                                    <spieldose-image-artist src="artist.image" :extraClass="'is-rounded'"></spieldose-image-artist>
                                 </figure>
                             </div>
                             <div class="media-content">
@@ -47,7 +49,7 @@ const template = function () {
                         <article class="media" v-for="album, i in albums" v-bind:key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
-                                    <img class="border-radius-50" v-bind:src="album.image | getAlbumImageUrl" @error="album.image = null;"/>
+                                    <spieldose-image-album :src="album.image" :extraClass="'is-rounded'"></spieldose-image-album>
                                 </figure>
                             </div>
                             <div class="media-content">
@@ -133,7 +135,9 @@ export default {
         });
     },
     components: {
-        'spieldose-input-typeahead': inputTypeAHead
+        'spieldose-input-typeahead': inputTypeAHead,
+        'spieldose-image-artist': imageArtist,
+        'spieldose-image-album': imageAlbum
     },
     methods: {
         onTypeahead: function (text) {
