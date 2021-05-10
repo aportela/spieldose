@@ -37,6 +37,10 @@
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+                $metric->playtimeSeconds = intval($metric->playtimeSeconds);
+            }
             return($metrics);
         }
 
@@ -65,6 +69,9 @@
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -94,6 +101,9 @@
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -121,6 +131,9 @@
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''), $count);
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -140,6 +153,9 @@
                 LIMIT %d;
             ', $count);
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->playtimeSeconds = intval($metric->playtimeSeconds);
+            }
             return($metrics);
         }
 
@@ -259,6 +275,9 @@
                 ORDER BY hour
             ', "%H", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -278,6 +297,9 @@
                 ORDER BY weekDay
             ', "%w", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -297,6 +319,9 @@
                 ORDER BY month
             ', "%m", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
@@ -316,6 +341,9 @@
                 ORDER BY year
             ', "%Y", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''));
             $metrics = $dbh->query($query, $params);
+            foreach($metrics as $metric) {
+                $metric->total = intval($metric->total);
+            }
             return($metrics);
         }
 
