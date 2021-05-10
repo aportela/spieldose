@@ -8,21 +8,21 @@ const template = function () {
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
                     <div class="control has-icons-left is-expanded">
-                        <input class="input" type="text" :placeholder="$t('currentPlaylist.inputs.playlistNamePlaceholder')" required :disabled="savingPlaylist" v-model.trim="currentPlaylistName">
+                        <input class="input" type="text" :placeholder="$t('currentPlaylist.inputs.playlistNamePlaceholder')" required :disabled="loading" v-model.trim="currentPlaylistName">
                         <span class="icon is-small is-left">
                             <i class="fas fa-list-alt"></i>
                         </span>
                     </div>
                     <div class="control">
-                        <a class="button is-dark" :class="{ 'is-loading': savingPlaylist }" @click.prevent="savePlayList();">
+                        <a class="button is-dark" :class="{ 'is-loading': loading }" @click.prevent="onSavePlayList">
                             <span class="icon is-small">
                             <i class="fas fa-check"></i>
                             </span>
                             <span>{{ $t('currentPlaylist.buttons.savePlaylist') }}</span>
                         </a>
                     </div>
-                    <div class="control" v-if="isPlaylisted">
-                        <a class="button is-info" :class="{ 'is-loading': savingPlaylist }" @click.prevent="unsetPlaylist();">
+                    <div class="control" v-if="this.$player.currentPlayList.id">
+                        <a class="button is-info" :class="{ 'is-loading': loading }" @click.prevent="onUnsetPlaylist">
                             <span class="icon is-small">
                             <i class="fas fa-check-square"></i>
                             </span>
@@ -39,7 +39,7 @@ const template = function () {
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.loadRandom') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="this.$player.currentPlayList.clear()">
+                    <a class="button is-light" @click.prevent="onClear">
                         <span class="icon is-small">
                             <i class="fas fa-eraser"></i>
                         </span>
@@ -166,7 +166,6 @@ export default {
     data: function () {
         return ({
             loading: false,
-            savingPlaylist: false,
             currentPlaylistName: null
         });
     },
@@ -174,11 +173,11 @@ export default {
         this.currentPlaylistName = this.$player.currentPlayList.name;
     },
     computed: {
-        nowPlayingLoved: function() {
+        nowPlayingLoved: function () {
             if (this.$player.currentPlayList.currentTrackIndex >= 0) {
-                return(this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].loved == "1");
+                return (this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].loved == "1");
             } else {
-                return(false);
+                return (false);
             }
         },
         isPlaylisted: function () {
@@ -192,7 +191,7 @@ export default {
             return (this.$player.currentPlayList.repeatMode != 'none');
         },
         isSavePlaylistDisabled: function () {
-            return (!this.currentPlaylistName || this.savingPlaylist);
+            return (!this.currentPlaylistName || this.loading);
         },
         repeatMode: function () {
             let mode = this.$t('commonLabels.repeatModeNone');
@@ -209,10 +208,15 @@ export default {
 
     },
     methods: {
-        onLoadRandom: function() {
+        onLoadRandom: function () {
             this.$player.loadRandomTracksIntoCurrentPlayList(32);
         },
-        onDownloadCurrentTrack: function() {
+        onClear: function () {
+            this.$player.stop();
+            this.$player.currentPlayList.currentTrackIndex = -1;
+            this.$player.currentPlayList.tracks = [];
+        },
+        onDownloadCurrentTrack: function () {
             if (this.$player.currentPlayList.currentTrackIndex >= 0) {
                 this.$player.downloadTrack(this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].id);
             }
@@ -228,23 +232,18 @@ export default {
                 }
             }
         },
-        unsetPlaylist: function () {
-            this.$player.currentPlaylist.unset();
+        onUnsetPlaylist: function () {
+            this.$player.currentPlayList.id = null;
+            this.$player.currentPlayList.name = null;
             this.currentPlaylistName = null;
         },
-        savePlayList: function () {
+        onSavePlayList: function () {
             this.loading = true;
             this.clearAPIErrors();
-            let trackIds = [];
-            this.savingPlaylist = true;
-            for (let i = 0; i < this.player.tracks.length; i++) {
-                trackIds.push(this.player.tracks[i].id);
-            }
-            if (this.$player.currentPlayList.isSet()) {
+            const trackIds = this.$player.currentPlayList.tracks.map((track) => { return (track.id) });
+            if (this.$player.currentPlayList.id) {
                 spieldoseAPI.playlist.update(this.$player.currentPlayList.id, this.currentPlaylistName, trackIds, (response) => {
-                    this.savingPlaylist = false;
                     if (response.status == 200) {
-                        this.player.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -252,9 +251,8 @@ export default {
                 });
             } else {
                 spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, (response) => {
-                    this.savingPlaylist = false;
                     if (response.status == 200) {
-                        this.player.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
+                        this.$player.currentPlayList.id = response.data.playlist.id;
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
