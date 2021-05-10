@@ -63,7 +63,10 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlayList.replace(response.data.tracks);
+                        this.$player.stop();
+                        this.$player.currentPlayList.tracks = response.data.tracks;
+                        this.$player.currentPlayList.currentTrackIndex = 0;
+                        this.$player.play();
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -75,7 +78,7 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlayList.enqueue(response.data.tracks);
+                        this.$player.currentPlayList.tracks = this.$player.currentPlayList.tracks.concat(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
