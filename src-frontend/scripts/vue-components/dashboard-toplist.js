@@ -7,7 +7,7 @@ const template = function () {
             <p class="panel-heading">
                 <span class="icon">
                     <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                    <i class="fas fa-exclamation-triangle" v-else-if="errors"></i>
                     <i class="fas fa-list" v-else></i>
                 </span>
                 <span>{{ title }}</span>
@@ -60,8 +60,6 @@ export default {
     ],
     data: function () {
         return ({
-            loading: false,
-            errors: false,
             activeInterval: 0
         });
     },
@@ -98,11 +96,35 @@ export default {
         }
     },
     methods: {
-        onPlayTrack(track) {
-            this.$player.playTracks([ track ]);
+        changeInterval: function (interval) {
+            if (!this.loading) {
+                if (this.activeInterval != interval) {
+                    this.activeInterval = interval;
+                    this.load();
+                }
+            }
         },
-        onEnqueueTrack(track) {
-            this.$player.enqueueTracks([ track ]);
+        load: function () {
+            this.errors = false;
+            this.loading = true;
+            this.items = [];
+            switch (this.type) {
+                case 'topTracks':
+                    this.loadTopPlayedTracks();
+                    break;
+                case 'topArtists':
+                    this.loadTopPlayedArtists();
+                    break;
+                case 'topAlbums':
+                    this.loadTopPlayedAlbums();
+                    break;
+                case 'topGenres':
+                    this.loadTopPlayedGenres();
+                    break;
+                default:
+                    this.loading = false;
+                    break;
+            }
         },
         loadTopPlayedTracks: function () {
             spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist, (response) => {
@@ -139,7 +161,6 @@ export default {
                         if (response.data.metrics && response.data.metrics.length > 0) {
                             this.items = response.data.metrics;
                         }
-                        success = true;
                     } else {
                         this.errors = true;
                     }
@@ -160,36 +181,6 @@ export default {
                     this.loading = false;
                 }
             });
-        },
-        changeInterval: function (interval) {
-            if (!this.loading) {
-                if (this.activeInterval != interval) {
-                    this.activeInterval = interval;
-                    this.load();
-                }
-            }
-        },
-        load: function () {
-            this.errors = false;
-            this.loading = true;
-            this.items = [];
-            switch (this.type) {
-                case 'topTracks':
-                    this.loadTopPlayedTracks();
-                    break;
-                case 'topArtists':
-                    this.loadTopPlayedArtists();
-                    break;
-                case 'topAlbums':
-                    this.loadTopPlayedAlbums();
-                    break;
-                case 'topGenres':
-                    this.loadTopPlayedGenres();
-                    break;
-                default:
-                    this.loading = false;
-                    break;
-            }
         }
     }
 }

@@ -243,6 +243,8 @@ export const mixinAPIError = {
  export const mixinTopRecentCharts = {
     data: function () {
         return ({
+            loading: false,
+            errors: false,
             items: []
         });
     },
@@ -255,11 +257,17 @@ export const mixinAPIError = {
         }
     },
     methods: {
-        playTrack: function (track) {
-            this.$player.currentPlayList.replace([track]);
+        onPlayTrack: function (track) {
+            this.$player.playTracks([ track ]);
         },
-        enqueueTrack: function (track) {
-            this.$player.currentPlayList.enqueue([track]);
+        onEnqueueTrack: function (track) {
+            this.$player.enqueueTracks([ track ]);
+        },
+        onPlayAlbum: function (album) {
+            // TODO
+        },
+        onEnqueueAlbum: function (album) {
+            // TODO
         }
     }
 };

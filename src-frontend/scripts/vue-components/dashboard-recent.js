@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer } from '../mixins.js';
+import { mixinTopRecentCharts } from '../mixins.js';
 
 const template = function () {
     return `
@@ -7,7 +7,7 @@ const template = function () {
             <p class="panel-heading">
                 <span class="icon">
                     <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                    <i class="fas fa-exclamation-triangle" v-else-if="errors"></i>
                     <i class="far fa-clock" v-else></i>
                 </span>
                 <span>{{ title }}</span>
@@ -21,8 +21,8 @@ const template = function () {
             <div class="panel-block cut-text">
                 <ol v-if="hasItems">
                     <li class="is-small" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
-                        <span class="icon"><i class="cursor-pointer fa fa-play" @click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
-                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-play" @click="onPlayTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="onEnqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
                     </li>
@@ -31,8 +31,8 @@ const template = function () {
                         <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link>
                     </li>
                     <li class="is-small" v-if="isAlbumEntity" v-for="item in items">
-                        <span class="icon"><i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click="playAlbum(item);" ></i></span>
-                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click="enqueueAlbum(item);"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click="onPlayAlbum(item);" ></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click="onEnqueueAlbum(item);"></i></span>
                         <span>{{ item.album }}</span>
                         <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
                     </li>
@@ -48,11 +48,10 @@ export default {
     name: 'spieldose-dashboard-recent',
     template: template(),
     mixins: [
-        mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer
+        mixinTopRecentCharts
     ],
     data: function () {
         return ({
-            loading: false,
             actualEntity: 'tracks'
         });
     },
@@ -71,80 +70,16 @@ export default {
         },
     },
     methods: {
-        loadRecentAddedTracks: function () {
-            spieldoseAPI.metrics.getRecentAddedTracks(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+        changeEntity: function (entity) {
+            if (!this.loading) {
+                if (entity && entity != this.actualEntity) {
+                    this.actualEntity = entity;
+                    this.load();
                 }
-                this.loading = false;
-            });
-        },
-        loadRecentAddedArtists: function () {
-            spieldoseAPI.metrics.getRecentAddedArtists(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadRecentAddedAlbums: function () {
-            spieldoseAPI.metrics.getRecentAddedAlbums(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadRecentPlayedTracks: function () {
-            spieldoseAPI.metrics.getRecentPlayedTracks(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadRecentPlayedArtists: function () {
-            spieldoseAPI.metrics.getRecentPlayedArtists(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadRecentPlayedAlbums: function () {
-            spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
-                    }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
+            }
         },
         load: function () {
-            this.clearAPIErrors();
+            this.errors = false;
             this.loading = true;
             this.items = [];
             switch (this.type) {
@@ -158,6 +93,90 @@ export default {
                     this.loading = false;
                     break;
             }
+        },
+        loadRecentAddedTracks: function () {
+            spieldoseAPI.metrics.getRecentAddedTracks(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadRecentAddedArtists: function () {
+            spieldoseAPI.metrics.getRecentAddedArtists(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadRecentAddedAlbums: function () {
+            spieldoseAPI.metrics.getRecentAddedAlbums(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadRecentPlayedTracks: function () {
+            spieldoseAPI.metrics.getRecentPlayedTracks(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadRecentPlayedArtists: function () {
+            spieldoseAPI.metrics.getRecentPlayedArtists(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadRecentPlayedAlbums: function () {
+            spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval, (response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
         },
         loadRecentAdded: function () {
             switch (this.actualEntity) {
@@ -191,19 +210,5 @@ export default {
                     break;
             }
         },
-        changeEntity: function (entity) {
-            if (!this.loading) {
-                if (entity && entity != this.actualEntity) {
-                    this.actualEntity = entity;
-                    this.load();
-                }
-            }
-        },
-        playAlbum: function (album) {
-            // TODO
-        },
-        enqueueAlbum: function (album) {
-            // TODO
-        }
     }
 }
