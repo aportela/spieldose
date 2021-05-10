@@ -168,23 +168,15 @@ export const mixinLiveSearches = {
                         artist: this.$t("commonLabels.remoteRadioStation"),
                         radioStation: response.data.radioStation
                     };
-                    this.$player.currentPlayList.replace([track]);
+                    this.$player.stop();
+                    this.$player.currentPlayList.currentTrackIndex = 0;
+                    this.$player.currentPlayList.tracks = [track];
+                    this.$player.play();
                 } else {
                     this.setAPIError(response.getApiErrorData());
                 }
             });
         }
-    }
-};
-
-/**
- * validator common mixins
- */
- export const mixinValidations = {
-    data: function () {
-        return ({
-            validator: getValidator
-        });
     }
 };
 
