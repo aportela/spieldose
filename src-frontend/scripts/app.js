@@ -83,7 +83,8 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                this.$router.push({ name: 'artist', params: { artist: 'Dover' } });
+                this.$router.push({ name: 'dashboard' });
+                //this.$router.push({ name: 'artist', params: { artist: 'Dover' } });
             }
         } else {
             this.$router.push({ name: 'upgrade' });
@@ -182,6 +183,13 @@ let reactivePlayer = reactive({
                 }
                 this.tracks.splice(idx, 1);
             }
+        },
+        replaceTracks: function(tracks) {
+            this.currentTrackIndex = 0;
+            this.tracks = tracks;
+        },
+        enqueueTracks: function(tracks) {
+            this.tracks = this.tracks.concat(tracks);
         }
     },
     playPreviousTrack: function () {
@@ -260,6 +268,14 @@ let reactivePlayer = reactive({
     pause: function () {
         this.status = "paused";
         this.audio.pause();
+    },
+    playTracks: function(tracks) {
+        this.stop();
+        this.currentPlayList.replaceTracks(tracks);
+        this.play();
+    },
+    enqueueTracks: function(tracks) {
+        this.currentPlayList.enqueueTracks(tracks);
     },
     /*
     setCurrentTrackFromPlayListIndex: function (index) {

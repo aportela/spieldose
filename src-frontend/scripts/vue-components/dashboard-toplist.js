@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer } from '../mixins.js';
+import { mixinTopRecentCharts } from '../mixins.js';
 
 const template = function () {
     return `
@@ -23,8 +23,8 @@ const template = function () {
             <div class="panel-block cut-text">
                 <ol v-if="items.length > 0">
                     <li class="is-small" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
-                        <span class="icon"><i class="cursor-pointer fa fa-play" @click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
-                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-play" @click.prevent="onPlayTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
+                        <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click.prevent="onEnqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
@@ -56,11 +56,12 @@ export default {
     name: 'spieldose-dashboard-toplist',
     template: template(),
     mixins: [
-        mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer
+        mixinTopRecentCharts
     ],
     data: function () {
         return ({
             loading: false,
+            errors: false,
             activeInterval: 0
         });
     },
@@ -97,59 +98,79 @@ export default {
         }
     },
     methods: {
+        onPlayTrack(track) {
+            this.$player.playTracks([ track ]);
+        },
+        onEnqueueTrack(track) {
+            this.$player.enqueueTracks([ track ]);
+        },
         loadTopPlayedTracks: function () {
             spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
                     }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+                    this.loading = false;
                 }
-                this.loading = false;
             });
-        }, loadTopPlayedArtists: function () {
+        },
+        loadTopPlayedArtists: function () {
             spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
                     }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+                    this.loading = false;
                 }
-                this.loading = false;
             });
-        }, loadTopPlayedAlbums: function () {
+        },
+        loadTopPlayedAlbums: function () {
             spieldoseAPI.metrics.getTopPlayedAlbums(this.activeInterval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                        success = true;
+                    } else {
+                        this.errors = true;
                     }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+                    this.loading = false;
                 }
-                this.loading = false;
             });
-        }, loadTopPlayedGenres: function () {
+        },
+        loadTopPlayedGenres: function () {
             spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, (response) => {
-                if (response.status == 200) {
-                    if (response.data.metrics && response.data.metrics.length > 0) {
-                        this.items = response.data.metrics;
+                if (response) {
+                    if (response.status == 200) {
+                        if (response.data.metrics && response.data.metrics.length > 0) {
+                            this.items = response.data.metrics;
+                        }
+                    } else {
+                        this.errors = true;
                     }
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+                    this.loading = false;
                 }
-                this.loading = false;
             });
-        }, changeInterval: function (interval) {
+        },
+        changeInterval: function (interval) {
             if (!this.loading) {
                 if (this.activeInterval != interval) {
                     this.activeInterval = interval;
                     this.load();
                 }
             }
-        }, load: function () {
-            this.clearAPIErrors();
+        },
+        load: function () {
+            this.errors = false;
             this.loading = true;
             this.items = [];
             switch (this.type) {
