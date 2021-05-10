@@ -244,8 +244,17 @@ let reactivePlayer = reactive({
             });
         }
     },
+    downloadCurrentTrack: function () {
+        if (this.currentPlayList.currentTrackIndex != -1) {
+            this.downloadTrack(this.currentPlayList.tracks[this.currentPlayList.currentTrackIndex].id);
+        }
+    },
     downloadTrack: function (id) {
-        window.location = "api/track/get/" + id;
+        if (id) {
+            window.location = "api/track/get/" + id;
+        } else {
+            console.error("error downloading track: id not found")
+        }
     },
     nowPlayingCurrentTime: 0,
     nowPlayingCurrentProgress: 0,

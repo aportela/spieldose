@@ -105,7 +105,7 @@ const template = function () {
                         </span>
                         <span class="is-hidden-touch">{{ $t('currentPlaylist.buttons.loveTrack') }}</span>
                     </a>
-                    <a class="button is-light" @click.prevent="onDownloadCurrentTrack">
+                    <a class="button is-light" @click.prevent="this.$player.downloadCurrentTrack()">
                         <span class="icon is-small">
                             <i class="fas fa-save"></i>
                         </span>
@@ -215,11 +215,6 @@ export default {
             this.$player.stop();
             this.$player.currentPlayList.currentTrackIndex = -1;
             this.$player.currentPlayList.tracks = [];
-        },
-        onDownloadCurrentTrack: function () {
-            if (this.$player.currentPlayList.currentTrackIndex >= 0) {
-                this.$player.downloadTrack(this.$player.currentPlayList.tracks[this.$player.currentPlayList.currentTrackIndex].id);
-            }
         },
         iconAction: function (index) {
             if (this.$player.isPaused && this.$player.currentPlayList.currentTrackIndex == index) {

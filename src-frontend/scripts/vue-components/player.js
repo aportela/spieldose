@@ -37,7 +37,7 @@ const template = function () {
                     <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" @click.prevent="this.$player.playNextTrack()" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
                     <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" @click.prevent="this.$player.unSetLovedCurrentTrack()" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
                     <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else @click.prevent="this.$player.setLovedCurrentTrack()" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="player.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
+                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" @click.prevent="this.$player.downloadCurrentTrack()"><i class="fas fa-2x fa-save"></i></span>
                 </div>
                 <div id="player-volume-control">
                     <div class="columns">
