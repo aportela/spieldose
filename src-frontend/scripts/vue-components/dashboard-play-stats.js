@@ -1,5 +1,4 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError } from '../mixins.js';
 import Chart from 'chart.js/auto';
 
 const template = function () {
@@ -8,7 +7,7 @@ const template = function () {
             <p class="panel-heading">
                 <span class="icon">
                     <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                    <i class="fas fa-exclamation-triangle" v-else-if="errors"></i>
                     <i class="fas fa-chart-line" v-else></i>
                 </span>
                 <span>{{ $t("dashboard.labels.playStatistics") }}</span>
@@ -20,13 +19,12 @@ const template = function () {
                 <a v-bind:class="{ 'is-active': isMonthInterval }" @click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
                 <a v-bind:class="{ 'is-active': isYearInterval }" @click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
             </p>
-            <div class="panel-block" v-if="! hasAPIErrors">
+            <div class="panel-block" v-if="! errors">
                 <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
                 <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
                 <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
                 <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
             </div>
-            <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
         </section>
     `;
 };
@@ -56,16 +54,16 @@ const commonChartOptions = {
 export default {
     name: 'spieldose-dashboard-play-stats',
     template: template(),
-    mixins: [mixinAPIError],
     data: function () {
         return ({
-            chart: null,
             loading: false,
+            errors: false,
+            items: [],
             activeInterval: 'hour',
-            items: []
+            chart: null
         });
     },
-    created: function () {
+    mounted: function () {
         this.loadChart();
     },
     computed: {
@@ -83,156 +81,16 @@ export default {
         }
     },
     methods: {
-        loadMetricsByHourChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByHour((response) => {
-                if (response.status == 200) {
-                    const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-                    let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    for (let i = 0; i < response.data.metrics.length; i++) {
-                        data[response.data.metrics[i].hour] = response.data.metrics[i].total;
-                    }
-                    if (this.chart) {
-                        this.chart.destroy();
-                    }
-                    this.chart = new Chart(document.getElementById('playcount-metrics-chart-hour'), {
-                        type: 'line',
-                        data: {
-                            labels: hourNames,
-                            datasets: [
-                                {
-                                    'label': 'play stats by hour',
-                                    'data': data,
-                                    'fill': true,
-                                    'borderColor': '#3273dc',
-                                    'lineTension': 0.1
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
+        changeInterval: function (interval) {
+            if (!this.loading) {
+                if (interval && interval != this.activeInterval) {
+                    this.activeInterval = interval;
+                    this.loadChart();
                 }
-                this.loading = false;
-            });
-        },
-        loadMetricsByWeekDayChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByWeekDay((response) => {
-                if (response.status == 200) {
-                    const weekDayNames = [
-                        this.$t('dashboard.labels.sunday'),
-                        this.$t('dashboard.labels.monday'),
-                        this.$t('dashboard.labels.tuesday'),
-                        this.$t('dashboard.labels.wednesday'),
-                        this.$t('dashboard.labels.thursday'),
-                        this.$t('dashboard.labels.friday'),
-                        this.$t('dashboard.labels.saturday')
-                    ];
-                    let weekDays = [];
-                    let data = [];
-                    for (let i = 0; i < response.data.metrics.length; i++) {
-                        data.push(response.data.metrics[i].total);
-                        weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
-                    }
-                    if (this.chart) {
-                        this.chart.destroy();
-                    }
-                    this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
-                        type: 'bar',
-                        data: {
-                            labels: weekDays,
-                            datasets: [
-                                {
-                                    'label': this.$t('dashboard.labels.playStatsByWeekday'),
-                                    'data': data,
-                                    'backgroundColor': '#3273dc'
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadMetricsByMonthChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByMonth((response) => {
-                if (response.status == 200) {
-                    const monthNames = [
-                        this.$t('dashboard.labels.january'),
-                        this.$t('dashboard.labels.february'),
-                        this.$t('dashboard.labels.march'),
-                        this.$t('dashboard.labels.april'),
-                        this.$t('dashboard.labels.may'),
-                        this.$t('dashboard.labels.june'),
-                        this.$t('dashboard.labels.july'),
-                        this.$t('dashboard.labels.august'),
-                        this.$t('dashboard.labels.september'),
-                        this.$t('dashboard.labels.october'),
-                        this.$t('dashboard.labels.november'),
-                        this.$t('dashboard.labels.december')
-                    ];
-                    let months = [];
-                    let data = [];
-                    for (let i = 0; i < response.data.metrics.length; i++) {
-                        data.push(response.data.metrics[i].total);
-                        months.push(monthNames[response.data.metrics[i].month - 1]);
-                    }
-                    if (this.chart) {
-                        this.chart.destroy();
-                    }
-                    this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
-                        type: 'bar',
-                        data: {
-                            labels: months,
-                            datasets: [
-                                {
-                                    'label': this.$t('dashboard.labels.playStatsByMonth'),
-                                    'data': data,
-                                    'backgroundColor': '#3273dc'
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
-        },
-        loadMetricsByYearChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByYear((response) => {
-                if (response.status == 200) {
-                    let years = [];
-                    let data = [];
-                    for (let i = 0; i < response.data.metrics.length; i++) {
-                        data.push(response.data.metrics[i].total);
-                        years.push(response.data.metrics[i].year);
-                    }
-                    if (this.chart) {
-                        this.chart.destroy();
-                    }
-                    this.chart = new Chart(document.getElementById('playcount-metrics-chart-year'), {
-                        type: 'bar',
-                        data: {
-                            labels: years,
-                            datasets: [
-                                {
-                                    'label': this.$t('dashboard.labels.playStatsByYear'),
-                                    'data': data,
-                                    'backgroundColor': '#3273dc'
-                                }
-                            ]
-                        }, options: commonChartOptions
-                    });
-                } else {
-                    //this.setAPIError(response.getApiErrorData());
-                }
-                this.loading = false;
-            });
+            }
         },
         loadChart: function () {
-            this.clearAPIErrors();
+            this.errors = false;
             this.loading = true;
             switch (this.activeInterval) {
                 case 'hour':
@@ -252,14 +110,165 @@ export default {
                     break;
             }
         },
-        changeInterval: function (interval) {
-            if (!this.loading) {
-                if (interval && interval != this.activeInterval) {
-                    this.loading = true;
-                    this.activeInterval = interval;
-                    this.loadChart();
+        loadMetricsByHourChart: function () {
+            spieldoseAPI.metrics.getPlayStatMetricsByHour((response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+                        let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for (let i = 0; i < response.data.metrics.length; i++) {
+                            data[response.data.metrics[i].hour] = response.data.metrics[i].total;
+                        }
+                        if (this.chart) {
+                            this.chart.destroy();
+                        }
+                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-hour'), {
+                            type: 'line',
+                            data: {
+                                labels: hourNames,
+                                datasets: [
+                                    {
+                                        'label': 'play stats by hour',
+                                        'data': data,
+                                        'fill': true,
+                                        'borderColor': '#3273dc',
+                                        'lineTension': 0.1
+                                    }
+                                ]
+                            },
+                            options: commonChartOptions
+                        });
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
                 }
-            }
+            });
+        },
+        loadMetricsByWeekDayChart: function () {
+            spieldoseAPI.metrics.getPlayStatMetricsByWeekDay((response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        const weekDayNames = [
+                            this.$t('dashboard.labels.sunday'),
+                            this.$t('dashboard.labels.monday'),
+                            this.$t('dashboard.labels.tuesday'),
+                            this.$t('dashboard.labels.wednesday'),
+                            this.$t('dashboard.labels.thursday'),
+                            this.$t('dashboard.labels.friday'),
+                            this.$t('dashboard.labels.saturday')
+                        ];
+                        let weekDays = [];
+                        let data = [];
+                        for (let i = 0; i < response.data.metrics.length; i++) {
+                            data.push(response.data.metrics[i].total);
+                            weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
+                        }
+                        if (this.chart) {
+                            this.chart.destroy();
+                        }
+                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
+                            type: 'bar',
+                            data: {
+                                labels: weekDays,
+                                datasets: [
+                                    {
+                                        'label': this.$t('dashboard.labels.playStatsByWeekday'),
+                                        'data': data,
+                                        'backgroundColor': '#3273dc'
+                                    }
+                                ]
+                            },
+                            options: commonChartOptions
+                        });
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadMetricsByMonthChart: function () {
+            spieldoseAPI.metrics.getPlayStatMetricsByMonth((response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        const monthNames = [
+                            this.$t('dashboard.labels.january'),
+                            this.$t('dashboard.labels.february'),
+                            this.$t('dashboard.labels.march'),
+                            this.$t('dashboard.labels.april'),
+                            this.$t('dashboard.labels.may'),
+                            this.$t('dashboard.labels.june'),
+                            this.$t('dashboard.labels.july'),
+                            this.$t('dashboard.labels.august'),
+                            this.$t('dashboard.labels.september'),
+                            this.$t('dashboard.labels.october'),
+                            this.$t('dashboard.labels.november'),
+                            this.$t('dashboard.labels.december')
+                        ];
+                        let months = [];
+                        let data = [];
+                        for (let i = 0; i < response.data.metrics.length; i++) {
+                            data.push(response.data.metrics[i].total);
+                            months.push(monthNames[response.data.metrics[i].month - 1]);
+                        }
+                        if (this.chart) {
+                            this.chart.destroy();
+                        }
+                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
+                            type: 'bar',
+                            data: {
+                                labels: months,
+                                datasets: [
+                                    {
+                                        'label': this.$t('dashboard.labels.playStatsByMonth'),
+                                        'data': data,
+                                        'backgroundColor': '#3273dc'
+                                    }
+                                ]
+                            },
+                            options: commonChartOptions
+                        });
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
+        },
+        loadMetricsByYearChart: function () {
+            spieldoseAPI.metrics.getPlayStatMetricsByYear((response) => {
+                if (response) {
+                    if (response.status == 200) {
+                        let years = [];
+                        let data = [];
+                        for (let i = 0; i < response.data.metrics.length; i++) {
+                            data.push(response.data.metrics[i].total);
+                            years.push(response.data.metrics[i].year);
+                        }
+                        if (this.chart) {
+                            this.chart.destroy();
+                        }
+                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-year'), {
+                            type: 'bar',
+                            data: {
+                                labels: years,
+                                datasets: [
+                                    {
+                                        'label': this.$t('dashboard.labels.playStatsByYear'),
+                                        'data': data,
+                                        'backgroundColor': '#3273dc'
+                                    }
+                                ]
+                            },
+                            options: commonChartOptions
+                        });
+                    } else {
+                        this.errors = true;
+                    }
+                    this.loading = false;
+                }
+            });
         }
     }
 }
