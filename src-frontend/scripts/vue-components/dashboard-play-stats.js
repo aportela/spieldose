@@ -20,10 +20,10 @@ const template = function () {
                 <a v-bind:class="{ 'is-active': isYearInterval }" @click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
             </p>
             <div class="panel-block" v-if="! errors">
-                <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
-                <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
-                <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
-                <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
+                <canvas v-show="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
+                <canvas v-show="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
+                <canvas v-show="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
+                <canvas v-show="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
             </div>
         </section>
     `;
@@ -60,7 +60,10 @@ export default {
             errors: false,
             items: [],
             activeInterval: 'hour',
-            chart: null
+            chartHours: null,
+            chartWeekDays: null,
+            chartMonths: null,
+            chartYears: null
         });
     },
     mounted: function () {
@@ -85,7 +88,7 @@ export default {
             if (!this.loading) {
                 if (interval && interval != this.activeInterval) {
                     this.activeInterval = interval;
-                    this.loadChart();
+                    this.$nextTick(() => this.loadChart());
                 }
             }
         },
@@ -119,25 +122,27 @@ export default {
                         for (let i = 0; i < response.data.metrics.length; i++) {
                             data[response.data.metrics[i].hour] = response.data.metrics[i].total;
                         }
-                        if (this.chart) {
-                            this.chart.destroy();
+                        const element = document.getElementById('playcount-metrics-chart-hour');
+                        if (element && ! this.chartHours) {
+                            this.chartHours = new Chart(element, {
+                                type: 'line',
+                                data: {
+                                    labels: hourNames,
+                                    datasets: [
+                                        {
+                                            'label': 'play stats by hour',
+                                            'data': data,
+                                            'fill': true,
+                                            'borderColor': '#3273dc',
+                                            'lineTension': 0.1
+                                        }
+                                    ]
+                                },
+                                options: commonChartOptions
+                            });
+                        } else {
+                            console.error("error loading chart: canvas not found");
                         }
-                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-hour'), {
-                            type: 'line',
-                            data: {
-                                labels: hourNames,
-                                datasets: [
-                                    {
-                                        'label': 'play stats by hour',
-                                        'data': data,
-                                        'fill': true,
-                                        'borderColor': '#3273dc',
-                                        'lineTension': 0.1
-                                    }
-                                ]
-                            },
-                            options: commonChartOptions
-                        });
                     } else {
                         this.errors = true;
                     }
@@ -164,23 +169,25 @@ export default {
                             data.push(response.data.metrics[i].total);
                             weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
                         }
-                        if (this.chart) {
-                            this.chart.destroy();
+                        const element = document.getElementById('playcount-metrics-chart-weekday');
+                        if (element && ! this.chartWeekDays) {
+                            this.chartWeekDays = new Chart(element, {
+                                type: 'bar',
+                                data: {
+                                    labels: weekDays,
+                                    datasets: [
+                                        {
+                                            'label': this.$t('dashboard.labels.playStatsByWeekday'),
+                                            'data': data,
+                                            'backgroundColor': '#3273dc'
+                                        }
+                                    ]
+                                },
+                                options: commonChartOptions
+                            });
+                        } else {
+                            console.error("error loading chart: canvas not found");
                         }
-                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
-                            type: 'bar',
-                            data: {
-                                labels: weekDays,
-                                datasets: [
-                                    {
-                                        'label': this.$t('dashboard.labels.playStatsByWeekday'),
-                                        'data': data,
-                                        'backgroundColor': '#3273dc'
-                                    }
-                                ]
-                            },
-                            options: commonChartOptions
-                        });
                     } else {
                         this.errors = true;
                     }
@@ -212,23 +219,25 @@ export default {
                             data.push(response.data.metrics[i].total);
                             months.push(monthNames[response.data.metrics[i].month - 1]);
                         }
-                        if (this.chart) {
-                            this.chart.destroy();
+                        const element = document.getElementById('playcount-metrics-chart-month');
+                        if (element && ! this.chartMonths) {
+                            this.chartMonths = new Chart(element, {
+                                type: 'bar',
+                                data: {
+                                    labels: months,
+                                    datasets: [
+                                        {
+                                            'label': this.$t('dashboard.labels.playStatsByMonth'),
+                                            'data': data,
+                                            'backgroundColor': '#3273dc'
+                                        }
+                                    ]
+                                },
+                                options: commonChartOptions
+                            });
+                        } else {
+                            console.error("error loading chart: canvas not found");
                         }
-                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
-                            type: 'bar',
-                            data: {
-                                labels: months,
-                                datasets: [
-                                    {
-                                        'label': this.$t('dashboard.labels.playStatsByMonth'),
-                                        'data': data,
-                                        'backgroundColor': '#3273dc'
-                                    }
-                                ]
-                            },
-                            options: commonChartOptions
-                        });
                     } else {
                         this.errors = true;
                     }
@@ -246,23 +255,25 @@ export default {
                             data.push(response.data.metrics[i].total);
                             years.push(response.data.metrics[i].year);
                         }
-                        if (this.chart) {
-                            this.chart.destroy();
+                        const element = document.getElementById('playcount-metrics-chart-year');
+                        if (element && ! this.chartYears) {
+                            this.chartYears = new Chart(element, {
+                                type: 'bar',
+                                data: {
+                                    labels: years,
+                                    datasets: [
+                                        {
+                                            'label': this.$t('dashboard.labels.playStatsByYear'),
+                                            'data': data,
+                                            'backgroundColor': '#3273dc'
+                                        }
+                                    ]
+                                },
+                                options: commonChartOptions
+                            });
+                        } else {
+                            console.error("error loading chart: canvas not found");
                         }
-                        this.chart = new Chart(document.getElementById('playcount-metrics-chart-year'), {
-                            type: 'bar',
-                            data: {
-                                labels: years,
-                                datasets: [
-                                    {
-                                        'label': this.$t('dashboard.labels.playStatsByYear'),
-                                        'data': data,
-                                        'backgroundColor': '#3273dc'
-                                    }
-                                ]
-                            },
-                            options: commonChartOptions
-                        });
                     } else {
                         this.errors = true;
                     }
