@@ -142,6 +142,7 @@ export default {
                 tableHeaderActions: 'Acciones',
                 moveElementUpHint: 'subir esta canción en la lista de reproducción',
                 moveElementDownHint: 'bajar esta canción en la lista de reproducción',
+                downloadElementHint: 'descargar esta canción',
                 removeElementHint: 'eliminar esta canción de la lista de reproducción',
                 playThisTrackHint: 'escuchar esta canción',
                 nowPlayingClickToPauseHint: 'reproduciendo, haga click para pausar',

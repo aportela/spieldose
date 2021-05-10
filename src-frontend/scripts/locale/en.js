@@ -142,6 +142,7 @@ export default {
                 tableHeaderActions: 'Actions',
                 moveElementUpHint: 'move up this track on playlist',
                 moveElementDownHint: 'move down this track playlist',
+                downloadElementHint: 'download this track',
                 removeElementHint: 'remove this track from playlist',
                 playThisTrackHint: 'play this track',
                 nowPlayingClickToPauseHint: 'now playing, click to pause',

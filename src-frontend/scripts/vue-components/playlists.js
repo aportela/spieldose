@@ -146,6 +146,7 @@ const template = function () {
                             <td>
                                 <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.moveElementUpHint')" aria-hidden="true" @click="this.$player.currentPlayList.moveItemUp(i)"><i class="fas fa-caret-up"></i></span>
                                 <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" @click="this.$player.currentPlayList.moveItemDown(i)"><i class="fas fa-caret-down"></i></span>
+                                <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.downloadElementHint')" aria-hidden="true" @click="this.$player.downloadTrack(track.id)"><i class="fas fa-save cursor-pointer"></i></span>
                                 <span class="icon cursor-pointer" :title="$t('currentPlaylist.labels.removeElementHint')" aria-hidden="true" @click="this.$player.currentPlayList.removeItem(i)"><i class="fas fa-times cursor-pointer"></i></span>
                             </td>
                         </tr>
