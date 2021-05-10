@@ -40,7 +40,7 @@ const template = function () {
                     <p class="content is-small">{{ playlist.trackCount }} tracks</p>
                     <div class="field has-addons">
                         <p class="control">
-                            <a class="button is-small is-link" @click.prevent="playPlaylistTracks(playlist.id);">
+                            <a class="button is-small is-link" @click.prevent="onLoadPlayList(playlist.id);">
                                 <span class="icon is-small"><i class="fas fa-play"></i></span>
                                 <span>{{ $t("browsePlaylists.buttons.play") }}</span>
                             </a>
@@ -102,8 +102,9 @@ export default {
                 this.clearAPIErrors();
                 spieldoseAPI.playlist.remove(id, (response) => {
                     if (response.status == 200) {
-                        if (this.player.currentPlaylist.id == id) {
-                            this.player.currentPlaylist.unset();
+                        if (this.$player.currentPlayList.id == id) {
+                            this.$player.currentPlayList.id = null;
+                            this.$player.currentPlayList.name = null;
                         }
                         this.search();
                     } else {
@@ -137,6 +138,22 @@ export default {
                     this.apiError = response.getApiErrorData();
                     this.loading = false;
                 }
+            });
+        },
+        onLoadPlayList: function(id) {
+            this.loading = true;
+            this.clearAPIErrors();
+            spieldoseAPI.playlist.get(id, (response) => {
+                if (response.status == 200) {
+                    this.$player.stop();
+                    this.$player.currentPlayList.currentTrackIndex = 0;
+                    this.$player.currentPlayList.tracks = response.data.playlist.tracks;
+                    this.$player.currentPlayList.id = response.data.playlist.id;
+                    this.$player.currentPlayList.name = response.data.playlist.name;
+                } else {
+                    this.setAPIError(response.getApiErrorData());
+                }
+                this.loading = false;
             });
         }
     }

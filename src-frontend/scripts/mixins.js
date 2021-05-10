@@ -63,7 +63,7 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlaylist.replace(response.data.tracks);
+                        this.$player.currentPlayList.replace(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -75,7 +75,7 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getPathTracks(path, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlaylist.enqueue(response.data.tracks);
+                        this.$player.currentPlayList.enqueue(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -85,7 +85,7 @@ export const mixinLiveSearches = {
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                this.$player.currentPlaylist.empty();
+                this.$player.currentPlayList.empty();
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
                         this.$player.tracks = response.data.tracks;
@@ -101,7 +101,7 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlaylist.enqueue(response.data.tracks);
+                        this.$player.currentPlayList.enqueue(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -113,8 +113,8 @@ export const mixinLiveSearches = {
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlaylist.replace(response.data.playlist.tracks);
-                        this.$player.currentPlaylist.set(id, response.data.playlist.name);
+                        this.$player.currentPlayList.replace(response.data.playlist.tracks);
+                        this.$player.currentPlayList.set(id, response.data.playlist.name);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -122,8 +122,8 @@ export const mixinLiveSearches = {
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlaylist.replace(response.data.tracks);
-                        this.$player.currentPlaylist.unset();
+                        this.$player.currentPlayList.replace(response.data.tracks);
+                        this.$player.currentPlayList.unset();
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -135,7 +135,7 @@ export const mixinLiveSearches = {
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlaylist.enqueue(response.data.playlist.tracks);
+                        this.$player.currentPlayList.enqueue(response.data.playlist.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -143,7 +143,7 @@ export const mixinLiveSearches = {
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlaylist.enqueue(response.data.tracks);
+                        this.$player.currentPlayList.enqueue(response.data.tracks);
                     } else {
                         this.setAPIError(response.getApiErrorData());
                     }
@@ -151,10 +151,10 @@ export const mixinLiveSearches = {
             }
         },
         playTrack: function (track) {
-            this.$player.currentPlaylist.replace([track]);
+            this.$player.currentPlayList.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.$player.currentPlaylist.enqueue([track]);
+            this.$player.currentPlayList.enqueue([track]);
         },
         playRadioStation: function(id) {
             this.clearAPIErrors();
@@ -165,7 +165,7 @@ export const mixinLiveSearches = {
                         artist: this.$t("commonLabels.remoteRadioStation"),
                         radioStation: response.data.radioStation
                     };
-                    this.$player.currentPlaylist.replace([track]);
+                    this.$player.currentPlayList.replace([track]);
                 } else {
                     this.setAPIError(response.getApiErrorData());
                 }
@@ -261,10 +261,10 @@ export const mixinAPIError = {
     },
     methods: {
         playTrack: function (track) {
-            this.$player.currentPlaylist.replace([track]);
+            this.$player.currentPlayList.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.$player.currentPlaylist.enqueue([track]);
+            this.$player.currentPlayList.enqueue([track]);
         }
     }
 };
