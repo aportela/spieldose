@@ -1,5 +1,4 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPlayer, mixinNavigation } from '../mixins.js';
 
 const template = function () {
     return `
@@ -161,9 +160,6 @@ const template = function () {
 export default {
     name: 'spieldose-nowplaying',
     template: template(),
-    mixins: [
-        mixinAPIError, mixinPlayer, mixinNavigation
-    ],
     data: function () {
         return ({
             loading: false,
@@ -235,13 +231,13 @@ export default {
         },
         onSavePlayList: function () {
             this.loading = true;
-            this.clearAPIErrors();
             const trackIds = this.$player.currentPlayList.tracks.map((track) => { return (track.id) });
             if (this.$player.currentPlayList.id) {
                 spieldoseAPI.playlist.update(this.$player.currentPlayList.id, this.currentPlaylistName, trackIds, (response) => {
                     if (response.status == 200) {
                     } else {
-                        this.setAPIError(response.getApiErrorData());
+                        // TODO: show error
+                        console.error(response);
                     }
                     this.loading = false;
                 });
@@ -250,7 +246,8 @@ export default {
                     if (response.status == 200) {
                         this.$player.currentPlayList.id = response.data.playlist.id;
                     } else {
-                        this.setAPIError(response.getApiErrorData());
+                        // TODO: show error
+                        console.error(response);
                     }
                     this.loading = false;
                 });
