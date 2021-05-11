@@ -10,9 +10,9 @@ const template = function () {
             <p class="title is-1 has-text-centered">{{ $t("search.labels.sectionName") }}</p>
             <div v-if="! hasAPIErrors">
                 <div class="field has-addons">
-                    <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" ref="inputSearch" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="onSearch">
+                    <div class="control is-expanded has-icons-left" :class="loading ? 'is-loading': ''">
+                        <spieldose-input-typeahead v-if="liveSearch" :loading="loading" :placeholder="$t('search.inputs.searchTextPlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" ref="inputSearch" :placeholder="$t('search.inputs.searchTextPlaceholder')" v-else :disabled="loading" v-model.trim="textFilter" @keyup.enter="onSearch">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
@@ -30,7 +30,7 @@ const template = function () {
                     <div class="column is-one-quarter is-clipped">
                         <h1 class="title is-6 has-text-centered">{{ $t("search.tabs.artists") }}</h1>
                         <hr class="dropdown-divider">
-                        <article class="media" v-for="artist, i in artists" v-bind:key="i">
+                        <article class="media" v-for="artist, i in artists" :key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
                                     <spieldose-image-artist :src="artist.image" :extraClass="'is-rounded'"></spieldose-image-artist>
@@ -46,7 +46,7 @@ const template = function () {
                     <div class="column is-one-quarter is-clipped">
                         <h1 class="title is-6 has-text-centered">{{ $t("search.tabs.albums") }}</h1>
                         <hr class="dropdown-divider">
-                        <article class="media" v-for="album, i in albums" v-bind:key="i">
+                        <article class="media" v-for="album, i in albums" :key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
                                     <spieldose-image-album :src="album.image" :extraClass="'is-rounded'"></spieldose-image-album>
@@ -72,15 +72,15 @@ const template = function () {
                     <div class="column is-one-quarter is-clipped">
                         <h1 class="title is-6 has-text-centered">{{ $t("search.tabs.tracks") }}</h1>
                         <hr class="dropdown-divider">
-                        <article class="media" v-for="track, i in tracks" v-bind:key="track.id">
+                        <article class="media" v-for="track, i in tracks" :key="track.id">
                             <div class="media-left">
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
-                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.playThisTrack')" @click.prevent="playTrack(track)">
+                                    <span class="icon cursor-pointer" :title="$t('commonLabels.playThisTrack')" @click.prevent="playTrack(track)">
                                         <i class="fa fa-play"></i>
                                     </span>
-                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track)">
+                                    <span class="icon cursor-pointer" :title="$t('commonLabels.enqueueThisTrack')" @click.prevent="enqueueTrack(track)">
                                         <i class="fa fa-plus-square"></i>
                                     </span>
                                     <span>{{ track.title }}</span>
@@ -93,16 +93,16 @@ const template = function () {
                     <div class="column is-one-quarter is-clipped">
                         <h1 class="title is-6 has-text-centered">{{ $t("search.tabs.playlists") }}</h1>
                         <hr class="dropdown-divider">
-                        <article class="media" v-for="playlist in playlists" v-bind:key="playlist.id">
+                        <article class="media" v-for="playlist in playlists" :key="playlist.id">
                             <div class="media-left">
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.playThisPlaylist')" @click="playPlaylistTracks(playlist.id);">
+                                    <span class="icon cursor-pointer" :title="$t('commonLabels.playThisPlaylist')" @click="playPlaylistTracks(playlist.id);">
                                         <i class="fa fa-play"></i>
                                     </span>
-                                    <span class="icon cursor-pointer" v-bind:title="$t('commonLabels.enqueueThisPlaylist')" @click="enqueuePlaylistTracks(playlist.id)">
+                                    <span class="icon cursor-pointer" :title="$t('commonLabels.enqueueThisPlaylist')" @click="enqueuePlaylistTracks(playlist.id)">
                                         <i class="fa fa-plus-square"></i>
                                     </span>
                                     {{ playlist.name }} ({{ playlist.trackCount}} {{$t("commonLabels.tracksCount")}})
@@ -113,7 +113,6 @@ const template = function () {
                     </div>
                 </div>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
