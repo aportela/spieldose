@@ -83,7 +83,7 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                this.$router.push({ name: 'dashboard' });
+                //this.$router.push({ name: 'dashboard' });
                 //this.$router.push({ name: 'artist', params: { artist: 'Dover' } });
             }
         } else {
