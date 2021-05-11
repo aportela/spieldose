@@ -88,11 +88,10 @@ export const mixinLiveSearches = {
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
-                this.$player.currentPlayList.empty();
+                this.$player.currentPlayList.clear();
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.tracks = response.data.tracks;
-                        this.$player.playback.play();
+                        this.$player.playTracks(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -104,7 +103,7 @@ export const mixinLiveSearches = {
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
                 if (response.status == 200) {
                     if (response.data.tracks && response.data.tracks.length > 0) {
-                        this.$player.currentPlayList.enqueue(response.data.tracks);
+                        this.$player.enqueueTracks(response.data.tracks);
                     }
                 } else {
                     this.setAPIError(response.getApiErrorData());
@@ -154,10 +153,10 @@ export const mixinLiveSearches = {
             }
         },
         playTrack: function (track) {
-            this.$player.currentPlayList.replace([track]);
+            this.$player.playTracks([track]);
         },
         enqueueTrack: function (track) {
-            this.$player.currentPlayList.enqueue([track]);
+            this.$player.enqueueTracks([track]);
         },
         playRadioStation: function(id) {
             this.clearAPIErrors();

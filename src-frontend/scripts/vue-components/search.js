@@ -12,7 +12,7 @@ const template = function () {
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                         <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" ref="inputSearch" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="search();">
+                        <input type="text" class="input" ref="inputSearch" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="onSearch">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
@@ -135,8 +135,14 @@ export default {
         });
     },
     mounted: function() {
+        if (this.$route.params && this.$route.params.query) {
+            this.textFilter = this.$route.params.query;
+        }
         if (! this.liveSearch) {
             this.$nextTick(() => this.$refs.inputSearch.focus());
+        }
+        if (this.textFilter) {
+            this.search();
         }
     },
     components: {
@@ -144,7 +150,17 @@ export default {
         'spieldose-image-artist': imageArtist,
         'spieldose-image-album': imageAlbum
     },
+    beforeRouteUpdate: function(to, from) {
+        if (to.params.query) {
+            this.search();
+        }
+    },
     methods: {
+        onSearch: function() {
+            if (this.textFilter) {
+                this.$router.push({ name: 'searchWithQuery', params: { query: this.textFilter }});
+            }
+        },
         onTypeahead: function (text) {
             this.textFilter = text;
             this.search();
@@ -178,6 +194,9 @@ export default {
                     this.setAPIError(response.getApiErrorData());
                 }
                 this.loading = false;
+                if (! this.liveSearch) {
+                    this.$nextTick(() => this.$refs.inputSearch.focus());
+                }
             });
         }
     }
