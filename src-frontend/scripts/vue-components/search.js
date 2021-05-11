@@ -18,12 +18,12 @@ const template = function () {
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-dark" @click.prevent="search();">
+                        <button type="button" class="button is-dark" @click.prevent="search();" :disabled="! textFilter">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("search.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
                 <div class="columns is-desktop">
