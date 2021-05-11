@@ -33,7 +33,7 @@ const template = function () {
                         <article class="media" v-for="artist, i in artists" v-bind:key="i">
                             <div class="media-left">
                                 <figure class="image is-48x48">
-                                    <spieldose-image-artist src="artist.image" :extraClass="'is-rounded'"></spieldose-image-artist>
+                                    <spieldose-image-artist :src="artist.image" :extraClass="'is-rounded'"></spieldose-image-artist>
                                 </figure>
                             </div>
                             <div class="media-content">
