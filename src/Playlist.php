@@ -191,27 +191,30 @@
             $whereCondition = "";
             if (isset($filter)) {
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $queryConditions[] = " P.name LIKE :partialName ";
+                    $queryConditions[] = " name LIKE :partialName ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%". $filter["partialName"] . "%");
                 }
                 if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $queryConditions[] = " P.name LIKE :name ";
+                    $queryConditions[] = " name LIKE :name ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
             }
             $whereCondition = count($queryConditions) > 0 ? " WHERE " .  implode(" AND ", $queryConditions) : "";
-            $queryCount = sprintf('
-                SELECT SUM(TMP.total) AS total
-                FROM (
-                    SELECT
-                        COUNT (P.id) AS total
-                    FROM PLAYLIST P
-                    %s
-                    UNION ALL
-                    SELECT COUNT(DISTINCT user_id) AS total
-                    FROM LOVED_FILE WHERE user_id = :user_id
-                ) TMP
-            ', $whereCondition);
+            $queryCount = sprintf(
+                '
+                    SELECT SUM(TMP.total) AS total
+                    FROM (
+                        SELECT
+                            COUNT (P.id) AS total
+                        FROM PLAYLIST P
+                        %s
+                        UNION ALL
+                        SELECT COUNT(DISTINCT P.user_id) AS total
+                        FROM LOVED_FILE P
+                    ) TMP
+                ',
+                $whereCondition
+            );
             $result = $dbh->query($queryCount, $params);
             $data = new \stdClass();
             $data->actualPage = $page;
@@ -228,25 +231,29 @@
                         $sqlOrder = " ORDER BY name COLLATE NOCASE ASC ";
                     break;
                 }
-                $query = sprintf('
-                    SELECT id, name, total AS trackCount
-                    FROM (
-                        SELECT P.id, P.name, TMP_COUNT.total
-                        FROM PLAYLIST P
-                        LEFT JOIN (
-                            SELECT COUNT(file_id) AS total, playlist_id
-                            FROM PLAYLIST_TRACK
-                            GROUP BY playlist_id
-                        ) TMP_COUNT ON TMP_COUNT.playlist_id = P.id
+                $query = sprintf(
+                    '
+                        SELECT id, name, total AS trackCount
+                        FROM (
+                            SELECT P.id, P.name, TMP_COUNT.total
+                            FROM PLAYLIST P
+                            LEFT JOIN (
+                                SELECT COUNT(file_id) AS total, playlist_id
+                                FROM PLAYLIST_TRACK
+                                GROUP BY playlist_id
+                            ) TMP_COUNT ON TMP_COUNT.playlist_id = P.id
+                            %s
+                            UNION ALL
+                            SELECT NULL AS id, "My loved tracks" AS name, COUNT(*) AS total
+                            FROM LOVED_FILE P
+                            %s
+                            GROUP BY user_id
+                        ) TMP
                         %s
-                        UNION ALL
-                        SELECT NULL AS id, "My loved tracks" AS name, COUNT(*) AS total
-                        FROM LOVED_FILE WHERE user_id = :user_id
-                        GROUP BY user_id
-                    ) TMP
-                    %s
-                    LIMIT %d OFFSET %d
-                    ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions): ''),
+                        LIMIT %d OFFSET %d
+                    ',
+                    $whereCondition,
+                    $whereCondition,
                     $sqlOrder,
                     $resultsPage,
                     $resultsPage * ($page -1)

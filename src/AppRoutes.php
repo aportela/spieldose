@@ -556,7 +556,7 @@
                     $request->getParam("actualPage", 1),
                     $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
                     array(
-                        "text" => $request->getParam("text", "")
+                        "partialName" => $request->getParam("text", "")
                     ),
                     $request->getParam("orderBy", "")
                 );
