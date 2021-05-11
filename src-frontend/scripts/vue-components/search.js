@@ -12,13 +12,13 @@ const template = function () {
                 <div class="field has-addons">
                     <div class="control is-expanded has-icons-left" v-bind:class="loading ? 'is-loading': ''">
                         <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="search();">
+                        <input type="text" class="input" ref="inputSearch" v-bind:placeholder="$t('search.inputs.searchTextPlaceholder')" v-else v-bind:disabled="loading" v-model.trim="textFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" @click.prevent="search();">
+                        <a class="button is-dark" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
@@ -133,6 +133,11 @@ export default {
             tracks: [],
             playlists: []
         });
+    },
+    mounted: function() {
+        if (! this.liveSearch) {
+            this.$nextTick(() => this.$refs.inputSearch.focus());
+        }
     },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
