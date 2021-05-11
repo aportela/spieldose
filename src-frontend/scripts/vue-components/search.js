@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer } from '../mixins.js';
+import { mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import imageAlbum from './image-album.js';
 import imageArtist from './image-artist.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
@@ -122,7 +122,7 @@ export default {
     name: 'spieldose-search',
     template: template(),
     mixins: [
-        mixinAPIError, mixinNavigation, mixinLiveSearches, mixinPlayer
+        mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({
@@ -152,7 +152,14 @@ export default {
     },
     beforeRouteUpdate: function(to, from) {
         if (to.params.query) {
+            this.textFilter = to.params.query;
             this.search();
+        } else {
+            this.textFilter = null;
+            this.artists = [];
+            this.albums = [];
+            this.tracks = [];
+            this.playlists = [];
         }
     },
     methods: {
@@ -167,7 +174,6 @@ export default {
         },
         search: function () {
             this.loading = true;
-            this.clearAPIErrors();
             spieldoseAPI.globalSearch(this.textFilter, 1, 8, (response) => {
                 if (response.status == 200) {
                     if (response.data.artists && response.data.artists.length > 0) {
@@ -191,7 +197,8 @@ export default {
                         this.playlists = [];
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
                 this.loading = false;
                 if (! this.liveSearch) {
