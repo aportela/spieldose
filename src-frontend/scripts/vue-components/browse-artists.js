@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation } from '../mixins.js';
+import { mixinPagination, mixinLiveSearches } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
 import { default as imageArtist } from './image-artist.js';
@@ -9,11 +9,11 @@ const template = function () {
     return `
         <div class="container is-fluid box is-marginless">
             <p class="title is-1 has-text-centered">{{ $t("browseArtists.labels.sectionName") }}</p>
-            <div v-if="! hasAPIErrors">
+            <div>
                 <div class="field is-expanded has-addons">
                     <div class="control is-expanded has-icons-left" :class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" :placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" :placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
+                        <spieldose-input-typeahead v-if="liveSearch" :loading="loading" :placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" :placeholder="$t('browseArtists.inputs.artistNamePlaceholder')" v-else :disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
@@ -35,19 +35,18 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-artist-item is-pulled-left" v-for="artist in artists" :key="artist.name" v-show="! loading">
-                    <a v-bind:title="$t('commonLabels.navigateToArtistPage')" @click.prevent="navigateToArtistPage(artist.name);">
+                    <router-link :to="{ name: 'artist', params: { artist: artist.name }}" :title="$t('commonLabels.navigateToArtistPage')">
                         <spieldose-image-artist :src="artist.image"></spieldose-image-artist>
                         <i class="fas fa-search fa-4x"></i>
-                    </a>
+                    </router-link>
                     <div class="artist-info is-clipped">
                         <p class="artist-name has-text-centered">{{ artist.name }}</p>
                     </div>
                 </div>
                 <div class="is-clearfix"></div>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -56,28 +55,36 @@ export default {
     name: 'spieldose-browse-artists',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation
+        mixinPagination, mixinLiveSearches
     ],
     data: function () {
         return ({
             loading: false,
             nameFilter: null,
             artists: [],
-            filterNotScraped: 0
+            filterNotScraped: 0,
+            resetPager: false
         });
     },
     watch: {
         filterNotScraped: function (v) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
             if (this.liveSearch) {
                 this.search();
+            }
+        },
+        nameFilter: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
             }
         }
     },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
-        'spieldose-image-artist': imageArtist,
-        'spieldose-api-error-component': apiError
+        'spieldose-image-artist': imageArtist
     },
     methods: {
         onPaginationChanged: function (currentPage) {
@@ -89,7 +96,9 @@ export default {
         },
         search: function () {
             this.loading = true;
-            this.clearAPIErrors();
+            if (this.resetPager) {
+                this.pager.actualPage = 1;
+            }
             spieldoseAPI.artist.search(this.nameFilter, this.filterNotScraped == 1, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.status == 200) {
                     this.pager.actualPage = response.data.pagination.actualPage;
@@ -101,7 +110,8 @@ export default {
                         this.artists = [];
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
                 this.loading = false;
             });
