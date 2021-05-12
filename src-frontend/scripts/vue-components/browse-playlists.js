@@ -18,12 +18,12 @@ const template = function () {
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" @click.prevent="search();">
+                        <button type="button" class="button is-dark" :disabled="loading" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browsePlaylists.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
                 <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
