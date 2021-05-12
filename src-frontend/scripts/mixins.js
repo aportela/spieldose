@@ -111,7 +111,7 @@ export const mixinLiveSearches = {
             if (id) {
                 spieldoseAPI.playlist.get(id, (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlayList.replace(response.data.playlist.tracks);
+                        this.$player.currentPlayList.replaceTracks(response.data.playlist.tracks);
                         this.$player.currentPlayList.set(id, response.data.playlist.name);
                     } else {
                         // TODO: show error
@@ -121,7 +121,7 @@ export const mixinLiveSearches = {
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random", (response) => {
                     if (response.status == 200) {
-                        this.$player.currentPlayList.replace(response.data.tracks);
+                        this.$player.currentPlayList.replaceTracks(response.data.tracks);
                         this.$player.currentPlayList.unset();
                     } else {
                         // TODO: show error

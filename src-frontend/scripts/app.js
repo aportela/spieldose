@@ -153,6 +153,10 @@ let reactivePlayer = reactive({
         isSet: function () {
             return (this.id ? true : false);
         },
+        set: function(id, name) {
+            this.id = id;
+            this.name = name;
+        },
         unset: function () {
             this.id = null;
             this.name = null;
