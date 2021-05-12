@@ -201,7 +201,7 @@ export default {
             }
         },
         playerCurrentProgress: function(newValue) {
-            if (! this.$player.currentTrack.radioStation) {
+            if (! (this.$player.currentTrack && this.$player.currentTrack.radioStation)) {
                 this.currentTrackProgressControl = newValue;
             }
         }
@@ -218,7 +218,7 @@ export default {
             const offset = e.target.getBoundingClientRect();
             const x = e.pageX - offset.left;
             const seconds = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.$player.audio.duration / 100;
-            if (! this.$player.currentTrack.radioStation) {
+            if (! (this.$player.currentTrack && this.$player.currentTrack.radioStation)) {
                 this.$player.changeCurrentTime(seconds);
             }
         });
