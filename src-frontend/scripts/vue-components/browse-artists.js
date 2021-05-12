@@ -19,14 +19,14 @@ const template = function () {
                     </div>
                     <div class="control">
                         <div class="select">
-                            <select v-model="filterNotScraped">
+                            <select v-model="filterNotScraped" :disabled="loading">
                                 <option value="0">{{ $t("browseArtists.dropdowns.filterAllArtists") }}</option>
                                 <option value="1">{{ $t("browseArtists.dropdowns.filterNotScrapedArtists") }}</option>
                             </select>
                         </div>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <button type="button" class="button is-dark" @click.prevent="search();">
+                        <button type="button" class="button is-dark" :disabled="loading" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
