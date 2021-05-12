@@ -1,38 +1,38 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
+import { mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
-import { default as apiError } from './api-error.js';
+import { default as imageRadioStation } from './image-radio-station.js';
 import { default as deleteConfirmationModal } from './delete-confirmation-modal.js';
 
 const template = function () {
     return `
         <div class="container is-fluid box is-marginless">
-        <p class="title is-1 has-text-centered">{{ $t("browseRadioStations.labels.sectionName") }}</p>
-            <div v-if="! hasAPIErrors">
+            <p class="title is-1 has-text-centered">{{ $t("browseRadioStations.labels.sectionName") }}</p>
+            <div>
                 <div class="field has-addons">
-                    <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
+                    <div class="control is-expanded has-icons-left" :class="{ 'is-loading': loading }">
+                        <spieldose-input-typeahead v-if="liveSearch" :loading="loading" :placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" :placeholder="$t('browseRadioStations.inputs.radioStationSearchNamePlaceholder')" v-else :disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" @click.prevent="search();">
+                        <button type="button" class="button is-dark" :disabled="loading" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browseRadioStations.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                     <p class="control">
-                        <a class="button is-info" v-bind:disabled="showForm" @click.prevent="showAddRadioStationForm();">
+                        <button type="button" class="button is-dark" :disabled="showForm" @click.prevent="showAddRadioStationForm();">
                             <span class="icon">
                                 <i class="fas fa-plus" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browseRadioStations.buttons.add") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
                 <div v-if="showForm">
@@ -43,7 +43,7 @@ const template = function () {
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationNamePlaceholder')" v-model.trim="formRadioStationName">
+                                    <input class="input" type="text" :placeholder="$t('browseRadioStations.inputs.radioStationNamePlaceholder')" v-model.trim="formRadioStationName">
                                 </div>
                             </div>
                             <div class="field">
@@ -66,7 +66,7 @@ const template = function () {
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderUrl')" v-model.trim="formRadioStationUrl">
+                                    <input class="input" type="text" :placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderUrl')" v-model.trim="formRadioStationUrl">
                                 </div>
                             </div>
                         </div>
@@ -78,7 +78,7 @@ const template = function () {
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input" type="text" v-bind:placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderImage')" v-model.trim="formRadioStationImage">
+                                    <input class="input" type="text" :placeholder="$t('browseRadioStations.inputs.radioStationPlaceholderImage')" v-model.trim="formRadioStationImage">
                                 </div>
                             </div>
                         </div>
@@ -89,7 +89,7 @@ const template = function () {
                         <div class="field-body">
                             <div class="field is-grouped">
                                 <div class="control">
-                                    <a class="button is-link" @click.prevent="save();" v-bind:disabled="! allowSave">
+                                    <a class="button is-link" @click.prevent="save();" :disabled="! allowSave">
                                         <span class="icon">
                                             <i class="fas fa-save" aria-hidden="true"></i>
                                         </span>
@@ -109,9 +109,9 @@ const template = function () {
                     </div>
                 </div>
                 <div v-else>
-                    <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
+                    <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                     <div class="radio-station-item browse-radio-station-item box has-text-centered" v-for="radioStation in radioStations" v-show="! loading">
-                        <img class="radio-station-thumbnail" v-bind:src="radioStation.image | getAlbumImageUrl" @error="radioStation.image = null;">
+                        <spieldose-image-radio-station :src="radioStation.image"></spieldose-image-radio-station>
                         <p class="radio-station-info">
                             <strong>“{{ radioStation.name }}”</strong>
                         </p>
@@ -138,9 +138,8 @@ const template = function () {
                     </div>
                     <div class="is-clearfix"></div>
                 </div>
-                <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" @confirm-delete="onConfirmDelete" @cancel-delete="onCancelDelete"></delete-confirmation-modal>
+                <delete-confirmation-modal :id="deleteItemId" v-if="showDeleteConfirmationModal" @confirm-delete="onConfirmDelete" @cancel-delete="onCancelDelete"></delete-confirmation-modal>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -149,13 +148,14 @@ export default {
     name: 'spieldose-browse-radio-stations',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
+        mixinPagination, mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({
             loading: false,
             nameFilter: null,
             radioStations: [],
+            resetPager: false,
             showDeleteConfirmationModal: false,
             deleteItemId: null,
             showForm: false,
@@ -171,10 +171,17 @@ export default {
             return (this.formRadioStationName && this.formRadioStationUrl);
         }
     },
+    watch: {
+        nameFilter: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
+        }
+    },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
-        'spieldose-api-error-component': apiError,
+        'spieldose-image-radio-station': imageRadioStation,
         'delete-confirmation-modal': deleteConfirmationModal
     },
     methods: {
@@ -194,12 +201,12 @@ export default {
         onConfirmDelete: function (id) {
             if (id) {
                 this.loading = true;
-                this.clearAPIErrors();
                 spieldoseAPI.radioStation.remove(id, (response) => {
                     if (response.status == 200) {
                         this.search();
                     } else {
-                        this.setAPIError(response.getApiErrorData());
+                        // TODO: show error
+                        console.error(response);
                     }
                     this.showDeleteConfirmationModal = false;
                     this.deleteItemId = null;
@@ -231,7 +238,8 @@ export default {
                     this.formRadioStationImage = response.data.radioStation.image;
                     this.showForm = true;
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
             });
         },
@@ -244,31 +252,34 @@ export default {
         },
         add: function () {
             this.loading = true;
-            this.clearAPIErrors();
             spieldoseAPI.radioStation.add(this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
                 if (response.status == 200) {
                     this.showForm = false;
                     this.search();
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
             });
         },
         update: function () {
             this.loading = true;
-            this.clearAPIErrors();
             spieldoseAPI.radioStation.update(this.formRadioStationId, this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
                 if (response.status == 200) {
                     this.showForm = false;
                     this.search();
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
             });
         },
         search: function () {
             this.loading = true;
-            this.clearAPIErrors();
+            if (this.resetPager) {
+                this.pager.actualPage = 1;
+                this.resetPager = false;
+            }
             spieldoseAPI.radioStation.search(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.status == 200) {
                     this.pager.actualPage = response.data.pagination.actualPage;
@@ -279,12 +290,11 @@ export default {
                     } else {
                         this.radioStations = [];
                     }
-                    this.loading = false;
                 } else {
-                    this.errors = true;
-                    this.apiError = response.getApiErrorData();
-                    this.loading = false;
+                    // TODO: show error
+                    console.error(response);
                 }
+                this.loading = false;
             });
         }
     }
