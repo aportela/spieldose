@@ -18,7 +18,7 @@ const template = function () {
                         </span>
                     </div>
                     <p class="control">
-                        <button type="button" class="button is-default" @click.prevent="advancedSearch = ! advancedSearch;">
+                        <button type="button" class="button is-outline-dark" :disabled="loading" @click.prevent="advancedSearch = ! advancedSearch;">
                             <span class="icon">
                                 <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
                                 <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
@@ -27,12 +27,12 @@ const template = function () {
                         </button>
                     </p>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" @click.prevent="search();">
+                        <button type="button" class="button is-dark" :disabled="loading" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browseAlbums.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
                 <div class="field has-addons" v-if="advancedSearch">
@@ -49,12 +49,12 @@ const template = function () {
                         </span>
                     </p>
                     <p class="control">
-                        <a class="button is-info" @click="search(true);">
+                        <button type="button" class="button is-dark" :disabled="loading" @click="search(true);">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browseAlbums.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
                 <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
