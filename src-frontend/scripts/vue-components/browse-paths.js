@@ -1,32 +1,31 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
+import { mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
-import { default as apiError } from './api-error.js';
 
 const template = function () {
     return `
         <div class="container is-fluid box is-marginless">
-        <p class="title is-1 has-text-centered">{{ $t("browsePaths.labels.sectionName") }}</p>
-            <div v-if="! hasAPIErrors">
+            <p class="title is-1 has-text-centered">{{ $t("browsePaths.labels.sectionName") }}</p>
+            <div>
                 <div class="field has-addons">
-                    <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                    <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
+                    <div class="control is-expanded has-icons-left" :class="{ 'is-loading': loading }">
+                    <spieldose-input-typeahead v-if="liveSearch" :loading="loading" :placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" :placeholder="$t('browsePaths.inputs.pathNamePlaceholder')" v-else :disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <a class="button is-info" @click.prevent="search();">
+                        <button type="button" class="button is-dark" :disabled="loading" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browsePaths.buttons.search") }}</span>
-                        </a>
+                        </button>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <table class="table is-bordered is-striped is-narrow is-fullwidth is-unselectable" v-show="! loading">
                     <thead>
                         <tr>
@@ -36,20 +35,19 @@ const template = function () {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in paths" v-bind:key="item.path">
+                        <tr v-for="item in paths" :key="item.path">
                             <td>{{ item.path }}</td>
                             <td class="has-text-right">{{ item.totalTracks }}</td>
                             <td class="has-text-centered">
                                 <div v-if="item.totalTracks > 0">
-                                    <span class="icon"><i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" @click.prevent="playPathTracks(item.path);"></i></span>
-                                    <span class="icon"><i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" @click.prevent="enqueuePathTracks(item.path);"></i></span>
+                                    <span class="icon"><i class="cursor-pointer fa fa-play" :title="$t('browsePaths.labels.playThisPath')" @click.prevent="playPathTracks(item.path);"></i></span>
+                                    <span class="icon"><i class="cursor-pointer fa fa-plus-square" :title="$t('browsePaths.labels.enqueueThisPath')" @click.prevent="enqueuePathTracks(item.path);"></i></span>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -58,19 +56,26 @@ export default {
     name: 'spieldose-browse-paths',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
+        mixinPagination, mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({
             loading: false,
+            paths: [],
             nameFilter: null,
-            paths: []
+            resetPager: false
         });
+    },
+    watch: {
+        nameFilter: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
+        }
     },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
-        'spieldose-pagination': pagination,
-        'spieldose-api-error-component': apiError
+        'spieldose-pagination': pagination
     },
     methods: {
         onPaginationChanged: function (currentPage) {
@@ -82,7 +87,10 @@ export default {
         },
         search: function () {
             this.loading = true;
-            this.clearAPIErrors();
+            if (this.resetPager) {
+                this.pager.actualPage = 1;
+                this.resetPager = false;
+            }
             spieldoseAPI.searchPaths(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.status == 200) {
                     this.pager.actualPage = response.data.pagination.actualPage;
@@ -94,7 +102,8 @@ export default {
                         this.paths = [];
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
                 this.loading = false;
             });
