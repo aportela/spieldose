@@ -26,7 +26,7 @@ const template = function () {
                         </div>
                     </div>
                     <p class="control" v-if="! liveSearch">
-                        <button type="button" class="button is-info" @click.prevent="search();">
+                        <button type="button" class="button is-dark" @click.prevent="search();">
                             <span class="icon">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </span>
