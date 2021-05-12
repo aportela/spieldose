@@ -193,8 +193,8 @@ let reactivePlayer = reactive({
     },
     playPreviousTrack: function () {
         if (this.currentPlayList.currentTrackIndex > 0) {
-            this.currentPlayList.currentTrackIndex--;
             this.changeCurrentTime(0);
+            this.currentPlayList.currentTrackIndex--;
             if (this.status == "paused") {
                 this.play();
             }
@@ -203,14 +203,14 @@ let reactivePlayer = reactive({
     playNextTrack: function () {
         if (this.currentPlayList.repeatMode != 'track') {
             if (this.currentPlayList.currentTrackIndex < this.currentPlayList.tracks.length - 1) {
-                this.currentPlayList.currentTrackIndex++;
                 this.changeCurrentTime(0);
+                this.currentPlayList.currentTrackIndex++;
                 if (this.status == "paused") {
                     this.play();
                 }
             } else if (this.repeatMode == 'all') {
-                this.currentPlayList.currentTrackIndex = 0;
                 this.changeCurrentTime(0);
+                this.currentPlayList.currentTrackIndex = 0;
                 if (this.status == "paused") {
                     this.play();
                 }
@@ -271,6 +271,7 @@ let reactivePlayer = reactive({
     },
     stop: function () {
         this.status = "stopped";
+        this.audio.pause();
         this.changeCurrentTime(0);
     },
     pause: function () {
