@@ -165,10 +165,7 @@ export const mixinLiveSearches = {
                         artist: this.$t("commonLabels.remoteRadioStation"),
                         radioStation: response.data.radioStation
                     };
-                    this.$player.stop();
-                    this.$player.currentPlayList.currentTrackIndex = 0;
-                    this.$player.currentPlayList.tracks = [track];
-                    this.$player.play();
+                    this.$player.playTracks([track]);
                 } else {
                     // TODO: show error
                     console.error(response);

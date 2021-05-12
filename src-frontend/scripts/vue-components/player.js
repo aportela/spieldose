@@ -174,6 +174,9 @@ export default {
     watch: {
         streamUrl: function (newValue) {
             if (newValue) {
+                if (this.$player.currentTrack.radioStation) {
+                    this.currentTrackProgressControl = 0;
+                }
                 this.$player.audio.src = newValue;
                 if (this.$player.isPlaying || this.$player.isPaused) {
                     this.$player.audio.pause();
@@ -198,7 +201,9 @@ export default {
             }
         },
         playerCurrentProgress: function(newValue) {
-            this.currentTrackProgressControl = newValue;
+            if (! this.$player.currentTrack.radioStation) {
+                this.currentTrackProgressControl = newValue;
+            }
         }
     },
     created: function () {
@@ -213,7 +218,9 @@ export default {
             const offset = e.target.getBoundingClientRect();
             const x = e.pageX - offset.left;
             const seconds = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.$player.audio.duration / 100;
-            this.$player.changeCurrentTime(seconds);
+            if (! this.$player.currentTrack.radioStation) {
+                this.$player.changeCurrentTime(seconds);
+            }
         });
 
         document.getElementById('volume-range').addEventListener('click', (e) => {
