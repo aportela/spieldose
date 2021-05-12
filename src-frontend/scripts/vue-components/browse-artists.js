@@ -97,6 +97,7 @@ export default {
             this.loading = true;
             if (this.resetPager) {
                 this.pager.actualPage = 1;
+                this.resetPager = false;
             }
             spieldoseAPI.artist.search(this.nameFilter, this.filterNotScraped == 1, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.status == 200) {
