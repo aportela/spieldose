@@ -1,31 +1,30 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinPlayer } from '../mixins.js';
+import { mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
 import { default as imageAlbum } from './image-album.js';
-import { default as apiError } from './api-error.js';
 
 const template = function () {
     return `
         <div class="container is-fluid box is-marginless">
-        <p class="title is-1 has-text-centered">{{ $t("browseAlbums.labels.sectionName") }}</p>
-            <div v-if="! hasAPIErrors">
+            <p class="title is-1 has-text-centered">{{ $t("browseAlbums.labels.sectionName") }}</p>
+            <div>
                 <div class="field has-addons">
-                    <div class="control is-expanded has-icons-left" v-bind:class="{ 'is-loading': loading }">
-                        <spieldose-input-typeahead v-if="liveSearch" v-bind:loading="loading" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
-                        <input type="text" class="input" v-bind:placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-else v-bind:disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
+                    <div class="control is-expanded has-icons-left" :class="{ 'is-loading': loading }">
+                        <spieldose-input-typeahead v-if="liveSearch" :loading="loading" :placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" @on-value-change="onTypeahead"></spieldose-input-typeahead>
+                        <input type="text" class="input" :placeholder="$t('browseAlbums.inputs.albumNamePlaceholder')" v-else :disabled="loading" v-model.trim="nameFilter" @keyup.enter="search();">
                         <span class="icon is-small is-left">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
                     <p class="control">
-                        <a class="button is-default" @click.prevent="advancedSearch = ! advancedSearch;">
+                        <button type="button" class="button is-default" @click.prevent="advancedSearch = ! advancedSearch;">
                             <span class="icon">
                                 <i v-if="advancedSearch" class="fas fa-search-minus" aria-hidden="true"></i>
                                 <i v-else="advancedSearch" class="fas fa-search-plus" aria-hidden="true"></i>
                             </span>
                             <span>{{ $t("browseAlbums.buttons.toggleAdvancedSearch") }}</span>
-                        </a>
+                        </button>
                     </p>
                     <p class="control" v-if="! liveSearch">
                         <a class="button is-info" @click.prevent="search();">
@@ -38,13 +37,13 @@ const template = function () {
                 </div>
                 <div class="field has-addons" v-if="advancedSearch">
                     <p class="control has-icons-left">
-                        <input class="input" type="text" pattern="[0-9]*" v-bind:placeholder="$t('browseAlbums.inputs.yearPlaceholder')" maxlength="4" v-bind:disabled="loading" @keyup.enter="search(true);" v-model.number="filterByYear" >
+                        <input class="input" type="text" pattern="[0-9]*" :placeholder="$t('browseAlbums.inputs.yearPlaceholder')" maxlength="4" :disabled="loading" @keyup.enter="search(true);" v-model.number="filterByYear" >
                         <span class="icon is-small is-left">
                             <i class="fas fa-calendar"></i>
                         </span>
                     </p>
                     <p class="control is-expanded has-icons-left">
-                        <input class="input" type="text" v-bind:placeholder="$t('browseAlbums.inputs.artistNamePlaceholder')" v-bind:disabled="loading" @keyup.enter="search(true);" v-model.trim="filterByArtist">
+                        <input class="input" type="text" :placeholder="$t('browseAlbums.inputs.artistNamePlaceholder')" :disabled="loading" @keyup.enter="search(true);" v-model.trim="filterByArtist">
                         <span class="icon is-small is-left">
                             <i class="fas fa-user"></i>
                         </span>
@@ -58,9 +57,9 @@ const template = function () {
                         </a>
                     </p>
                 </div>
-                <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
+                <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-album-item" v-for="album in albums" :key="album.name+album.artist+album.year" v-show="! loading">
-                    <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
+                    <a class="play-album" :title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
                         <spieldose-image-album :src="album.image"></spieldose-image-album>
                         <i class="fas fa-play fa-4x"></i>
                         <img class="vinyl no-cover" src="images/vinyl.png" />
@@ -76,7 +75,6 @@ const template = function () {
                 </div>
                 <div class="is-clearfix"></div>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -85,7 +83,7 @@ export default {
     name: 'spieldose-browse-albums',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinPlayer
+        mixinPagination, mixinLiveSearches, mixinPlayer
     ],
     data: function () {
         return ({
@@ -94,14 +92,31 @@ export default {
             albums: [],
             advancedSearch: false,
             filterByArtist: null,
-            filterByYear: null
+            filterByYear: null,
+            resetPager: false
         });
+    },
+    watch: {
+        filterByArtist: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
+        },
+        filterByYear: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
+        },
+        nameFilter: function (newValue) {
+            if (this.pager.actualPage > 1) {
+                this.resetPager = true;
+            }
+        }
     },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
-        'spieldose-image-album': imageAlbum,
-        'spieldose-api-error-component': apiError
+        'spieldose-image-album': imageAlbum
     },
     methods: {
         onPaginationChanged: function (currentPage) {
@@ -113,9 +128,9 @@ export default {
         },
         search: function (resetPager) {
             this.loading = true;
-            this.clearAPIErrors();
-            if (resetPager) {
+            if (this.resetPager) {
                 this.pager.actualPage = 1;
+                this.resetPager = false;
             }
             spieldoseAPI.album.search(this.nameFilter, this.filterByArtist, this.filterByYear, this.pager.actualPage, this.pager.resultsPage, (response) => {
                 if (response.status == 200) {
@@ -128,7 +143,8 @@ export default {
                         this.albums = [];
                     }
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    // TODO: show error
+                    console.error(response);
                 }
                 this.loading = false;
             });
