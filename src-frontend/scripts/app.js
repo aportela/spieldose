@@ -84,7 +84,6 @@ const spieldoseApp = {
                 }
             } else {
                 //this.$router.push({ name: 'dashboard' });
-                //this.$router.push({ name: 'artist', params: { artist: 'Dover' } });
             }
         } else {
             this.$router.push({ name: 'upgrade' });
@@ -352,7 +351,6 @@ let reactivePlayer = reactive({
         });
     },
     changeCurrentTime: function (t) {
-        this.nowPlayingCurrentProgress = t;
         this.audio.currentTime = t;
     },
     changeVolume: function (volume) {
