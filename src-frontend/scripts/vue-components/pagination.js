@@ -8,7 +8,7 @@ const template = function () {
                         <span>{{ $t("pagination.buttons.previousPage") }}</span>
                     </button>
                 </div>
-                <div class="column has-text-centered">
+                <div class="column is-narrow is-centered">
                     <div class="field is-grouped">
                         <p class="control" v-for="pageNumber in data.totalPages" v-show="showIntermediatePage(pageNumber)">
                             <button class="button is-outline-dark"  :class="{'is-dark': isCurrentPage(pageNumber) }" :disabled="loading" @click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</button>
