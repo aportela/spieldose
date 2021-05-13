@@ -13,7 +13,9 @@ const template = function () {
             <div class="column is-8">
                 <div class="content" id="bio" v-if="artist.bio">
                 <div v-html="artist.bio"></div>
-                <p class="read-more"><a href="#" class="has-text-dark" @click.prevent="changeTab('biography')">Read more <i class="fas fa-angle-right"></i></a></p>
+                <p class="read-more">
+                    <router-link :class="'has-text-dark'" :to="{ name: 'artistBiography', params: $route.params }">Read more <i class="fas fa-angle-right"></i></router-link>
+                </p>
                 </div>
                 <div class="is-clearfix">
                     <span class="title is-5 is-pulled-left">Top tracks</span>
