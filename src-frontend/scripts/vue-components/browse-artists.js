@@ -36,7 +36,7 @@ const template = function () {
                 </div>
                 <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
                 <div class="browse-artist-item is-pulled-left" v-for="artist in artists" :key="artist.name" v-show="! loading">
-                    <router-link :to="{ name: 'artist', params: { artist: artist.name }}" :title="$t('commonLabels.navigateToArtistPage')">
+                    <router-link :to="{ name: 'artistOverview', params: { artist: artist.name }}" :title="$t('commonLabels.navigateToArtistPage')">
                         <spieldose-image-artist :src="artist.image"></spieldose-image-artist>
                         <i class="fas fa-search fa-4x"></i>
                     </router-link>

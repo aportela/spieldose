@@ -24,7 +24,7 @@ const template = function () {
             <div id="player-metadata-container" class="has-text-centered">
                 <h1 class="title is-4 cut-text" v-bind:title="nowPlayingTitle">{{ nowPlayingTitle }}</h1>
                 <h2 class="subtitle is-5 cut-text" v-bind:title="nowPlayingArtist">
-                    <router-link :to="{ name: 'artist', params: { artist: nowPlayingArtist }}">{{ nowPlayingArtist }}</router-link>
+                    <router-link :to="{ name: 'artistOverview', params: { artist: nowPlayingArtist }}">{{ nowPlayingArtist }}</router-link>
                 </h2>
             </div>
             <div id="player-controls" class="is-unselectable">

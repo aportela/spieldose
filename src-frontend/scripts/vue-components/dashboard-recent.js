@@ -24,17 +24,17 @@ const template = function () {
                         <span class="icon"><i class="cursor-pointer fa fa-play" @click="onPlayTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i></span>
                         <span class="icon"><i class="cursor-pointer fa fa-plus-square" @click="onEnqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i></span>
                         <span>{{ item.title }}</span>
-                        <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                        <span v-if="item.artist"> / <router-link :to="{ name: 'artistOverview', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
                     </li>
                     <li class="is-small" v-if="isArtistEntity" v-for="item in items">
                         <span class="icon"><i class="fas fa-compact-disc"></i></span>
-                        <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link>
+                        <router-link :to="{ name: 'artistOverview', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link>
                     </li>
                     <li class="is-small" v-if="isAlbumEntity" v-for="item in items">
                         <span class="icon"><i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" @click="onPlayAlbum(item);" ></i></span>
                         <span class="icon"><i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" @click="onEnqueueAlbum(item);"></i></span>
                         <span>{{ item.album }}</span>
-                        <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                        <span v-if="item.artist"> / <router-link :to="{ name: 'artistOverview', params: { artist: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
                     </li>
                 </ol>
                 <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">{{ $t("dashboard.errors.notEnoughData") }}</p>
