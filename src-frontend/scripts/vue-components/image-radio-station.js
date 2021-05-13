@@ -24,8 +24,8 @@ export default {
                 return ("api/thumbnail?url=" + value);
             } else {
                 /**
-                 * Music band icon credits: adiante apps (http://www.adianteapps.com/)
-                 * https://www.iconfinder.com/icons/339940/band_festival_music_rock_stage_icon
+                 * Radio station icon credits: adiante apps (http://www.adianteapps.com/)
+                 * https://www.iconfinder.com/icons/339937/blog_blogger_megaphone_post_speaker_icon
                  */
                 return ('images/image-radio-station-not-set.png');
             }
