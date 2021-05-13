@@ -7,14 +7,16 @@ import { default as pagination } from './pagination';
 import Chart from 'chart.js/auto';
 import browseArtistHeader from './browse-artist-header.js';
 import browseArtistOverview from './browse-artist-overview.js';
+import browseArtistBiography from './browse-artist-biography.js';
 
 const template = function () {
     return `
         <div>
             <div>
-                <spieldose-browse-artist-header :artist="artist" :currentTab="activeTab" @change-tab="onChangeTab"></spieldose-browse-artist-header>
+                <spieldose-browse-artist-header :artist="artist"></spieldose-browse-artist-header>
                 <div class="container is-fluid box mt-3">
-                    <spieldose-browse-artist-overview v-if="activeTab == 'overview'" :artist="artist" @change-tab="onChangeTab"></spieldose-browse-artist-overview>
+                    <spieldose-browse-artist-overview v-if="currentTab == 'overview'" :artist="artist"></spieldose-browse-artist-overview>
+                    <spieldose-browse-artist-biography v-if="currentTab == 'biography'" :artist="artist"></spieldose-browse-artist-biography>
                 </div>
             </div>
 
@@ -200,17 +202,44 @@ export default {
             } else {
                 return (null);
             }
+        },
+        // TODO: duplicated in header
+        currentTab: function() {
+            let tab = null;
+            switch(this.$route.name) {
+                case 'artistBiography':
+                    tab = 'biography';
+                break;
+                case 'artistSimilarArtists':
+                    tab = 'similarArtists';
+                break;
+                case 'artistAlbums':
+                    tab = 'albums';
+                break;
+                case 'artistTracks':
+                    tab = 'tracks';
+                break;
+                case 'artistStats':
+                    tab = 'stats'
+                break;
+                default:
+                    tab = 'overview';
+                break;
+            }
+            return(tab);
         }
     },
     components: {
         'spieldose-browse-artist-header': browseArtistHeader,
         'spieldose-browse-artist-overview': browseArtistOverview,
+        'spieldose-browse-artist-biography': browseArtistBiography,
         'spieldose-dashboard-toplist': dashboardTopList,
         'spieldose-pagination': pagination,
         'spieldose-image-artist': imageArtist,
         'spieldose-image-album': imageAlbum,
     },
     watch: {
+        /*
         '$route'(to, from) {
             switch (to.name) {
                 case 'artistBio':
@@ -237,6 +266,7 @@ export default {
                     break;
             }
         }
+        */
     },
     beforeRouteUpdate(to, from) {
         if (from.params.artist != to.params.artist) {
