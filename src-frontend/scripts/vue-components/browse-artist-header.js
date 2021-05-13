@@ -36,11 +36,12 @@ const template = function () {
                 <div id="bottom">
                     <div class="tabs is-centered is-small">
                         <ul>
-                            <li :class="{ 'is-active': currentTab == 'overview' }"><a class="has-text-grey-lighter" @click.prevent="changeTab('overview')">Overview</a></li>
-                            <li :class="{ 'is-active': currentTab == 'biography' }"><a class="has-text-grey-lighter" @click.prevent="changeTab('biography')">Biography</a></li>
-                            <li :class="{ 'is-active': currentTab == 'similarArtists' }"><a class="has-text-grey-lighter" @click.prevent="changeTab('similarArtists')">Similar artists</a></li>
-                            <li :class="{ 'is-active': currentTab == 'albums' }"><a class="has-text-grey-lighter" @click.prevent="changeTab('albums')">Albums</a></li>
-                            <li :class="{ 'is-active': currentTab == 'tracks' }"><a class="has-text-grey-lighter" @click.prevent="changeTab('tracks')">Tracks</a></li>
+                            <li :class="{ 'is-active': currentTab == 'overview' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistOverview', params: $route.params }">Overview</router-link></li>
+                            <li :class="{ 'is-active': currentTab == 'biography' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistBiography', params: $route.params }">Biography</router-link></li>
+                            <li :class="{ 'is-active': currentTab == 'similarArtists' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistSimilarArtists', params: $route.params }">Similar artists</router-link></li>
+                            <li :class="{ 'is-active': currentTab == 'albums' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistAlbums', params: $route.params }">Albums</router-link></li>
+                            <li :class="{ 'is-active': currentTab == 'tracks' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistTracks', params: $route.params }">Tracks</router-link></li>
+                            <li :class="{ 'is-active': currentTab == 'stats' }"><router-link :class="'has-text-grey-lighter'" :to="{ name: 'artistStats', params: $route.params }">Stats</router-link></li>
                         </ul>
                     </div>
                 </div>
@@ -55,10 +56,34 @@ export default {
     template: template(),
     props: [
         'artist',
-        'currentTab'
     ],
     computed: {
+        currentTab: function() {
+            let tab = null;
+            switch(this.$route.name) {
+                case 'artistBiography':
+                    tab = 'biography';
+                break;
+                case 'artistSimilarArtists':
+                    tab = 'similarArtists';
+                break;
+                case 'artistAlbums':
+                    tab = 'albums';
+                break;
+                case 'artistTracks':
+                    tab = 'tracks';
+                break;
+                case 'artistStats':
+                    tab = 'stats'
+                break;
+                default:
+                    tab = 'overview';
+                break;
+            }
+            return(tab);
+        },
         latestAlbum: function () {
+            // TODO: check order
             if (this.artist && this.artist.albums) {
                 return (this.artist.albums[this.artist.albums.length - 1]);
             } else {
@@ -66,6 +91,7 @@ export default {
             }
         },
         popularAlbum: function () {
+            // TODO
             if (this.artist && this.artist.albums) {
                 return (this.artist.albums[0]);
             } else {
@@ -74,11 +100,6 @@ export default {
         }
     },
     components: {
-        'spieldose-image-album': imageAlbum,
-    },
-    methods: {
-        changeTab: function(t) {
-            this.$emit("change-tab", { tab: t });
-        }
+        'spieldose-image-album': imageAlbum
     }
 }

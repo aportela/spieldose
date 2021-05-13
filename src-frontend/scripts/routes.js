@@ -1,4 +1,4 @@
-import { createWebHashHistory, createRouter } from "vue-router";
+import { createWebHashHistory, createRouter, START_LOCATION } from "vue-router";
 import { default as upgrade } from './vue-components/upgrade.js';
 import { default as signInUp } from './vue-components/signin.js';
 import { default as container } from './vue-components/container.js';
@@ -25,7 +25,14 @@ const routes = [
             {
                 path: 'search',
                 name: 'search',
-                component: search
+                component: search,
+                children: [
+                    {
+                        path: ':query',
+                        name: 'searchWithQuery',
+                        component: search
+                    }
+                ]
             },
             {
                 path: 'dashboard',
@@ -103,8 +110,18 @@ const routes = [
                 component: browseArtist,
                 children: [
                     {
-                        path: 'bio',
-                        name: 'artistBio',
+                        path: 'overview',
+                        name: 'artistOverview',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'biography',
+                        name: 'artistBiography',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'similar_artists',
+                        name: 'artistSimilarArtists',
                         component: browseArtist
                     },
                     {
@@ -122,6 +139,11 @@ const routes = [
                     {
                         path: 'albums',
                         name: 'artistAlbums',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'stats',
+                        name: 'artistStats',
                         component: browseArtist
                     },
                     {
