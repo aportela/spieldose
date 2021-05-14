@@ -18,6 +18,11 @@ export default {
     created: function () {
         this.url = this.getAlbumImageUrl(this.src);
     },
+    watch: {
+        src: function(newValue, oldValue) {
+            this.url = this.getAlbumImageUrl(newValue);
+        }
+    },
     methods: {
         getAlbumImageUrl: function (value) {
             if (value) {
