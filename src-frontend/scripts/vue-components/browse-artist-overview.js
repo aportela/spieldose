@@ -1,11 +1,11 @@
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPlayer, mixinPagination, mixinAlbums, mixinLiveSearches } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
-import { default as imageAlbum } from './image-album.js';
 import { default as dashboardTopList } from './dashboard-toplist.js';
 import { default as pagination } from './pagination';
 import Chart from 'chart.js/auto';
 import browseArtistHeader from './browse-artist-header.js';
+import { default as album } from './album.js';
 
 const template = function () {
     return `
@@ -52,18 +52,21 @@ const template = function () {
                 </div>
                 <table class="table is-unselectable is-clear-fix">
                     <tbody>
-                        <tr>
-                            <td class="is-vcentered">1</td>
-                            <td class="is-vcentered"><i class="fas fa-play cursor-pointer"></i></td>
+                        <tr v-for="track, idx in artist.topTracks">
+                            <td class="is-vcentered">{{ idx + 1 }}</td>
+                            <td class="is-vcentered"><span class="icon cursor-pointer" @click.prevent="onPlayTrack(track)"><i class="fas fa-play"></i></span></td>
+                            <td class="is-vcentered"><span class="icon cursor-pointer" :class="{ 'btn-active': track.loved }" @click.prevent="onToggleLoveTrack(track)"><i class="fas fa-heart"></i></span></td>
+                            <td class="is-vcentered" style="max-width: 24em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{ track.title }}</td>
                             <td class="is-vcentered">
-                                <figure class="image is-32x32" v-if="latestAlbum">
-                                    <spieldose-image-album :src="latestAlbum.image"></spieldose-image-album>
+                                <figure class="image is-32x32" v-if="track.image">
+                                    <spieldose-image-album :src="track.image"></spieldose-image-album>
                                 </figure>
                             </td>
-                            <td class="is-vcentered"><i class="fas fa-heart cursor-pointer"></i></td>
-                            <td class="is-vcentered">Enter sandman</td>
+                            <td class="is-vcentered" style="max-width: 24em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{ track.album }} <span v-if="track.year">({{ track.year }})</span></td>
                             <td class="is-vcentered">
-                                <span class="has-text-dark has-background-light" style="display: block: width: 90%;">11,763 listeners </span>
+                                <div style="min-width: 192px; max-width: 256px;">
+                                    <span class="has-text-dark has-background-light pl-2 pr-2 pt-1 pb-1" style="display: block: width: 90%;">{{ track.total }} plays </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -102,21 +105,7 @@ const template = function () {
                     </div>
                 </div>
                 <div class="is-clearfix">
-                    <div class="browse-album-item" v-for="album, i in artist.albums" :key="album.name+album.artist+album.year" v-show="! loading && i < 4">
-                        <a class="play-album" v-bind:title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                            <spieldose-image-album :src="album.image"></spieldose-image-album>
-                            <i class="fas fa-play fa-4x"></i>
-                            <img class="vinyl no-cover" src="images/vinyl.png" />
-                        </a>
-                        <div class="album-info">
-                            <p class="album-name">{{ album.name }}</p>
-                            <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }}
-                                <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link>
-                                <span v-show="album.year"> ({{ album.year }})</span>
-                            </p>
-                            <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
-                        </div>
-                    </div>
+                    <spieldose-album v-for="album, i in artist.albums" :key="album.name+album.artist+album.year" v-show="! loading && i < 4" :album="album"></spieldose-album>
                 </div>
                 <div class="is-clearfix">
                     <span class="is-pulled-right">View all albums <i class="fas fa-angle-right"></i></span>
@@ -197,11 +186,17 @@ export default {
         'artist'
     ],
     components: {
-        'spieldose-image-album': imageAlbum
+        'spieldose-album': album
     },
     methods: {
-        changeTab: function(t) {
-            this.$emit("change-tab", { tab: t });
+        onPlayTrack: function(track) {
+            this.$player.playTracks([ track ]);
+        },
+        onToggleLoveTrack: function(track) {
+            // TODO
+            if (track.loved) {
+            } else {
+            }
         }
     }
 }
