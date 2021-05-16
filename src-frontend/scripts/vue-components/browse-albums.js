@@ -2,7 +2,7 @@ import { default as spieldoseAPI } from '../api.js';
 import { mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
-import { default as imageAlbum } from './image-album.js';
+import { default as album } from './album.js';
 
 const template = function () {
     return `
@@ -58,21 +58,7 @@ const template = function () {
                     </p>
                 </div>
                 <spieldose-pagination :loading="loading" :data="pager" @pagination-changed="onPaginationChanged"></spieldose-pagination>
-                <div class="browse-album-item" v-for="album in albums" :key="album.name+album.artist+album.year" v-show="! loading">
-                    <a class="play-album" :title="$t('commonLabels.playThisAlbum')" @click.prevent="playAlbumTracks(album.name, album.artist, album.year);">
-                        <spieldose-image-album :src="album.image"></spieldose-image-album>
-                        <i class="fas fa-play fa-4x"></i>
-                        <img class="vinyl no-cover" src="images/vinyl.png" />
-                    </a>
-                    <div class="album-info">
-                        <p class="album-name">{{ album.name }}</p>
-                        <p v-if="album.artist" class="artist-name">{{ $t("commonLabels.by") }}
-                            <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: album.artist }}">{{ album.artist }}</router-link>
-                            <span v-show="album.year"> ({{ album.year }})</span>
-                        </p>
-                        <p v-else class="artist-name">{{ $t("commonLabels.by") }} {{ $t("browseAlbums.labels.unknownArtist") }} <span v-show="album.year"> ({{ album.year }})</span></p>
-                    </div>
-                </div>
+                <spieldose-album v-for="album in albums" :key="album.name+album.artist+album.year" v-show="! loading" :album="album"></spieldose-album>
                 <div class="is-clearfix"></div>
             </div>
         </div>
@@ -116,7 +102,7 @@ export default {
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
-        'spieldose-image-album': imageAlbum
+        'spieldose-album': album
     },
     methods: {
         onPaginationChanged: function (currentPage) {
