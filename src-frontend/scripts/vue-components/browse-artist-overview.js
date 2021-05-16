@@ -108,7 +108,7 @@ const template = function () {
                     <spieldose-album v-for="album, i in artist.albums" :key="album.name+album.artist+album.year" v-show="! loading && i < 4" :album="album"></spieldose-album>
                 </div>
                 <div class="is-clearfix">
-                    <span class="is-pulled-right">View all albums <i class="fas fa-angle-right"></i></span>
+                    <router-link :class="'is-pulled-right has-text-dark'" :to="{ name: 'artistAlbums', params: $route.params }">View all albums <i class="fas fa-angle-right"></i></router-link>
                 </div>
             </div>
             <div class="column is-4">
