@@ -11,6 +11,7 @@
         public $albums;
         public $totalListeners;
         public $playCount;
+        public $topTracks;
 
 	    public function __construct (string $name = "", array $albums = array()) {
             $this->name = $name;
@@ -67,6 +68,7 @@
                         $this->playCount = intval($data[0]->playCount);
                     }
                     $this->getMusicBrainzMetadata($dbh);
+                    $this->topTracks = \Spieldose\Metrics::GetTopPlayedTracks($dbh, array("artist" => $this->name), 10);
                     $this->albums = (\Spieldose\Album::search($dbh, 1, 1024, array("artist" => $this->name), "year"))->results;
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("");
