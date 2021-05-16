@@ -120,6 +120,11 @@ const routes = [
                         component: browseArtist
                     },
                     {
+                        path: 'albums',
+                        name: 'artistAlbums',
+                        component: browseArtist
+                    },
+                    {
                         path: 'similar_artists',
                         name: 'artistSimilarArtists',
                         component: browseArtist
