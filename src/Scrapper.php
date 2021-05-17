@@ -30,6 +30,13 @@
                 } else {
                     $params[] = (new \Spieldose\Database\DBParam())->null(":track_name");
                 }
+                $trackMBId = $this->id3->getMusicBrainzReleaseTrackId();
+                // multiple mbids (divided by "/") not supported
+                if (! empty($trackMBId) && strlen($trackMBId) == 36) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":track_mbid", $trackMBId);
+                } else {
+                    $params[] = (new \Spieldose\Database\DBParam())->null(":track_mbid");
+                }
                 $trackArtist = $this->id3->getTrackArtistName();
                 if (! empty($trackArtist)) {
                     $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $trackArtist);
@@ -42,6 +49,13 @@
                     $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $artistMBId);
                 } else {
                     $params[] = (new \Spieldose\Database\DBParam())->null(":artist_mbid");
+                }
+                $albumArtistMBId = $this->id3->getMusicBrainzAlbumArtistId();
+                // multiple mbids (divided by "/") not supported
+                if (! empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) {
+                    $params[] = (new \Spieldose\Database\DBParam())->str(":album_artist_mbid", $albumArtistMBId);
+                } else {
+                    $params[] = (new \Spieldose\Database\DBParam())->null(":album_artist_mbid");
                 }
                 $trackAlbum = $this->id3->getAlbum();
                 if (! empty($trackAlbum)) {
@@ -112,11 +126,13 @@
                         file_name,
                         mime,
                         track_name,
+                        track_mbid,
                         track_artist,
                         artist_mbid,
                         album_name,
                         album_mbid,
                         album_artist,
+                        album_artist_mbid,
                         disc_number,
                         track_number,
                         year,
@@ -131,11 +147,13 @@
                         :file_name,
                         :mime,
                         :track_name,
+                        :track_mbid,
                         :track_artist,
                         :artist_mbid,
                         :album_name,
                         :album_mbid,
                         :album_artist,
+                        :album_artist_mbid,
                         :disc_number,
                         :track_number,
                         :year,

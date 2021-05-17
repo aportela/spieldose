@@ -135,9 +135,18 @@
 			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id"));
 		}
 
+		public function getMusicBrainzAlbumArtistId(): string {
+			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id"));
+		}
+
 		public function getMusicBrainzAlbumId(): string {
 			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id"));
 		}
+
+		public function getMusicBrainzReleaseTrackId(): string {
+			return((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id"));
+		}
+
 	}
 
 ?>
