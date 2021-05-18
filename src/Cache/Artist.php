@@ -107,10 +107,6 @@
                     $name = $result->artist->name;
                 }
             }
-            echo $name . PHP_EOL;
-            print_R($jsonLastFM);
-            exit;
-
             if (! empty($name)) {
                 self::saveCache($dbh, $mbId, $name, $image, $jsonLastFM, $jsonMusicBrainz );
             }
