@@ -157,6 +157,17 @@
                             [image] VARCHAR(8192)
                         );
                     '
+                ),
+                "1.06" => array(
+                    '
+                        CREATE TABLE [CACHE_ARTIST] (
+                            [mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [artist] VARCHAR(128) NOT NULL,
+                            [image] VARCHAR(8192),
+                            [lastfm_json] TEXT NULL,
+                            [musicbrainz_json] TEXT NULL
+                        );
+                    ',
                 )
             ),
             "PDO_MARIADB" => array(
@@ -276,6 +287,17 @@
                             [image] VARCHAR(8192)
                         );
                     '
+                ),
+                "1.06" => array(
+                    '
+                        CREATE TABLE [CACHE_ARTIST] (
+                            [mbid] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [artist] VARCHAR(128) NOT NULL,
+                            [image] VARCHAR(8192),
+                            [lastfm_json] TEXT NULL,
+                            [musicbrainz_json] TEXT NULL
+                        );
+                    ',
                 )
             )
         );
