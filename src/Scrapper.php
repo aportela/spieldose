@@ -179,6 +179,42 @@
             return($artists);
         }
 
+        public function getPendingArtistsWithoutMBId() {
+            $artists = array();
+            $query = " SELECT DISTINCT track_artist AS artist FROM FILE WHERE artist_mbid IS NULL AND track_artist IS NOT NULL ORDER BY track_artist ";
+            $results = $this->dbh->query($query);
+            $totalArtists = count($results);
+            for ($i = 0; $i < $totalArtists; $i++) {
+                $artists[] = $results[$i]->artist;
+            }
+            return($artists);
+        }
+
+        public function scrapArtistMBIdFromName(string $name) {
+            $mbId = \Spieldose\Cache\Artist::getMusicBrainzIdFromName($name);
+            if (! empty($mbId)) {
+                $this->setArtistMBIdFromName($mbId, $name);
+            } else {
+                throw new \Exception("MUSICBRAINZ API ERROR - ARTIST NOT FOUND: " . $name);
+            }
+        }
+
+        public function setArtistMBIdFromName(string $mbId, string $name) {
+            $params[] = (new \Spieldose\Database\DBParam())->str(":mbid", $mbId);
+            $params[] = (new \Spieldose\Database\DBParam())->str(":name", $name);
+            $this->dbh->execute(" UPDATE FILE SET artist_mbid = :mbid WHERE track_artist LIKE :name AND artist_mbid IS NULL ", $params);
+        }
+
+
+        public function scrapArtistFromName(string $name) {
+            $mbId = \Spieldose\Cache\Artist::getMusicBrainzIdFromName($name);
+            if (! empty($mbId)) {
+                \Spieldose\Cache\Artist::refreshCache($this->dbh, $mbId);
+            } else {
+                throw new \Exception("MusicBrainz - ARTIST NOT FOUND: " . $name);
+            }
+        }
+
         public function getPendingArtistMBIds() {
             $mbIds = array();
             $query = '
