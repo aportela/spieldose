@@ -958,3 +958,18 @@ div#artist-header-block-content div#bottom div.tabs ul li.is-active a
 }
 
 /* artist */
+
+/* common */
+
+.pre
+{
+    white-space: pre;
+}
+
+.online-hide-overflow
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* common */
