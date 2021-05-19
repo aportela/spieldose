@@ -30,44 +30,46 @@
         if ($scrapArtists) {
             echo "Artist scraping...." . PHP_EOL;
             $c["scrapLogger"]->info("Scraping artists");
-            $pendingArtists = $scraper->getPendingArtists();
-            $totalPendingArtists = count($pendingArtists);
-            if ($totalPendingArtists > 0) {
-                echo sprintf("Processing %d artist/s%s", $totalPendingArtists, PHP_EOL);
+            $pendingArtistsWithoutMBId = $scraper->getPendingArtistsWithoutMBId();
+            $total = count($pendingArtistsWithoutMBId);
+            $total = 0;
+            if ($total > 0) {
+                echo sprintf("Processing %d artist/s without MusicBrainz Id%s", $total, PHP_EOL);
                 $failed = array();
-                for ($i = 0; $i < $totalPendingArtists; $i++) {
+                for ($i = 0; $i < $total; $i++) {
                     try {
-                        $c["scrapLogger"]->debug("Searching on MusicBrainz artist: " . $pendingArtists[$i]);
-                        $scraper->mbArtistScrap($pendingArtists[$i]);
+                        $c["scrapLogger"]->debug("Searching MusicBrainz Id for artist: " . $pendingArtistsWithoutMBId[$i]);
+                        $mbId = $scraper->scrapArtistMBIdFromName($pendingArtistsWithoutMBId[$i]);
+                        if (! empty($mbId)) {
+                            $scraper->setArtistMBIdFromName($mbId, $pendingArtistsWithoutMBId[$i]);
+                        } else {
+                            throw new \Exception("MUSICBRAINZ API - ARTIST NOT FOUND: " . $name);
+                        }
                     } catch (\Throwable $e) {
                         $c["scrapLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
-                        $failed[] = $pendingArtists[$i];
+                        $failed[] = $pendingArtistsWithoutMBId[$i];
                     }
                     sleep(1);
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalPendingArtists, 20);
-                }
-                $totalFailed = count($failed);
-                if ($totalFailed > 0) {
-                    echo sprintf("Failed to scrap %d artists:%s", $totalFailed, PHP_EOL);
-                    print_r($failed);
+                    \Spieldose\Utils::showProgressBar($i + 1, $total, 20);
                 }
             } else {
-                echo "No pending artists found to scrap" . PHP_EOL;
+                echo "No pending Artists without music brainz id" . PHP_EOL;
             }
-            $mbIds = $scraper->getPendingArtistMBIds();
-            $totalMBIds = count($mbIds);
-            if ($totalMBIds > 0) {
-                echo sprintf("Scrapping %d pending artist MusicBrainz ids%s", $totalMBIds, PHP_EOL);
+            $mbIds = $scraper->getArtistMBIdsWithoutCache();
+            $total = count($mbIds);
+            if ($total > 0) {
+                echo sprintf("Scrapping %d pending artist MusicBrainz ids%s", $total, PHP_EOL);
                 $failed = array();
-                for ($i = 0; $i < $totalMBIds; $i++) {
+                for ($i = 0; $i < $total; $i++) {
                     try {
                         $c["scrapLogger"]->debug("Getting MusicBrainz artist id: " . $mbIds[$i]);
-                        $scraper->mbArtistMBIdscrap($mbIds[$i]);
+                        $scraper->setArtistMBCacheFromMBId($mbIds[$i]);
                     } catch (\Throwable $e) {
+                        // TODO: music brainz artist id not found, delete from LOCAL database
                         $c["scrapLogger"]->error("Error: " . $e->getMessage());
                         $failed[] = $mbIds[$i];
                     }
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+                    \Spieldose\Utils::showProgressBar($i + 1, $total, 20);
                     sleep(1);
                 }
                 $totalFailed = count($failed);
@@ -104,11 +106,11 @@
                 }
             }
             $mbIds = $scraper->getPendingAlbumMBIds();
-            $totalMBIds = count($mbIds);
-            if ($totalMBIds > 0) {
-                echo sprintf("Scrapping %d pending album MusicBrainz ids%s", $totalMBIds, PHP_EOL);
+            $total = count($mbIds);
+            if ($total > 0) {
+                echo sprintf("Scrapping %d pending album MusicBrainz ids%s", $total, PHP_EOL);
                 $failed = array();
-                for ($i = 0; $i < $totalMBIds; $i++) {
+                for ($i = 0; $i < $total; $i++) {
                     try {
                         $c["scrapLogger"]->debug("Getting MusicBrainz album id: " . $mbIds[$i]);
                         $scraper->mbAlbumMBIdscrap($mbIds[$i]);
@@ -116,7 +118,7 @@
                         $c["scrapLogger"]->error("Error: " . $e->getMessage());
                         $failed[] = $mbIds[$i];
                     }
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
+                    \Spieldose\Utils::showProgressBar($i + 1, $total, 20);
                     sleep(1);
                 }
                 $totalFailed = count($failed);
