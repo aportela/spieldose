@@ -6,8 +6,9 @@
 
     class Artist {
         const MUSICBRAINZ_API_SEARCH_ARTIST_FROM_NAME = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&fmt=json";
-        const MUSICBRAINZ_API_GET_ARTIST_DETAILS_FROM_ID = "http://musicbrainz.org/ws/2/artist/%s?inc=url-rels&fmt=json";
+        const MUSICBRAINZ_API_GET_ARTIST_DETAILS_FROM_ID = "http://musicbrainz.org/ws/2/artist/%s?inc=url-rels%%20artist-rels&fmt=json";
         const LASTFM_API_GET_ARTIST_DETAILS_FROM_MBID = "http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&api_key=%s&mbid=%s&format=json";
+        const LASTFM_API_GET_ARTIST_DETAILS_FROM_NAME = "http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&api_key=%s&artist=%s&format=json";
 
         public $mbId;
         public $name;
@@ -68,6 +69,17 @@
             return($json);
         }
 
+        public static function getLastFMDetailsFromName(string $name) {
+            $json = "";
+            try {
+                $url = sprintf(self::LASTFM_API_GET_ARTIST_DETAILS_FROM_NAME, \Spieldose\LastFM::API_KEY, $name);
+                $json = \Spieldose\Net::httpRequest($url);
+            } catch (\Throwable $e) {
+                // TODO: log error
+            }
+            return($json);
+        }
+
         public static function refreshCache(\Spieldose\Database\DB $dbh, string $mbId) {
             $jsonMusicBrainz = self::getMusicBrainzDetails($mbId);
             $jsonLastFM = self::getLastFMDetailsFromMBId($mbId);
@@ -94,21 +106,29 @@
                                     $image = $url;
                                 }
                             }
-
                         }
                     }
                 }
             } else {
                 throw new \Spieldose\Exception\NotFoundException($mbId);
             }
-            if (empty($name) && ! empty($jsonLastFM)) {
+            if (! empty($jsonLastFM)) {
                 $result = json_decode($jsonLastFM, false);
                 if (isset ($result->artist) && isset($result->artist->name) && ! empty($result->artist->name)) {
-                    $name = $result->artist->name;
+                    if (empty($name)) {
+                        // rare case: missing artist name on musicbrainz register (mbId) but found on lastFM
+                        $name = $result->artist->name;
+                    } else {
+                        // musicbrainz name is different from lastFM name, try to get lastFM artist data again by artist name
+                        // assumption: relevance of musicbrainz data >= relevance of lastFM data
+                        if ($name != $result->artist->name) {
+                            $jsonLastFM = self::getLastFMDetailsFromName($name);
+                        }
+                    }
                 }
             }
             if (! empty($name)) {
-                self::saveCache($dbh, $mbId, $name, $image, $jsonLastFM, $jsonMusicBrainz );
+                self::saveCache($dbh, $mbId, $name, $image, $jsonLastFM, $jsonMusicBrainz);
             }
         }
 
