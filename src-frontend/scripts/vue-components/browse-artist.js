@@ -347,11 +347,6 @@ export default {
             spieldoseAPI.artist.get(artist, (response) => {
                 if (response.status == 200) {
                     this.artist = response.data.artist;
-                    if (this.artist.bio) {
-                        this.artist.bio = this.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                        this.truncatedBio = this.truncate(this.artist.bio);
-                        //this.activeTab = "overview";
-                    }
                     this.loading = false;
                 } else {
                     this.errors = true;
