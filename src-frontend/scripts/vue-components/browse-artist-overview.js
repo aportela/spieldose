@@ -11,8 +11,8 @@ const template = function () {
     return `
         <div class="columns">
             <div class="column is-8">
-                <div class="content" id="bio" v-if="artist.bio">
-                <div v-html="artist.bio"></div>
+                <div class="content" id="bio" v-if="biography">
+                <div v-html="biography"></div>
                 <p class="read-more">
                     <router-link :class="'has-text-dark'" :to="{ name: 'artistBiography', params: $route.params }">Read more <i class="fas fa-angle-right"></i></router-link>
                 </p>
@@ -50,7 +50,7 @@ const template = function () {
                         </div>
                     </div>
                 </div>
-                <table class="table is-unselectable is-clear-fix">
+                <table class="table is-unselectable is-hoverable is-clear-fix">
                     <tbody>
                         <tr v-for="track, idx in artist.topTracks">
                             <td class="is-vcentered">{{ idx + 1 }}</td>
@@ -185,6 +185,11 @@ export default {
     props: [
         'artist'
     ],
+    computed: {
+        biography: function() {
+            return((this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.bio && this.artist.lastFM.artist.bio.content) ? this.artist.lastFM.artist.bio.content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'): null);
+        }
+    },
     components: {
         'spieldose-album': album
     },
