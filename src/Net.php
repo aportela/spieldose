@@ -22,8 +22,13 @@
                 curl_setopt ($ch, CURLOPT_USERAGENT, $userAgent);
             }
 			$content = curl_exec($ch);
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			curl_close($ch);
-			return($content);
+            if ($httpcode == 200) {
+			    return($content);
+            } else {
+                throw new \Exception("Unexpected HTTP response code: " . $httpcode);
+            }
         }
 
     }
