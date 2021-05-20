@@ -350,7 +350,6 @@ export default {
                     this.loading = false;
                 } else {
                     this.errors = true;
-                    this.apiError = response.getApiErrorData();
                     this.loading = false;
                 }
             });
