@@ -39,23 +39,11 @@ const template = function () {
                         <span class="is-pulled-right">Show more <i class="fas fa-angle-right"></i></span>
                     </div>
                     <div class="columns is-size-6">
-                        <div class="column is-4 has-text-grey is-centered">
+                        <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in similarArtists" :key="similar.name" v-show="idx < 3">
                             <figure class="image is-96x96" style="margin: 0px auto;">
                                 <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
                             </figure>
-                            <p class="has-text-centered has-text-grey">Artist1</p>
-                        </div>
-                        <div class="column is-4">
-                            <figure class="image is-96x96" style="margin: 0px auto;">
-                                <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
-                            </figure>
-                            <p class="has-text-centered has-text-grey">Artist</p>
-                        </div>
-                        <div class="column is-4">
-                            <figure class="image is-96x96" style="margin: 0px auto;">
-                                <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
-                            </figure>
-                            <p class="has-text-centered has-text-grey">Artist</p>
+                            <p class="has-text-centered has-text-grey">{{ similar.name }}</p>
                         </div>
                     </div>
                 </div>
@@ -157,6 +145,13 @@ export default {
                         );
                     })
                 );
+            } else {
+                return(null);
+            }
+        },
+        similarArtists: function() {
+            if (this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.similar && this.artist.lastFM.artist.similar.artist) {
+                return(this.artist.lastFM.artist.similar.artist);
             } else {
                 return(null);
             }
