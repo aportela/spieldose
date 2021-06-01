@@ -122,7 +122,7 @@ const template = function () {
                             <figure class="image is-96x96" style="margin: 0px auto;">
                                 <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
                             </figure>
-                            <p class="has-text-centered has-text-grey">{{ similar.name }}</p>
+                            <p class="has-text-centered"><router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: similar.name }}" :class="'has-text-grey'">{{ similar.name }}</router-link></p>
                         </div>
                     </div>
                 </div>
