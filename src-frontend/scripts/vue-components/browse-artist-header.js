@@ -25,7 +25,7 @@ const template = function () {
                             <figure class="image is-96x96 is-pulled-left">
                                 <spieldose-image-album :src="popularAlbum.image"></spieldose-image-album>
                             </figure>
-                            <p style="margin-left: 110px; margin-top: 10px;">
+                            <p style="margin-left: 110px; margin-top: 4px;">
                                 <span class="is-size-7 has-text-grey">POPULAR
                                 <br><strong class="is-size-6 has-text-grey-lighter">{{ popularAlbum.name }}</strong>
                                 <br><span class="is-size-6 has-text-grey-light" v-if="popularAlbum.year">{{ popularAlbum.year }}</span>
