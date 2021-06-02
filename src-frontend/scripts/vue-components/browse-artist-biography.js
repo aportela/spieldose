@@ -154,13 +154,6 @@ export default {
             } else {
                 return(null);
             }
-        },
-        similarArtists: function() {
-            if (this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.similar && this.artist.lastFM.artist.similar.artist) {
-                return(this.artist.lastFM.artist.similar.artist);
-            } else {
-                return(null);
-            }
         }
     },
     components: {
