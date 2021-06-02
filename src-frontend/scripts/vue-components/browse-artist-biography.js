@@ -1,3 +1,5 @@
+import { default as imageArtist } from './image-artist.js';
+
 const template = function () {
     return `
         <div class="columns">
@@ -42,10 +44,12 @@ const template = function () {
                     </div>
                     <div class="columns is-size-6">
                         <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in similarArtists" :key="similar.name" v-show="idx < 3">
-                            <figure class="image is-96x96" style="margin: 0px auto;">
-                                <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
-                            </figure>
-                            <p class="has-text-centered has-text-grey">{{ similar.name }}</p>
+                            <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: similar.name }}" :class="'has-text-grey'">
+                                <figure class="image is-96x96" style="margin: 0px auto;">
+                                    <spieldose-image-artist :src="similar.image" :extraClass="'is-rounded'"></spieldose-image-artist>
+                                </figure>
+                                <p class="has-text-centered">{{ similar.name }}</p>
+                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -158,5 +162,8 @@ export default {
                 return(null);
             }
         }
+    },
+    components: {
+        'spieldose-image-artist': imageArtist
     }
 }
