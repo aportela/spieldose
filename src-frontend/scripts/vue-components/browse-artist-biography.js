@@ -22,10 +22,12 @@ const template = function () {
                             <p v-if="startLifeSpanYear">{{ startLifeSpanYear }} <span v-if="endLifeSpanYear"> - {{ endLifeSpanYear }}</span><span v-else> – present</span> ({{ totalYearsActive }} years)</p>
                             <h6 v-if="foundedIn">Founded in</h6>
                             <p v-if="foundedIn">{{ foundedIn }}</p>
-                            <h6 v-if="membersOfBand">Members</h6>
-                            <p class="mb-0" v-for="member in membersOfBand">
-                            {{ member.name }} - {{ member.attribute }}
-                            </p>
+                            <div v-if="membersOfBand && membersOfBand.length > 0">
+                                <h6 v-if="membersOfBand">Members</h6>
+                                <p class="mb-0" v-for="member in membersOfBand">
+                                {{ member.name }} - {{ member.attribute }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div v-html="biography">
