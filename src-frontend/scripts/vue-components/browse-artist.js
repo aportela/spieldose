@@ -9,6 +9,7 @@ import browseArtistHeader from './browse-artist-header.js';
 import browseArtistOverview from './browse-artist-overview.js';
 import browseArtistBiography from './browse-artist-biography.js';
 import browseArtistAlbums from './browse-artist-albums.js';
+import browseArtistSimilar from './browse-artist-similar.js';
 
 const template = function () {
     return `
@@ -19,6 +20,7 @@ const template = function () {
                     <spieldose-browse-artist-overview v-if="currentTab == 'overview'" :artist="artist"></spieldose-browse-artist-overview>
                     <spieldose-browse-artist-biography v-if="currentTab == 'biography'" :artist="artist"></spieldose-browse-artist-biography>
                     <spieldose-browse-artist-albums v-if="currentTab == 'albums'" :artist="artist"></spieldose-browse-artist-albums>
+                    <spieldose-browse-artist-similar v-if="currentTab == 'similarArtists'" :artist="artist"></spieldose-browse-artist-similar>
                 </div>
             </div>
 
@@ -236,6 +238,7 @@ export default {
         'spieldose-browse-artist-overview': browseArtistOverview,
         'spieldose-browse-artist-biography': browseArtistBiography,
         'spieldose-browse-artist-albums': browseArtistAlbums,
+        'spieldose-browse-artist-similar': browseArtistSimilar,
         'spieldose-dashboard-toplist': dashboardTopList,
         'spieldose-pagination': pagination,
         'spieldose-image-artist': imageArtist,
