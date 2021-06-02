@@ -43,7 +43,7 @@ const template = function () {
                         <span class="is-pulled-right">Show more <i class="fas fa-angle-right"></i></span>
                     </div>
                     <div class="columns is-size-6">
-                        <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in similarArtists" :key="similar.name" v-show="idx < 3">
+                        <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in artist.similarArtists" :key="similar.name" v-show="idx < 3">
                             <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: similar.name }}" :class="'has-text-grey'">
                                 <figure class="image is-96x96" style="margin: 0px auto;">
                                     <spieldose-image-artist :src="similar.image" :extraClass="'is-rounded'"></spieldose-image-artist>
