@@ -12,6 +12,9 @@
         public $totalListeners;
         public $playCount;
         public $topTracks;
+        public $lastFM;
+        public $musicBrainz;
+        public $similarArtists;
 
 	    public function __construct (string $name = "", array $albums = array()) {
             $this->name = $name;
@@ -36,10 +39,10 @@
                 );
                 $query = '
                     SELECT
-                        COUNT(DISTINCT(COALESCE(MBA.artist, F.track_artist))) AS total
+                        COUNT(DISTINCT(COALESCE(CA.artist, F.track_artist))) AS total
                     FROM FILE F
-                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                    WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
+                    LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                    WHERE COALESCE(CA.artist, F.track_artist) LIKE :name
                 ';
                 $data = $dbh->query($query, $params);
                 if ($data && $data[0]->total > 0) {
@@ -48,8 +51,8 @@
                             COUNT(DISTINCT S.user_id) AS totalListeners
                         FROM STATS S
                         LEFT JOIN FILE F ON (F.id = S.file_id)
-                        LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                        AND COALESCE(MBA.artist, F.track_artist) LIKE :name
+                        LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                        AND COALESCE(CA.artist, F.track_artist) LIKE :name
                     ';
                     $data = $dbh->query($query, $params);
                     if ($data && $data[0]->totalListeners) {
@@ -60,14 +63,15 @@
                             COUNT(S.played) AS playCount
                         FROM STATS S
                         LEFT JOIN FILE F ON (F.id = S.file_id)
-                        LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                        AND COALESCE(MBA.artist, F.track_artist) LIKE :name
+                        LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                        AND COALESCE(CA.artist, F.track_artist) LIKE :name
                     ';
                     $data = $dbh->query($query, $params);
                     if ($data && $data[0]->playCount) {
                         $this->playCount = intval($data[0]->playCount);
                     }
                     $this->getMusicBrainzMetadata($dbh);
+                    $this->getSimilarArtists(($dbh));
                     $this->topTracks = \Spieldose\Metrics::GetTopPlayedTracks($dbh, array("artist" => $this->name), 10);
                     $this->albums = (\Spieldose\Album::search($dbh, 1, 1024, array("artist" => $this->name), "year"))->results;
                 } else {
@@ -90,22 +94,57 @@
                 );
                 $query = sprintf('
                     SELECT DISTINCT
-                        MBA.mbid,
-                        MBA.bio,
-                        MBA.image
+                        CA.mbid,
+                        CA.image,
+                        CA.lastfm_json,
+                        CA.musicbrainz_json
                     FROM FILE F
-                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                    WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
-                    AND MBA.mbid IS NOT NULL
+                    LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                    WHERE COALESCE(CA.artist, F.track_artist) LIKE :name
+                    AND CA.mbid IS NOT NULL
                 ');
                 $data = $dbh->query($query, $params);
                 if ($data) {
                     $this->mbid = $data[0]->mbid;
-                    $this->bio = $data[0]->bio;
                     $this->image = $data[0]->image;
+                    $this->lastFM = ! empty($data[0]->lastfm_json) ? json_decode($data[0]->lastfm_json): null;
+
+                    $this->musicBrainz = ! empty($data[0]->musicbrainz_json) ? json_decode($data[0]->musicbrainz_json): null;
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("name");
+            }
+        }
+
+        /**
+         * get artist similar relations with another artists (requires lastFM scrapped data)
+         *
+         * @param \Spieldose\Database\DB $dbh database handler
+         */
+        private function getSimilarArtists(\Spieldose\Database\DB $dbh) {
+            $this->similarArtists = array();
+            if (isset($this->lastFM) && isset($this->lastFM->artist) && isset($this->lastFM->artist->similar) && isset($this->lastFM->artist->similar->artist) && is_array($this->lastFM->artist->similar->artist)) {
+                foreach($this->lastFM->artist->similar->artist as $similarArtist) {
+                    if (! empty($similarArtist->name)) {
+                        $params = array(
+                            (new \Spieldose\Database\DBParam())->str(":name", $similarArtist->name)
+                        );
+                        $query = sprintf('
+                            SELECT DISTINCT
+                                CA.image
+                            FROM FILE F
+                            LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                            WHERE COALESCE(CA.artist, F.track_artist) LIKE :name
+                        ');
+                        $data = $dbh->query($query, $params);
+                        if ($data) {
+                            $artist = new \Spieldose\Artist();
+                            $artist->name = $similarArtist->name;
+                            $artist->image = $data[0]->image;
+                            $this->similarArtists[] = $artist;
+                        }
+                    }
+                }
             }
         }
 
@@ -136,7 +175,7 @@
         public static function clearMusicBrainz(\Spieldose\Database\DB $dbh, string $name) {
             $params = array();
             $params[] = (new \Spieldose\Database\DBParam())->str(":name", $name);
-            $dbh->execute(" UPDATE FILE SET artist_mbid = NULL WHERE EXISTS (SELECT MBA.mbid FROM MB_CACHE_ARTIST MBA WHERE MBA.artist LIKE :name AND MBA.mbid = FILE.artist_mbid ) ", $params);
+            $dbh->execute(" UPDATE FILE SET artist_mbid = NULL WHERE EXISTS (SELECT CA.mbid FROM MB_CACHE_ARTIST MBA WHERE CA.artist LIKE :name AND CA.mbid = FILE.artist_mbid ) ", $params);
         }
 
         /**
@@ -154,24 +193,24 @@
             if (isset($filter)) {
                 $conditions = array();
                 if (isset($filter["withoutMbid"]) && $filter["withoutMbid"]) {
-                    $conditions[] = " MBA.mbid IS NULL ";
+                    $conditions[] = " CA.mbid IS NULL ";
                 }
                 if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $conditions[] = " COALESCE(MBA.artist, F.track_artist) LIKE :partialName ";
+                    $conditions[] = " COALESCE(CA.artist, F.track_artist) LIKE :partialName ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
                 }
                 if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $conditions[] = " COALESCE(MBA.artist, F.track_artist) LIKE :name ";
+                    $conditions[] = " COALESCE(CA.artist, F.track_artist) LIKE :name ";
                     $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
                 }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
             $queryCount = '
                 SELECT
-                    COUNT (DISTINCT(COALESCE(MBA.artist, F.track_artist))) AS total
+                    COUNT (DISTINCT(COALESCE(CA.artist, F.track_artist))) AS total
                 FROM FILE F
-                LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                WHERE COALESCE(MBA.artist, F.track_artist) IS NOT NULL
+                LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                WHERE COALESCE(CA.artist, F.track_artist) IS NOT NULL
                 ' . $whereCondition . '
             ';
             $result = $dbh->query($queryCount, $params);
@@ -187,16 +226,16 @@
                         $sqlOrder = " ORDER BY RANDOM() ";
                     break;
                     default:
-                        $sqlOrder = " ORDER BY COALESCE(MBA.artist, F.track_artist) COLLATE NOCASE ASC ";
+                        $sqlOrder = " ORDER BY COALESCE(CA.artist, F.track_artist) COLLATE NOCASE ASC ";
                     break;
                 }
                 $query = sprintf('
                     SELECT
-                        DISTINCT COALESCE(MBA.artist, F.track_artist) as name,
-                        MBA.image
+                        DISTINCT COALESCE(CA.artist, F.track_artist) as name,
+                        CA.image
                     FROM FILE F
-                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
-                    WHERE COALESCE(MBA.artist, F.track_artist) IS NOT NULL
+                    LEFT JOIN CACHE_ARTIST CA ON CA.mbid = F.artist_mbid
+                    WHERE COALESCE(CA.artist, F.track_artist) IS NOT NULL
                     %s
                     %s
                     LIMIT %d OFFSET %d

@@ -112,21 +112,23 @@ const template = function () {
                 </div>
             </div>
             <div class="column is-4">
-                <div id="similar">
+                <div id="similar" v-if="hasSimilar">
                     <div class="is-clearfix">
                         <span class="title is-5 is-pulled-left">Similar to</span>
                         <span class="is-pulled-right">Show more <i class="fas fa-angle-right"></i></span>
                     </div>
                     <div class="columns is-size-6">
-                        <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in similarArtists" :key="similar.name" v-show="idx < 3">
-                            <figure class="image is-96x96" style="margin: 0px auto;">
-                                <img class="is-rounded" src="api/thumbnail?url=https://lastfm-img2.akamaized.net/i/u/300x300/1a3adf2f20b642c3bc50b10048b980a6.png">
-                            </figure>
-                            <p class="has-text-centered"><router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: similar.name }}" :class="'has-text-grey'">{{ similar.name }}</router-link></p>
+                        <div class="column is-4 has-text-grey is-centered" v-for="similar, idx in artist.similarArtists" :key="similar.name" v-show="idx < 3">
+                            <router-link :title="$t('commonLabels.navigateToArtistPage')" :to="{ name: 'artist', params: { artist: similar.name }}" :class="'has-text-grey'">
+                                <figure class="image is-96x96" style="margin: 0px auto;">
+                                    <spieldose-image-artist :src="similar.image" :extraClass="'is-rounded'"></spieldose-image-artist>
+                                </figure>
+                                <p class="has-text-centered">{{ similar.name }}</p>
+                            </router-link>
                         </div>
                     </div>
                 </div>
-                <hr>
+                <hr v-if="hasSimilar">
                 <div class="is-clearfix">
                     <span class="title is-5 is-pulled-left">Play stats</span>
                     <div class="dropdown is-pulled-right">
@@ -177,16 +179,13 @@ export default {
         biography: function() {
             return((this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.bio && this.artist.lastFM.artist.bio.content) ? this.artist.lastFM.artist.bio.content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'): null);
         },
-        similarArtists: function() {
-            if (this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.similar && this.artist.lastFM.artist.similar.artist) {
-                return(this.artist.lastFM.artist.similar.artist);
-            } else {
-                return(null);
-            }
+        hasSimilar: function() {
+            return(this.artist.similarArtists && this.artist.similarArtists.length > 0);
         }
     },
     components: {
-        'spieldose-album': album
+        'spieldose-album': album,
+        'spieldose-image-artist': imageArtist
     },
     methods: {
         onPlayTrack: function(track) {
