@@ -13,22 +13,14 @@
         <link rel="icon" type="image/png" href="icons/icon-64.png" sizes="64x64">
         <link rel="icon" type="image/png" href="icons/icon-128.png" sizes="128x128">
         <title>Spieldose</title>
-        {% if settings.localVendorAssets %}
-            {% if settings.production %}
-        <link rel="stylesheet" href="vendor/bulma-0.9.2/css/bulma.min.css" crossorigin="anonymous" />
-            {% else %}
-        <link rel="stylesheet" href="vendor/bulma-0.9.2/css/bulma.css" crossorigin="anonymous" />
-            {% endif %}
+        {% if settings.production %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" integrity="sha512-IgmDkwzs96t4SrChW29No3NXBIBv8baW490zk5aXvhCD8vuZM3yUSkbyTBcXohkySecyzIrUwiF/qV0cuPcL3Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         {% else %}
-            {% if settings.production %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" integrity="sha512-byErQdWdTqREz6DLAA9pCnLbdoGGhXfU6gm1c8bkf7F51JVmUBlayGe2A31VpXWQP+eiJ3ilTAZHCR3vmMyybA==" crossorigin="anonymous" />
-            {% else %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.css" integrity="sha512-toUvtf5IUJlYwGfXDzm8QT5X2JXuF9inSJp+oIkfOWZ+QNKKbA9HbXpUpe5nMQ4Mg9SC773pO3vWp2LjMY6vPg==" crossorigin="anonymous" />
-            {% endif %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.css" integrity="sha512-7VGuxKU1BFMmA+dC7NiW8jF0YOIe6bibjUBr42unVtEsI/UYzXMS3nkgNvmsY4yqauxeiEs4bXF6fPLsCuxN/A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         {% endif %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="styles/app.css">
-    </head>
+    <script defer src="/scripts/app-bundle.min.js?07e392ed9a76722d40ff"></script><script defer src="/scripts/vendor-bundle.min.js?07e392ed9a76722d40ff"></script></head>
     <body>
         <div id="app">
             <transition name="fade">
@@ -44,44 +36,23 @@
 
         {% if settings.localVendorAssets %}
             {% if settings.production %}
-        <script src="vendor/vue-2.6.12/vue.min.js" integrity="sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw==" crossorigin="anonymous"></script>
-        <script src="vendor/vue-router-3.4.9/vue-router.min.js" integrity="sha512-5zLXysUT2RHZ2FZwgnM12r3vGxRejsOtDQeYSFgJYDyDqzLTJeG2SmV87foegnnzKI/Fk9d5EdMNj+osKSpf1g==" crossorigin="anonymous"></script>
-        <script src="vendor/vue-resource-1.5.1/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
-        <script src="vendor/vue-i18n-8.22.1/vue-i18n.min.js" integrity="sha512-kevh6bbBShDVHwyqMqP+kOq34DRpFV74d9uUZ8bQoyIEA67Ui7F7Din2UoTGYXCGgrj2OWdLwOCB8uH0XC80CQ==" crossorigin="anonymous"></script>
         <script src="vendor/chartjs-2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
             {% else %}
-        <script src="vendor/vue-2.6.12/vue.js" integrity="sha512-YXLGLsQBiwHPHLCAA9npZWhADUsHECjkZ71D1uzT2Hpop82/eLnmFb6b0jo8pK4T0Au0g2FETrRJNblF/46ZzQ==" crossorigin="anonymous"></script>
-        <script src="vendor/vue-router-3.4.9/vue-router.js" integrity="sha512-k9aDZZA3EK+84lOvvFTb9Ul0bt009Qj0SOuiF1UhER2zvvlBXv2V6IsNds450ToFo4fNwsC8UgFUZj3N1rVukA==" crossorigin="anonymous"></script>
-        <script src="vendor/vue-resource-1.5.1/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
-        <script src="vendor/vue-i18n-8.22.1/vue-i18n.js" integrity="sha512-Qi1/rGoCPAwYtbqBS3pRu1PuUJFRjlcQPGdVmBOXiXeNAXPnBuS+kGAai7kLknykr5hgla3XE0UUu+AAUB5QuQ==" crossorigin="anonymous"></script>
         <script src="vendor/chartjs-2.9.4/Chart.js" integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw==" crossorigin="anonymous"></script>
             {% endif %}
         <script src="vendor/dayjs-1.9.7/dayjs.min.js" integrity="sha512-kZ+x2gdehn6OZMWZSp3Vt5R+v9hQTYEATQwaUfWquhxbvNVAy6IRtYs7asdyxKUTqG0I5ZqBqnzcBrpnHJCAGw==" crossorigin="anonymous"></script>
         {% else %}
             {% if settings.production %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js" integrity="sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.4.9/vue-router.min.js" integrity="sha512-5zLXysUT2RHZ2FZwgnM12r3vGxRejsOtDQeYSFgJYDyDqzLTJeG2SmV87foegnnzKI/Fk9d5EdMNj+osKSpf1g==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.22.1/vue-i18n.min.js" integrity="sha512-kevh6bbBShDVHwyqMqP+kOq34DRpFV74d9uUZ8bQoyIEA67Ui7F7Din2UoTGYXCGgrj2OWdLwOCB8uH0XC80CQ==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             {% else %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.js" integrity="sha512-YXLGLsQBiwHPHLCAA9npZWhADUsHECjkZ71D1uzT2Hpop82/eLnmFb6b0jo8pK4T0Au0g2FETrRJNblF/46ZzQ==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.4.9/vue-router.js" integrity="sha512-k9aDZZA3EK+84lOvvFTb9Ul0bt009Qj0SOuiF1UhER2zvvlBXv2V6IsNds450ToFo4fNwsC8UgFUZj3N1rVukA==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.22.1/vue-i18n.js" integrity="sha512-Qi1/rGoCPAwYtbqBS3pRu1PuUJFRjlcQPGdVmBOXiXeNAXPnBuS+kGAai7kLknykr5hgla3XE0UUu+AAUB5QuQ==" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js" integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw==" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.js" integrity="sha512-Lii3WMtgA0C0qmmkdCpsG0Gjr6M0ajRyQRQSbTF6BsrVh/nhZdHpVZ76iMIPvQwz1eoXC3DmAg9K51qT5/dEVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             {% endif %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.7/dayjs.min.js" integrity="sha512-kZ+x2gdehn6OZMWZSp3Vt5R+v9hQTYEATQwaUfWquhxbvNVAy6IRtYs7asdyxKUTqG0I5ZqBqnzcBrpnHJCAGw==" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.0/dayjs.min.js" integrity="sha512-KTFpdbCb05CY4l242bLjyaPhoL9vAy4erP1Wkn7Rji0AG6jx6zzGtKkdHc7jUOYOVSmbMbTg728u260CA/Qugg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         {% endif %}
 
         <!--
         <script src="vendor/visualizer.js"></script>
         -->
-        {% if settings.production %}
-        <script type="module" src="scripts/app-bundle.min.js?26615e2fe89177bd7e49"></script>
-        {% else %}
-        <script type="module" src="scripts/app.js"></script>
-        {% endif %}
 
     </body>
 </html>
