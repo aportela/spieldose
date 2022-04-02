@@ -1,16 +1,13 @@
 {
     "require": {
-        "slim/slim": "^3.8",
-        "slim/twig-view": "^2.3",
-        "monolog/monolog": "^1.23",
+        "slim/slim": "^4.10",
+        "slim/twig-view": "^3.3",
+        "monolog/monolog": "^2.4",
         "james-heinrich/getid3": "^1.9",
-        "ramsey/uuid": "^3.7",
-        "sybio/image-workshop": "^2.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "Spieldose\\": "src"
-        }
+        "sybio/image-workshop": "^2.2",
+        "slim/psr7": "^1.5",
+        "php-di/php-di": "^6.3",
+        "ramsey/uuid": "^4.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
