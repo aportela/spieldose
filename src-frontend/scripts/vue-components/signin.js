@@ -109,7 +109,7 @@ export default {
     name: 'spieldose-signin-component',
     template: template(),
     mixins: [mixinValidations, mixinAPIError],
-    created: function () {
+    mounted: function () {
         this.$nextTick(() => this.$refs.signInEmail.focus());
     },
     data: function () {
@@ -143,7 +143,7 @@ export default {
             self.validator.clear();
             self.clearAPIErrors();
             spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     self.$router.push({ name: 'dashboard' });
                 } else {
                     switch (response.status) {
@@ -163,7 +163,7 @@ export default {
                             self.validator.setInvalid('signInPassword', self.$t('signIn.errorMessages.incorrectPassword'));
                             break;
                         default:
-                            self.setAPIError(response.getApiErrorData());
+                            //self.setAPIError(response.getApiErrorData());
                             break;
                     }
                     self.loading = false;
@@ -177,7 +177,7 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     self.signInEmail = self.signUpEmail;
                     self.signInPassword = self.signUpPassword;
                     self.loading = false;

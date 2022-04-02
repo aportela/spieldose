@@ -90,9 +90,9 @@ export default {
         loadTopPlayedTracks: function () {
             let self = this;
             spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, self.artist, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 300) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -102,9 +102,9 @@ export default {
         }, loadTopPlayedArtists: function () {
             let self = this;
             spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -114,9 +114,9 @@ export default {
         }, loadTopPlayedGenres: function () {
             let self = this;
             spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());

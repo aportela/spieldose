@@ -133,24 +133,24 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.globalSearch(self.textFilter, 1, 8, function (response) {
-                if (response.ok) {
-                    if (response.body.artists && response.body.artists.length > 0) {
-                        self.artists = response.body.artists;
+                if (response.status == 200) {
+                    if (response.data.artists && response.data.artists.length > 0) {
+                        self.artists = response.data.artists;
                     } else {
                         self.artists = [];
                     }
-                    if (response.body.albums && response.body.albums.length > 0) {
-                        self.albums = response.body.albums;
+                    if (response.data.albums && response.data.albums.length > 0) {
+                        self.albums = response.data.albums;
                     } else {
                         self.albums = [];
                     }
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        self.tracks = response.body.tracks;
+                    if (response.data.tracks && response.data.tracks.length > 0) {
+                        self.tracks = response.data.tracks;
                     } else {
                         self.tracks = [];
                     }
-                    if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
+                    if (response.data.playlists && response.data.playlists.length > 0) {
+                        self.playlists = response.data.playlists;
                     } else {
                         self.playlists = [];
                     }

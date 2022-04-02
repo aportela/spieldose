@@ -197,7 +197,7 @@ export default {
                 self.loading = true;
                 self.clearAPIErrors();
                 spieldoseAPI.radioStation.remove(id, function (response) {
-                    if (response.ok) {
+                    if (response.status == 200) {
                         self.search();
                     } else {
                         self.setAPIError(response.getApiErrorData());
@@ -225,12 +225,12 @@ export default {
         showUpdateRadioStationForm: function (id) {
             let self = this;
             spieldoseAPI.radioStation.get(id, (response) => {
-                if (response.ok) {
-                    self.formRadioStationId = response.body.radioStation.id;
-                    self.formRadioStationName = response.body.radioStation.name;
-                    self.formRadioStationUrl = response.body.radioStation.url;
-                    self.formRadioStationType = response.body.radioStation.urlType;
-                    self.formRadioStationImage = response.body.radioStation.image;
+                if (response.status == 200) {
+                    self.formRadioStationId = response.data.radioStation.id;
+                    self.formRadioStationName = response.data.radioStation.name;
+                    self.formRadioStationUrl = response.data.radioStation.url;
+                    self.formRadioStationType = response.data.radioStation.urlType;
+                    self.formRadioStationImage = response.data.radioStation.image;
                     self.showForm = true;
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -249,7 +249,7 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.radioStation.add(self.formRadioStationName, self.formRadioStationUrl, self.formRadioStationType, self.formRadioStationImage, function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     self.showForm = false;
                     self.search();
                 } else {
@@ -262,7 +262,7 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.radioStation.update(self.formRadioStationId, self.formRadioStationName, self.formRadioStationUrl, self.formRadioStationType, self.formRadioStationImage, function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     self.showForm = false;
                     self.search();
                 } else {
@@ -275,12 +275,12 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.radioStation.search(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.radioStations && response.body.radioStations.length > 0) {
-                        self.radioStations = response.body.radioStations;
+                if (response.status == 200) {
+                    self.pager.actualPage = response.data.pagination.actualPage;
+                    self.pager.totalPages = response.data.pagination.totalPages;
+                    self.pager.totalResults = response.data.pagination.totalResults;
+                    if (response.data.radioStations && response.data.radioStations.length > 0) {
+                        self.radioStations = response.data.radioStations;
                     } else {
                         self.radioStations = [];
                     }

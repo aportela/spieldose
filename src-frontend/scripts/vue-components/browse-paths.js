@@ -85,12 +85,12 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.searchPaths(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.paths && response.body.paths.length > 0) {
-                        self.paths = response.body.paths;
+                if (response.status == 200) {
+                    self.pager.actualPage = response.data.pagination.actualPage;
+                    self.pager.totalPages = response.data.pagination.totalPages;
+                    self.pager.totalResults = response.data.pagination.totalResults;
+                    if (response.data.paths && response.data.paths.length > 0) {
+                        self.paths = response.data.paths;
                     } else {
                         self.paths = [];
                     }

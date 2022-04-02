@@ -48,9 +48,9 @@ const getPlayerData = (function () {
     playerData.love = function (track) {
         playerData.loading = true;
         spieldoseAPI.track.love(track.id, function (response) {
-            if (response.ok) {
+            if (response.status == 200) {
                 playerData.loading = false;
-                track.loved = response.body.loved;
+                track.loved = response.data.loved;
             } else {
                 // TODO: ERRORS
                 playerData.loading = false;
@@ -60,9 +60,9 @@ const getPlayerData = (function () {
     playerData.unlove = function (track) {
         playerData.loading = true;
         spieldoseAPI.track.unlove(track.id, function (response) {
-            if (response.ok) {
+            if (response.status == 200) {
                 playerData.loading = false;
-                track.loved = response.body.loved;
+                track.loved = response.data.loved;
             } else {
                 // TODO: ERRORS
                 playerData.loading = false;
@@ -133,9 +133,9 @@ const getPlayerData = (function () {
         playerData.loading = true;
         playerData.currentTrack.unset();
         spieldoseAPI.track.searchTracks("", "", "", false, 1, count, "random", function (response) {
-            if (response.ok) {
-                if (response.body.tracks && response.body.tracks.length > 0) {
-                    playerData.tracks = response.body.tracks;
+            if (response.status == 200) {
+                if (response.data.tracks && response.data.tracks.length > 0) {
+                    playerData.tracks = response.data.tracks;
                 }
                 playerData.loading = false;
                 playerData.playback.play();

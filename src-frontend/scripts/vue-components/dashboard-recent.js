@@ -73,9 +73,9 @@ export default {
         loadRecentAddedTracks: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentAddedTracks(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -86,9 +86,9 @@ export default {
         loadRecentAddedArtists: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentAddedArtists(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -99,9 +99,9 @@ export default {
         loadRecentAddedAlbums: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentAddedAlbums(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -112,9 +112,9 @@ export default {
         loadRecentPlayedTracks: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentPlayedTracks(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -125,9 +125,9 @@ export default {
         loadRecentPlayedArtists: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentPlayedArtists(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());
@@ -138,9 +138,9 @@ export default {
         loadRecentPlayedAlbums: function () {
             let self = this;
             spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval, function (response) {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        self.items = response.body.metrics;
+                if (response.status == 200) {
+                    if (response.data.metrics && response.data.metrics.length > 0) {
+                        self.items = response.data.metrics;
                     }
                 } else {
                     self.setAPIError(response.getApiErrorData());

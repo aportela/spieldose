@@ -94,12 +94,12 @@ export default {
     },
     created: function () {
         let self = this;
-        bus.$on('showPlayerNavBar', function () {
+        bus.on('showPlayerNavBar', function () {
             const rootEl = document.documentElement;
             rootEl.classList.add('has-navbar-fixed-bottom');
             self.showPlayerNavBar = true;
         });
-        bus.$on('hidePlayerNavbar', function () {
+        bus.on('hidePlayerNavbar', function () {
             const rootEl = document.documentElement;
             rootEl.classList.remove('has-navbar-fixed-bottom');
             self.showPlayerNavBar = false;
@@ -120,7 +120,7 @@ export default {
     },
     methods: {
         signout: function (e) {
-            bus.$emit('signOut');
+            bus.emit('signOut');
         }
     }
 }

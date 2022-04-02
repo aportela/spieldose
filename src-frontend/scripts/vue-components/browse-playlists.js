@@ -102,7 +102,7 @@ export default {
                 self.loading = true;
                 self.clearAPIErrors();
                 spieldoseAPI.playlist.remove(id, function (response) {
-                    if (response.ok) {
+                    if (response.status == 200) {
                         if (self.playerData.currentPlaylist.id == id) {
                             self.playerData.currentPlaylist.unset();
                         }
@@ -124,12 +124,12 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.playlist.search(self.nameFilter, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.playlists && response.body.playlists.length > 0) {
-                        self.playlists = response.body.playlists;
+                if (response.status == 200) {
+                    self.pager.actualPage = response.data.pagination.actualPage;
+                    self.pager.totalPages = response.data.pagination.totalPages;
+                    self.pager.totalResults = response.data.pagination.totalResults;
+                    if (response.data.playlists && response.data.playlists.length > 0) {
+                        self.playlists = response.data.playlists;
                     } else {
                         self.playlists = [];
                     }

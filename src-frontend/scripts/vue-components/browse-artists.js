@@ -90,12 +90,12 @@ export default {
             self.loading = true;
             self.clearAPIErrors();
             spieldoseAPI.artist.search(self.nameFilter, self.filterNotScraped == 1, self.pager.actualPage, self.pager.resultsPage, function (response) {
-                if (response.ok) {
-                    self.pager.actualPage = response.body.pagination.actualPage;
-                    self.pager.totalPages = response.body.pagination.totalPages;
-                    self.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.artists && response.body.artists.length > 0) {
-                        self.artists = response.body.artists;
+                if (response.status == 200) {
+                    self.pager.actualPage = response.data.pagination.actualPage;
+                    self.pager.totalPages = response.data.pagination.totalPages;
+                    self.pager.totalResults = response.data.pagination.totalResults;
+                    if (response.data.artists && response.data.artists.length > 0) {
+                        self.artists = response.data.artists;
                     } else {
                         self.artists = [];
                     }

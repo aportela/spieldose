@@ -85,11 +85,11 @@ export default {
         loadMetricsByHourChart: function () {
             let self = this;
             spieldoseAPI.metrics.getPlayStatMetricsByHour(function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
                     let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data[response.body.metrics[i].hour] = response.body.metrics[i].total;
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data[response.data.metrics[i].hour] = response.data.metrics[i].total;
                     }
                     if (self.chart) {
                         self.chart.destroy();
@@ -118,7 +118,7 @@ export default {
         loadMetricsByWeekDayChart: function () {
             let self = this;
             spieldoseAPI.metrics.getPlayStatMetricsByWeekDay(function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     const weekDayNames = [
                         self.$t('dashboard.labels.sunday'),
                         self.$t('dashboard.labels.monday'),
@@ -130,9 +130,9 @@ export default {
                     ];
                     let weekDays = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        weekDays.push(weekDayNames[response.body.metrics[i].weekDay]);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
                     }
                     if (self.chart) {
                         self.chart.destroy();
@@ -159,7 +159,7 @@ export default {
         loadMetricsByMonthChart: function () {
             let self = this;
             spieldoseAPI.metrics.getPlayStatMetricsByMonth(function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     const monthNames = [
                         self.$t('dashboard.labels.january'),
                         self.$t('dashboard.labels.february'),
@@ -176,9 +176,9 @@ export default {
                     ];
                     let months = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        months.push(monthNames[response.body.metrics[i].month - 1]);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        months.push(monthNames[response.data.metrics[i].month - 1]);
                     }
                     if (self.chart) {
                         self.chart.destroy();
@@ -205,12 +205,12 @@ export default {
         loadMetricsByYearChart: function () {
             let self = this;
             spieldoseAPI.metrics.getPlayStatMetricsByYear(function (response) {
-                if (response.ok) {
+                if (response.status == 200) {
                     let years = [];
                     let data = [];
-                    for (let i = 0; i < response.body.metrics.length; i++) {
-                        data.push(response.body.metrics[i].total);
-                        years.push(response.body.metrics[i].year);
+                    for (let i = 0; i < response.data.metrics.length; i++) {
+                        data.push(response.data.metrics[i].total);
+                        years.push(response.data.metrics[i].year);
                     }
                     if (self.chart) {
                         self.chart.destroy();
