@@ -6,7 +6,7 @@ import { default as spieldoseSettings } from '../settings.js';
 const template = function () {
     return `
         <div id="player" class="box is-paddingless is-radiusless is-unselectable" v-if="this.$player">
-            <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
+            <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
             <!--
             <canvas id="canvas"></canvas>
             -->
@@ -47,9 +47,9 @@ const template = function () {
                                 <i v-else class="fas fa-2x fa-volume-off"></i>
                             </span>
                             <span v-else v-bind:title="$t('player.buttons.toggleMuteHint')" class="icon" @click.prevent="onToggleMuteAudio">
-                                <span class="fa-stack fa-1x">
-                                    <i class="fas fa-stack-2x fa-volume-off"></i>
-                                    <i class="fas fa-ban fa-stack-2x has-text-danger"></i>
+                                <span class="fa-stack fa-1x fa-fw">
+                                    <i class="fa-fw fas fa-stack-2x fa-volume-off"></i>
+                                    <i class="fa-fw fas fa-ban fa-stack-2x has-text-danger"></i>
                                 </span>
                             </span>
                         </div>
@@ -79,7 +79,8 @@ export default {
     },
     computed: {
         hasRotateVinylClass: function () {
-            return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
+            //return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
+            return(this.vinylRotationEffect);
         },
         coverSrc: function () {
             if (this.$player.currentTrack) {

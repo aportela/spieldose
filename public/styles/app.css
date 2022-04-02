@@ -664,6 +664,15 @@ img#album-cover
     height: 400px;
 }
 
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+
 @-webkit-keyframes rotate
 {
     from {
@@ -676,7 +685,9 @@ img#album-cover
 
 img#album-cover.rotate-album
 {
-    animation: rotate 1s steps(360, end) 0s infinite;
+    border-radius: 390px;
+    border: 100px solid #222;
+    animation: rotation 6s linear infinite;
 }
 
 /* audio */

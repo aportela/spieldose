@@ -13,20 +13,12 @@
         <link rel="icon" type="image/png" href="icons/icon-64.png" sizes="64x64">
         <link rel="icon" type="image/png" href="icons/icon-128.png" sizes="128x128">
         <title>Spieldose</title>
-        {% if settings.localVendorAssets %}
-            {% if settings.production %}
-        <link rel="stylesheet" href="vendor/bulma-0.9.2/css/bulma.min.css" crossorigin="anonymous" />
-            {% else %}
-        <link rel="stylesheet" href="vendor/bulma-0.9.2/css/bulma.css" crossorigin="anonymous" />
-            {% endif %}
+        {% if settings.production %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" integrity="sha512-IgmDkwzs96t4SrChW29No3NXBIBv8baW490zk5aXvhCD8vuZM3yUSkbyTBcXohkySecyzIrUwiF/qV0cuPcL3Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         {% else %}
-            {% if settings.production %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" integrity="sha512-byErQdWdTqREz6DLAA9pCnLbdoGGhXfU6gm1c8bkf7F51JVmUBlayGe2A31VpXWQP+eiJ3ilTAZHCR3vmMyybA==" crossorigin="anonymous" />
-            {% else %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.css" integrity="sha512-toUvtf5IUJlYwGfXDzm8QT5X2JXuF9inSJp+oIkfOWZ+QNKKbA9HbXpUpe5nMQ4Mg9SC773pO3vWp2LjMY6vPg==" crossorigin="anonymous" />
-            {% endif %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.css" integrity="sha512-7VGuxKU1BFMmA+dC7NiW8jF0YOIe6bibjUBr42unVtEsI/UYzXMS3nkgNvmsY4yqauxeiEs4bXF6fPLsCuxN/A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         {% endif %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="styles/app.css">
     </head>
     <body>
