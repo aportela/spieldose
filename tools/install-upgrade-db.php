@@ -1,14 +1,32 @@
 <?php
 
-    declare(strict_types=1);
 
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+use DI\ContainerBuilder;
+use Slim\App;
+
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+
+
+$containerBuilder = new ContainerBuilder();
+
+// Set up settings
+
+$containerBuilder->addDefinitions(__DIR__ . '../../config/container.php');
+
+// Build PHP-DI Container instance
+$container = $containerBuilder->build();
+
+// Create App instance
+$app = $container->get(App::class);
+
 
     echo "Spieldose installer" . PHP_EOL;
 
-    $app = (new \Spieldose\App())->get();
+    //$app = (new \Spieldose\App())->get();
 
-    $missingExtensions = array_diff($app->getContainer()["settings"]["phpRequiredExtensions"], get_loaded_extensions());
+    $settings = $container->get('settings');
+
+    $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
     if (count($missingExtensions) > 0) {
         echo "Error: missing php extension/s: " . implode(", ", $missingExtensions) . PHP_EOL;
         exit;
@@ -16,7 +34,9 @@
 
     $actualVersion = 0;
     $container = $app->getContainer();
-    $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($container), $container->get("settings")['database']['type']);
+    $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB(
+        $container->get(PDO::class)
+    ), "PDO_SQLITE");
     try {
         $actualVersion = $v->get();
     } catch (\Spieldose\Exception\NotFoundException $e) {
