@@ -6,7 +6,8 @@
         "slim/twig-view": "^3.3",
         "james-heinrich/getid3": "1.9.*",
         "sybio/image-workshop": "2.2",
-        "ramsey/uuid": "^4.2"
+        "ramsey/uuid": "^4.2",
+        "monolog/monolog": "^2.4"
     },
     "autoload": {
         "psr-4": {
