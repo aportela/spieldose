@@ -37,16 +37,25 @@ return function (App $app) {
         /* user */
 
         $group->get('/user/poll', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-            return $response->withJson(['sessionId' => session_id() ], 200);
+            $payload = json_encode(['sessionId' => session_id() ]);
+            $response->getBody()->write($payload);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         });
 
         $group->post('/user/signin', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $params = $request->getParsedBody();
-            $u = new \Spieldose\User("", $request->getParam("email", ""), $request->getParam("password", ""));
-            if ($u->login(new \Spieldose\Database\DB($this))) {
-                return $response->withJson(['logged' => true], 200);
+            $u = new \Spieldose\User("", $params["email"] ?? "", $params["password"] ?? "");
+            $dbh =  new \Spieldose\Database\DB(
+                $this->get(PDO::class)
+            );
+            if ($u->login($dbh)) {
+                $payload = json_encode(['logged' => true]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             } else {
-                return $response->withJson(['logged' => false], 401);
+                $payload = json_encode(['logged' => false]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
             }
         });
 
@@ -54,7 +63,9 @@ return function (App $app) {
             $params = $request->getParsedBody();
             if ($this->get('settings')['common']['allowSignUp']) {
                 $params = $request->getParsedBody();
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh =  new \Spieldose\Database\DB(
+                    $this->get(PDO::class)
+                );
                 $u = new \Spieldose\User(
                     "",
                     $request->getParam("email", ""),
@@ -67,11 +78,15 @@ return function (App $app) {
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
                 if ($exists) {
-                    return $response->withJson([], 409);
+                    $payload = json_encode([]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
                 } else {
                     $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                     $u->add($dbh);
-                    return $response->withJson([], 200);
+                    $payload = json_encode([]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 }
             } else {
                 throw new \Spieldose\Exception\AccessDeniedException("");
@@ -80,7 +95,9 @@ return function (App $app) {
 
         $group->get('/user/signout', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             \Spieldose\User::logout();
-            return $response->withJson(['logged' => false], 200);
+            $payload = json_encode(['logged' => false]);
+            $response->getBody()->write($payload);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         });
 
         /* user */
@@ -97,10 +114,11 @@ return function (App $app) {
                     fseek($f, 0);
                     $data = fread($f, $filesize);
                     fclose($f);
-                    return $response->withStatus(200)
+                    $response->getBody()->write($data);
+                    return $response
                     ->withHeader('Content-Type', "image/jpeg")
-                    ->withHeader('Content-Length', $filesize)
-                    ->write($data);
+                    //->withHeader('Content-Length', $filesize)
+                    ->withStatus(200);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("url");
                 }
@@ -112,10 +130,11 @@ return function (App $app) {
                     fseek($f, 0);
                     $data = fread($f, $filesize);
                     fclose($f);
-                    return $response->withStatus(200)
+                    $response->getBody()->write($data);
+                    return $response
                     ->withHeader('Content-Type', "image/jpeg")
-                    ->withHeader('Content-Length', $filesize)
-                    ->write($data);
+                    //->withHeader('Content-Length', $filesize)
+                    ->withStatus(200);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("hash");
                 }
