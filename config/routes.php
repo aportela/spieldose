@@ -68,8 +68,8 @@ return function (App $app) {
                 );
                 $u = new \Spieldose\User(
                     "",
-                    $request->getParam("email", ""),
-                    $request->getParam("password", "")
+                    $params["email"] ?? "",
+                    $params["password"] ?? ""
                 );
                 $exists = false;
                 try {
@@ -117,7 +117,7 @@ return function (App $app) {
                     $response->getBody()->write($data);
                     return $response
                     ->withHeader('Content-Type', "image/jpeg")
-                    //->withHeader('Content-Length', $filesize)
+                    ->withHeader('Content-Length', $filesize)
                     ->withStatus(200);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("url");
@@ -133,7 +133,7 @@ return function (App $app) {
                     $response->getBody()->write($data);
                     return $response
                     ->withHeader('Content-Type', "image/jpeg")
-                    //->withHeader('Content-Length', $filesize)
+                    ->withHeader('Content-Length', $filesize)
                     ->withStatus(200);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("hash");
@@ -150,9 +150,8 @@ return function (App $app) {
                 new \Spieldose\Database\DB($this->get(PDO::class)),
                 intval($count)
             );
-            $response->getBody()->write(json_encode([
-                'covers' => $data
-            ]));
+            $payload = json_encode(['covers' => $data]);
+            $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
         });
 
@@ -162,9 +161,9 @@ return function (App $app) {
             /* track */
 
             $group2->get('/track/get/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $track  = new \Spieldose\Track($route->getArgument("id"));
-                $db = new \Spieldose\Database\DB($this);
+
+                $track  = new \Spieldose\Track($args["id"]);
+                $db = new \Spieldose\Database\DB($this->get(PDO::class));
                 $track->get($db);
                 if (file_exists($track->path)) {
                     $track->incPlayCount($db);
@@ -213,37 +212,43 @@ return function (App $app) {
             $group2->post('/track/{id}/love', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $route = $request->getAttribute('route');
                 $track  = new \Spieldose\Track($route->getArgument("id"));
-                $db = new \Spieldose\Database\DB($this);
+                $db = new \Spieldose\Database\DB($this->get(PDO::class));
                 $loved = $track->love($db);
-                return $response->withJson(['loved' => $loved ? "1": "0"], 200);
+                $payload = json_encode(['loved' => $loved ? "1": "0"]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/track/{id}/unlove', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $route = $request->getAttribute('route');
                 $track  = new \Spieldose\Track($route->getArgument("id"));
-                $db = new \Spieldose\Database\DB($this);
+                $db = new \Spieldose\Database\DB($this->get(PDO::class));
                 $loved = $track->unLove($db);
-                return $response->withJson(['loved' => "0" ], 200);
+                $payload = json_encode(['loved' => "0" ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/track/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $filter = array();
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Track::search(
-                    new \Spieldose\Database\DB($this),
-                    intval($request->getParam("actualPage", 1)),
-                    intval($request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage'])),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    intval($params["actualPage"]) ?? 1,
+                    intval(isset($params["resultsPage"]) ? $params["resultsPage"]: $this->get('settings')['common']['defaultResultsPage']) ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "text" => $request->getParam("text", ""),
-                        "artist" => $request->getParam("artist", ""),
-                        "album" => $request->getParam("album", ""),
-                        "year" => $request->getParam("year", ""),
-                        "path" => $request->getParam("path", ""),
-                        "loved" => $request->getParam("loved", "")
+                        "text" => $params["text"] ?? "",
+                        "artist" => $params["artist"] ?? "",
+                        "album" => $params["album"] ?? "",
+                        "year" => $params["year"] ?? "",
+                        "path" => $params["path"] ?? "",
+                        "loved" => $params["loved"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages], 200);
+                $payload = json_encode(['tracks' => $data->results, 'totalResults' => $data->totalResults, 'actualPage' => $data->actualPage, 'resultsPage' => $data->resultsPage, 'totalPages' => $data->totalPages]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* track */
@@ -253,44 +258,46 @@ return function (App $app) {
             $group2->post('/artist/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Artist::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "partialName" => $request->getParam("partialName", ""),
-                        "name" => $request->getParam("name", ""),
-                        "withoutMbid" => $request->getParam("withoutMbid", false)
+                        "partialName" => $params["partialName"] ?? "",
+                        "name" => $params["name"] ?? "",
+                        "withoutMbid" => $params["withoutMbid"] ?? false
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(
-                    [
-                        'artists' => $data->results,
-                        "pagination" => array(
-                            'totalResults' => $data->totalResults,
-                            'actualPage' => $data->actualPage,
-                            'resultsPage' => $data->resultsPage,
-                            'totalPages' => $data->totalPages
-                        )
-                    ],
-                    200
-                );
+
+                $payload = json_encode([
+                    'artists' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'actualPage' => $data->actualPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->get('/artist/{name:.*}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $route = $request->getAttribute('route');
                 $artist = new \Spieldose\Artist($route->getArgument("name"));
-                $artist->get(new \Spieldose\Database\DB($this));
-                return $response->withJson(['artist' => $artist], 200);
+                $artist->get(new \Spieldose\Database\DB($this->get(PDO::class)));
+                $payload = json_encode(['artist' => $artist]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->put('/artist/{name:.*}/mbid', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $route = $request->getAttribute('route');
-                $mbid = $request->getParam("mbid", "");
+                $mbid = $params["mbid"] ?? "";
                 if (! empty($mbid)) {
                     \Spieldose\Artist::overwriteMusicBrainz(
-                        new \Spieldose\Database\DB($this),
+                        new \Spieldose\Database\DB($this->get(PDO::class)),
                         $route->getArgument("name"),
                         $mbid
                     );
@@ -300,7 +307,9 @@ return function (App $app) {
                         $route->getArgument("name")
                     );
                 }
-                return $response->withJson([], 200);
+                $payload = json_encode([]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* artist */
@@ -310,30 +319,29 @@ return function (App $app) {
             $group2->post('/album/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Album::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "partialName" => $request->getParam("partialName", ""),
-                        "name" => $request->getParam("name", ""),
-                        "partialArtist" => $request->getParam("partialArtist", ""),
-                        "artist" => $request->getParam("artist", ""),
-                        "year" => $request->getParam("year", "")
+                        "partialName" => $params["partialName"] ?? "",
+                        "name" => $params["name"] ?? "",
+                        "partialArtist" => $params["partialArtist"] ?? "",
+                        "artist" => $params["artist"] ?? "",
+                        "year" => $params["year"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(
-                    [
-                        'albums' => $data->results,
-                        "pagination" => array(
-                            'totalResults' => $data->totalResults,
-                            'actualPage' => $data->actualPage,
-                            'resultsPage' => $data->resultsPage,
-                            'totalPages' => $data->totalPages
-                        )
-                    ],
-                    200
-                );
+                $payload = json_encode([
+                    'albums' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'actualPage' => $data->actualPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* album */
@@ -343,27 +351,26 @@ return function (App $app) {
             $group2->post('/path/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Path::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "name" => $request->getParam("name", ""),
-                        "partialName" => $request->getParam("partialName", "")
+                        "name" => $params["name"] ?? "",
+                        "partialName" => $params["partialName"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(
-                    [
-                        'paths' => $data->results,
-                        "pagination" => array(
-                            'totalResults' => $data->totalResults,
-                            'actualPage' => $data->actualPage,
-                            'resultsPage' => $data->resultsPage,
-                            'totalPages' => $data->totalPages
-                        )
-                    ],
-                    200
-                );
+                $payload = json_encode([
+                    'paths' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'actualPage' => $data->actualPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* path */
@@ -373,69 +380,74 @@ return function (App $app) {
             $group2->get('/playlist/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $route = $request->getAttribute('route');
                 $playlist = new \Spieldose\Playlist($route->getArgument("id"), "", array());
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->get($dbh);
-                    return $response->withJson(['playlist' => $playlist], 200);
+                    $payload = json_encode(['playlist' => $playlist]);
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/playlist/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Playlist::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "name" => $request->getParam("name", ""),
-                        "partialName" => $request->getParam("partialName", "")
+                        "name" => $params["name"] ?? "",
+                        "partialName" => $params["partialName"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(
-                    [
-                        'playlists' => $data->results,
-                        "pagination" => array(
-                            'totalResults' => $data->totalResults,
-                            'actualPage' => $data->actualPage,
-                            'resultsPage' => $data->resultsPage,
-                            'totalPages' => $data->totalPages
-                        )
-                    ],
-                    200
-                );
+                $payload = json_encode([
+                    'playlists' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'actualPage' => $data->actualPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/playlist/add', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $name = $request->getParam("name", "");
-                $tracks = $request->getParam("tracks", array());
+                $name = $params["name"] ?? "";
+                $tracks = $params["tracks"] ?? array();
                 $playlist = new \Spieldose\Playlist(
                     $id,
                     $name,
                     $tracks
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 $playlist->add($dbh);
-                return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+                $payload = json_encode([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/playlist/update', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $id = $request->getParam("id", "");
-                $name = $request->getParam("name", "");
-                $tracks = $request->getParam("tracks", array());
+                $id = $params["id"] ?? "";
+                $name = $params["name"] ?? "";
+                $tracks = $params["tracks"] ?? array();
                 $playlist = new \Spieldose\Playlist(
                     $id,
                     $name,
                     $tracks
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->update($dbh);
-                    return $response->withJson([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ], 200);
+                    $payload = json_encode([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json');
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
@@ -443,16 +455,18 @@ return function (App $app) {
 
             $group2->post('/playlist/remove', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $id = $request->getParam("id", "");
+                $id = $params["id"] ?? "";
                 $playlist = new \Spieldose\Playlist(
                     $id,
                     "",
                     array()
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->remove($dbh);
-                    return $response->withJson([ ], 200);
+                    $payload = json_encode([ ]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json');
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
@@ -465,10 +479,12 @@ return function (App $app) {
             $group2->get('/radio_station/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $route = $request->getAttribute('route');
                 $radioStation = new \Spieldose\RadioStation($route->getArgument("id"), "", "", 0, "");
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->get($dbh);
-                    return $response->withJson(['radioStation' => $radioStation], 200);
+                    $payload = json_encode(['radioStation' => $radioStation]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json');
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
@@ -477,36 +493,35 @@ return function (App $app) {
             $group2->post('/radio_station/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\RadioStation::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "name" => $request->getParam("name", ""),
-                        "partialName" => $request->getParam("partialName", "")
+                        "name" => $params["name"] ?? "",
+                        "partialName" => $params["partialName"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(
-                    [
-                        'radioStations' => $data->results,
-                        "pagination" => array(
-                            'totalResults' => $data->totalResults,
-                            'actualPage' => $data->actualPage,
-                            'resultsPage' => $data->resultsPage,
-                            'totalPages' => $data->totalPages
-                        )
-                    ],
-                    200
-                );
+                $payload = json_encode([
+                    'radioStations' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'actualPage' => $data->actualPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/radio_station/add', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $name = $request->getParam("name", "");
-                $url = $request->getParam("url", "");
-                $urlType = intval($request->getParam("urlType", 0));
-                $image = $request->getParam("image", "");
+                $name = $params["name"] ?? "";
+                $url = $params["url"] ?? "";
+                $urlType = intval($params["urlType"] ?? 0);
+                $image = $params["image"] ?? "";
                 $radioStation = new \Spieldose\RadioStation(
                     $id,
                     $name,
@@ -514,18 +529,20 @@ return function (App $app) {
                     $urlType,
                     $image
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 $radioStation->add($dbh);
-                return $response->withJson([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ], 200);
+                $payload = json_encode([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/radio_station/update', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $id = $request->getParam("id", "");
-                $name = $request->getParam("name", "");
-                $url = $request->getParam("url", "");
-                $urlType = intval($request->getParam("urlType", 0));
-                $image = $request->getParam("image", "");
+                $id = $params["id"] ?? "";
+                $name = $params["name"] ?? "";
+                $url = $params["url"] ?? "";
+                $urlType = intval($params["urlType"] ?? 0);
+                $image = $params["image"] ?? "";
                 $radioStation = new \Spieldose\RadioStation(
                     $id,
                     $name,
@@ -533,10 +550,12 @@ return function (App $app) {
                     $urlType,
                     $image
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->update($dbh);
-                    return $response->withJson([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ], 200);
+                    $payload = json_encode([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json');
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
@@ -544,7 +563,7 @@ return function (App $app) {
 
             $group2->post('/radio_station/remove', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $id = $request->getParam("id", "");
+                $id = $params["id"] ?? "";
                 $radioStation = new \Spieldose\RadioStation(
                     $id,
                     "",
@@ -552,10 +571,12 @@ return function (App $app) {
                     0,
                     ""
                 );
-                $dbh = new \Spieldose\Database\DB($this);
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->remove($dbh);
-                    return $response->withJson([ ], 200);
+                    $payload = json_encode([ ]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json');
                 } else {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
@@ -569,41 +590,43 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $artistData = \Spieldose\Artist::search(
                     new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "partialName" => $request->getParam("text", "")
+                        "partialName" => $params["text"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
                 $albumData = \Spieldose\Album::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "partialName" => $request->getParam("text", "")
+                        "partialName" => $params["text"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
                 $trackData = \Spieldose\Track::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "text" => $request->getParam("text", "")
+                        "text" => $params["text"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
                 $playlistData = \Spieldose\Playlist::search(
-                    new \Spieldose\Database\DB($this),
-                    $request->getParam("actualPage", 1),
-                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    $params["actualPage"] ?? 1,
+                    $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
-                        "partialName" => $request->getParam("text", "")
+                        "partialName" => $params["text"] ?? ""
                     ),
-                    $request->getParam("orderBy", "")
+                    $params["orderBy"] ?? ""
                 );
-                return $response->withJson(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results], 200);
+                $payload = json_encode(['artists' => $artistData->results, 'albums' => $albumData->results, 'tracks' => $trackData->results, 'playlists' => $playlistData->results]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* global search */
@@ -613,83 +636,91 @@ return function (App $app) {
             $group2->post('/metrics/top_played_tracks', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
-                        "fromDate" => $request->getParam("fromDate", ""),
-                        "toDate" => $request->getParam("toDate", ""),
-                        "artist" => $request->getParam("artist", ""),
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
+                        "artist" => $params["artist"] ?? "",
                     ),
-                    $request->getParam("count", 5)
+                    $params["count"] ?? 5
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/top_artists', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopArtists(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
-                        "fromDate" => $request->getParam("fromDate", ""),
-                        "toDate" => $request->getParam("toDate", ""),
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
                     ),
-                    $request->getParam("count", 5)
+                    $params["count"] ?? 5
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/top_albums', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopAlbums(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
-                        "fromDate" => $request->getParam("fromDate", ""),
-                        "toDate" => $request->getParam("toDate", ""),
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
                     ),
-                    $request->getParam("count", 5)
+                    $params["count"] ?? 5
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/top_genres', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopGenres(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
-                        "fromDate" => $request->getParam("fromDate", ""),
-                        "toDate" => $request->getParam("toDate", ""),
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
                     ),
-                    $request->getParam("count", 5)
+                    $params["count"] ?? 5
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/recently_added', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $entity = $request->getParam("entity", "");
+                $entity = $params["entity"] ?? "";
                 if (! empty($entity)) {
                     switch($entity) {
                         case "tracks":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
                         break;
                         case "artists":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
                         break;
                         case "albums":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
 
                         break;
@@ -697,36 +728,38 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("entity");
                 }
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/recently_played', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $entity = $request->getParam("entity", "");
+                $entity = $params["entity"] ?? "";
                 if (! empty($entity)) {
                     switch($entity) {
                         case "tracks":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
                         break;
                         case "artists":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
                         break;
                         case "albums":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
-                                new \Spieldose\Database\DB($this),
+                                new \Spieldose\Database\DB($this->get(PDO::class)),
                                 array(
                                 ),
-                                $request->getParam("count", 5)
+                                $params["count"] ?? 5
                             );
                         break;
                     }
@@ -734,44 +767,54 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("entity");
                 }
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/play_stats_by_hour', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
                     )
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/play_stats_by_weekday', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
                     )
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/play_stats_by_month', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
                     )
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             $group2->post('/metrics/play_stats_by_year', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
-                    new \Spieldose\Database\DB($this),
+                    new \Spieldose\Database\DB($this->get(PDO::class)),
                     array(
                     )
                 );
-                return $response->withJson(['metrics' => $metrics], 200);
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
             });
 
             /* metrics */
