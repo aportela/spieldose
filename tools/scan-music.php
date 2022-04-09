@@ -74,7 +74,8 @@
             for ($i = 0; $i < $totalDirectories; $i++) {
                 try {
                     //$c["scanLogger"]->debug("Processing " . $directories[$i]);
-                    foreach(glob($directories[$i] . DIRECTORY_SEPARATOR . $c["settings"]["albumCoverPathValidFilenames"], GLOB_BRACE) as $file) {
+                    foreach(glob($directories[$i] . DIRECTORY_SEPARATOR . $settings["albumCoverPathValidFilenames"], GLOB_BRACE) as $file) {
+                        //echo dirname($file) .PHP_EOL;
                         \Spieldose\Album::saveLocalAlbumCover($dbh, dirname($file), basename($file));
                     }
                 } catch (\Throwable $e) {

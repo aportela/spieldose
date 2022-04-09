@@ -61,6 +61,9 @@
         'options' => ['cache' => false]
     ];
 
+
+    $settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+
     $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
 
     return $settings;
