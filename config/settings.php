@@ -62,6 +62,13 @@
     ];
 
 
+    $settings['common'] = [
+        'defaultResultsPage' => 64,
+        'allowSignUp' => true,
+        'liveSearch' => true,
+        'locale' => 'en'
+    ];
+
     $settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
