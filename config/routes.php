@@ -187,6 +187,7 @@ return function (App $app) {
                     fseek($file, $offset);
                     $data = fread($file, $length);
                     fclose($file);
+                    $response->getBody()->write($data);
                     if ($partialContent) {
                         // output the right headers for partial content
                         return $response->withStatus(206)
@@ -194,15 +195,13 @@ return function (App $app) {
                         ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                         ->withHeader('Content-Length', $filesize)
                         ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
-                        ->withHeader('Accept-Ranges', 'bytes')
-                        ->write($data);
+                        ->withHeader('Accept-Ranges', 'bytes');
                     } else {
                         return $response->withStatus(200)
                             ->withHeader('Content-Type', $track->mime ? $track->mime: "application/octet-stream")
                             ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
                             ->withHeader('Content-Length', $filesize)
-                            ->withHeader('Accept-Ranges', 'bytes')
-                            ->write($data);
+                            ->withHeader('Accept-Ranges', 'bytes');
                     }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id");
