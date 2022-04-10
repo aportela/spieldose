@@ -7,7 +7,7 @@
     ini_set('display_errors', '1');
 
     // Timezone
-    date_default_timezone_set('Europe/Berlin');
+    date_default_timezone_set('Europe/Madrid');
 
     // Settings
     $settings = [];
@@ -29,7 +29,6 @@
         // Display error details in error log
         'log_error_details' => true,
     ];
-
 
     $settings['default_log_path'] = isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log';
 
