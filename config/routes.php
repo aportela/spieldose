@@ -123,7 +123,7 @@ return function (App $app) {
                     throw new \Spieldose\Exception\NotFoundException("url");
                 }
             } else if (! empty($hash)) {
-                $file = \Spieldose\Thumbnail::getCachedLocalPathFromHash(new \Spieldose\Database\DB($this->get(PDO::class)), $hash);
+                $file = \Spieldose\Thumbnail::getCachedLocalPathFromHash(new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)), $hash);
                 if (! empty($file) && file_exists($file)) {
                     $filesize = filesize($file);
                     $f = fopen($file, 'r');
@@ -147,7 +147,7 @@ return function (App $app) {
             $params = $request->getParsedBody();
             $count = $params["count"] ?? 128;
             $data = \Spieldose\Album::getRandomAlbumCovers(
-                new \Spieldose\Database\DB($this->get(PDO::class)),
+                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                 intval($count)
             );
             $payload = json_encode(['covers' => $data]);
@@ -163,7 +163,7 @@ return function (App $app) {
             $group2->get('/track/get/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
 
                 $track  = new \Spieldose\Track($args["id"]);
-                $db = new \Spieldose\Database\DB($this->get(PDO::class));
+                $db = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 $track->get($db);
                 if (file_exists($track->path)) {
                     $track->incPlayCount($db);
@@ -209,9 +209,8 @@ return function (App $app) {
             });
 
             $group2->post('/track/{id}/love', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $track  = new \Spieldose\Track($route->getArgument("id"));
-                $db = new \Spieldose\Database\DB($this->get(PDO::class));
+                $track  = new \Spieldose\Track($args["id"]);
+                $db = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 $loved = $track->love($db);
                 $payload = json_encode(['loved' => $loved ? "1": "0"]);
                 $response->getBody()->write($payload);
@@ -219,9 +218,8 @@ return function (App $app) {
             });
 
             $group2->post('/track/{id}/unlove', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $track  = new \Spieldose\Track($route->getArgument("id"));
-                $db = new \Spieldose\Database\DB($this->get(PDO::class));
+                $track  = new \Spieldose\Track($args["id"]);
+                $db = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 $loved = $track->unLove($db);
                 $payload = json_encode(['loved' => "0" ]);
                 $response->getBody()->write($payload);
@@ -232,8 +230,8 @@ return function (App $app) {
                 $filter = array();
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Track::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    intval($params["actualPage"]) ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     intval(isset($params["resultsPage"]) ? $params["resultsPage"]: $this->get('settings')['common']['defaultResultsPage']) ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "text" => $params["text"] ?? "",
@@ -257,8 +255,8 @@ return function (App $app) {
             $group2->post('/artist/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Artist::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "partialName" => $params["partialName"] ?? "",
@@ -282,9 +280,8 @@ return function (App $app) {
             });
 
             $group2->get('/artist/{name:.*}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $artist = new \Spieldose\Artist($route->getArgument("name"));
-                $artist->get(new \Spieldose\Database\DB($this->get(PDO::class)));
+                $artist = new \Spieldose\Artist($args["name"]);
+                $artist->get(new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)));
                 $payload = json_encode(['artist' => $artist]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json');
@@ -292,18 +289,17 @@ return function (App $app) {
 
             $group2->put('/artist/{name:.*}/mbid', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $route = $request->getAttribute('route');
                 $mbid = $params["mbid"] ?? "";
                 if (! empty($mbid)) {
                     \Spieldose\Artist::overwriteMusicBrainz(
-                        new \Spieldose\Database\DB($this->get(PDO::class)),
-                        $route->getArgument("name"),
+                        new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                        $args["name"],
                         $mbid
                     );
                 } else {
                     \Spieldose\Artist::clearMusicBrainz(
                         new \Spieldose\Database\DB($this),
-                        $route->getArgument("name")
+                        $args["name"]
                     );
                 }
                 $payload = json_encode([]);
@@ -318,8 +314,8 @@ return function (App $app) {
             $group2->post('/album/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Album::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "partialName" => $params["partialName"] ?? "",
@@ -350,8 +346,8 @@ return function (App $app) {
             $group2->post('/path/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Path::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "name" => $params["name"] ?? "",
@@ -377,9 +373,8 @@ return function (App $app) {
             /* playlist */
 
             $group2->get('/playlist/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $playlist = new \Spieldose\Playlist($route->getArgument("id"), "", array());
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $playlist = new \Spieldose\Playlist($args["id"], "", array());
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->get($dbh);
                     $payload = json_encode(['playlist' => $playlist]);
@@ -393,8 +388,8 @@ return function (App $app) {
             $group2->post('/playlist/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Playlist::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "name" => $params["name"] ?? "",
@@ -425,7 +420,7 @@ return function (App $app) {
                     $name,
                     $tracks
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 $playlist->add($dbh);
                 $payload = json_encode([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ]);
                 $response->getBody()->write($payload);
@@ -441,7 +436,7 @@ return function (App $app) {
                     $name,
                     $tracks
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->update($dbh);
                     $payload = json_encode([ "playlist" => array("id" => $id, "name" => $name, "tracks" => $tracks) ]);
@@ -460,7 +455,7 @@ return function (App $app) {
                     "",
                     array()
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($playlist->isAllowed($dbh)) {
                     $playlist->remove($dbh);
                     $payload = json_encode([ ]);
@@ -476,9 +471,8 @@ return function (App $app) {
             /* radio stations */
 
             $group2->get('/radio_station/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-                $route = $request->getAttribute('route');
-                $radioStation = new \Spieldose\RadioStation($route->getArgument("id"), "", "", 0, "");
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $radioStation = new \Spieldose\RadioStation($args["id"], "", "", 0, "");
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->get($dbh);
                     $payload = json_encode(['radioStation' => $radioStation]);
@@ -492,8 +486,8 @@ return function (App $app) {
             $group2->post('/radio_station/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\RadioStation::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "name" => $params["name"] ?? "",
@@ -528,7 +522,7 @@ return function (App $app) {
                     $urlType,
                     $image
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 $radioStation->add($dbh);
                 $payload = json_encode([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ]);
                 $response->getBody()->write($payload);
@@ -549,7 +543,7 @@ return function (App $app) {
                     $urlType,
                     $image
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->update($dbh);
                     $payload = json_encode([ "radioStation" => array("id" => $id, "name" => $name, "url" => $url, "image" => $image) ]);
@@ -570,7 +564,7 @@ return function (App $app) {
                     0,
                     ""
                 );
-                $dbh = new \Spieldose\Database\DB($this->get(PDO::class));
+                $dbh = new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class));
                 if ($radioStation->isAllowed($dbh)) {
                     $radioStation->remove($dbh);
                     $payload = json_encode([ ]);
@@ -589,7 +583,7 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $artistData = \Spieldose\Artist::search(
                     new \Spieldose\Database\DB($this),
-                    $params["actualPage"] ?? 1,
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "partialName" => $params["text"] ?? ""
@@ -597,8 +591,8 @@ return function (App $app) {
                     $params["orderBy"] ?? ""
                 );
                 $albumData = \Spieldose\Album::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "partialName" => $params["text"] ?? ""
@@ -606,8 +600,8 @@ return function (App $app) {
                     $params["orderBy"] ?? ""
                 );
                 $trackData = \Spieldose\Track::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "text" => $params["text"] ?? ""
@@ -615,8 +609,8 @@ return function (App $app) {
                     $params["orderBy"] ?? ""
                 );
                 $playlistData = \Spieldose\Playlist::search(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
-                    $params["actualPage"] ?? 1,
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
+                    intval(isset($params["actualPage"]) ? $params["actualPage"] : 1 ),
                     $params["resultsPage"] ?? $this->get('settings')['common']['defaultResultsPage'],
                     array(
                         "partialName" => $params["text"] ?? ""
@@ -635,7 +629,7 @@ return function (App $app) {
             $group2->post('/metrics/top_played_tracks', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                         "fromDate" => $params["fromDate"] ?? "",
                         "toDate" => $params["toDate"] ?? "",
@@ -651,7 +645,7 @@ return function (App $app) {
             $group2->post('/metrics/top_artists', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopArtists(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                         "fromDate" => $params["fromDate"] ?? "",
                         "toDate" => $params["toDate"] ?? "",
@@ -666,7 +660,7 @@ return function (App $app) {
             $group2->post('/metrics/top_albums', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopAlbums(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                         "fromDate" => $params["fromDate"] ?? "",
                         "toDate" => $params["toDate"] ?? "",
@@ -681,7 +675,7 @@ return function (App $app) {
             $group2->post('/metrics/top_genres', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetTopGenres(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                         "fromDate" => $params["fromDate"] ?? "",
                         "toDate" => $params["toDate"] ?? "",
@@ -700,7 +694,7 @@ return function (App $app) {
                     switch($entity) {
                         case "tracks":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -708,7 +702,7 @@ return function (App $app) {
                         break;
                         case "artists":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -716,7 +710,7 @@ return function (App $app) {
                         break;
                         case "albums":
                             $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -739,7 +733,7 @@ return function (App $app) {
                     switch($entity) {
                         case "tracks":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -747,7 +741,7 @@ return function (App $app) {
                         break;
                         case "artists":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -755,7 +749,7 @@ return function (App $app) {
                         break;
                         case "albums":
                             $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
-                                new \Spieldose\Database\DB($this->get(PDO::class)),
+                                new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                                 array(
                                 ),
                                 $params["count"] ?? 5
@@ -774,7 +768,7 @@ return function (App $app) {
             $group2->post('/metrics/play_stats_by_hour', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                     )
                 );
@@ -785,7 +779,7 @@ return function (App $app) {
 
             $group2->post('/metrics/play_stats_by_weekday', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                     )
                 );
@@ -796,7 +790,7 @@ return function (App $app) {
 
             $group2->post('/metrics/play_stats_by_month', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                     )
                 );
@@ -807,7 +801,7 @@ return function (App $app) {
 
             $group2->post('/metrics/play_stats_by_year', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
-                    new \Spieldose\Database\DB($this->get(PDO::class)),
+                    new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)),
                     array(
                     )
                 );

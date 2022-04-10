@@ -9,10 +9,11 @@
      */
     class DB {
         private $dbh = null;
+        private $logger = null;
         private $container = null;
         private $queryParams = array();
 
-	    public function __construct (\PDO $pdo) {
+	    public function __construct (\PDO $pdo, \Monolog\Logger $logger) {
             /*
             $this->container = $container;
             $settings = $this->container->get('settings');
@@ -39,10 +40,12 @@
             }
             */
             $this->dbh = $pdo;
+            $this->logger = $logger;
         }
 
         public function __destruct() {
             $this->dbh = null;
+            $this->logger = null;
         }
 
         /**
@@ -110,7 +113,7 @@
          */
         public function exec(string $sql, $params = array()): int {
             $this->queryParams = $params;
-            //$this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
+            $this->logger->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
             if ($totalParams > 0) {
@@ -131,7 +134,7 @@
          */
         public function execute(string $sql, $params = array()): bool {
             $this->queryParams = $params;
-            //$this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
+            $this->logger->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
             if ($totalParams > 0) {
@@ -152,7 +155,7 @@
          */
         public function query(string $sql, $params = array()): array {
             $this->queryParams = $params;
-            //$this->container["databaseLogger"]->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
+            $this->logger->debug($this->getQuery($sql), array('file' => __FILE__, 'line' => __LINE__));
 			$rows = array();
             $stmt = $this->dbh->prepare($sql);
             $totalParams = count($params);
