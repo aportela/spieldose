@@ -37,7 +37,7 @@ $app = $container->get(App::class);
         //$c["logger"]->info("Setting account credentials");
         echo "Setting account credentials..." . PHP_EOL;
         $dbh = new \Spieldose\Database\DB(
-            $container->get(PDO::class)
+            $container->get(PDO::class), $container->get(\Monolog\Logger::class)
         );
         if ((new \Spieldose\Database\Version($dbh, "PDO_SQLITE"))->hasUpgradeAvailable()) {
             //$c["logger"]->warning("Process stopped: upgrade database before continue");

@@ -35,7 +35,7 @@ $app = $container->get(App::class);
     $actualVersion = 0;
     $container = $app->getContainer();
     $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB(
-        $container->get(PDO::class)
+        $container->get(PDO::class), $container->get(\Monolog\Logger::class)
     ), "PDO_SQLITE");
     try {
         $actualVersion = $v->get();

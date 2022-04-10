@@ -18,7 +18,7 @@
 
     $logger = $container->get(\Monolog\Logger::class);
     $logger->info("Database cleaner started");
-    $dbh = new \Spieldose\Database\DB($container->get(PDO::class));
+    $dbh = new \Spieldose\Database\DB($container->get(PDO::class), $container->get(\Monolog\Logger::class));
     $scrapper = new \Spieldose\Scrapper($dbh);
     $results = $scrapper->getAllDatabaseFiles();
     $totalResults = count($results);

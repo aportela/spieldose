@@ -37,7 +37,7 @@
             //$c = $app->getContainer();
             //$c["scanLogger"]->info("Scanner started");
             $dbh = new \Spieldose\Database\DB(
-                $container->get(PDO::class)
+                $container->get(PDO::class), $container->get(\Monolog\Logger::class)
             );
             if ((new \Spieldose\Database\Version($dbh, "PDO_SQLITE"))->hasUpgradeAvailable()) {
                 //$c["scanLogger"]->warning("Process stopped: upgrade database before continue");
