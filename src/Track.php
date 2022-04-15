@@ -112,6 +112,7 @@
                     COALESCE(MBT.track, F.track_name) AS title,
                     COALESCE(MBA2.artist, F.track_artist) AS artist,
                     COALESCE(MBA1.album, F.album_name) AS album,
+                    F.album_mbid AS albumMBId,
                     album_artist AS albumartist,
                     COALESCE(MBA1.year, F.year) AS year,
                     playtime_seconds AS playtimeSeconds,
