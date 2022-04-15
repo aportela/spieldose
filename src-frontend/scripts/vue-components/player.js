@@ -87,7 +87,11 @@ export default {
                         return ('api/thumbnail?hash=' + this.playerData.currentTrack.track.image);
                     }
                 } else {
-                    return ('images/vinyl.png');
+                    if (this.playerData.currentTrack.track.albumMBId) {
+                        return('https://coverartarchive.org/release/' + this.playerData.currentTrack.track.albumMBId + '/front');
+                    } else {
+                        return ('images/vinyl.png');
+                    }
                 }
             }
         },
@@ -112,6 +116,10 @@ export default {
             } else {
                 if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
                     this.playerData.currentTrack.track.image = null;
+                } else {
+                    if (this.playerData.currentTrack.track.albumMBId) {
+                        this.playerData.currentTrack.track.albumMBId = null;
+                    }
                 }
             }
         },
