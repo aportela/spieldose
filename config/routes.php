@@ -14,19 +14,20 @@ return function (App $app) {
         //$this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
         //$v = new \Spieldose\Database\Version(new \Spieldose\Database\DB($this->get(PDO::class), $this->get(\Monolog\Logger::class)), $this->get('settings')['database']['type']);
 
+        $settings = $this->get('settings');
         return $this->get('Twig')->render($response, 'index.html.twig', [
             //'settings' => $this->get('settings'),
             //'settings' => $settings["twigParams"],
-            //"locale" => $settings['common']['locale'],
+            "locale" => $settings['common']['locale'],
             'initialState' => json_encode(
                 array(
                     "logged" => \Spieldose\User::isLogged(),
                     "sessionExpireMinutes" => session_cache_expire(),
                     //'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                    //"defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                    //"allowSignUp" => $this->get('settings')['common']['allowSignUp'],
-                    //"liveSearch" => $this->get('settings')['common']['liveSearch'],
-                    //"locale" => $this->get('settings')['common']['locale']
+                    "defaultResultsPage" => $settings['common']['defaultResultsPage'],
+                    "allowSignUp" => $settings['common']['allowSignUp'],
+                    "liveSearch" => $settings['common']['liveSearch'],
+                    "locale" => $settings['common']['locale']
                 )
             )
         ]);

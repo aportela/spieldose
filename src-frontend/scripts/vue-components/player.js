@@ -5,7 +5,10 @@ import { default as spieldoseSettings } from '../settings.js';
 const template = function () {
     return `
         <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-            <img id="album-cover" v-bind:class="{ 'rotate-album': hasRotateVinylClass }" v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();">
+            <div v-if="vinylRotationEffect" id="album-cover-container" :class="{'album-cover-container-rotate': playerData.isPlaying }" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
+                <img id="album-cover-animated" v-if="coverSrc != 'images/vinyl.png'" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
+            </div>
+            <img id="album-cover" v-else v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
             <!--
             <canvas id="canvas"></canvas>
             -->
@@ -62,7 +65,7 @@ export default {
         return ({
             preMuteVolume: 1,
             audio: null,
-            vinylRotationEffect: false
+            vinylRotationEffect: true
         });
     },
     computed: {

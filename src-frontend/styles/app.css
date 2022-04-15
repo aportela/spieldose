@@ -638,6 +638,36 @@ img#album-cover
     height: 400px;
 }
 
+div#album-cover-container {
+    display: block;
+    width: 400px;
+    height: 400px;
+    background : url(../images/vinyl.png) no-repeat;
+    background-size: cover;
+}
+
+div.album-cover-container-rotate {
+    animation: rotation 6s linear infinite;
+}
+
+img#album-cover-animated
+{
+    width: 130px;
+    height: 130px;
+    margin-top: 136px;
+    margin-left: 137px;
+    border-radius: 100%;
+}
+
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+
 @-webkit-keyframes rotate
 {
     from {
@@ -650,7 +680,7 @@ img#album-cover
 
 img#album-cover.rotate-album
 {
-    animation: rotate 1s steps(360, end) 0s infinite;
+    animation: rotate 3s steps(360, end) 0s infinite;
 }
 
 /* audio */
