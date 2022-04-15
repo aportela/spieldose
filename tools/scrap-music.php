@@ -1,14 +1,28 @@
 <?php
 
-    declare(strict_types=1);
+    use DI\ContainerBuilder;
+    use Slim\App;
 
     require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
+
+    $containerBuilder = new ContainerBuilder();
+
+    // Set up settings
+
+    $containerBuilder->addDefinitions(__DIR__ . '../../config/container.php');
+
+    // Build PHP-DI Container instance
+    $container = $containerBuilder->build();
+
+    // Create App instance
+    $app = $container->get(App::class);
+
     echo "Spieldose music scraper" . PHP_EOL;
 
-    $app = (new \Spieldose\App())->get();
+    $settings = $container->get('settings');
 
-    $missingExtensions = array_diff($app->getContainer()["settings"]["phpRequiredExtensions"], get_loaded_extensions());
+    $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
     if (count($missingExtensions) > 0) {
         echo "Error: missing php extension/s: " . implode(", ", $missingExtensions) . PHP_EOL;
         exit;
@@ -18,18 +32,21 @@
     $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
     $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
     if ($scrapArtists || $scrapAlbums) {
-        $c = $app->getContainer();
-        $c["scrapLogger"]->info("Scraper started");
-        $dbh = new \Spieldose\Database\DB($c);
-        if ((new \Spieldose\Database\Version($dbh, $c->get("settings")['database']['type']))->hasUpgradeAvailable()) {
-            $c["scrapLogger"]->warning("Process stopped: upgrade database before continue");
+        //$c["scrapLogger"]->info("Scraper started");
+
+        $dbh = new \Spieldose\Database\DB(
+            $container->get(PDO::class), $container->get(\Monolog\Logger::class)
+        );
+        if ((new \Spieldose\Database\Version($dbh, "PDO_SQLITE"))->hasUpgradeAvailable()) {
+            //$c["scanLogger"]->warning("Process stopped: upgrade database before continue");
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
+
         $scraper = new \Spieldose\Scrapper($dbh);
         if ($scrapArtists) {
             echo "Artist scraping...." . PHP_EOL;
-            $c["scrapLogger"]->info("Scraping artists");
+            //$c["scrapLogger"]->info("Scraping artists");
             $pendingArtists = $scraper->getPendingArtists();
             $totalPendingArtists = count($pendingArtists);
             if ($totalPendingArtists > 0) {
@@ -37,10 +54,10 @@
                 $failed = array();
                 for ($i = 0; $i < $totalPendingArtists; $i++) {
                     try {
-                        $c["scrapLogger"]->debug("Searching on MusicBrainz artist: " . $pendingArtists[$i]);
+                        //$c["scrapLogger"]->debug("Searching on MusicBrainz artist: " . $pendingArtists[$i]);
                         $scraper->mbArtistScrap($pendingArtists[$i]);
                     } catch (\Throwable $e) {
-                        $c["scrapLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
+                        //$c["scrapLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
                         $failed[] = $pendingArtists[$i];
                     }
                     sleep(1);
@@ -61,10 +78,10 @@
                 $failed = array();
                 for ($i = 0; $i < $totalMBIds; $i++) {
                     try {
-                        $c["scrapLogger"]->debug("Getting MusicBrainz artist id: " . $mbIds[$i]);
+                        //$c["scrapLogger"]->debug("Getting MusicBrainz artist id: " . $mbIds[$i]);
                         $scraper->mbArtistMBIdscrap($mbIds[$i]);
                     } catch (\Throwable $e) {
-                        $c["scrapLogger"]->error("Error: " . $e->getMessage());
+                        //$c["scrapLogger"]->error("Error: " . $e->getMessage());
                         $failed[] = $mbIds[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
@@ -80,7 +97,7 @@
         }
         if ($scrapAlbums) {
             echo "Album scraping...." . PHP_EOL;
-            $c["scrapLogger"]->info("Scraping albums");
+            //$c["scrapLogger"]->info("Scraping albums");
             $pendingAlbums = $scraper->getPendingAlbums();
             $totalPendingAlbums = count($pendingAlbums);
             if ($totalPendingAlbums > 0) {
@@ -88,10 +105,10 @@
                 $failed = array();
                 for ($i = 0; $i < $totalPendingAlbums; $i++) {
                     try {
-                        $c["scrapLogger"]->debug("Searching on MusicBrainz album: " . $pendingAlbums[$i]->album . " of artist:" . $pendingAlbums[$i]->artist);
+                        //$c["scrapLogger"]->debug("Searching on MusicBrainz album: " . $pendingAlbums[$i]->album . " of artist:" . $pendingAlbums[$i]->artist);
                         $scraper->mbAlbumScrap($pendingAlbums[$i]->album, $pendingAlbums[$i]->artist);
                     } catch (\Throwable $e) {
-                        $c["scrapLogger"]->error("Error: " . $e->getMessage());
+                        //$c["scrapLogger"]->error("Error: " . $e->getMessage());
                         $failed[] = $pendingAlbums[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalPendingAlbums, 20);
@@ -110,10 +127,10 @@
                 $failed = array();
                 for ($i = 0; $i < $totalMBIds; $i++) {
                     try {
-                        $c["scrapLogger"]->debug("Getting MusicBrainz album id: " . $mbIds[$i]);
+                        //$c["scrapLogger"]->debug("Getting MusicBrainz album id: " . $mbIds[$i]);
                         $scraper->mbAlbumMBIdscrap($mbIds[$i]);
                     } catch (\Throwable $e) {
-                        $c["scrapLogger"]->error("Error: " . $e->getMessage());
+                        //$c["scrapLogger"]->error("Error: " . $e->getMessage());
                         $failed[] = $mbIds[$i];
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalMBIds, 20);
@@ -127,7 +144,7 @@
                 echo "No pending MusicBrainz Album ids found to scrap" . PHP_EOL;
             }
         }
-        $c["scrapLogger"]->info("Scraper finished");
+        //$c["scrapLogger"]->info("Scraper finished");
     } else {
         echo "No required params found: --artists or --albums or --all" . PHP_EOL;
     }

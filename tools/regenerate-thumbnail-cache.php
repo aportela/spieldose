@@ -18,7 +18,7 @@
 
     $actualVersion = 0;
 
-    $dbh = new \Spieldose\Database\DB($c);
+    $dbh = new \Spieldose\Database\DB($c, $container->get(\Monolog\Logger::class));
     $thumbnailUrls = \Spieldose\Thumbnail::getThumbnailUrls($dbh);
     $totalThumbnails = count($thumbnailUrls);
     if ($totalThumbnails > 0) {
