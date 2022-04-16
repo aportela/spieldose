@@ -19,6 +19,7 @@ return function (App $app) {
             //'settings' => $this->get('settings'),
             //'settings' => $settings["twigParams"],
             "locale" => $settings['common']['locale'],
+            "webpack" => $settings['webpack'],
             'initialState' => json_encode(
                 array(
                     "logged" => \Spieldose\User::isLogged(),

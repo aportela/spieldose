@@ -72,4 +72,6 @@
 
     $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
 
+    $settings['webpack'] = require_once('webpack.php');
+
     return $settings;
