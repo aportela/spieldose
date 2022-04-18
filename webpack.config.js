@@ -26,20 +26,8 @@ module.exports = {
                     files: ['webpack.php'],
                     rules: [
                         {
-
                             search: /'jsBundleHash' => '[a-zA-Z0-9]*'/,
-                            replace: '\'jsBundleHash\' => \'[hash]\''
-                        }
-                    ]
-                },
-                {
-                    dir: 'config',
-                    files: ['webpack.php'],
-                    rules: [
-                        {
-
-                            search: /'jsBundleHash' => '[a-zA-Z0-9]*'/,
-                            replace: '\'jsBundleHash\' => \'[hash]\''
+                            replace: "'jsBundleHash' => '[hash]'"
                         }
                     ]
                 }
