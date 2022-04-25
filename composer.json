@@ -1,13 +1,26 @@
 {
+    "name": "aportela/spieldose",
+    "description": "an application for streaming music hosted on your own server",
+    "type": "library",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "alex",
+            "email": "766f6964+github@gmail.com"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
-        "php-di/php-di": "^6.0",
+        "james-heinrich/getid3": "^1.9",
+        "monolog/monolog": "^2.5",
+        "php-di/php-di": "^6.4",
+        "ramsey/uuid": "^4.3",
         "slim/psr7": "^1",
-        "slim/slim": "^4.4",
+        "slim/slim": "^4.10",
         "slim/twig-view": "^3.3",
-        "james-heinrich/getid3": "1.9.*",
-        "sybio/image-workshop": "2.2",
-        "ramsey/uuid": "^4.2",
-        "monolog/monolog": "^2.4"
+        "sybio/image-workshop": "^2.2"
     },
     "autoload": {
         "psr-4": {
