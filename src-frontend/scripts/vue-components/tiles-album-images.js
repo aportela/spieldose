@@ -5,7 +5,7 @@ const template = function () {
         <div class="tile is-ancestor" id="container_tiles">
             <div class="tile is-2 is-vertical" v-for="column in [0,1,2,3,4,5]">
                 <div class="tile" v-for="row in [0,1,2,3,4,5]">
-                    <img :src="getImageSource(covers[(5 * column) + row])" style="width:100%" class="blur" @error="event.target.src = '/images/vinyl.png'">
+                    <img :src="getImageSource(covers[(5 * column) + row])" style="width:100%" class="blur" @error="onImageError($event)">
                 </div>
             </div>
         </div>
@@ -43,6 +43,9 @@ export default {
                     this.covers = response.body.covers.map((cover, idx) => { cover.id = idx; return (cover); });
                 }
             });
+        },
+        onImageError: function(event) {
+            event.target.src = '/images/vinyl.png';
         }
     }
 }

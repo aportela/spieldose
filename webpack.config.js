@@ -22,12 +22,12 @@ module.exports = {
         new ReplaceHashInFileWebpackPlugin(
             [
                 {
-                    dir: 'templates',
-                    files: ['index.html.twig'],
+                    dir: 'config',
+                    files: ['webpack.php'],
                     rules: [
                         {
-                            search: /<script type="module" src="scripts\/app-bundle.min.js\?*[a-zA-Z0-9]*"><\/script>/,
-                            replace: '<script type="module" src="scripts/app-bundle.min.js?[hash]"></script>'
+                            search: /'jsBundleHash' => '[a-zA-Z0-9]*'/,
+                            replace: "'jsBundleHash' => '[hash]'"
                         }
                     ]
                 }
