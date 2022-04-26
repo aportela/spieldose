@@ -157,7 +157,6 @@ return function (App $app) {
             return $response->withHeader('Content-Type', 'application/json');
         });
 
-
         $group->group("", function(Slim\Routing\RouteCollectorProxy $group2) {
 
             /* track */
@@ -816,8 +815,6 @@ return function (App $app) {
 
         });
 
-    });
-
-
+    })->add(\Spieldose\Middleware\CheckAuth::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 
 };
