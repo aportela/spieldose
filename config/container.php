@@ -35,6 +35,13 @@
             );
         },
 
+        Twig::class => function (ContainerInterface $container) {
+            $settings = $container->get('settings')['twig'];
+            $twig = \Slim\Views\Twig::create($settings['path'], $settings['options']);
+
+            return $twig;
+        },
+
         PDO::class => function (ContainerInterface $container) {
             $settings = $container->get('settings')['db'];
 
@@ -50,13 +57,6 @@
             return new PDO($dsn, $username, $password, $flags);
         },
 
-        Twig::class => function (ContainerInterface $container) {
-            $settings = $container->get('settings')['twig'];
-            $twig = \Slim\Views\Twig::create($settings['path'], $settings['options']);
-
-            return $twig;
-        },
-
         \Monolog\Logger::class => function(ContainerInterface $container) {
             $settings = $container->get('settings');
             $logger = new \Monolog\Logger('default');
@@ -67,6 +67,10 @@
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
             return ($logger);
+        },
+
+        \Spieldose\Middleware\APIExceptionCatcher::class => function (ContainerInterface $container) {
+            return(new \Spieldose\Middleware\APIExceptionCatcher($container->get(\Monolog\Logger::class)));
         }
 
     ];
