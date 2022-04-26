@@ -155,7 +155,7 @@ return function (App $app) {
             $payload = json_encode(['covers' => $data]);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
-        })->add(\Spieldose\Middleware\CheckAuth::class);
+        });
 
         $group->group("", function(Slim\Routing\RouteCollectorProxy $group2) {
 
