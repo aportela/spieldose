@@ -71,74 +71,68 @@ export default {
     },
     methods: {
         loadRecentAddedTracks: function () {
-            spieldoseAPI.metrics.getRecentAddedTracks(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentAddedTracks(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentAddedArtists: function () {
-            spieldoseAPI.metrics.getRecentAddedArtists(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentAddedArtists(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentAddedAlbums: function () {
-            spieldoseAPI.metrics.getRecentAddedAlbums(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentAddedAlbums(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedTracks: function () {
-            spieldoseAPI.metrics.getRecentPlayedTracks(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentPlayedTracks(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedArtists: function () {
-            spieldoseAPI.metrics.getRecentPlayedArtists(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentPlayedArtists(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedAlbums: function () {
-            spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },

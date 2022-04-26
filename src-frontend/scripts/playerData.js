@@ -47,26 +47,22 @@ const getPlayerData = (function () {
     };
     playerData.love = function (track) {
         playerData.loading = true;
-        spieldoseAPI.track.love(track.id, (response) => {
-            if (response.ok) {
-                playerData.loading = false;
-                track.loved = response.body.loved;
-            } else {
-                // TODO: ERRORS
-                playerData.loading = false;
-            }
+        spieldoseAPI.track.love(track.id).then(response => {
+            playerData.loading = false;
+            track.loved = response.data.loved;
+        }).catch(error => {
+            // TODO: ERRORS
+            playerData.loading = false;
         });
     };
     playerData.unlove = function (track) {
         playerData.loading = true;
-        spieldoseAPI.track.unlove(track.id, (response) => {
-            if (response.ok) {
-                playerData.loading = false;
-                track.loved = response.body.loved;
-            } else {
-                // TODO: ERRORS
-                playerData.loading = false;
-            }
+        spieldoseAPI.track.unlove(track.id).then(response => {
+            playerData.loading = false;
+            track.loved = response.data.loved;
+        }).catch(error => {
+            // TODO: ERRORS
+            playerData.loading = false;
         });
     };
 
@@ -132,22 +128,20 @@ const getPlayerData = (function () {
         playerData.tracks = [];
         playerData.loading = true;
         playerData.currentTrack.unset();
-        spieldoseAPI.track.searchTracks("", "", "", false, 1, count, "random", (response) => {
-            if (response.ok) {
-                if (response.body.tracks && response.body.tracks.length > 0) {
-                    playerData.tracks = response.body.tracks;
-                }
-                playerData.loading = false;
-                playerData.playback.play();
-                if (callback && typeof callback === "function") {
-                    callback();
-                }
-            } else {
-                // TODO: errors
-                playerData.loading = false;
-                if (callback && typeof callback === "function") {
-                    callback();
-                }
+        spieldoseAPI.track.searchTracks("", "", "", false, 1, count, "random").then(response => {
+            if (response.data.tracks && response.data.tracks.length > 0) {
+                playerData.tracks = response.data.tracks;
+            }
+            playerData.loading = false;
+            playerData.playback.play();
+            if (callback && typeof callback === "function") {
+                callback();
+            }
+        }).catch(error => {
+            // TODO: errors
+            playerData.loading = false;
+            if (callback && typeof callback === "function") {
+                callback();
             }
         });
     };

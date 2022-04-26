@@ -228,20 +228,18 @@ export default {
         getArtist: function (artist) {
             this.loading = true;
             this.errors = false;
-            spieldoseAPI.artist.get(artist, (response) => {
-                if (response.ok) {
-                    this.artist = response.body.artist;
-                    if (this.artist.bio) {
-                        this.artist.bio = this.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                        this.truncatedBio = this.truncate(this.artist.bio);
-                        //this.activeTab = "overview";
-                    }
-                    this.loading = false;
-                } else {
-                    this.errors = true;
-                    this.apiError = response.getApiErrorData();
-                    this.loading = false;
+            spieldoseAPI.artist.get(artist).then(response => {
+                this.artist = response.data.artist;
+                if (this.artist.bio) {
+                    this.artist.bio = this.artist.bio.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    this.truncatedBio = this.truncate(this.artist.bio);
+                    //this.activeTab = "overview";
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.errors = true;
+                this.apiError = response.getApiErrorData();
+                this.loading = false;
             });
         },
         abortInstantSearch: function () {
@@ -265,19 +263,19 @@ export default {
             this.loadingTracks = true;
             this.clearAPIErrors();
             let text = this.nameFilter ? this.nameFilter : '';
-            spieldoseAPI.track.searchTracks(text, artist, '', false, this.pager.actualPage, this.pager.resultsPage, '', (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.actualPage;
-                    this.pager.totalPages = response.body.totalPages;
-                    this.pager.totalResults = response.body.totalResults;
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.tracks = response.body.tracks;
-                    } else {
-                        this.tracks = [];
-                    }
+            spieldoseAPI.track.searchTracks(text, artist, '', false, this.pager.actualPage, this.pager.resultsPage, '').then(response => {
+                this.pager.actualPage = response.data.actualPage;
+                this.pager.totalPages = response.data.totalPages;
+                this.pager.totalResults = response.data.totalResults;
+                if (response.data.tracks && response.data.tracks.length > 0) {
+                    this.tracks = response.data.tracks;
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    this.tracks = [];
                 }
+                this.loadingTracks = false;
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loadingTracks = false;
                 this.loading = false;
             });
@@ -290,16 +288,15 @@ export default {
         enqueueAlbumTracks: function (album, artist, year) {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null, (response) => {
+            spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null).then(response => {
                 this.playerData.currentPlaylist.empty();
-                if (response.ok) {
-                    if (response.body.tracks && response.body.tracks.length > 0) {
-                        this.playerData.tracks = response.body.tracks;
-                        this.playerData.playback.play();
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+                if (response.data.tracks && response.data.tracks.length > 0) {
+                    this.playerData.tracks = response.data.tracks;
+                    this.playerData.playback.play();
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
@@ -309,22 +306,20 @@ export default {
         overwriteMusicBrainzArtist(name, mbid) {
             this.loading = true;
             this.errors = false;
-            spieldoseAPI.artist.overwriteMusicBrainz(name, mbid, (response) => {
-                if (response.ok) {
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.artist.overwriteMusicBrainz(name, mbid).then(response => {
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         clearMusicBrainzArtist: function (name, mbid) {
             this.loading = true;
             this.errors = false;
-            spieldoseAPI.artist.clearMusicBrainz(name, mbid, (response) => {
-                if (response.ok) {
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.artist.clearMusicBrainz(name, mbid).then(response => {
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }

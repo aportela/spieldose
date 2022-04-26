@@ -159,32 +159,31 @@ export default {
             this.loading = true;
             this.validator.clear();
             this.clearAPIErrors();
-            spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword, (response) => {
-                if (response.ok) {
-                    this.$router.push({ name: 'dashboard' });
-                } else {
-                    switch (response.status) {
-                        case 400:
-                            if (response.isFieldInvalid('email')) {
-                                this.validator.setInvalid('signInEmail', this.$t('commonErrors.invalidAPIParam'));
-                            } else if (response.isFieldInvalid("password")) {
-                                this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
-                            } else {
-                                this.setAPIError(response.getApiErrorData());
-                            }
-                            break;
-                        case 404:
-                            this.validator.setInvalid('signInEmail', this.$t('signIn.errorMessages.userNotFound'));
-                            break;
-                        case 401:
-                            this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
-                            break;
-                        default:
-                            this.setAPIError(response.getApiErrorData());
-                            break;
-                    }
-                    this.loading = false;
+            spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword).then(success => {
+                this.$router.push({ name: 'dashboard' });
+                this.loading = false;
+            }).catch(error => {
+                switch (error.response.status) {
+                    case 400:
+                        if (error.isFieldInvalid('email')) {
+                            this.validator.setInvalid('signInEmail', this.$t('commonErrors.invalidAPIParam'));
+                        } else if (error.isFieldInvalid("password")) {
+                            this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
+                        } else {
+                            this.setAPIError(error.getApiErrorData());
+                        }
+                        break;
+                    case 404:
+                        this.validator.setInvalid('signInEmail', this.$t('signIn.errorMessages.userNotFound'));
+                        break;
+                    case 401:
+                        this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
+                        break;
+                    default:
+                        this.setAPIError(error.getApiErrorData());
+                        break;
                 }
+                this.loading = false;
             });
         },
         submitSignUp: function () {
@@ -192,33 +191,32 @@ export default {
             this.invalidSignUpPassword = false;
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword, (response) => {
-                if (response.ok) {
-                    this.signInEmail = this.signUpEmail;
-                    this.signInPassword = this.signUpPassword;
-                    this.loading = false;
-                    this.tab = 'signin';
-                    this.submitSignIn();
-                } else {
-                    switch (response.status) {
-                        case 400:
-                            if (response.isFieldInvalid('email')) {
-                                this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
-                            } else if (response.isFieldInvalid('password')) {
-                                this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
-                            } else {
-                                this.setAPIError(response.getApiErrorData());
-                            }
-                            break;
-                        case 409:
-                            this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
-                            break;
-                        default:
-                            this.setAPIError(response.getApiErrorData());
-                            break;
-                    }
-                    this.loading = false;
+            spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword).then(success => {
+                this.signInEmail = this.signUpEmail;
+                this.signInPassword = this.signUpPassword;
+                this.loading = false;
+                this.tab = 'signin';
+                this.submitSignIn();
+                this.loading = false;
+            }).catch(error => {
+                switch (error.response.status) {
+                    case 400:
+                        if (error.isFieldInvalid('email')) {
+                            this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
+                        } else if (error.isFieldInvalid('password')) {
+                            this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
+                        } else {
+                            this.setAPIError(error.getApiErrorData());
+                        }
+                        break;
+                    case 409:
+                        this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
+                        break;
+                    default:
+                        this.setAPIError(error.getApiErrorData());
+                        break;
                 }
+                this.loading = false;
             });
         }
     }

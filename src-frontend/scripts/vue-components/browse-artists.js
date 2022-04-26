@@ -88,19 +88,18 @@ export default {
         search: function () {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.artist.search(this.nameFilter, this.filterNotScraped == 1, this.pager.actualPage, this.pager.resultsPage, (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.pagination.actualPage;
-                    this.pager.totalPages = response.body.pagination.totalPages;
-                    this.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.artists && response.body.artists.length > 0) {
-                        this.artists = response.body.artists;
-                    } else {
-                        this.artists = [];
-                    }
+            spieldoseAPI.artist.search(this.nameFilter, this.filterNotScraped == 1, this.pager.actualPage, this.pager.resultsPage).then(response => {
+                this.pager.actualPage = response.data.pagination.actualPage;
+                this.pager.totalPages = response.data.pagination.totalPages;
+                this.pager.totalResults = response.data.pagination.totalResults;
+                if (response.data.artists && response.data.artists.length > 0) {
+                    this.artists = response.data.artists;
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    this.artists = [];
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }

@@ -195,12 +195,12 @@ export default {
             if (id) {
                 this.loading = true;
                 this.clearAPIErrors();
-                spieldoseAPI.radioStation.remove(id, (response) => {
-                    if (response.ok) {
-                        this.search();
-                    } else {
-                        this.setAPIError(response.getApiErrorData());
-                    }
+                spieldoseAPI.radioStation.remove(id).then(response => {
+                    this.search();
+                    this.showDeleteConfirmationModal = false;
+                    this.deleteItemId = null;
+                }).catch(error => {
+                    this.setAPIError(error.getApiErrorData());
                     this.showDeleteConfirmationModal = false;
                     this.deleteItemId = null;
                 });
@@ -222,17 +222,17 @@ export default {
             this.showForm = false;
         },
         showUpdateRadioStationForm: function (id) {
-            spieldoseAPI.radioStation.get(id, (response) => {
-                if (response.ok) {
-                    this.formRadioStationId = response.body.radioStation.id;
-                    this.formRadioStationName = response.body.radioStation.name;
-                    this.formRadioStationUrl = response.body.radioStation.url;
-                    this.formRadioStationType = response.body.radioStation.urlType;
-                    this.formRadioStationImage = response.body.radioStation.image;
-                    this.showForm = true;
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.radioStation.get(id).then(response => {
+
+                this.formRadioStationId = response.data.radioStation.id;
+                this.formRadioStationName = response.data.radioStation.name;
+                this.formRadioStationUrl = response.data.radioStation.url;
+                this.formRadioStationType = response.data.radioStation.urlType;
+                this.formRadioStationImage = response.data.radioStation.image;
+                this.showForm = true;
+
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
             });
         },
         save: function () {
@@ -245,46 +245,40 @@ export default {
         add: function () {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.radioStation.add(this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
-                if (response.ok) {
-                    this.showForm = false;
-                    this.search();
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.radioStation.add(this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage).then(response => {
+                this.showForm = false;
+                this.search();
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
             });
         },
         update: function () {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.radioStation.update(this.formRadioStationId, this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage, (response) => {
-                if (response.ok) {
-                    this.showForm = false;
-                    this.search();
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.radioStation.update(this.formRadioStationId, this.formRadioStationName, this.formRadioStationUrl, this.formRadioStationType, this.formRadioStationImage).then(response => {
+                this.showForm = false;
+                this.search();
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
             });
         },
         search: function () {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.radioStation.search(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.pagination.actualPage;
-                    this.pager.totalPages = response.body.pagination.totalPages;
-                    this.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.radioStations && response.body.radioStations.length > 0) {
-                        this.radioStations = response.body.radioStations;
-                    } else {
-                        this.radioStations = [];
-                    }
-                    this.loading = false;
+            spieldoseAPI.radioStation.search(this.nameFilter, this.pager.actualPage, this.pager.resultsPage).then(response => {
+                this.pager.actualPage = response.data.pagination.actualPage;
+                this.pager.totalPages = response.data.pagination.totalPages;
+                this.pager.totalResults = response.data.pagination.totalResults;
+                if (response.data.radioStations && response.data.radioStations.length > 0) {
+                    this.radioStations = response.data.radioStations;
                 } else {
-                    this.errors = true;
-                    this.apiError = response.getApiErrorData();
-                    this.loading = false;
+                    this.radioStations = [];
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.errors = true;
+                this.apiError = response.getApiErrorData();
+                this.loading = false;
             });
         }
     }

@@ -88,36 +88,33 @@ export default {
     },
     methods: {
         loadTopPlayedTracks: function () {
-            spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, loadTopPlayedArtists: function () {
-            spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, loadTopPlayedGenres: function () {
-            spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval, (response) => {
-                if (response.ok) {
-                    if (response.body.metrics && response.body.metrics.length > 0) {
-                        this.items = response.body.metrics;
-                    }
-                } else {
-                    this.setAPIError(response.getApiErrorData());
+            spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, changeInterval: function (interval) {

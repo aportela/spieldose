@@ -227,23 +227,21 @@ export default {
                 trackIds.push(this.playerData.tracks[i].id);
             }
             if (this.playerData.currentPlaylist.isSet()) {
-                spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds, (response) => {
+                spieldoseAPI.playlist.update(this.playerData.currentPlaylist.id, this.currentPlaylistName, trackIds).then(response => {
                     this.savingPlaylist = false;
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
-                    } else {
-                        this.setAPIError(response.getApiErrorData());
-                    }
+                    this.playerData.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
+                    this.loading = false;
+                }).catch(error => {
+                    this.setAPIError(error.getApiErrorData());
                     this.loading = false;
                 });
             } else {
-                spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds, (response) => {
+                spieldoseAPI.playlist.add(this.currentPlaylistName, trackIds).then(response => {
                     this.savingPlaylist = false;
-                    if (response.ok) {
-                        this.playerData.currentPlaylist.set(response.body.playlist.id, response.body.playlist.name);
-                    } else {
-                        this.setAPIError(response.getApiErrorData());
-                    }
+                    this.playerData.currentPlaylist.set(response.data.playlist.id, response.data.playlist.name);
+                    this.loading = false;
+                }).catch(error => {
+                    this.setAPIError(error.getApiErrorData());
                     this.loading = false;
                 });
             }

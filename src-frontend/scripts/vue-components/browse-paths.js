@@ -83,19 +83,18 @@ export default {
         search: function () {
             this.loading = true;
             this.clearAPIErrors();
-            spieldoseAPI.searchPaths(this.nameFilter, this.pager.actualPage, this.pager.resultsPage, (response) => {
-                if (response.ok) {
-                    this.pager.actualPage = response.body.pagination.actualPage;
-                    this.pager.totalPages = response.body.pagination.totalPages;
-                    this.pager.totalResults = response.body.pagination.totalResults;
-                    if (response.body.paths && response.body.paths.length > 0) {
-                        this.paths = response.body.paths;
-                    } else {
-                        this.paths = [];
-                    }
+            spieldoseAPI.searchPaths(this.nameFilter, this.pager.actualPage, this.pager.resultsPage).then(response => {
+                this.pager.actualPage = response.data.pagination.actualPage;
+                this.pager.totalPages = response.data.pagination.totalPages;
+                this.pager.totalResults = response.data.pagination.totalResults;
+                if (response.data.paths && response.data.paths.length > 0) {
+                    this.paths = response.data.paths;
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    this.paths = [];
                 }
+                this.loading = false;
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }

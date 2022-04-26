@@ -38,13 +38,12 @@ export default {
             }
         },
         loadRandomAlbumImages: function () {
-            spieldoseAPI.album.getRandomAlbumCovers(32, (response) => {
-                if (response.ok) {
-                    this.covers = response.body.covers.map((cover, idx) => { cover.id = idx; return (cover); });
-                }
+            spieldoseAPI.album.getRandomAlbumCovers(32).then(response => {
+                this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
+            }).catch(error => {
             });
         },
-        onImageError: function(event) {
+        onImageError: function (event) {
             event.target.src = '/images/vinyl.png';
         }
     }

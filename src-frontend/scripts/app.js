@@ -32,11 +32,39 @@ const getApiErrorDataFromResponse = function (r) {
     return (data);
 };
 
+const getApiErrorDataFromAxiosResponse = function (r) {
+    var data = {
+        request: {
+            //method: r.rMethod,
+            //url: r.rUrl,
+            //body: r.rBody
+        },
+        response: {
+            //status: r.status,
+            //statusText: r.statusText,
+            //text: r.bodyText
+        }
+    };
+    data.request.headers = [];
+    /*
+    for (var headerName in r.rHeaders.map) {
+        //data.request.headers.push({ name: headerName, value: r.rHeaders.get(headerName) });
+    }
+    */
+    data.response.headers = [];
+    /*
+    for (var headerName in r.headers.map) {
+        //data.response.headers.push({ name: headerName, value: r.headers.get(headerName) });
+    }
+    */
+    return (data);
+};
+
 /**
  * vue-resource interceptor for adding (on errors) custom get data function (used in api-error component) into response
  */
 Vue.http.interceptors.push((request, next) => {
-    next((response) => {
+    next.then(response => {
         if (!response.ok) {
             response.rBody = request.body;
             response.rUrl = request.url;
@@ -47,13 +75,38 @@ Vue.http.interceptors.push((request, next) => {
             };
             if (response.status == 400 || response.status == 409) {
                 // helper for find invalid fields on api response
-                response.isFieldInvalid = function (fieldName) {
-                    return (response.body.invalidOrMissingParams.indexOf(fieldName) > -1);
+                error.isFieldInvalid = function (fieldName) {
+                    return (response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
                 }
             }
         }
         return (response);
     });
+});
+
+axios.interceptors.response.use(function (response) {
+    return response;
+}, function (error) {
+    console.log(error);
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    //error.rBody = request.body;
+    //error.rUrl = request.url;
+    //error.rMethod = request.method;
+    //error.rHeaders = request.headers;
+    error.getApiErrorData = function () {
+        return (getApiErrorDataFromAxiosResponse(error));
+    };
+    if (error.response.status == 400 || error.response.status == 409) {
+        // helper for find invalid fields on api response
+        error.isFieldInvalid = function (fieldName) {
+            return (error.response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
+        }
+    }
+    return Promise.reject(error);
 });
 
 /**
@@ -92,16 +145,14 @@ const app = new Vue({
         signOut: function () {
             this.playerData.dispose();
             this.clearAPIErrors();
-            spieldoseAPI.session.signOut((response) => {
-                if (response.ok) {
-                    this.$router.push({ path: '/signin' });
-                } else {
-                    this.setAPIError(response.getApiErrorData());
-                }
+            spieldoseAPI.session.signOut().then(response => {
+                this.$router.push({ path: '/signin' });
+            }).catch(error => {
+                this.setAPIError(error.getApiErrorData());
             });
         },
         poll: function (callback) {
-            spieldoseAPI.session.poll((response) => {
+            spieldoseAPI.session.poll().then(response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
