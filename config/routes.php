@@ -143,7 +143,7 @@ return function (App $app) {
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("url|hash");
             }
-        });
+        })->add(\Spieldose\Middleware\CheckAuth::class);
 
         $group->post('/random_album_covers', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $params = $request->getParsedBody();
@@ -155,7 +155,7 @@ return function (App $app) {
             $payload = json_encode(['covers' => $data]);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type', 'application/json');
-        });
+        })->add(\Spieldose\Middleware\CheckAuth::class);
 
         $group->group("", function(Slim\Routing\RouteCollectorProxy $group2) {
 
@@ -813,8 +813,8 @@ return function (App $app) {
 
             /* metrics */
 
-        });
+        })->add(\Spieldose\Middleware\CheckAuth::class);
 
-    })->add(\Spieldose\Middleware\CheckAuth::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
+    })->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 
 };
