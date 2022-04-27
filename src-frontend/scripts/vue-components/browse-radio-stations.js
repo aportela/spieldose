@@ -111,7 +111,7 @@ const template = function () {
                 <div v-else>
                     <spieldose-pagination v-bind:loading="loading" v-bind:data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
                     <div class="radio-station-item browse-radio-station-item box has-text-centered" v-for="radioStation in radioStations" v-show="! loading">
-                        <img class="radio-station-thumbnail" v-bind:src="radioStation.image | getAlbumImageUrl" v-on:error="radioStation.image = null;">
+                        <img class="radio-station-thumbnail" v-bind:src="getAlbumImageUrl(radioStation.image)" v-on:error="radioStation.image = null;">
                         <p class="radio-station-info">
                             <strong>“{{ radioStation.name }}”</strong>
                         </p>

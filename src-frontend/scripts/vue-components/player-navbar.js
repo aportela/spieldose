@@ -93,12 +93,12 @@ export default {
         });
     },
     created: function () {
-        bus.$on('showPlayerNavBar', function () {
+        bus.on('showPlayerNavBar',  () => {
             const rootEl = document.documentElement;
             rootEl.classList.add('has-navbar-fixed-bottom');
             this.showPlayerNavBar = true;
         });
-        bus.$on('hidePlayerNavbar', function () {
+        bus.on('hidePlayerNavbar',  () => {
             const rootEl = document.documentElement;
             rootEl.classList.remove('has-navbar-fixed-bottom');
             this.showPlayerNavBar = false;
@@ -119,7 +119,7 @@ export default {
     },
     methods: {
         signout: function (e) {
-            bus.$emit('signOut');
+            bus.emit('signOut');
         }
     }
 }

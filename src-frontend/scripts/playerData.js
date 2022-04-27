@@ -47,22 +47,26 @@ const getPlayerData = (function () {
     };
     playerData.love = function (track) {
         playerData.loading = true;
-        spieldoseAPI.track.love(track.id).then(response => {
-            playerData.loading = false;
-            track.loved = response.data.loved;
-        }).catch(error => {
-            // TODO: ERRORS
-            playerData.loading = false;
+        spieldoseAPI.track.love(track.id, function (response) {
+            if (response.status == 200) {
+                playerData.loading = false;
+                track.loved = response.data.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
         });
     };
     playerData.unlove = function (track) {
         playerData.loading = true;
-        spieldoseAPI.track.unlove(track.id).then(response => {
-            playerData.loading = false;
-            track.loved = response.data.loved;
-        }).catch(error => {
-            // TODO: ERRORS
-            playerData.loading = false;
+        spieldoseAPI.track.unlove(track.id, function (response) {
+            if (response.status == 200) {
+                playerData.loading = false;
+                track.loved = response.data.loved;
+            } else {
+                // TODO: ERRORS
+                playerData.loading = false;
+            }
         });
     };
 
@@ -138,7 +142,6 @@ const getPlayerData = (function () {
                 callback();
             }
         }).catch(error => {
-            // TODO: errors
             playerData.loading = false;
             if (callback && typeof callback === "function") {
                 callback();

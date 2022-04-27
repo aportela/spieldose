@@ -1,17 +1,35 @@
+const webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
-const ReplaceHashInFileWebpackPlugin = require('replace-hash-in-file-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+//const ReplaceHashInFileWebpackPlugin = require('replace-hash-in-file-webpack-plugin');
 
 module.exports = {
     mode: 'production',
-    entry: './src-frontend/scripts/app.js',
+    resolve: {
+        alias: {
+            'vue': "vue/dist/vue.esm-bundler.js",
+            'vue-i18n': "vue-i18n/dist/vue-i18n.esm-bundler.js",
+            'dayjs': "dayjs/dayjs.min.js",
+            'Chart': "chart.js/dist/chart.esm.js"
+        }
+    },
+    entry: {
+        'app': {
+            import: './src-frontend/scripts/app.js',
+            dependOn: 'vendor'
+        },
+        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt']
+    },
     output: {
-        filename: 'app-bundle.min.js',
         path: path.resolve(__dirname, 'public/scripts/'),
         publicPath: '/scripts/',
+        filename: '[name]-bundle.min.js',
         clean: true
     },
     plugins: [
+        // to remove warn in browser console: runtime-core.esm-bundler.js:3607 Feature flags __VUE_OPTIONS_API__, __VUE_PROD_DEVTOOLS__ are not explicitly defined...
+        new webpack.DefinePlugin({ __VUE_OPTIONS_API__: true, __VUE_PROD_DEVTOOLS__: true }),
         new CopyPlugin({
             patterns: [
                 { from: path.resolve(__dirname, 'src-frontend/icons'), to: path.resolve(__dirname, 'public/icons') },
@@ -19,6 +37,12 @@ module.exports = {
                 { from: path.resolve(__dirname, 'src-frontend/styles'), to: path.resolve(__dirname, 'public/styles') },
             ],
         }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, 'templates/index-webpack.html.twig'),
+            filename: path.resolve(__dirname, 'templates/index.html.twig'),
+            hash: true
+        }),
+        /*
         new ReplaceHashInFileWebpackPlugin(
             [
                 {
@@ -33,5 +57,6 @@ module.exports = {
                 }
             ]
         )
+        */
     ]
 };

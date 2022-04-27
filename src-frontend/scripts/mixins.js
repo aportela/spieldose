@@ -18,7 +18,7 @@ export const mixinLiveSearches = {
  * album entity common mixins
  */
 export const mixinAlbums = {
-    filters: {
+    methods:{
         getAlbumImageUrl: function (value) {
             if (value) {
                 if (value.indexOf("http") == 0) {
@@ -41,7 +41,7 @@ export const mixinAlbums = {
  * artist entity common mixins
  */
 export const mixinArtists = {
-    filters: {
+    methods: {
         getArtistImageUrl: function (value) {
             if (value) {
                 return ("api/thumbnail?url=" + value);
@@ -143,7 +143,7 @@ export const mixinPlayer = {
             return (this.playerData.currentTrack.track && this.playerData.currentTrack.track.loved == '1');
         }
     },
-    filters: {
+    methods: {
         formatSeconds: function (seconds) {
             // https://stackoverflow.com/a/11234208
             function formatSecondsAsTime(secs, format) {
@@ -159,9 +159,7 @@ export const mixinPlayer = {
                 return (min + ':' + sec);
             }
             return (formatSecondsAsTime(seconds));
-        }
-    },
-    methods: {
+        },
         playPathTracks: function (path) {
             this.clearAPIErrors();
             spieldoseAPI.track.getPathTracks(path).then(response => {
@@ -380,7 +378,7 @@ export const mixinNavigation = {
 export const mixinSession = {
     methods: {
         signout: function () {
-            bus.$emit("signOut");
+            bus.emit("signOut");
         }
     }
 };

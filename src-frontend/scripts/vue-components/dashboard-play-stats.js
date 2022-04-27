@@ -1,3 +1,4 @@
+import { Chart } from 'Chart';
 import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError } from '../mixins.js';
 
@@ -35,20 +36,13 @@ const commonChartOptions = {
     legend: {
         display: false
     },
-    // https://stackoverflow.com/a/38945591
+    // https://stackoverflow.com/a/71239566
     scales: {
-        yAxes: [
-            {
-                ticks: {
-                    beginAtZero: true,
-                    callback: function (value) {
-                        if (value % 1 === 0) {
-                            return value;
-                        }
-                    }
-                }
+        y: {
+            ticks: {
+                precision: 0
             }
-        ]
+        }
     }
 };
 
@@ -92,23 +86,36 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
-                this.chart = new Chart(document.getElementById('playcount-metrics-chart-hour'), {
-                    type: 'line',
-                    data: {
-                        labels: hourNames,
-                        datasets: [
-                            {
-                                'label': 'play stats by hour',
-                                'data': data,
-                                'fill': true,
-                                'borderColor': '#3273dc',
-                                'lineTension': 0.1
-                            }
-                        ]
-                    }, options: commonChartOptions
-                });
+                let el = document.getElementById('playcount-metrics-chart-hour');
+                if (el) {
+                    /*
+                    this.chart = new Chart(el, {
+                        type: 'line',
+                        data: {
+                            labels: hourNames,
+                            datasets: [
+                                {
+                                    'label': 'play stats by hour',
+                                    'data': data,
+                                    'fill': true,
+                                    'borderColor': '#3273dc',
+                                    'lineTension': 0.1
+                                }
+                            ]
+                            datasets: [{
+                                label: 'My First dataset',
+                                backgroundColor: 'rgb(255, 99, 132)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                data: [0, 10, 5, 2, 20, 30, 45],
+                              }]
+                        }
+                        , options: commonChartOptions
+                    });
+                    */
+                }
                 this.loading = false;
             }).catch(error => {
+                console.log("error");
                 this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
@@ -133,6 +140,7 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
+                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
                     type: 'bar',
                     data: {
@@ -146,8 +154,10 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
+                */
                 this.loading = false;
             }).catch(error => {
+                console.log(error);
                 this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
@@ -177,6 +187,7 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
+                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
                     type: 'bar',
                     data: {
@@ -190,6 +201,7 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
+                */
                 this.loading = false;
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
@@ -207,6 +219,7 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
+                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-year'), {
                     type: 'bar',
                     data: {
@@ -220,6 +233,7 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
+                */
                 this.loading = false;
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());

@@ -1,7 +1,11 @@
+
+import { createApp } from 'vue';
 import { default as router } from './routes.js';
+import axios from 'axios';
 import { default as i18n } from './i18n.js';
 import { default as spieldoseAPI } from './api.js';
 import { bus } from './bus.js';
+
 import { mixinAPIError, mixinPlayer } from './mixins.js';
 
 const getApiErrorDataFromAxiosResponse = function (r) {
@@ -32,7 +36,11 @@ const getApiErrorDataFromAxiosResponse = function (r) {
     return (data);
 };
 
+
 axios.interceptors.response.use(function (response) {
+    response.getApiErrorData = function () {
+        return (getApiErrorDataFromAxiosResponse(response));
+    };
     return response;
 }, function (error) {
     console.log(error);
@@ -57,12 +65,7 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-/**
- * main app component
- */
-const app = new Vue({
-    router,
-    i18n,
+const spieldoseApp = {
     mixins: [mixinAPIError, mixinPlayer],
     data: function () {
         return ({
@@ -72,7 +75,7 @@ const app = new Vue({
         });
     },
     created: function () {
-        bus.$on("signOut", () => {
+        bus.on("signOut", () => {
             this.signOut();
         });
         if (!initialState.upgradeAvailable) {
@@ -93,21 +96,25 @@ const app = new Vue({
         signOut: function () {
             this.playerData.dispose();
             this.clearAPIErrors();
-            spieldoseAPI.session.signOut().then(response => {
-                this.$router.push({ path: '/signin' });
-            }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+            spieldoseAPI.session.signOut((response) => {
+                if (response.status == 200) {
+                    this.$router.push({ path: '/signin' });
+                } else {
+                    this.setAPIError(response.getApiErrorData());
+                }
             });
         },
         poll: function (callback) {
-            spieldoseAPI.session.poll().then(response => {
+            spieldoseAPI.session.poll((response) => {
                 if (callback && typeof callback === "function") {
                     callback(response);
                 }
             });
         }
     }
-}).$mount('#app');
+};
+
+createApp(spieldoseApp).use(router).use(i18n).mount('#app');
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
 setInterval(function () {

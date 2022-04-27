@@ -23,8 +23,8 @@ const template = function () {
             <div class="panel-block cut-text">
                 <ol v-if="items.length > 0">
                     <li class="is-small" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
-                        <i class="cursor-pointer fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
-                        <i class="cursor-pointer fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
+                        <i class="cursor-pointer fa-fw fa fa-play mr-1" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
+                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>

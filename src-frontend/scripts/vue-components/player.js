@@ -14,7 +14,7 @@ const template = function () {
             -->
             <nav class="level is-marginless">
                 <div class="level-left">
-                    <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
+                    <span id="song-current-time" class="level-item has-text-grey">{{ formatSeconds(currentPlayedSeconds) }}</span>
                 </div>
                 <div class="level-item">
                     <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" />
@@ -139,6 +139,7 @@ export default {
             spieldoseSettings.setCurrentSessionVolume(value);
         },
         streamUrl: function (value) {
+            console.log(value);
             if (value) {
                 this.audio.src = this.streamUrl;
                 if (this.isPlaying || this.isPaused) {
@@ -153,10 +154,12 @@ export default {
                     });
                 }
                 if (this.playerData.currentTrack.index >= 0) {
+                    /*
                     const element = document.getElementById('playlist-item-' + this.playerData.currentTrack.index);
                     if (element) {
                         element.scrollIntoView();
                     }
+                    */
                 }
             } else {
                 this.audio.currentTime = 0;
@@ -218,25 +221,31 @@ export default {
         });
         // visualizer launch error with remote streams because CORS and Access-Control-Allow-Origin headers
         //initializeVisualizer(document.getElementById("canvas"), this.audio);
-        document.getElementById('song-played-progress').addEventListener('click', (e) => {
+        let el1 = document.getElementById('song-played-progress');
+        if (el1) {
+            el1.addEventListener('click', (e) => {
             const offset = e.target.getBoundingClientRect();
             const x = e.pageX - offset.left;
             this.audio.currentTime = ((parseFloat(x) / parseFloat(e.target.offsetWidth)) * 100) * this.audio.duration / 100;
-        });
+            });
+        }
 
         if (typeof window.IntersectionObserver !== 'undefined') {
             const playerVisibilityObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.intersectionRatio > 0) {
-                        bus.$emit('hidePlayerNavbar');
+                        bus.emit('hidePlayerNavbar');
                     } else {
-                        bus.$emit('showPlayerNavBar');
+                        bus.emit('showPlayerNavBar');
                     }
                 });
             });
 
             // observe player controls div (show fixed player controls bottom bar when sidebar player controls are hidden because scrolled area)
-            playerVisibilityObserver.observe(document.getElementById('player-controls'));
+            var el2 = document.getElementById('player-controls');
+            if (el2) {
+                playerVisibilityObserver.observe(el2);
+            }
         }
     },
     created: function () {

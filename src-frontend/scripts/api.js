@@ -1,4 +1,5 @@
-"use strict";
+import axios from 'axios';
+import dayjs from 'dayjs';
 
 export default {
     session: {
