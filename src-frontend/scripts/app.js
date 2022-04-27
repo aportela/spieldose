@@ -4,34 +4,6 @@ import { default as spieldoseAPI } from './api.js';
 import { bus } from './bus.js';
 import { mixinAPIError, mixinPlayer } from './mixins.js';
 
-/**
- * parse vue-resource (custom) resource and return valid object for api-error component
- * @param {*} r a valid vue-resource response object
- */
-const getApiErrorDataFromResponse = function (r) {
-    var data = {
-        request: {
-            method: r.rMethod,
-            url: r.rUrl,
-            body: r.rBody
-        },
-        response: {
-            status: r.status,
-            statusText: r.statusText,
-            text: r.bodyText
-        }
-    };
-    data.request.headers = [];
-    for (var headerName in r.rHeaders.map) {
-        data.request.headers.push({ name: headerName, value: r.rHeaders.get(headerName) });
-    }
-    data.response.headers = [];
-    for (var headerName in r.headers.map) {
-        data.response.headers.push({ name: headerName, value: r.headers.get(headerName) });
-    }
-    return (data);
-};
-
 const getApiErrorDataFromAxiosResponse = function (r) {
     var data = {
         request: {
@@ -59,30 +31,6 @@ const getApiErrorDataFromAxiosResponse = function (r) {
     */
     return (data);
 };
-
-/**
- * vue-resource interceptor for adding (on errors) custom get data function (used in api-error component) into response
- */
-Vue.http.interceptors.push((request, next) => {
-    next.then(response => {
-        if (!response.ok) {
-            response.rBody = request.body;
-            response.rUrl = request.url;
-            response.rMethod = request.method;
-            response.rHeaders = request.headers;
-            response.getApiErrorData = function () {
-                return (getApiErrorDataFromResponse(response));
-            };
-            if (response.status == 400 || response.status == 409) {
-                // helper for find invalid fields on api response
-                error.isFieldInvalid = function (fieldName) {
-                    return (response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
-                }
-            }
-        }
-        return (response);
-    });
-});
 
 axios.interceptors.response.use(function (response) {
     return response;
