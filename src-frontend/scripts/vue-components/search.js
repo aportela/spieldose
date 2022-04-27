@@ -53,8 +53,8 @@ const template = function () {
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click.prevent="playAlbumTracks(album.name, album.artist, album.year);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click.prevent="enqueueAlbumTracks(album.name, album.artist, album.year);"></i>
                                         <span>{{ album.name }}</span>
                                         <br>
                                         <span v-if="album.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(album.artist);">{{ album.artist }}</a></span>
@@ -71,8 +71,8 @@ const template = function () {
                             </div>
                             <div class="media-content">
                                 <div class="content cut-text">
-                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playTrack(track);"></i>
-                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="enqueueTrack(track);"></i>
+                                    <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playTrack(track);"></i>
+                                    <i class="cursor-pointer fa-fw fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="enqueueTrack(track);"></i>
                                     <span>{{ track.title }}</span>
                                     <br >
                                     <span v-if="track.artist">{{ $t("commonLabels.by" )}} <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(track.artist);">{{ track.artist }}</a></span> <span v-if="track.album"> / {{ track.album }}</span>
@@ -89,8 +89,8 @@ const template = function () {
                             <div class="media-content">
                                 <div class="content cut-text">
                                     <p class="subtitle is-6">
-                                    <i v-on:click="playPlaylistTracks(playlist.id);" class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisPlaylist')"></i>
-                                    <i v-on:click="enqueuePlaylistTracks(playlist.id);" class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisPlaylist')"></i>
+                                    <i v-on:click="playPlaylistTracks(playlist.id);" class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisPlaylist')"></i>
+                                    <i v-on:click="enqueuePlaylistTracks(playlist.id);" class="cursor-pointer fa-fw fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisPlaylist')"></i>
                                     {{ playlist.name }} ({{ playlist.trackCount}} {{$t("commonLabels.tracksCount")}})
                                     </p>
                                 </div>

@@ -142,9 +142,9 @@ const template = function () {
                             <td><span>{{ track.genre }}</span></td>
                             <td><span>{{ track.year }}</span></td>
                             <td>
-                                <i class="fas fa-caret-up cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementUpHint')"  aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemUp(i);"></i>
-                                <i class="fas fa-caret-down cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemDown(i);"></i>
-                                <i class="fas fa-times cursor-pointer" v-bind:title="$t('currentPlaylist.labels.removeElementHint')"  aria-hidden="true" v-on:click="playerData.currentPlaylist.removeItem(i); $forceUpdate();"></i>
+                                <i class="fa-fw fas fa-caret-up cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementUpHint')"  aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemUp(i);"></i>
+                                <i class="fa-fw fas fa-caret-down cursor-pointer" v-bind:title="$t('currentPlaylist.labels.moveElementDownHint')" aria-hidden="true" v-on:click="playerData.currentPlaylist.moveItemDown(i);"></i>
+                                <i class="fa-fw fas fa-times cursor-pointer" v-bind:title="$t('currentPlaylist.labels.removeElementHint')"  aria-hidden="true" v-on:click="playerData.currentPlaylist.removeItem(i); $forceUpdate();"></i>
                             </td>
                         </tr>
                     </tbody>

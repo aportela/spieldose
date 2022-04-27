@@ -73,9 +73,9 @@ const template = function () {
                                         <span> {{ track.title}}</span>
                                     </td>
                                     <td>
-                                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
-                                        <i class="cursor-pointer fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
-                                        <i class="cursor-pointer fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="playerData.download(track.id);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="playerData.download(track.id);"></i>
                                     </td>
                                 </tr>
                             </tbody>

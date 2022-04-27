@@ -41,8 +41,8 @@ const template = function () {
                             <td class="has-text-right">{{ item.totalTracks }}</td>
                             <td class="has-text-centered">
                                 <div v-if="item.totalTracks > 0">
-                                    <i class="cursor-pointer fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" v-on:click.prevent="playPathTracks(item.path);"></i>
-                                    <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
+                                    <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('browsePaths.labels.playThisPath')" v-on:click.prevent="playPathTracks(item.path);"></i>
+                                    <i class="cursor-pointer fa-fw fa fa-plus-square" v-bind:title="$t('browsePaths.labels.enqueueThisPath')" v-on:click.prevent="enqueuePathTracks(item.path);"></i>
                                 </div>
                             </td>
                         </tr>
