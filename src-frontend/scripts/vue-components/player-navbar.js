@@ -1,5 +1,4 @@
 import { bus } from '../bus.js';
-import { mixinPlayer } from '../mixins.js';
 
 const template = function () {
     return `
@@ -50,10 +49,10 @@ const template = function () {
                         <img v-bind:src="coverSrc" style="width: 64px; max-height: 64px;">
                     </div>
                     <div class="navbar-item player-buttons">
-                        <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                        <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                        <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                        <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                        <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="$audioplayer.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                        <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="$audioplayer.playback.pause();" v-if="$audioplayer.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                        <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="$audioplayer.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                        <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="$audioplayer.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
                     </div>
                     <div class="navbar-item">
                         <div>
@@ -65,7 +64,7 @@ const template = function () {
                     <div class="navbar-item">
                         <nav class="level is-marginless">
                             <div class="level-left">
-                                <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds | formatSeconds }}</span>
+                                <span id="song-current-time" class="level-item has-text-grey">{{ currentPlayedSeconds }}</span>
                             </div>
                             <div class="level-item">
                                 <input id="song-played-progress" class="is-pulled-left" type="range" v-model="songProgress" min="0" max="1" step="0.01" />
@@ -85,7 +84,6 @@ const template = function () {
 export default {
     name: 'player-navbar',
     template: template(),
-    mixins: [mixinPlayer],
     data: function () {
         return ({
             showPlayerNavBar: false,
@@ -106,11 +104,11 @@ export default {
     },
     computed: {
         coverSrc: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                if (this.playerData.currentTrack.track.image.indexOf('http') == 0) {
-                    return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.image));
+            if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.image) {
+                if (this.$audioplayer.currentTrack.track.image.indexOf('http') == 0) {
+                    return ('api/thumbnail?url=' + encodeURIComponent(this.$audioplayer.currentTrack.track.image));
                 } else {
-                    return ('api/thumbnail?hash=' + this.playerData.currentTrack.track.image);
+                    return ('api/thumbnail?hash=' + this.$audioplayer.currentTrack.track.image);
                 }
             } else {
                 return ('images/vinyl.png');

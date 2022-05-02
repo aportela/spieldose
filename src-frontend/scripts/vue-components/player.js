@@ -1,11 +1,11 @@
 import { bus } from '../bus.js';
-import { mixinPlayer, mixinNavigation } from '../mixins.js';
+import { mixinNavigation, mixinPlayer } from '../mixins.js';
 import { default as spieldoseSettings } from '../settings.js';
 
 const template = function () {
     return `
         <div id="player" class="box is-paddingless is-radiusless is-unselectable">
-            <div v-if="vinylRotationEffect" id="album-cover-container" :class="{'album-cover-container-rotate': playerData.isPlaying }" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
+            <div v-if="vinylRotationEffect" id="album-cover-container" :class="{'album-cover-container-rotate': $audioplayer.isPlaying }" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
                 <img id="album-cover-animated" v-if="coverSrc != 'images/vinyl.png'" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
             </div>
             <img id="album-cover" v-else v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
@@ -29,15 +29,15 @@ const template = function () {
             </div>
             <div id="player-controls" class="is-unselectable">
                 <div class="has-text-centered player-buttons">
-                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" v-on:click.prevent="playerData.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
-                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': playerData.repeatTracksMode != 'none' }" v-on:click.prevent="playerData.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
-                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="playerData.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
-                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="playerData.playback.pause();" v-if="playerData.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
-                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="playerData.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
-                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="playerData.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
-                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" v-on:click.prevent="playerData.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else v-on:click.prevent="playerData.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
-                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" v-on:click.prevent="playerData.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
+                    <span v-bind:title="$t('player.buttons.shufflePlaylistHint')" v-on:click.prevent="$audioplayer.currentPlaylist.shuffle();" class="icon"><i class="fas fa-2x fa-random"></i></span>
+                    <span v-bind:title="$t('player.buttons.toggleRepeatHint')" v-bind:class="{ 'btn-active': $audioplayer.repeatTracksMode != 'none' }" v-on:click.prevent="$audioplayer.playback.toggleRepeatMode();" class="icon"><i class="fas fa-2x fa-redo"></i></span>
+                    <span v-bind:title="$t('player.buttons.previousTrackHint')" id="btn-previous" v-on:click.prevent="$audioplayer.currentPlaylist.playPrevious();" class="icon"><i class="fas fa-2x fa-step-backward"></i></span>
+                    <span v-bind:title="$t('player.buttons.pauseTrackHint')" id="btn-pause" v-on:click.prevent="$audioplayer.playback.pause();" v-if="$audioplayer.isPlaying" class="icon"><i class="fas fa-2x fa-pause"></i></span>
+                    <span v-bind:title="$t('player.buttons.playTrackHint')" id="btn-play" v-on:click.prevent="$audioplayer.playback.play();" v-else class="icon"><i class="fas fa-2x fa-play"></i></span>
+                    <span v-bind:title="$t('player.buttons.nextTrackHint')" id="btn-next" v-on:click.prevent="$audioplayer.currentPlaylist.playNext();" class="icon"><i class="fas fa-2x fa-step-forward"></i></span>
+                    <span v-bind:title="$t('player.buttons.unloveTrackHint')" v-if="nowPlayingLoved" v-on:click.prevent="$audioplayer.currentTrack.unSetLoved();" class="icon btn-active"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.loveTrackHint')" v-else v-on:click.prevent="$audioplayer.currentTrack.setLoved();" class="icon"><i class="fas fa-2x fa-heart"></i></span>
+                    <span v-bind:title="$t('player.buttons.downloadTrackHint')" id="btn-download" class="icon" v-on:click.prevent="$audioplayer.currentTrack.download();"><i class="fas fa-2x fa-save"></i></span>
                 </div>
                 <div id="player-volume-control">
                     <div class="columns">
@@ -60,7 +60,7 @@ const template = function () {
 export default {
     name: 'spieldose-player-component',
     template: template(),
-    mixins: [mixinPlayer, mixinNavigation],
+    mixins: [ mixinNavigation, mixinPlayer],
     data: function () {
         return ({
             preMuteVolume: 1,
@@ -73,22 +73,22 @@ export default {
             return (this.vinylRotationEffect && this.coverSrc == 'images/vinyl.png');
         },
         coverSrc: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                if (this.playerData.currentTrack.track.radioStation.image) {
-                    return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.radioStation.image));
+            if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.radioStation) {
+                if (this.$audioplayer.currentTrack.track.radioStation.image) {
+                    return ('api/thumbnail?url=' + encodeURIComponent(this.$audioplayer.currentTrack.track.radioStation.image));
                 } else {
                     return ('images/vinyl.png');
                 }
             } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    if (this.playerData.currentTrack.track.image.indexOf("http") == 0) {
-                        return ('api/thumbnail?url=' + encodeURIComponent(this.playerData.currentTrack.track.image));
+                if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.image) {
+                    if (this.$audioplayer.currentTrack.track.image.indexOf("http") == 0) {
+                        return ('api/thumbnail?url=' + encodeURIComponent(this.$audioplayer.currentTrack.track.image));
                     } else {
-                        return ('api/thumbnail?hash=' + this.playerData.currentTrack.track.image);
+                        return ('api/thumbnail?hash=' + this.$audioplayer.currentTrack.track.image);
                     }
                 } else {
-                    if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.albumMBId) {
-                        return('https://coverartarchive.org/release/' + this.playerData.currentTrack.track.albumMBId + '/front');
+                    if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.albumMBId) {
+                        return('https://coverartarchive.org/release/' + this.$audioplayer.currentTrack.track.albumMBId + '/front');
                     } else {
                         return ('images/vinyl.png');
                     }
@@ -96,11 +96,11 @@ export default {
             }
         },
         streamUrl: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                return (this.playerData.currentTrack.track.radioStation.streamUrls[0]);
+            if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.radioStation) {
+                return (this.$audioplayer.currentTrack.track.radioStation.streamUrls[0]);
             } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.id) {
-                    return ('api/track/get/' + this.playerData.currentTrack.track.id);
+                if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.id) {
+                    return ('api/track/get/' + this.$audioplayer.currentTrack.track.id);
                 } else {
                     return ('');
                 }
@@ -109,16 +109,16 @@ export default {
     },
     methods: {
         replaceAlbumThumbnailWithLoadError: function () {
-            if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.radioStation) {
-                if (this.playerData.currentTrack.track.radioStation.image) {
-                    this.playerData.currentTrack.track.radioStation.image = null;
+            if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.radioStation) {
+                if (this.$audioplayer.currentTrack.track.radioStation.image) {
+                    this.$audioplayer.currentTrack.track.radioStation.image = null;
                 }
             } else {
-                if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.image) {
-                    this.playerData.currentTrack.track.image = null;
+                if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.image) {
+                    this.$audioplayer.currentTrack.track.image = null;
                 } else {
-                    if (this.playerData.currentTrack.track && this.playerData.currentTrack.track.albumMBId) {
-                        this.playerData.currentTrack.track.albumMBId = null;
+                    if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.albumMBId) {
+                        this.$audioplayer.currentTrack.track.albumMBId = null;
                     }
                 }
             }
@@ -139,7 +139,6 @@ export default {
             spieldoseSettings.setCurrentSessionVolume(value);
         },
         streamUrl: function (value) {
-            console.log(value);
             if (value) {
                 this.audio.src = this.streamUrl;
                 if (this.isPlaying || this.isPaused) {
@@ -153,9 +152,9 @@ export default {
                     }).catch(function (error) {
                     });
                 }
-                if (this.playerData.currentTrack.index >= 0) {
+                if (this.$audioplayer.currentTrack.index >= 0) {
                     /*
-                    const element = document.getElementById('playlist-item-' + this.playerData.currentTrack.index);
+                    const element = document.getElementById('playlist-item-' + this.$audioplayer.currentTrack.index);
                     if (element) {
                         element.scrollIntoView();
                     }
@@ -202,17 +201,17 @@ export default {
             this.volume = aa.volume;
         });
         aa.addEventListener('ended', () => {
-            if (this.playerData.repeatTracksMode == 'track') {
+            if (this.$audioplayer.repeatTracksMode == 'track') {
                 this.audio.pause();
                 this.audio.currentTime = 0;
                 this.audio.play();
             } else {
-                this.playerData.currentPlaylist.playNext();
+                this.$audioplayer.currentPlaylist.playNext();
             }
         });
         aa.addEventListener('error', (e) => {
             // try to load next song on playlist if errors found
-            this.playerData.currentPlaylist.playNext();
+            this.$audioplayer.currentPlaylist.playNext();
             // TODO
             /*
             switch (e.target.error.code) {
@@ -249,6 +248,6 @@ export default {
         }
     },
     created: function () {
-        this.playerData.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
+        this.$audioplayer.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
     }
 }

@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer } from '../mixins.js';
+import { mixinAPIError, mixinTopRecentCharts, mixinNavigation } from '../mixins.js';
 
 const template = function () {
     return `
@@ -47,7 +47,7 @@ export default {
     name: 'spieldose-dashboard-recent',
     template: template(),
     mixins: [
-        mixinAPIError, mixinTopRecentCharts, mixinNavigation, mixinPlayer
+        mixinAPIError, mixinTopRecentCharts, mixinNavigation
     ],
     data: function () {
         return ({

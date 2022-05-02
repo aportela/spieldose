@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums } from '../mixins.js';
+import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums } from '../mixins.js';
 
 const template = function () {
     return `
@@ -73,9 +73,9 @@ const template = function () {
                                         <span> {{ track.title}}</span>
                                     </td>
                                     <td>
-                                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="playerData.currentPlaylist.replace([track]);"></i>
-                                        <i class="cursor-pointer fa-fw fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="playerData.currentPlaylist.enqueue([track]);"></i>
-                                        <i class="cursor-pointer fa-fw fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="playerData.download(track.id);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisTrack')" v-on:click.prevent="$audioplayer.currentPlaylist.replace([track]);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-plus-square"  v-bind:title="$t('commonLabels.enqueueThisTrack')" v-on:click.prevent="$audioplayer.currentPlaylist.enqueue([track]);"></i>
+                                        <i class="cursor-pointer fa-fw fa fa-save"  v-bind:title="$t('commonLabels.downloadThisTrack')" v-on:click.prevent="$audioplayer.download(track.id);"></i>
                                     </td>
                                 </tr>
                             </tbody>
@@ -151,7 +151,7 @@ export default {
     name: 'spieldose-browse-artist',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPlayer, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums
+        mixinAPIError, mixinPagination, mixinLiveSearches, mixinArtists, mixinAlbums
     ],
     data: function () {
         return ({
@@ -289,10 +289,10 @@ export default {
             this.loading = true;
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null).then(response => {
-                this.playerData.currentPlaylist.empty();
+                this.$audioplayer.currentPlaylist.empty();
                 if (response.data.tracks && response.data.tracks.length > 0) {
-                    this.playerData.tracks = response.data.tracks;
-                    this.playerData.playback.play();
+                    this.$audioplayer.tracks = response.data.tracks;
+                    this.$audioplayer.playback.play();
                 }
                 this.loading = false;
             }).catch(error => {

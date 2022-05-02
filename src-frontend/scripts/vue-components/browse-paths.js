@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer } from '../mixins.js';
+import { mixinAPIError, mixinPagination, mixinLiveSearches } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
 import { default as apiError } from './api-error.js';
@@ -58,7 +58,7 @@ export default {
     name: 'spieldose-browse-paths',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinPlayer
+        mixinAPIError, mixinPagination, mixinLiveSearches
     ],
     data: function () {
         return ({

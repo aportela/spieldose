@@ -62,7 +62,6 @@ export const mixinArtists = {
 export const mixinPlayer = {
     data: function () {
         return ({
-            playerData: sharedPlayerData,
             currentPlayedSeconds: null,
             volume: 1,
             songProgress: 0
@@ -70,21 +69,21 @@ export const mixinPlayer = {
     },
     computed: {
         isPlaying: function () {
-            return (this.playerData.isPlaying);
+            return (this.$audioplayer.isPlaying);
         },
         isPaused: function () {
-            return (this.playerData.isPaused);
+            return (this.$audioplayer.isPaused);
         },
         isMuted: function () {
             return (false);
         },
         isStopped: function () {
-            return (this.playerData.isStopped);
+            return (this.$audioplayer.isStopped);
         },
         nowPlayingTitle: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.currentTrack.track.title) {
-                    return (this.playerData.currentTrack.track.title);
+                if (this.$audioplayer.currentTrack.track.title) {
+                    return (this.$audioplayer.currentTrack.track.title);
                 } else {
                     return ("track title unknown");
                 }
@@ -97,8 +96,8 @@ export const mixinPlayer = {
         },
         nowPlayingLength: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.currentTrack.track.playtimeString) {
-                    return (this.playerData.currentTrack.track.playtimeString);
+                if (this.$audioplayer.currentTrack.track.playtimeString) {
+                    return (this.$audioplayer.currentTrack.track.playtimeString);
                 } else {
                     return ("00:00");
                 }
@@ -108,8 +107,8 @@ export const mixinPlayer = {
         },
         nowPlayingArtist: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.currentTrack.track.artist) {
-                    return (this.playerData.currentTrack.track.artist);
+                if (this.$audioplayer.currentTrack.track.artist) {
+                    return (this.$audioplayer.currentTrack.track.artist);
                 } else {
                     return ("artist unknown");
                 }
@@ -119,8 +118,8 @@ export const mixinPlayer = {
         },
         nowPlayingArtistAlbum: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.currentTrack.track.album) {
-                    return (" / " + this.playerData.currentTrack.track.album);
+                if (this.$audioplayer.currentTrack.track.album) {
+                    return (" / " + this.$audioplayer.currentTrack.track.album);
                 } else {
                     return ("album unknown");
                 }
@@ -130,8 +129,8 @@ export const mixinPlayer = {
         },
         nowPlayingYear: function () {
             if (this.isPlaying || this.isPaused) {
-                if (this.playerData.currentTrack.track.year) {
-                    return (" (" + this.playerData.currentTrack.track.year + ")");
+                if (this.$audioplayer.currentTrack.track.year) {
+                    return (" (" + this.$audioplayer.currentTrack.track.year + ")");
                 } else {
                     return (" (year unknown)");
                 }
@@ -140,7 +139,7 @@ export const mixinPlayer = {
             }
         },
         nowPlayingLoved: function () {
-            return (this.playerData.currentTrack.track && this.playerData.currentTrack.track.loved == '1');
+            return (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.loved == '1');
         }
     },
     methods: {
@@ -164,7 +163,7 @@ export const mixinPlayer = {
             this.clearAPIErrors();
             spieldoseAPI.track.getPathTracks(path).then(response => {
                 if (response.data.tracks && response.data.tracks.length > 0) {
-                    this.playerData.currentPlaylist.replace(response.data.tracks);
+                    this.$audioplayer.currentPlaylist.replace(response.data.tracks);
                 }
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
@@ -174,7 +173,7 @@ export const mixinPlayer = {
             this.clearAPIErrors();
             spieldoseAPI.track.getPathTracks(path).then(response => {
                 if (response.data.tracks && response.data.tracks.length > 0) {
-                    this.playerData.currentPlaylist.enqueue(response.data.tracks);
+                    this.$audioplayer.currentPlaylist.enqueue(response.data.tracks);
                 }
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
@@ -183,10 +182,10 @@ export const mixinPlayer = {
         playAlbumTracks: function (album, artist, year) {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null).then(response => {
-                this.playerData.currentPlaylist.empty();
+                this.$audioplayer.currentPlaylist.empty();
                 if (response.data.tracks && response.data.tracks.length > 0) {
-                    this.playerData.tracks = response.data.tracks;
-                    this.playerData.playback.play();
+                    this.$audioplayer.tracks = response.data.tracks;
+                    this.$audioplayer.playback.play();
                 }
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
@@ -196,7 +195,7 @@ export const mixinPlayer = {
             this.clearAPIErrors();
             spieldoseAPI.track.getAlbumTracks(album || null, artist || null, year || null).then(response => {
                 if (response.data.tracks && response.data.tracks.length > 0) {
-                    this.playerData.currentPlaylist.enqueue(response.data.tracks);
+                    this.$audioplayer.currentPlaylist.enqueue(response.data.tracks);
                 }
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
@@ -206,16 +205,16 @@ export const mixinPlayer = {
             this.clearAPIErrors();
             if (id) {
                 spieldoseAPI.playlist.get(id).then(response => {
-                    this.playerData.currentPlaylist.replace(response.data.playlist.tracks);
-                    this.playerData.currentPlaylist.set(id, response.data.playlist.name);
+                    this.$audioplayer.currentPlaylist.replace(response.data.playlist.tracks);
+                    this.$audioplayer.currentPlaylist.set(id, response.data.playlist.name);
                 }).catch(error => {
                     this.setAPIError(error.getApiErrorData());
                 });
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random").then(response => {
                 }).catch(error => {
-                    this.playerData.currentPlaylist.replace(response.data.tracks);
-                    this.playerData.currentPlaylist.unset();
+                    this.$audioplayer.currentPlaylist.replace(response.data.tracks);
+                    this.$audioplayer.currentPlaylist.unset();
                     this.setAPIError(error.getApiErrorData());
                 });
             }
@@ -224,23 +223,23 @@ export const mixinPlayer = {
             this.clearAPIErrors();
             if (id) {
                 spieldoseAPI.playlist.get(id).then(response => {
-                    this.playerData.currentPlaylist.enqueue(response.data.playlist.tracks);
+                    this.$audioplayer.currentPlaylist.enqueue(response.data.playlist.tracks);
                 }).catch(error => {
                     this.setAPIError(error.getApiErrorData());
                 });
             } else {
                 spieldoseAPI.track.searchTracks("", "", "", true, 1, 0, "random").then(response => {
-                    this.playerData.currentPlaylist.enqueue(response.data.tracks);
+                    this.$audioplayer.currentPlaylist.enqueue(response.data.tracks);
                 }).catch(error => {
                     this.setAPIError(error.getApiErrorData());
                 });
             }
         },
         playTrack: function (track) {
-            this.playerData.currentPlaylist.replace([track]);
+            this.$audioplayer.currentPlaylist.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.playerData.currentPlaylist.enqueue([track]);
+            this.$audioplayer.currentPlaylist.enqueue([track]);
         },
         playRadioStation: function (id) {
             this.clearAPIErrors();
@@ -250,7 +249,7 @@ export const mixinPlayer = {
                     artist: this.$t("commonLabels.remoteRadioStation"),
                     radioStation: response.data.radioStation
                 };
-                this.playerData.currentPlaylist.replace([track]);
+                this.$audioplayer.currentPlaylist.replace([track]);
             }).catch(error => {
                 this.setAPIError(error.getApiErrorData());
             });
@@ -345,10 +344,10 @@ export const mixinTopRecentCharts = {
     },
     methods: {
         playTrack: function (track) {
-            this.playerData.currentPlaylist.replace([track]);
+            this.$audioplayer.currentPlaylist.replace([track]);
         },
         enqueueTrack: function (track) {
-            this.playerData.currentPlaylist.enqueue([track]);
+            this.$audioplayer.currentPlaylist.enqueue([track]);
         }
     }
 };

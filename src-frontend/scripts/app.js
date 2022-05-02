@@ -6,7 +6,9 @@ import { default as i18n } from './i18n.js';
 import { default as spieldoseAPI } from './api.js';
 import { bus } from './bus.js';
 
-import { mixinAPIError, mixinPlayer } from './mixins.js';
+import { mixinAPIError } from './mixins.js';
+
+import { default as audioplayer } from './plugins/audioplayer.js';
 
 const getApiErrorDataFromAxiosResponse = function (r) {
     var data = {
@@ -66,7 +68,7 @@ axios.interceptors.response.use(function (response) {
 });
 
 const spieldoseApp = {
-    mixins: [mixinAPIError, mixinPlayer],
+    mixins: [mixinAPIError],
     data: function () {
         return ({
             logged: false,
@@ -94,7 +96,7 @@ const spieldoseApp = {
     },
     methods: {
         signOut: function () {
-            this.playerData.dispose();
+            this.$audioplayer.dispose();
             this.clearAPIErrors();
             spieldoseAPI.session.signOut((response) => {
                 if (response.status == 200) {
@@ -114,7 +116,7 @@ const spieldoseApp = {
     }
 };
 
-createApp(spieldoseApp).use(router).use(i18n).mount('#app');
+createApp(spieldoseApp).use(router).use(i18n).use(audioplayer).mount('#app');
 
 // prevent php session lost (TODO: better management, only poll if we are logged)
 setInterval(function () {
