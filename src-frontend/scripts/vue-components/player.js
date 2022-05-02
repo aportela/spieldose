@@ -148,8 +148,11 @@ export default {
                 this.audio.load();
                 let playPromise = this.audio.play();
                 if (playPromise !== undefined) {
-                    playPromise.then(function () {
-                    }).catch(function (error) {
+                    console.log(playPromise);
+                    playPromise.then(() => {
+                    }).catch((error) => {
+                        this.$audioplayer.playback.pause();
+                        this.audio.currentTime = 0;
                     });
                 }
                 if (this.$audioplayer.currentTrack.index >= 0) {
