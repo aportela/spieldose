@@ -24,7 +24,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'public/scripts/'),
         publicPath: '/scripts/',
-        filename: '[name]-bundle.min.js',
+        filename: '[name]-bundle-[contenthash].min.js',
         clean: true
     },
     plugins: [
