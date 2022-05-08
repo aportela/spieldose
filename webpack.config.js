@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const ReplaceHashInFileWebpackPlugin = require('replace-hash-in-file-webpack-plugin');
 
 module.exports = {
     mode: 'production',
@@ -40,23 +39,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'templates/index-webpack.html.twig'),
             filename: path.resolve(__dirname, 'templates/index.html.twig'),
-            hash: true
-        }),
-        /*
-        new ReplaceHashInFileWebpackPlugin(
-            [
-                {
-                    dir: 'config',
-                    files: ['webpack.php'],
-                    rules: [
-                        {
-                            search: /'jsBundleHash' => '[a-zA-Z0-9]*'/,
-                            replace: "'jsBundleHash' => '[hash]'"
-                        }
-                    ]
-                }
-            ]
-        )
-        */
+            hash: false
+        })
     ]
 };
