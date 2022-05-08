@@ -18,7 +18,7 @@ module.exports = {
             import: './src-frontend/scripts/app.js',
             dependOn: 'vendor'
         },
-        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt']
+        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt', 'dayjs', 'Chart']
     },
     output: {
         path: path.resolve(__dirname, 'public/scripts/'),
