@@ -1,14 +1,18 @@
 import { bus } from '../bus.js';
 import { mixinNavigation, mixinPlayer } from '../mixins.js';
 import { default as spieldoseSettings } from '../settings.js';
+import { default as playerCDCoverArt } from './player-cd-cover-art.js';
 
 const template = function () {
     return `
         <div id="player" class="box is-paddingless is-radiusless is-unselectable">
+            <spieldose-player-cd-cover-art :url="coverSrc"></spieldose-player-cd-cover-art>
+            <!--
             <div v-if="vinylRotationEffect" id="album-cover-container" :class="{'album-cover-container-rotate': $audioplayer.isPlaying }" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
                 <img id="album-cover-animated" v-if="coverSrc != 'images/vinyl.png'" v-bind:src="coverSrc" @error="replaceAlbumThumbnailWithLoadError();">
             </div>
             <img id="album-cover" v-else v-bind:src="coverSrc" v-on:error="replaceAlbumThumbnailWithLoadError();" @click.prevent="vinylRotationEffect=!vinylRotationEffect">
+            -->
             <!--
             <canvas id="canvas"></canvas>
             -->
@@ -77,7 +81,8 @@ export default {
                 if (this.$audioplayer.currentTrack.track.radioStation.image) {
                     return ('api/thumbnail?url=' + encodeURIComponent(this.$audioplayer.currentTrack.track.radioStation.image));
                 } else {
-                    return ('images/vinyl.png');
+                    //return ('images/vinyl.png');
+                    return(null);
                 }
             } else {
                 if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.image) {
@@ -90,7 +95,8 @@ export default {
                     if (this.$audioplayer.currentTrack.track && this.$audioplayer.currentTrack.track.albumMBId) {
                         return('https://coverartarchive.org/release/' + this.$audioplayer.currentTrack.track.albumMBId + '/front');
                     } else {
-                        return ('images/vinyl.png');
+                        return(null);
+                        //return ('images/vinyl.png');
                     }
                 }
             }
@@ -252,5 +258,8 @@ export default {
     },
     created: function () {
         this.$audioplayer.currentPlaylist.loadRandomTracks(initialState.defaultResultsPage, function () { });
+    },
+    components: {
+        'spieldose-player-cd-cover-art': playerCDCoverArt
     }
 }
