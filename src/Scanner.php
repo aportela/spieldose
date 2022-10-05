@@ -35,6 +35,61 @@ class Scanner
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", filemtime($filePath))
                 )
             );
+            $this->id3->analyze($filePath);
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($filePath))
+            );
+            $trackTitle = $this->id3->getTrackTitle();
+            if (!empty($trackTitle)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", $trackTitle);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":title");
+            }
+            $trackArtist = $this->id3->getTrackArtistName();
+            if (!empty($trackArtist)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $trackArtist);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":artist");
+            }
+            $albumArtist = $this->id3->getAlbumArtistName();
+            if (!empty($albumArtist)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_artist", $albumArtist);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist");
+            }
+            $trackYear = $this->id3->getYear();
+            if (!empty($trackYear)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", intval($trackYear));
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
+            }
+            $artistMBId = $this->id3->getMusicBrainzArtistId();
+            // multiple mbids (divided by "/") not supported
+            if (!empty($artistMBId) && strlen($artistMBId) == 36) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $artistMBId);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_artist_id");
+            }
+            $trackAlbum = $this->id3->getAlbum();
+            if (!empty($trackAlbum)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
+            }
+            $albumMBId = $this->id3->getMusicBrainzAlbumId();
+            // multiple mbids (divided by "/") not supported
+            if (!empty($albumMBId) && strlen($albumMBId) == 36) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_id", $albumMBId);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_id");
+            }
+            $this->dbh->query(
+                "
+                    REPLACE INTO FILE_ID3_TAG
+                        (SHA1_HASH, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, MB_ARTIST_ID, MB_ALBUM_ID)
+                    VALUES (:id, :title, :artist, :album_artist, :album, :year, :mb_artist_id, :mb_album_id); ",
+                $params
+            );
             echo "ok!" . PHP_EOL;
         } catch (\Throwable $e) {
             echo "error!" . PHP_EOL;
