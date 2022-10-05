@@ -48,17 +48,8 @@ if (count($missingExtensions) > 0) {
             $failed = array();
             for ($i = 0; $i < $totalFiles; $i++) {
                 try {
-                    $logger->debug("Processing file: " . $files[$i]);
-                    $db->query(
-                        " REPLACE INTO FILES (SHA1_HASH, PATH, NAME, ATIME, MTIME) VALUES (:id, :path, :name, STRFTIME('%s'), :mtime)",
-                        array(
-                            new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($files[$i])),
-                            new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($files[$i])),
-                            new \aportela\DatabaseWrapper\Param\StringParam(":name", basename($files[$i])),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", filemtime($files[$i]))
-                        )
-                    );
-
+                    $scanner = new \Spieldose\Scanner($db, $logger);
+                    $scanner->scan(($files[$i]));
                     //$scrapper->scrapFileTags($files[$i]);
                 } catch (\Throwable $e) {
                     //$c["scanLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
@@ -75,6 +66,7 @@ if (count($missingExtensions) > 0) {
                     echo " " . $f . PHP_EOL;
                 }
             }
+            $scanner->cleanUp();
         } else {
             echo "Invalid music path" . PHP_EOL;
         }
