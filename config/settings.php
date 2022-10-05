@@ -30,14 +30,23 @@
         'log_error_details' => true,
     ];
 
-    $settings['default_log_path'] = isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log';
+    $settings['logger'] = [
+        'default'  => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
+            'name' => 'Spieldose::Default'
+        ],
+        'database' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
+            'name' => 'Spieldose::Database'
+        ]
+    ];
 
     // Database settings
     $settings['db'] = [
         'driver' => 'sqlite',
         'host' => '',
         'username' => '',
-        'database' => 'spieldose',
+        'database' => 'spieldose2.sqlite3',
         'password' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -53,13 +62,13 @@
             // Set character set
             //PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci' // BUG: https://bugs.php.net/bug.php?id=81576
         ],
+        "upgradeSchemaPath" => __DIR__ . '/../src/Database/schema.sql'
     ];
 
     $settings['twig'] = [
         'path' =>  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates',
         'options' => ['cache' => false]
     ];
-
 
     $settings['common'] = [
         'defaultResultsPage' => 64,
@@ -68,7 +77,7 @@
         'locale' => 'en'
     ];
 
-    $settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+    $settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
 
