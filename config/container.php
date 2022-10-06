@@ -7,6 +7,8 @@
     use Slim\Factory\AppFactory;
     use Slim\Middleware\ErrorMiddleware;
 
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+
     return [
         'settings' => function () {
             return require __DIR__ . '/settings.php';
@@ -57,11 +59,40 @@
             return new PDO($dsn, $username, $password, $flags);
         },
 
+        DB::class => function (ContainerInterface $container) {
+            $settings = $container->get('settings')['db'];
+            $adapter = new \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter(
+                dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $settings["database"],
+                // READ upgrade SQL schema file definition on next block of this README.md
+                $settings["upgradeSchemaPath"]
+            );
+            $logger = $container->get(DBLogger::class);
+            // main object
+            $db = new \aportela\DatabaseWrapper\DB
+            (
+                $adapter,
+                $logger
+            );
+            return($db);
+        },
+
         \Monolog\Logger::class => function(ContainerInterface $container) {
-            $settings = $container->get('settings');
-            $logger = new \Monolog\Logger('default');
+            $settings = $container->get('settings')['logger'];
+            $logger = new \Monolog\Logger('spieldose-default');
             $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-            $handler = new \Monolog\Handler\RotatingFileHandler($settings['default_log_path'], 0, \Monolog\Logger::DEBUG);
+            $handler = new \Monolog\Handler\RotatingFileHandler($settings['default']['path'], 0, \Monolog\Level::Debug);
+            $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+            $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+            $handler->setFormatter($formatter);
+            $logger->pushHandler($handler);
+            return ($logger);
+        },
+
+        DBLogger::class => function(ContainerInterface $container) {
+            $settings = $container->get('settings')['logger'];
+            $logger = new \Monolog\Logger('spieldose-db');
+            $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+            $handler = new \Monolog\Handler\RotatingFileHandler($settings['database']['path'], 0, \Monolog\Level::Debug);
             $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
             $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
             $handler->setFormatter($formatter);
