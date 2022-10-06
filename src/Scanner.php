@@ -10,6 +10,8 @@ class Scanner
     private $logger;
     private $id3;
 
+    const VALID_COVER_FILENAMES = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Monolog\Logger $logger)
     {
         $this->dbh = $dbh;
@@ -26,11 +28,39 @@ class Scanner
         $this->logger->debug("Processing file: " . $filePath);
         echo "Scanning " . $filePath . ": ";
         try {
+
+            $stat = stat(dirname($filePath));
+            $coverFilename = null;
+            foreach (glob(dirname($filePath) . DIRECTORY_SEPARATOR . self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
+                $coverFilename = basename(realpath($file)); // get real file "case"
+                break;
+            }
+
+            if (!empty($coverFilename)) {
+                $this->dbh->query(
+                    " REPLACE INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ",
+                    array(
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename)
+                    )
+                );
+            } else {
+                $this->dbh->query(
+                    " REPLACE INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, NULL) ",
+                    array(
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                    )
+                );
+            }
             $this->dbh->query(
-                " REPLACE INTO FILES (SHA1_HASH, PATH, NAME, ATIME, MTIME) VALUES (:id, :path, :name, STRFTIME('%s'), :mtime) ",
+                " REPLACE INTO FILES (ID, DIRECTORY_ID, NAME, ATIME, MTIME) VALUES (:id, :path_id, :name, STRFTIME('%s'), :mtime) ",
                 array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($filePath)),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":path_id", sha1(dirname($filePath))),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", basename($filePath)),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", filemtime($filePath))
                 )
@@ -86,7 +116,7 @@ class Scanner
             $this->dbh->query(
                 "
                     REPLACE INTO FILE_ID3_TAG
-                        (SHA1_HASH, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, MB_ARTIST_ID, MB_ALBUM_ID)
+                        (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, MB_ARTIST_ID, MB_ALBUM_ID)
                     VALUES (:id, :title, :artist, :album_artist, :album, :year, :mb_artist_id, :mb_album_id); ",
                 $params
             );
@@ -100,7 +130,7 @@ class Scanner
     {
         $this->logger->debug("Starting scanner cleanup");
         $results = $this->dbh->query(
-            " SELECT SHA1_HASH AS id, PATH || :directory_separator || NAME AS filePath FROM FILES ORDER BY PATH, NAME ",
+            " SELECT FILES.ID AS id, (DIRECTORIES.PATH || :directory_separator || FILES.NAME) AS filePath FROM FILES LEFT JOIN DIRECTORIES ON FILES.DIRECTORY_ID = DIRECTORIES.ID ORDER BY DIRECTORIES.PATH, FILES.NAME ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
             )
@@ -109,7 +139,7 @@ class Scanner
             if (!file_exists($result->filePath)) {
                 echo "deleting " . $result->id . PHP_EOL;
                 $this->dbh->query(
-                    " DELETE FROM FILES WHERE SHA1_HASH = :id ",
+                    " DELETE FROM FILES WHERE ID = :id ",
                     array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $result->id)
                     )
