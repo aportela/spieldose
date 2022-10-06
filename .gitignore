@@ -1,6 +1,6 @@
-/data/spieldose.sqlite3
-/data/spieldose.sqlite3-shm
-/data/spieldose.sqlite3-wal
+/data/*.sqlite3
+/data/*.sqlite3-shm
+/data/*.sqlite3-wal
 /data/thumbnails/*
 /vendor/
 /node_modules/
