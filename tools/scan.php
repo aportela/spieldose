@@ -1,76 +1,60 @@
 <?php
 
 use DI\ContainerBuilder;
-use Slim\App;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
-
 
 $containerBuilder = new ContainerBuilder();
 
 // Set up settings
-
 $containerBuilder->addDefinitions(__DIR__ . '../../config/container.php');
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
 
-// Create App instance
-$app = $container->get(App::class);
-
 echo "Spieldose scanner" . PHP_EOL;
 
-$logger = $container->get(\Monolog\Logger::class);
+$logger = $container->get(ScannerLogger::class);
 
-$logger->debug("Scan started");
-
-//$app = (new \Spieldose\App())->get();
+$logger->info("Scan started");
 
 $settings = $container->get('settings');
 
 $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
 if (count($missingExtensions) > 0) {
-    $logger->critical("Error: missing php extension/s: ", [implode(", ", $missingExtensions)]);
-    echo "Error: missing php extension/s: " . implode(", ", $missingExtensions) . PHP_EOL;
-    exit;
+    $missingExtensionsStr = implode(", ", $missingExtensions);
+    echo "Error: missing php extension/s: " . $missingExtensionsStr . PHP_EOL;
+    $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
 } else {
-    $cmdLine = new \Spieldose\CmdLine("", array("path:"));
-    if ($cmdLine->hasParam("path")) {
-        $musicPath = $cmdLine->getParamValue("path");
-        if (file_exists($musicPath)) {
-            $logger->debug("Scanning base path: " . $musicPath);
-            $db = $container->get(DB::class);
-
-            $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
-            $totalFiles = count($files);
-            echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
-            //$scrapper = new \Spieldose\Scrapper($dbh);
-            $failed = array();
-            for ($i = 0; $i < $totalFiles; $i++) {
-                try {
-                    $scanner = new \Spieldose\Scanner($db, $logger);
-                    $scanner->scan(($files[$i]));
-                    //$scrapper->scrapFileTags($files[$i]);
-                } catch (\Throwable $e) {
-                    //$c["scanLogger"]->error("Error: " . $e->getMessage(), array('file' => __FILE__, 'line' => __LINE__));
-                    //$failed[] = $files[$i];
-                    $logger->critical($e->getMessage());
-                    throw $e;
+    try {
+        $db = $container->get(DB::class);
+        $scanner = new \Spieldose\Scanner($db, $logger);
+        $cmdLine = new \Spieldose\CmdLine("", array("path:", "cleanup"));
+        if ($cmdLine->hasParam("path")) {
+            $musicPath = realpath($cmdLine->getParamValue("path"));
+            if (file_exists($musicPath)) {
+                $logger->info("Scanning base path: " . $musicPath);
+                $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
+                $totalFiles = count($files);
+                $logger->debug("Total files on path: " . $totalFiles);
+                if ($totalFiles > 0) {
+                    echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
+                    $failed = array();
+                    for ($i = 0; $i < $totalFiles; $i++) {
+                        $scanner->scan(($files[$i]));
+                        \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
+                    }
                 }
-                //\Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
+            } else {
+                echo "Invalid music path / path not found" . PHP_EOL;
             }
-            $totalFailed = count($failed);
-            if ($totalFailed > 0) {
-                echo sprintf("Failed to scrap %d files:%s", $totalFailed, PHP_EOL);
-                foreach ($failed as $f) {
-                    echo " " . $f . PHP_EOL;
-                }
-            }
-            $scanner->cleanUp();
-        } else {
-            echo "Invalid music path" . PHP_EOL;
         }
-    } else {
-        echo "No required params found: --path <music_path>" . PHP_EOL;
+        if ($cmdLine->hasParam(("cleanup"))) {
+            $logger->debug("Cleanup started");
+            $scanner->cleanUp();
+        }
+    } catch (\Exception $e) {
+        echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
+        $logger->critical("Uncaught exception: " . $e->getMessage());
     }
 }
