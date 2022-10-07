@@ -191,8 +191,15 @@ class Track
                     FILE_ID3_TAG.TITLE AS title,
                     FILE_ID3_TAG.ARTIST AS artist,
                     FILE_ID3_TAG.ALBUM_ARTIST AS albumArtist,
+                    FILE_ID3_TAG.ALBUM AS album,
                     FILE_ID3_TAG.YEAR as year,
-                    (DIRECTORIES.PATH || :directory_separator || DIRECTORIES.COVER_FILENAME) AS localCoverPath
+                    FILE_ID3_TAG.TRACK_NUMBER as trackNumber,
+                    FILE_ID3_TAG.DISC_NUMBER AS discNumber,
+                    (DIRECTORIES.PATH || :directory_separator || DIRECTORIES.COVER_FILENAME) AS localCoverPath,
+                    FILE_ID3_TAG.PLAYTIME_SECONDS AS playtimeSeconds,
+                    FILE_ID3_TAG.MB_ARTIST_ID AS musicBrainzArtistId,
+                    FILE_ID3_TAG.MB_ALBUM_ARTIST_ID as musicBrainzAlbumArtistId,
+                    FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId
                 FROM FILES
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
                 LEFT JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
@@ -212,7 +219,7 @@ class Track
         return ($tracks);
     }
 
-    public  static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
+    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
     {
         $results = $db->query(
             "
