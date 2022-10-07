@@ -1,15 +1,15 @@
 <?php
 
-    use Slim\App;
-    use Slim\Middleware\ErrorMiddleware;
+use Slim\App;
+use Slim\Middleware\ErrorMiddleware;
 
-    return function (App $app) {
-        // Parse json, form data and xml
-        $app->addBodyParsingMiddleware();
+return function (App $app) {
+    // Parse json, form data and xml
+    $app->addBodyParsingMiddleware();
 
-        // Add the Slim built-in routing middleware
-        $app->addRoutingMiddleware();
+    // Add the Slim built-in routing middleware
+    $app->addRoutingMiddleware();
 
-        // Catch exceptions and errors
-        $app->add(ErrorMiddleware::class);
-    };
+    // Catch exceptions and errors
+    $app->add(ErrorMiddleware::class);
+};
