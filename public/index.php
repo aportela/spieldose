@@ -1,10 +1,10 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    ob_start();
+ob_start();
 
-    session_cache_limiter("nocache");
-    session_start();
+session_cache_limiter("nocache");
+session_start();
 
-    (require __DIR__ . '/../config/bootstrap.php')->run();
+(require __DIR__ . '/../config/bootstrap.php')->run();
