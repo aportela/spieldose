@@ -219,6 +219,24 @@ class Track
         return ($tracks);
     }
 
+    public function getNew(\aportela\DatabaseWrapper\DB $db)
+    {
+        $data = $db->query(
+            "
+                SELECT
+                    (DIRECTORIES.PATH || :directory_separator || FILES.NAME) AS path
+                FROM FILES
+                INNER JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
+                WHERE FILES.ID = :id
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
+            )
+        );
+        $this->path = $data[0]->path;
+    }
+
     public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
     {
         $results = $db->query(
