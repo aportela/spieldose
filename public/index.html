@@ -271,7 +271,7 @@
                         </li>
                     </ul>
 
-                    <img v-if="currentTrack.thumbnailURL" :src="currentTrack.thumbnailURL" alt="Album cover"/>
+                    <img v-if="currentTrack.thumbnailURL" :src="currentTrack.thumbnailURL" alt="Album cover" />
                     <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='"
                         alt="Album cover" />
 
@@ -297,10 +297,10 @@
                         <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
                                     class="fa fa-step-forward"></i></a></li>
                     </ul>
-                </div>                
+                </div>
             </div>
 
-            <div class="player__footer">                
+            <div class="player__footer">
                 <ul class="list list--footer">
                     <li><a href="#" class="list__link"><i class="fa fa-heart-o"></i></a></li>
 
@@ -311,7 +311,7 @@
                     <li><a href="#" class="list__link"><i class="fa fa-ellipsis-h"></i></a></li>
                 </ul>
             </div>
-        </div>        
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js"
@@ -327,11 +327,11 @@
             document.getElementById('container'),
             {
                 source: document.getElementById('audio'),
-                mode: 3,
+                mode: 4,
                 /*
                 connectSpeakers: false,
                 fftSize : 1024,
-                
+
                 showPeaks :true,
                 stereo : true
                 */
@@ -341,14 +341,14 @@
                 /*
                 barSpace: .6,
                 */
-                ledBars  : false,
+                ledBars: false,
                 showScaleX: false,
                 showScaleY: false,
-                stereo :false,
+                stereo: false,
                 splitGradient: false
             }
         );
-        
+
     </script>
     <script type="text/javascript">
         const app = new Vue({
@@ -372,6 +372,7 @@
                 currentTrackIndex: function (newValue, oldValue) {
                     if (!this.audio) {
                         this.audio = document.getElementById('audio');
+                        this.audio.volume = 0.1;
                     } else {
                         if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
                             this.audio.stop();
@@ -415,7 +416,7 @@
                     }
                     let playPromise = this.audio.play();
                     if (playPromise !== undefined) {
-                        //console.log(playPromise);                      
+                        //console.log(playPromise);
                         playPromise.then(() => {
                         }).catch((error) => {
                             //this.$audioplayer.playback.pause();
