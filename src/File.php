@@ -18,7 +18,7 @@ class File
         if (!$container) {
             throw new \Spieldose\Exception\InvalidParamsException("container");
         } else {
-            $this->dbh = $container->get(DB::class);
+            $this->dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
             $this->id = $id;
         }
     }
@@ -55,7 +55,6 @@ class File
     public function getData(int $offset, int $length)
     {
         if (!empty($this->path)) {
-            return (null);
             $file = fopen($this->path, 'r');
             fseek($file, $offset);
             $data = fread($file, $length);

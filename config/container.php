@@ -75,6 +75,23 @@ return [
         return ($db);
     },
 
+    \aportela\DatabaseWrapper\DB::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['db'];
+        $adapter = new \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter(
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $settings["database"],
+            // READ upgrade SQL schema file definition on next block of this README.md
+            $settings["upgradeSchemaPath"]
+        );
+        $logger = $container->get(DBLogger::class);
+        // main object
+        $db = new \aportela\DatabaseWrapper\DB(
+            $adapter,
+            $logger
+        );
+        return ($db);
+    },
+
+
     \Monolog\Logger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
         $logger = new \Monolog\Logger('spieldose-default');
