@@ -110,7 +110,7 @@ export default {
     data: function () {
         return ({
             audio: null,
-            volume: 16,
+            volume: 8,
             position: 0,
             audioMotion: null,
             currentTime: "00:00",
