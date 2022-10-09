@@ -45,49 +45,46 @@ return function (App $app) {
         });
 
         $group->get('/file/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-            $track  = new \Spieldose\Track($args["id"]);
-            $db = $this->get(DB::class);
-            $track->getNew($db);
-            if (file_exists($track->path)) {
-                //$track->incPlayCount($db);
-                $filesize = filesize($track->path);
-                $offset = 0;
-                $length = $filesize;
-                // https://stackoverflow.com/a/157447
-                if (isset($_SERVER['HTTP_RANGE'])) {
-                    // if the HTTP_RANGE header is set we're dealing with partial content
-                    $partialContent = true;
-                    // find the requested range
-                    // this might be too simplistic, apparently the client can request
-                    // multiple ranges, which can become pretty complex, so ignore it for now
-                    preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
-                    $offset = intval($matches[1]);
-                    $length = ((isset($matches[2])) ? intval($matches[2]) : $filesize) - $offset;
-                } else {
+            if (!empty($args["id"])) {
+                $file = new \Spieldose\File($this, $args["id"]);
+                $file->get();
+                if (file_exists($file->path)) {
+                    //$track->incPlayCount($db);
+                    $length = $file->length;
+                    // https://stackoverflow.com/a/157447
                     $partialContent = false;
-                }
-                $file = fopen($track->path, 'r');
-                fseek($file, $offset);
-                $data = fread($file, $length);
-                fclose($file);
-                $response->getBody()->write($data);
-                if ($partialContent) {
-                    // output the right headers for partial content
-                    return $response->withStatus(206)
-                        ->withHeader('Content-Type', $track->mime ? $track->mime : "application/octet-stream")
-                        ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
-                        ->withHeader('Content-Length', $filesize)
-                        ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $filesize)
-                        ->withHeader('Accept-Ranges', 'bytes');
+                    $offset = 0;
+                    if (isset($_SERVER['HTTP_RANGE'])) {
+                        // if the HTTP_RANGE header is set we're dealing with partial content
+                        $partialContent = true;
+                        // find the requested range
+                        // this might be too simplistic, apparently the client can request
+                        // multiple ranges, which can become pretty complex, so ignore it for now
+                        preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                        $offset = intval($matches[1]);
+                        $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
+                    }
+                    $response->getBody()->write($file->getData($offset, $length));
+                    if ($partialContent) {
+                        // output the right headers for partial content
+                        return $response->withStatus(206)
+                            ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
+                            ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file->path) . '"')
+                            ->withHeader('Content-Length', $file->length)
+                            ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
+                            ->withHeader('Accept-Ranges', 'bytes');
+                    } else {
+                        return $response->withStatus(200)
+                            ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
+                            ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file->path) . '"')
+                            ->withHeader('Content-Length', $file->length)
+                            ->withHeader('Accept-Ranges', 'bytes');
+                    }
                 } else {
-                    return $response->withStatus(200)
-                        ->withHeader('Content-Type', $track->mime ? $track->mime : "application/octet-stream")
-                        ->withHeader('Content-Disposition', 'attachment; filename="' . basename($track->path) . '"')
-                        ->withHeader('Content-Length', $filesize)
-                        ->withHeader('Accept-Ranges', 'bytes');
+                    throw new \Spieldose\Exception\NotFoundException("id");
                 }
             } else {
-                throw new \Spieldose\Exception\NotFoundException("id");
+                throw new \Spieldose\Exception\InvalidParamsException("id");
             }
         });
 
@@ -109,6 +106,5 @@ return function (App $app) {
                 throw new \Exception("Invalid / empty path: " . $localPath);
             }
         });
-
     })->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
