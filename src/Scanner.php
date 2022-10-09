@@ -157,6 +157,22 @@ class Scanner
                 VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id); ",
             $params
         );
+
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($filePath))
+        );
+        $mime = $this->id3->getMimeType();
+        if (!empty($mime)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mime", $mime);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mime");
+        }
+        $this->dbh->query(
+            "
+                UPDATE FILES SET MIME = :mime WHERE ID = :id
+            ",
+            $params
+        );
     }
 
     public function cleanUp()
