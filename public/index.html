@@ -33,8 +33,12 @@
             text-decoration: none;
         }
 
+        div#app {
+            padding-top: 2rem;
+        }
+
         .player__container {
-            margin-top: 2rem;
+            /* margin-top: 2rem; */
             /* margin-right: auto; */
             /* margin-left: auto; */
             max-width: 300px;
@@ -342,7 +346,7 @@
 </head>
 
 <body>
-    <div class="wrapper" id="app">
+    <div class="wrapper is-clearfix" id="app">
         <audio id="audio" class="is-hidden"></audio>
         <!--
             heavily inspired by design by Alex Devero
@@ -450,7 +454,7 @@
             </div>
         </div>
 
-        <div class="details_container is-pulled-left" style="margin-top: 2rem; margin-left: 1rem;">
+        <div class="details_container is-pulled-left" style="margin-left: 1rem;">
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                 <thead>
                     <tr>
