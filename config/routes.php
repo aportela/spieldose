@@ -91,6 +91,7 @@ return function (App $app) {
         });
 
         $group->get('/track/thumbnail/{width}/{height}/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+            //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
             $db = $this->get(DB::class);
             try {
                 $localPath = \Spieldose\Track::getLocalThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
@@ -112,6 +113,8 @@ return function (App $app) {
                 return $response
                     ->withHeader('Content-Type', "image/jpeg")
                     ->withHeader('Content-Length', $filesize)
+                    ->withHeader('ETag', sha1($args["id"] . $localPath . $filesize))
+                    ->withHeader('Cache-Control', 'max-age=86400')
                     ->withStatus(200);
             } else {
                 throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
