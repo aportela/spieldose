@@ -182,7 +182,7 @@ class Track
         }
     }
 
-    public static function searchNew(\aportela\DatabaseWrapper\DB $db)
+    public static function searchNew(\aportela\DatabaseWrapper\DB $db, $query)
     {
         $tracks = $db->query(
             "

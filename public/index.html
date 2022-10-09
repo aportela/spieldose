@@ -343,6 +343,8 @@
             color: #fafafa;
             background: #d30320;
         }
+
+
     </style>
 </head>
 
@@ -358,7 +360,7 @@
                 -->
         <spieldose-player :track="currentTrack" @previous="onPreviousTrack" @next="onNextTrack">
             <template slot="top-left-icon">
-                <a class="list__link" href="#" @click.prevent="loadTracks"><i class="fa fa-navicon"></i></a>
+                <a class="list__link" href="#" @click.prevent="loadTracks('')"><i class="fa fa-navicon"></i></a>
             </template>
             <template slot="top-right-icon">
                 <a class="list__link" href="#" @click.prevent><i class="fa fa-search"></i></a>
@@ -366,6 +368,22 @@
         </spieldose-player>
 
         <div class="details_container is-pulled-left" style="margin-left: 1rem;">
+            <div class="field has-addons">
+            <div class="control has-icons-left has-icons-right is-expanded">
+                <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-search"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-loading"></i>
+                </span>
+              </div>
+              <div class="control">
+                <a class="button is-small" style="background: #d30320; color: #fafafa;" @click.prevent="onSearch">
+                  Search
+                </a>
+              </div>
+            </div>
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                 <thead>
                     <tr>

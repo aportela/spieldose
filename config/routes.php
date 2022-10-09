@@ -35,10 +35,12 @@ return function (App $app) {
     });
 
     $app->group("/api2", function (Slim\Routing\RouteCollectorProxy $group) {
+        
         $group->get('/track/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+            $params = $request->getQueryParams();
             $db = $this->get(DB::class);
             $payload = array(
-                "tracks" => \Spieldose\Track::searchNew($db)
+                "tracks" => \Spieldose\Track::searchNew($db, $params['q'])
             );
             $response->getBody()->write(json_encode($payload));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

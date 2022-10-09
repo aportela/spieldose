@@ -4,7 +4,8 @@ const app = new Vue({
     data: function () {
         return ({
             tracks: [],
-            currentTrackIndex: -1
+            currentTrackIndex: -1,
+            searchQuery: null
         });
     },
     computed: {
@@ -43,8 +44,8 @@ const app = new Vue({
         this.loadTracks();
     },
     methods: {
-        loadTracks: function () {
-            Vue.http.get("/api2/track/search").then(
+        loadTracks: function (query) {
+            Vue.http.get("/api2/track/search?q=" + (query ? encodeURIComponent(query): '')).then(
                 response => {
                     this.tracks = response.body.tracks;
                     this.currentTrackIndex = 0;
@@ -53,15 +54,16 @@ const app = new Vue({
                     console.log(response);
                 }
             );
-        }        ,
+        },
+        onSearch: function() {
+            this.loadTracks(this.searchQuery);
+        },
         onPreviousTrack: function () {
-            console.log(1);
             if (this.currentTrackIndex > 0) {
                 this.currentTrackIndex--;
             }
         },
         onNextTrack: function () {
-            console.log(2);
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < this.tracks.length) {
                 this.currentTrackIndex++;
             }
