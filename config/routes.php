@@ -35,7 +35,7 @@ return function (App $app) {
     });
 
     $app->group("/api2", function (Slim\Routing\RouteCollectorProxy $group) {
-        
+
         $group->get('/track/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $params = $request->getQueryParams();
             $db = $this->get(DB::class);
@@ -92,10 +92,16 @@ return function (App $app) {
 
         $group->get('/track/thumbnail/{width}/{height}/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $db = $this->get(DB::class);
-            try {              
+            try {
                 $localPath = \Spieldose\Track::getLocalThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
-            } catch (\Spieldose\Exception\NotFoundException $e) {                
-            }            
+            } catch (\Spieldose\Exception\NotFoundException $e) {
+            }
+            if (empty($localPath)) {
+                try {
+                    $localPath = \Spieldose\Track::getRemoteThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+            }
             if (!empty($localPath) && file_exists(($localPath))) {
                 $filesize = filesize($localPath);
                 $f = fopen($localPath, 'r');
