@@ -24,6 +24,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "audiomotion-analyzer": "^3.6.0",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
     "dayjs": "^1.11.5",
