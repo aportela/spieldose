@@ -90,7 +90,10 @@ return function (App $app) {
 
         $group->get('/track/thumbnail/{width}/{height}/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $db = $this->get(DB::class);
-            $localPath = \Spieldose\Track::getLocalThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
+            try {              
+                $localPath = \Spieldose\Track::getLocalThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
+            } catch (\Spieldose\Exception\NotFoundException $e) {                
+            }            
             if (!empty($localPath) && file_exists(($localPath))) {
                 $filesize = filesize($localPath);
                 $f = fopen($localPath, 'r');
@@ -103,7 +106,7 @@ return function (App $app) {
                     ->withHeader('Content-Length', $filesize)
                     ->withStatus(200);
             } else {
-                throw new \Exception("Invalid / empty path: " . $localPath);
+                throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
             }
         });
     })->add(\Spieldose\Middleware\APIExceptionCatcher::class);
