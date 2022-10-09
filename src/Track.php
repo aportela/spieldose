@@ -213,7 +213,7 @@ class Track
         $tracks = array_map(function ($track) {
             $track->year = $track->year ? intval($track->year) : null;
             $track->thumbnailURL = !empty($track->localCoverPath) && file_exists(($track->localCoverPath)) ? "http://localhost:8080/api2/track/thumbnail/400/400/" . $track->id : null;
-            if (empty($track->thumbnailURL)) {
+            if (empty($track->thumbnailURL) && ! empty($track->musicBrainzAlbumId)) {
                 $track->thumbnailURL =sprintf("https://coverartarchive.org/release/%s/front-250", $track->musicBrainzAlbumId);
             }
             unset($track->localCoverPath);
