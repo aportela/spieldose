@@ -213,6 +213,9 @@ class Track
         $tracks = array_map(function ($track) {
             $track->year = $track->year ? intval($track->year) : null;
             $track->thumbnailURL = !empty($track->localCoverPath) && file_exists(($track->localCoverPath)) ? "http://localhost:8080/api2/track/thumbnail/400/400/" . $track->id : null;
+            if (empty($track->thumbnailURL)) {
+                $track->thumbnailURL =sprintf("https://coverartarchive.org/release/%s/front-250", $track->musicBrainzAlbumId);
+            }
             unset($track->localCoverPath);
             return $track;
         }, $tracks);
@@ -253,16 +256,49 @@ class Track
             )
         );
         if (count($results) == 1) {
+            $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";            
+            $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
+            $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
+            if (! empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
+                if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath, $width, $height)) {
+                    return ($thumbnail->path);
+                } else {
+                    return (null);
+                }
+            } else {
+                return(null);
+            }
+        } else {
+            throw new \Spieldose\Exception\NotFoundException("Invalid path for id: " . $id);
+        }
+    }
+
+    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
+    {
+        $results = $db->query(
+            "
+                SELECT
+                    FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId
+                FROM FILES
+                LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
+                WHERE FILES.ID = :id
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
+            )
+        );
+        if (count($results) == 1) {
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
             $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
-            if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath, $width, $height)) {
+            echo '<h1>' . sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId).'</h1>';
+            if ($thumbnail->getFromRemoteURL(sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId), $width, $height)) {
                 return ($thumbnail->path);
             } else {
                 return (null);
             }
         } else {
-            throw new \Exception("Invalid path: ");
+            throw new \Spieldose\Exception\NotFoundException("Invalid musicBrainzAlbumId for id: " . $id);
         }
     }
 }
