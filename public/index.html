@@ -386,6 +386,7 @@
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                 <thead>
                     <tr>
+                        <th>Index</th>
                         <th>Title</th>
                         <th>Artist</th>
                         <th>Album</th>
@@ -395,10 +396,9 @@
                 <tbody>
                     <tr v-for="track,index in tracks" :key="index"
                         :class="{ 'is-selected': currentTrack.id == track.id } ">
-                        <td class="is-clickable" @click.prevent="currentTrackIndex = index;"><i
-                                class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{
-                            track.title }}
-                        </td>
+                        <td class="is-clickable" @click.prevent="currentTrackIndex = index;"> <i
+                                class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index }}</td>
+                        <td class="is-clickable" @click.prevent="currentTrackIndex = index;">{{ track.title }}</td>
                         <td>{{ track.artist }}</td>
                         <td>{{ track.album }}</td>
                         <td>{{ track.year }}</td>
