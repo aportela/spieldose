@@ -8,19 +8,17 @@ const template = function () {
                 <div class="body__cover">
                     <ul class="list list--cover">
                         <li>
-                            <a class="list__link" href="" @click.prevent="loadTracks"><i class="fa fa-navicon"></i></a>
-                        </li>
-
+                            <slot name="top-left-icon"></slot>
+                        </li>                                                
                         <li>
                             <a class="list__link" href=""></a>
-                        </li>
-
+                        </li>                                                
                         <li>
-                            <a class="list__link" href=""><i class="fa fa-search"></i></a>
+                            <slot name="top-right-icon"></slot>
                         </li>
                     </ul>
 
-                    <img v-if="track.thumbnailURL" :src="track.thumbnailURL" alt="Album cover" />
+                    <img v-if="track.thumbnailURL" :src="track.thumbnailURL" alt="Album cover" @error="track.thumbnailURL = null"/>
                     <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
                         alt="Album cover" />
 
