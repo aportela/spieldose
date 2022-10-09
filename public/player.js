@@ -136,6 +136,16 @@ export default {
                     this.audio.stop();
                 }
                 this.audio.src = "/api2/file/" + this.track.id;
+                const url = this.track.thumbnailURL;
+                this.track.thumbnailURL = null;
+                let img = new Image();
+                img.src = url
+                img.onload  = () => {
+                    this.track.thumbnailURL = url;
+                }
+                img.onerror = () => {
+                    this.track.thumbnailURL = null;
+                }
                 this.audio.load();
                 if (newValue && oldValue) {
                     this.onPlay();
