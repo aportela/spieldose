@@ -9,16 +9,16 @@ const template = function () {
                     <ul class="list list--cover">
                         <li>
                             <slot name="top-left-icon"></slot>
-                        </li>                                                
+                        </li>
                         <li>
                             <a class="list__link" href=""></a>
-                        </li>                                                
+                        </li>
                         <li>
                             <slot name="top-right-icon"></slot>
                         </li>
                     </ul>
 
-                    <img v-if="track.thumbnailURL" :src="track.thumbnailURL" alt="Album cover" @error="track.thumbnailURL = null"/>
+                    <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
                     <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
                         alt="Album cover" />
 
@@ -45,7 +45,7 @@ const template = function () {
                             v-model.number="volume">
                             <span class="icon is-right" style="height: 1em;">
                             <small>{{ volume }}%</small>
-                        </span>                            
+                        </span>
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@ const template = function () {
 
                 </ul>
             </div>
-        </div>    
+        </div>
     `;
 }
 
@@ -115,7 +115,8 @@ export default {
             audioMotion: null,
             currentTime: "00:00",
             duration: "00:00",
-            audioMotionMode: 3
+            audioMotionMode: 3,
+            coverURL: null
         });
     },
     props: [
@@ -123,35 +124,35 @@ export default {
     ],
     computed: {
         trackId: function () {
-            return(this.track ? this.track.id: null);
+            return (this.track ? this.track.id : null);
         },
         isPlaying: function () {
             return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
         }
     },
     watch: {
-        trackId: function(newValue, oldValue) {
+        trackId: function (newValue, oldValue) {
             if (newValue) {
                 if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
                     this.audio.stop();
                 }
                 this.audio.src = "/api2/file/" + this.track.id;
-                const url = this.track.thumbnailURL;
-                this.track.thumbnailURL = null;
+                //const url = this.track.thumbnailURL;
+                const url = "/api2/track/thumbnail/400/400/" + this.track.id;
                 let img = new Image();
                 img.src = url
-                img.onload  = () => {
-                    this.track.thumbnailURL = url;
+                img.onload = () => {
+                    this.coverURL = url;
                 }
                 img.onerror = () => {
-                    this.track.thumbnailURL = null;
+                    this.coverURL = null;
                 }
                 this.audio.load();
                 if (newValue && oldValue) {
                     this.onPlay();
                 }
             }
-        },        
+        },
         volume: function (newValue) {
             if (this.audio) {
                 this.audio.volume = newValue / 100;
@@ -160,7 +161,7 @@ export default {
     },
     created: function () {
     },
-    mounted: function() {
+    mounted: function () {
         this.audio = document.getElementById('audio');
         this.audio.volume = this.volume / 100;
         this.audioMotion = new AudioMotionAnalyzer(
@@ -171,7 +172,7 @@ export default {
                 /*
                 connectSpeakers: false,
                 fftSize : 1024,
- 
+
                 showPeaks :true,
                 stereo : true
                 */
@@ -189,7 +190,7 @@ export default {
             }
         );
     },
-    methods: {        
+    methods: {
         onPreviousTrack: function () {
             this.$emit("previous", true)
         },
@@ -235,7 +236,7 @@ export default {
 
             return min + ':' + sec;
         },
-        onChangeAudioMotionAnalyzerMode: function() {
+        onChangeAudioMotionAnalyzerMode: function () {
             this.audioMotionMode++;
             if (this.audioMotionMode > 8) {
                 this.audioMotionMode = 0;
