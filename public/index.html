@@ -343,13 +343,11 @@
             color: #fafafa;
             background: #d30320;
         }
-
-
     </style>
 </head>
 
 <body>
-    <div class="wrapper is-clearfix" id="app">        
+    <div class="wrapper is-clearfix" id="app">
         <!--
             heavily inspired by design by Alex Devero
             https://codepen.io/alexdevero/pen/aZjLNw
@@ -369,20 +367,21 @@
 
         <div class="details_container is-pulled-left" style="margin-left: 1rem;">
             <div class="field has-addons">
-            <div class="control has-icons-left has-icons-right is-expanded">
-                <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery">
-                <span class="icon is-small is-left">
-                  <i class="fas fa-search"></i>
-                </span>
-                <span class="icon is-small is-right">
-                  <i class="fas fa-loading"></i>
-                </span>
-              </div>
-              <div class="control">
-                <a class="button is-small" style="background: #d30320; color: #fafafa;" @click.prevent="onSearch">
-                  Search
-                </a>
-              </div>
+                <div class="control has-icons-left has-icons-right is-expanded">
+                    <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery"
+                        v-on:keyup.enter="onSearch">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                        <i class="fas fa-loading"></i>
+                    </span>
+                </div>
+                <div class="control">
+                    <a class="button is-small" style="background: #d30320; color: #fafafa;" @click.prevent="onSearch">
+                        Search
+                    </a>
+                </div>
             </div>
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                 <thead>
