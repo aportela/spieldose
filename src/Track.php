@@ -212,11 +212,11 @@ class Track
                     LEFT JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
                     %s
                     ORDER BY %s
-                    LIMIT 64
+                    LIMIT %d
                 ",
-                //!empty($query) ? " WHERE FILE_ID3_TAG.TITLE LIKE :query OR FILE_ID3_TAG.ALBUM LIKE :query OR FILE_ID3_TAG.ARTIST LIKE :query" : "",
-                " WHERE DIRECTORIES.COVER_FILENAME IS NULL AND FILE_ID3_TAG.MB_ALBUM_ID IS NOT NULL ",
+                !empty($query) ? " WHERE FILE_ID3_TAG.TITLE LIKE :query OR FILE_ID3_TAG.ALBUM LIKE :query OR FILE_ID3_TAG.ARTIST LIKE :query" : "",
                 empty($query) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
+                empty($query) ? 32 : 64
 
             ),
             $params
