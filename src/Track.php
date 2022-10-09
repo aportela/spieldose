@@ -184,37 +184,49 @@ class Track
 
     public static function searchNew(\aportela\DatabaseWrapper\DB $db, $query)
     {
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
+        );
+        if (!empty($query)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":query", "%" . $query . "%");
+        }
         $tracks = $db->query(
-            "
-                SELECT
-                    FILES.ID AS id,
-                    FILE_ID3_TAG.TITLE AS title,
-                    FILE_ID3_TAG.ARTIST AS artist,
-                    FILE_ID3_TAG.ALBUM_ARTIST AS albumArtist,
-                    FILE_ID3_TAG.ALBUM AS album,
-                    FILE_ID3_TAG.YEAR as year,
-                    FILE_ID3_TAG.TRACK_NUMBER as trackNumber,
-                    FILE_ID3_TAG.DISC_NUMBER AS discNumber,
-                    (DIRECTORIES.PATH || :directory_separator || DIRECTORIES.COVER_FILENAME) AS localCoverPath,
-                    FILE_ID3_TAG.PLAYTIME_SECONDS AS playtimeSeconds,
-                    FILE_ID3_TAG.MB_ARTIST_ID AS musicBrainzArtistId,
-                    FILE_ID3_TAG.MB_ALBUM_ARTIST_ID as musicBrainzAlbumArtistId,
-                    FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId
-                FROM FILES
-                LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
-                LEFT JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
-                ORDER BY RANDOM()
-                LIMIT 32
-            ",
-            array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
-            )
+            sprintf(
+                "
+                    SELECT
+                        FILES.ID AS id,
+                        FILE_ID3_TAG.TITLE AS title,
+                        FILE_ID3_TAG.ARTIST AS artist,
+                        FILE_ID3_TAG.ALBUM_ARTIST AS albumArtist,
+                        FILE_ID3_TAG.ALBUM AS album,
+                        FILE_ID3_TAG.YEAR as year,
+                        FILE_ID3_TAG.TRACK_NUMBER as trackNumber,
+                        FILE_ID3_TAG.DISC_NUMBER AS discNumber,
+                        (DIRECTORIES.PATH || :directory_separator || DIRECTORIES.COVER_FILENAME) AS localCoverPath,
+                        FILE_ID3_TAG.PLAYTIME_SECONDS AS playtimeSeconds,
+                        FILE_ID3_TAG.MB_ARTIST_ID AS musicBrainzArtistId,
+                        FILE_ID3_TAG.MB_ALBUM_ARTIST_ID as musicBrainzAlbumArtistId,
+                        FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId
+                    FROM FILES
+                    LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
+                    LEFT JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
+                    %s
+                    ORDER BY %s
+                    LIMIT 64
+                ",
+                //!empty($query) ? " WHERE FILE_ID3_TAG.TITLE LIKE :query OR FILE_ID3_TAG.ALBUM LIKE :query OR FILE_ID3_TAG.ARTIST LIKE :query" : "",
+                " WHERE DIRECTORIES.COVER_FILENAME IS NULL AND FILE_ID3_TAG.MB_ALBUM_ID IS NOT NULL ",
+                empty($query) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
+
+            ),
+            $params
         );
         $tracks = array_map(function ($track) {
             $track->year = $track->year ? intval($track->year) : null;
-            $track->thumbnailURL = !empty($track->localCoverPath) && file_exists(($track->localCoverPath)) ? "http://localhost:8080/api2/track/thumbnail/400/400/" . $track->id : null;
-            if (empty($track->thumbnailURL) && ! empty($track->musicBrainzAlbumId)) {
-                $track->thumbnailURL =sprintf("https://coverartarchive.org/release/%s/front-250", $track->musicBrainzAlbumId);
+            //$track->thumbnailURL = "http://localhost:8080/api2/track/thumbnail/400/400/" . $track->id;
+            //$track->thumbnailURL = !empty($track->localCoverPath) && file_exists(($track->localCoverPath)) ? "http://localhost:8080/api2/track/thumbnail/400/400/" . $track->id : null;
+            if (empty($track->thumbnailURL) && !empty($track->musicBrainzAlbumId)) {
+                //$track->thumbnailURL = sprintf("https://coverartarchive.org/release/%s/front-250", $track->musicBrainzAlbumId);
             }
             unset($track->localCoverPath);
             return $track;
@@ -256,17 +268,17 @@ class Track
             )
         );
         if (count($results) == 1) {
-            $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";            
+            $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
             $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
-            if (! empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
+            if (!empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
                 if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath, $width, $height)) {
                     return ($thumbnail->path);
                 } else {
                     return (null);
                 }
             } else {
-                return(null);
+                return (null);
             }
         } else {
             throw new \Spieldose\Exception\NotFoundException("Invalid path for id: " . $id);
@@ -291,8 +303,15 @@ class Track
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
             $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
-            echo '<h1>' . sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId).'</h1>';
-            if ($thumbnail->getFromRemoteURL(sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId), $width, $height)) {
+            $url = null;
+            if ($width < 250) {
+                $url = sprintf("https://coverartarchive.org/release/%s/front-250", $results[0]->musicBrainzAlbumId);
+            } elseif ($width < 500) {
+                $url = sprintf("https://coverartarchive.org/release/%s/front-500", $results[0]->musicBrainzAlbumId);
+            } else {
+                $url = sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId);
+            }
+            if ($thumbnail->getFromRemoteURL($url, $width, $height)) {
                 return ($thumbnail->path);
             } else {
                 return (null);
