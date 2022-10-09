@@ -35,8 +35,8 @@
 
         .player__container {
             margin-top: 2rem;
-            margin-right: auto;
-            margin-left: auto;
+            /* margin-right: auto; */
+            /* margin-left: auto; */
             max-width: 300px;
             background: #fff;
             border-radius: 0.25rem;
@@ -248,18 +248,116 @@
         .list--footer a:hover {
             opacity: 0.9;
         }
+
+        /*
+            https://wikiki.github.io/form/slider/
+        */
+        input[type="range"].slider.is-large:not([orient="vertical"]) {
+            min-height: calc((1.5rem + 2px) * 1.25);
+        }
+
+        input[type="range"].slider.is-fullwidth {
+            display: block;
+            width: 100%;
+        }
+
+        input[type="range"].slider {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 1rem 0;
+            background: transparent;
+        }
+
+        .slider {
+            position: relative;
+            width: 100%;
+            color: #d30320;
+        }
+
+        input[type="range"].slider.is-circle::-moz-range-thumb {
+
+            border-radius: 50%;
+
+        }
+
+        input[type="range"].slider::-moz-range-thumb {
+
+            height: 1rem;
+            width: 1rem;
+
+        }
+
+        input[type="range"].slider::-moz-range-thumb {
+
+            box-shadow: none;
+            border: 1px solid #b5b5b5;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform .2s ease, -webkit-transform .2s ease;
+            transition: transform .2s ease;
+            transition: -webkit-transform .2s ease;
+
+        }
+
+        input[type="range"].slider.is-success::-moz-range-track {
+
+            background: #23d160;
+
+        }
+
+        input[type="range"].slider:not([orient="vertical"])::-moz-range-track {
+
+            height: .5rem;
+
+        }
+
+        input[type="range"].slider:not([orient="vertical"])::-moz-range-track {
+
+            width: 100%;
+
+        }
+
+        input[type="range"].slider::-moz-range-track {
+
+            cursor: pointer;
+            animate: 0.2s;
+            box-shadow: 0px 0px 0px #7a7a7a;
+            background: #dbdbdb;
+            border-radius: 4px;
+            border: 0px solid #7a7a7a;
+
+        }
+
+        table {
+            font-weight: 300;
+            font-size: 0.75rem;
+        }
+
+        .table tr.is-selected {
+            color: #fafafa;
+            background: #d30320;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper" id="app">
         <audio id="audio" class="is-hidden"></audio>
-        <div class="player__container">
+        <!--
+            heavily inspired by design by Alex Devero
+            https://codepen.io/alexdevero/pen/aZjLNw
+        -->
+        <!--
+        <div class="columns is-mobile">
+            <div class="column is-narrow">
+                -->
+        <div class="player__container is-pulled-left" style="margin-left: 30%;">
             <div class="player__body">
                 <div class="body__cover">
                     <ul class="list list--cover">
                         <li>
-                            <a class="list__link" href=""><i class="fa fa-navicon"></i></a>
+                            <a class="list__link" href="" @click.prevent="loadTracks"><i class="fa fa-navicon"></i></a>
                         </li>
 
                         <li>
@@ -272,11 +370,12 @@
                     </ul>
 
                     <img v-if="currentTrack.thumbnailURL" :src="currentTrack.thumbnailURL" alt="Album cover" />
-                    <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='"
+                    <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
                         alt="Album cover" />
 
                     <div class="range"></div>
                 </div>
+
                 <div id="container"></div>
 
                 <div class="body__info">
@@ -287,12 +386,39 @@
                     <div class="info__artist">{{ currentTrack.artist }}</div>
                 </div>
 
+                <div class="field">
+                    <div class="control has-icons-left has-icons-right">
+                        <span class="icon is-left" style="height: 1em;">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </span>
+                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
+                            v-model.number="volume">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control has-icons-left has-icons-right">
+                        <span class="icon is-left" style="height: 1em;">
+                            <small>{{ currentTime }}</small>
+
+                        </span>
+                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
+                            v-model.number="position">
+                        <span class="icon is-right" style="height: 1em;">
+                            <small>{{ duration }}</small>
+                        </span>
+                    </div>
+                </div>
+
                 <div class="body__buttons">
                     <ul class="list list--buttons">
                         <li><a href="#" class="list__link" @click.prevent="onPreviousTrack"><i
                                     class="fa fa-step-backward"></i></a></li>
 
-                        <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a></li>
+                        <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a>
+                        </li>
 
                         <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
                                     class="fa fa-step-forward"></i></a></li>
@@ -302,16 +428,59 @@
 
             <div class="player__footer">
                 <ul class="list list--footer">
-                    <li><a href="#" class="list__link"><i class="fa fa-heart-o"></i></a></li>
+                    <li><a href="#" class="list__link" title="Toggle navigation menu"><i class="fa fa-navicon"></i></a>
+                    </li>
 
-                    <li><a href="#" class="list__link"><i class="fa fa-random"></i></a></li>
+                    <li><a href="#" class="list__link" title="Love/unlove track"><i class="fa fa-heart"></i></a>
+                    </li>
 
-                    <li><a href="#" class="list__link"><i class="fa fa-undo"></i></a></li>
+                    <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a>
+                    </li>
 
-                    <li><a href="#" class="list__link"><i class="fa fa-ellipsis-h"></i></a></li>
+                    <li><a href="#" class="list__link" title="Toggle repeat mode"><i class="fa fa-undo"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Download track"><i class="fa-solid fa-download"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Toggle details"><i
+                                class="fa-regular fa-rectangle-list"></i></a></li>
+
                 </ul>
             </div>
         </div>
+
+        <div class="details_container is-pulled-left" style="margin-top: 2rem; margin-left: 1rem;">
+            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Album</th>
+                        <th>Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="track,index in tracks" :key="index"
+                        :class="{ 'is-selected': currentTrack.id == track.id } ">
+                        <td class="is-clickable" @click.prevent="currentTrackIndex = index;"><i
+                                class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{
+                            track.title }}
+                        </td>
+                        <td>{{ track.artist }}</td>
+                        <td>{{ track.album }}</td>
+                        <td>{{ track.year }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--
+            </div>
+            <div class=" column">2
+        </div>
+    </div>
+    -->
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js"
@@ -327,7 +496,7 @@
             document.getElementById('container'),
             {
                 source: document.getElementById('audio'),
-                mode: 4,
+                mode: 3,
                 /*
                 connectSpeakers: false,
                 fftSize : 1024,
@@ -356,7 +525,11 @@
                 return ({
                     tracks: [],
                     currentTrackIndex: -1,
-                    audio: null
+                    audio: null,
+                    volume: 10,
+                    position: 0,
+                    currentTime: "00:00",
+                    duration: "00:00"
                 });
             },
             computed: {
@@ -366,6 +539,9 @@
                     } else {
                         return ({});
                     }
+                },
+                isPlaying: function () {
+                    return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
                 }
             },
             watch: {
@@ -382,6 +558,11 @@
                     this.audio.load();
                     if (oldValue != -1) {
                         this.onPlay();
+                    }
+                },
+                volume: function (newValue) {
+                    if (this.audio) {
+                        this.audio.volume = newValue / 100;
                     }
                 }
             },
@@ -411,10 +592,21 @@
                     }
                 },
                 onPlay: function () {
-                    if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
+                    if (this.isPlaying) {
                         this.audio.stop();
                     }
                     let playPromise = this.audio.play();
+                    this.audio.addEventListener('timeupdate', (track) => {
+                        const currentProgress = this.audio.currentTime / this.audio.duration;
+                        this.duration = this.formatSecondsAsTime(Math.floor(this.audio.duration).toString());
+                        this.currentTime = this.formatSecondsAsTime(Math.floor(this.audio.currentTime).toString());
+                        if (!isNaN(currentProgress)) {
+                            this.position = currentProgress.toFixed(2);
+                        } else {
+                            this.position = 0;
+                        }
+                        //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+                    });
                     if (playPromise !== undefined) {
                         //console.log(playPromise);
                         playPromise.then(() => {
@@ -423,6 +615,20 @@
                             this.audio.currentTime = 0;
                         });
                     }
+                },
+                formatSecondsAsTime: function (secs, format) {
+                    var hr = Math.floor(secs / 3600);
+                    var min = Math.floor((secs - (hr * 3600)) / 60);
+                    var sec = Math.floor(secs - (hr * 3600) - (min * 60));
+
+                    if (min < 10) {
+                        min = "0" + min;
+                    }
+                    if (sec < 10) {
+                        sec = "0" + sec;
+                    }
+
+                    return min + ':' + sec;
                 }
             }
         }).$mount('#app');
