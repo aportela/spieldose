@@ -136,6 +136,7 @@ export default {
                 if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
                     this.audio.stop();
                 }
+                this.coverURL = null;
                 this.audio.src = "/api2/file/" + this.track.id;
                 //const url = this.track.thumbnailURL;
                 const url = "/api2/track/thumbnail/400/400/" + this.track.id;
