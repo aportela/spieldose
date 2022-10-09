@@ -1,0 +1,238 @@
+import AudioMotionAnalyzer from 'https://cdn.skypack.dev/audiomotion-analyzer?min';
+
+const template = function () {
+    return `
+        <div class="player__container is-pulled-left" style="margin-left: 30%;">
+            <div class="player__body">
+                <audio id="audio" class="is-hidden"></audio>
+                <div class="body__cover">
+                    <ul class="list list--cover">
+                        <li>
+                            <a class="list__link" href="" @click.prevent="loadTracks"><i class="fa fa-navicon"></i></a>
+                        </li>
+
+                        <li>
+                            <a class="list__link" href=""></a>
+                        </li>
+
+                        <li>
+                            <a class="list__link" href=""><i class="fa fa-search"></i></a>
+                        </li>
+                    </ul>
+
+                    <img v-if="track.thumbnailURL" :src="track.thumbnailURL" alt="Album cover" />
+                    <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
+                        alt="Album cover" />
+
+                    <div class="range"></div>
+                </div>
+
+                <div id="container" @click="onChangeAudioMotionAnalyzerMode"></div>
+
+                <div class="body__info">
+                    <div class="info__album">{{ track.title }}</div>
+
+                    <div class="info__song">{{ track.album }}</div>
+
+                    <div class="info__artist">{{ track.artist }}</div>
+                </div>
+
+                <div class="field">
+                    <div class="control has-icons-left has-icons-right">
+                        <span class="icon is-left" style="height: 1em;">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </span>
+                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
+                            v-model.number="volume">
+                            <span class="icon is-right" style="height: 1em;">
+                            <small>{{ volume }}%</small>
+                        </span>                            
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control has-icons-left has-icons-right">
+                        <span class="icon is-left" style="height: 1em;">
+                            <small>{{ currentTime }}</small>
+
+                        </span>
+                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
+                            v-model.number="position">
+                        <span class="icon is-right" style="height: 1em;">
+                            <small>{{ duration }}</small>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="body__buttons">
+                    <ul class="list list--buttons">
+                        <li><a href="#" class="list__link" @click.prevent="onPreviousTrack"><i
+                                    class="fa fa-step-backward"></i></a></li>
+
+                        <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a>
+                        </li>
+
+                        <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
+                                    class="fa fa-step-forward"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="player__footer">
+                <ul class="list list--footer">
+                    <li><a href="#" class="list__link" title="Toggle navigation menu"><i class="fa fa-navicon"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Love/unlove track"><i class="fa fa-heart"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Toggle repeat mode"><i class="fa fa-undo"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Download track"><i class="fa-solid fa-download"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" title="Toggle details"><i
+                                class="fa-regular fa-rectangle-list"></i></a></li>
+
+                </ul>
+            </div>
+        </div>    
+    `;
+}
+
+export default {
+    name: 'spieldose-player',
+    template: template(),
+    data: function () {
+        return ({
+            audio: null,
+            volume: 16,
+            position: 0,
+            audioMotion: null,
+            currentTime: "00:00",
+            duration: "00:00",
+            audioMotionMode: 3
+        });
+    },
+    props: [
+        'track'
+    ],
+    computed: {
+        trackId: function () {
+            return(this.track ? this.track.id: null);
+        },
+        isPlaying: function () {
+            return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
+        }
+    },
+    watch: {
+        trackId: function(newValue, oldValue) {
+            if (newValue) {
+                if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
+                    this.audio.stop();
+                }
+                this.audio.src = "/api2/file/" + this.track.id;
+                this.audio.load();
+                if (newValue && oldValue) {
+                    this.onPlay();
+                }
+            }
+        },        
+        volume: function (newValue) {
+            if (this.audio) {
+                this.audio.volume = newValue / 100;
+            }
+        }
+    },
+    created: function () {
+    },
+    mounted: function() {
+        this.audio = document.getElementById('audio');
+        this.audio.volume = this.volume / 100;
+        this.audioMotion = new AudioMotionAnalyzer(
+            document.getElementById('container'),
+            {
+                source: document.getElementById('audio'),
+                mode: 3,
+                /*
+                connectSpeakers: false,
+                fftSize : 1024,
+ 
+                showPeaks :true,
+                stereo : true
+                */
+                height: 40,
+                // you can set other options below - check the docs!
+                //mode: 3,
+                /*
+                barSpace: .6,
+                */
+                ledBars: false,
+                showScaleX: false,
+                showScaleY: false,
+                stereo: false,
+                splitGradient: false
+            }
+        );
+    },
+    methods: {        
+        onPreviousTrack: function () {
+            this.$emit("previous", true)
+        },
+        onNextTrack: function () {
+            this.$emit("next", true)
+        },
+        onPlay: function () {
+            if (this.isPlaying) {
+                this.audio.stop();
+            }
+            let playPromise = this.audio.play();
+            this.audio.addEventListener('timeupdate', (track) => {
+                const currentProgress = this.audio.currentTime / this.audio.duration;
+                this.duration = this.formatSecondsAsTime(Math.floor(this.audio.duration).toString());
+                this.currentTime = this.formatSecondsAsTime(Math.floor(this.audio.currentTime).toString());
+                if (!isNaN(currentProgress)) {
+                    this.position = currentProgress.toFixed(2);
+                } else {
+                    this.position = 0;
+                }
+                //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+            });
+            if (playPromise !== undefined) {
+                //console.log(playPromise);
+                playPromise.then(() => {
+                }).catch((error) => {
+                    //this.$audioplayer.playback.pause();
+                    this.audio.currentTime = 0;
+                });
+            }
+        },
+        formatSecondsAsTime: function (secs, format) {
+            var hr = Math.floor(secs / 3600);
+            var min = Math.floor((secs - (hr * 3600)) / 60);
+            var sec = Math.floor(secs - (hr * 3600) - (min * 60));
+
+            if (min < 10) {
+                min = "0" + min;
+            }
+            if (sec < 10) {
+                sec = "0" + sec;
+            }
+
+            return min + ':' + sec;
+        },
+        onChangeAudioMotionAnalyzerMode: function() {
+            this.audioMotionMode++;
+            if (this.audioMotionMode > 8) {
+                this.audioMotionMode = 0;
+            }
+            this.audioMotion.setOptions({ mode: this.audioMotionMode });
+        }
+    }
+};

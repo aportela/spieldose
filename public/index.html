@@ -346,8 +346,7 @@
 </head>
 
 <body>
-    <div class="wrapper is-clearfix" id="app">
-        <audio id="audio" class="is-hidden"></audio>
+    <div class="wrapper is-clearfix" id="app">        
         <!--
             heavily inspired by design by Alex Devero
             https://codepen.io/alexdevero/pen/aZjLNw
@@ -356,103 +355,7 @@
         <div class="columns is-mobile">
             <div class="column is-narrow">
                 -->
-        <div class="player__container is-pulled-left" style="margin-left: 30%;">
-            <div class="player__body">
-                <div class="body__cover">
-                    <ul class="list list--cover">
-                        <li>
-                            <a class="list__link" href="" @click.prevent="loadTracks"><i class="fa fa-navicon"></i></a>
-                        </li>
-
-                        <li>
-                            <a class="list__link" href=""></a>
-                        </li>
-
-                        <li>
-                            <a class="list__link" href=""><i class="fa fa-search"></i></a>
-                        </li>
-                    </ul>
-
-                    <img v-if="currentTrack.thumbnailURL" :src="currentTrack.thumbnailURL" alt="Album cover" />
-                    <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
-                        alt="Album cover" />
-
-                    <div class="range"></div>
-                </div>
-
-                <div id="container" @click="onChangeAudioMotionAnalyzerMode"></div>
-
-                <div class="body__info">
-                    <div class="info__album">{{ currentTrack.title }}</div>
-
-                    <div class="info__song">{{ currentTrack.album }}</div>
-
-                    <div class="info__artist">{{ currentTrack.artist }}</div>
-                </div>
-
-                <div class="field">
-                    <div class="control has-icons-left has-icons-right">
-                        <span class="icon is-left" style="height: 1em;">
-                            <i class="fa-solid fa-volume-high"></i>
-                        </span>
-                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
-                            v-model.number="volume">
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="control has-icons-left has-icons-right">
-                        <span class="icon is-left" style="height: 1em;">
-                            <small>{{ currentTime }}</small>
-
-                        </span>
-                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
-                            v-model.number="position">
-                        <span class="icon is-right" style="height: 1em;">
-                            <small>{{ duration }}</small>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="body__buttons">
-                    <ul class="list list--buttons">
-                        <li><a href="#" class="list__link" @click.prevent="onPreviousTrack"><i
-                                    class="fa fa-step-backward"></i></a></li>
-
-                        <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a>
-                        </li>
-
-                        <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
-                                    class="fa fa-step-forward"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="player__footer">
-                <ul class="list list--footer">
-                    <li><a href="#" class="list__link" title="Toggle navigation menu"><i class="fa fa-navicon"></i></a>
-                    </li>
-
-                    <li><a href="#" class="list__link" title="Love/unlove track"><i class="fa fa-heart"></i></a>
-                    </li>
-
-                    <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a>
-                    </li>
-
-                    <li><a href="#" class="list__link" title="Toggle repeat mode"><i class="fa fa-undo"></i></a>
-                    </li>
-
-                    <li><a href="#" class="list__link" title="Download track"><i class="fa-solid fa-download"></i></a>
-                    </li>
-
-                    <li><a href="#" class="list__link" title="Toggle details"><i
-                                class="fa-regular fa-rectangle-list"></i></a></li>
-
-                </ul>
-            </div>
-        </div>
+        <spieldose-player :track="currentTrack" @previous="onPreviousTrack" @next="onNextTrack"></spieldose-player>
 
         <div class="details_container is-pulled-left" style="margin-left: 1rem;">
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
