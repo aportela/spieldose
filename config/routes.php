@@ -38,7 +38,7 @@ return function (App $app) {
 
         $group->get('/track/search', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             $params = $request->getQueryParams();
-            $db = $this->get(DB::class);
+            $db = $this->get(\aportela\DatabaseWrapper\DB::class);
             $payload = array(
                 "tracks" => \Spieldose\Track::searchNew($db, $params['q'], $params['artist'], $params['albumArtist'], $params['album'])
             );
@@ -92,7 +92,7 @@ return function (App $app) {
 
         $group->get('/track/thumbnail/{width}/{height}/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
-            $db = $this->get(DB::class);
+            $db = $this->get(\aportela\DatabaseWrapper\DB::class);
             $logger = $this->get(ThumbnailLogger::class);
             try {
                 $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
