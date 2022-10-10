@@ -12,6 +12,15 @@
             ),
             3 => array(
                 " CREATE TABLE IF NOT EXISTS DIRECTORIES(ID CHAR(40) PRIMARY KEY, PATH VARCHAR(4096) NOT NULL, ATIME INTEGER NOT NULL, MTIME INTEGER NOT NULL, COVER_FILENAME VARCHAR(4096)); "
+            ),
+            4 => array(
+                "
+                CREATE TABLE [USER] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [email] VARCHAR(255) UNIQUE NOT NULL,
+                            [password_hash] VARCHAR(60) NOT NULL
+                        );
+                "
             )
         )
     );
