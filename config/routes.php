@@ -93,13 +93,14 @@ return function (App $app) {
         $group->get('/track/thumbnail/{width}/{height}/{id}', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
             //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
             $db = $this->get(DB::class);
+            $logger = $this->get(ThumbnailLogger::class);
             try {
-                $localPath = \Spieldose\Track::getLocalThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
+                $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
             } catch (\Spieldose\Exception\NotFoundException $e) {
             }
             if (empty($localPath)) {
                 try {
-                    $localPath = \Spieldose\Track::getRemoteThumbnail($db, $args["id"], intval($args["width"]), intval($args["height"]));
+                    $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
             }

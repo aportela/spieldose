@@ -262,7 +262,7 @@ class Track
         $this->path = $data[0]->path;
     }
 
-    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
+    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, $width, $height)
     {
         $results = $db->query(
             "
@@ -279,7 +279,6 @@ class Track
         );
         if (count($results) == 1) {
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-            $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
             if (!empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
                 if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath, $width, $height)) {
@@ -295,7 +294,7 @@ class Track
         }
     }
 
-    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, $id, $width, $height)
+    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, $width, $height)
     {
         $results = $db->query(
             "
@@ -311,7 +310,6 @@ class Track
         );
         if (count($results) == 1) {
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-            $logger = new \Monolog\Logger("remote-thumbnail-cache-wrapper");
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $localPath);
             $url = null;
             if ($width < 250) {

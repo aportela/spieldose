@@ -140,6 +140,18 @@ return [
         return ($logger);
     },
 
+    ThumbnailLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Monolog\Logger($settings['thumbnail']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['thumbnail']['path'], 0, \Monolog\Level::Debug);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
     \Spieldose\Middleware\APIExceptionCatcher::class => function (ContainerInterface $container) {
         return (new \Spieldose\Middleware\APIExceptionCatcher($container->get(\Monolog\Logger::class)));
     }
