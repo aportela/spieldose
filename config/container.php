@@ -59,22 +59,6 @@ return [
         return new PDO($dsn, $username, $password, $flags);
     },
 
-    DB::class => function (ContainerInterface $container) {
-        $settings = $container->get('settings')['db'];
-        $adapter = new \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter(
-            dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $settings["database"],
-            // READ upgrade SQL schema file definition on next block of this README.md
-            $settings["upgradeSchemaPath"]
-        );
-        $logger = $container->get(DBLogger::class);
-        // main object
-        $db = new \aportela\DatabaseWrapper\DB(
-            $adapter,
-            $logger
-        );
-        return ($db);
-    },
-
     \aportela\DatabaseWrapper\DB::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['db'];
         $adapter = new \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter(
@@ -82,7 +66,7 @@ return [
             // READ upgrade SQL schema file definition on next block of this README.md
             $settings["upgradeSchemaPath"]
         );
-        $logger = $container->get(DBLogger::class);
+        $logger = $container->get(\Spieldose\Logger\DBLogger::class);
         // main object
         $db = new \aportela\DatabaseWrapper\DB(
             $adapter,
@@ -91,10 +75,21 @@ return [
         return ($db);
     },
 
-
-    \Monolog\Logger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\HTTPRequestLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Monolog\Logger('spieldose-default');
+        $logger = new \Spieldose\Logger\HTTPRequestLogger($settings['http']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['http']['path'], 0, \Monolog\Level::Debug);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
+    \Spieldose\Logger\DefaultLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Spieldose\Logger\DefaultLogger($settings['default']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['default']['path'], 0, \Monolog\Level::Debug);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
@@ -104,9 +99,9 @@ return [
         return ($logger);
     },
 
-    DBLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\DBLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Monolog\Logger($settings['database']['name']);
+        $logger = new \Spieldose\Logger\DBLogger($settings['database']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['database']['path'], 0, \Monolog\Level::Debug);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
@@ -116,9 +111,9 @@ return [
         return ($logger);
     },
 
-    InstallerLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\InstallerLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Monolog\Logger($settings['installer']['name']);
+        $logger = new \Spieldose\Logger\InstallerLogger($settings['installer']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['installer']['path'], 0, \Monolog\Level::Debug);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
@@ -128,9 +123,9 @@ return [
         return ($logger);
     },
 
-    ScannerLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\ScannerLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Monolog\Logger($settings['scanner']['name']);
+        $logger = new \Spieldose\Logger\ScannerLogger($settings['scanner']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['scanner']['path'], 0, \Monolog\Level::Debug);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
@@ -140,9 +135,9 @@ return [
         return ($logger);
     },
 
-    ThumbnailLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Monolog\Logger($settings['thumbnail']['name']);
+        $logger = new \Spieldose\Logger\ThumbnailLogger($settings['thumbnail']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['thumbnail']['path'], 0, \Monolog\Level::Debug);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
@@ -153,7 +148,7 @@ return [
     },
 
     \Spieldose\Middleware\APIExceptionCatcher::class => function (ContainerInterface $container) {
-        return (new \Spieldose\Middleware\APIExceptionCatcher($container->get(\Monolog\Logger::class)));
+        return (new \Spieldose\Middleware\APIExceptionCatcher($container->get(\Spieldose\Logger\HTTPRequestLogger::class)));
     }
 
 ];
