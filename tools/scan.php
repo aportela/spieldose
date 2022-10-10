@@ -27,7 +27,7 @@ if (count($missingExtensions) > 0) {
     $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
 } else {
     try {
-        $db = $container->get(DB::class);
+        $db = $container->get(\aportela\DatabaseWrapper\DB::class);
         $scanner = new \Spieldose\Scanner($db, $logger);
         $cmdLine = new \Spieldose\CmdLine("", array("path:", "cleanup"));
         if ($cmdLine->hasParam("path")) {

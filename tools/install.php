@@ -26,7 +26,7 @@ if (count($missingExtensions) > 0) {
     echo "Error: missing php extension/s: " . $missingExtensionsStr . PHP_EOL;
     $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
 } else {
-    $db = $container->get(DB::class);
+    $db = $container->get(\aportela\DatabaseWrapper\DB::class);
     $success = true;
     // check if the database is already installed (install scheme with version table already exists)
     if (!$db->isSchemaInstalled()) {
