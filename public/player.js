@@ -19,9 +19,9 @@ const template = function () {
                     </ul>
 
                     <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
-                    <img v-else :src="'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='"
-                        alt="Album cover" />
-
+                    <div v-else style="background: #efefef; width: 300px; height: 300px;">
+                    <img src="images/vinyl.png" alt="Vinyl" />
+                    </div>
                     <div class="range"></div>
                 </div>
 
