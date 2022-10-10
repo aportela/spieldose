@@ -18,7 +18,7 @@
 
     $actualVersion = 0;
 
-    $dbh = new \Spieldose\Database\DB($c, $container->get(\Monolog\Logger::class));
+    $dbh = new \Spieldose\Database\DB($c, $container->get(\Spieldose\Logger\DBLogger::class));
     $thumbnailUrls = \Spieldose\Thumbnail::getThumbnailUrls($dbh);
     $totalThumbnails = count($thumbnailUrls);
     if ($totalThumbnails > 0) {
@@ -39,5 +39,3 @@
     } else {
         echo "No thumbnails found" . PHP_EOL;
     }
-
-?>

@@ -35,7 +35,7 @@
         //$c["scrapLogger"]->info("Scraper started");
 
         $dbh = new \Spieldose\Database\DB(
-            $container->get(PDO::class), $container->get(\Monolog\Logger::class)
+            $container->get(PDO::class), $container->get(\Spieldose\Logger\ScannerLogger::class)
         );
         if ((new \Spieldose\Database\Version($dbh, "PDO_SQLITE"))->hasUpgradeAvailable()) {
             //$c["scanLogger"]->warning("Process stopped: upgrade database before continue");
@@ -148,5 +148,3 @@
     } else {
         echo "No required params found: --artists or --albums or --all" . PHP_EOL;
     }
-
-?>

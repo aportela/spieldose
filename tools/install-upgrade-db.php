@@ -35,7 +35,7 @@ $app = $container->get(App::class);
     $actualVersion = 0;
     $container = $app->getContainer();
     $v = new \Spieldose\Database\Version(new \Spieldose\Database\DB(
-        $container->get(PDO::class), $container->get(\Monolog\Logger::class)
+        $container->get(PDO::class), $container->get(\Spieldose\Logger\DefaultLogger::class)
     ), "PDO_SQLITE");
     try {
         $actualVersion = $v->get();
@@ -60,5 +60,3 @@ $app = $container->get(App::class);
     } else {
         echo "No database upgrade required" . PHP_EOL;
     }
-
-?>

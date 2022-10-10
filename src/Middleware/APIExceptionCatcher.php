@@ -9,7 +9,7 @@ class APIExceptionCatcher
 
     protected $logger;
 
-    public function __construct(\Monolog\Logger $logger)
+    public function __construct(\Spieldose\Logger\HTTPRequestLogger $logger)
     {
         $this->logger = $logger;
     }

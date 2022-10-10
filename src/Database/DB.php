@@ -13,7 +13,7 @@
         private $container = null;
         private $queryParams = array();
 
-	    public function __construct (\PDO $pdo, \Monolog\Logger $logger) {
+	    public function __construct (\PDO $pdo, \Spieldose\Logger\DBLogger::class) {
             /*
             $this->container = $container;
             $settings = $this->container->get('settings');

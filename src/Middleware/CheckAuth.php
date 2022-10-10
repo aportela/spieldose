@@ -9,7 +9,7 @@ class CheckAuth
 
     protected $logger;
 
-    public function __construct(\Monolog\Logger $logger)
+    public function __construct(\Spieldose\Logger\DefaultLogger $logger)
     {
         $this->logger = $logger;
     }
