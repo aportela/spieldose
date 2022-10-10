@@ -2,7 +2,7 @@ import AudioMotionAnalyzer from 'https://cdn.skypack.dev/audiomotion-analyzer?mi
 
 const template = function () {
     return `
-        <div class="player__container is-pulled-left" style="margin-left: 30%;">
+        <div class="player__container">
             <div class="player__body">
                 <audio id="audio" class="is-hidden"></audio>
                 <div class="body__cover">
