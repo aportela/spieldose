@@ -45,12 +45,12 @@ const app = new Vue({
         this.loadTracks();
     },
     methods: {
-        loadTracks: function (query, artist, album) {
+        loadTracks: function (query, artist, albumArtist, album) {
             if (artist ||album) {
                 this.searchQuery = null;
             }
             this.loading = true;
-            const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query): '')+ '&artist=' + (artist ? encodeURIComponent(artist): '') + '&album=' + (album ? encodeURIComponent(album): '');
+            const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query): '')+ '&artist=' + (artist ? encodeURIComponent(artist): '') + '&albumArtist=' + (albumArtist ? encodeURIComponent(albumArtist): '') + '&album=' + (album ? encodeURIComponent(album): '');
             Vue.http.get(url).then(                
                 response => {
                     this.loading = false;
