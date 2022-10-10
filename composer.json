@@ -15,6 +15,7 @@
     "require": {
         "aportela/db-wrapper": "^1.0",
         "aportela/remote-thumbnail-cache-wrapper": "^1.0",
+        "firebase/php-jwt": "^6.3",
         "james-heinrich/getid3": "^1.9",
         "monolog/monolog": "^3.2",
         "php-di/php-di": "^6.4",

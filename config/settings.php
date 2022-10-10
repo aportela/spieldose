@@ -35,6 +35,10 @@ $settings['logger'] = [
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
         'name' => 'Spieldose::Default'
     ],
+    'http'  => [
+        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/http.log',
+        'name' => 'Spieldose::HTTP'
+    ],
     'installer' => [
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/installer.log',
         'name' => 'Spieldose::Installer'
@@ -46,7 +50,7 @@ $settings['logger'] = [
     'thumbnail' => [
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
         'name' => 'Spieldose::Thumbnail'
-    ],    
+    ],
     'database' => [
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
         'name' => 'Spieldose::Database'
@@ -87,6 +91,10 @@ $settings['common'] = [
     'allowSignUp' => true,
     'liveSearch' => true,
     'locale' => 'en'
+];
+
+$settings['jwt'] = [
+    'passphrase' => '/@q]/?pc`c&bq,P/MCp{5#E~-Nr2]NXQ$pvSKiz$tLQd]K)>eIOOk!&6rKVO7J~' // WARNING: for security reasons, generate a random string for using as your OWN (not default) passphrase
 ];
 
 //$settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
