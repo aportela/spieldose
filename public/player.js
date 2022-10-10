@@ -38,7 +38,7 @@ const template = function () {
                 <div class="field">
                     <div class="control has-icons-left has-icons-right">
                         <span class="icon is-left" style="height: 1em;">
-                            <i class="fa-solid fa-volume-high"></i>
+                            <i class="fa-solid fa-volume-high" style="color: #d30320;" :style="'opacity: ' + ((volume / 100)+0.4)"></i>
                         </span>
                         <input style="padding-left: 3.5em; padding-right: 3.5em;"
                             class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
