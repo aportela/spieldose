@@ -3,6 +3,7 @@ import { default as playerComponent } from './player.js';
 const app = new Vue({
     data: function () {
         return ({
+            loading: false,
             tracks: [],
             currentTrackIndex: -1,
             searchQuery: null
@@ -44,13 +45,20 @@ const app = new Vue({
         this.loadTracks();
     },
     methods: {
-        loadTracks: function (query) {
-            Vue.http.get("/api2/track/search?q=" + (query ? encodeURIComponent(query): '')).then(
+        loadTracks: function (query, artist, album) {
+            if (artist ||album) {
+                this.searchQuery = null;
+            }
+            this.loading = true;
+            const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query): '')+ '&artist=' + (artist ? encodeURIComponent(artist): '') + '&album=' + (album ? encodeURIComponent(album): '');
+            Vue.http.get(url).then(                
                 response => {
+                    this.loading = false;
                     this.tracks = response.body.tracks;
                     this.currentTrackIndex = 0;
                 },
                 response => {
+                    this.loading = false;
                     console.log(response);
                 }
             );

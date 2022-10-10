@@ -182,14 +182,25 @@ class Track
         }
     }
 
-    public static function searchNew(\aportela\DatabaseWrapper\DB $db, $query)
+    public static function searchNew(\aportela\DatabaseWrapper\DB $db, $query, $artist, $album)
     {
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
         );
+        $whereConditions = [];
         if (!empty($query)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":query", "%" . $query . "%");
+            $whereConditions[] = " (FILE_ID3_TAG.TITLE LIKE :query OR FILE_ID3_TAG.ALBUM LIKE :query OR FILE_ID3_TAG.ARTIST LIKE :query) ";
         }
+        if (!empty($artist)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist);
+            $whereConditions[] = " FILE_ID3_TAG.ARTIST = :artist ";
+        }
+        if (!empty($album)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $album);
+            $whereConditions[] = " FILE_ID3_TAG.ALBUM = :album ";
+        }
+        
         $tracks = $db->query(
             sprintf(
                 "
@@ -214,10 +225,9 @@ class Track
                     ORDER BY %s
                     LIMIT %d
                 ",
-                !empty($query) ? " WHERE FILE_ID3_TAG.TITLE LIKE :query OR FILE_ID3_TAG.ALBUM LIKE :query OR FILE_ID3_TAG.ARTIST LIKE :query" : "",
-                empty($query) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
+                count($whereConditions)>0 ? ' WHERE ' . implode(" AND ", $whereConditions): null,
+                empty($query) && empty($artist) && empty($album) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
                 empty($query) ? 32 : 64
-
             ),
             $params
         );

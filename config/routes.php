@@ -40,7 +40,7 @@ return function (App $app) {
             $params = $request->getQueryParams();
             $db = $this->get(DB::class);
             $payload = array(
-                "tracks" => \Spieldose\Track::searchNew($db, $params['q'])
+                "tracks" => \Spieldose\Track::searchNew($db, $params['q'], $params['artist'], $params['album'])
             );
             $response->getBody()->write(json_encode($payload));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

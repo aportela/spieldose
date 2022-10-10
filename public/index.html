@@ -366,8 +366,9 @@
         </spieldose-player>
 
         <div class="details_container is-pulled-left" style="margin-left: 1rem; width: 40%;">
+            
             <div class="field has-addons">
-                <div class="control has-icons-left has-icons-right is-expanded">
+                <div class="control has-icons-left is-expanded is-small" :class="{ 'is-loading': loading}">
                     <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery"
                         v-on:keyup.enter="onSearch">
                     <span class="icon is-small is-left">
@@ -378,7 +379,7 @@
                     </span>
                 </div>
                 <div class="control">
-                    <a class="button is-small" style="background: #d30320; color: #fafafa;" @click.prevent="onSearch">
+                    <a class="button is-small" style="background: #d30320; color: #fafafa;" @click.prevent="onSearch" :disabled="loading">
                         Search
                     </a>
                 </div>
@@ -386,21 +387,23 @@
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                 <thead>
                     <tr>
-                        <th>Index</th>
-                        <th>Title</th>
+                        <th class="has-text-right">Index</th>
                         <th>Artist</th>
                         <th>Album</th>
+                        <th class="has-text-right">Track nº</th>
+                        <th>Title</th>
                         <th>Year</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="track,index in tracks" :key="index"
                         :class="{ 'is-selected': currentTrack.id == track.id } ">
-                        <td class="is-clickable" @click.prevent="currentTrackIndex = index;"> <i
+                        <td class="has-text-right is-clickable" @click.prevent="currentTrackIndex = index;"> <i
                                 class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index }}</td>
+                        <td class="is-clickable" @click.prevent="loadTracks('', track.artist, '');">{{ track.artist }}</td>
+                        <td class="is-clickable" @click.prevent="loadTracks('', track.artist, track.album);">{{ track.album }}</td>      
+                        <td class="has-text-right">{{ track.trackNumber }}</td>
                         <td class="is-clickable" @click.prevent="currentTrackIndex = index;">{{ track.title }}</td>
-                        <td>{{ track.artist }}</td>
-                        <td>{{ track.album }}</td>
                         <td>{{ track.year }}</td>
                     </tr>
                 </tbody>
