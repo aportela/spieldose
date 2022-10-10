@@ -57,7 +57,9 @@
             height: 300px;
             display: block;
             /* border-radius: 0.25rem;*/
+            /*
             background: green;
+            */
         }
 
         .list {
@@ -400,11 +402,14 @@
                             <td class="has-text-right is-clickable" @click.prevent="currentTrackIndex = index;"> <i
                                     class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index }}
                             </td>
-                            <td class="is-clickable" @click.prevent="loadTracks('', track.artist, '', '');">{{ track.artist
+                            <td class="is-clickable" @click.prevent="loadTracks('', track.artist, '', '');">{{
+                                track.artist
                                 }}</td>
-                            <td class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, '');">{{ track.albumArtist
+                            <td class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, '');">{{
+                                track.albumArtist
                                 }}</td>
-                            <td class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, track.album);">{{
+                            <td class="is-clickable"
+                                @click.prevent="loadTracks('', '', track.albumArtist, track.album);">{{
                                 track.album }}</td>
                             <td class="has-text-right">{{ track.trackNumber }}</td>
                             <td class="is-clickable" @click.prevent="currentTrackIndex = index;">{{ track.title }}</td>
