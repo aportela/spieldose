@@ -424,9 +424,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js"
         integrity="sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw=="
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.min.js"
-        integrity="sha512-wGKmIfDWUJSUvxUfUayQPJj7ADCD60La3up0VCbq+MTFcOUQ2hlH2McnYFafHgLTsOrGwOdiHKX4p1v0BerCyQ=="
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.2/axios.min.js"
+        integrity="sha512-bHeT+z+n8rh9CKrSrbyfbINxu7gsBmSHlDCb3gUF1BjmjDzKhoKspyB71k0CIRBSjE5IVQiMMVBgCWjF60qsvA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/basil.js/0.4.7/basil.min.js"
+        integrity="sha512-Cr1IQNd0mFqQOH5Mtpsd1P/jCOlmm+DoP+x6FDEOmEbX70MceFiPZHEvIdzle5funoCdF1MH8jy4B1fzxwH/PQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        window.spieldose = window.spieldose || {};
+        window.spieldose.storage = new window.Basil({
+            namespace: 'spieldose',
+            storages: ['local', 'cookie', 'session', 'memory'],
+            storage: 'local',
+            expireDays: 3650
+        });
+    </script>
 
     <script type="module" src="index.js"></script>
 </body>
