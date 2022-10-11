@@ -6,7 +6,8 @@ const app = new Vue({
             loading: false,
             tracks: [],
             currentTrackIndex: -1,
-            searchQuery: null
+            searchQuery: null,
+            axios: null
         });
     },
     computed: {
@@ -18,7 +19,7 @@ const app = new Vue({
             }
         },
         isPlaying: function () {
-            return(true);
+            return (true);
             //return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
         }
     },
@@ -42,28 +43,48 @@ const app = new Vue({
         }
     },
     created: function () {
+
+        this.axios = axios.create({});
+        const apiJWT = window.spieldose.storage.get('SPIELDOSE-JWT');
+        if (apiJWT) {
+            this.axios.interceptors.request.use((config) => {
+                return (config);
+            }, (error) => {
+                return Promise.reject(error);
+            });
+        }
+        this.axios.interceptors.response.use((response) => {
+            if (response.config.parse) {
+                //perform the manipulation here and change the response object
+                console.log(response.headers);
+            }
+            return response;
+        }, (error) => {
+            return Promise.reject(error.message);
+        });
         this.loadTracks();
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
-            if (artist ||album) {
+            if (artist || album) {
                 this.searchQuery = null;
             }
             this.loading = true;
-            const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query): '')+ '&artist=' + (artist ? encodeURIComponent(artist): '') + '&albumArtist=' + (albumArtist ? encodeURIComponent(albumArtist): '') + '&album=' + (album ? encodeURIComponent(album): '');
-            Vue.http.get(url).then(                
-                response => {
-                    this.loading = false;
-                    this.tracks = response.body.tracks;
+            const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query) : '') + '&artist=' + (artist ? encodeURIComponent(artist) : '') + '&albumArtist=' + (albumArtist ? encodeURIComponent(albumArtist) : '') + '&album=' + (album ? encodeURIComponent(album) : '');
+            this.axios.get(url).then(
+                (response) => {
+                    // handle success
+                    this.tracks = response.data.tracks;
                     this.currentTrackIndex = 0;
-                },
-                response => {
+                }).catch((error) => {
+                    // handle error
+                    console.log(error);
+                }).then(() => {
+                    // always executed
                     this.loading = false;
-                    console.log(response);
-                }
-            );
+                });
         },
-        onSearch: function() {
+        onSearch: function () {
             this.loadTracks(this.searchQuery);
         },
         onPreviousTrack: function () {
