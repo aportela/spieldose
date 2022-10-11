@@ -31,29 +31,32 @@ $settings['error'] = [
 ];
 
 $settings['logger'] = [
-    'default'  => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
-        'name' => 'Spieldose::Default'
-    ],
-    'http'  => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/http.log',
-        'name' => 'Spieldose::HTTP'
-    ],
-    'installer' => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/installer.log',
-        'name' => 'Spieldose::Installer'
-    ],
-    'scanner' => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
-        'name' => 'Spieldose::Scanner'
-    ],
-    'thumbnail' => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
-        'name' => 'Spieldose::Thumbnail'
-    ],
-    'database' => [
-        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
-        'name' => 'Spieldose::Database'
+    'defaultLevel' => \Monolog\Level::Debug,
+    'channels' => [
+        'default'  => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
+            'name' => 'Spieldose::Default'
+        ],
+        'http'  => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/http.log',
+            'name' => 'Spieldose::HTTP'
+        ],
+        'installer' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/installer.log',
+            'name' => 'Spieldose::Installer'
+        ],
+        'scanner' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
+            'name' => 'Spieldose::Scanner'
+        ],
+        'thumbnail' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
+            'name' => 'Spieldose::Thumbnail'
+        ],
+        'database' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
+            'name' => 'Spieldose::Database'
+        ]
     ]
 ];
 

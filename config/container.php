@@ -77,9 +77,9 @@ return [
 
     \Spieldose\Logger\HTTPRequestLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\HTTPRequestLogger($settings['http']['name']);
+        $logger = new \Spieldose\Logger\HTTPRequestLogger($settings['channels']['http']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['http']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['http']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
@@ -89,9 +89,9 @@ return [
 
     \Spieldose\Logger\DefaultLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\DefaultLogger($settings['default']['name']);
+        $logger = new \Spieldose\Logger\DefaultLogger($settings['channels']['default']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['default']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['default']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
@@ -101,9 +101,9 @@ return [
 
     \Spieldose\Logger\DBLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\DBLogger($settings['database']['name']);
+        $logger = new \Spieldose\Logger\DBLogger($settings['channels']['database']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['database']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['database']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
@@ -113,9 +113,9 @@ return [
 
     \Spieldose\Logger\InstallerLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\InstallerLogger($settings['installer']['name']);
+        $logger = new \Spieldose\Logger\InstallerLogger($settings['channels']['installer']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['installer']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['installer']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
@@ -125,9 +125,9 @@ return [
 
     \Spieldose\Logger\ScannerLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\ScannerLogger($settings['scanner']['name']);
+        $logger = new \Spieldose\Logger\ScannerLogger($settings['channels']['scanner']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['scanner']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['scanner']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
@@ -137,9 +137,9 @@ return [
 
     \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
-        $logger = new \Spieldose\Logger\ThumbnailLogger($settings['thumbnail']['name']);
+        $logger = new \Spieldose\Logger\ThumbnailLogger($settings['channels']['thumbnail']['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $handler = new \Monolog\Handler\RotatingFileHandler($settings['thumbnail']['path'], 0, \Monolog\Level::Debug);
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['thumbnail']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
         $handler->setFormatter($formatter);
