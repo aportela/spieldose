@@ -14,7 +14,7 @@ $container = $containerBuilder->build();
 
 echo "Spieldose scanner" . PHP_EOL;
 
-$logger = $container->get(ScannerLogger::class);
+$logger = $container->get(\Spieldose\Logger\ScannerLogger::class);
 
 $logger->info("Scan started");
 

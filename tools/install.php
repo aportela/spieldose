@@ -14,7 +14,7 @@ $container = $containerBuilder->build();
 
 echo "Spieldose installer" . PHP_EOL;
 
-$logger = $container->get(InstallerLogger::class);
+$logger = $container->get(\Spieldose\Logger\InstallerLogger::class);
 
 $logger->info("Install started");
 
