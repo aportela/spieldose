@@ -121,6 +121,42 @@ return function (App $app) {
                     throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
                 }
             });
+
+            $group->get('/thumbnail/{width}/{height}/{hash}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                //$logger->info($request->getMethod() . " " . $request->getUri()->getPath());
+                //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                try {
+                    $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
+                    $p = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp,intval($args["width"]), intval($args["height"]), substr($this->hash, 0, 1), substr($this->hash, 1, 1), $args["hash"], "jpg"))
+                    $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+                if (empty($localPath)) {
+                    try {
+                        $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
+                    } catch (\Spieldose\Exception\NotFoundException $e) {
+                    }
+                }
+                if (!empty($localPath) && file_exists(($localPath))) {
+                    $filesize = filesize($localPath);
+                    $f = fopen($localPath, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    $response->getBody()->write($data);
+                    return $response
+                        ->withHeader('Content-Type', "image/jpeg")
+                        ->withHeader('Content-Length', $filesize)
+                        ->withHeader('ETag', sha1($args["id"] . $localPath . $filesize))
+                        ->withHeader('Cache-Control', 'max-age=86400')
+                        ->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
+                }
+            });            
         }
     )->add(\Spieldose\Middleware\JWT::class)
         ->add(\Spieldose\Middleware\APIExceptionCatcher::class);
