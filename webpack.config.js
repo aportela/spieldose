@@ -10,7 +10,8 @@ module.exports = {
             'vue': "vue/dist/vue.esm-bundler.js",
             'vue-i18n': "vue-i18n/dist/vue-i18n.esm-bundler.js",
             'dayjs': "dayjs/dayjs.min.js",
-            'Chart': "chart.js/dist/chart.esm.js"
+            'Chart': "chart.js/dist/chart.esm.js",
+            'Basil': "basil.js/build/basil.min.js"
         }
     },
     entry: {
@@ -18,7 +19,7 @@ module.exports = {
             import: './src-frontend/scripts/app.js',
             dependOn: 'vendor'
         },
-        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt', 'dayjs', 'Chart']
+        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt', 'dayjs', 'Basil', 'Chart']
     },
     output: {
         path: path.resolve(__dirname, 'public/scripts/'),
