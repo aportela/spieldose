@@ -39,6 +39,14 @@ class User
     }
 
     /**
+     * set session authentication params
+     */
+    public static function setSessionVars(string $userId, string $email) {
+        $_SESSION["userId"] = $userId;
+        $_SESSION["email"] = $email;
+    }
+
+    /**
      * add new user
      *
      * @param \aportela\DatabaseWrapper\DB $db database handler
@@ -143,8 +151,7 @@ class User
         if (!empty($this->password)) {
             $this->get($db);
             if (password_verify($this->password, $this->passwordHash)) {
-                $_SESSION["userId"] = $this->id;
-                $_SESSION["email"] = $this->email;
+                self::setSessionVars($this->id, $this->email);
                 return (true);
             } else {
                 return (false);
