@@ -28,30 +28,54 @@ class JWT
     {
         $clientHeaderJWT = $request->hasHeader("SPIELDOSE-JWT") ? $request->getHeader("SPIELDOSE-JWT")[0] : null;
         if (!\Spieldose\User::isLogged()) {
-            $this->logger->debug("User not logged");
             if (!empty($clientHeaderJWT)) {
-                $this->logger->debug("JWT found in client headers", [$clientHeaderJWT]);
                 try {
                     $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
                     $decoded = $jwt->decode($clientHeaderJWT);
+
                     if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
                         $this->logger->debug("JWT decoded", $decoded->data);
                         $_SESSION["userId"] = $decoded->data->userId;
                         $_SESSION["email"] = $decoded->data->email;
                     } else {
-                        $this->logger->warning("Error decoding JWT");
-                        throw new \Spieldose\Exception\InvalidParamsException("JWT: " . $clientHeaderJWT);
+                        throw new \Spieldose\Exception\InvalidParamsException("jwt");
                     }
-                } catch (\Throwable $e) {
+                } catch (\InvalidArgumentException $e) {
+                    // provided key/key-array is empty or malformed.
+                    $this->logger->error("Error decoding JWT", [$e->getMessage()]);
+                } catch (\DomainException $e) {
+                    // provided algorithm is unsupported OR
+                    // provided key is invalid OR
+                    // unknown error thrown in openSSL or libsodium OR
+                    // libsodium is required but not available.
+                    $this->logger->error("Error decoding JWT", [$e->getMessage()]);
+                } catch (\Firebase\JWT\SignatureInvalidException $e) {
+                    // provided JWT signature verification failed.
+                    $this->logger->error("Error decoding JWT", [$e->getMessage()]);
+                } catch (\Firebase\JWT\BeforeValidException $e) {
+                    // provided JWT is trying to be used before "nbf" claim OR
+                    // provided JWT is trying to be used before "iat" claim.
+                    $this->logger->error("Error decoding JWT", [$e->getMessage()]);
+                } catch (\Firebase\JWT\ExpiredException $e) {
+                    // provided JWT is trying to be used after "exp" claim.
+                    $this->logger->error("Error decoding JWT", [$e->getMessage()]);
+                } catch (\UnexpectedValueException $e) {
+                    // provided JWT is malformed OR
+                    // provided JWT is missing an algorithm / using an unsupported algorithm OR
+                    // provided JWT algorithm does not match provided key OR
+                    // provided key ID in key/key-array is empty or invalid.
                     $this->logger->error("Error decoding JWT", [$e->getMessage()]);
                 }
             }
             $response = $handler->handle($request);
-            return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
+            if (!empty($clientHeaderJWT)) {
+                return $response->withHeader("SPIELDOSE-JWT", "BB"); //$clientHeaderJWT);
+            } else {
+                return ($response);
+            }
         } else {
             $this->logger->debug("User logged");
             if (empty($clientHeaderJWT)) {
-                $this->logger->debug("JWT not found in client headers");
                 $payload = array(
                     "id" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
                     "email" => isset($_SESSION["email"]) ? $_SESSION["email"] : null
@@ -59,7 +83,6 @@ class JWT
                 try {
                     $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
                     $clientHeaderJWT = $jwt->encode($payload);
-                    $this->logger->debug("New JWT", [$clientHeaderJWT]);
                 } catch (\Throwable $e) {
                     $this->logger->error("Error encoding JWT payload", [$payload]);
                 }
