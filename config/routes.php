@@ -25,7 +25,7 @@ return function (App $app) {
                 )
             )
         ]);
-    })->add(\Spieldose\Middleware\JWT::class);
+    });
 
     $app->group(
         "/api2",
@@ -122,6 +122,6 @@ return function (App $app) {
                 }
             });
         }
-    )->add(\Spieldose\Middleware\APIExceptionCatcher::class)
-        ->add(\Spieldose\Middleware\JWT::class);
+    )->add(\Spieldose\Middleware\JWT::class)
+        ->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
