@@ -7,7 +7,8 @@ const app = new Vue({
             tracks: [],
             currentTrackIndex: -1,
             searchQuery: null,
-            axios: null
+            axios: null,
+            currentJWT: null
         });
     },
     computed: {
@@ -45,18 +46,24 @@ const app = new Vue({
     created: function () {
 
         this.axios = axios.create({});
-        const apiJWT = window.spieldose.storage.get('SPIELDOSE-JWT');
-        if (apiJWT) {
+        this.currentJWT = window.spieldose.storage.get('jwt') || null;
+        if (this.currentJWT) {
             this.axios.interceptors.request.use((config) => {
+                config.headers["SPIELDOSE-JWT"] = this.currentJWT;
                 return (config);
             }, (error) => {
                 return Promise.reject(error);
             });
         }
         this.axios.interceptors.response.use((response) => {
-            if (response.config.parse) {
-                //perform the manipulation here and change the response object
-                console.log(response.headers);
+            console.log(response.headers);
+            // warning: axios lowercase received header names
+            const apiResponseJWT = response.headers["spieldose-jwt"] || null;
+            if (apiResponseJWT) {
+                if (apiResponseJWT && apiResponseJWT != this.currentJWT) {
+                    window.spieldose.storage.set("jwt", apiResponseJWT);
+                    this.currentJWT = apiResponseJWT;
+                }
             }
             return response;
         }, (error) => {
