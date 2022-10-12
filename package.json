@@ -26,6 +26,7 @@
   "dependencies": {
     "audiomotion-analyzer": "^3.6.0",
     "axios": "^0.27.2",
+    "basil.js": "^0.4.11",
     "chart.js": "^3.9.1",
     "dayjs": "^1.11.5",
     "mitt": "^3.0.0",
