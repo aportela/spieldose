@@ -244,12 +244,14 @@ export default {
                 });
             });
         },
-        getRandomAlbumCovers: function (count) {
+        getRandomAlbumCovers: function (count, width, height) {
             return new Promise(function (resolve, reject) {
                 const params = {
+                    width: width,
+                    height: height,
                     count: count
                 };
-                axios.post("api/random_album_covers", params).then(response => {
+                axios.post("api2/random_album_covers", params).then(response => {
                     resolve(response);
                 }).catch(error => {
                     reject(error);

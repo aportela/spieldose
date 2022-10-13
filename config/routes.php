@@ -122,23 +122,33 @@ return function (App $app) {
                 }
             });
 
+            $group->post('/random_album_covers', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . intval($params["width"]) . "x" . intval($params["width"]) . DIRECTORY_SEPARATOR;
+                $files = array();
+                $rdi = new \RecursiveDirectoryIterator($lp);
+                foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
+                    $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    if (in_array($extension, ["jpg" ])) {
+                        $files[] = pathinfo($filename)['filename'];
+                    }
+                }
+                shuffle($files);
+                $files = array_slice($files, 0, $params["count"]);
+                $payload = array(
+                    "covers" => $files
+                );
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/thumbnail/{width}/{height}/{hash}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
-                //$logger->info($request->getMethod() . " " . $request->getUri()->getPath());
-                //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
-                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                $localPath = null;
                 try {
                     $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-                    $p = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp,intval($args["width"]), intval($args["height"]), substr($this->hash, 0, 1), substr($this->hash, 1, 1), $args["hash"], "jpg"))
-                    $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
+                    $localPath = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp,intval($args["width"]), intval($args["height"]), substr($args["hash"], 0, 1), substr($args["hash"], 1, 1), $args["hash"], "jpg");
                 } catch (\Spieldose\Exception\NotFoundException $e) {
-                }
-                if (empty($localPath)) {
-                    try {
-                        $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
-                    } catch (\Spieldose\Exception\NotFoundException $e) {
-                    }
                 }
                 if (!empty($localPath) && file_exists(($localPath))) {
                     $filesize = filesize($localPath);
@@ -150,11 +160,11 @@ return function (App $app) {
                     return $response
                         ->withHeader('Content-Type', "image/jpeg")
                         ->withHeader('Content-Length', $filesize)
-                        ->withHeader('ETag', sha1($args["id"] . $localPath . $filesize))
+                        ->withHeader('ETag', sha1($args["hash"] . $localPath . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
+                    throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for hash: " . $args["hash"]);
                 }
             });            
         }
