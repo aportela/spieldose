@@ -15,7 +15,7 @@ $container = $containerBuilder->build();
 echo "Spieldose account manager" . PHP_EOL;
 
 
-$logger = $container->get(ScannerLogger::class);
+$logger = $container->get(\Spieldose\Logger\InstallerLogger::class);
 
 $logger->info("Scan started");
 
