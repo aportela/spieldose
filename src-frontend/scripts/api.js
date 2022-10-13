@@ -18,7 +18,7 @@ export default {
                     email: email,
                     password: password
                 }
-                axios.post("api/user/signup", params).then(response => {
+                axios.post("api2/user/signup", params).then(response => {
                     resolve(response);
                 }).catch(error => {
                     reject(error);
@@ -31,7 +31,7 @@ export default {
                     email: email,
                     password: password
                 }
-                axios.post("api/user/signin", params).then(response => {
+                axios.post("api2/user/signin", params).then(response => {
                     resolve(response);
                 }).catch(error => {
                     reject(error);
@@ -40,7 +40,7 @@ export default {
         },
         signOut: function () {
             return new Promise(function (resolve, reject) {
-                axios.get("api/user/signout").then(response => {
+                axios.get("api2/user/signout").then(response => {
                     resolve(response);
                 }).catch(error => {
                     reject(error);

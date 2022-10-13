@@ -30,6 +30,61 @@ return function (App $app) {
     $app->group(
         "/api2",
         function (RouteCollectorProxy $group) {
+
+            $group->post('/user/signin', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $u = new \Spieldose\User("", $params["email"] ?? "", $params["password"] ?? "");
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                if ($u->login($db)) {
+                    $payload = json_encode(['logged' => true]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    $payload = json_encode(['logged' => false]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+                }
+            });
+
+            $group->post('/user/signup', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                if ($this->get('settings')['common']['allowSignUp']) {
+                    $params = $request->getParsedBody();
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $u = new \Spieldose\User(
+                        "",
+                        $params["email"] ?? "",
+                        $params["password"] ?? ""
+                    );
+                    $exists = false;
+                    try {
+                        $u->get($db);
+                        $exists = true;
+                    } catch (\Spieldose\Exception\NotFoundException $e) {
+                    }
+                    if ($exists) {
+                        $payload = json_encode([]);
+                        $response->getBody()->write($payload);
+                        return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
+                    } else {
+                        $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                        $u->add($db);
+                        $payload = json_encode([]);
+                        $response->getBody()->write($payload);
+                        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                    }
+                } else {
+                    throw new \Spieldose\Exception\AccessDeniedException("");
+                }
+            });
+    
+            $group->get('/user/signout', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                \Spieldose\User::logout();
+                $payload = json_encode(['logged' => false]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });            
+
             $group->get('/track/search', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . " " . $request->getUri()->getPath());
