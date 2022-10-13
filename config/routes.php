@@ -10,6 +10,9 @@ return function (App $app) {
         $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
         $logger->info($request->getMethod() . " " . $request->getUri()->getPath());
         $settings = $this->get('settings');
+        $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+        $currentVersion = $db->getCurrentSchemaVersion();
+        $lastVersion = $db->getUpgradeSchemaVersion();
         return $this->get('Twig')->render($response, 'index.html.twig', [
             "locale" => $settings['common']['locale'],
             "webpack" => $settings['webpack'],
@@ -21,7 +24,12 @@ return function (App $app) {
                     "defaultResultsPage" => $settings['common']['defaultResultsPage'],
                     "allowSignUp" => $settings['common']['allowSignUp'],
                     "liveSearch" => $settings['common']['liveSearch'],
-                    "locale" => $settings['common']['locale']
+                    "locale" => $settings['common']['locale'],
+                    "version" => array(
+                        "currentVersion" => $currentVersion,
+                        "lastVersion" => $lastVersion,
+                        "upgradeAvailable" => $currentVersion < $lastVersion
+                    )
                 )
             )
         ]);
@@ -77,13 +85,13 @@ return function (App $app) {
                     throw new \Spieldose\Exception\AccessDeniedException("");
                 }
             });
-    
+
             $group->get('/user/signout', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 \Spieldose\User::logout();
                 $payload = json_encode(['logged' => false]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });            
+            });
 
             $group->get('/track/search', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
@@ -181,11 +189,11 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . intval($params["width"]) . "x" . intval($params["width"]) . DIRECTORY_SEPARATOR;
                 $hashes = array();
-                if (file_exists($lp)) {                    
+                if (file_exists($lp)) {
                     $rdi = new \RecursiveDirectoryIterator($lp);
                     foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
                         $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                        if (in_array($extension, ["jpg" ])) {
+                        if (in_array($extension, ["jpg"])) {
                             $hashes[] = pathinfo($filename)['filename'];
                         }
                     }
@@ -204,7 +212,7 @@ return function (App $app) {
                 $localPath = null;
                 try {
                     $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-                    $localPath = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp,intval($args["width"]), intval($args["height"]), substr($args["hash"], 0, 1), substr($args["hash"], 1, 1), $args["hash"], "jpg");
+                    $localPath = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp, intval($args["width"]), intval($args["height"]), substr($args["hash"], 0, 1), substr($args["hash"], 1, 1), $args["hash"], "jpg");
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
                 if (!empty($localPath) && file_exists(($localPath))) {
@@ -223,7 +231,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for hash: " . $args["hash"]);
                 }
-            });            
+            });
         }
     )->add(\Spieldose\Middleware\JWT::class)
         ->add(\Spieldose\Middleware\APIExceptionCatcher::class);

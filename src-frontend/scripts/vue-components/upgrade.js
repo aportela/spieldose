@@ -10,10 +10,10 @@ const template = function () {
                             <h2 class="subtitle is-6 has-text-centered"><cite>{{ $t("commonLabels.slogan") }}</cite></h2>
                             <div class="notification is-warning" v-if="upgradeAvailable">
                                 <p class="title is-5"><span class="icon"><i class="fa fa-exclamation-triangle"></i></span> {{ $t("upgrade.labels.newDatabaseVersionAvailable") }}</p>
-                                <hr>
+                                <hr class="has-background-grey-light">
                                 <p class="subtitle is-5">{{ $t("upgrade.labels.upgradeRequired") }}</p>
                                 <p>{{ $t("upgrade.labels.executeThisCommandline") }}</p>
-                                <p>php tools/install-upgrade-db.php</p>
+                                <p class="has-text-weight-bold">php tools/install-upgrade-db.php</p>
                             </div>
                             <div class="notification is-success" v-else>
                                 <p class="title is-5"><span class="icon"><i class="fas fa-check"></i></span> {{ $t("upgrade.labels.updateNotRequired") }}</p>
@@ -34,7 +34,7 @@ export default {
     template: template(),
     computed: {
         upgradeAvailable: function () {
-            return (initialState.upgradeAvailable);
+            return (initialState.version.upgradeAvailable);
         }
     }
 }
