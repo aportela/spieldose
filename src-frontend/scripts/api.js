@@ -251,7 +251,7 @@ export default {
                     height: height,
                     count: count
                 };
-                axios.post("api2/random_album_covers", params).then(response => {
+                axios.post("api2/random_album_cover_hashes", params).then(response => {
                     resolve(response);
                 }).catch(error => {
                     reject(error);

@@ -177,21 +177,23 @@ return function (App $app) {
                 }
             });
 
-            $group->post('/random_album_covers', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+            $group->post('/random_album_cover_hashes', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
                 $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . intval($params["width"]) . "x" . intval($params["width"]) . DIRECTORY_SEPARATOR;
-                $files = array();
-                $rdi = new \RecursiveDirectoryIterator($lp);
-                foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
-                    $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                    if (in_array($extension, ["jpg" ])) {
-                        $files[] = pathinfo($filename)['filename'];
+                $hashes = array();
+                if (file_exists($lp)) {                    
+                    $rdi = new \RecursiveDirectoryIterator($lp);
+                    foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
+                        $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                        if (in_array($extension, ["jpg" ])) {
+                            $hashes[] = pathinfo($filename)['filename'];
+                        }
                     }
+                    shuffle($hashes);
+                    $hashes = array_slice($hashes, 0, $params["count"]);
                 }
-                shuffle($files);
-                $files = array_slice($files, 0, $params["count"]);
                 $payload = array(
-                    "covers" => $files
+                    "coverHashes" => $hashes
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
