@@ -44,7 +44,7 @@ const template = function () {
                                 </div>
                             </div>
                             <form v-on:submit.prevent="submitSignIn" v-show="isSignInTabActive">
-                                <div class="box is-radiusless is-shadowless">
+                                <div class="box is-radiusless is-shadowless pt-0">
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signIn.labels.email") }}</label>
                                         <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInEmail') }">
@@ -72,21 +72,25 @@ const template = function () {
                                 </div>
                             </form>
                             <form v-on:submit.prevent="submitSignUp" v-show="isSignUpTabActive">
-                                <div class="box is-radiusless is-shadowless">
-                                    <label class="label is-hidden-mobile">{{ $t("signUp.labels.email") }}</label>
-                                    <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpEmail') }">
-                                        <input class="input is-rounded" type="email" ref="signUpEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpEmail') }" v-bind:disabled="loading ? true: false" v-model="signUpEmail" :placeholder="$t('signIn.labels.email')">
-                                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
-                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpEmail')"><i class="fas fa-warning"></i></span>
-                                        <p class="help is-danger" v-show="validator.hasInvalidField('signUpEmail')">{{ validator.getInvalidFieldMessage('signUpEmail') }}</p>
-                                    </p>
-                                    <label class="label is-hidden-mobile">{{ $t("signUp.labels.password") }}</label>
-                                    <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpPassword') }">
-                                        <input class="input is-rounded" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpPassword') }" v-bind:disabled="loading ? true: false" v-model="signUpPassword" :placeholder="$t('signIn.labels.password')">
-                                        <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
-                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpPassword')"><i class="fas fa-warning"></i></span>
-                                        <p class="help is-danger" v-show="validator.hasInvalidField('signUpPassword')">{{ validator.getInvalidFieldMessage('signUpPassword') }}</p>
-                                    </p>
+                                <div class="box is-radiusless is-shadowless pt-0">
+                                    <div class="field">
+                                        <label class="label is-hidden-mobile">{{ $t("signUp.labels.email") }}</label>
+                                        <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpEmail') }">
+                                            <input class="input is-rounded" type="email" ref="signUpEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpEmail') }" v-bind:disabled="loading ? true: false" v-model="signUpEmail" :placeholder="$t('signIn.labels.email')">
+                                            <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpEmail')"><i class="fas fa-warning"></i></span>
+                                            <p class="help is-danger" v-show="validator.hasInvalidField('signUpEmail')">{{ validator.getInvalidFieldMessage('signUpEmail') }}</p>
+                                        </p>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label is-hidden-mobile">{{ $t("signUp.labels.password") }}</label>
+                                        <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpPassword') }">
+                                            <input class="input is-rounded" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpPassword') }" v-bind:disabled="loading ? true: false" v-model="signUpPassword" :placeholder="$t('signIn.labels.password')">
+                                            <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
+                                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpPassword')"><i class="fas fa-warning"></i></span>
+                                            <p class="help is-danger" v-show="validator.hasInvalidField('signUpPassword')">{{ validator.getInvalidFieldMessage('signUpPassword') }}</p>
+                                        </p>
+                                    </div>
                                     <p class="control">
                                         <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
                                             <span class="icon"><i class="fas fa-plus-circle"></i></span>
