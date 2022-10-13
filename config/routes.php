@@ -18,6 +18,7 @@ return function (App $app) {
             "webpack" => $settings['webpack'],
             'initialState' => json_encode(
                 array(
+                    "environment" => $settings['environment'],
                     "logged" => \Spieldose\User::isLogged(),
                     "sessionExpireMinutes" => session_cache_expire(),
                     //'upgradeAvailable' => $v->hasUpgradeAvailable(),

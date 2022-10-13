@@ -1,16 +1,19 @@
 <?php
 
-// Should be set to 0 in production
-error_reporting(E_ALL);
+// Settings
+$settings = [
+    'environment' => 'development' // (development|production)
+];
+
+// Should be set to 0 (E_NONE) in production
+error_reporting($settings['environment'] == 'development' ? E_ALL : 0);
 
 // Should be set to '0' in production
-ini_set('display_errors', '1');
+ini_set('display_errors', $settings['environment'] == 'development' ? '1' : '0');
 
 // Timezone
 date_default_timezone_set('Europe/Madrid');
 
-// Settings
-$settings = [];
 
 // Path settings
 $settings['root'] = dirname(__DIR__);
@@ -19,7 +22,7 @@ $settings['root'] = dirname(__DIR__);
 $settings['error'] = [
 
     // Should be set to false in production
-    'display_error_details' => true,
+    'display_error_details' => $settings['environment'] == 'development',
 
     // Parameter is passed to the default ErrorHandler
     // View in rendered output by enabling the "displayErrorDetails" setting.
@@ -31,7 +34,7 @@ $settings['error'] = [
 ];
 
 $settings['logger'] = [
-    'defaultLevel' => \Monolog\Level::Debug,
+    'defaultLevel' => $settings['environment'] == 'development' ? \Monolog\Level::Debug : \Monolog\Level::Error,
     'channels' => [
         'default'  => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
@@ -86,7 +89,7 @@ $settings['db'] = [
 
 $settings['twig'] = [
     'path' =>  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates',
-    'options' => ['cache' => false]
+    'options' => ['cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "twig_cache"]
 ];
 
 $settings['common'] = [
