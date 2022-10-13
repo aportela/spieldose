@@ -2,6 +2,7 @@
 /data/*.sqlite3-shm
 /data/*.sqlite3-wal
 /data/thumbnails/*
+/data/twig_cache/*
 /vendor/
 /node_modules/
 /logs/*
