@@ -55,6 +55,10 @@ const spieldoseApp = {
             }
             return response;
         }, (error) => {
+            // helper for checking invalid fields on api response
+            error.isFieldInvalid = function (fieldName) {
+                return (error.response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
+            }
             return Promise.reject(error.message);
         });
         bus.on("signOut", () => {
