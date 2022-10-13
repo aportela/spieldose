@@ -9,7 +9,7 @@ const template = function () {
                 <div class="columns is-desktop">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column">
-                        <spieldose-player-component></spieldose-player-component>
+                        <spieldose-player :track="{}"></spieldose-player>
                         <spieldose-menu-component></spieldose-menu-component>
                     </div>
                     <div class="column">
@@ -26,8 +26,11 @@ export default {
     name: 'spieldose-app-component',
     template: template(),
     components: {
-        'spieldose-player-component': playerComponent,
+        'spieldose-player': playerComponent,
         'spieldose-menu-component': menu,
         'player-navbar': playerNavBar
+    },
+    created: function () {
+        console.log(this.$api);
     }
 }

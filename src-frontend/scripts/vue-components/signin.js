@@ -159,7 +159,7 @@ export default {
             this.loading = true;
             this.validator.clear();
             this.clearAPIErrors();
-            spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword).then(success => {
+            this.$spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword).then(success => {
                 this.$router.push({ name: 'dashboard' });
                 this.loading = false;
             }).catch(error => {

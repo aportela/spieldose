@@ -91,12 +91,12 @@ export default {
         });
     },
     created: function () {
-        bus.on('showPlayerNavBar',  () => {
+        bus.on('showPlayerNavBar', () => {
             const rootEl = document.documentElement;
             rootEl.classList.add('has-navbar-fixed-bottom');
             this.showPlayerNavBar = true;
         });
-        bus.on('hidePlayerNavbar',  () => {
+        bus.on('hidePlayerNavbar', () => {
             const rootEl = document.documentElement;
             rootEl.classList.remove('has-navbar-fixed-bottom');
             this.showPlayerNavBar = false;
@@ -117,7 +117,7 @@ export default {
     },
     methods: {
         signout: function (e) {
-            bus.emit('signOut');
+            this.$spieldoseAPI.session.signOut().then(response => { this.$router.push({ name: 'signin' }); }).catch(error => { console.log(error); });
         }
     }
 }
