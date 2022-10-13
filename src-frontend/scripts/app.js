@@ -140,13 +140,14 @@ const spieldoseApp = {
         signOut: function () {
             this.$audioplayer.dispose();
             this.clearAPIErrors();
-            spieldoseAPI.session.signOut((response) => {
+            spieldoseAPI.session.signOut().then(response => {
                 if (response.status == 200) {
                     this.$router.push({ path: '/signin' });
                 } else {
-                    this.setAPIError(response.getApiErrorData());
+                    console.log(response);
+                    //this.setAPIError(response.getApiErrorData());
                 }
-            });
+            }).catch(error => { console.log(error); });
         },
         poll: function (callback) {
             spieldoseAPI.session.poll((response) => {
