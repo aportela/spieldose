@@ -81,7 +81,7 @@ $settings['db'] = [
         // Set character set
         //PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci' // BUG: https://bugs.php.net/bug.php?id=81576
     ],
-    "upgradeSchemaPath" => __DIR__ . '/../src/Database/schema.sql'
+    "upgradeSchemaPath" => __DIR__ . '/db-schema.php'
 ];
 
 $settings['twig'] = [
