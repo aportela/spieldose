@@ -46,12 +46,14 @@ class JWT
             }        
         } else {
             if (empty($clientHeaderJWT)) {
-                $payload = array(
-                    "id" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
-                    "email" => isset($_SESSION["email"]) ? $_SESSION["email"] : null
-                );
-                $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
-                $clientHeaderJWT = $jwt->encode($payload);
+                if (\Spieldose\User::isLogged()) {
+                    $payload = array(
+                        "id" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
+                        "email" => isset($_SESSION["email"]) ? $_SESSION["email"] : null
+                    );
+                    $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
+                    $clientHeaderJWT = $jwt->encode($payload);
+                }
             }
             $response = $handler->handle($request);
             if ($clientHeaderJWT) {
