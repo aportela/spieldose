@@ -8,28 +8,27 @@ use Slim\App;
 return function (App $app) {
     $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
-        $logger->info($request->getMethod() . " " . $request->getUri()->getPath());
+        $logger->info($request->getMethod() . '  ' . $request->getUri()->getPath());
         $settings = $this->get('settings');
         $db = $this->get(\aportela\DatabaseWrapper\DB::class);
         $currentVersion = $db->getCurrentSchemaVersion();
         $lastVersion = $db->getUpgradeSchemaVersion();
         return $this->get('Twig')->render($response, 'index.html.twig', [
-            "locale" => $settings['common']['locale'],
-            "webpack" => $settings['webpack'],
+            'locale' => $settings['common']['locale'],
+            'webpack' => $settings['webpack'],
             'initialState' => json_encode(
                 array(
-                    "environment" => $settings['environment'],
-                    "logged" => \Spieldose\User::isLogged(),
-                    "sessionExpireMinutes" => session_cache_expire(),
-                    //'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                    "defaultResultsPage" => $settings['common']['defaultResultsPage'],
-                    "allowSignUp" => $settings['common']['allowSignUp'],
-                    "liveSearch" => $settings['common']['liveSearch'],
-                    "locale" => $settings['common']['locale'],
-                    "version" => array(
-                        "currentVersion" => $currentVersion,
-                        "lastVersion" => $lastVersion,
-                        "upgradeAvailable" => $currentVersion < $lastVersion
+                    'environment' => $settings['environment'],
+                    'logged' => \Spieldose\User::isLogged(),
+                    'sessionExpireMinutes' => session_cache_expire(),
+                    'defaultResultsPage' => $settings['common']['defaultResultsPage'],
+                    'allowSignUp' => $settings['common']['allowSignUp'],
+                    'liveSearch' => $settings['common']['liveSearch'],
+                    'locale' => $settings['common']['locale'],
+                    'version' => array(
+                        'currentVersion' => $currentVersion,
+                        'lastVersion' => $lastVersion,
+                        'upgradeAvailable' => $currentVersion < $lastVersion
                     )
                 )
             )
@@ -37,12 +36,12 @@ return function (App $app) {
     });
 
     $app->group(
-        "/api2",
+        '/api2',
         function (RouteCollectorProxy $group) {
 
             $group->post('/user/signin', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
                 $params = $request->getParsedBody();
-                $u = new \Spieldose\User("", $params["email"] ?? "", $params["password"] ?? "");
+                $u = new \Spieldose\User('', $params['email'] ?? '', $params['password'] ?? '');
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 if ($u->login($db)) {
                     $payload = json_encode(['logged' => true]);
@@ -61,9 +60,9 @@ return function (App $app) {
                     $params = $request->getParsedBody();
                     $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                     $u = new \Spieldose\User(
-                        "",
-                        $params["email"] ?? "",
-                        $params["password"] ?? ""
+                        '',
+                        $params['email'] ?? '',
+                        $params['password'] ?? ''
                     );
                     $exists = false;
                     try {
@@ -83,7 +82,7 @@ return function (App $app) {
                         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                     }
                 } else {
-                    throw new \Spieldose\Exception\AccessDeniedException("");
+                    throw new \Spieldose\Exception\AccessDeniedException('');
                 }
             });
 
@@ -96,11 +95,11 @@ return function (App $app) {
 
             $group->get('/track/search', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
-                $logger->info($request->getMethod() . " " . $request->getUri()->getPath());
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
                 $params = $request->getQueryParams();
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $payload = array(
-                    "tracks" => \Spieldose\Track::searchNew($db, $params['q'], $params['artist'], $params['albumArtist'], $params['album'])
+                    'tracks' => \Spieldose\Track::searchNew($db, $params['q'], $params['artist'], $params['albumArtist'], $params['album'])
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -108,9 +107,9 @@ return function (App $app) {
 
             $group->get('/file/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
-                $logger->info($request->getMethod() . " " . $request->getUri()->getPath());
-                if (!empty($args["id"])) {
-                    $file = new \Spieldose\File($this, $args["id"]);
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                if (!empty($args['id'])) {
+                    $file = new \Spieldose\File($this, $args['id']);
                     $file->get();
                     if (file_exists($file->path)) {
                         //$track->incPlayCount($db);
@@ -132,7 +131,7 @@ return function (App $app) {
                         if ($partialContent) {
                             // output the right headers for partial content
                             return $response->withStatus(206)
-                                ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
+                                ->withHeader('Content-Type', $file->mime ? $file->mime : 'application/octet-stream')
                                 ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file->path) . '"')
                                 ->withHeader('Content-Length', $file->length)
                                 ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
@@ -145,10 +144,10 @@ return function (App $app) {
                                 ->withHeader('Accept-Ranges', 'bytes');
                         }
                     } else {
-                        throw new \Spieldose\Exception\NotFoundException("id");
+                        throw new \Spieldose\Exception\NotFoundException('id');
                     }
                 } else {
-                    throw new \Spieldose\Exception\InvalidParamsException("id");
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
                 }
             });
 
@@ -159,12 +158,12 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
                 try {
-                    $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
+                    $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($args['width']), intval($args['height']));
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
                 if (empty($localPath)) {
                     try {
-                        $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args["id"], intval($args["width"]), intval($args["height"]));
+                        $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($args['width']), intval($args['height']));
                     } catch (\Spieldose\Exception\NotFoundException $e) {
                     }
                 }
@@ -176,61 +175,67 @@ return function (App $app) {
                     fclose($f);
                     $response->getBody()->write($data);
                     return $response
-                        ->withHeader('Content-Type', "image/jpeg")
+                        ->withHeader('Content-Type', 'image/jpeg')
                         ->withHeader('Content-Length', $filesize)
-                        ->withHeader('ETag', sha1($args["id"] . $localPath . $filesize))
+                        ->withHeader('ETag', sha1($args['id'] . $localPath . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for id: " . $args["id"]);
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for id: ' . $args['id']);
                 }
             });
 
-            $group->post('/random_album_cover_hashes', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
-                $params = $request->getParsedBody();
-                $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . intval($params["width"]) . "x" . intval($params["width"]) . DIRECTORY_SEPARATOR;
+            $group->get('/random_album_covers', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $settings = $this->get('settings')['thumbnails'];
+                $lp = $settings['path'] . DIRECTORY_SEPARATOR . $settings['sizes']['normal']['width'] . "x" . $settings['sizes']['normal']['height'];
                 $hashes = array();
                 if (file_exists($lp)) {
                     $rdi = new \RecursiveDirectoryIterator($lp);
                     foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
                         $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                        if (in_array($extension, ["jpg"])) {
+                        if (in_array($extension, ['jpg'])) {
                             $hashes[] = pathinfo($filename)['filename'];
                         }
                     }
                     shuffle($hashes);
-                    $hashes = array_slice($hashes, 0, $params["count"]);
+                    $hashes = array_slice($hashes, 0, 32);
+                    $uri = $request->getUri();
+                    $urls = array_map(
+                        fn ($url) =>
+                        sprintf("%s://%s:%d/api2/thumbnail_hash/%s/%s", $uri->getScheme(), $uri->getHost(), $uri->getPort(), 'normal', $url),
+                        $hashes
+                    );
                 }
                 $payload = array(
-                    "coverHashes" => $hashes
+                    'coverURLs' => $urls
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/thumbnail/{width}/{height}/{hash}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
-                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
-                $localPath = null;
-                try {
-                    $lp = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-                    $localPath = sprintf("%s/%dx%d/%s/%s/%s.%s", $lp, intval($args["width"]), intval($args["height"]), substr($args["hash"], 0, 1), substr($args["hash"], 1, 1), $args["hash"], "jpg");
-                } catch (\Spieldose\Exception\NotFoundException $e) {
+            $group->get('/thumbnail_hash/{size}/{hash}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                if (!in_array($args['size'], ['small', 'normal'])) {
+                    throw new \Spieldose\Exception\InvalidParamsException('size');
                 }
-                if (!empty($localPath) && file_exists(($localPath))) {
-                    $filesize = filesize($localPath);
-                    $f = fopen($localPath, 'r');
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $settings = $this->get('settings')['thumbnails'];
+                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\Thumbnail($logger, $settings['path'], $args['hash']);
+                $thumbnailPath = $thumbnail->getThumbnailLocalPath($settings['sizes'][$args['size']]['width'], $settings['sizes'][$args['size']]['height']);
+                if (!empty($thumbnailPath) && file_exists(($thumbnailPath))) {
+                    $filesize = filesize($thumbnailPath);
+                    $f = fopen($thumbnailPath, 'r');
                     fseek($f, 0);
                     $data = fread($f, $filesize);
                     fclose($f);
                     $response->getBody()->write($data);
                     return $response
-                        ->withHeader('Content-Type', "image/jpeg")
+                        ->withHeader('Content-Type', 'image/jpeg')
                         ->withHeader('Content-Length', $filesize)
-                        ->withHeader('ETag', sha1($args["hash"] . $localPath . $filesize))
+                        ->withHeader('ETag', sha1($args['hash'] . $thumbnailPath . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException("Invalid / empty path for hash: " . $args["hash"]);
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for hash: ' . $args['hash']);
                 }
             });
         }
