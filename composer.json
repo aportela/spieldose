@@ -34,7 +34,6 @@
         "phpunit/phpunit": "^9.5"
     },
     "scripts": {
-        "serve": "php -S 0.0.0.0:8080 -t public",
         "test": "vendor/bin/phpunit.bat --colors=always --verbose src/test/UserTest.php"
     }
 }
