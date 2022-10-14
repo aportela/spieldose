@@ -1,7 +1,7 @@
 import { createWebHashHistory, createRouter } from "vue-router";
 
 import { default as upgrade } from '../vue-components/upgrade.js';
-import { default as signInUp } from '../vue-components/signin.js';
+import { default as signInUp } from '../pages/signin.js';
 import { default as container } from '../vue-components/container.js';
 import { default as search } from '../vue-components/search.js';
 import { default as dashboard } from '../vue-components/dashboard.js';

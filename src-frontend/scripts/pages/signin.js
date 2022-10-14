@@ -1,6 +1,6 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinValidations, mixinAPIError } from '../mixins.js';
-import { default as blockTilesAlbumImages } from './tiles-album-images.js';
+import { mixinValidations } from '../mixins.js';
+import { default as blockTilesAlbumImages } from '../vue-components/tiles-album-images.js';
 
 const template = function () {
     return `
@@ -25,7 +25,7 @@ const template = function () {
                             </div>
                             <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fas fa-music" aria-hidden="true"></i></span> Spieldose <span class="icon is-medium"><i class="fas fa-music" aria-hidden="true"></i></span></h1>
                             <h2 class="subtitle is-6 has-text-centered"><cite>{{ $t("commonLabels.slogan") }}</cite></h2>
-                            <div class="box is-radiusless is-shadowless is-marginless">
+                            <div class="box is-radiusless is-shadowless is-marginless pb-2">
                                 <div class="tabs is-toggle is-radiusless spieldose-tabs-without-margin-bottom" v-if="allowSignUp">
                                     <ul>
                                         <li v-bind:class="{ 'is-active': isSignInTabActive }">
@@ -100,7 +100,7 @@ const template = function () {
                                 </div>
                             </form>
                             <p class="has-text-centered spieldose-margin-top-1rem">
-                                <a href="https://github.com/aportela/spieldose" target="_blank"><span class="icon is-small"><i class="fab fa-github"></i></span>{{ $t("commonLabels.projectPageLinkLabel") }}</a> | <a href="https://github.com/aportela" target="_blank">{{ $t("commonLabels.authorLinkLabel") }}</a>
+                                <a href="https://github.com/aportela/spieldose" target="_blank"><span class="icon is-small mr-1"><i class="fab fa-github"></i></span>{{ $t("commonLabels.projectPageLinkLabel") }}</a> | <a href="https://github.com/aportela" target="_blank">{{ $t("commonLabels.authorLinkLabel") }}</a>
                             </p>
 
                     </section>
@@ -115,7 +115,7 @@ const template = function () {
 export default {
     name: 'spieldose-signin-component',
     template: template(),
-    mixins: [mixinValidations, mixinAPIError],
+    mixins: [mixinValidations],
     data: function () {
         return ({
             loading: false,
