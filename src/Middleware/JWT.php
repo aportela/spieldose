@@ -37,18 +37,18 @@ class JWT
                 \Spieldose\User::setSessionVars($decoded->data->userId, $decoded->data->email);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("jwt");
-            }          
+            }
             $response = $handler->handle($request);
             if (!empty($clientHeaderJWT)) {
                 return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
-            }        
+            }
         } else {
             if (empty($clientHeaderJWT)) {
                 if (\Spieldose\User::isLogged()) {
                     $payload = array(
-                        "id" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
+                        "userId" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
                         "email" => isset($_SESSION["email"]) ? $_SESSION["email"] : null
                     );
                     $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
