@@ -2,8 +2,8 @@ export default {
     install: (app, options) => {
         app.config.globalProperties.$api = {
             session: {
-                signUp: function (email, password) {
-                    return new Promise(function (resolve, reject) {
+                signUp: (email, password) => {
+                    return new Promise((resolve, reject) => {
                         var params = {
                             email: email,
                             password: password
@@ -15,8 +15,8 @@ export default {
                         });
                     });
                 },
-                signIn: function (email, password) {
-                    return new Promise(function (resolve, reject) {
+                signIn: (email, password) => {
+                    return new Promise((resolve, reject) => {
                         var params = {
                             email: email,
                             password: password
@@ -28,8 +28,8 @@ export default {
                         });
                     });
                 },
-                signOut: function () {
-                    return new Promise(function (resolve, reject) {
+                signOut: () => {
+                    return new Promise((resolve, reject) => {
                         app.config.globalProperties.$axios.get("api2/user/signout").then(response => {
                             resolve(response);
                         }).catch(error => {
@@ -40,7 +40,7 @@ export default {
             },
             album: {
                 getRandomAlbumCoverThumbnails: (count, width, height) => {
-                    return new Promise(function (resolve, reject) {
+                    return new Promise((resolve, reject) => {
                         const params = {
                             count: count,
                             width: width,
