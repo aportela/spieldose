@@ -167,6 +167,7 @@ export default {
                 this.$router.push({ name: 'dashboard' });
                 this.loading = false;
             }).catch(error => {
+                this.loading = false;
                 switch (error.response.status) {
                     case 400:
                         if (error.isFieldInvalid('email')) {
