@@ -84,12 +84,26 @@ $settings['db'] = [
         // Set character set
         //PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci' // BUG: https://bugs.php.net/bug.php?id=81576
     ],
-    "upgradeSchemaPath" => __DIR__ . '/db-schema.php'
+    'upgradeSchemaPath' => __DIR__ . '/db-schema.php'
 ];
 
 $settings['twig'] = [
     'path' =>  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates',
-    'options' => ['cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "twig_cache"]
+    'options' => ['cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'twig_cache']
+];
+
+$settings['thumbnails'] = [
+    'path' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails',
+    'sizes' => [
+        'small' => [
+            'width' => 80,
+            'height' => 80
+        ],
+        'normal' => [
+            'width' => 400,
+            'height' => 400
+        ]
+    ]
 ];
 
 $settings['common'] = [
