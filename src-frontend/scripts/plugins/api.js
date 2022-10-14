@@ -8,7 +8,7 @@ export default {
                             email: email,
                             password: password
                         }
-                        app.config.globalProperties.$axios.post("api2/user/signup", params).then(response => {
+                        app.config.globalProperties.$axios.post('api2/user/signup', params).then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
@@ -21,7 +21,7 @@ export default {
                             email: email,
                             password: password
                         }
-                        app.config.globalProperties.$axios.post("api2/user/signin", params).then(response => {
+                        app.config.globalProperties.$axios.post('api2/user/signin', params).then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
@@ -30,7 +30,7 @@ export default {
                 },
                 signOut: () => {
                     return new Promise((resolve, reject) => {
-                        app.config.globalProperties.$axios.get("api2/user/signout").then(response => {
+                        app.config.globalProperties.$axios.get('api2/user/signout').then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
@@ -39,14 +39,9 @@ export default {
                 }
             },
             album: {
-                getRandomAlbumCoverThumbnails: (count, width, height) => {
+                getRandomAlbumCoverThumbnails: () => {
                     return new Promise((resolve, reject) => {
-                        const params = {
-                            count: count,
-                            width: width,
-                            height: height
-                        }
-                        app.config.globalProperties.$axios.post("api2/random_album_cover_hashes", params).then(response => {
+                        app.config.globalProperties.$axios.get('api2/random_album_covers').then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
