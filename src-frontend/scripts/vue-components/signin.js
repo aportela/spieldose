@@ -48,7 +48,7 @@ const template = function () {
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signIn.labels.email") }}</label>
                                         <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInEmail') }">
-                                            <input class="input is-rounded" type="email" ref="signInEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInEmail') }" v-bind:disabled="loading ? true: false" v-model="signInEmail" :placeholder="$t('signIn.labels.email')">
+                                            <input class="input is-rounded" type="email" ref="signInEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInEmail') }" v-bind:disabled="loading" v-model="signInEmail" :placeholder="$t('signIn.labels.email')">
                                             <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
                                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('signInEmail')"><i class="fas fa-warning"></i></span>
                                             <p class="help is-danger" v-show="validator.hasInvalidField('signInEmail')">{{ validator.getInvalidFieldMessage('signInEmail') }}</p>
@@ -57,14 +57,14 @@ const template = function () {
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signIn.labels.password") }}</label>
                                         <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signInPassword') }">
-                                            <input class="input is-rounded" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInPassword') }" v-bind:disabled="loading ? true: false" v-model="signInPassword" :placeholder="$t('signIn.labels.password')">
+                                            <input class="input is-rounded" type="password" ref="signInPassword" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signInPassword') }" v-bind:disabled="loading" v-model="signInPassword" :placeholder="$t('signIn.labels.password')">
                                             <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
                                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('signInPassword')"><i class="fas fa-warning"></i></span>
                                             <p class="help is-danger" v-show="validator.hasInvalidField('signInPassword')">{{ validator.getInvalidFieldMessage('signInPassword') }}</p>
                                         </p>
                                     </div>
                                     <p class="control">
-                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
                                             <span class="icon"><i class="fas fa-lock"></i></span>
                                             <span>{{ $t("signIn.buttons.submit") }}</span>
                                         </button>
@@ -76,7 +76,7 @@ const template = function () {
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signUp.labels.email") }}</label>
                                         <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpEmail') }">
-                                            <input class="input is-rounded" type="email" ref="signUpEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpEmail') }" v-bind:disabled="loading ? true: false" v-model="signUpEmail" :placeholder="$t('signIn.labels.email')">
+                                            <input class="input is-rounded" type="email" ref="signUpEmail" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpEmail') }" v-bind:disabled="loading" v-model="signUpEmail" :placeholder="$t('signIn.labels.email')">
                                             <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
                                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpEmail')"><i class="fas fa-warning"></i></span>
                                             <p class="help is-danger" v-show="validator.hasInvalidField('signUpEmail')">{{ validator.getInvalidFieldMessage('signUpEmail') }}</p>
@@ -85,14 +85,14 @@ const template = function () {
                                     <div class="field">
                                         <label class="label is-hidden-mobile">{{ $t("signUp.labels.password") }}</label>
                                         <p class="block control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('signUpPassword') }">
-                                            <input class="input is-rounded" type="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpPassword') }" v-bind:disabled="loading ? true: false" v-model="signUpPassword" :placeholder="$t('signIn.labels.password')">
+                                            <input class="input is-rounded" type="password" ref="signUpPassword" required v-bind:class="{ 'is-danger': validator.hasInvalidField('signUpPassword') }" v-bind:disabled="loading" v-model="signUpPassword" :placeholder="$t('signIn.labels.password')">
                                             <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
                                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('signUpPassword')"><i class="fas fa-warning"></i></span>
                                             <p class="help is-danger" v-show="validator.hasInvalidField('signUpPassword')">{{ validator.getInvalidFieldMessage('signUpPassword') }}</p>
                                         </p>
                                     </div>
                                     <p class="control">
-                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                                        <button type="submit" class="button is-black" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
                                             <span class="icon"><i class="fas fa-plus-circle"></i></span>
                                             <span>{{ $t("signUp.buttons.submit") }}</span>
                                         </button>
@@ -163,26 +163,29 @@ export default {
             this.loading = true;
             this.validator.clear();
             this.clearAPIErrors();
-            this.$spieldoseAPI.session.signIn(this.signInEmail, this.signInPassword).then(success => {
+            this.$api.session.signIn(this.signInEmail, this.signInPassword).then(success => {
+                this.loading = false;
                 this.$router.push({ name: 'dashboard' });
-                this.loading = false;
             }).catch(error => {
-                this.loading = false;
                 switch (error.response.status) {
                     case 400:
                         if (error.isFieldInvalid('email')) {
                             this.validator.setInvalid('signInEmail', this.$t('commonErrors.invalidAPIParam'));
+                            this.$nextTick(() => this.$refs.signInEmail.focus());
                         } else if (error.isFieldInvalid("password")) {
                             this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
+                            this.$nextTick(() => this.$refs.signInPassword.focus());
                         } else {
                             this.setAPIError(error.getApiErrorData());
                         }
                         break;
                     case 404:
                         this.validator.setInvalid('signInEmail', this.$t('signIn.errorMessages.userNotFound'));
+                        this.$nextTick(() => this.$refs.signInEmail.focus());
                         break;
                     case 401:
                         this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
+                        this.$nextTick(() => this.$refs.signInPassword.focus());
                         break;
                     default:
                         this.setAPIError(error.getApiErrorData());
@@ -208,14 +211,17 @@ export default {
                     case 400:
                         if (error.isFieldInvalid('email')) {
                             this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
+                            this.$nextTick(() => this.$refs.signUpEmail.focus());
                         } else if (error.isFieldInvalid('password')) {
                             this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
+                            this.$nextTick(() => this.$refs.signUpPassword.focus());
                         } else {
                             this.setAPIError(error.getApiErrorData());
                         }
                         break;
                     case 409:
                         this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
+                        this.$nextTick(() => this.$refs.signUpEmail.focus());
                         break;
                     default:
                         this.setAPIError(error.getApiErrorData());
