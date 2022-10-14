@@ -32,35 +32,6 @@ const spieldoseApp = {
         });
     },
     created: function () {
-        this.jwt = this.$spieldoseLocalStorage.get('jwt');
-        if (this.jwt) {
-            window.spieldose.jwt = this.jwt;
-            if (this.jwt) {
-                this.$axios.interceptors.request.use((config) => {
-                    config.headers["SPIELDOSE-JWT"] = this.jwt;
-                    return (config);
-                }, (error) => {
-                    return Promise.reject(error);
-                });
-            }
-        }
-        this.$axios.interceptors.response.use((response) => {
-            // warning: axios lowercase received header names
-            const apiResponseJWT = response.headers["spieldose-jwt"] || null;
-            if (apiResponseJWT) {
-                if (apiResponseJWT && apiResponseJWT != this.jwt) {
-                    this.$spieldoseLocalStorage.set("jwt", apiResponseJWT);
-                    window.spieldose.jwt = apiResponseJWT;
-                }
-            }
-            return response;
-        }, (error) => {
-            // helper for checking invalid fields on api response
-            error.isFieldInvalid = function (fieldName) {
-                return (error.response.data.invalidOrMissingParams.indexOf(fieldName) > -1);
-            }
-            return Promise.reject(error.message);
-        });
         bus.on("signOut", () => {
             this.signOut();
         });

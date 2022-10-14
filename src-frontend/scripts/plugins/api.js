@@ -1,8 +1,8 @@
 export default {
-    install: (app, options) => {
-        app.config.globalProperties.$spieldoseAPI = {
+    install: (app, options) => {      
+        app.config.globalProperties.$spieldoseAPI = {            
             session: {
-                signUp: function (email, password) {
+                signUp: function (email, password) {                    
                     return new Promise(function (resolve, reject) {
                         var params = {
                             email: email,
