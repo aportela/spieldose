@@ -4,7 +4,10 @@ export default {
     install: (app, options) => {
         let axiosInstance = axios.create(options);
         axiosInstance.interceptors.request.use((config) => {
-            config.headers["SPIELDOSE-JWT"] = app.config.globalProperties.$spieldoseLocalStorage.get('jwt');
+            const jwt = app.config.globalProperties.$spieldoseLocalStorage.get('jwt');
+            if (jwt) {
+                config.headers["SPIELDOSE-JWT"] = jwt;
+            }
             return (config);
         }, (error) => {
             return Promise.reject(error);
