@@ -37,7 +37,7 @@ const template = function () {
                             <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
                             {{ $t('menu.labels.browsePlaylists') }}
                             </a>
-                            <a v-on:click.prevent="signout();" class="navbar-item">
+                            <a v-on:click.prevent="signOut();" class="navbar-item">
                             <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
                             {{ $t('menu.labels.signOut') }}
                             </a>
@@ -116,8 +116,12 @@ export default {
         }
     },
     methods: {
-        signout: function (e) {
-            this.$api.session.signOut().then(response => { this.$router.push({ name: 'signin' }); }).catch(error => { console.log(error); });
+        signOut: function (e) {
+            console.log(e);
+            this.$api.session.signOut().then(response => {
+                this.$spieldoseLocalStorage.remove("jwt");
+                this.$router.push({ name: 'signin' });
+            }).catch(error => { console.log(error); });
         }
     }
 }
