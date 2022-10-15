@@ -2,10 +2,11 @@ import { createWebHashHistory, createRouter } from "vue-router";
 
 import { default as upgrade } from '../vue-components/upgrade.js';
 import { default as signInUp } from '../pages/signin.js';
-import { default as container } from '../vue-components/container.js';
+import { default as container } from '../layouts/app.js';
 import { default as search } from '../vue-components/search.js';
 import { default as dashboard } from '../vue-components/dashboard.js';
-import { default as nowPlaying } from '../vue-components/playlists.js';
+//import { default as nowPlaying } from '../vue-components/playlists.js';
+import { default as currentPlaylist } from '../pages/currentPlaylist.js';
 import { default as browseArtists } from '../vue-components/browse-artists.js';
 import { default as browseAlbums } from '../vue-components/browse-albums.js';
 import { default as browsePaths } from '../vue-components/browse-paths.js';
@@ -36,7 +37,7 @@ const routes = [
             {
                 path: 'now_playing',
                 name: 'nowPlaying',
-                component: nowPlaying
+                component: currentPlaylist
             },
             {
                 path: 'artists',
