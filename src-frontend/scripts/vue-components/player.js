@@ -1,4 +1,5 @@
-//import { AudioMotionAnalyzer } from AudioMotionAnalizer;
+//import AudioMotionAnalyzer from 'audiomotion-analyzer';
+import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
 const template = function () {
     return `
@@ -165,7 +166,6 @@ export default {
     mounted: function () {
         this.audio = document.getElementById('audio');
         this.audio.volume = this.volume / 100;
-        /*
         this.audioMotion = new AudioMotionAnalyzer(
             document.getElementById('container'),
             {
@@ -179,7 +179,6 @@ export default {
                 splitGradient: false
             }
         );
-        */
     },
     methods: {
         onPreviousTrack: function () {

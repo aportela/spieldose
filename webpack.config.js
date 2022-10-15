@@ -12,6 +12,7 @@ module.exports = {
             'dayjs': "dayjs/dayjs.min.js",
             'Chart': "chart.js/dist/chart.esm.js",
             'Basil': "basil.js/build/basil.min.js"
+            //"AudioMotionAnalyzer": "audiomotion-analyzer/src/audioMotion-analyzer.js"
         }
     },
     entry: {
@@ -19,7 +20,7 @@ module.exports = {
             import: './src-frontend/scripts/app.js',
             dependOn: 'vendor'
         },
-        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt', 'dayjs', 'Basil', 'Chart']
+        'vendor': ['vue', 'vue-router', 'vue-i18n', 'axios', 'mitt', 'dayjs', 'Basil', 'Chart', 'audiomotion-analyzer' ]
     },
     output: {
         path: path.resolve(__dirname, 'public/scripts/'),
