@@ -33,7 +33,7 @@ class JWT
             $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
             $decoded = $jwt->decode($clientHeaderJWT);
             if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
-                $this->logger->notice("JWT valid data decoded", [ print_r($decoded->data, true) ]);
+                $this->logger->notice("JWT valid data decoded", [print_r($decoded->data, true)]);
                 \Spieldose\User::setSessionVars($decoded->data->userId, $decoded->data->email);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("jwt");
@@ -56,7 +56,7 @@ class JWT
                 }
             }
             $response = $handler->handle($request);
-            if ($clientHeaderJWT) {
+            if ($clientHeaderJWT && \Spieldose\User::isLogged()) {
                 return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
