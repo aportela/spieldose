@@ -1,4 +1,4 @@
-import { bus } from './bus.js';
+//import { bus } from './bus.js';
 import { default as spieldoseAPI } from './api.js';
 import { default as sharedPlayerData } from './playerData.js';
 import { default as getValidator } from './validator.js';
@@ -377,7 +377,7 @@ export const mixinNavigation = {
 export const mixinSession = {
     methods: {
         signout: function () {
-            bus.emit("signOut");
+            this.$bus.emit("signOut");
         }
     }
 };
