@@ -117,7 +117,7 @@ export default {
     },
     methods: {
         signout: function (e) {
-            this.$spieldoseAPI.session.signOut().then(response => { this.$router.push({ name: 'signin' }); }).catch(error => { console.log(error); });
+            this.$api.session.signOut().then(response => { this.$router.push({ name: 'signin' }); }).catch(error => { console.log(error); });
         }
     }
 }
