@@ -1,5 +1,3 @@
-//import { bus } from './bus.js';
-import { default as spieldoseAPI } from './api.js';
 import { default as sharedPlayerData } from './playerData.js';
 import { default as getValidator } from './validator.js';
 
@@ -18,7 +16,7 @@ export const mixinLiveSearches = {
  * album entity common mixins
  */
 export const mixinAlbums = {
-    methods:{
+    methods: {
         getAlbumImageUrl: function (value) {
             if (value) {
                 if (value.indexOf("http") == 0) {
