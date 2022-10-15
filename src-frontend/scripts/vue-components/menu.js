@@ -1,9 +1,8 @@
-import { mixinNavigation, mixinSession } from '../mixins.js';
-
 const template = function () {
     return `
         <nav id="menu" class="panel is-unselectable">
             <p class="panel-heading">{{ $t("menu.labels.header") }}</p>
+            <!--
             <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('dashboard') }" v-on:click.prevent="changeSection('dashboard');">
                 <span class="panel-icon"><i class="fas fa-chart-line"></i></span>
                 <span>{{ $t("menu.labels.dashboard") }}</span>
@@ -36,7 +35,8 @@ const template = function () {
                 <span class="panel-icon"><i class="fas fa-broadcast-tower"></i></span>
                 <span>{{ $t("menu.labels.browseRadioStations") }}</span>
             </a>
-            <a class="panel-block" v-on:click.prevent="signout();">
+            -->
+            <a class="panel-block" v-on:click.prevent="signOut();">
                 <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
                 <span>{{ $t("menu.labels.signOut") }}</span>
             </a>
@@ -47,5 +47,12 @@ const template = function () {
 export default {
     name: 'spieldose-menu-component',
     template: template(),
-    mixins: [mixinNavigation, mixinSession]
+    methods: {
+        signOut: function (e) {
+            this.$api.session.signOut().then(response => {
+                this.$spieldoseLocalStorage.remove("jwt");
+                this.$router.push({ name: 'signin' });
+            }).catch(error => { console.log(error); });
+        }
+    }
 }
