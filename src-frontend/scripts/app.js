@@ -11,6 +11,7 @@ const spieldoseApp = {
     data: function () {
         return ({
             logged: false,
+            track: null
         });
     },
     created: function () {
@@ -24,7 +25,7 @@ const spieldoseApp = {
                 }
             } else {
                 if (!this.$route.name) {
-                    this.$router.push({ name: 'dashboard' });
+                    this.$router.push({ name: 'nowPlaying' });
                 }
             }
         } else {
