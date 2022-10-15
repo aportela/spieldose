@@ -3,81 +3,84 @@ import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
 const template = function () {
     return `
-        <div class="player__container">
-            <div class="player__body">
-                <audio id="audio" class="is-hidden"></audio>
-                <div class="body__cover">
-                    <ul class="list list--cover">
-                        <li>
-                            <slot name="top-left-icon"></slot>
-                        </li>
-                        <li>
-                            <a class="list__link" href=""></a>
-                        </li>
-                        <li>
-                            <slot name="top-right-icon"></slot>
-                        </li>
-                    </ul>
+        <div class="">
+            <div class="player__body" style="max-width: 400px;">
+            <audio id="audio" class="is-hidden"></audio>
+            <div class="body__cover">
+                <ul class="list list--cover">
+                    <li>
+                        <slot name="top-left-icon"></slot>
+                    </li>
+                    <li>
+                        <a class="list__link" href=""></a>
+                    </li>
+                    <li>
+                        <slot name="top-right-icon"></slot>
+                    </li>
+                </ul>
+                <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
+                <img v-else src="images/vinyl.png" alt="Vinyl" />
+                <!--
+                <div class="range"></div>
+                -->
+            </div>
 
-                    <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
-                    <div v-else style="background: #efefef; width: 300px; height: 300px;">
-                    <img src="images/vinyl.png" alt="Vinyl" />
-                    </div>
-                    <div class="range"></div>
-                </div>
+            <div id="container" @click="onChangeAudioMotionAnalyzerMode" style="opacity: 0.9"></div>
 
-                <div id="container" @click="onChangeAudioMotionAnalyzerMode"></div>
+            <div class="body__info">
+                <div class="info__album">{{ track.title }}</div>
 
-                <div class="body__info">
-                    <div class="info__album">{{ track.title }}</div>
+                <div class="info__song">{{ track.album }}</div>
 
-                    <div class="info__song">{{ track.album }}</div>
+                <div class="info__artist">{{ track.artist }}</div>
+            </div>
 
-                    <div class="info__artist">{{ track.artist }}</div>
-                </div>
+                        <!--
 
-                <div class="field">
-                    <div class="control has-icons-left has-icons-right">
-                        <span class="icon is-left" style="height: 1em;">
-                            <i class="fa-solid fa-volume-high" style="color: #d30320;" :style="'opacity: ' + ((volume / 100)+0.4)"></i>
-                        </span>
-                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
-                            v-model.number="volume">
-                            <span class="icon is-right" style="height: 1em;">
-                            <small>{{ volume }}%</small>
-                        </span>
-                    </div>
-                </div>
+            <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                    <span class="icon is-left" style="height: 1em;">
+                        <small>{{ currentTime }}</small>
 
-                <div class="field">
-                    <div class="control has-icons-left has-icons-right">
-                        <span class="icon is-left" style="height: 1em;">
-                            <small>{{ currentTime }}</small>
-
-                        </span>
-                        <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
-                            v-model.number="position">
-                        <span class="icon is-right" style="height: 1em;">
-                            <small>{{ duration }}</small>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="body__buttons">
-                    <ul class="list list--buttons">
-                        <li><a href="#" class="list__link" @click.prevent="onPreviousTrack"><i
-                                    class="fa fa-step-backward"></i></a></li>
-
-                        <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a>
-                        </li>
-
-                        <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
-                                    class="fa fa-step-forward"></i></a></li>
-                    </ul>
+                    </span>
+                    <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                        class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
+                        v-model.number="position">
+                    <span class="icon is-right" style="height: 1em;">
+                        <small>{{ duration }}</small>
+                    </span>
                 </div>
             </div>
+            -->
+
+            <div class="body__buttons">
+                <ul class="list list--buttons">
+                    <li><a href="#" class="list__link" @click.prevent="onPreviousTrack"><i
+                                class="fa fa-step-backward"></i></a></li>
+
+                    <li><a href="#" class="list__link" @click.prevent="onPlay"><i class="fa fa-play"></i></a>
+                    </li>
+
+                    <li><a href="#" class="list__link" @click.prevent="onNextTrack"><i
+                                class="fa fa-step-forward"></i></a></li>
+                </ul>
+                </div>
+            </div>
+
+                        <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                    <span class="icon is-left" style="height: 1em;">
+                        <i class="fa-solid fa-volume-high" style="color: #d30320;" :style="'opacity: ' + ((volume / 100)+0.4)"></i>
+                    </span>
+                    <input style="padding-left: 3.5em; padding-right: 3.5em;"
+                        class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
+                        v-model.number="volume">
+                        <span class="icon is-right" style="height: 1em;">
+                        <small>{{ volume }}%</small>
+                    </span>
+                </div>
+            </div>
+
 
             <div class="player__footer">
                 <ul class="list list--footer">
@@ -106,7 +109,7 @@ const template = function () {
 }
 
 export default {
-    name: 'spieldose-player',
+    name: 'spieldose-component-player',
     template: template(),
     data: function () {
         return ({
