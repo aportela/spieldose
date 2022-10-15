@@ -1,5 +1,3 @@
-import { bus } from '../bus.js';
-
 const template = function () {
     return `
         <nav class="navbar is-light is-fixed-bottom is-unselectable" role="navigation" aria-label="main navigation" v-show="showPlayerNavBar">
@@ -91,6 +89,7 @@ export default {
         });
     },
     created: function () {
+        /*
         bus.on('showPlayerNavBar', () => {
             const rootEl = document.documentElement;
             rootEl.classList.add('has-navbar-fixed-bottom');
@@ -101,6 +100,7 @@ export default {
             rootEl.classList.remove('has-navbar-fixed-bottom');
             this.showPlayerNavBar = false;
         });
+        */
     },
     computed: {
         coverSrc: function () {
