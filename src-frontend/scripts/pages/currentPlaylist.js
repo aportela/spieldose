@@ -20,7 +20,7 @@ const template = function () {
                 </a>
             </div>
         </div>
-        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style="font-size: 1rem;">
             <thead>
                 <tr>
                     <th class="has-text-right">Index</th>
@@ -33,22 +33,14 @@ const template = function () {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="track,index in tracks" :key="index"
+                <tr v-for="track,index in tracks" :key="index" class="is-clickable" @click.prevent="currentTrackIndex = index;"
                     :class="{ 'is-selected': currentTrack.id == track.id } ">
-                    <td class="has-text-right is-clickable" @click.prevent="currentTrackIndex = index;"> <i
-                            class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index + 1 }}/{{ tracks.length }}
-                    </td>
-                    <td class="is-clickable" @click.prevent="loadTracks('', track.artist, '', '');">{{
-                        track.artist
-                        }}</td>
-                    <td class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, '');">{{
-                        track.albumArtist
-                        }}</td>
-                    <td class="is-clickable"
-                        @click.prevent="loadTracks('', '', track.albumArtist, track.album);">{{
-                        track.album }}</td>
+                    <td class="has-text-right"><i class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index + 1 }}/{{ tracks.length }}</td>
+                    <td>{{ track.artist }} <span class="is-clickable" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
+                    <td>{{ track.albumArtist }} <span class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, '');"><i class="fas fa-link ml-1"></i></span></td>
+                    <td>{{ track.album }}<span class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, track.album);"><i class="fas fa-link ml-1"></i></span></td>
                     <td class="has-text-right">{{ track.trackNumber }}</td>
-                    <td class="is-clickable" @click.prevent="currentTrackIndex = index;">{{ track.title }}</td>
+                    <td>{{ track.title }}</td>
                     <td>{{ track.year }}</td>
                 </tr>
             </tbody>
@@ -97,7 +89,7 @@ export default {
                 this.onPlay();
             }
             */
-           this.$bus.emit('onTrackChanged', { track: this.currentTrack });
+            this.$bus.emit('onTrackChanged', { track: this.currentTrack });
         }
     },
     created: function () {
@@ -112,6 +104,7 @@ export default {
             this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
                 this.tracks = success.data.tracks;
                 this.currentTrackIndex = 0;
+                this.loading = false;
             }).catch(error => {
                 switch (error.response.status) {
                     case 400:
@@ -134,7 +127,7 @@ export default {
                         break;
                 }
                 this.loading = false;
-            });                
+            });
             /*
             const url = '/api2/track/search?q=' + (query ? encodeURIComponent(query) : '') + '&artist=' + (artist ? encodeURIComponent(artist) : '') + '&albumArtist=' + (albumArtist ? encodeURIComponent(albumArtist) : '') + '&album=' + (album ? encodeURIComponent(album) : '');
             this.axios.get(url).then(
