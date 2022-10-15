@@ -15,9 +15,6 @@ const spieldoseApp = {
         });
     },
     created: function () {
-        this.$bus.on("signOut", () => {
-            this.signOut();
-        });
         if (!initialState.version.upgradeAvailable) {
             if (!initialState.logged) {
                 if (this.$route.name != 'signin') {
@@ -30,11 +27,6 @@ const spieldoseApp = {
             }
         } else {
             this.$router.push({ name: 'upgrade' });
-        }
-    },
-    methods: {
-        signOut: function () {
-            this.$api.session.signOut().then(response => { this.$router.push({ name: 'signin' }); }).catch(error => { console.log(error); });
         }
     }
 };
