@@ -161,7 +161,6 @@ export default {
         submitSignIn: function () {
             this.loading = true;
             this.validator.clear();
-            this.clearAPIErrors();
             this.$api.session.signIn(this.signInEmail, this.signInPassword).then(success => {
                 this.loading = false;
                 this.$router.push({ name: 'dashboard' });
@@ -197,8 +196,7 @@ export default {
             this.invalidSignUpUsername = false;
             this.invalidSignUpPassword = false;
             this.loading = true;
-            this.clearAPIErrors();
-            spieldoseAPI.session.signUp(this.signUpEmail, this.signUpPassword).then(success => {
+            this.$api.session.signUp(this.signUpEmail, this.signUpPassword).then(success => {
                 this.signInEmail = this.signUpEmail;
                 this.signInPassword = this.signUpPassword;
                 this.loading = false;
