@@ -2,7 +2,6 @@ import { createApp } from 'vue';
 
 import { default as router } from './plugins/router.js';
 import { default as i18n } from './plugins/i18n.js';
-import { default as audio } from './plugins/audio.js';
 import { default as axios } from './plugins/axios.js';
 import { default as api } from './plugins/api.js';
 import { default as localStorage } from './plugins/localStorage.js';
@@ -40,4 +39,4 @@ const localStorageBasilOptions = {
 };
 
 
-createApp(spieldoseApp).use(router).use(i18n).use(localStorage, localStorageBasilOptions).use(audio).use(axios, {}).use(api).use(bus).mount('#app');
+createApp(spieldoseApp).use(router).use(i18n).use(localStorage, localStorageBasilOptions).use(axios, {}).use(api).use(bus).mount('#app');

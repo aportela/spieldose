@@ -94,6 +94,8 @@ export default {
     },
     created: function () {
         this.loadTracks();
+        this.$bus.on('onPreviousTrack', () => { this.onPreviousTrack(); });
+        this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {

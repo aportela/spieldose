@@ -9,7 +9,14 @@ const template = function () {
                 <div class="columns is-desktop">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column">
-                        <spieldose-player :track="{}"></spieldose-player>
+                        <spieldose-player :track="true" :animations="true" @next="console.log('next');" @previous="console.log('previous');">
+                            <template slot="top-left-icon">11
+                                <a class="list__link" href="#" @click.prevent="loadTracks('')"><i class="fa fa-navicon"></i></a>
+                            </template>
+                            <template slot="top-right-icon">22
+                                <a class="list__link" href="#" @click.prevent><i class="fa fa-search"></i></a>
+                            </template>
+                        </spieldose-player>
                         <spieldose-menu-component></spieldose-menu-component>
                     </div>
                     <div class="column">
