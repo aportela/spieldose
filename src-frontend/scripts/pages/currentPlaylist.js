@@ -64,6 +64,7 @@ export default {
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex >= 0) {
                 return (this.tracks[this.currentTrackIndex]);
             } else {
+                console.log("returning null");
                 return ({});
             }
         },
@@ -155,7 +156,7 @@ export default {
             }
         },
         onNextTrack: function () {
-            if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < this.tracks.length) {
+            if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length -1)) {
                 this.currentTrackIndex++;
             }
         }
