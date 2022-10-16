@@ -1,9 +1,9 @@
-//import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
 const template = function () {
     return `
         <div class="">
+            <audio id="audio" class="is-hidden"></audio>
             <div class="player__body" style="max-width: 400px;">
             <div class="body__cover">
                 <ul class="list list--cover">
@@ -24,7 +24,7 @@ const template = function () {
                 -->
             </div>
 
-            <div id="container" @click="onChangeAudioMotionAnalyzerMode" style="opacity: 0.9"></div>
+            <div id="container" v-if="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode" style="opacity: 0.9"></div>
 
             <div class="body__info">
                 <div class="info__album">{{ track.title }}</div>
@@ -112,14 +112,16 @@ export default {
     template: template(),
     data: function () {
         return ({
-            audio: null,
             volume: 8,
             position: 0,
-            audioMotion: null,
+            audioElementMotion: null,
             currentTime: "00:00",
             duration: "00:00",
-            audioMotionMode: 3,
-            coverURL: null
+            audioElementMotionMode: 3,
+            coverURL: null,
+            allowStartPlaying: false,
+            showAnalyzer: false
+
         });
     },
     props: [
@@ -130,56 +132,75 @@ export default {
             return (this.track ? this.track.id : null);
         },
         isPlaying: function () {
-            return (this.$audio && this.$audio.currentAudio && this.$audio.currentAudio.currentTime > 0 && !this.$audio.currentAudio.paused && !this.$audio.currentAudio.ended && this.$audio.currentAudio.readyState > 2);
+            return (this.audioElement && this.audioElement.currentaudioElement && this.audioElement.currentaudioElement.currentTime > 0 && !this.audioElement.currentaudioElement.paused && !this.audioElement.currentaudioElement.ended && this.audioElement.currentaudioElement.readyState > 2);
+        },
+        audioInstance: function () {
+            return (this.$audio);
+        },
+        audioElement: function () {
+            return (this.$audio.getElement());
         }
     },
     watch: {
         trackId: function (newValue, oldValue) {
+            this.allowStartPlaying = false;
             if (newValue) {
-                if (this.$audio.currentAudio && this.$audio.currentAudio.currentTime > 0 && !this.$audio.currentAudio.paused && !this.$audio.currentAudio.ended && this.$audio.currentAudio.readyState > 2) {
-                    this.$audio.stop();
+                if (this.audioElement && this.audioElement.currentTime > 0 && !this.audioElement.paused && !this.audioElement.ended && this.audioElement.readyState > 2) {
+                    //this.audioElement.stop();
                 }
                 this.coverURL = null;
-                this.$audio.src = "/api2/file/" + this.track.id;
-                //const url = this.track.thumbnailURL;
-                const url = "/api2/track/thumbnail/400/400/" + this.track.id;
-                let img = new Image();
-                img.src = url
-                img.onload = () => {
-                    this.coverURL = url;
+                if (this.audioElement) {
+                    this.audioElement.src = "/api2/file/" + this.track.id;
+                    //const url = this.track.thumbnailURL;
+                    const url = "/api2/track/thumbnail/400/400/" + this.track.id;
+                    let img = new Image();
+                    img.src = url
+                    img.onload = () => {
+                        this.coverURL = url;
+                    }
+                    img.onerror = () => {
+                        this.coverURL = null;
+                    }
+                    this.audioElement.load();
+                    //if (newValue && oldValue) {
+                    this.onPlay();
                 }
-                img.onerror = () => {
-                    this.coverURL = null;
-                }
-                this.$audio.load();
-                //if (newValue && oldValue) {
-                this.onPlay();
                 //}
             }
         },
+        allowStartPlaying: function (newValue) {
+            if (newValue) {
+                this.onPlay();
+            }
+        },
         volume: function (newValue) {
-            if (this.$audio) {
-                this.$audio.volume = newValue / 100;
+            if (this.audioElement) {
+                this.audioInstance.setVolume(this.volume / 100);
             }
         }
     },
     created: function () {
     },
     mounted: function () {
-        this.$audio.volume = this.volume / 100;
-        this.$audioMotion = new AudioMotionAnalyzer(
-            document.getElementById('container'),
-            {
-                source: this.$audio,
-                mode: 3,
-                height: 40,
-                ledBars: false,
-                showScaleX: false,
-                showScaleY: false,
-                stereo: false,
-                splitGradient: false
-            }
-        );
+        this.audioElement.addEventListener('canplay', (event) => {
+            this.allowStartPlaying = true;
+        });
+        this.audioInstance.setVolume(this.volume / 100);
+        if (this.showAnalyzer) {
+            this.audioElementMotion = new AudioMotionAnalyzer(
+                document.getElementById('container'),
+                {
+                    source: this.audioElement,
+                    mode: this.audioElementMotionMode,
+                    height: 40,
+                    ledBars: false,
+                    showScaleX: false,
+                    showScaleY: false,
+                    stereo: false,
+                    splitGradient: false
+                }
+            );
+        }
     },
     methods: {
         onPreviousTrack: function () {
@@ -190,13 +211,13 @@ export default {
         },
         onPlay: function () {
             if (this.isPlaying) {
-                this.$audio.stop();
+                this.audioElement.stop();
             }
-            let playPromise = this.$audio.play();
-            this.$audio.addEventListener('timeupdate', (track) => {
-                const currentProgress = this.$audio.currentTime / this.$audio.duration;
-                this.duration = this.formatSecondsAsTime(Math.floor(this.$audio.duration).toString());
-                this.currentTime = this.formatSecondsAsTime(Math.floor(this.$audio.currentTime).toString());
+            let playPromise = this.audioElement.play();
+            this.audioElement.addEventListener('timeupdate', (track) => {
+                const currentProgress = this.audioElement.currentTime / this.audioElement.duration;
+                this.duration = this.formatSecondsAsTime(Math.floor(this.audioElement.duration).toString());
+                this.currentTime = this.formatSecondsAsTime(Math.floor(this.audioElement.currentTime).toString());
                 if (!isNaN(currentProgress)) {
                     this.position = currentProgress.toFixed(2);
                 } else {
@@ -208,8 +229,8 @@ export default {
                 //console.log(playPromise);
                 playPromise.then(() => {
                 }).catch((error) => {
-                    //this.$audioplayer.playback.pause();
-                    this.$audio.currentTime = 0;
+                    //this.audioElementplayer.playback.pause();
+                    this.audioElement.currentTime = 0;
                 });
             }
         },
@@ -227,12 +248,14 @@ export default {
 
             return min + ':' + sec;
         },
-        onChangeAudioMotionAnalyzerMode: function () {
-            this.$audioMotionMode++;
-            if (this.$audioMotionMode > 8) {
-                this.$audioMotionMode = 0;
+        onChangeaudioElementMotionAnalyzerMode: function () {
+            if (this.showAnalyzer) {
+                this.audioElementMotionMode++;
+                if (this.audioElementMotionMode > 8) {
+                    this.audioElementMotionMode = 0;
+                }
+                this.audioElementMotion.setOptions({ mode: this.audioElementMotionMode });
             }
-            this.$audioMotion.setOptions({ mode: this.$audioMotionMode });
         }
     }
 };
