@@ -151,22 +151,40 @@ return function (App $app) {
                 }
             });
 
-            $group->get('/track/thumbnail/{width}/{height}/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+            $group->get('/track/thumbnail/{size}/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                if (!in_array($args['size'], ['small', 'normal'])) {
+                    throw new \Spieldose\Exception\InvalidParamsException('size');
+                }                
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $settings = $this->get('settings')['thumbnails'];
+
                 //$logger->info($request->getMethod() . " " . $request->getUri()->getPath());
                 //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                $localPathNormalSize = null;
                 try {
-                    $localPath = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($args['width']), intval($args['height']));
+                    $localPathNormalSize = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($settings['sizes']['normal']['height']), intval($settings['sizes']['normal']['height']));
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
-                if (empty($localPath)) {
+                if (empty($localPathNormalSize)) {
                     try {
-                        $localPath = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($args['width']), intval($args['height']));
+                        $localPathNormalSize = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($settings['sizes']['normal']['height']), intval($settings['sizes']['normal']['height']));
                     } catch (\Spieldose\Exception\NotFoundException $e) {
                     }
                 }
+                $localPathSmallSize = null;
+                try {
+                    $localPathSmallSize = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($settings['sizes']['small']['height']), intval($settings['sizes']['small']['height']));
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+                if (empty($localPathSmallSize)) {
+                    try {
+                        $localPathSmallSize = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($settings['sizes']['small']['height']), intval($settings['sizes']['small']['height']));
+                    } catch (\Spieldose\Exception\NotFoundException $e) {
+                    }
+                }
+                $localPath = $args['size'] == 'small' ? $localPathSmallSize: $localPathNormalSize;
                 if (!empty($localPath) && file_exists(($localPath))) {
                     $filesize = filesize($localPath);
                     $f = fopen($localPath, 'r');
@@ -187,7 +205,7 @@ return function (App $app) {
 
             $group->get('/random_album_covers', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $settings = $this->get('settings')['thumbnails'];
-                $lp = $settings['path'] . DIRECTORY_SEPARATOR . $settings['sizes']['normal']['width'] . "x" . $settings['sizes']['normal']['height'];
+                $lp = $settings['path'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . "x" . $settings['sizes']['small']['height'];
                 $hashes = array();
                 if (file_exists($lp)) {
                     $rdi = new \RecursiveDirectoryIterator($lp);
@@ -202,7 +220,7 @@ return function (App $app) {
                     $uri = $request->getUri();
                     $urls = array_map(
                         fn ($url) =>
-                        sprintf("%s://%s:%d/api2/thumbnail_hash/%s/%s", $uri->getScheme(), $uri->getHost(), $uri->getPort(), 'normal', $url),
+                        sprintf("%s://%s:%d/api2/thumbnail_hash/%s/%s", $uri->getScheme(), $uri->getHost(), $uri->getPort(), 'small', $url),
                         $hashes
                     );
                 }
