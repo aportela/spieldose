@@ -1,4 +1,5 @@
 import bus from "../plugins/bus";
+import player from "../vue-components/player";
 
 const template = function () {
     return `
@@ -35,7 +36,7 @@ const template = function () {
             <tbody>
                 <tr v-for="track,index in tracks" :key="index" class="is-clickable" @click.prevent="currentTrackIndex = index;"
                     :class="{ 'is-selected': currentTrack.id == track.id } ">
-                    <td class="has-text-right"><i class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index + 1 }}/{{ tracks.length }}</td>
+                    <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
                     <td>{{ track.artist }} <span class="is-clickable" v-if="track.artist" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
                     <td>{{ track.albumArtist }} <span class="is-clickable" v-if="track.albumArtist" @click.prevent="loadTracks('', '', track.albumArtist, '');"><i class="fas fa-link ml-1"></i></span></td>
@@ -57,6 +58,7 @@ export default {
             tracks: [],
             currentTrackIndex: -1,
             searchQuery: null,
+            playerEvent:  {}
         });
     },
     computed: {
@@ -97,6 +99,9 @@ export default {
         this.loadTracks();
         this.$bus.on('onPreviousTrack', () => { this.onPreviousTrack(); });
         this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
+        this.$bus.on('playerEvent', (playerEvent) => {
+            this.playerEvent = playerEvent;
+        });
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
