@@ -473,6 +473,7 @@ div#rotating_album_cover {
 
 div.is_rotating_album_cover {
     animation: rotation 8s linear infinite;
+    z-index: 1;
 }
 
 div#rotating_album_cover img {
@@ -482,6 +483,11 @@ div#rotating_album_cover img {
     position: relative;
     margin-left: 137px;
     border-radius: 100%;
+}
+
+div#analyzer-container {
+    z-index: 2;
+    position: relative;
 }
 
 @keyframes rotation {
