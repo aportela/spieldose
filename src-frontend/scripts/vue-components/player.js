@@ -31,7 +31,7 @@ const template = function () {
                     -->
                 </div>
 
-                <div id="container" v-if="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode" style="opacity: 0.9"></div>
+                <div id="analyzer-container" v-if="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
 
                 <div class="body__info">
                     <div class="info__album">{{ track.title }}</div>
@@ -271,7 +271,7 @@ export default {
 
         if (this.showAnalyzer) {
             this.audioElementMotion = new AudioMotionAnalyzer(
-                document.getElementById('container'),
+                document.getElementById('analyzer-container'),
                 {
                     source: this.audioElement,
                     mode: this.audioElementMotionMode,
@@ -281,9 +281,33 @@ export default {
                     showScaleY: false,
                     stereo: false,
                     splitGradient: false,
-                    start: false
+                    start: false,
+                    bgAlpha: 1,
+                    overlay: true,
+                    showBgColor: true
                 }
             );
+            const options = {
+                /*
+                bgColor: '#011a35', // background color (optional) - defaults to '#111'
+                dir: 'h',           // add this property to create a horizontal gradient (optional)
+                colorStops: [       // list your gradient colors in this array (at least 2 entries are required)
+                    'red',                      // colors may be defined in any valid CSS format
+                    { pos: .6, color: '#ff0' }, // use an object to adjust the position (0 to 1) of a color
+                    'hsl( 120, 100%, 50% )'     // colors may be defined in any valid CSS format
+                ]
+                */
+                bgColor: '#fff', // background color (optional) - defaults to '#111'
+                dir: 'v',           // add this property to create a horizontal gradient (optional)
+                colorStops: [       // list your gradient colors in this array (at least 2 entries are required)
+                    '#d30320', // colors may be defined in any valid CSS format
+                    //'#020024',
+                    '#e399a3'                      // colors may be defined in any valid CSS format
+
+                ]
+            }
+            this.audioElementMotion.registerGradient('my-grad', options);
+            this.audioElementMotion.gradient = 'my-grad';
         }
     },
     methods: {
