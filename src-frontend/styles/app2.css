@@ -458,6 +458,49 @@ input[type="range"].slider::-moz-range-track {
 
 }
 
+div#rotating_album_cover {
+    display: block;
+    width: 400px;
+    height: 400px;
+    background: url(../images/vinyl.png) no-repeat;
+    background-size: auto;
+    background-size: cover;
+
+}
+
+div.is_rotating_album_cover {
+    animation: rotation 8s linear infinite;
+}
+
+div#rotating_album_cover img {
+    width: 130px;
+    height: 130px;
+    top: 136px;
+    position: relative;
+    margin-left: 137px;
+    border-radius: 100%;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
 /* player (sidebar) */
 
 /* app sidebar */

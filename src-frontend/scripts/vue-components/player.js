@@ -17,8 +17,15 @@ const template = function () {
                         <slot name="top-right-icon"></slot>
                     </li>
                 </ul>
-                <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
-                <img v-else src="images/vinyl.png" alt="Vinyl" />
+                <div v-if="rotateVinyl" @click.prevent="rotateVinyl =! rotateVinyl">
+                    <div id="rotating_album_cover" :class="{'is_rotating_album_cover': true }">
+                        <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
+                    </div>
+                </div>
+                <div v-else @click.prevent="rotateVinyl =! rotateVinyl">
+                    <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
+                    <img v-else src="images/vinyl.png" alt="Vinyl" />
+                </div>
                 <!--
                 <div class="range"></div>
                 -->
@@ -120,7 +127,8 @@ export default {
             audioElementMotionMode: 3,
             coverURL: null,
             allowStartPlaying: false,
-            showAnalyzer: false
+            showAnalyzer: false,
+            rotateVinyl: true
 
         });
     },
@@ -132,7 +140,7 @@ export default {
             return (this.track ? this.track.id : null);
         },
         isPlaying: function () {
-            return (this.audioElement && this.audioElement.currentaudioElement && this.audioElement.currentaudioElement.currentTime > 0 && !this.audioElement.currentaudioElement.paused && !this.audioElement.currentaudioElement.ended && this.audioElement.currentaudioElement.readyState > 2);
+            return (this.audioElement && this.audioElement.currentTime > 0 && !this.audioElement.paused && !this.audioElement.ended && this.audioElement.readyState > 2);
         },
         audioInstance: function () {
             return (this.$audio);
