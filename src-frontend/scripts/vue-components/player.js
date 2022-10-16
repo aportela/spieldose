@@ -18,7 +18,7 @@ const template = function () {
                         </li>
                     </ul>
                     <div v-if="customVinyl" @click.prevent="customVinyl =! customVinyl">
-                        <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': false }">
+                        <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': playerEvents.isPlaying }">
                             <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
                         </div>
                     </div>
@@ -61,15 +61,16 @@ const template = function () {
 
                 <div class="body__buttons">
                     <ul class="list list--buttons">
-                        <li><a href="#" class="list__link" @click.prevent="onPreviousTrackButtonClick"><i
+                        <li><a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" @click.prevent="onPreviousTrackButtonClick"><i
                                     class="fa-fw fa fa-step-backward"></i></a></li>
 
                         <li>
-                            <a href="#" class="list__link" v-show="this.playerEvents.isPaused" @click.prevent="onPlayButtonClick"><i class="fa-fw fa fa-play"></i></a>
-                            <a href="#" class="list__link" v-show="this.playerEvents.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>                        
+                            <a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" v-show="! this.playerEvents.isLoading && this.playerEvents.isPaused" @click.prevent="onPlayButtonClick"><i class="fa-fw fa fa-play"></i></a>
+                            <a href="#" class="list__link" v-show="! this.playerEvents.isLoading && this.playerEvents.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>                        
+                            <a href="#" class="list__link" v-show="this.playerEvents.isLoading"><i class="fa-fw fa fa-cog fa-spin"></i></a>                        
                         </li>
 
-                        <li><a href="#" class="list__link" @click.prevent="onNextTrackButtonClick"><i
+                        <li><a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" @click.prevent="onNextTrackButtonClick"><i
                                     class="fa-fw fa fa-step-forward"></i></a></li>
                     </ul>
                     </div>
@@ -126,6 +127,7 @@ export default {
             audioElement: null,
             audioCanBePlayed: false,
             playerEvents: {
+                isLoading: false,
                 isPaused: true,
                 isPlaying: false
             },
@@ -166,6 +168,7 @@ export default {
             this.playerEvents.isPaused = true;
             this.playerEvents.isPlaying = false;
             if (newValue) {
+                this.playerEvents.isLoading = true;
                 if (this.audioElement && this.audioElement.currentTime > 0 && !this.audioElement.paused && !this.audioElement.ended && this.audioElement.readyState > 2) {
                     //this.audioElement.stop();
                 }
@@ -214,6 +217,7 @@ export default {
         this.audioElement.addEventListener('canplay', (event) => {
             console.debug('Audio can be played');
             this.audioCanBePlayed = true;
+            this.playerEvents.isLoading = false;
         });
         this.audioElement.addEventListener('pause', (event) => {
             console.debug('Audio is paused');
@@ -230,6 +234,29 @@ export default {
             this.playerEvents.isPaused = false;
             this.playerEvents.isPlaying = true;
         });
+        this.audioElement.addEventListener('ended', (event) => {
+            console.debug('Audio is ended');
+            //this.playerEvents.isPaused = false;
+            //this.playerEvents.isPlaying = true;
+        });
+
+        /*
+        this.audioElement.addEventListener('timeupdate', (event) => {
+            console.debug('Audio timeupdate');
+            console.debug(event);
+            //this.playerEvents.isPaused = false;
+            //this.playerEvents.isPlaying = true;
+        });        
+
+        */
+
+        
+        
+        this.audioElement.addEventListener('waiting', (event) => {
+            console.debug('Audio is waiting');
+            this.playerEvents.isPaused = false;
+            this.playerEvents.isPlaying = true;
+        });        
         
         /*
         
@@ -303,7 +330,7 @@ export default {
             */
         },   
         pause: function () {
-            if (this.isPlaying) {
+            if (this.playerEvents.isPlaying) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
             }
