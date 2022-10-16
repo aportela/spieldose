@@ -331,11 +331,14 @@ div#album_cover img {
 }
 
 .list--buttons li:nth-of-type(2) a {
+    /*
     padding-top: 0.82rem;
     padding-right: 1rem;
     padding-bottom: 0.82rem;
     padding-left: 1.19rem;
     margin-left: 0.5rem;
+    */
+    padding: 0.6rem 1.2rem;
     font-size: 1.25rem;
     color: rgba(211, 3, 32, 0.95);
 }
