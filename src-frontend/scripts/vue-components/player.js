@@ -326,7 +326,9 @@ export default {
                     this.audioElementMotion.registerGradient('my-grad', options);
                     this.audioElementMotion.gradient = 'my-grad';
                 }
-                this.audioElementMotion.toggleAnalyzer();
+                if (!this.audioElementMotion.isOn) {
+                    this.audioElementMotion.toggleAnalyzer();
+                }
             }
         },
         /**
