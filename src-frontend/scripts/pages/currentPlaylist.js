@@ -24,11 +24,11 @@ const template = function () {
             <thead>
                 <tr>
                     <th class="has-text-right">Index</th>
+                    <th>Title</th>
                     <th>Artist</th>
                     <th>Album Artist</th>
                     <th>Album</th>
-                    <th class="has-text-right">Track nº</th>
-                    <th>Title</th>
+                    <th class="has-text-right">Album Track nº</th>
                     <th>Year</th>
                 </tr>
             </thead>
@@ -36,11 +36,11 @@ const template = function () {
                 <tr v-for="track,index in tracks" :key="index" class="is-clickable" @click.prevent="currentTrackIndex = index;"
                     :class="{ 'is-selected': currentTrack.id == track.id } ">
                     <td class="has-text-right"><i class="fa-solid fa-play mr-2" v-if="currentTrack.id == track.id"></i>{{ index + 1 }}/{{ tracks.length }}</td>
-                    <td>{{ track.artist }} <span class="is-clickable" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
-                    <td>{{ track.albumArtist }} <span class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, '');"><i class="fas fa-link ml-1"></i></span></td>
-                    <td>{{ track.album }}<span class="is-clickable" @click.prevent="loadTracks('', '', track.albumArtist, track.album);"><i class="fas fa-link ml-1"></i></span></td>
-                    <td class="has-text-right">{{ track.trackNumber }}</td>
                     <td>{{ track.title }}</td>
+                    <td>{{ track.artist }} <span class="is-clickable" v-if="track.artist" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
+                    <td>{{ track.albumArtist }} <span class="is-clickable" v-if="track.albumArtist" @click.prevent="loadTracks('', '', track.albumArtist, '');"><i class="fas fa-link ml-1"></i></span></td>
+                    <td>{{ track.album }}<span class="is-clickable" v-if="track.album" @click.prevent="loadTracks('', '', track.albumArtist, track.album);"><i class="fas fa-link ml-1"></i></span></td>
+                    <td class="has-text-right">{{ track.trackNumber }}</td>
                     <td>{{ track.year }}</td>
                 </tr>
             </tbody>
