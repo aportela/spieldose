@@ -49,7 +49,7 @@ const template = function () {
                         </span>
                         <input style="padding-left: 3.5em; padding-right: 3.5em;"
                             class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
-                            v-model.number="position">
+                            v-model.number="position" @change="onSeek">
                         <span class="icon is-right" style="height: 1em;">
                             <small>{{ duration }}</small>
                         </span>
@@ -129,16 +129,15 @@ export default {
                 isPlaying: false
             },
             oldVolume: 0,
-            volume: 8,
-            position: 0,
-            audioElementMotion: null,
+            volume: 0,
+            position: 0,            
             currentTime: "00:00",
             duration: "00:00",
+            showAnalyzer: true,
+            audioElementMotion: null,
             audioElementMotionMode: 3,
-            coverURL: null,            
-            showAnalyzer: false,
+            coverURL: null,                        
             customVinyl: true
-
         });
     },
     props: [
@@ -162,6 +161,7 @@ export default {
             }
         },
         trackId: function (newValue, oldValue) {
+            this.position = 0;
             this.audioCanBePlayed = false;
             this.playerEvents.isPaused = true;
             this.playerEvents.isPlaying = false;
@@ -199,11 +199,6 @@ export default {
         }
     },
     created: function () {
-        /*        
-        console.log(this.track);
-        console.log(this.aa);
-        console.log(this.animations);
-        */
     },
     mounted: function () {
         console.debug('Creating audio element');
@@ -242,6 +237,7 @@ export default {
             //this.playerEvents.isPaused = false;
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
+            this.onNextTrackButtonClick();
         });
 
         this.audioElement.addEventListener('error', (event) => {
@@ -272,9 +268,7 @@ export default {
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
         });        
-        
-        /*
-        
+              
         if (this.showAnalyzer) {
             this.audioElementMotion = new AudioMotionAnalyzer(
                 document.getElementById('container'),
@@ -286,10 +280,11 @@ export default {
                     showScaleX: false,
                     showScaleY: false,
                     stereo: false,
-                    splitGradient: false
+                    splitGradient: false,
+                    start: false
                 }
             );
-        }*/
+        }
     },
     methods: {
         /**
@@ -315,6 +310,7 @@ export default {
             if (this.hasPreviousUserInteractions) {
                 console.debug('Playing audio');
                 this.audioElement.play();
+                this.audioElementMotion.toggleAnalyzer();
             } else {
                 console.debug('No previous user interactions found, browser will deny play');
             }
@@ -323,9 +319,15 @@ export default {
             if (this.playerEvents.isPlaying) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
+                this.audioElementMotion.toggleAnalyzer();
             }
         },     
 
+        onSeek: function() {
+            if (this.position >= 0 && this.position < 1) {
+                this.audioElement.currentTime = this.audioElement.duration * this.position;
+            }            
+        },
         onToggleMute: function() {
             if (this.volume != 0) {
                 this.oldVolume = this.volume;
