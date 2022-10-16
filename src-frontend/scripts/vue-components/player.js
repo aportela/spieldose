@@ -5,7 +5,6 @@ const template = function () {
     return `
         <div class="">
             <div class="player__body" style="max-width: 400px;">
-            <audio id="audio" class="is-hidden"></audio>
             <div class="body__cover">
                 <ul class="list list--cover">
                     <li>
@@ -131,17 +130,17 @@ export default {
             return (this.track ? this.track.id : null);
         },
         isPlaying: function () {
-            return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
+            return (this.$audio && this.$audio.currentAudio && this.$audio.currentAudio.currentTime > 0 && !this.$audio.currentAudio.paused && !this.$audio.currentAudio.ended && this.$audio.currentAudio.readyState > 2);
         }
     },
     watch: {
         trackId: function (newValue, oldValue) {
             if (newValue) {
-                if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
-                    this.audio.stop();
+                if (this.$audio.currentAudio && this.$audio.currentAudio.currentTime > 0 && !this.$audio.currentAudio.paused && !this.$audio.currentAudio.ended && this.$audio.currentAudio.readyState > 2) {
+                    this.$audio.stop();
                 }
                 this.coverURL = null;
-                this.audio.src = "/api2/file/" + this.track.id;
+                this.$audio.src = "/api2/file/" + this.track.id;
                 //const url = this.track.thumbnailURL;
                 const url = "/api2/track/thumbnail/400/400/" + this.track.id;
                 let img = new Image();
@@ -152,27 +151,26 @@ export default {
                 img.onerror = () => {
                     this.coverURL = null;
                 }
-                this.audio.load();
-                if (newValue && oldValue) {
-                    this.onPlay();
-                }
+                this.$audio.load();
+                //if (newValue && oldValue) {
+                this.onPlay();
+                //}
             }
         },
         volume: function (newValue) {
-            if (this.audio) {
-                this.audio.volume = newValue / 100;
+            if (this.$audio) {
+                this.$audio.volume = newValue / 100;
             }
         }
     },
     created: function () {
     },
     mounted: function () {
-        this.audio = document.getElementById('audio');
-        this.audio.volume = this.volume / 100;
-        this.audioMotion = new AudioMotionAnalyzer(
+        this.$audio.volume = this.volume / 100;
+        this.$audioMotion = new AudioMotionAnalyzer(
             document.getElementById('container'),
             {
-                source: document.getElementById('audio'),
+                source: this.$audio,
                 mode: 3,
                 height: 40,
                 ledBars: false,
@@ -192,13 +190,13 @@ export default {
         },
         onPlay: function () {
             if (this.isPlaying) {
-                this.audio.stop();
+                this.$audio.stop();
             }
-            let playPromise = this.audio.play();
-            this.audio.addEventListener('timeupdate', (track) => {
-                const currentProgress = this.audio.currentTime / this.audio.duration;
-                this.duration = this.formatSecondsAsTime(Math.floor(this.audio.duration).toString());
-                this.currentTime = this.formatSecondsAsTime(Math.floor(this.audio.currentTime).toString());
+            let playPromise = this.$audio.play();
+            this.$audio.addEventListener('timeupdate', (track) => {
+                const currentProgress = this.$audio.currentTime / this.$audio.duration;
+                this.duration = this.formatSecondsAsTime(Math.floor(this.$audio.duration).toString());
+                this.currentTime = this.formatSecondsAsTime(Math.floor(this.$audio.currentTime).toString());
                 if (!isNaN(currentProgress)) {
                     this.position = currentProgress.toFixed(2);
                 } else {
@@ -211,7 +209,7 @@ export default {
                 playPromise.then(() => {
                 }).catch((error) => {
                     //this.$audioplayer.playback.pause();
-                    this.audio.currentTime = 0;
+                    this.$audio.currentTime = 0;
                 });
             }
         },
@@ -230,11 +228,11 @@ export default {
             return min + ':' + sec;
         },
         onChangeAudioMotionAnalyzerMode: function () {
-            this.audioMotionMode++;
-            if (this.audioMotionMode > 8) {
-                this.audioMotionMode = 0;
+            this.$audioMotionMode++;
+            if (this.$audioMotionMode > 8) {
+                this.$audioMotionMode = 0;
             }
-            this.audioMotion.setOptions({ mode: this.audioMotionMode });
+            this.$audioMotion.setOptions({ mode: this.$audioMotionMode });
         }
     }
 };
