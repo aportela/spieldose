@@ -63,8 +63,8 @@ const template = function () {
 
                         <li>
                             <a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" v-show="! this.playerEvents.isLoading && this.playerEvents.isPaused" @click.prevent="onPlayButtonClick"><i class="fa-fw fa fa-play"></i></a>
-                            <a href="#" class="list__link" v-show="! this.playerEvents.isLoading && this.playerEvents.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>                        
-                            <a href="#" class="list__link" v-show="this.playerEvents.isLoading"><i class="fa-fw fa fa-cog fa-spin"></i></a>                        
+                            <a href="#" class="list__link" v-show="! this.playerEvents.isLoading && this.playerEvents.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>
+                            <a href="#" class="list__link" v-show="this.playerEvents.isLoading"><i class="fa-fw fa fa-cog fa-spin"></i></a>
                         </li>
 
                         <li><a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" @click.prevent="onNextTrackButtonClick"><i
@@ -130,13 +130,13 @@ export default {
             },
             oldVolume: 0,
             volume: 0,
-            position: 0,            
+            position: 0,
             currentTime: "00:00",
             duration: "00:00",
             showAnalyzer: true,
             audioElementMotion: null,
-            audioElementMotionMode: 3,
-            coverURL: null,                        
+            audioElementMotionMode: 4,
+            coverURL: null,
             customVinyl: true
         });
     },
@@ -149,8 +149,8 @@ export default {
         }
     },
     watch: {
-        customVinyl: function(newValue) {
-            const url = "/api2/track/thumbnail/" + (newValue ? 'small': 'normal') + "/" + this.track.id;
+        customVinyl: function (newValue) {
+            const url = "/api2/track/thumbnail/" + (newValue ? 'small' : 'normal') + "/" + this.track.id;
             let img = new Image();
             img.src = url
             img.onload = () => {
@@ -172,7 +172,7 @@ export default {
                 if (this.audioElement) {
                     this.audioElement.src = "/api2/file/" + this.track.id;
                     //const url = this.track.thumbnailURL;
-                    const url = "/api2/track/thumbnail/" + (this.customVinyl ? 'small': 'normal') + "/" + this.track.id;
+                    const url = "/api2/track/thumbnail/" + (this.customVinyl ? 'small' : 'normal') + "/" + this.track.id;
                     let img = new Image();
                     img.src = url
                     img.onload = () => {
@@ -206,7 +206,7 @@ export default {
         console.debug('Setting audio volume at ' + this.volume);
         this.setVolume(this.volume / 100);
         console.debug('Setting audio available to play event');
-                
+
         this.audioElement.addEventListener('canplay', (event) => {
             console.log("Buffering audio end");
             console.debug('Audio can be played');
@@ -261,14 +261,14 @@ export default {
             } else {
                 this.position = 0;
             }
-            //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();            
+            //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
             //console.log(this.audioElement.currentTime);
             //console.debug(event);
             //this.playerEvents.isPaused = false;
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
-        });        
-              
+        });
+
         if (this.showAnalyzer) {
             this.audioElementMotion = new AudioMotionAnalyzer(
                 document.getElementById('container'),
@@ -303,37 +303,39 @@ export default {
             }
         },
         play: function () {
-            if (! this.playerEvents.isPaused) {
+            if (!this.playerEvents.isPaused) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
             }
             if (this.hasPreviousUserInteractions) {
                 console.debug('Playing audio');
                 this.audioElement.play();
-                this.audioElementMotion.toggleAnalyzer();
+                if (!this.audioElementMotion.isOn) {
+                    this.audioElementMotion.toggleAnalyzer();
+                }
             } else {
                 console.debug('No previous user interactions found, browser will deny play');
             }
-        },   
+        },
         pause: function () {
             if (this.playerEvents.isPlaying) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
                 this.audioElementMotion.toggleAnalyzer();
             }
-        },     
+        },
 
-        onSeek: function() {
+        onSeek: function () {
             if (this.position >= 0 && this.position < 1) {
                 this.audioElement.currentTime = this.audioElement.duration * this.position;
-            }            
+            }
         },
-        onToggleMute: function() {
+        onToggleMute: function () {
             if (this.volume != 0) {
                 this.oldVolume = this.volume;
                 this.volume = 0;
             } else {
-                this.volume = this.oldVolume;   
+                this.volume = this.oldVolume;
             }
             this.setVolume(this.volume / 100);
         },
@@ -355,7 +357,7 @@ export default {
             this.hasPreviousUserInteractions = true;
             this.pause();
             this.$bus.emit('onNextTrack');
-        },        
+        },
         formatSecondsAsTime: function (secs, format) {
             var hr = Math.floor(secs / 3600);
             var min = Math.floor((secs - (hr * 3600)) / 60);
