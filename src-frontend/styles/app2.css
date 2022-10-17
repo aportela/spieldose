@@ -524,7 +524,8 @@ div#analyzer-container {
 /* app sidebar */
 
 table td {
-    white-space: nowrap;
+    /* white-space: nowrap; */
+    font-size: 0.9rem;
 }
 
 
