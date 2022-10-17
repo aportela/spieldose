@@ -142,7 +142,7 @@ export default {
         });
     },
     props: [
-        'track', 'animations'
+        'track'
     ],
     computed: {
         trackId: function () {
