@@ -130,7 +130,7 @@ export default {
                 isPlaying: false
             },
             oldVolume: 0,
-            volume: 80,
+            volume: 2,
             position: 0,
             currentTime: "00:00",
             duration: "00:00",
@@ -209,7 +209,7 @@ export default {
         }
     },
     created: function () {
-        const savedVolume = this.$spieldoseLocalStorage.get('savedVolume');
+        const savedVolume = this.$spieldoseLocalStorage.get('volume');
         if (savedVolume != null) {
             this.volume = savedVolume * 100;
         }
@@ -341,7 +341,7 @@ export default {
             if (volume >= 0 && volume <= 1) {
                 if (this.audioElement) {
                     this.audioElement.volume = volume;
-                    this.$spieldoseLocalStorage.set('savedVolume', volume);
+                    this.$spieldoseLocalStorage.set('volume', volume);
                 } else {
                     console.error("Audio element not mounted");
                 }
