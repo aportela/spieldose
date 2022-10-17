@@ -209,16 +209,18 @@ export default {
         }
     },
     created: function () {
-        const savedVolume = this.$spieldoseLocalStorage.get('volume');
-        if (savedVolume != null) {
-            this.volume = savedVolume * 100;
-        }
     },
     mounted: function () {
         console.debug('Creating audio element');
         this.audioElement = document.getElementById('audio');
-        console.debug('Setting audio volume at ' + this.volume);
-        this.setVolume(this.volume / 100);
+        const savedVolume = this.$spieldoseLocalStorage.get('volume');
+        if (savedVolume != null) {
+            console.debug('Restoring audio volume at ' + (savedVolume * 100) + '%');
+            this.volume = savedVolume * 100;
+        } else {
+            console.debug('Setting audio volume at ' + this.volume + '%');
+            this.setVolume(this.volume / 100);
+        }
         console.debug('Setting audio available to play event');
         this.audioElement.addEventListener('canplay', (event) => {
             console.log("Buffering audio end");
