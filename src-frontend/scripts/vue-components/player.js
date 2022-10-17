@@ -34,11 +34,11 @@ const template = function () {
                 <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
 
                 <div class="body__info">
-                    <div class="info__album">{{ track.title }}</div>
+                    <div class="info__album">{{ track.album }}</div>
 
-                    <div class="info__song">{{ track.album }}</div>
+                    <div class="info__song">{{ track.title }}</div>
 
-                    <div class="info__artist">{{ track.artist }}</div>
+                    <div class="info__artist"><router-link v-if="track.artist" :to="{ name: 'artistPage', params: { name: track.artist }}">{{ track.artist }}</router-link></div>
                 </div>
 
                 <div class="field">
