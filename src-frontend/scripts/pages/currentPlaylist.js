@@ -1,3 +1,4 @@
+import { nextTick } from "vue";
 import bus from "../plugins/bus";
 import player from "../vue-components/player";
 
@@ -103,14 +104,6 @@ export default {
         }
     },
     created: function () {
-        const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
-        const savedPlaylistIndex = this.$spieldoseLocalStorage.get('currentPlaylistTrackIndex');
-        if (false && savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
-            this.tracks = savedPlaylist;
-            this.currentTrackIndex = savedPlaylistIndex;
-        } else {
-            this.loadTracks();
-        }
         this.$bus.on('onPreviousTrack', () => { this.onPreviousTrack(); });
         this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
         this.$bus.on('playerEvent', (playerEvent) => {
@@ -119,6 +112,18 @@ export default {
         this.$bus.on('endTrack', (trackId) => {
             this.onIncreaseTrackPlayCount(trackId);
         });
+    },
+    mounted: function () {
+        const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
+        const savedPlaylistIndex = this.$spieldoseLocalStorage.get('currentPlaylistTrackIndex');
+        if (savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
+            this.$nextTick(() => {
+                this.tracks = savedPlaylist;
+                this.currentTrackIndex = savedPlaylistIndex;
+            });
+        } else {
+            this.loadTracks();
+        }
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
