@@ -94,7 +94,7 @@ const template = function () {
                         <li><i class="is-clickable fa-solid fa-chart-simple" title="Toggle analyzer" :class="{'active_button': showAnalyzer, 'not_active_button': ! showAnalyzer }" @click.prevent="showAnalyzer = ! showAnalyzer"></i></li>
 
 
-                        <li><a href="#" class="list__link" title="Love/unlove track"><i class="fa fa-heart"></i></a>
+                        <li><a href="#" class="list__link" title="Love/unlove track" :class="{'active_button': track.loved, 'not_active_button': ! track.loved }" @click.prevent="onToggleLoved"><i class="fa fa-heart"></i></a>
                         </li>
 
                         <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a>
@@ -428,6 +428,15 @@ export default {
                     this.audioElementMotionMode = 0;
                 }
                 this.audioElementMotion.setOptions({ mode: this.audioElementMotionMode });
+            }
+        },
+        onToggleLoved: function () {
+            if (this.track.loved) {
+                console.log('Unloving current track');
+                this.$bus.emit('unLoveTrack', this.track.id);
+            } else {
+                console.log('Loving current track');
+                this.$bus.emit('loveTrack', this.track.id);
             }
         }
     }

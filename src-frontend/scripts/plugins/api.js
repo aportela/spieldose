@@ -74,6 +74,24 @@ export default {
                             reject(error);
                         });
                     });
+                },
+                love: (trackId) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/love/track/' + trackId).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
+                unLove: (trackId) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/unlove/track/' + trackId).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
                 }
             }
         };

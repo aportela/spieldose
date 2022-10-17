@@ -28,5 +28,15 @@ return (array(
                 PRIMARY KEY(`USER`,`FILE`, `PLAYED`)
             );
         "
+    ),
+    6 => array(
+        "
+            CREATE TABLE [LOVED_FILE] (
+                [FILE] VARCHAR(40) NOT NULL,
+                [USER] VARCHAR(36) NOT NULL,
+                [LOVED]	INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY([FILE], [USER])
+            );
+        "
     )
 ));

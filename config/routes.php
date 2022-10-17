@@ -168,6 +168,40 @@ return function (App $app) {
                 }
             });
 
+            $group->get('/love/track/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                //$logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                //$logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                if (!empty($args['id'])) {
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    \Spieldose\Track::love($db, $args['id'], \Spieldose\User::getUserId());
+                    $payload = json_encode([]);
+                    $response->getBody()->write(json_encode($payload));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
+
+            $group->get('/unlove/track/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                //$logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                //$logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                if (!empty($args['id'])) {
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    \Spieldose\Track::unLove($db, $args['id'], \Spieldose\User::getUserId());
+                    $payload = json_encode([]);
+                    $response->getBody()->write(json_encode($payload));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
+
             $group->get('/track/thumbnail/{size}/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 if (!in_array($args['size'], ['small', 'normal'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('size');

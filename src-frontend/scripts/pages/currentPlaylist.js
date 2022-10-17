@@ -112,6 +112,12 @@ export default {
         this.$bus.on('endTrack', (trackId) => {
             this.onIncreaseTrackPlayCount(trackId);
         });
+        this.$bus.on('loveTrack', (trackId) => {
+            this.onLoveTrack(trackId);
+        });
+        this.$bus.on('unLoveTrack', (trackId) => {
+            this.onUnLoveTrack(trackId);
+        });
     },
     mounted: function () {
         const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
@@ -178,6 +184,24 @@ export default {
         },
         onIncreaseTrackPlayCount: function (trackId) {
             this.$api.track.increasePlayCount(trackId).then(success => {
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
+        },
+        onLoveTrack: function (trackId) {
+            this.$api.track.love(trackId).then(success => {
+                this.tracks.find((track) => track.id == trackId).loved = true;
+                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
+        },
+        onUnLoveTrack: function (trackId) {
+            this.$api.track.unLove(trackId).then(success => {
+                this.tracks.find((track) => track.id == trackId).loved = false;
+                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
                 // TODO
             }).catch(error => {
                 // TODO
