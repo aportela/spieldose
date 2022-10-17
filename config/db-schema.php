@@ -12,11 +12,21 @@ return (array(
     ),
     4 => array(
         "
-                CREATE TABLE [USER] (
-                    [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                    [email] VARCHAR(255) UNIQUE NOT NULL,
-                    [password_hash] VARCHAR(60) NOT NULL
-                );
-            "
+            CREATE TABLE [USER] (
+                [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [email] VARCHAR(255) UNIQUE NOT NULL,
+                [password_hash] VARCHAR(60) NOT NULL
+            );
+        "
+    ),
+    5 => array(
+        "
+            CREATE TABLE [PLAY_STATS] (
+                [USER] VARCHAR(36) NOT NULL,
+                [FILE] VARCHAR(40) NOT NULL,
+                [PLAYED] INTEGER NOT NULL,
+                PRIMARY KEY(`USER`,`FILE`, `PLAYED`)
+            );
+        "
     )
 ));

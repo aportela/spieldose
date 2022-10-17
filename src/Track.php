@@ -149,15 +149,18 @@ class Track
         return ($data);
     }
 
-    public function incPlayCount(\Spieldose\Database\DB $dbh): bool
+    public static function incPlayCount(\aportela\DatabaseWrapper\DB $db, string $trackId, string $userId): bool
     {
-        if (isset($this->id) && !empty($this->id)) {
-            $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-            return ($dbh->execute('REPLACE INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
-        } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id");
-        }
+
+        return ($db->exec(
+            "
+                REPLACE INTO PLAY_STATS (USER, FILE, PLAYED) VALUES(:USER, :FILE, CURRENT_TIMESTAMP);
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":FILE", $trackId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":USER", $userId)
+            )
+        ) == 1);
     }
 
     public function love(\Spieldose\Database\DB $dbh): bool
@@ -199,12 +202,12 @@ class Track
         if (!empty($albumArtist)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":albumArtist", $albumArtist);
             $whereConditions[] = " FILE_ID3_TAG.ALBUM_ARTIST = :albumArtist ";
-        }        
+        }
         if (!empty($album)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $album);
             $whereConditions[] = " FILE_ID3_TAG.ALBUM = :album ";
         }
-        
+
         $tracks = $db->query(
             sprintf(
                 "
@@ -229,7 +232,7 @@ class Track
                     ORDER BY %s
                     LIMIT %d
                 ",
-                count($whereConditions)>0 ? ' WHERE ' . implode(" AND ", $whereConditions): null,
+                count($whereConditions) > 0 ? ' WHERE ' . implode(" AND ", $whereConditions) : null,
                 empty($query) && empty($artist) && empty($albumArtist) && empty($album) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
                 empty($query) ? 32 : 64
             ),

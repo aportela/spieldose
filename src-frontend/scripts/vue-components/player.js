@@ -220,7 +220,6 @@ export default {
         console.debug('Setting audio volume at ' + this.volume);
         this.setVolume(this.volume / 100);
         console.debug('Setting audio available to play event');
-
         this.audioElement.addEventListener('canplay', (event) => {
             console.log("Buffering audio end");
             console.debug('Audio can be played');
@@ -249,6 +248,7 @@ export default {
         this.audioElement.addEventListener('ended', (event) => {
             console.debug('Audio is ended');
             //this.playerEvents.isPaused = false;
+            this.$bus.emit('endTrack', this.track.id);
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
             this.onNextTrackButtonClick();

@@ -151,10 +151,27 @@ return function (App $app) {
                 }
             });
 
+            $group->get('/increase_play_count/track/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                //$logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                //$logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                if (!empty($args['id'])) {
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    \Spieldose\Track::incPlayCount($db, $args['id'], \Spieldose\User::getUserId());
+                    $payload = json_encode([]);
+                    $response->getBody()->write(json_encode($payload));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
+
             $group->get('/track/thumbnail/{size}/{id}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 if (!in_array($args['size'], ['small', 'normal'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('size');
-                }                
+                }
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $settings = $this->get('settings')['thumbnails'];
 
@@ -184,7 +201,7 @@ return function (App $app) {
                     } catch (\Spieldose\Exception\NotFoundException $e) {
                     }
                 }
-                $localPath = $args['size'] == 'small' ? $localPathSmallSize: $localPathNormalSize;
+                $localPath = $args['size'] == 'small' ? $localPathSmallSize : $localPathNormalSize;
                 if (!empty($localPath) && file_exists(($localPath))) {
                     $filesize = filesize($localPath);
                     $f = fopen($localPath, 'r');

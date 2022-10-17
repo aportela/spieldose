@@ -6,7 +6,7 @@ const template = function () {
         <div class="field has-addons">
             <div class="control has-icons-left is-expanded is-small" :class="{ 'is-loading': loading }">
                 <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery"
-                    v-on:keyup.enter="onSearch">
+                    v-on:keyup.enter="onSearch" :disabled="loading">
                 <span class="icon is-small is-left">
                     <i class="fas fa-search"></i>
                 </span>
@@ -15,7 +15,7 @@ const template = function () {
                 </span>
             </div>
             <div class="control">
-                <button class="button is-small is-pink" :class="{ 'is-loading': loading }" @click.prevent="onSearch" :disabled="loading">Search</button>
+                <button class="button is-small is-pink" @click.prevent="onSearch" :disabled="loading">Search</button>
             </div>
         </div>
 
@@ -94,29 +94,10 @@ export default {
                 console.log("returning null");
                 return ({});
             }
-        },
-        isPlaying: function () {
-            return (true);
-            //return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
         }
     },
     watch: {
         currentTrackIndex: function (newValue, oldValue) {
-            /*
-            if (!this.audio) {
-                this.audio = document.getElementById('audio');
-                this.audio.volume = this.volume / 100;
-            } else {
-                if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
-                    this.audio.stop();
-                }
-            }
-            this.audio.src = "/api2/file/" + this.tracks[this.currentTrackIndex].id;
-            this.audio.load();
-            if (oldValue != -1) {
-                this.onPlay();
-            }
-            */
             this.$spieldoseLocalStorage.set('currentPlaylistTrackIndex', newValue);
             this.$bus.emit('onTrackChanged', { track: this.currentTrack });
         }
@@ -124,7 +105,7 @@ export default {
     created: function () {
         const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
         const savedPlaylistIndex = this.$spieldoseLocalStorage.get('currentPlaylistTrackIndex');
-        if (savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
+        if (false && savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
             this.tracks = savedPlaylist;
             this.currentTrackIndex = savedPlaylistIndex;
         } else {
@@ -134,6 +115,9 @@ export default {
         this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
         this.$bus.on('playerEvent', (playerEvent) => {
             this.playerEvent = playerEvent;
+        });
+        this.$bus.on('endTrack', (trackId) => {
+            this.onIncreaseTrackPlayCount(trackId);
         });
     },
     methods: {
@@ -186,6 +170,13 @@ export default {
                     this.loading = false;
                 });
             */
+        },
+        onIncreaseTrackPlayCount: function (trackId) {
+            this.$api.track.increasePlayCount(trackId).then(success => {
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
         },
         onSearch: function () {
             this.loadTracks(this.searchQuery);
