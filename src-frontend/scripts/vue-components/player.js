@@ -4,8 +4,8 @@ const template = function () {
     return `
         <div>
             <audio id="audio" class="is-hidden"></audio>
-            <div class="player__body" style="max-width: 400px;">
-                <div class="body__cover">
+            <div class="player__body" style="max-width: 400px; margin: 0px auto;">
+                <div class="body__cover" style="max-width: 400px; margin: 0px auto;">
                     <ul class="list list--cover">
                         <li>
                             <slot name="top-left-icon"></slot>
