@@ -38,5 +38,10 @@ return (array(
                 PRIMARY KEY([FILE], [USER])
             );
         "
+    ),
+    7 => array(
+        "
+            ALTER TABLE FILE_ID3_TAG ADD COLUMN [GENRE] VARCHAR(128)
+        "
     )
 ));

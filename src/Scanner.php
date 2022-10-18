@@ -150,11 +150,18 @@ class Scanner
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_id");
         }
+
+        $genre = $this->id3->getGenre();
+        if (!empty($genre)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":genre");
+        }
         $this->dbh->query(
             "
                 REPLACE INTO FILE_ID3_TAG
-                    (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, TRACK_NUMBER, DISC_NUMBER, PLAYTIME_SECONDS, MB_ARTIST_ID, MB_ALBUM_ARTIST_ID, MB_ALBUM_ID)
-                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id); ",
+                    (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, TRACK_NUMBER, DISC_NUMBER, PLAYTIME_SECONDS, MB_ARTIST_ID, MB_ALBUM_ARTIST_ID, MB_ALBUM_ID, GENRE)
+                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id, :genre); ",
             $params
         );
 
