@@ -1,6 +1,6 @@
 import { createWebHashHistory, createRouter } from "vue-router";
 
-import { default as upgrade } from '../vue-components/upgrade.js';
+import { default as upgrade } from '../pages/upgrade-database.js';
 import { default as signInUp } from '../pages/signin.js';
 import { default as container } from '../layouts/app.js';
 import { default as search } from '../vue-components/search.js';
@@ -100,8 +100,8 @@ const routes = [
                 ]
             },
             {
-                path: 'artist/:artist',
-                name: 'artist',
+                path: 'artist/:name',
+                name: 'artistPage',
                 component: browseArtist,
                 children: [
                     {

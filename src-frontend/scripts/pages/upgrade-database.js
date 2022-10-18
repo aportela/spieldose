@@ -13,7 +13,7 @@ const template = function () {
                                 <hr class="has-background-grey-light">
                                 <p class="subtitle is-5">{{ $t("upgrade.labels.upgradeRequired") }}</p>
                                 <p>{{ $t("upgrade.labels.executeThisCommandline") }}</p>
-                                <p class="has-text-weight-bold">php tools/install-upgrade-db.php</p>
+                                <p class="has-text-weight-bold">php tools/upgrade.php</p>
                             </div>
                             <div class="notification is-success" v-else>
                                 <p class="title is-5"><span class="icon"><i class="fas fa-check"></i></span> {{ $t("upgrade.labels.updateNotRequired") }}</p>
