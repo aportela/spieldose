@@ -307,6 +307,185 @@ return function (App $app) {
                     throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for hash: ' . $args['hash']);
                 }
             });
+
+
+
+            /* metrics */
+
+            $group->post('/metrics/top_played_tracks', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $metrics = \Spieldose\Metrics::GetTopPlayedTracks(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array(
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
+                        "artist" => $params["artist"] ?? "",
+                    ),
+                    $params["count"] ?? 5
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/top_artists', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $metrics = \Spieldose\Metrics::GetTopArtists(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array(
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
+                    ),
+                    $params["count"] ?? 5
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/top_albums', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $metrics = \Spieldose\Metrics::GetTopAlbums(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array(
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
+                    ),
+                    $params["count"] ?? 5
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/top_genres', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $metrics = \Spieldose\Metrics::GetTopGenres(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array(
+                        "fromDate" => $params["fromDate"] ?? "",
+                        "toDate" => $params["toDate"] ?? "",
+                    ),
+                    $params["count"] ?? 5
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/recently_added', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $entity = $params["entity"] ?? "";
+                if (!empty($entity)) {
+                    switch ($entity) {
+                        case "tracks":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedTracks(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+                            break;
+                        case "artists":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedArtists(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+                            break;
+                        case "albums":
+                            $metrics = \Spieldose\Metrics::GetRecentlyAddedAlbums(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+
+                            break;
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("entity");
+                }
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/recently_played', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $entity = $params["entity"] ?? "";
+                if (!empty($entity)) {
+                    switch ($entity) {
+                        case "tracks":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedTracks(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+                            break;
+                        case "artists":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedArtists(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+                            break;
+                        case "albums":
+                            $metrics = \Spieldose\Metrics::GetRecentlyPlayedAlbums(
+                                $this->get(\aportela\DatabaseWrapper\DB::class),
+                                array(),
+                                $params["count"] ?? 5
+                            );
+                            break;
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("entity");
+                }
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/play_stats_by_hour', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $metrics = \Spieldose\Metrics::GetPlayStatsByHour(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array()
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/play_stats_by_weekday', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByWeekDay(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array()
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/play_stats_by_month', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByMonth(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array()
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            $group->post('/metrics/play_stats_by_year', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $metrics = \Spieldose\Metrics::GetPlayStatsByYear(
+                    $this->get(\aportela\DatabaseWrapper\DB::class),
+                    array()
+                );
+                $payload = json_encode(['metrics' => $metrics]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json');
+            });
+
+            /* metrics */
         }
     )->add(\Spieldose\Middleware\JWT::class)
         ->add(\Spieldose\Middleware\APIExceptionCatcher::class);

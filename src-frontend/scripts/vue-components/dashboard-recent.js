@@ -1,4 +1,3 @@
-import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinTopRecentCharts, mixinNavigation } from '../mixins.js';
 
 const template = function () {
@@ -71,68 +70,68 @@ export default {
     },
     methods: {
         loadRecentAddedTracks: function () {
-            spieldoseAPI.metrics.getRecentAddedTracks(this.interval).then(response => {
+            this.$api.metrics.getRecentAddedTracks(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentAddedArtists: function () {
-            spieldoseAPI.metrics.getRecentAddedArtists(this.interval).then(response => {
+            this.$api.metrics.getRecentAddedArtists(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentAddedAlbums: function () {
-            spieldoseAPI.metrics.getRecentAddedAlbums(this.interval).then(response => {
+            this.$api.metrics.getRecentAddedAlbums(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedTracks: function () {
-            spieldoseAPI.metrics.getRecentPlayedTracks(this.interval).then(response => {
+            this.$api.metrics.getRecentPlayedTracks(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedArtists: function () {
-            spieldoseAPI.metrics.getRecentPlayedArtists(this.interval).then(response => {
+            this.$api.metrics.getRecentPlayedArtists(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
         loadRecentPlayedAlbums: function () {
-            spieldoseAPI.metrics.getRecentPlayedAlbums(this.interval).then(response => {
+            this.$api.metrics.getRecentPlayedAlbums(this.interval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },

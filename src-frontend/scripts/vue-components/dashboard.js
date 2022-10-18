@@ -39,8 +39,8 @@ export default {
     name: 'spieldose-dashboard',
     template: template(),
     components: {
-    'spieldose-dashboard-toplist': dashboardTopList,
-    'spieldose-dashboard-recent': dashboardRecent,
-    'spieldose-dashboard-play-stats': dashboardPlayStats
+        'spieldose-dashboard-toplist': dashboardTopList,
+        'spieldose-dashboard-recent': dashboardRecent,
+        'spieldose-dashboard-play-stats': dashboardPlayStats
     }
 }

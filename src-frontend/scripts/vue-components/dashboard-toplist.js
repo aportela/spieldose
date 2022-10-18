@@ -1,6 +1,4 @@
-import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinTopRecentCharts, mixinNavigation } from '../mixins.js';
-
 const template = function () {
     return `
         <section class="panel chart height-100">
@@ -54,7 +52,7 @@ export default {
     data: function () {
         return ({
             loading: false,
-            activeInterval: 0
+            activeInterval: 0,
         });
     },
     props: [
@@ -88,33 +86,33 @@ export default {
     },
     methods: {
         loadTopPlayedTracks: function () {
-            spieldoseAPI.metrics.getTopPlayedTracks(this.activeInterval, this.artist).then(response => {
+            this.$api.metrics.getTopPlayedTracks(this.activeInterval, this.artist).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, loadTopPlayedArtists: function () {
-            spieldoseAPI.metrics.getTopPlayedArtists(this.activeInterval).then(response => {
+            this.$api.metrics.getTopPlayedArtists(this.activeInterval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, loadTopPlayedGenres: function () {
-            spieldoseAPI.metrics.getTopPlayedGenres(this.activeInterval).then(response => {
+            this.$api.metrics.getTopPlayedGenres(this.activeInterval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         }, changeInterval: function (interval) {

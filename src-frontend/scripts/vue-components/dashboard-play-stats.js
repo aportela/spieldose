@@ -1,6 +1,6 @@
 import { Chart } from 'Chart';
-import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError } from '../mixins.js';
+
 
 const template = function () {
     return `
@@ -59,7 +59,7 @@ export default {
         });
     },
     created: function () {
-        this.loadChart();
+        //this.loadChart();
     },
     computed: {
         isHourInterval: function () {
@@ -116,7 +116,7 @@ export default {
                 this.loading = false;
             }).catch(error => {
                 console.log("error");
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
@@ -158,7 +158,7 @@ export default {
                 this.loading = false;
             }).catch(error => {
                 console.log(error);
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
@@ -204,7 +204,7 @@ export default {
                 */
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },
@@ -236,7 +236,7 @@ export default {
                 */
                 this.loading = false;
             }).catch(error => {
-                this.setAPIError(error.getApiErrorData());
+                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
             });
         },

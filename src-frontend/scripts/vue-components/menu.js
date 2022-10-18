@@ -2,7 +2,6 @@ const template = function () {
     return `
         <nav id="menu" class="panel is-unselectable">
             <p class="panel-heading">{{ $t("menu.labels.header") }}</p>
-            <!--
             <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('dashboard') }" v-on:click.prevent="changeSection('dashboard');">
                 <span class="panel-icon"><i class="fas fa-chart-line"></i></span>
                 <span>{{ $t("menu.labels.dashboard") }}</span>
@@ -11,6 +10,7 @@ const template = function () {
                 <span class="panel-icon"><i class="fas fa-headphones"></i></span>
                 <span>{{ $t("menu.labels.currentPlaylist") }}</span>
             </a>
+            <!--
             <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('search') }" v-on:click.prevent="changeSection('search');">
                 <span class="panel-icon"><i class="fas fa-search"></i></span>
                 <span>{{ $t("menu.labels.search") }}</span>
@@ -53,6 +53,12 @@ export default {
     name: 'spieldose-menu-component',
     template: template(),
     methods: {
+        isSectionActive: function (section) {
+            return (this.$route.name == section);
+        },
+        changeSection: function (routeName) {
+            this.$router.push({ name: routeName }).catch(err => { });
+        },
         signOut: function (e) {
             this.$api.session.signOut().then(response => {
                 this.$spieldoseLocalStorage.remove("jwt");
