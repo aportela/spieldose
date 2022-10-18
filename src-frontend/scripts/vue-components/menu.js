@@ -35,7 +35,12 @@ const template = function () {
                 <span class="panel-icon"><i class="fas fa-broadcast-tower"></i></span>
                 <span>{{ $t("menu.labels.browseRadioStations") }}</span>
             </a>
+            <a class="panel-block" v-on:click.prevent="signOut();">
+                <span class="panel-icon"><i class="fa-solid fa-sun"></i></span>
+                <span>Toggle dark mode</span>
+            </a>
             -->
+
             <a class="panel-block" v-on:click.prevent="signOut();">
                 <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>
                 <span>{{ $t("menu.labels.signOut") }}</span>
