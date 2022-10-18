@@ -77,7 +77,7 @@ export default {
     },
     methods: {
         loadMetricsByHourChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByHour().then(response => {
+            this.$api.metrics.getPlayStatMetricsByHour().then(response => {
                 const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
                 let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for (let i = 0; i < response.data.metrics.length; i++) {
@@ -88,7 +88,6 @@ export default {
                 }
                 let el = document.getElementById('playcount-metrics-chart-hour');
                 if (el) {
-                    /*
                     this.chart = new Chart(el, {
                         type: 'line',
                         data: {
@@ -102,16 +101,9 @@ export default {
                                     'lineTension': 0.1
                                 }
                             ]
-                            datasets: [{
-                                label: 'My First dataset',
-                                backgroundColor: 'rgb(255, 99, 132)',
-                                borderColor: 'rgb(255, 99, 132)',
-                                data: [0, 10, 5, 2, 20, 30, 45],
-                              }]
                         }
                         , options: commonChartOptions
                     });
-                    */
                 }
                 this.loading = false;
             }).catch(error => {
@@ -121,7 +113,7 @@ export default {
             });
         },
         loadMetricsByWeekDayChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByWeekDay().then(response => {
+            this.$api.metrics.getPlayStatMetricsByWeekDay().then(response => {
                 const weekDayNames = [
                     this.$t('dashboard.labels.sunday'),
                     this.$t('dashboard.labels.monday'),
@@ -140,7 +132,6 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
-                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
                     type: 'bar',
                     data: {
@@ -154,7 +145,6 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
-                */
                 this.loading = false;
             }).catch(error => {
                 console.log(error);
@@ -163,7 +153,7 @@ export default {
             });
         },
         loadMetricsByMonthChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByMonth().then(response => {
+            this.$api.metrics.getPlayStatMetricsByMonth().then(response => {
                 const monthNames = [
                     this.$t('dashboard.labels.january'),
                     this.$t('dashboard.labels.february'),
@@ -187,7 +177,6 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
-                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
                     type: 'bar',
                     data: {
@@ -201,7 +190,6 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
-                */
                 this.loading = false;
             }).catch(error => {
                 console.log(error); // this.setAPIError(error.getApiErrorData());
@@ -209,7 +197,7 @@ export default {
             });
         },
         loadMetricsByYearChart: function () {
-            spieldoseAPI.metrics.getPlayStatMetricsByYear().then(response => {
+            this.$api.metrics.getPlayStatMetricsByYear().then(response => {
                 let years = [];
                 let data = [];
                 for (let i = 0; i < response.data.metrics.length; i++) {
@@ -219,7 +207,6 @@ export default {
                 if (this.chart) {
                     this.chart.destroy();
                 }
-                /*
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-year'), {
                     type: 'bar',
                     data: {
@@ -233,7 +220,6 @@ export default {
                         ]
                     }, options: commonChartOptions
                 });
-                */
                 this.loading = false;
             }).catch(error => {
                 console.log(error); // this.setAPIError(error.getApiErrorData());
