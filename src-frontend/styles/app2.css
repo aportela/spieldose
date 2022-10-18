@@ -527,10 +527,12 @@ div#analyzer-container {
 /* app sidebar */
 
 table td {
-    /* white-space: nowrap; */
     font-size: 0.9rem;
 }
 
+.whitespace-nowrap {
+    white-space: nowrap;
+}
 
 
 /* custom bulma overrides */
