@@ -149,42 +149,49 @@ class Track
         return ($data);
     }
 
-    public function incPlayCount(\Spieldose\Database\DB $dbh): bool
+    public static function incPlayCount(\aportela\DatabaseWrapper\DB $db, string $trackId, string $userId): bool
     {
-        if (isset($this->id) && !empty($this->id)) {
-            $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-            return ($dbh->execute('REPLACE INTO STATS (user_id, file_id, played) VALUES(:user_id, :file_id, CURRENT_TIMESTAMP); ', $params));
-        } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id");
-        }
+        return ($db->exec(
+            "
+                REPLACE INTO PLAY_STATS (USER, FILE, PLAYED) VALUES(:USER, :FILE, CURRENT_TIMESTAMP);
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":FILE", $trackId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":USER", $userId)
+            )
+        ) == 1);
     }
 
-    public function love(\Spieldose\Database\DB $dbh): bool
+    public static function love(\aportela\DatabaseWrapper\DB $db, string $trackId, string $userId): bool
     {
-        if (isset($this->id) && !empty($this->id)) {
-            $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-            return ($dbh->execute('REPLACE INTO LOVED_FILE (file_id, user_id, loved) VALUES(:file_id, :user_id, 1); ', $params));
-        } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id");
-        }
+        return ($db->exec(
+            "
+                REPLACE INTO LOVED_FILE (USER, FILE, LOVED) VALUES(:USER, :FILE, CURRENT_TIMESTAMP);
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":FILE", $trackId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":USER", $userId)
+            )
+        ) == 1);
     }
 
-    public function unLove(\Spieldose\Database\DB $dbh): bool
+    public static function unLove(\aportela\DatabaseWrapper\DB $db, string $trackId, string $userId): bool
     {
-        if (isset($this->id) && !empty($this->id)) {
-            $params[] = (new \Spieldose\Database\DBParam())->str(":file_id", $this->id);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId());
-            return ($dbh->execute('DELETE FROM LOVED_FILE WHERE file_id = :file_id AND user_id = :user_id; ', $params));
-        } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id");
-        }
+        return ($db->exec(
+            "
+                DELETE FROM LOVED_FILE WHERE USER = :USER AND FILE = :FILE
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":FILE", $trackId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":USER", $userId)
+            )
+        ) == 1);
     }
 
     public static function searchNew(\aportela\DatabaseWrapper\DB $db, $query, $artist, $albumArtist, $album)
     {
         $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":USER", \Spieldose\User::getUserId()),
             new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
         );
         $whereConditions = [];
@@ -199,12 +206,12 @@ class Track
         if (!empty($albumArtist)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":albumArtist", $albumArtist);
             $whereConditions[] = " FILE_ID3_TAG.ALBUM_ARTIST = :albumArtist ";
-        }        
+        }
         if (!empty($album)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $album);
             $whereConditions[] = " FILE_ID3_TAG.ALBUM = :album ";
         }
-        
+
         $tracks = $db->query(
             sprintf(
                 "
@@ -221,15 +228,17 @@ class Track
                         FILE_ID3_TAG.PLAYTIME_SECONDS AS playtimeSeconds,
                         FILE_ID3_TAG.MB_ARTIST_ID AS musicBrainzArtistId,
                         FILE_ID3_TAG.MB_ALBUM_ARTIST_ID as musicBrainzAlbumArtistId,
-                        FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId
+                        FILE_ID3_TAG.MB_ALBUM_ID AS musicBrainzAlbumId,
+                        COALESCE(LOVED_FILE.LOVED, 0) AS loved
                     FROM FILES
                     LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
                     LEFT JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
+                    LEFT JOIN LOVED_FILE ON (LOVED_FILE.FILE = FILES.ID AND LOVED_FILE.USER = :USER)
                     %s
                     ORDER BY %s
                     LIMIT %d
                 ",
-                count($whereConditions)>0 ? ' WHERE ' . implode(" AND ", $whereConditions): null,
+                count($whereConditions) > 0 ? ' WHERE ' . implode(" AND ", $whereConditions) : null,
                 empty($query) && empty($artist) && empty($albumArtist) && empty($album) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
                 empty($query) ? 32 : 64
             ),
@@ -243,6 +252,7 @@ class Track
                 //$track->thumbnailURL = sprintf("https://coverartarchive.org/release/%s/front-250", $track->musicBrainzAlbumId);
             }
             unset($track->localCoverPath);
+            $track->loved = $track->loved == 1;
             return $track;
         }, $tracks);
         return ($tracks);

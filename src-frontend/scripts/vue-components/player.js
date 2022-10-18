@@ -31,30 +31,29 @@ const template = function () {
                     -->
                 </div>
 
+
                 <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
-
-                <div class="body__info">
-                    <div class="info__album">{{ track.album }}</div>
-
-                    <div class="info__song">{{ track.title }}</div>
-
-                    <div class="info__artist"><router-link v-if="track.artist" :to="{ name: 'artistPage', params: { name: track.artist }}">{{ track.artist }}</router-link></div>
-                </div>
 
                 <div class="field">
                     <div class="control has-icons-left has-icons-right">
                         <span class="icon is-left" style="height: 1em;">
-                            <small>{{ currentTime }}</small>
-
+                            <i @click.prevent="onToggleMute" class="is-clickable fas fw" :class="{ 'fa-volume-mute': volume == 0, 'fa-volume-off': volume > 0 && volume <= 10, 'fa-volume-down': volume > 0 && volume <= 50, 'fa-volume-up': volume > 50 }" style="color: #d30320;"></i>
                         </span>
                         <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
-                            v-model.number="position" @change="onSeek">
-                        <span class="icon is-right" style="height: 1em;">
-                            <small>{{ duration }}</small>
+                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
+                            v-model.number="volume">
+                            <span class="icon is-right" style="height: 1em;">
+                            <small>{{ volume }}%</small>
                         </span>
                     </div>
                 </div>
+                <div class="body__info">
+                    <div class="info__song" style="font-weight: 600;">{{ track.title }}</div>
+                    <div class="info__album">{{ track.album }}</div>
+                    <div class="info__artist"><router-link v-if="track.artist" :to="{ name: 'artistPage', params: { name: track.artist }}">{{ track.artist }}</router-link></div>
+                </div>
+
+
 
                 <div class="body__buttons">
                     <ul class="list list--buttons">
@@ -76,17 +75,16 @@ const template = function () {
                 <div class="field">
                     <div class="control has-icons-left has-icons-right">
                         <span class="icon is-left" style="height: 1em;">
-                            <i @click.prevent="onToggleMute" class="is-clickable fas fw" :class="{ 'fa-volume-mute': volume == 0, 'fa-volume-off': volume > 0 && volume <= 10, 'fa-volume-down': volume > 0 && volume <= 50, 'fa-volume-up': volume > 50 }" style="color: #d30320;"></i>
+                            <small>{{ currentTime }}</small>
                         </span>
                         <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
-                            v-model.number="volume">
-                            <span class="icon is-right" style="height: 1em;">
-                            <small>{{ volume }}%</small>
+                            class="slider is-fullwidth is-small is-circle" min="0" max="1" step="0.01" type="range"
+                            v-model.number="position" @change="onSeek">
+                        <span class="icon is-right" style="height: 1em;">
+                            <small>{{ duration }}</small>
                         </span>
                     </div>
                 </div>
-
 
                 <div class="player__footer">
                     <ul class="list list--footer">
@@ -96,7 +94,7 @@ const template = function () {
                         <li><i class="is-clickable fa-solid fa-chart-simple" title="Toggle analyzer" :class="{'active_button': showAnalyzer, 'not_active_button': ! showAnalyzer }" @click.prevent="showAnalyzer = ! showAnalyzer"></i></li>
 
 
-                        <li><a href="#" class="list__link" title="Love/unlove track"><i class="fa fa-heart"></i></a>
+                        <li><a href="#" class="list__link" title="Love/unlove track" :class="{'active_button': track.loved, 'not_active_button': ! track.loved }" @click.prevent="onToggleLoved"><i class="fa fa-heart"></i></a>
                         </li>
 
                         <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a>
@@ -132,7 +130,7 @@ export default {
                 isPlaying: false
             },
             oldVolume: 0,
-            volume: 0,
+            volume: 2,
             position: 0,
             currentTime: "00:00",
             duration: "00:00",
@@ -144,7 +142,7 @@ export default {
         });
     },
     props: [
-        'track', 'animations'
+        'track'
     ],
     computed: {
         trackId: function () {
@@ -215,10 +213,15 @@ export default {
     mounted: function () {
         console.debug('Creating audio element');
         this.audioElement = document.getElementById('audio');
-        console.debug('Setting audio volume at ' + this.volume);
-        this.setVolume(this.volume / 100);
+        const savedVolume = this.$spieldoseLocalStorage.get('volume');
+        if (savedVolume != null) {
+            console.debug('Restoring audio volume at ' + (savedVolume * 100) + '%');
+            this.volume = savedVolume * 100;
+        } else {
+            console.debug('Setting audio volume at ' + this.volume + '%');
+            this.setVolume(this.volume / 100);
+        }
         console.debug('Setting audio available to play event');
-
         this.audioElement.addEventListener('canplay', (event) => {
             console.log("Buffering audio end");
             console.debug('Audio can be played');
@@ -247,6 +250,7 @@ export default {
         this.audioElement.addEventListener('ended', (event) => {
             console.debug('Audio is ended');
             //this.playerEvents.isPaused = false;
+            this.$bus.emit('endTrack', this.track.id);
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
             this.onNextTrackButtonClick();
@@ -339,6 +343,7 @@ export default {
             if (volume >= 0 && volume <= 1) {
                 if (this.audioElement) {
                     this.audioElement.volume = volume;
+                    this.$spieldoseLocalStorage.set('volume', volume);
                 } else {
                     console.error("Audio element not mounted");
                 }
@@ -423,6 +428,15 @@ export default {
                     this.audioElementMotionMode = 0;
                 }
                 this.audioElementMotion.setOptions({ mode: this.audioElementMotionMode });
+            }
+        },
+        onToggleLoved: function () {
+            if (this.track.loved) {
+                console.log('Unloving current track');
+                this.$bus.emit('unLoveTrack', this.track.id);
+            } else {
+                console.log('Loving current track');
+                this.$bus.emit('loveTrack', this.track.id);
             }
         }
     }

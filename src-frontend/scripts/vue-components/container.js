@@ -9,7 +9,7 @@ const template = function () {
                 <div class="columns is-desktop">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column">
-                        <spieldose-player :track="true" :animations="true" @next="console.log('next');" @previous="console.log('previous');">
+                        <spieldose-player :track="true" @next="console.log('next');" @previous="console.log('previous');">
                             <template slot="top-left-icon">11
                                 <a class="list__link" href="#" @click.prevent="loadTracks('')"><i class="fa fa-navicon"></i></a>
                             </template>
@@ -38,6 +38,5 @@ export default {
         'player-navbar': playerNavBar
     },
     created: function () {
-        console.log(this.$api);
     }
 }

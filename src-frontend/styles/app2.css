@@ -296,8 +296,10 @@ div#album_cover img {
 
 .info__artist,
 .info__album {
+    /*
     font-size: 0.75rem;
     font-weight: 300;
+    */
     color: #666;
 }
 
@@ -407,7 +409,6 @@ input[type="range"].slider.is-fullwidth {
 input[type="range"].slider {
     -webkit-appearance: none;
     appearance: none;
-    margin: 1rem 0;
     background: transparent;
 }
 
@@ -525,12 +526,25 @@ div#analyzer-container {
 
 /* app sidebar */
 
-table th, table td {
-    white-space: nowrap;
+table td {
+    /* white-space: nowrap; */
     font-size: 0.9rem;
 }
 
-.table tr.is-selected {
-    background: #d30320;   
+
+
+/* custom bulma overrides */
+
+button.is-pink,
+button.is-pink:hover {
+    background-color: #d30320;
+    border-color: transparent;
     color: #fff;
 }
+
+.is-selected-pink {
+    background-color: #d30320 !important;
+    color: #fff !important;
+}
+
+/* custom bulma overrides */

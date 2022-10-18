@@ -1,12 +1,13 @@
+import { nextTick } from "vue";
 import bus from "../plugins/bus";
 import player from "../vue-components/player";
 
 const template = function () {
     return `
         <div class="field has-addons">
-            <div class="control has-icons-left is-expanded is-small" :class="{ 'is-loading': loading}">
+            <div class="control has-icons-left is-expanded is-small" :class="{ 'is-loading': loading }">
                 <input class="input is-small" type="text" placeholder="Search" v-model.trim="searchQuery"
-                    v-on:keyup.enter="onSearch">
+                    v-on:keyup.enter="onSearch" :disabled="loading">
                 <span class="icon is-small is-left">
                     <i class="fas fa-search"></i>
                 </span>
@@ -15,12 +16,37 @@ const template = function () {
                 </span>
             </div>
             <div class="control">
-                <a class="button is-small" style="background: #d30320; color: #fafafa;"
-                    @click.prevent="onSearch" :disabled="loading">
-                    Search
-                </a>
+                <button class="button is-small is-pink" @click.prevent="onSearch" :disabled="loading">Search</button>
             </div>
         </div>
+
+        <div class="field has-addons">
+            <p class="control">
+                <button class="button is-small" @click.prevent="tracks = []; currentTrackIndex = 0;">
+                <span class="icon is-small">
+                    <i class="fa-solid fa-xmark"></i>
+                </span>
+                <span>Clear</span>
+                </button>
+            </p>
+            <p class="control">
+                <button class="button is-small" @click.prevent="loadTracks();">
+                <span class="icon is-small">
+                    <i class="fa-solid fa-rotate"></i>
+                </span>
+                <span>Random</span>
+                </button>
+            </p>
+            <p class="control">
+                <button class="button is-small" disabled>
+                <span class="icon is-small">
+                    <i class="fa-solid fa-save"></i>
+                </span>
+                <span>Save</span>
+                </button>
+            </p>
+        </div>
+
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style="font-size: 1rem;">
             <thead>
                 <tr>
@@ -35,7 +61,7 @@ const template = function () {
             </thead>
             <tbody>
                 <tr v-for="track,index in tracks" :key="index" class="is-clickable" @click.prevent="currentTrackIndex = index;"
-                    :class="{ 'is-selected': currentTrack.id == track.id } ">
+                    :class="{ 'is-selected-pink': currentTrack.id == track.id } ">
                     <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
                     <td>{{ track.artist }} <span class="is-clickable" v-if="track.artist" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
@@ -58,7 +84,7 @@ export default {
             tracks: [],
             currentTrackIndex: -1,
             searchQuery: null,
-            playerEvent:  {}
+            playerEvent: {}
         });
     },
     computed: {
@@ -69,39 +95,41 @@ export default {
                 console.log("returning null");
                 return ({});
             }
-        },
-        isPlaying: function () {
-            return (true);
-            //return (this.audio && this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2);
         }
     },
     watch: {
         currentTrackIndex: function (newValue, oldValue) {
-            /*
-            if (!this.audio) {
-                this.audio = document.getElementById('audio');
-                this.audio.volume = this.volume / 100;
-            } else {
-                if (this.audio.currentAudio && this.audio.currentAudio.currentTime > 0 && !this.audio.currentAudio.paused && !this.audio.currentAudio.ended && this.audio.currentAudio.readyState > 2) {
-                    this.audio.stop();
-                }
-            }
-            this.audio.src = "/api2/file/" + this.tracks[this.currentTrackIndex].id;
-            this.audio.load();
-            if (oldValue != -1) {
-                this.onPlay();
-            }
-            */
+            this.$spieldoseLocalStorage.set('currentPlaylistTrackIndex', newValue);
             this.$bus.emit('onTrackChanged', { track: this.currentTrack });
         }
     },
     created: function () {
-        this.loadTracks();
         this.$bus.on('onPreviousTrack', () => { this.onPreviousTrack(); });
         this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
         this.$bus.on('playerEvent', (playerEvent) => {
             this.playerEvent = playerEvent;
         });
+        this.$bus.on('endTrack', (trackId) => {
+            this.onIncreaseTrackPlayCount(trackId);
+        });
+        this.$bus.on('loveTrack', (trackId) => {
+            this.onLoveTrack(trackId);
+        });
+        this.$bus.on('unLoveTrack', (trackId) => {
+            this.onUnLoveTrack(trackId);
+        });
+    },
+    mounted: function () {
+        const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
+        const savedPlaylistIndex = this.$spieldoseLocalStorage.get('currentPlaylistTrackIndex');
+        if (savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
+            this.$nextTick(() => {
+                this.tracks = savedPlaylist;
+                this.currentTrackIndex = savedPlaylistIndex;
+            });
+        } else {
+            this.loadTracks();
+        }
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
@@ -111,7 +139,9 @@ export default {
             this.loading = true;
             this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
                 this.tracks = success.data.tracks;
+                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
                 this.currentTrackIndex = 0;
+                this.$spieldoseLocalStorage.set('currentPlaylistTrackIndex', this.currentTrackIndex);
                 this.loading = false;
             }).catch(error => {
                 switch (error.response.status) {
@@ -152,6 +182,31 @@ export default {
                 });
             */
         },
+        onIncreaseTrackPlayCount: function (trackId) {
+            this.$api.track.increasePlayCount(trackId).then(success => {
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
+        },
+        onLoveTrack: function (trackId) {
+            this.$api.track.love(trackId).then(success => {
+                this.tracks.find((track) => track.id == trackId).loved = true;
+                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
+        },
+        onUnLoveTrack: function (trackId) {
+            this.$api.track.unLove(trackId).then(success => {
+                this.tracks.find((track) => track.id == trackId).loved = false;
+                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
+                // TODO
+            }).catch(error => {
+                // TODO
+            });
+        },
         onSearch: function () {
             this.loadTracks(this.searchQuery);
         },
@@ -161,7 +216,7 @@ export default {
             }
         },
         onNextTrack: function () {
-            if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length -1)) {
+            if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length - 1)) {
                 this.currentTrackIndex++;
             }
         }

@@ -50,20 +50,49 @@ export default {
                 }
             },
             track: {
-                search: (query, artist, albumArtist, album) => {                    
+                search: (query, artist, albumArtist, album) => {
                     return new Promise((resolve, reject) => {
-                        app.config.globalProperties.$axios.get('/api2/track/search', { params: {
-                            q: query || null,
-                            artist: artist || null,
-                            albumArtist: albumArtist || null,
-                            album: album || null
-                        } }).then(response => {
+                        app.config.globalProperties.$axios.get('/api2/track/search', {
+                            params: {
+                                q: query || null,
+                                artist: artist || null,
+                                albumArtist: albumArtist || null,
+                                album: album || null
+                            }
+                        }).then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
                         });
                     });
-                }                
+                },
+                increasePlayCount: (trackId) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/increase_play_count/track/' + trackId).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
+                love: (trackId) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/love/track/' + trackId).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
+                unLove: (trackId) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/unlove/track/' + trackId).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                }
             }
         };
     }
