@@ -60,7 +60,7 @@ const template = function () {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="track,index in tracks" :key="index" class="is-clickable" @click.prevent="currentTrackIndex = index;"
+                <tr v-for="track,index in tracks" :key="index" class="is-clickable whitespace-nowrap" @click.prevent="currentTrackIndex = index;"
                     :class="{ 'is-selected-pink': currentTrack.id == track.id } ">
                     <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
