@@ -21,7 +21,7 @@ const spieldoseApp = {
                     this.$router.push({ name: 'signin' });
                 }
             } else {
-                if (!this.$route.name) {
+                if (!this.$router.currentRoute.name) {
                     this.$router.push({ name: 'nowPlaying' });
                 }
             }
