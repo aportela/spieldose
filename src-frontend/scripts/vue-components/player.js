@@ -169,6 +169,7 @@ export default {
             if (newValue) {
                 console.log("Buffering audio start");
                 this.playerEvents.isLoading = true;
+                this.$bus.emit('playerEvent', this.playerEvents);
                 this.coverURL = null;
                 if (this.audioElement) {
                     this.audioElement.src = "/api2/file/" + this.track.id;
