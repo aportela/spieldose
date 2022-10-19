@@ -43,5 +43,35 @@ return (array(
         "
             ALTER TABLE FILE_ID3_TAG ADD COLUMN [GENRE] VARCHAR(128)
         "
+    ),
+    8 => array(
+        "
+            CREATE TABLE [MB_CACHE_ARTIST] (
+                [MBID] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [ARTIST] VARCHAR(128) NOT NULL,
+                [IMAGE] VARCHAR(8192),
+                [BIO] TEXT,
+                [JSON] TEXT NOT NULL
+            );
+        ",
+        "
+            CREATE TABLE [MB_CACHE_ALBUM] (
+                [MBID] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [ALBUM] VARCHAR(128) NOT NULL,
+                [ARTIST] VARCHAR(36) NOT NULL,
+                [IMAGE] VARCHAR(8192),
+                [YEAR] INTEGER,
+                [JSON] TEXT NOT NULL
+            );
+        ",
+        "
+            CREATE TABLE [MB_CACHE_TRACK] (
+                [MBID] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [TRACK] VARCHAR(128) NOT NULL,
+                [ARTIST_MBID] VARCHAR(36) NOT NULL,
+                [ARTIST_MBNAME] VARCHAR(36) NOT NULL,
+                [JSON] TEXT NOT NULL
+            );
+        "
     )
 ));
