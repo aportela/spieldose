@@ -30,7 +30,7 @@ const template = function () {
 };
 
 export default {
-    name: 'spieldose-upgrade-component',
+    name: 'spieldose-upgrade-database-component',
     template: template(),
     computed: {
         upgradeAvailable: function () {
