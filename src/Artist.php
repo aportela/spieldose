@@ -33,9 +33,10 @@
                 );
                 $query = '
                     SELECT
-                        COUNT(DISTINCT(COALESCE(MBA.artist, F.track_artist))) AS total
+                        COUNT(DISTINCT(COALESCE(MBA.ARTIST, FIT.ARTIST))) AS total
                     FROM FILE F
-                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.mbid = F.artist_mbid
+                    LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
+                    LEFT JOIN MB_CACHE_ARTIST MBA ON MBA.MBID = F.ARTIST_MBID
                     WHERE COALESCE(MBA.artist, F.track_artist) LIKE :name
                 ';
                 $data = $dbh->query($query, $params);
@@ -200,5 +201,3 @@
         }
 
     }
-
-?>

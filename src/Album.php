@@ -1,122 +1,131 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    namespace Spieldose;
+namespace Spieldose;
 
-    class Album {
+class Album
+{
 
-	    public function __construct () { }
+    public function __construct()
+    {
+    }
 
-        public function __destruct() { }
+    public function __destruct()
+    {
+    }
 
-        /**
-         * search albums
-         *
-         * @param \Spieldose\Database\DB $dbh database handler
-         * @param int $page return results from this page
-         * @param int $resultsPage number of results / page
-         * @param array $filter the condition filter
-         * @param string $order results order
-         *
-         */
-        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
-            $params = array();
-            $whereCondition = "";
-            $filteredByArtist = false;
-            if (isset($filter)) {
-                $conditions = array();
-                if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $conditions[] = " COALESCE(MBA.album, F.album_name) LIKE :partialName ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
-                }
-                if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $conditions[] = " COALESCE(MBA.album, F.album_name) LIKE :name ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
-                }
-                if (isset($filter["partialArtist"]) && ! empty($filter["partialArtist"])) {
-                    $conditions[] = " (MBA.artist LIKE :partialArtist OR F.album_artist LIKE :partialArtist OR F.track_artist LIKE :partialArtist) ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialArtist", "%" . $filter["partialArtist"] . "%");
-                    $filteredByArtist = true;
-                }
-                if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-                    $conditions[] = " (MBA.artist LIKE :artist OR MBA2.artist LIKE :artist OR F.album_artist LIKE :artist OR F.track_artist LIKE :artist) ";
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
-                    $filteredByArtist = true;
-                }
-                if (isset($filter["year"]) && ! empty($filter["year"])) {
-                    $conditions[] = " COALESCE(MBA.year, F.year) = :year ";
-                    $params[] = (new \Spieldose\Database\DBParam())->int(":year", intval($filter["year"]));
-                }
-                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
+    /**
+     * search albums
+     *
+     * @param \Spieldose\Database\DB $dbh database handler
+     * @param int $page return results from this page
+     * @param int $resultsPage number of results / page
+     * @param array $filter the condition filter
+     * @param string $order results order
+     *
+     */
+    public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "")
+    {
+        $params = array();
+        $whereCondition = "";
+        $filteredByArtist = false;
+        if (isset($filter)) {
+            $conditions = array();
+            if (isset($filter["partialName"]) && !empty($filter["partialName"])) {
+                $conditions[] = " COALESCE(MBA.ALBUM, FIT.ALBUM) LIKE :partialName ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialName", "%" . $filter["partialName"] . "%");
             }
-            $queryCount = '
+            if (isset($filter["name"]) && !empty($filter["name"])) {
+                $conditions[] = " COALESCE(MBA.album, FIT.ALBUM) LIKE :name ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialName", $filter["name"]);
+            }
+            if (isset($filter["partialArtist"]) && !empty($filter["partialArtist"])) {
+                $conditions[] = " (MBA.ARTIST LIKE :partialArtist OR FIT.ALBUM_ARTIST LIKE :partialArtist OR FIT.ARTIST LIKE :partialArtist) ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialArtist", "%" . $filter["partialArtist"] . "%");
+                $filteredByArtist = true;
+            }
+            if (isset($filter["artist"]) && !empty($filter["artist"])) {
+                $conditions[] = " (MBA.ARTIST LIKE :artist OR MBA2.ARTIST LIKE :artist OR FIT.ALBUM_ARTIST LIKE :artist OR FIT.ARTIST LIKE :artist) ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $filter["artist"]);
+                $filteredByArtist = true;
+            }
+            if (isset($filter["year"]) && !empty($filter["year"])) {
+                $conditions[] = " COALESCE(MBA.year, F.year) = :year ";
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $filter["year"]);
+            }
+            $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
+        }
+        $queryCount = '
                 SELECT
-                    COUNT (DISTINCT COALESCE(MBA.album, F.album_name) || COALESCE(MBA.artist, F.album_artist, F.track_artist, "") || COALESCE(MBA.year, F.year, 0)) AS total
+                    COUNT (DISTINCT COALESCE(MBA.ALBUM, FIT.ALBUM) || COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") || COALESCE(MBA.YEAR, FIT.YEAR, 0)) AS total
                 FROM FILE F
-                LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
-                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
-                WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
+                LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
+                LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.MBID = FIT.MB_ALBUM_ID
+                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.MBID = FIT.MB_ARTIST_ID
+                WHERE COALESCE(MBA.ALBUM, FIT.ALBUM) IS NOT NULL
                 ' . $whereCondition . '
             ';
-            $result = $dbh->query($queryCount, $params);
-            $data = new \stdClass();
-            $data->actualPage = $page;
-            $data->resultsPage = $resultsPage;
-            $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil($data->totalResults / $resultsPage);
-            if ($data->totalResults > 0) {
-                $sqlOrder = "";
-                switch($order) {
-                    case "random":
-                        $sqlOrder = " ORDER BY RANDOM() ";
+        $result = $dbh->query($queryCount, $params);
+        $data = new \stdClass();
+        $data->actualPage = $page;
+        $data->resultsPage = $resultsPage;
+        $data->totalResults = $result[0]->total;
+        $data->totalPages = ceil($data->totalResults / $resultsPage);
+        if ($data->totalResults > 0) {
+            $sqlOrder = "";
+            switch ($order) {
+                case "random":
+                    $sqlOrder = " ORDER BY RANDOM() ";
                     break;
-                    case "year":
-                        $sqlOrder = " ORDER BY COALESCE(MBA.year, F.year) ASC, COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
+                case "year":
+                    $sqlOrder = " ORDER BY COALESCE(MBA.YEAR, FIT.YEAR, 0) ASC, COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ";
                     break;
-                    default:
-                        if ($filteredByArtist) {
-                            $sqlOrder = " ORDER BY COALESCE(MBA.artist, F.album_artist, F.track_artist) COLLATE NOCASE ASC, COALESCE(MBA.year, F.year) ASC, COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
-                        } else {
-                            $sqlOrder = " ORDER BY COALESCE(MBA.album, F.album_name) COLLATE NOCASE ASC ";
-                        }
+                default:
+                    if ($filteredByArtist) {
+                        $sqlOrder = ' ORDER BY COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") COLLATE NOCASE ASC, COALESCE(MBA.YEAR, FIT.YEAR, 0) ASC, COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ';
+                    } else {
+                        $sqlOrder = " ORDER BY COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ";
+                    }
                     break;
-                }
-                $query = sprintf('
+            }
+            $query = sprintf(
+                '
                     SELECT DISTINCT
-                        COALESCE(MBA.album, F.album_name) as name,
-                        COALESCE(MBA.artist, F.album_artist, F.track_artist) AS artist,
-                        COALESCE(MBA.year, F.year) AS year,
-                        COALESCE(MBA.image, LOCAL_PATH_ALBUM_COVER.id) AS image
+                        COALESCE(MBA.ALBUM, FIT.ALBUM) as name,
+                        COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") AS artist,
+                        COALESCE(MBA.YEAR, FIT.YEAR, 0) AS year,
                     FROM FILE F
-                    LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.mbid = F.album_mbid
-                    LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.mbid = F.artist_mbid
-                    LEFT JOIN LOCAL_PATH_ALBUM_COVER ON LOCAL_PATH_ALBUM_COVER.base_path = F.base_path
-                    WHERE COALESCE(MBA.album, F.album_name) IS NOT NULL
+                    LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
+                    LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.MBID = FIT.MB_ALBUM_ID
+                    LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.MBID = FIT.MB_ARTIST_ID
+                    WHERE COALESCE(MBA.ALBUM, FIT.ALBUM) IS NOT NULL
                     %s
                     %s
                     LIMIT %d OFFSET %d
                     ',
-                    $whereCondition,
-                    $sqlOrder,
-                    $resultsPage,
-                    $resultsPage * ($page -1)
-                );
-                $data->results = $dbh->query($query, $params);
-            } else {
-                $data->results = array();
-            }
-            return($data);
+                $whereCondition,
+                $sqlOrder,
+                $resultsPage,
+                $resultsPage * ($page - 1)
+            );
+            $data->results = $dbh->query($query, $params);
+        } else {
+            $data->results = array();
         }
+        return ($data);
+    }
 
-        /**
-         * save local album cover reference
-         *
-         * @param \Spieldose\Database\DB $dbh database handler
-         * @param string $path directory path
-         * @param string $filename album cover filename
-         */
-        public static function saveLocalAlbumCover(\Spieldose\Database\DB $dbh, string $path = "", string $filename = "") {
+    /**
+     * save local album cover reference
+     *
+     * @param \Spieldose\Database\DB $dbh database handler
+     * @param string $path directory path
+     * @param string $filename album cover filename
+     */
+    public static function saveLocalAlbumCover(\Spieldose\Database\DB $dbh, string $path = "", string $filename = "")
+    {
+        /*
             if (! empty($path) && file_exists($path)) {
                 if (! empty($filename) && file_exists($path . DIRECTORY_SEPARATOR . $filename)) {
                     $params = array(
@@ -131,9 +140,12 @@
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("path");
             }
-        }
+            */
+    }
 
-        public static function getLocalPath(\Spieldose\Database\DB $dbh, string $id = "") {
+    public static function getLocalPath(\Spieldose\Database\DB $dbh, string $id = "")
+    {
+        /*
             $results = $dbh->query(" SELECT base_path AS directory, file_name AS filename FROM LOCAL_PATH_ALBUM_COVER WHERE id = :id ", array(
                 (new \Spieldose\Database\DBParam())->str(":id", $id)
             ));
@@ -142,14 +154,16 @@
             } else {
                 throw new \Spieldose\Exception\NotFoundException("");
             }
-        }
+            */
+    }
 
-        /**
-         * get album cover collection
-         */
-        public static function getRandomAlbumCovers(\Spieldose\Database\DB $dbh, int $count = 32) {
-            $results = $dbh->query(
-                "
+    /**
+     * get album cover collection
+     */
+    public static function getRandomAlbumCovers(\Spieldose\Database\DB $dbh, int $count = 32)
+    {
+        $results = $dbh->query(
+            "
                     SELECT TMP.* FROM (
                         SELECT LOCAL_PATH_ALBUM_COVER.id AS hash, NULL AS url FROM LOCAL_PATH_ALBUM_COVER
                         UNION
@@ -157,11 +171,11 @@
                     ) TMP
                     ORDER BY RANDOM()
                     LIMIT :count
-                ", array(
+                ",
+            array(
                 (new \Spieldose\Database\DBParam())->int(":count", $count)
-            ));
-            return($results);
-        }
+            )
+        );
+        return ($results);
     }
-
-?>
+}
