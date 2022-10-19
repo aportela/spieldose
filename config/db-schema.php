@@ -73,5 +73,23 @@ return (array(
                 [JSON] TEXT NOT NULL
             );
         "
+    ),
+    9 => array(
+        "
+            CREATE TABLE [USER2] (
+                [ID] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [EMAIL] VARCHAR(255) UNIQUE NOT NULL,
+                [PASSWORD_HASH] VARCHAR(60) NOT NULL
+            );
+        ",
+        "
+            INSERT INTO USER2 SELECT * FROM USER;
+        ",
+        "
+            DROP TABLE USER;
+        ",
+        "
+            ALTER TABLE USER2 RENAME TO USER
+        "
     )
 ));

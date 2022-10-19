@@ -41,7 +41,8 @@ class User
     /**
      * set session authentication params
      */
-    public static function setSessionVars(string $userId, string $email) {
+    public static function setSessionVars(string $userId, string $email)
+    {
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
     }
@@ -57,7 +58,7 @@ class User
             if (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                 if (!empty($this->password)) {
                     return ($db->exec(
-                        " INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash) ",
+                        " INSERT INTO USER (ID, EMAIL, PASSWORD_HASH) VALUES(:id, :email, :password_hash) ",
                         array(
                             (new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)),
                             (new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))),
@@ -87,7 +88,7 @@ class User
             if (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                 if (!empty($this->password)) {
                     return ($db->exec(
-                        " UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ",
+                        " UPDATE USER SET EMAIL = :email, PASSWORD_HASH = :password_hash WHERE ID = :id ",
                         array(
                             (new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)),
                             (new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))),
@@ -116,12 +117,12 @@ class User
     {
         $results = null;
         if (!empty($this->id)) {
-            $results = $db->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
+            $results = $db->query(" SELECT ID AS id, EMAIL AS email, PASSWORD_HASH AS passwordHash FROM USER WHERE ID = :id ", array(
                 (new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id))
             ));
         } else if (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $results = $db->query(
-                " SELECT id, email, password_hash AS passwordHash FROM USER WHERE email = :email ",
+                " SELECT ID AS id, EMAIL AS email, PASSWORD_HASH AS passwordHash FROM USER WHERE EMAIL = :email ",
                 array(
                     (new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))),
                 )
@@ -210,7 +211,7 @@ class User
             if (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
                 if (!empty($password)) {
                     return ($db->exec(
-                        " REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash) ",
+                        " REPLACE INTO USER (ID, EMAIL, PASSWORD_HASH) VALUES(:id, :email, :password_hash) ",
                         array(
                             (new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)),
                             (new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))),
