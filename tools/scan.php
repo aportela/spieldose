@@ -28,6 +28,10 @@ if (count($missingExtensions) > 0) {
 } else {
     try {
         $db = $container->get(\aportela\DatabaseWrapper\DB::class);
+        if ($db->getCurrentSchemaVersion() < $db->getUpgradeSchemaVersion()) {
+            echo "New database version available, an upgrade is required before continue." . PHP_EOL;
+            exit;
+        }
         $scanner = new \Spieldose\Scanner($db, $logger);
         $cmdLine = new \Spieldose\CmdLine("", array("path:", "cleanup"));
         if ($cmdLine->hasParam("path")) {
