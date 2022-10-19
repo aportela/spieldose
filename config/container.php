@@ -135,6 +135,18 @@ return [
         return ($logger);
     },
 
+    \Spieldose\Logger\ScraperLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Spieldose\Logger\ScraperLogger($settings['channels']['scraper']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['scraper']['path'], 0, $settings['defaultLevel']);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
     \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
         $logger = new \Spieldose\Logger\ThumbnailLogger($settings['channels']['thumbnail']['name']);

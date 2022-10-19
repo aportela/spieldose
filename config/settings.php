@@ -52,6 +52,10 @@ $settings['logger'] = [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scanner.log',
             'name' => 'Spieldose::Scanner'
         ],
+        'scraper' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/scraper.log',
+            'name' => 'Spieldose::Scraper'
+        ],
         'thumbnail' => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/thumbnail.log',
             'name' => 'Spieldose::Thumbnail'
