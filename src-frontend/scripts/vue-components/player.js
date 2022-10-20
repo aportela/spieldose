@@ -88,13 +88,13 @@ const template = function () {
 
                 <div class="player__footer">
                     <ul class="list list--footer">
-                        <li><i class="is-clickable fa fa-navicon" :class="{ 'active_button': showNavigationMenu, 'not_active_button' : ! showNavigationMenu }" title="Toggle navigation menu" @click.prevent="onToggleNavigationMenu"></i></li>
-                        <li><i class="is-clickable fa-solid fa-chart-simple" title="Toggle analyzer" :class="{'active_button': showAnalyzer, 'not_active_button': ! showAnalyzer }" @click.prevent="showAnalyzer = ! showAnalyzer"></i></li>
-                        <li><i class="is-clickable fa fa-heart" :class="{'active_button': track.loved, 'not_active_button': ! track.loved }" title="Love/unlove track" @click.prevent="onToggleLoved"></i></li>
-                        <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa fa-random"></i></a></li>
-                        <li><a href="#" class="list__link" title="Toggle repeat mode"><i class="fa fa-undo"></i></a></li>
-                        <li><a :href="'/api2/file/' + track.id" class="list__link" title="Download track"><i class="fa-solid fa-download"></i></a></li>
-                        <li><i class="is-clickable fa-regular fa-rectangle-list" :class="{'active_button': showSectionDetails, 'not_active_button': ! showSectionDetails }" title="Toggle section details" @click.prevent="onToggleSectionDetails"></i></li>
+                        <li><i class="is-clickable fa-fw fa fa-navicon" :class="{ 'active_button': showNavigationMenu, 'not_active_button' : ! showNavigationMenu }" title="Toggle navigation menu" @click.prevent="onToggleNavigationMenu"></i></li>
+                        <li><i class="is-clickable fa-fw fa-solid fa-chart-simple" title="Toggle analyzer" :class="{'active_button': showAnalyzer, 'not_active_button': ! showAnalyzer }" @click.prevent="showAnalyzer = ! showAnalyzer"></i></li>
+                        <li><i class="is-clickable fa-fw fa fa-heart" :class="{'active_button': track.loved, 'not_active_button': ! track.loved }" title="Love/unlove track" @click.prevent="onToggleLoved"></i></li>
+                        <li><a href="#" class="list__link" title="Toggle random sort"><i class="fa-fw fa fa-random"></i></a></li>
+                        <li><a href="#" class="list__link" title="Toggle repeat mode"><i class="fa-fw fa fa-undo"></i></a></li>
+                        <li><a :href="'/api2/file/' + track.id" class="list__link" title="Download track"><i class="fa-fw fa-solid fa-download"></i></a></li>
+                        <li><i class="is-clickable fa-fw fa-regular fa-rectangle-list" :class="{'active_button': showSectionDetails, 'not_active_button': ! showSectionDetails }" title="Toggle section details" @click.prevent="onToggleSectionDetails"></i></li>
                     </ul>
                 </div>
         </div>
