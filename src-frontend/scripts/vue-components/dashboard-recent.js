@@ -4,10 +4,10 @@ const template = function () {
     return `
         <section class="panel chart height-100">
             <p class="panel-heading">
-                <span class="icon">
-                    <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
-                    <i class="far fa-clock" v-else></i>
+                <span class="icon mr-1">
+                    <i class="fa-fw fas fa-cog fa-spin fa-fw" v-if="loading"></i>
+                    <i class="fa-fw fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                    <i class="fa-fw far fa-clock" v-else></i>
                 </span>
                 <span>{{ title }}</span>
                 <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw"></i></a>
@@ -18,19 +18,19 @@ const template = function () {
                 <a v-bind:class="{ 'is-active' : isAlbumEntity }" v-on:click.prevent="changeEntity('albums');">{{ $t("dashboard.labels.entityAlbums") }}</a>
             </p>
             <div class="panel-block cut-text">
-                <ol v-if="hasItems">
-                    <li class="is-small" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
+                <ol class="pl-5" v-if="hasItems">
+                    <li class="is-size-7" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
                         <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
-                        <i class="cursor-pointer fa-fw fa fa-plus-square" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
+                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                     </li>
-                    <li class="is-small" v-if="isArtistEntity" v-for="item in items">
+                    <li class="is-size-7" v-if="isArtistEntity" v-for="item in items">
                         <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                     </li>
-                    <li class="is-small" v-if="isAlbumEntity" v-for="item in items">
-                        <i class="cursor-pointer fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click="playAlbum(item);" ></i>
-                        <i class="cursor-pointer fa fa-plus-square" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click="enqueueAlbum(item);"></i>
+                    <li class="is-size-7" v-if="isAlbumEntity" v-for="item in items">
+                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click="playAlbum(item);" ></i>
+                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click="enqueueAlbum(item);"></i>
                         <span>{{ item.album }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                     </li>

@@ -6,10 +6,10 @@ const template = function () {
     return `
         <section class="panel">
             <p class="panel-heading">
-                <span class="icon">
-                    <i class="fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
-                    <i class="fas fa-chart-line" v-else></i>
+                <span class="icon mr-1">
+                    <i class="fa-fw fas fa-cog fa-spin fa-fw" v-if="loading"></i>
+                    <i class="fa-fw fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
+                    <i class="fa-fw fas fa-chart-line" v-else></i>
                 </span>
                 <span>{{ $t("dashboard.labels.playStatistics") }}</span>
                 <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>

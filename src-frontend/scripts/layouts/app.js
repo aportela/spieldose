@@ -1,15 +1,14 @@
 import { default as player } from '../vue-components/player.js';
 import { default as menu } from '../vue-components/menu.js';
-import { default as playerNavBar } from '../vue-components/player-navbar.js';
 
 const template = function () {
     return `
         <div>
             <section class="section is-fullheight">
-                <div class="columns is-desktop">
+                <div class="columns is-desktop is-centered">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column" id="sidebar">
-                        <spieldose-component-player :track="currentTrack" @previous="onPreviousTrack" @next="onNextTrack">
+                        <spieldose-component-player :track="currentTrack" @previous="onPreviousTrack" @next="onNextTrack" :showNavigationMenu="showNavigationMenu" @toggle-navigation-menu="onToggleNavigationMenu" :showSectionDetails="showSectionDetails" @toggle-section-details="onToggleSectionDetails">
                             <template slot="top-left-icon">
                                 <a class="list__link" href="#" @click.prevent="loadTracks('')"><i class="fa fa-navicon"></i></a>
                             </template>
@@ -17,9 +16,9 @@ const template = function () {
                                 <a class="list__link" href="#" @click.prevent><i class="fa fa-search"></i></a>
                             </template>
                         </spieldose-component-player>
-                        <spieldose-menu-component></spieldose-menu-component>
+                        <spieldose-menu-component v-if="showNavigationMenu"></spieldose-menu-component>
                     </div>
-                    <div class="column">
+                    <div class="column" v-show="showSectionDetails">
                         <router-view></router-view>
                     </div>
                 </div>
@@ -36,13 +35,14 @@ export default {
     template: template(),
     data: function () {
         return ({
-            currentTrack: {}
+            currentTrack: {},
+            showNavigationMenu: true,
+            showSectionDetails: true
         });
     },
     components: {
         'spieldose-component-player': player,
         'spieldose-menu-component': menu
-        //'player-navbar': playerNavBar
     },
     created: function () {
         this.$bus.on('onTrackChanged', (data) => { this.currentTrack = data.track; });
@@ -53,6 +53,12 @@ export default {
         },
         onNextTrack: function () {
 
+        },
+        onToggleNavigationMenu: function () {
+            this.showNavigationMenu = !this.showNavigationMenu;
+        },
+        onToggleSectionDetails: function () {
+            this.showSectionDetails = !this.showSectionDetails;
         }
     }
 }
