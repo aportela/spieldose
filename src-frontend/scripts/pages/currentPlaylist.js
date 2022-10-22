@@ -22,7 +22,7 @@ const template = function () {
 
         <div class="field has-addons">
             <p class="control">
-                <button class="button is-small" @click.prevent="tracks = []; currentTrackIndex = 0;">
+                <button class="button is-small" @click.prevent="tracks = []; currentTrackIndex = 0;" :disabled="loading || playerEvent.isLoading">
                 <span class="icon is-small">
                     <i class="fa-solid fa-xmark"></i>
                 </span>
@@ -30,11 +30,36 @@ const template = function () {
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="loadTracks();">
+                <button class="button is-small" @click.prevent="loadTracks" :disabled="loading || playerEvent.isLoading">
                 <span class="icon is-small">
                     <i class="fa-solid fa-rotate"></i>
                 </span>
                 <span>Random</span>
+                </button>
+            </p>
+            <p class="control">
+                <button class="button is-small" @click.prevent="onPreviousTrack" :disabled="loading || playerEvent.isLoading">
+                    <span class="icon is-small">
+                        <i class="fa-fw fa fa-step-backward"></i>
+                    </span>
+                    <span>Previous</span>
+                </button>
+            </p>
+            <p class="control">
+                <button class="button is-small" @click.prevent="onTogglePlay" disabled>
+                    <span class="icon is-small">
+                        <i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }"></i>
+                    </span>
+                    <span v-if="playerEvent.isPlaying">Pause</span>
+                    <span v-else>Play</span>
+                </button>
+            </p>
+            <p class="control">
+                <button class="button is-small" @click.prevent="onNextTrack" :disabled="loading || playerEvent.isLoading">
+                    <span class="icon is-small">
+                        <i class="fa-fw fa fa-step-forward"></i>
+                    </span>
+                    <span>Next</span>
                 </button>
             </p>
             <p class="control">
@@ -219,6 +244,9 @@ export default {
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length - 1)) {
                 this.currentTrackIndex++;
             }
+        },
+        onTogglePlay: function () {
+
         }
     }
 }
