@@ -22,7 +22,8 @@ class Scraper
     {
     }
 
-    public function _scrapFileTags(string $filePath = "")
+    /*
+    public function scrapFileTags(string $filePath = "")
     {
         if (file_exists($filePath)) {
             $this->id3->analyze($filePath);
@@ -156,15 +157,23 @@ class Scraper
             throw new \Spieldose\Exception\NotFoundException("path: " . $filePath);
         }
     }
+    */
 
     public function getPendingArtists()
     {
         $artists = array();
-        $query = " SELECT DISTINCT ARTIST AS artist FROM FILE_ID3_TAG WHERE MB_ARTIST_ID IS NULL AND ARTIST IS NOT NULL ORDER BY RANDOM() ";
+        $query = '
+            SELECT
+                DISTINCT LOWER(TRIM(ARTIST)) AS artist
+                FROM FILE_ID3_TAG
+                WHERE MB_ARTIST_ID IS NULL
+                AND ARTIST IS NOT NULL
+                ORDER BY RANDOM()
+        ';
         $results = $this->dbh->query($query);
         $totalArtists = count($results);
         for ($i = 0; $i < $totalArtists; $i++) {
-            $artists[] = $results[$i]->artist;
+            $artists[] = ucwords($results[$i]->artist);
         }
         return ($artists);
     }
@@ -173,13 +182,13 @@ class Scraper
     {
         $mbIds = array();
         $query = '
-                SELECT
-                    DISTINCT FIT.MB_ARTIST_ID AS mbid
-                FROM FILE_ID3_TAG FIT
-                WHERE FIT.MB_ARTIST_ID IS NOT NULL
-                AND NOT EXISTS
-                    (SELECT MBID FROM MB_CACHE_ARTIST MCA WHERE MCA.MBID = FIT.MB_ARTIST_ID)
-            ';
+            SELECT
+                DISTINCT LOWER(FIT.MB_ARTIST_ID) AS mbid
+            FROM FILE_ID3_TAG FIT
+            WHERE FIT.MB_ARTIST_ID IS NOT NULL
+            AND NOT EXISTS
+                (SELECT MBID FROM MB_CACHE_ARTIST MCA WHERE MCA.MBID = FIT.MB_ARTIST_ID)
+        ';
         $results = $this->dbh->query($query);
         $totalArtists = count($results);
         for ($i = 0; $i < $totalArtists; $i++) {
@@ -188,6 +197,7 @@ class Scraper
         return ($mbIds);
     }
 
+    /*
     public function mbArtistScrap($artist)
     {
         $mbArtist = \Spieldose\MusicBrainz\Artist::getFromArtist($artist);
@@ -206,17 +216,51 @@ class Scraper
         }
     }
 
+    */
+
     public function mbArtistMBIdscrap($mbid)
     {
-        $mbArtist = \Spieldose\MusicBrainz\Artist::getFromMBId($mbid);
+        $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+        $mbArtist->get($mbid);
         if (!empty($mbArtist->mbId)) {
-            $mbArtist->save($this->dbh);
-            $params = array();
-            $params[] = (new \Spieldose\Database\DBParam())->str(":old_artist_mbid", $mbid);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":artist_mbid", $mbArtist->mbId);
-            $this->dbh->execute(" UPDATE FILE SET artist_mbid = :artist_mbid WHERE artist_mbid = :old_artist_mbid ", $params);
+            $this->logger->info("Caching artist " . $mbArtist->mbId);
+            $params = array(
+                (new \aportela\DatabaseWrapper\Param\StringParam(":MBID", $mbArtist->mbId)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":ARTIST", $mbArtist->name)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":JSON", $mbArtist->raw))
+            );
+            $this->dbh->exec("
+                    INSERT INTO MB_CACHE_ARTIST
+                    (MBID, ARTIST, IMAGE, BIO, JSON)
+                    VALUES
+                    (:MBID, :ARTIST, NULL, NULL, :JSON)
+                ", $params);
         }
     }
+
+
+    public function getPendingAlbums()
+    {
+        $albums = array();
+        $query = "
+            SELECT
+                DISTINCT LOWER(TRIM(FIT.ALBUM)) AS album,
+                LOWER(TRIM(COALESCE(FIT.ALBUM_ARTIST, FIT.ARTIST))) AS artist
+            FROM FILE_ID3_TAG FIT
+            WHERE FIT.MB_ALBUM_ID IS NULL
+            AND FIT.ALBUM IS NOT NULL
+            ORDER BY RANDOM()
+        ";
+        $results = $this->dbh->query($query);
+        $totalAlbums = count($results);
+        for ($i = 0; $i < $totalAlbums; $i++) {
+            $results[$i]->album = ucwords($results[$i]->album);
+            $results[$i]->artist = ucwords($results[$i]->artist);
+            $albums[] = $results[$i];
+        }
+        return ($albums);
+    }
+
 
     public function getPendingAlbumMBIds()
     {
@@ -228,6 +272,7 @@ class Scraper
                 WHERE NOT EXISTS
                     (SELECT MBID FROM MB_CACHE_ALBUM MCA WHERE MCA.MBID = FIT.MB_ALBUM_ID)
                 AND FIT.MB_ALBUM_ID IS NOT NULL
+                ORDER BY RANDOM()
             ';
         $results = $this->dbh->query($query);
         $totalArtists = count($results);
@@ -237,43 +282,65 @@ class Scraper
         return ($mbIds);
     }
 
-    public function getPendingAlbums()
+    public function mbAlbumScrap(string $album = "", string $artist = "", string $year = "")
     {
-        $query = " SELECT DISTINCT FIT.ALBUM AS album, COALESCE(FIT.ALBUM_ARTIST, FIT.ARTIST) AS artist FROM FILE_ID3_TAG FIT WHERE FIT.MB_ALBUM_ID IS NULL AND FIT.ALBUM IS NOT NULL ORDER BY RANDOM() ";
-        return ($this->dbh->query($query));
-    }
-
-    public function mbAlbumScrap(string $album = "", string $artist = "")
-    {
-        $mbAlbum = \Spieldose\MusicBrainz\Album::getFromAlbumAndArtist($album, $artist);
-        if (empty($mbArtist->mbId)) {
-            $mbIds = \Spieldose\MusicBrainz\Album::searchMusicBrainzId($album, $artist, 1);
-            if (count($mbIds) == 1) {
-                $mbAlbum->mbId = $mbIds[0];
+        if (!empty($album) && !empty($artist)) {
+            $mbRelease = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+            $mbAlbumId = null;
+            $results = $mbRelease->search($album, $artist, $year, 1);
+            if (count($results) == 1) {
+                $mbAlbumId = $results[0]->mbId;
+            }
+            if (!empty($mbAlbumId)) {
+                $this->logger->info("Found album " . $album . " of artist " . $artist . " with MusicBrainzId: " . $mbAlbumId);
+                $params = array(
+                    (new \aportela\DatabaseWrapper\Param\StringParam(":album_mbid", $mbAlbumId)),
+                    (new \aportela\DatabaseWrapper\Param\StringParam(":album_name", mb_strtolower($album))),
+                    (new \aportela\DatabaseWrapper\Param\StringParam(":artist", mb_strtolower($artist)))
+                );
+                $this->dbh->exec("
+                    UP DATE FILE_ID3_TAG
+                    SET MB_ALBUM_ID = :album_mbid
+                    WHERE LOWER(TRIM(ALBUM)) = :album_name
+                    AND LOWER(TRIM(COALESCE(ALBUM_ARTIST, ARTIST))) = :artist
+                ", $params);
             }
         }
-        if (!empty($mbAlbum->mbId)) {
-            $mbAlbum->save($this->dbh);
-            $params = array();
-            $params[] = (new \Spieldose\Database\DBParam())->str(":album_mbid", $mbAlbum->mbId);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":album_name", $album);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":track_artist", $artist);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":album_artist", $artist);
-            $this->dbh->execute(" UPDATE FILE SET album_mbid = :album_mbid WHERE album_name = :album_name AND (track_artist = :track_artist OR album_artist = :album_artist) ", $params);
-        }
     }
+
 
     public function mbAlbumMBIdScrap(string $mbid = "")
     {
-        $mbAlbum = \Spieldose\MusicBrainz\Album::getFromMBId($mbid);
-        if (!empty($mbAlbum->mbId)) {
-            $mbAlbum->save($this->dbh);
-            $params = array();
-            $params[] = (new \Spieldose\Database\DBParam())->str(":old_album_mbid", $mbid);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":album_mbid", $mbAlbum->mbId);
-            $this->dbh->execute("UPDATE FILE SET album_mbid = :album_mbid WHERE album_mbid = :old_album_mbid", $params);
+        $mbRelease = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+        $mbRelease->get($mbid);
+        if (!empty($mbRelease->mbId)) {
+            $this->logger->info("Caching release " . $mbRelease->mbId);
+            print_r($mbRelease->mbId);
+            print_r($mbRelease->title);
+            print_r($mbRelease->artist);
+            print_r($mbRelease->year);
+            $params = array(
+                (new \aportela\DatabaseWrapper\Param\StringParam(":MBID", $mbRelease->mbId)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":ALBUM", $mbRelease->title)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":ARTIST", $mbRelease->artist)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":YEAR", $mbRelease->year)),
+                (new \aportela\DatabaseWrapper\Param\StringParam(":JSON", $mbRelease->raw))
+            );
+            if (!empty($mbRelease->coverArtArchive->front)) {
+                $params[] = (new \aportela\DatabaseWrapper\Param\StringParam(":IMAGE", $mbRelease->coverArtArchive->front));
+            } else {
+                $params[] = (new \aportela\DatabaseWrapper\Param\NullParam(":IMAGE"));
+            }
+            $this->dbh->exec("
+                    INSERT INTO MB_CACHE_RELEASE
+                    (MBID, TITLE, YEAR, ARTIST_MBID, ARTIST_NAME, JSON)
+                    VALUES
+                    (:MBID, :TITLE, :YEAR, :ARTIST_MBID, :ARTIST_NAME, :JSON)
+                ", $params);
         }
     }
+
+    /*
 
     public function getAllDatabaseFiles(): array
     {
@@ -293,4 +360,6 @@ class Scraper
         $this->dbh->execute(" DELETE FROM LOVED_FILE WHERE file_id = :file_id ", $params);
         $this->dbh->execute(" DELETE FROM FILE WHERE id = :file_id ", $params);
     }
+
+    */
 }
