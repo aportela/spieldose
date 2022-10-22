@@ -91,5 +91,17 @@ return (array(
         "
             ALTER TABLE USER2 RENAME TO USER
         "
+    ),
+    10 => array(
+        "
+            CREATE TABLE [MB_CACHE_RELEASE] (
+                [MBID] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                [TITLE] VARCHAR(512) NOT NULL,
+                [YEAR] INTEGER,
+                [ARTIST_MBID] VARCHAR(36),
+                [ARTIST_NAME] VARCHAR(128),
+                [JSON] TEXT NOT NULL
+            );
+        "
     )
 ));
