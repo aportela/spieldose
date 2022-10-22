@@ -100,8 +100,8 @@ $settings['thumbnails'] = [
     'path' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails',
     'sizes' => [
         'small' => [
-            'width' => 80,
-            'height' => 80
+            'width' => 100,
+            'height' => 100
         ],
         'normal' => [
             'width' => 400,
