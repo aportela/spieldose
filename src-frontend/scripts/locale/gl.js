@@ -108,6 +108,7 @@ export default {
                 browsePaths: 'Directorios',
                 browsePlaylists: 'Listas de reproducción',
                 browseRadioStations: 'Estacións de radio',
+                profile: 'O meu perfil',
                 signOut: 'Rematar sesión'
             }
         },
@@ -298,6 +299,21 @@ export default {
                 remove: 'eliminar',
                 save: 'grabar',
                 cancel: 'cancelar'
+            }
+        },
+        profile: {
+            labels: {
+                sectionName: 'O meu perfil',
+                email: 'Email',
+                newPassword: 'Nova contrasinal',
+                confirmNewPassword: 'Confirme a nova contrasinal'
+            },
+            buttons: {
+                submit: 'gardar cambios',
+                linkLastFMAccount: 'Enlazar a unha conta en Last.FM (requerido pra scrobbling)'
+            },
+            errorMessages: {
+                'passwordsDontMatch': 'As contrasinais non coinciden'
             }
         },
         commonErrors: {

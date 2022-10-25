@@ -7,6 +7,7 @@ import { default as search } from '../vue-components/search.js';
 import { default as dashboard } from '../vue-components/dashboard.js';
 //import { default as nowPlaying } from '../vue-components/playlists.js';
 import { default as currentPlaylist } from '../pages/currentPlaylist.js';
+import { default as profile } from '../pages/profile.js';
 import { default as browseArtists } from '../vue-components/browse-artists.js';
 import { default as browseAlbums } from '../vue-components/browse-albums.js';
 import { default as browsePaths } from '../vue-components/browse-paths.js';
@@ -132,7 +133,13 @@ const routes = [
                         component: browseArtist
                     }
                 ]
-            }]
+            },
+            {
+                path: 'my_profile',
+                name: 'profile',
+                component: profile
+            }
+        ]
     }
 ];
 

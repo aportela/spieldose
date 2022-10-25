@@ -40,6 +40,10 @@ const template = function () {
                 <span>Toggle dark mode</span>
             </a>
             -->
+            <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('profile') }" v-on:click.prevent="changeSection('profile');">
+                <span class="panel-icon"><i class="fas fa-user"></i></span>
+                <span>{{ $t("menu.labels.profile") }}</span>
+            </a>
 
             <a class="panel-block" v-on:click.prevent="signOut();">
                 <span class="panel-icon"><i class="fas fa-sign-out-alt"></i></span>

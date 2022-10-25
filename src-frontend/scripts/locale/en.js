@@ -108,6 +108,7 @@ export default {
                 browsePaths: 'Browse paths',
                 browsePlaylists: 'Browse playlists',
                 browseRadioStations: 'Browse radio stations',
+                profile: 'My profile',
                 signOut: 'Sign out'
             }
         },
@@ -298,6 +299,21 @@ export default {
                 remove: 'remove',
                 save: 'save',
                 cancel: 'cancel'
+            }
+        },
+        profile: {
+            labels: {
+                sectionName: 'My profile',
+                email: 'Email',
+                newPassword: 'New password',
+                confirmNewPassword: 'Confirm new password'
+            },
+            buttons: {
+                submit: 'save',
+                linkLastFMAccount: 'Link to Last.FM account (required for scrobbling)'
+            },
+            errorMessages: {
+                'passwordsDontMatch': 'Passwords don\'t match'
             }
         },
         commonErrors: {
