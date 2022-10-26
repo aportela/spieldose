@@ -94,6 +94,33 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->get('/user/profile', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $payload = json_encode([
+                    'user' => [
+                        'id' => \Spieldose\User::getUserId(),
+                        'email' => \Spieldose\User::getUserEmail()
+                    ]
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->post('/user/profile', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                $u = new \Spieldose\User(\Spieldose\User::getUserId(), $params['email'] ?? '', $params['password'] ?? '');
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $u->update($db);
+                \Spieldose\User::setSessionVars($u->id, $u->email);
+                $payload = json_encode([
+                    'user' => [
+                        'id' => \Spieldose\User::getUserId(),
+                        'email' => \Spieldose\User::getUserEmail()
+                    ]
+                ]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/track/search', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
@@ -308,8 +335,6 @@ return function (App $app) {
                     throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for hash: ' . $args['hash']);
                 }
             });
-
-
 
             /* metrics */
 

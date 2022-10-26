@@ -6,7 +6,7 @@ export default {
             session: {
                 signUp: (email, password) => {
                     return new Promise((resolve, reject) => {
-                        var params = {
+                        const params = {
                             email: email,
                             password: password
                         }
@@ -19,7 +19,7 @@ export default {
                 },
                 signIn: (email, password) => {
                     return new Promise((resolve, reject) => {
-                        var params = {
+                        const params = {
                             email: email,
                             password: password
                         }
@@ -33,6 +33,28 @@ export default {
                 signOut: () => {
                     return new Promise((resolve, reject) => {
                         app.config.globalProperties.$axios.get('api2/user/signout').then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
+                getProfile: () => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('api2/user/profile').then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
+                setProfile: (email, password) => {
+                    const params = {
+                        email: email,
+                        password: password
+                    }
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.post('api2/user/profile', params).then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);
@@ -99,7 +121,7 @@ export default {
             metrics: {
                 getTopPlayedTracks: function (interval, artist) {
                     return new Promise(function (resolve, reject) {
-                        var params = {};
+                        const params = {};
                         if (artist) {
                             params.artist = artist;
                         }
@@ -132,7 +154,7 @@ export default {
                 },
                 getTopPlayedArtists: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {};
+                        const params = {};
                         switch (interval) {
                             case 0:
                                 break;
@@ -162,7 +184,7 @@ export default {
                 },
                 getTopPlayedGenres: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {};
+                        const params = {};
                         switch (interval) {
                             case 0:
                                 break;
@@ -192,7 +214,7 @@ export default {
                 },
                 getRecentAddedTracks: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "tracks"
                         };
                         switch (interval) {
@@ -224,7 +246,7 @@ export default {
                 },
                 getRecentAddedArtists: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "artists"
                         };
                         switch (interval) {
@@ -256,7 +278,7 @@ export default {
                 },
                 getRecentAddedAlbums: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "albums"
                         };
                         switch (interval) {
@@ -288,7 +310,7 @@ export default {
                 },
                 getRecentPlayedTracks: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "tracks"
                         };
                         switch (interval) {
@@ -320,7 +342,7 @@ export default {
                 },
                 getRecentPlayedArtists: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "albums"
                         };
                         switch (interval) {
@@ -352,7 +374,7 @@ export default {
                 },
                 getRecentPlayedAlbums: function (interval) {
                     return new Promise(function (resolve, reject) {
-                        var params = {
+                        const params = {
                             entity: "albums"
                         };
                         switch (interval) {

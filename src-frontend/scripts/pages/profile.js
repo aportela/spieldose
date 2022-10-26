@@ -35,7 +35,7 @@ const template = function () {
 
             <div class="field has-addons">
                 <p class="control">
-                    <button type="submit" class="button is-dark" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
+                    <button type="submit" class="button is-dark" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="disableSaving" @click.prevent="onSave">
                         <span class="icon"><i class="fas fa-save"></i></span>
                         <span>{{ $t("profile.buttons.submit") }}</span>
                     </button>
@@ -64,12 +64,15 @@ export default {
         });
     },
     computed: {
+        disableSaving: function () {
+            return (this.loading || !(this.email && this.newPassword && this.confirmNewPassword && this.newPassword == this.confirmNewPassword));
+        },
         hasLastFMAPIKey: function () {
             return (initialState && initialState.lastFMAPIKey);
         }
     },
     created: function () {
-        this.get();
+        this.onGet();
     },
     mounted: function () {
         this.$nextTick(() => this.$refs.email.focus());
@@ -91,8 +94,37 @@ export default {
         }
     },
     methods: {
-        get: function () {
-
+        onGet: function () {
+            this.$api.session.getProfile().then(success => {
+                this.loading = false;
+                if (success.data.user) {
+                    this.email = success.data.user.email;
+                }
+            }).catch(error => {
+                this.loading = false;
+                switch (error.response.status) {
+                    default:
+                        // TODO
+                        break;
+                }
+            });
+        },
+        onSave: function () {
+            this.$api.session.setProfile(this.email, this.newPassword).then(success => {
+                this.loading = false;
+                if (success.data.user) {
+                    this.email = success.data.user.email;
+                    this.newPassword = null;
+                    this.confirmNewPassword = null;
+                }
+            }).catch(error => {
+                this.loading = false;
+                switch (error.response.status) {
+                    default:
+                        // TODO
+                        break;
+                }
+            });
         },
         onLinkLastFM: function () {
             window.open("http://www.last.fm/api/auth/?api_key=" + initialState.lastFMAPIKey + '&cb=http://localhost:8080/OK')
