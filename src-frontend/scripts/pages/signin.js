@@ -165,31 +165,43 @@ export default {
                 this.loading = false;
                 this.$router.push({ name: 'nowPlaying' });
             }).catch(error => {
+                this.loading = false;
                 switch (error.response.status) {
                     case 400:
                         if (error.isFieldInvalid('email')) {
                             this.validator.setInvalid('signInEmail', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signInEmail.focus());
+                            this.$nextTick(() => {
+                                this.$refs.signInEmail.focus();
+                                this.$refs.signInEmail.select();
+                            });
                         } else if (error.isFieldInvalid("password")) {
                             this.validator.setInvalid('signInPassword', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signInPassword.focus());
+                            this.$nextTick(() => {
+                                this.$refs.signInPassword.focus();
+                                this.$refs.signInPassword.select()
+                            });
                         } else {
                             this.setAPIError(error.getApiErrorData());
                         }
                         break;
                     case 404:
                         this.validator.setInvalid('signInEmail', this.$t('signIn.errorMessages.userNotFound'));
-                        this.$nextTick(() => this.$refs.signInEmail.focus());
+                        this.$nextTick(() => {
+                            this.$refs.signInEmail.focus();
+                            this.$refs.signInEmail.select();
+                        });
                         break;
                     case 401:
                         this.validator.setInvalid('signInPassword', this.$t('signIn.errorMessages.incorrectPassword'));
-                        this.$nextTick(() => this.$refs.signInPassword.focus());
+                        this.$nextTick(() => {
+                            this.$refs.signInPassword.focus();
+                            this.$refs.signInPassword.select();
+                        });
                         break;
                     default:
                         this.setAPIError(error.getApiErrorData());
                         break;
                 }
-                this.loading = false;
             });
         },
         submitSignUp: function () {
@@ -204,27 +216,36 @@ export default {
                 this.submitSignIn();
                 this.loading = false;
             }).catch(error => {
+                this.loading = false;
                 switch (error.response.status) {
                     case 400:
                         if (error.isFieldInvalid('email')) {
                             this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signUpEmail.focus());
+                            this.$nextTick(() => {
+                                this.$refs.signUpEmail.focus();
+                                this.$refs.signUpEmail.select();
+                            });
                         } else if (error.isFieldInvalid('password')) {
                             this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signUpPassword.focus());
+                            this.$nextTick(() => {
+                                this.$refs.signUpPassword.focus();
+                                this.$refs.signUpPassword.select();
+                            });
                         } else {
                             this.setAPIError(error.getApiErrorData());
                         }
                         break;
                     case 409:
                         this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
-                        this.$nextTick(() => this.$refs.signUpEmail.focus());
+                        this.$nextTick(() => {
+                            this.$refs.signUpEmail.focus();
+                            this.$refs.signUpEmail.select();
+                        });
                         break;
                     default:
                         this.setAPIError(error.getApiErrorData());
                         break;
                 }
-                this.loading = false;
             });
         }
     }
