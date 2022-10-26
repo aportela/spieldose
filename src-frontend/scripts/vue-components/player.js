@@ -205,7 +205,7 @@ export default {
         const savedVolume = this.$spieldoseLocalStorage.get('volume');
         if (savedVolume != null) {
             console.debug('Restoring audio volume at ' + (savedVolume * 100) + '%');
-            this.volume = savedVolume * 100;
+            this.setVolume(savedVolume);
         } else {
             console.debug('Setting audio volume at ' + this.volume + '%');
             this.setVolume(this.volume / 100);
@@ -244,7 +244,6 @@ export default {
             this.$bus.emit('playerEvent', this.playerEvents);
             this.onNextTrackButtonClick();
         });
-
         this.audioElement.addEventListener('error', (event) => {
             console.debug('Audio loading error');
             console.log(event);
@@ -273,7 +272,6 @@ export default {
             //this.playerEvents.isPlaying = true;
             this.$bus.emit('playerEvent', this.playerEvents);
         });
-
         this.createAnalyzer();
     },
     methods: {
