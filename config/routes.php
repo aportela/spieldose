@@ -25,6 +25,7 @@ return function (App $app) {
                     'allowSignUp' => $settings['common']['allowSignUp'],
                     'liveSearch' => $settings['common']['liveSearch'],
                     'locale' => $settings['common']['locale'],
+                    'lastFMAPIKey' => $settings['lastFM']['apiKey'],
                     'version' => array(
                         'currentVersion' => $currentVersion,
                         'lastVersion' => $lastVersion,

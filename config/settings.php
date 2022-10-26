@@ -123,6 +123,10 @@ $settings['jwt'] = [
 
 //$settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
+$settings["lastFM"] = [
+    "apiKey" => "40ede2a05c97a8a8055ee12f813a417d"
+];
+
 $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
 
 $settings['webpack'] = require_once('webpack.php');
