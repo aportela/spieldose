@@ -206,7 +206,7 @@ export default {
         const savedVolume = this.$spieldoseLocalStorage.get('volume');
         if (savedVolume != null) {
             console.debug('Restoring audio volume at ' + (savedVolume * 100) + '%');
-            this.setVolume(savedVolume);
+            this.volume = savedVolume * 100;
         } else {
             console.debug('Setting audio volume at ' + this.volume + '%');
             this.setVolume(this.volume / 100);
