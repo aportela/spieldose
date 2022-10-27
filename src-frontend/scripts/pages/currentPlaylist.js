@@ -22,7 +22,7 @@ const template = function () {
 
         <div class="field has-addons">
             <p class="control">
-                <button class="button is-small" @click.prevent="tracks = []; currentTrackIndex = 0;" :disabled="loading || playerEvent.isLoading">
+                <button class="button is-small" @click.prevent="onClearPlaylist" :disabled="loading || playerEvent.isLoading">
                 <span class="icon is-small">
                     <i class="fa-solid fa-xmark"></i>
                 </span>
@@ -162,6 +162,8 @@ export default {
                 this.searchQuery = null;
             }
             this.loading = true;
+            this.tracks = [];
+            this.currentTrackIndex = -1;
             this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
                 this.tracks = success.data.tracks;
                 this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
@@ -247,6 +249,10 @@ export default {
         },
         onTogglePlay: function () {
 
+        },
+        onClearPlaylist: function () {
+            this.tracks = [];
+            this.currentTrackIndex = -1;
         }
     }
 }
