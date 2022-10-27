@@ -198,6 +198,16 @@ class User
     }
 
     /**
+     * return logged user email
+     *
+     * @return string email || null
+     */
+    public static function getUserEmail()
+    {
+        return (isset($_SESSION["email"]) ? $_SESSION["email"] : null);
+    }
+
+    /**
      * set user credentials
      *
      * @param \Spieldose\Database\DB $dbh database handler
