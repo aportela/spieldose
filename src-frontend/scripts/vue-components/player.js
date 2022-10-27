@@ -106,8 +106,6 @@ export default {
     template: template(),
     data: function () {
         return ({
-            // audio can not auto-play without this
-            hasPreviousUserInteractions: false,
             audioElement: null,
             audioCanBePlayed: false,
             playerEvents: {
@@ -135,6 +133,9 @@ export default {
     computed: {
         trackId: function () {
             return (this.track ? this.track.id : null);
+        },
+        hasPreviousUserInteractions: function () {
+            return (this.$player.hasPreviousUserInteractions);
         }
     },
     watch: {
@@ -378,21 +379,21 @@ export default {
             this.setVolume(this.volume / 100);
         },
         onPlayButtonClick: function () {
-            this.hasPreviousUserInteractions = true;
+            this.$player.hasPreviousUserInteractions = true;
             this.play();
         },
         onPauseButtonClick: function () {
-            this.hasPreviousUserInteractions = true;
+            this.$player.hasPreviousUserInteractions = true;
             this.pause();
         },
 
         onPreviousTrackButtonClick: function () {
-            this.hasPreviousUserInteractions = true;
+            this.$player.hasPreviousUserInteractions = true;
             this.pause();
             this.$bus.emit('onPreviousTrack');
         },
         onNextTrackButtonClick: function () {
-            this.hasPreviousUserInteractions = true;
+            this.$player.hasPreviousUserInteractions = true;
             this.pause();
             this.$bus.emit('onNextTrack');
         },

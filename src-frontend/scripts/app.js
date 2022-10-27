@@ -6,6 +6,7 @@ import { default as axios } from './plugins/axios.js';
 import { default as api } from './plugins/api.js';
 import { default as localStorage } from './plugins/localStorage.js';
 import { default as bus } from './plugins/bus.js';
+import { default as player } from './plugins/player.js';
 
 const spieldoseApp = {
     data: function () {
@@ -39,4 +40,4 @@ const localStorageBasilOptions = {
 };
 
 
-createApp(spieldoseApp).use(router).use(i18n).use(localStorage, localStorageBasilOptions).use(axios, {}).use(api).use(bus).mount('#app');
+createApp(spieldoseApp).use(router).use(i18n).use(localStorage, localStorageBasilOptions).use(axios, {}).use(api).use(bus).use(player).mount('#app');

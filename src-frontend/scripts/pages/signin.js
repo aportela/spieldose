@@ -163,6 +163,7 @@ export default {
             this.validator.clear();
             this.$api.session.signIn(this.signInEmail, this.signInPassword).then(success => {
                 this.loading = false;
+                this.$player.hasPreviousUserInteractions = true;
                 this.$router.push({ name: 'nowPlaying' });
             }).catch(error => {
                 switch (error.response.status) {
