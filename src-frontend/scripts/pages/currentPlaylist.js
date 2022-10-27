@@ -186,7 +186,7 @@ export default {
                         this.$nextTick(() => this.$refs.signUpEmail.focus());
                         break;
                     default:
-                        this.setAPIError(error.getApiErrorData());
+                        //this.setAPIError(error.getApiErrorData());
                         break;
                 }
                 this.loading = false;
