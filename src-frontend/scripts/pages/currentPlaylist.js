@@ -38,7 +38,7 @@ const template = function () {
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="onPreviousTrack" :disabled="loading || playerEvent.isLoading">
+                <button class="button is-small" @click.prevent="onPreviousTrack" :disabled="loading || playerEvent.isLoading || currentTrackIndex < 1">
                     <span class="icon is-small">
                         <i class="fa-fw fa fa-step-backward"></i>
                     </span>
@@ -50,12 +50,13 @@ const template = function () {
                     <span class="icon is-small">
                         <i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }"></i>
                     </span>
-                    <span v-if="playerEvent.isPlaying">Pause</span>
+                    <span v-if="playerEvent.isLoading">Loading</span>
+                    <span v-else-if="playerEvent.isPlaying">Pause</span>
                     <span v-else>Play</span>
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="onNextTrack" :disabled="loading || playerEvent.isLoading">
+                <button class="button is-small" @click.prevent="onNextTrack" :disabled="loading || playerEvent.isLoading || currentTrackIndex >= tracks.length - 1">
                     <span class="icon is-small">
                         <i class="fa-fw fa fa-step-forward"></i>
                     </span>
@@ -85,7 +86,7 @@ const template = function () {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="track,index in tracks" :key="index" class="is-clickable whitespace-nowrap" @click.prevent="currentTrackIndex = index;"
+                <tr v-for="track,index in tracks" :key="index" class="is-clickable whitespace-nowrap" @click.prevent="onChangeCurrentTrackIndex(index)"
                     :class="{ 'is-selected-pink': currentTrack.id == track.id } ">
                     <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
@@ -165,6 +166,7 @@ export default {
             this.tracks = [];
             this.currentTrackIndex = -1;
             this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
+                this.$player.hasPreviousUserInteractions = true;
                 this.tracks = success.data.tracks;
                 this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
                 this.currentTrackIndex = 0;
@@ -238,17 +240,25 @@ export default {
             this.loadTracks(this.searchQuery);
         },
         onPreviousTrack: function () {
+            this.$player.hasPreviousUserInteractions = true;
             if (this.currentTrackIndex > 0) {
                 this.currentTrackIndex--;
             }
         },
         onNextTrack: function () {
+            this.$player.hasPreviousUserInteractions = true;
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length - 1)) {
                 this.currentTrackIndex++;
             }
         },
         onTogglePlay: function () {
-
+            this.$player.hasPreviousUserInteractions = true;
+        },
+        onChangeCurrentTrackIndex: function (index) {
+            this.$player.hasPreviousUserInteractions = true;
+            if (index >= 0) {
+                this.currentTrackIndex = index;
+            }
         },
         onClearPlaylist: function () {
             this.tracks = [];
