@@ -17,12 +17,12 @@ const template = function () {
                             <slot name="top-right-icon"></slot>
                         </li>
                     </ul>
-                    <div v-if="customVinyl" @click.prevent="customVinyl =! customVinyl">
+                    <div class="is-clickable" v-if="customVinyl" @click.prevent="customVinyl =! customVinyl">
                         <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': playerEvents.isPlaying }">
                             <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
                         </div>
                     </div>
-                    <div v-else @click.prevent="customVinyl =! customVinyl">
+                    <div class="is-clickable" v-else @click.prevent="customVinyl =! customVinyl">
                         <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
                         <img v-else src="images/vinyl.png" alt="Vinyl" />
                     </div>
