@@ -40,11 +40,12 @@ const template = function () {
                             <i @click.prevent="onToggleMute" class="is-clickable fas fw" :class="{ 'fa-volume-mute': volume == 0, 'fa-volume-off': volume > 0 && volume <= 10, 'fa-volume-down': volume > 0 && volume <= 50, 'fa-volume-up': volume > 50 }" style="color: #d30320;"></i>
                         </span>
                         <input style="padding-left: 3.5em; padding-right: 3.5em;"
-                            class="slider is-fullwidth is-small is-circle" step="1" min="0" max="100" type="range"
+                            class="slider is-fullwidth is-small is-circle" step="0.05" min="0" max="1" type="range"
                             v-model.number="volume">
                             <span class="icon is-right" style="height: 1em;">
-                            <small>{{ volume }}%</small>
+                            <small>{{ parseInt(volume * 100) }}%</small>
                         </span>
+
                     </div>
                 </div>
                 <div class="body__info">
@@ -114,7 +115,7 @@ export default {
                 isPlaying: false
             },
             oldVolume: 0,
-            volume: 2,
+            volume: 0,
             position: 0,
             currentTime: "00:00",
             duration: "00:00",
@@ -186,7 +187,7 @@ export default {
         },
         volume: function (newValue, oldValue) {
             this.oldVolume = oldValue;
-            this.setVolume(newValue / 100);
+            this.setVolume(newValue);
         },
         showAnalyzer: function (newValue) {
             if (newValue) {
@@ -205,11 +206,11 @@ export default {
         this.audioElement = document.getElementById('audio');
         const savedVolume = this.$spieldoseLocalStorage.get('volume');
         if (savedVolume != null) {
-            console.debug('Restoring audio volume at ' + (savedVolume * 100) + '%');
-            this.volume = savedVolume * 100;
+            console.debug('Restoring audio volume at ' + (savedVolume) + '%');
+            this.volume = savedVolume;
         } else {
+            this.volume = 0.05;
             console.debug('Setting audio volume at ' + this.volume + '%');
-            this.setVolume(this.volume / 100);
         }
         console.debug('Setting audio available to play event');
         this.audioElement.addEventListener('canplay', (event) => {
@@ -374,7 +375,7 @@ export default {
             } else {
                 this.volume = this.oldVolume;
             }
-            this.setVolume(this.volume / 100);
+            this.setVolume(this.volume);
         },
         onPlayButtonClick: function () {
             this.$player.hasPreviousUserInteractions = true;
