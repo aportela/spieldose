@@ -90,7 +90,8 @@ const template = function () {
                     :class="{ 'is-selected-pink': currentTrack.id == track.id } ">
                     <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
-                    <td>{{ track.artist }} <span class="is-clickable" v-if="track.artist" @click.prevent="loadTracks('', track.artist, '', '');"><i class="fas fa-link ml-1"></i></span></td>
+                    <td>{{ track.artist }} <router-link v-if="track.artist" :to="{ name: 'artistPage', params: { name: track.artist } }"><i class="fas fa-link ml-1"></i></router-link></td>
+
                     <td>{{ track.albumArtist }} <span class="is-clickable" v-if="track.albumArtist" @click.prevent="loadTracks('', '', track.albumArtist, '');"><i class="fas fa-link ml-1"></i></span></td>
                     <td>{{ track.album }}<span class="is-clickable" v-if="track.album" @click.prevent="loadTracks('', '', track.albumArtist, track.album);"><i class="fas fa-link ml-1"></i></span></td>
                     <td class="has-text-right">{{ track.trackNumber }}</td>

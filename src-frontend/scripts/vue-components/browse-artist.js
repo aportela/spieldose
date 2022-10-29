@@ -197,7 +197,8 @@ export default {
         }
     },
     created: function () {
-        this.getArtist(this.$route.params.artist);
+        //this.getArtist(this.$route.params.artist);
+        /*
         if (this.$route.name == 'artistTracks' || this.$route.name == 'artistTracksPaged') {
             if (this.$route.params.page) {
                 this.pager.actualPage = parseInt(this.$route.params.page);
@@ -220,6 +221,7 @@ export default {
                     break;
             }
         }
+        */
     },
     methods: {
         onPaginationChanged: function (currentPage) {
