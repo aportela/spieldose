@@ -1,6 +1,6 @@
-import { Chart } from 'Chart';
+import { Chart, registerables } from 'Chart';
 import { mixinAPIError } from '../mixins.js';
-
+import Chartist from 'chartist-webpack';
 
 const template = function () {
     return `
@@ -21,10 +21,11 @@ const template = function () {
                 <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
             </p>
             <div class="panel-block" v-if="! hasAPIErrors">
-                <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
+                <canvas v-if="isHourInterval_" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
                 <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
                 <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
                 <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
+                <div class="ct-chart ct-minor-seventh" class="play-stats-metrics-graph" style="height: 20em;"></div>
             </div>
             <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
         </section>
@@ -32,6 +33,7 @@ const template = function () {
 };
 
 const commonChartOptions = {
+    /*
     maintainAspectRatio: false,
     legend: {
         display: false
@@ -44,6 +46,7 @@ const commonChartOptions = {
             }
         }
     }
+    */
 };
 
 export default {
@@ -59,7 +62,7 @@ export default {
         });
     },
     created: function () {
-        //this.loadChart();
+        this.loadChart();
     },
     computed: {
         isHourInterval: function () {
@@ -83,6 +86,7 @@ export default {
                 for (let i = 0; i < response.data.metrics.length; i++) {
                     data[response.data.metrics[i].hour] = response.data.metrics[i].total;
                 }
+                /*
                 if (this.chart) {
                     this.chart.destroy();
                 }
@@ -105,6 +109,30 @@ export default {
                         , options: commonChartOptions
                     });
                 }
+                */
+                var options = {
+                    // If high is specified then the axis will display values explicitly up to this value and the computed maximum from the data is ignored
+                    //high: 100,
+                    // If low is specified then the axis will display values explicitly down to this value and the computed minimum from the data is ignored
+                    low: 0,
+                    // This option will be used when finding the right scale division settings. The amount of ticks on the scale will be determined so that as many ticks as possible will be displayed, while not violating this minimum required space (in pixel).
+                    scaleMinSpace: 20,
+                    // Can be set to true or false. If set to true, the scale will be generated with whole numbers only.
+                    onlyInteger: true,
+                    // The reference value can be used to make sure that this value will always be on the chart. This is especially useful on bipolar charts where the bipolar center always needs to be part of the chart.
+                    //referenceValue: 5,
+                    fullWidth: true,
+                    showArea: true
+
+                };
+                new Chartist.Line('.ct-chart', {
+                    labels: hourNames,
+                    series: [
+                        data
+                    ]
+                }, options
+
+                );
                 this.loading = false;
             }).catch(error => {
                 console.log("error");
