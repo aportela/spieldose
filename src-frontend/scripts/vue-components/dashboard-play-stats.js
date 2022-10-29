@@ -1,6 +1,5 @@
-import { Chart, registerables } from 'Chart';
+import { Chart, registerables } from 'chart.js';
 import { mixinAPIError } from '../mixins.js';
-import Chartist from 'chartist-webpack';
 
 const template = function () {
     return `
@@ -21,11 +20,10 @@ const template = function () {
                 <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
             </p>
             <div class="panel-block" v-if="! hasAPIErrors">
-                <canvas v-if="isHourInterval_" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
+                <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
                 <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
                 <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
                 <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
-                <div class="ct-chart ct-minor-seventh" class="play-stats-metrics-graph" style="height: 20em;"></div>
             </div>
             <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
         </section>
@@ -33,20 +31,24 @@ const template = function () {
 };
 
 const commonChartOptions = {
-    /*
     maintainAspectRatio: false,
     legend: {
         display: false
     },
-    // https://stackoverflow.com/a/71239566
     scales: {
+        // https://stackoverflow.com/a/59353503
+        x: {
+            offset: true
+        },
+        // https://stackoverflow.com/a/71239566
         y: {
+            beginAtZero: true,
+            grace: '1%',
             ticks: {
                 precision: 0
             }
         }
     }
-    */
 };
 
 export default {
@@ -62,6 +64,7 @@ export default {
         });
     },
     created: function () {
+        Chart.register(...registerables);
         this.loadChart();
     },
     computed: {
@@ -82,11 +85,10 @@ export default {
         loadMetricsByHourChart: function () {
             this.$api.metrics.getPlayStatMetricsByHour().then(response => {
                 const hourNames = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-                let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                let data = Array(24).fill(0);
                 for (let i = 0; i < response.data.metrics.length; i++) {
-                    data[response.data.metrics[i].hour] = response.data.metrics[i].total;
+                    data[parseInt(response.data.metrics[i].hour)] = response.data.metrics[i].total;
                 }
-                /*
                 if (this.chart) {
                     this.chart.destroy();
                 }
@@ -101,39 +103,16 @@ export default {
                                     'label': 'play stats by hour',
                                     'data': data,
                                     'fill': true,
-                                    'borderColor': '#3273dc',
-                                    'lineTension': 0.1
+                                    'borderColor': 'rgb(211, 3, 32)',
+                                    'backgroundColor': 'rgba(211, 3, 32, 0.2)',
+                                    'lineTension': 0.3
                                 }
                             ]
                         }
                         , options: commonChartOptions
                     });
+                    this.loading = false;
                 }
-                */
-                var options = {
-                    // If high is specified then the axis will display values explicitly up to this value and the computed maximum from the data is ignored
-                    //high: 100,
-                    // If low is specified then the axis will display values explicitly down to this value and the computed minimum from the data is ignored
-                    low: 0,
-                    // This option will be used when finding the right scale division settings. The amount of ticks on the scale will be determined so that as many ticks as possible will be displayed, while not violating this minimum required space (in pixel).
-                    scaleMinSpace: 20,
-                    // Can be set to true or false. If set to true, the scale will be generated with whole numbers only.
-                    onlyInteger: true,
-                    // The reference value can be used to make sure that this value will always be on the chart. This is especially useful on bipolar charts where the bipolar center always needs to be part of the chart.
-                    //referenceValue: 5,
-                    fullWidth: true,
-                    showArea: true
-
-                };
-                new Chartist.Line('.ct-chart', {
-                    labels: hourNames,
-                    series: [
-                        data
-                    ]
-                }, options
-
-                );
-                this.loading = false;
             }).catch(error => {
                 console.log("error");
                 console.log(error); // this.setAPIError(error.getApiErrorData());
@@ -151,11 +130,9 @@ export default {
                     this.$t('dashboard.labels.friday'),
                     this.$t('dashboard.labels.saturday')
                 ];
-                let weekDays = [];
-                let data = [];
+                let data = Array(7).fill(0);
                 for (let i = 0; i < response.data.metrics.length; i++) {
-                    data.push(response.data.metrics[i].total);
-                    weekDays.push(weekDayNames[response.data.metrics[i].weekDay]);
+                    data[parseInt(response.data.metrics[i].weekDay)] = response.data.metrics[i].total;
                 }
                 if (this.chart) {
                     this.chart.destroy();
@@ -163,12 +140,14 @@ export default {
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-weekday'), {
                     type: 'bar',
                     data: {
-                        labels: weekDays,
+                        labels: weekDayNames,
                         datasets: [
                             {
                                 'label': this.$t('dashboard.labels.playStatsByWeekday'),
                                 'data': data,
-                                'backgroundColor': '#3273dc'
+                                'borderColor': Array(weekDayNames.length).fill('rgb(211, 3, 32)'),
+                                'backgroundColor': Array(weekDayNames.length).fill('rgba(211, 3, 32, 0.2)'),
+                                borderWidth: 1
                             }
                         ]
                     }, options: commonChartOptions
@@ -196,11 +175,9 @@ export default {
                     this.$t('dashboard.labels.november'),
                     this.$t('dashboard.labels.december')
                 ];
-                let months = [];
-                let data = [];
+                let data = Array(12).fill(0);
                 for (let i = 0; i < response.data.metrics.length; i++) {
-                    data.push(response.data.metrics[i].total);
-                    months.push(monthNames[response.data.metrics[i].month - 1]);
+                    data[parseInt(response.data.metrics[i].month)] = response.data.metrics[i].total;
                 }
                 if (this.chart) {
                     this.chart.destroy();
@@ -208,12 +185,14 @@ export default {
                 this.chart = new Chart(document.getElementById('playcount-metrics-chart-month'), {
                     type: 'bar',
                     data: {
-                        labels: months,
+                        labels: monthNames,
                         datasets: [
                             {
                                 'label': this.$t('dashboard.labels.playStatsByMonth'),
                                 'data': data,
-                                'backgroundColor': '#3273dc'
+                                'borderColor': Array(monthNames.length).fill('rgb(211, 3, 32)'),
+                                'backgroundColor': Array(monthNames.length).fill('rgba(211, 3, 32, 0.2)'),
+                                borderWidth: 1
                             }
                         ]
                     }, options: commonChartOptions
@@ -243,7 +222,9 @@ export default {
                             {
                                 'label': this.$t('dashboard.labels.playStatsByYear'),
                                 'data': data,
-                                'backgroundColor': '#3273dc'
+                                'borderColor': Array(years.length).fill('rgb(211, 3, 32)'),
+                                'backgroundColor': Array(years.length).fill('rgba(211, 3, 32, 0.2)'),
+                                borderWidth: 1
                             }
                         ]
                     }, options: commonChartOptions
