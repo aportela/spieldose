@@ -30,7 +30,6 @@
     "axios": "^0.27.2",
     "basil.js": "^0.4.11",
     "chart.js": "^3.9.1",
-    "chartist-webpack": "^0.9.5-0",
     "dayjs": "^1.11.5",
     "mitt": "^3.0.0",
     "remove-files-webpack-plugin": "^1.5.0",
