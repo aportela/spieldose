@@ -1,4 +1,4 @@
-import { Chart, registerables } from 'chart.js';
+import { Chart, registerables } from 'chartjs';
 import { mixinAPIError } from '../mixins.js';
 
 const template = function () {
