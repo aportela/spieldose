@@ -3,7 +3,7 @@ import { mixinAPIError, mixinPlayer, mixinPagination, mixinAlbums, mixinLiveSear
 import { default as imageArtist } from './image-artist.js';
 import { default as dashboardTopList } from './dashboard-toplist.js';
 import { default as pagination } from './pagination';
-import Chart from 'chart.js/auto';
+import { Chart, registerables } from 'chartjs';
 import browseArtistHeader from './browse-artist-header.js';
 import { default as album } from './album.js';
 
@@ -162,7 +162,7 @@ const template = function () {
                         </div>
                     </div>
                 </div>
-                <canvas width="100%" height="200" id="play-stats"></canvas>
+                <canvas width="100%" style="max-height: 200px;" id="play-stats"></canvas>
             </div>
         </div>
     `;
@@ -172,26 +172,90 @@ const template = function () {
 export default {
     name: 'spieldose-browse-artist-overview',
     template: template(),
+    data: function () {
+        return ({
+            chart: null
+        });
+    },
     props: [
         'artist'
     ],
     computed: {
-        biography: function() {
-            return((this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.bio && this.artist.lastFM.artist.bio.content) ? this.artist.lastFM.artist.bio.content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'): null);
+        biography: function () {
+            return ((this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.bio && this.artist.lastFM.artist.bio.content) ? this.artist.lastFM.artist.bio.content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : null);
         },
-        hasSimilar: function() {
-            return(this.artist.similarArtists && this.artist.similarArtists.length > 0);
+        hasSimilar: function () {
+            return (this.artist.similarArtists && this.artist.similarArtists.length > 0);
         }
     },
     components: {
         'spieldose-album': album,
         'spieldose-image-artist': imageArtist
     },
+    created: function () {
+        Chart.register(...registerables);
+    },
+    mounted: function () {
+        if (this.chart) {
+            this.chart.destroy();
+        }
+        const commonChartOptions = {
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            scales: {
+                // https://stackoverflow.com/a/59353503
+                x: {
+                    offset: true
+                },
+                // https://stackoverflow.com/a/71239566
+                y: {
+                    beginAtZero: true,
+                    grace: '1%',
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        };
+        const monthNames = [
+            this.$t('dashboard.labels.january'),
+            this.$t('dashboard.labels.february'),
+            this.$t('dashboard.labels.march'),
+            this.$t('dashboard.labels.april'),
+            this.$t('dashboard.labels.may'),
+            this.$t('dashboard.labels.june'),
+            this.$t('dashboard.labels.july'),
+            this.$t('dashboard.labels.august'),
+            this.$t('dashboard.labels.september'),
+            this.$t('dashboard.labels.october'),
+            this.$t('dashboard.labels.november'),
+            this.$t('dashboard.labels.december')
+        ];
+        let data = [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55];
+        this.chart = new Chart(document.getElementById('play-stats'), {
+            type: 'line',
+            data: {
+                labels: monthNames,
+                datasets: [
+                    {
+                        'label': this.$t('dashboard.labels.playStatsByMonth'),
+                        'data': data,
+                        'fill': true,
+                        'borderColor': 'rgb(211, 3, 32)',
+                        'backgroundColor': 'rgba(211, 3, 32, 0.2)',
+                        'lineTension': 0.3
+                    }
+                ]
+            }, options: commonChartOptions
+        });
+    },
     methods: {
-        onPlayTrack: function(track) {
-            this.$player.playTracks([ track ]);
+        onPlayTrack: function (track) {
+            this.$player.playTracks([track]);
         },
-        onToggleLoveTrack: function(track) {
+        onToggleLoveTrack: function (track) {
             // TODO
             if (track.loved) {
             } else {
