@@ -245,6 +245,7 @@ export default {
                         'fill': true,
                         'borderColor': 'rgb(211, 3, 32)',
                         'backgroundColor': 'rgba(211, 3, 32, 0.2)',
+                        'borderWidth': 2,
                         'lineTension': 0.3
                     }
                 ]
