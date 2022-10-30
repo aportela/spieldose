@@ -4,7 +4,7 @@ const template = function () {
     return `
         <div id="artist-header-block">
             <div id="artist-header-block-background-image" v-if="false && artist && artist.image" :style="'background-image: url(api/thumbnail?url=' + artist.image + ')'"></div>
-            <div id="artist-header-block-background-image" v-if="artist && artist.image" style="background-image: url(https://milladoiro.gal/wp-content/uploads/2016/05/milladoiro-historia4.png);"></div>
+            <div id="artist-header-block-background-image" v-if="artist && artist.image" :style="'background-image: url(' + artist.image + ');'"></div>
             <div id="artist-header-block-background-overlay"></div>
             <div id="artist-header-block-content">
                 <div class="p-6">
