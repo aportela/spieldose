@@ -13,7 +13,7 @@ import { default as browseAlbums } from '../vue-components/browse-albums.js';
 import { default as browsePaths } from '../vue-components/browse-paths.js';
 import { default as browsePlaylists } from '../vue-components/browse-playlists.js';
 import { default as browseRadioStations } from '../vue-components/browse-radio-stations.js';
-import { default as browseArtist } from '../vue-components/browse-artist.js';
+import { default as browseArtist } from '../pages/artist.js';
 
 /**
  * vue-router route definitions
@@ -106,8 +106,23 @@ const routes = [
                 component: browseArtist,
                 children: [
                     {
-                        path: 'bio',
-                        name: 'artistBio',
+                        path: 'overview',
+                        name: 'artistOverview',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'biography',
+                        name: 'artistBiography',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'albums',
+                        name: 'artistAlbums',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'similar_artists',
+                        name: 'artistSimilarArtists',
                         component: browseArtist
                     },
                     {
@@ -125,6 +140,11 @@ const routes = [
                     {
                         path: 'albums',
                         name: 'artistAlbums',
+                        component: browseArtist
+                    },
+                    {
+                        path: 'stats',
+                        name: 'artistStats',
                         component: browseArtist
                     },
                     {

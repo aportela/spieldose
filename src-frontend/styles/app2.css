@@ -550,3 +550,64 @@ button.is-pink:hover {
 }
 
 /* custom bulma overrides */
+
+
+/* artist */
+
+div#artist-header-block {
+    overflow: hidden;
+    color: #fff;
+    background: rgba(24, 24, 24, 1);
+    height: 400px;
+    position: relative;
+}
+
+
+div#artist-header-block-background-image {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 25%;
+    width: 50%;
+    height: 400px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 0;
+    filter: blur(2px);
+    transition: filter 0.3s ease-in;
+}
+
+div#artist-header-block-background-overlay {
+    background: linear-gradient(0.25turn, rgba(24, 24, 24, 1), rgba(92, 71, 59, 0));
+    width: 51%;
+    height: 400px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+}
+
+div#artist-header-block-content {
+    width: 50%;
+    z-index: 2;
+}
+
+div#artist-header-block-content div#bottom {
+    width: 50%;
+    position: absolute;
+    bottom: 0px;
+}
+
+div#artist-header-block-content div#bottom div.tabs ul {
+    border: 0;
+}
+
+div#artist-header-block-content div#bottom div.tabs ul li a {
+    border-bottom: 4px solid #000;
+}
+
+div#artist-header-block-content div#bottom div.tabs ul li.is-active a {
+    border-bottom-color: #ededed;
+}
+
+/* artist */

@@ -72,7 +72,6 @@ const template = function () {
                 </div>
                 <div class="is-clearfix"></div>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -95,8 +94,7 @@ export default {
     },
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
-        'spieldose-pagination': pagination,
-        'spieldose-api-error-component': apiError
+        'spieldose-pagination': pagination
     },
     methods: {
         onPaginationChanged: function (currentPage) {
