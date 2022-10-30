@@ -152,6 +152,36 @@ export default {
                         });
                     });
                 },
+                getTopPlayedAlbums: function (interval) {
+                    return new Promise(function (resolve, reject) {
+                        const params = {};
+                        switch (interval) {
+                            case 0:
+                                break;
+                            case 1:
+                                params.fromDate = dayjs().subtract(7, 'day').format('YYYYMMDD');
+                                params.toDate = dayjs().format('YYYYMMDD');
+                                break;
+                            case 2:
+                                params.fromDate = dayjs().subtract(1, 'month').format('YYYYMMDD');
+                                params.toDate = dayjs().format('YYYYMMDD');
+                                break;
+                            case 3:
+                                params.fromDate = dayjs().subtract(6, 'month').format('YYYYMMDD');
+                                params.toDate = dayjs().format('YYYYMMDD');
+                                break;
+                            case 4:
+                                params.fromDate = dayjs().subtract(1, 'year').format('YYYYMMDD');
+                                params.toDate = dayjs().format('YYYYMMDD');
+                                break;
+                        }
+                        app.config.globalProperties.$axios.post("/api2/metrics/top_albums", params).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
                 getTopPlayedArtists: function (interval) {
                     return new Promise(function (resolve, reject) {
                         const params = {};

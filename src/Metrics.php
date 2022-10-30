@@ -48,6 +48,41 @@ class Metrics
         return ($metrics);
     }
 
+    public static function GetTopAlbums(\aportela\DatabaseWrapper\DB $db, $filter, int $count = 5): array
+    {
+        $metrics = array();
+        $params = array(
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+        );
+        $queryConditions = array(
+            " S.USER = :user_id "
+        );
+        if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
+            $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate AND :toDate ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
+        }
+        $query = sprintf('
+                /*
+                SELECT COALESCE(MB.artist, F.track_artist) AS artist, COUNT(S.played) AS total
+                */
+                SELECT FIT.ALBUM AS album, COALESCE(FIT.album_artist, FIT.artist) AS artist, COUNT(S.PLAYED) AS total
+                FROM PLAY_STATS S
+                LEFT JOIN FILES F ON F.ID = S.FILE
+                LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
+                /*
+                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
+                */
+                %s
+                GROUP BY FIT.ALBUM
+                HAVING FIT.ALBUM NOT NULL
+                ORDER BY total DESC
+                LIMIT %d;
+            ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''), $count);
+        $metrics = $db->query($query, $params);
+        return ($metrics);
+    }
+
     public static function GetTopArtists(\aportela\DatabaseWrapper\DB $db, $filter, int $count = 5): array
     {
         $metrics = array();

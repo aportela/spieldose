@@ -27,6 +27,10 @@ const template = function () {
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
+                    <li class="is-size-6-5" v-if="isTopAlbumsType" v-for="item in items">
+                        <span>{{ item.album }}</span>
+                        <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
+                    </li>
                     <li class="is-size-6-5" v-if="isTopArtistsType" v-for="item in items">
                         <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
@@ -77,6 +81,9 @@ export default {
         isTopTracksType: function () {
             return (this.type == 'topTracks');
         },
+        isTopAlbumsType: function () {
+            return (this.type == 'topAlbums');
+        },
         isTopArtistsType: function () {
             return (this.type == 'topArtists');
         },
@@ -87,6 +94,16 @@ export default {
     methods: {
         loadTopPlayedTracks: function () {
             this.$api.metrics.getTopPlayedTracks(this.activeInterval, this.artist).then(response => {
+                if (response.data.metrics && response.data.metrics.length > 0) {
+                    this.items = response.data.metrics;
+                }
+                this.loading = false;
+            }).catch(error => {
+                console.log(error); // this.setAPIError(error.getApiErrorData());
+                this.loading = false;
+            });
+        }, loadTopPlayedAlbums: function () {
+            this.$api.metrics.getTopPlayedAlbums(this.activeInterval).then(response => {
                 if (response.data.metrics && response.data.metrics.length > 0) {
                     this.items = response.data.metrics;
                 }
@@ -132,6 +149,9 @@ export default {
                     break;
                 case 'topArtists':
                     this.loadTopPlayedArtists();
+                    break;
+                case 'topAlbums':
+                    this.loadTopPlayedAlbums();
                     break;
                 case 'topGenres':
                     this.loadTopPlayedGenres();
