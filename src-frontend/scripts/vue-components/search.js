@@ -99,7 +99,6 @@ const template = function () {
                     </div>
                 </div>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };

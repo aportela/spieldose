@@ -56,7 +56,6 @@ const template = function () {
                 <div class="is-clearfix"></div>
                 <delete-confirmation-modal v-bind:id="deleteItemId" v-if="showDeleteConfirmationModal" v-on:confirm-delete="onConfirmDelete" v-on:cancel-delete="onCancelDelete"></delete-confirmation-modal>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
@@ -79,7 +78,6 @@ export default {
     components: {
         'spieldose-input-typeahead': inputTypeAHead,
         'spieldose-pagination': pagination,
-        'spieldose-api-error-component': apiError,
         'delete-confirmation-modal': deleteConfirmationModal
     },
     methods: {

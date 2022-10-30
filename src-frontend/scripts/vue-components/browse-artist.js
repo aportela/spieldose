@@ -142,7 +142,6 @@ const template = function () {
                     </div>
                 </div>
             </div>
-            <spieldose-api-error-component v-if="hasAPIErrors" v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };

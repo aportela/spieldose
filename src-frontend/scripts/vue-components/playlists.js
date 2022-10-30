@@ -150,7 +150,6 @@ const template = function () {
                     </tbody>
                 </table>
             </div>
-            <spieldose-api-error-component v-else v-bind:apiError="apiError"></spieldose-api-error-component>
         </div>
     `;
 };
