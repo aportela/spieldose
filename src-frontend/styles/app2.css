@@ -549,6 +549,10 @@ button.is-pink:hover {
     color: #fff !important;
 }
 
+.is-size-6-5 {
+    font-size: 0.875rem !important;
+}
+
 /* custom bulma overrides */
 
 
@@ -560,6 +564,10 @@ div#artist-header-block {
     background: rgba(24, 24, 24, 1);
     height: 400px;
     position: relative;
+    /*
+    background: rgb(0, 0, 0);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 1) 0%, rgba(217, 32, 120, 1) 50%, rgba(0, 212, 255, 1) 100%);
+    */
 }
 
 

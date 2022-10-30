@@ -19,16 +19,16 @@ const template = function () {
             </p>
             <div class="panel-block cut-text">
                 <ol class="pl-5" v-if="hasItems">
-                    <li class="is-size-7" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
+                    <li class="is-size-6-5" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
                         <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
                         <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                     </li>
-                    <li class="is-size-7" v-if="isArtistEntity" v-for="item in items">
+                    <li class="is-size-6-5" v-if="isArtistEntity" v-for="item in items">
                         <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                     </li>
-                    <li class="is-size-7" v-if="isAlbumEntity" v-for="item in items">
+                    <li class="is-size-6-5" v-if="isAlbumEntity" v-for="item in items">
                         <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click="playAlbum(item);" ></i>
                         <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click="enqueueAlbum(item);"></i>
                         <span>{{ item.album }}</span>

@@ -19,19 +19,19 @@ const template = function () {
                 <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">{{ $t("dashboard.labels.pastYearInterval") }}</a>
             </p>
             <div class="panel-block cut-text">
-                <ol class="pl-5 is-size-6" v-if="items.length > 0">
-                    <li class="is-size-7" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
+                <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
+                    <li class="is-size-6-5" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
                         <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
                         <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
                         <span>{{ item.title }}</span>
                         <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
-                    <li class="is-size-7" v-if="isTopArtistsType" v-for="item in items">
+                    <li class="is-size-6-5" v-if="isTopArtistsType" v-for="item in items">
                         <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
-                    <li class="is-size-7" v-if="isTopGenresType" v-for="item in items">
+                    <li class="is-size-6-5" v-if="isTopGenresType" v-for="item in items">
                         <span>{{ item.genre }}</span>
                         <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
                     </li>
