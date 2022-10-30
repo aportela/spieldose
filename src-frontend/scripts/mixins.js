@@ -363,7 +363,7 @@ export const mixinNavigation = {
         },
         navigateToArtistPage: function (artist) {
             if (artist) {
-                this.$router.push({ name: 'artist', params: { artist: artist } });
+                this.$router.push({ name: 'artistPage', params: { name: artist } });
             }
         }
     }
