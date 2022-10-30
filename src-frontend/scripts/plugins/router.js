@@ -181,23 +181,17 @@ const router = createRouter({
 });
 
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
     if (!initialState.version.upgradeAvailable) {
         if (!initialState.logged) {
             if (to.name != 'signin') {
                 return { name: 'signin' }
-            } else {
-                next();
             }
-        } else {
-            next();
         }
 
     } else {
         if (to.name != 'upgrade') {
             return { name: 'upgrade' }
-        } else {
-            next();
         }
     }
 });
