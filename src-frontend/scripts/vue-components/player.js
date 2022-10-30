@@ -204,77 +204,79 @@ export default {
     mounted: function () {
         console.debug('Creating audio element');
         this.audioElement = document.getElementById('audio');
-        const savedVolume = this.$spieldoseLocalStorage.get('volume');
-        if (savedVolume != null) {
-            console.debug('Restoring audio volume at ' + (savedVolume) + '%');
-            this.volume = savedVolume;
-        } else {
-            this.volume = 0.05;
-            console.debug('Setting audio volume at ' + this.volume + '%');
-        }
-        console.debug('Setting audio available to play event');
-        this.audioElement.addEventListener('canplay', (event) => {
-            console.log("Buffering audio end");
-            console.debug('Audio can be played');
-            this.audioCanBePlayed = true;
-            this.playerEvents.isLoading = false;
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-        this.audioElement.addEventListener('pause', (event) => {
-            console.debug('Audio is paused');
-            this.playerEvents.isPaused = true;
-            this.playerEvents.isPlaying = false;
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-        this.audioElement.addEventListener('play', (event) => {
-            console.debug('Audio is playing1');
-            //this.playerEvents.isPaused = false;
-            //this.playerEvents.isPlaying = true;
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-        this.audioElement.addEventListener('playing', (event) => {
-            console.debug('Audio is playing2');
-            this.playerEvents.isPaused = false;
-            this.playerEvents.isPlaying = true;
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-        this.audioElement.addEventListener('ended', (event) => {
-            console.debug('Audio is ended');
-            //this.playerEvents.isPaused = false;
-            this.$bus.emit('endTrack', this.track.id);
-            //this.playerEvents.isPlaying = true;
-            this.$bus.emit('playerEvent', this.playerEvents);
-            this.onNextTrackButtonClick();
-        });
-        this.audioElement.addEventListener('error', (event) => {
-            console.debug('Audio loading error');
-            console.log(event);
-            /*
-            this.playerEvents.isPaused = true;
-            this.playerEvents.isPlaying = false;
-            this.playerEvents.isLoading = false;
-            */
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-
-        this.audioElement.addEventListener('timeupdate', (event) => {
-            //console.debug('Audio timeupdate');
-            const currentProgress = this.audioElement.currentTime / this.audioElement.duration;
-            this.duration = this.formatSecondsAsTime(Math.floor(this.audioElement.duration).toString());
-            this.currentTime = this.formatSecondsAsTime(Math.floor(this.audioElement.currentTime).toString());
-            if (!isNaN(currentProgress)) {
-                this.position = currentProgress.toFixed(2);
+        if (this.audioElement) {
+            const savedVolume = this.$spieldoseLocalStorage.get('volume');
+            if (savedVolume != null) {
+                console.debug('Restoring audio volume at ' + (savedVolume) + '%');
+                this.volume = savedVolume;
             } else {
-                this.position = 0;
+                this.volume = 0.05;
+                console.debug('Setting audio volume at ' + this.volume + '%');
             }
-            //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
-            //console.log(this.audioElement.currentTime);
-            //console.debug(event);
-            //this.playerEvents.isPaused = false;
-            //this.playerEvents.isPlaying = true;
-            this.$bus.emit('playerEvent', this.playerEvents);
-        });
-        this.createAnalyzer();
+            console.debug('Setting audio available to play event');
+            this.audioElement.addEventListener('canplay', (event) => {
+                console.log("Buffering audio end");
+                console.debug('Audio can be played');
+                this.audioCanBePlayed = true;
+                this.playerEvents.isLoading = false;
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+            this.audioElement.addEventListener('pause', (event) => {
+                console.debug('Audio is paused');
+                this.playerEvents.isPaused = true;
+                this.playerEvents.isPlaying = false;
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+            this.audioElement.addEventListener('play', (event) => {
+                console.debug('Audio is playing1');
+                //this.playerEvents.isPaused = false;
+                //this.playerEvents.isPlaying = true;
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+            this.audioElement.addEventListener('playing', (event) => {
+                console.debug('Audio is playing2');
+                this.playerEvents.isPaused = false;
+                this.playerEvents.isPlaying = true;
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+            this.audioElement.addEventListener('ended', (event) => {
+                console.debug('Audio is ended');
+                //this.playerEvents.isPaused = false;
+                this.$bus.emit('endTrack', this.track.id);
+                //this.playerEvents.isPlaying = true;
+                this.$bus.emit('playerEvent', this.playerEvents);
+                this.onNextTrackButtonClick();
+            });
+            this.audioElement.addEventListener('error', (event) => {
+                console.debug('Audio loading error');
+                console.log(event);
+                /*
+                this.playerEvents.isPaused = true;
+                this.playerEvents.isPlaying = false;
+                this.playerEvents.isLoading = false;
+                */
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+
+            this.audioElement.addEventListener('timeupdate', (event) => {
+                //console.debug('Audio timeupdate');
+                const currentProgress = this.audioElement.currentTime / this.audioElement.duration;
+                this.duration = this.formatSecondsAsTime(Math.floor(this.audioElement.duration).toString());
+                this.currentTime = this.formatSecondsAsTime(Math.floor(this.audioElement.currentTime).toString());
+                if (!isNaN(currentProgress)) {
+                    this.position = currentProgress.toFixed(2);
+                } else {
+                    this.position = 0;
+                }
+                //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+                //console.log(this.audioElement.currentTime);
+                //console.debug(event);
+                //this.playerEvents.isPaused = false;
+                //this.playerEvents.isPlaying = true;
+                this.$bus.emit('playerEvent', this.playerEvents);
+            });
+            this.createAnalyzer();
+        }
     },
     methods: {
         createAnalyzer: function () {
