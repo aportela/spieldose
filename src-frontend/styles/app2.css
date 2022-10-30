@@ -553,6 +553,10 @@ button.is-pink:hover {
     font-size: 0.875rem !important;
 }
 
+.height-100 {
+    height: 100%;
+}
+
 /* custom bulma overrides */
 
 
