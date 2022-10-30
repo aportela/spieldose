@@ -1,4 +1,4 @@
-import { default as Basil } from 'Basil';
+import { default as Basil } from 'basil';
 
 export default {
     install: (app, options) => {
