@@ -160,6 +160,11 @@ const routes = [
                 component: profile
             }
         ]
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        redirect: { name: 'dashboard' }
+
     }
 ];
 
@@ -168,7 +173,33 @@ const routes = [
  */
 const router = createRouter({
     history: createWebHashHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        // always scroll to top
+        return { top: 0 }
+    }
+});
+
+
+router.beforeEach(async (to, from, next) => {
+    if (!initialState.version.upgradeAvailable) {
+        if (!initialState.logged) {
+            if (to.name != 'signin') {
+                return { name: 'signin' }
+            } else {
+                next();
+            }
+        } else {
+            next();
+        }
+
+    } else {
+        if (to.name != 'upgrade') {
+            return { name: 'upgrade' }
+        } else {
+            next();
+        }
+    }
 });
 
 export default router;
