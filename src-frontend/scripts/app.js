@@ -14,21 +14,6 @@ const spieldoseApp = {
             logged: false,
             track: null
         });
-    },
-    created: function () {
-        if (!initialState.version.upgradeAvailable) {
-            if (!initialState.logged) {
-                if (this.$route.name != 'signin') {
-                    this.$router.push({ name: 'signin' });
-                }
-            } else {
-                if (!this.$router.currentRoute.name) {
-                    this.$router.push({ name: 'nowPlaying' });
-                }
-            }
-        } else {
-            this.$router.push({ name: 'upgrade' });
-        }
     }
 };
 
