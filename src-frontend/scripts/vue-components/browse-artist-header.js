@@ -8,7 +8,7 @@ const template = function () {
             <div id="artist-header-block-background-overlay"></div>
             <div id="artist-header-block-content">
                 <div class="p-6">
-                    <p class="has-text-white title is-1">{{ artist.name }}</p>
+                    <p class="has-text-white title is-1">{{ artist.name }}<i class="fa-solid fa-compact-disc fa-spin title is-1 ml-4" v-if="loading"></i></p>
                     <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-users"></i> Listeners:</span> <span class="has-text-grey-lighter">{{ artist.totalListeners || 0 }} user/s</span></p>
                     <p class="has-text-white title is-6"><span class="has-text-grey"><i class="fas fa-compact-disc"></i> Total plays:</span> <span class="has-text-grey-lighter">{{ artist.playCount || 0 }} times</span></p>
                     <div class="columns">
@@ -57,6 +57,7 @@ export default {
     template: template(),
     props: [
         'artist',
+        'loading'
     ],
     computed: {
         currentTab: function () {

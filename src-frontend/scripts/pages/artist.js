@@ -20,7 +20,7 @@ const template = function () {
     return `
         <div>
             <div>
-                <spieldose-browse-artist-header :artist="artist"></spieldose-browse-artist-header>
+                <spieldose-browse-artist-header :artist="artist" :loading="loading"></spieldose-browse-artist-header>
                 <div class="container is-fluid box mt-3">
                     <spieldose-browse-artist-overview v-if="currentTab == 'overview'" :artist="artist"></spieldose-browse-artist-overview>
                     <spieldose-browse-artist-biography v-if="currentTab == 'biography'" :artist="artist"></spieldose-browse-artist-biography>
@@ -145,7 +145,7 @@ export default {
     created: function () {
         this.artist = {
             name: this.$route.params.name,
-            image: 'https://milladoiro.gal/wp-content/uploads/2016/05/milladoiro-historia4.png',
+            //image: 'https://milladoiro.gal/wp-content/uploads/2016/05/milladoiro-historia4.png',
             albums: [
                 {
                     name: 'Aires da terra',
@@ -154,6 +154,7 @@ export default {
                 }
             ]
         };
+        this.getArtist(this.artist.name);
         /*
         this.getArtist(this.$route.params.artist);
         if (this.$route.name == 'artistTracks' || this.$route.name == 'artistTracksPaged') {
@@ -225,14 +226,25 @@ export default {
         getArtist: function (artist) {
             this.loading = true;
             this.errors = false;
-            spieldoseAPI.artist.get(artist, (response) => {
-                if (response.status == 200) {
-                    this.artist = response.data.artist;
-                    this.loading = false;
-                } else {
-                    this.errors = true;
-                    this.loading = false;
+            this.$api.artist.get(artist).then(success => {
+                this.loading = false;
+                if (success.data.MusicBrainz.relations) {
+                    success.data.MusicBrainz.relations.forEach((relation) => {
+                        if (relation.type == 'image') {
+                            if (relation.url.resource.startsWith('https://commons.wikimedia.org/wiki/File:')) {
+                                this.artist.image = 'https://commons.wikimedia.org/w/thumb.php?f=' + relation.url.resource.replace(/https:\/\/commons.wikimedia.org\/wiki\/File:/, '') + '&w=400';
+                            } else {
+                                this.artist.image = relation.url.resource;
+                            }
+                        } else if (relation.type == 'wikidata') {
+                            console.log(relation.url.resource);
+                        }
+                    });
                 }
+                // TODO
+            }).catch(error => {
+                this.loading = false;
+                // TODO
             });
         },
         abortInstantSearch: function () {

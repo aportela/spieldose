@@ -336,6 +336,28 @@ return function (App $app) {
                 }
             });
 
+
+            $group->get('/artist/{name}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                if (!empty($args['name'])) {
+                    $artist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+                    $results = $artist->search($args['name'], 1);
+                    $payload = array();
+                    if (count($results) == 1 && !empty($results[0]->mbId)) {
+                        $artist->get($results[0]->mbId);
+                        $payload = array(
+                            'MusicBrainz' => json_decode($artist->raw),
+                            'LastFM' => null
+                        );
+                    }
+                    $response->getBody()->write(json_encode($payload));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
+
             /* metrics */
 
             $group->post('/metrics/top_played_tracks', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
