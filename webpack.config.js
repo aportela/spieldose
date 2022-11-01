@@ -34,7 +34,10 @@ module.exports = {
         new RemovePlugin({
             before: {
                 include: [
-                    __dirname, 'public/scripts/'
+                    __dirname, 'public/scripts/',
+                    __dirname, 'public/icons/',
+                    __dirname, 'public/images/',
+                    __dirname, 'public/styles/'
                 ]
             }
         }),
