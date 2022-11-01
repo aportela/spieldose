@@ -346,9 +346,13 @@ return function (App $app) {
                     $payload = array();
                     if (count($results) == 1 && !empty($results[0]->mbId)) {
                         $artist->get($results[0]->mbId);
+                        $wiki = new \aportela\HTTPRequestWrapper\HTTPRequest($logger);
+                        $wikiResponse = $wiki->GET('https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=' . urlencode($artist->name));
+                        //$wikiResponse = $wiki->GET('https://en.wikipedia.org/w/api.php?action=parse&page=' . urlencode($artist->name) . '&format=json');
                         $payload = array(
                             'MusicBrainz' => json_decode($artist->raw),
-                            'LastFM' => null
+                            'LastFM' => null,
+                            'Wikipedia' => $wikiResponse->code == 200 ? json_decode($wikiResponse->body) : null
                         );
                     }
                     $response->getBody()->write(json_encode($payload));
