@@ -97,8 +97,8 @@ if (count($missingExtensions) > 0) {
                 $pendingAlbums = $scraper->getPendingAlbums();
                 $totalPendingAlbums = count($pendingAlbums);
                 if ($totalPendingAlbums > 0) {
-                    echo sprintf("Processing %d albums%s", $totalPendingAlbums, PHP_EOL);
-                    $logger->info(sprintf("Processing %d albums/s", $totalPendingAlbums), []);
+                    echo sprintf("Processing %d album/s without MusicBrainzId %s", $totalPendingAlbums, PHP_EOL);
+                    $logger->info(sprintf("Processing %d album/s without MusicBrainzId", $totalPendingAlbums), []);
                     $failed = array();
                     for ($i = 0; $i < $totalPendingAlbums; $i++) {
                         try {
