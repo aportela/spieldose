@@ -152,7 +152,8 @@ export default {
                     year: 1999,
                     image: 'http://localhost:8080/api2/track/thumbnail/small/23682ab25db6ce676a2727f2930bb80e3b135f64'
                 }
-            ]
+            ],
+            wikipedia: null
         };
         this.getArtist(this.artist.name);
         /*
@@ -237,11 +238,11 @@ export default {
                                 this.artist.image = relation.url.resource;
                             }
                         } else if (relation.type == 'wikidata') {
-                            console.log(relation.url.resource);
+                            //console.log(relation.url.resource);
                         }
                     });
                 }
-                // TODO
+                this.artist.wikipedia = Object.values(success.data.Wikipedia.query.pages)[0]
             }).catch(error => {
                 this.loading = false;
                 // TODO

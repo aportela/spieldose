@@ -11,7 +11,7 @@ const template = function () {
     return `
         <div class="columns">
             <div class="column is-8">
-                <div class="content" id="bio" v-if="biography">
+                <div class="content is-normal" id="bio" v-if="biography">
                     <div v-html="biography"></div>
                     <p class="read-more">
                         <router-link :class="'has-text-dark'" :to="{ name: 'artistBiography', params: $route.params }">Read more <i class="fas fa-angle-right"></i></router-link>
@@ -182,7 +182,7 @@ export default {
     ],
     computed: {
         biography: function () {
-            return ((this.artist && this.artist.lastFM && this.artist.lastFM.artist && this.artist.lastFM.artist.bio && this.artist.lastFM.artist.bio.content) ? this.artist.lastFM.artist.bio.content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : null);
+            return (this.artist && this.artist.wikipedia && this.artist.wikipedia.extract ? this.artist.wikipedia.extract.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : null);
         },
         hasSimilar: function () {
             return (this.artist.similarArtists && this.artist.similarArtists.length > 0);
