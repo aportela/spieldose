@@ -30,6 +30,7 @@ class Album
     {
     }
 
+    /*
     public static function search(string $album = "", int $limit = 1): array
     {
         $results = array();
@@ -47,6 +48,7 @@ class Album
         }
         return ($results);
     }
+    */
 
     public static function searchMusicBrainzId(string $name = "", string $artist = "", int $limit = 1): array
     {
