@@ -740,3 +740,8 @@ div.browse-album-item div.album-info p. * {
 }
 
 /* album thumb */
+
+div#bio {
+    font-size: 0.85rem;
+    color: #666;
+}
