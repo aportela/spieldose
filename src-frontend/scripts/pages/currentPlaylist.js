@@ -108,25 +108,31 @@ export default {
     data: function () {
         return ({
             loading: false,
-            tracks: [],
-            currentTrackIndex: -1,
+            //tracks: [],
+            //currentTrackIndex: -1,
             searchQuery: null,
             playerEvent: {}
         });
     },
     computed: {
+        tracks: function () {
+            return (this.$player.currentPlaylist.tracks);
+        },
+        currentTrackIndex: function () {
+            return (this.$player.currentPlaylist.trackIndex);
+        },
         currentTrack: function () {
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex >= 0) {
                 return (this.tracks[this.currentTrackIndex]);
             } else {
-                console.log("returning null");
+                //console.log("returning null");
                 return ({});
             }
         }
     },
     watch: {
         currentTrackIndex: function (newValue, oldValue) {
-            this.$spieldoseLocalStorage.set('currentPlaylistTrackIndex', newValue);
+            this.$localStorage.set('currentPlaylistTrackIndex', newValue);
             this.$bus.emit('onTrackChanged', { track: this.currentTrack });
         }
     },
@@ -147,8 +153,9 @@ export default {
         });
     },
     mounted: function () {
-        const savedPlaylist = this.$spieldoseLocalStorage.get('currentPlaylist');
-        const savedPlaylistIndex = this.$spieldoseLocalStorage.get('currentPlaylistTrackIndex');
+        /*
+        const savedPlaylist = this.$localStorage.get('currentPlaylist');
+        const savedPlaylistIndex = this.$localStorage.get('currentPlaylistTrackIndex');
         if (savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
             this.$nextTick(() => {
                 this.tracks = savedPlaylist;
@@ -157,6 +164,7 @@ export default {
         } else {
             this.loadTracks();
         }
+        */
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
@@ -167,13 +175,10 @@ export default {
             this.tracks = [];
             this.currentTrackIndex = -1;
             this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
-                this.$player.hasPreviousUserInteractions = true;
-                this.tracks = success.data.tracks;
-                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
-                this.currentTrackIndex = 0;
-                this.$spieldoseLocalStorage.set('currentPlaylistTrackIndex', this.currentTrackIndex);
+                this.$player.replaceCurrentPlaylist(success.data.tracks);
                 this.loading = false;
             }).catch(error => {
+                console.log(error);
                 switch (error.response.status) {
                     case 400:
                         if (error.isFieldInvalid('email')) {
@@ -222,7 +227,7 @@ export default {
         onLoveTrack: function (trackId) {
             this.$api.track.love(trackId).then(success => {
                 this.tracks.find((track) => track.id == trackId).loved = true;
-                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
+                this.$localStorage.set('currentPlaylist', this.tracks);
                 // TODO
             }).catch(error => {
                 // TODO
@@ -231,7 +236,7 @@ export default {
         onUnLoveTrack: function (trackId) {
             this.$api.track.unLove(trackId).then(success => {
                 this.tracks.find((track) => track.id == trackId).loved = false;
-                this.$spieldoseLocalStorage.set('currentPlaylist', this.tracks);
+                this.$localStorage.set('currentPlaylist', this.tracks);
                 // TODO
             }).catch(error => {
                 // TODO
@@ -241,25 +246,16 @@ export default {
             this.loadTracks(this.searchQuery);
         },
         onPreviousTrack: function () {
-            this.$player.hasPreviousUserInteractions = true;
-            if (this.currentTrackIndex > 0) {
-                this.currentTrackIndex--;
-            }
+            this.$player.onPreviousTrack();
         },
         onNextTrack: function () {
-            this.$player.hasPreviousUserInteractions = true;
-            if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex < (this.tracks.length - 1)) {
-                this.currentTrackIndex++;
-            }
+            this.$player.onNextTrack();
         },
         onTogglePlay: function () {
             this.$player.hasPreviousUserInteractions = true;
         },
         onChangeCurrentTrackIndex: function (index) {
-            this.$player.hasPreviousUserInteractions = true;
-            if (index >= 0) {
-                this.currentTrackIndex = index;
-            }
+            this.$player.onChangeCurrentTrackIndex(index);
         },
         onClearPlaylist: function () {
             this.tracks = [];
