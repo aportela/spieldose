@@ -119,7 +119,7 @@ export default {
         signOut: function (e) {
             console.log(e);
             this.$api.session.signOut().then(response => {
-                this.$spieldoseLocalStorage.remove("jwt");
+                this.$localStorage.remove("jwt");
                 this.$router.push({ name: 'signin' });
             }).catch(error => { console.log(error); });
         }
