@@ -336,7 +336,6 @@ return function (App $app) {
                 }
             });
 
-
             $group->get('/artist/{name}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
@@ -347,7 +346,7 @@ return function (App $app) {
                     if (count($results) == 1 && !empty($results[0]->mbId)) {
                         $artist->get($results[0]->mbId);
                         $wiki = new \aportela\HTTPRequestWrapper\HTTPRequest($logger);
-                        $wikiResponse = $wiki->GET('https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=' . urlencode($artist->name));
+                        $wikiResponse = $wiki->GET('https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=' . urlencode($artist->name ?? $args['name']));
                         //$wikiResponse = $wiki->GET('https://en.wikipedia.org/w/api.php?action=parse&page=' . urlencode($artist->name) . '&format=json');
                         $payload = array(
                             'MusicBrainz' => json_decode($artist->raw),
