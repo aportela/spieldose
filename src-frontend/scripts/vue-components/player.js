@@ -127,11 +127,14 @@ export default {
         });
     },
     props: [
-        'track',
+        //'track',
         'showNavigationMenu',
         'showSectionDetails'
     ],
     computed: {
+        track: function () {
+            return (this.$player.currentTrack);
+        },
         trackId: function () {
             return (this.track ? this.track.id : null);
         },
@@ -205,7 +208,7 @@ export default {
         console.debug('Creating audio element');
         this.audioElement = document.getElementById('audio');
         if (this.audioElement) {
-            const savedVolume = this.$spieldoseLocalStorage.get('volume');
+            const savedVolume = this.$localStorage.get('volume');
             if (savedVolume != null) {
                 console.debug('Restoring audio volume at ' + (savedVolume) + '%');
                 this.volume = savedVolume;
@@ -334,7 +337,7 @@ export default {
             if (volume >= 0 && volume <= 1) {
                 if (this.audioElement) {
                     this.audioElement.volume = volume;
-                    this.$spieldoseLocalStorage.set('volume', volume);
+                    this.$localStorage.set('volume', volume);
                 } else {
                     console.error("Audio element not mounted");
                 }
