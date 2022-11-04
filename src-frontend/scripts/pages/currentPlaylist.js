@@ -73,7 +73,7 @@ const template = function () {
             </p>
         </div>
 
-        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style="font-size: 1rem;">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
             <thead>
                 <tr>
                     <th class="has-text-right">Index</th>
@@ -258,8 +258,7 @@ export default {
             this.$player.onChangeCurrentTrackIndex(index);
         },
         onClearPlaylist: function () {
-            this.tracks = [];
-            this.currentTrackIndex = -1;
+            this.$player.replaceCurrentPlaylist([]);
         }
     }
 }
