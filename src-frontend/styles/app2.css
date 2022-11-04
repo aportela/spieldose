@@ -499,6 +499,7 @@ div#rotating_album_cover img {
 
 div#analyzer-container {
     z-index: 2;
+    margin-top: 4px;
     position: relative;
 }
 
