@@ -16,7 +16,7 @@ export default {
                 trackIndex: previousPlaylistFound ? savedPlaylistIndex : -1
             },
             get currentTrack() {
-                return (this.currentPlaylist ? this.currentPlaylist.tracks[this.currentPlaylist.trackIndex] : {});
+                return (this.currentPlaylist && this.currentPlaylist.tracks && this.currentPlaylist.tracks.length > 0 ? this.currentPlaylist.tracks[this.currentPlaylist.trackIndex] : {});
             },
             replaceCurrentPlaylist: function (tracks) {
                 console.log("Replacing current playlist");
