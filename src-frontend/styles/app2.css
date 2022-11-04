@@ -745,3 +745,7 @@ div#bio {
     font-size: 0.85rem;
     color: #666;
 }
+
+div#bio br {
+    margin-bottom: 1em;
+}
