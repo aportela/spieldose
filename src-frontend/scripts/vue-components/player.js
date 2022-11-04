@@ -133,7 +133,7 @@ export default {
     ],
     computed: {
         track: function () {
-            return (this.$player.currentTrack);
+            return (this.$player.currentTrack || {});
         },
         trackId: function () {
             return (this.track ? this.track.id : null);
