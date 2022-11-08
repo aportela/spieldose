@@ -42,6 +42,7 @@ export default {
                 if (index >= 0 && index < this.currentPlaylist.tracks.length) {
                     this.currentPlaylist.trackIndex = index;
                     this.hasPreviousUserInteractions = true;
+                    app.config.globalProperties.$localStorage.set('currentPlaylistTrackIndex', index);
                 }
             }
         });
