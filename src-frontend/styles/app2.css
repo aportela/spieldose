@@ -142,7 +142,7 @@
 
 /* signin page right block (album cover tile effect) */
 
-div#container_tiles {
+div#sp-album-cover-tiles-container {
     box-shadow: inset 24px 4px 64px -24px rgba(71, 71, 71, 1);
     background-color: #666;
     height: 100vh;
@@ -152,7 +152,7 @@ div#container_tiles {
     opacity: 0.5;
 }
 
-div#container_tiles div.tile div.tile img {
+img.album-cover-tile {
     width: 100%;
     aspect-ratio: 1 / 1;
 }
