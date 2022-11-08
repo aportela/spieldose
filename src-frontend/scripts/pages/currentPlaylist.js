@@ -1,7 +1,3 @@
-import { nextTick } from "vue";
-import bus from "../plugins/bus";
-import player from "../vue-components/player";
-
 const template = function () {
     return `
         <div class="field has-addons">
@@ -108,8 +104,6 @@ export default {
     data: function () {
         return ({
             loading: false,
-            //tracks: [],
-            //currentTrackIndex: -1,
             searchQuery: null,
             playerEvent: {}
         });
@@ -125,46 +119,9 @@ export default {
             if (this.tracks && this.tracks.length > 0 && this.currentTrackIndex >= 0) {
                 return (this.tracks[this.currentTrackIndex]);
             } else {
-                //console.log("returning null");
                 return ({});
             }
         }
-    },
-    watch: {
-        currentTrackIndex: function (newValue, oldValue) {
-            this.$localStorage.set('currentPlaylistTrackIndex', newValue);
-            this.$bus.emit('onTrackChanged', { track: this.currentTrack });
-        }
-    },
-    created: function () {
-        this.$bus.on('onPreviousTrack', () => { this.onPreviousTrack(); });
-        this.$bus.on('onNextTrack', () => { this.onNextTrack(); });
-        this.$bus.on('playerEvent', (playerEvent) => {
-            this.playerEvent = playerEvent;
-        });
-        this.$bus.on('endTrack', (trackId) => {
-            this.onIncreaseTrackPlayCount(trackId);
-        });
-        this.$bus.on('loveTrack', (trackId) => {
-            this.onLoveTrack(trackId);
-        });
-        this.$bus.on('unLoveTrack', (trackId) => {
-            this.onUnLoveTrack(trackId);
-        });
-    },
-    mounted: function () {
-        /*
-        const savedPlaylist = this.$localStorage.get('currentPlaylist');
-        const savedPlaylistIndex = this.$localStorage.get('currentPlaylistTrackIndex');
-        if (savedPlaylist && savedPlaylist.length > 0 && savedPlaylistIndex >= 0 && savedPlaylistIndex < savedPlaylist.length) {
-            this.$nextTick(() => {
-                this.tracks = savedPlaylist;
-                this.currentTrackIndex = savedPlaylistIndex;
-            });
-        } else {
-            this.loadTracks();
-        }
-        */
     },
     methods: {
         loadTracks: function (query, artist, albumArtist, album) {
