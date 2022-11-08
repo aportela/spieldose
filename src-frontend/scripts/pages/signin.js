@@ -1,6 +1,5 @@
-import { default as spieldoseAPI } from '../api.js';
 import { mixinValidations } from '../mixins.js';
-import { default as blockTilesAlbumImages } from '../vue-components/tiles-album-images.js';
+import { default as albumCoverTilesContainer } from '../vue-components/album-cover-tiles-container.js';
 
 const template = function () {
     return `
@@ -105,7 +104,7 @@ const template = function () {
                 </section>
             </div>
             <div class="column is-8 is-hidden-mobile is-hidden-tablet-only is-hidden-desktop-only">
-                <spieldose-tiles-album-images></spieldose-tiles-album-images>
+                <spieldose-album-cover-tiles-container></spieldose-album-cover-tiles-container>
             </div>
         </div>
     `;
@@ -150,7 +149,7 @@ export default {
         }
     },
     components: {
-        'spieldose-tiles-album-images': blockTilesAlbumImages
+        'spieldose-album-cover-tiles-container': albumCoverTilesContainer
     },
     methods: {
         changeTab: function (tab) {
