@@ -12,7 +12,7 @@ const template = function () {
 };
 
 export default {
-    name: 'spieldose-tiles-album-images',
+    name: 'spieldose-album-cover-tiles-container',
     template: template(),
     data: function () {
         return ({
