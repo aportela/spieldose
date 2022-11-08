@@ -1,48 +1,44 @@
-import { mixinAPIError, mixinTopRecentCharts, mixinNavigation } from '../mixins.js';
+import { default as dashboardBlock } from './dashboard-block.js';
+import { mixinTopRecentCharts } from '../mixins.js';
+
 const template = function () {
     return `
-        <section class="panel chart height-100">
-            <p class="panel-heading">
-                <span class="icon mr-1">
-                    <i class="fa-fw fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fa-fw fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
-                    <i class="fa-fw fas fa-list" v-else></i>
-                </span>
-                <span>{{ title }}</span>
-                <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw2"></i></a>
-            </p>
-            <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active' : isAllTimeInterval }" v-on:click.prevent="changeInterval(0);">{{ $t("dashboard.labels.allTimeInterval") }}</a>
-                <a v-bind:class="{ 'is-active' : isPastWeekInterval }" v-on:click.prevent="changeInterval(1);">{{ $t("dashboard.labels.pastWeekInterval") }}</a>
-                <a v-bind:class="{ 'is-active' : isPastMonthInterval }" v-on:click.prevent="changeInterval(2);">{{ $t("dashboard.labels.pastMonthInterval") }}</a>
-                <a v-bind:class="{ 'is-active' : isPastSemesterInterval }" v-on:click.prevent="changeInterval(3);">{{ $t("dashboard.labels.pastSemesterInterval") }}</a>
-                <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">{{ $t("dashboard.labels.pastYearInterval") }}</a>
-            </p>
-            <div class="panel-block cut-text">
-                <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
-                    <li class="is-size-6-5" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
-                        <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
-                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
-                        <span>{{ item.title }}</span>
-                        <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
-                        <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
-                    </li>
-                    <li class="is-size-6-5" v-if="isTopAlbumsType" v-for="item in items">
-                        <span>{{ item.album }}</span>
-                        <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
-                    </li>
-                    <li class="is-size-6-5" v-if="isTopArtistsType" v-for="item in items">
-                        <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
-                        <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
-                    </li>
-                    <li class="is-size-6-5" v-if="isTopGenresType" v-for="item in items">
-                        <span>{{ item.genre }}</span>
-                        <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
-                    </li>
-                </ol>
-                <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">{{ $t("dashboard.errors.notEnoughData") }}</p>
-                <p v-else-if="hasAPIErrors">{{ $t("commonErrors.invalidAPIResponse") }}</p>
-            </div>
+        <spieldose-dashboard-block :extraClass="'chart height-100'":loading="loading" :errors="errors" :reloadFunction="load">
+            <template #icon><i class="fa-fw fas list"></i></template>
+            <template #title>{{ title }}</template>
+            <template #body>
+                <p class="panel-tabs">
+                    <a v-bind:class="{ 'is-active' : isAllTimeInterval }" v-on:click.prevent="changeInterval(0);">{{ $t("dashboard.labels.allTimeInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastWeekInterval }" v-on:click.prevent="changeInterval(1);">{{ $t("dashboard.labels.pastWeekInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastMonthInterval }" v-on:click.prevent="changeInterval(2);">{{ $t("dashboard.labels.pastMonthInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastSemesterInterval }" v-on:click.prevent="changeInterval(3);">{{ $t("dashboard.labels.pastSemesterInterval") }}</a>
+                    <a v-bind:class="{ 'is-active' : isPastYearInterval }" v-on:click.prevent="changeInterval(4);">{{ $t("dashboard.labels.pastYearInterval") }}</a>
+                </p>
+                <div class="panel-block cut-text">
+                    <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
+                        <li class="is-size-6-5" v-if="isTopTracksType" v-for="item, i in items" v-bind:key="i">
+                            <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
+                            <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
+                            <span>{{ item.title }}</span>
+                            <span v-if="item.artist"> / <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
+                        </li>
+                        <li class="is-size-6-5" v-if="isTopAlbumsType" v-for="item in items">
+                            <span>{{ item.album }}</span>
+                            <span v-if="item.artist"> / <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                        </li>
+                        <li class="is-size-6-5" v-if="isTopArtistsType" v-for="item in items">
+                            <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
+                        </li>
+                        <li class="is-size-6-5" v-if="isTopGenresType" v-for="item in items">
+                            <span>{{ item.genre }}</span>
+                            <span v-if="showPlayCount"> ({{ item.total }} {{ $t('dashboard.labels.playCount') }})</span>
+                        </li>
+                    </ol>
+                    <p v-else-if="! hasItems && ! loading">{{ $t("dashboard.errors.notEnoughData") }}</p>
+                </div>
+            </template>
         </section>
     `;
 };
@@ -51,7 +47,7 @@ export default {
     name: 'spieldose-dashboard-toplist',
     template: template(),
     mixins: [
-        mixinAPIError, mixinTopRecentCharts, mixinNavigation
+        mixinTopRecentCharts
     ],
     data: function () {
         return ({
@@ -90,6 +86,9 @@ export default {
         isTopGenresType: function () {
             return (this.type == 'topGenres');
         }
+    },
+    components: {
+        'spieldose-dashboard-block': dashboardBlock
     },
     methods: {
         loadTopPlayedTracks: function () {
@@ -140,7 +139,6 @@ export default {
                 }
             }
         }, load: function () {
-            this.clearAPIErrors();
             this.loading = true;
             this.items = [];
             switch (this.type) {

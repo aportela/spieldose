@@ -1,44 +1,39 @@
-import { mixinAPIError, mixinTopRecentCharts, mixinNavigation } from '../mixins.js';
+import { default as dashboardBlock } from './dashboard-block.js';
+import { mixinTopRecentCharts } from '../mixins.js';
 
 const template = function () {
     return `
-        <section class="panel chart height-100">
-            <p class="panel-heading">
-                <span class="icon mr-1">
-                    <i class="fa-fw fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fa-fw fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
-                    <i class="fa-fw far fa-clock" v-else></i>
-                </span>
-                <span>{{ title }}</span>
-                <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="load();"><i class="fas fa-redo fa-fw"></i></a>
-            </p>
-            <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active' : isTrackEntity }" v-on:click.prevent="changeEntity('tracks');">{{ $t("dashboard.labels.entityTracks") }}</a>
-                <a v-bind:class="{ 'is-active' : isArtistEntity }" v-on:click.prevent="changeEntity('artists');">{{ $t("dashboard.labels.entityArtists") }}</a>
-                <a v-bind:class="{ 'is-active' : isAlbumEntity }" v-on:click.prevent="changeEntity('albums');">{{ $t("dashboard.labels.entityAlbums") }}</a>
-            </p>
-            <div class="panel-block cut-text">
-                <ol class="pl-5" v-if="hasItems">
-                    <li class="is-size-6-5" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
-                        <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
-                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
-                        <span>{{ item.title }}</span>
-                        <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
-                    </li>
-                    <li class="is-size-6-5" v-if="isArtistEntity" v-for="item in items">
-                        <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a>
-                    </li>
-                    <li class="is-size-6-5" v-if="isAlbumEntity" v-for="item in items">
-                        <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click="playAlbum(item);" ></i>
-                        <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click="enqueueAlbum(item);"></i>
-                        <span>{{ item.album }}</span>
-                        <span v-if="item.artist"> / <a v-bind:title="$t('commonLabels.navigateToArtistPage')" v-on:click.prevent="navigateToArtistPage(item.artist);">{{ item.artist }}</a></span>
-                    </li>
-                </ol>
-                <p v-else-if="! hasItems && ! loading && ! hasAPIErrors">{{ $t("dashboard.errors.notEnoughData") }}</p>
-                <p v-else-if="hasAPIErrors">{{ $t("commonErrors.invalidAPIResponse") }}</p>
-            </div>
-        </section>
+        <spieldose-dashboard-block :extraClass="'chart height-100'":loading="loading" :errors="errors" :reloadFunction="load">
+            <template #icon><i class="fa-fw far fa-clock"></i></template>
+            <template #title>{{ title }}</template>
+            <template #body>
+                <p class="panel-tabs">
+                    <a v-bind:class="{ 'is-active' : isTrackEntity }" v-on:click.prevent="changeEntity('tracks');">{{ $t("dashboard.labels.entityTracks") }}</a>
+                    <a v-bind:class="{ 'is-active' : isArtistEntity }" v-on:click.prevent="changeEntity('artists');">{{ $t("dashboard.labels.entityArtists") }}</a>
+                    <a v-bind:class="{ 'is-active' : isAlbumEntity }" v-on:click.prevent="changeEntity('albums');">{{ $t("dashboard.labels.entityAlbums") }}</a>
+                </p>
+                <div class="panel-block cut-text">
+                    <ol class="pl-5" v-if="hasItems">
+                        <li class="is-size-6-5" v-if="isTrackEntity" v-for="item, i in items" v-bind:key="i">
+                            <i class="cursor-pointer fa-fw fa fa-play" v-on:click="playTrack(item);" v-bind:title="$t('commonLabels.playThisTrack')"></i>
+                            <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-on:click="enqueueTrack(item);" v-bind:title="$t('commonLabels.enqueueThisTrack')"></i>
+                            <span>{{ item.title }}</span>
+                            <span v-if="item.artist"> / <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                        </li>
+                        <li class="is-size-6-5" v-if="isArtistEntity" v-for="item in items">
+                            <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link>
+                        </li>
+                        <li class="is-size-6-5" v-if="isAlbumEntity" v-for="item in items">
+                            <i class="cursor-pointer fa-fw fa fa-play" v-bind:title="$t('commonLabels.playThisAlbum')" v-on:click="playAlbum(item);" ></i>
+                            <i class="cursor-pointer fa-fw fa fa-plus-square mr-1" v-bind:title="$t('commonLabels.enqueueThisAlbum')" v-on:click="enqueueAlbum(item);"></i>
+                            <span>{{ item.album }}</span>
+                            <span v-if="item.artist"> / <router-link :to="{ name: 'artistPage', params: { name: item.artist }}" :title="$t('commonLabels.navigateToArtistPage')">{{ item.artist }}</router-link></span>
+                        </li>
+                    </ol>
+                    <p v-else-if="! hasItems && ! loading">{{ $t("dashboard.errors.notEnoughData") }}</p>
+                </div>
+            </template>
+        </spieldose-dashboard-block>
     `;
 };
 
@@ -46,11 +41,12 @@ export default {
     name: 'spieldose-dashboard-recent',
     template: template(),
     mixins: [
-        mixinAPIError, mixinTopRecentCharts, mixinNavigation
+        mixinTopRecentCharts
     ],
     data: function () {
         return ({
             loading: false,
+            errors: false,
             actualEntity: 'tracks'
         });
     },
@@ -68,6 +64,9 @@ export default {
             return (this.actualEntity == 'albums');
         },
     },
+    components: {
+        'spieldose-dashboard-block': dashboardBlock
+    },
     methods: {
         loadRecentAddedTracks: function () {
             this.$api.metrics.getRecentAddedTracks(this.interval).then(response => {
@@ -76,8 +75,10 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent added tracks metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadRecentAddedArtists: function () {
@@ -87,8 +88,10 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent added artists metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadRecentAddedAlbums: function () {
@@ -98,8 +101,10 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent added albums metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadRecentPlayedTracks: function () {
@@ -109,8 +114,10 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent played tracks metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadRecentPlayedArtists: function () {
@@ -120,8 +127,10 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent played artists metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadRecentPlayedAlbums: function () {
@@ -131,12 +140,14 @@ export default {
                 }
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading recent played albums metrics");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         load: function () {
-            this.clearAPIErrors();
+            this.errors = false;
             this.loading = true;
             this.items = [];
             switch (this.type) {
