@@ -104,7 +104,7 @@ const template = function () {
                     </div>
                 </section>
             </div>
-            <div class="column is-8 is-hidden-mobile is-hidden-tablet-only is-hidden-desktop-only container_tiles">
+            <div class="column is-8 is-hidden-mobile is-hidden-tablet-only is-hidden-desktop-only">
                 <spieldose-tiles-album-images></spieldose-tiles-album-images>
             </div>
         </div>
