@@ -1,32 +1,27 @@
+import { default as dashboardBlock } from './dashboard-block.js';
 import { Chart, registerables } from 'chartjs';
-import { mixinAPIError } from '../mixins.js';
 
 const template = function () {
     return `
-        <section class="panel">
-            <p class="panel-heading">
-                <span class="icon mr-1">
-                    <i class="fa-fw fas fa-cog fa-spin fa-fw" v-if="loading"></i>
-                    <i class="fa-fw fas fa-exclamation-triangle" v-else-if="hasAPIErrors"></i>
-                    <i class="fa-fw fas fa-chart-line" v-else></i>
-                </span>
-                <span>{{ $t("dashboard.labels.playStatistics") }}</span>
-                <a class="icon is-pulled-right" v-bind:title="$t('commonMessages.refreshData')" v-on:click.prevent="loadChart();"><i class="fas fa-redo fa-fw"></i></a>
-            </p>
-            <p class="panel-tabs">
-                <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
-                <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
-                <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
-                <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
-            </p>
-            <div class="panel-block" v-if="! hasAPIErrors">
-                <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
-                <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
-                <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
-                <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
-            </div>
-            <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
-        </section>
+        <spieldose-dashboard-block :loading="loading" :errors="errors">
+            <template slot="title">aa{{ $t("dashboard.labels.playStatistics") }}</template>
+            <template slot="icon"><i class="fas fa-redo fa-fw"></i></template>
+            <template slot="body">
+                <p class="panel-tabs">
+                    <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
+                    <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
+                    <a v-bind:class="{ 'is-active': isMonthInterval }" v-on:click.prevent="changeInterval('month');">{{ $t("dashboard.labels.byMonth") }}</a>
+                    <a v-bind:class="{ 'is-active': isYearInterval }" v-on:click.prevent="changeInterval('year');">{{ $t("dashboard.labels.byYear") }}</a>
+                </p>
+                <div class="panel-block" v-if="! errors">
+                    <canvas v-if="isHourInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-hour" height="200"></canvas>
+                    <canvas v-else-if="isWeekDayInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-weekday" height="200"></canvas>
+                    <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
+                    <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
+                </div>
+                <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
+            </template>
+        </spieldose-dashboard-block>
     `;
 };
 
@@ -54,11 +49,11 @@ const commonChartOptions = {
 export default {
     name: 'spieldose-dashboard-play-stats',
     template: template(),
-    mixins: [mixinAPIError],
     data: function () {
         return ({
             chart: null,
             loading: false,
+            errors: false,
             activeInterval: 'hour',
             items: []
         });
@@ -80,6 +75,9 @@ export default {
         isYearInterval: function () {
             return (this.activeInterval == 'year');
         }
+    },
+    components: {
+        'spieldose-dashboard-block': dashboardBlock
     },
     methods: {
         loadMetricsByHourChart: function () {
@@ -112,12 +110,13 @@ export default {
                         }
                         , options: commonChartOptions
                     });
-                    this.loading = false;
                 }
-            }).catch(error => {
-                console.log("error");
-                console.log(error); // this.setAPIError(error.getApiErrorData());
                 this.loading = false;
+            }).catch(error => {
+                console.log("error loading metrics by hour data");
+                console.error(error);
+                this.loading = false;
+                this.errors = true;
             });
         },
         loadMetricsByWeekDayChart: function () {
@@ -155,9 +154,10 @@ export default {
                 });
                 this.loading = false;
             }).catch(error => {
-                console.log(error);
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading metrics by weekday data");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadMetricsByMonthChart: function () {
@@ -200,8 +200,10 @@ export default {
                 });
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading metrics by month data");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadMetricsByYearChart: function () {
@@ -232,12 +234,14 @@ export default {
                 });
                 this.loading = false;
             }).catch(error => {
-                console.log(error); // this.setAPIError(error.getApiErrorData());
+                console.log("error loading metrics by year data");
+                console.error(error);
                 this.loading = false;
+                this.errors = true;
             });
         },
         loadChart: function () {
-            this.clearAPIErrors();
+            this.errors = false;
             this.loading = true;
             switch (this.activeInterval) {
                 case 'hour':
