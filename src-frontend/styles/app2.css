@@ -152,6 +152,11 @@ div#container_tiles {
     opacity: 0.5;
 }
 
+div#container_tiles div.tile div.tile img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
 /* signin page right block (album cover tile effect) */
 
 /* app sidebar */
