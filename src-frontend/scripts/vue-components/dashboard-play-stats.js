@@ -3,10 +3,10 @@ import { Chart, registerables } from 'chartjs';
 
 const template = function () {
     return `
-        <spieldose-dashboard-block :loading="loading" :errors="errors">
-            <template slot="title">aa{{ $t("dashboard.labels.playStatistics") }}</template>
-            <template slot="icon"><i class="fas fa-redo fa-fw"></i></template>
-            <template slot="body">
+        <spieldose-dashboard-block :loading="loading" :errors="errors" :reloadFunction="loadChart">
+            <template #icon><i class="fa-fw fas fa-chart-line"></i></template>
+            <template #title>{{ $t("dashboard.labels.playStatistics") }}</template>
+            <template #body>
                 <p class="panel-tabs">
                     <a v-bind:class="{ 'is-active': isHourInterval }" v-on:click.prevent="changeInterval('hour');">{{ $t("dashboard.labels.byHour") }}</a>
                     <a v-bind:class="{ 'is-active': isWeekDayInterval }" v-on:click.prevent="changeInterval('weekDay');">{{ $t("dashboard.labels.byWeekday") }}</a>
@@ -19,7 +19,6 @@ const template = function () {
                     <canvas v-else-if="isMonthInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-month" height="200"></canvas>
                     <canvas v-else-if="isYearInterval" class="play-stats-metrics-graph" id="playcount-metrics-chart-year" height="200"></canvas>
                 </div>
-                <div class="panel-block" v-else>{{ $t("commonErrors.invalidAPIResponse") }}</div>
             </template>
         </spieldose-dashboard-block>
     `;
