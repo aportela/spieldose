@@ -18,7 +18,7 @@ const template = function () {
 
         <div class="field has-addons">
             <p class="control">
-                <button class="button is-small" @click.prevent="onClearPlaylist" :disabled="loading || playerEvent.isLoading">
+                <button class="button is-small" @click.prevent="onClearPlaylist" :disabled="loading || $player.events.isLoading">
                 <span class="icon is-small">
                     <i class="fa-solid fa-xmark"></i>
                 </span>
@@ -26,7 +26,7 @@ const template = function () {
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="loadTracks" :disabled="loading || playerEvent.isLoading">
+                <button class="button is-small" @click.prevent="loadTracks" :disabled="loading || $player.events.isLoading">
                 <span class="icon is-small">
                     <i class="fa-solid fa-rotate"></i>
                 </span>
@@ -34,7 +34,7 @@ const template = function () {
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="onPreviousTrack" :disabled="loading || playerEvent.isLoading || currentTrackIndex < 1">
+                <button class="button is-small" @click.prevent="onPreviousTrack" :disabled="loading || $player.events.isLoading || currentTrackIndex < 1">
                     <span class="icon is-small">
                         <i class="fa-fw fa fa-step-backward"></i>
                     </span>
@@ -42,17 +42,17 @@ const template = function () {
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="onTogglePlay" disabled>
+                <button class="button is-small" @click.prevent="onTogglePlay">
                     <span class="icon is-small">
-                        <i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }"></i>
+                        <i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! $player.events.isLoading && $player.events.isPaused, 'fa-pause': ! $player.events.isLoading && $player.events.isPlaying, 'fa-cog fa-spin': $player.events.isLoading }"></i>
                     </span>
-                    <span v-if="playerEvent.isLoading">Loading</span>
-                    <span v-else-if="playerEvent.isPlaying">Pause</span>
+                    <span v-if="$player.events.isLoading">Loading</span>
+                    <span v-else-if="$player.events.isPlaying">Pause</span>
                     <span v-else>Play</span>
                 </button>
             </p>
             <p class="control">
-                <button class="button is-small" @click.prevent="onNextTrack" :disabled="loading || playerEvent.isLoading || currentTrackIndex >= tracks.length - 1">
+                <button class="button is-small" @click.prevent="onNextTrack" :disabled="loading || $player.events.isLoading || currentTrackIndex >= tracks.length - 1">
                     <span class="icon is-small">
                         <i class="fa-fw fa fa-step-forward"></i>
                     </span>
@@ -84,7 +84,7 @@ const template = function () {
             <tbody>
                 <tr v-for="track,index in tracks" :key="index" class="is-clickable whitespace-nowrap" @click.prevent="onChangeCurrentTrackIndex(index)"
                     :class="{ 'is-selected-pink': currentTrack.id == track.id } ">
-                    <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! playerEvent.isLoading && playerEvent.isPaused, 'fa-pause': ! playerEvent.isLoading && playerEvent.isPlaying, 'fa-cog fa-spin': playerEvent.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
+                    <td class="has-text-right"><i class="fa-fw fa-solid mr-2" :class="{ 'fa-play': ! $player.events.isLoading && $player.events.isPaused, 'fa-pause': ! $player.events.isLoading && $player.events.isPlaying, 'fa-cog fa-spin': $player.events.isLoading }" v-if="currentTrack.id == track.id"></i> {{ index + 1 }}/{{ tracks.length }}</td>
                     <td>{{ track.title }}</td>
                     <td>{{ track.artist }} <router-link v-if="track.artist" :to="{ name: 'artistPage', params: { name: track.artist } }"><i class="fas fa-link ml-1"></i></router-link></td>
 
@@ -104,8 +104,7 @@ export default {
     data: function () {
         return ({
             loading: false,
-            searchQuery: null,
-            playerEvent: {}
+            searchQuery: null
         });
     },
     computed: {
