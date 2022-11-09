@@ -392,14 +392,12 @@ export default {
         },
 
         onPreviousTrackButtonClick: function () {
-            this.$player.hasPreviousUserInteractions = true;
             this.pause();
-            this.$bus.emit('onPreviousTrack');
+            this.$player.onPreviousTrack();
         },
         onNextTrackButtonClick: function () {
-            this.$player.hasPreviousUserInteractions = true;
             this.pause();
-            this.$bus.emit('onNextTrack');
+            this.$player.onNextTrack();
         },
         formatSecondsAsTime: function (secs, format) {
             var hr = Math.floor(secs / 3600);
