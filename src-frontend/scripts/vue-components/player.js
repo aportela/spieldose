@@ -6,15 +6,17 @@ const template = function () {
             <audio id="audio" class="is-hidden"></audio>
             <div class="player__body" style="max-width: 400px; margin: 0px auto;">
                 <div class="body__cover" style="max-width: 400px; margin: 0px auto;">
-                    <ul class="list list--cover">
+                    <ul class="list list--cover" v-show="customVinyl">
                         <li>
-                            <slot name="top-left-icon"></slot>
+                            <slot name="top-left-icon"><i class="is-clickable fa-fw fa fa-navicon"></i></slot>
                         </li>
+                        <!--
                         <li>
-                            <a class="list__link" href=""></a>
+                            <a class="list__link" href="https://github.com/aportela/spieldose">spieldose</a>
                         </li>
+                        -->
                         <li>
-                            <slot name="top-right-icon"></slot>
+                            <slot name="top-right-icon"><i class="is-clickable fa-fw fa fa-search"></i></slot>
                         </li>
                     </ul>
                     <div class="is-clickable" v-if="customVinyl" @click.prevent="customVinyl =! customVinyl">
@@ -150,32 +152,7 @@ export default {
             }
         },
         trackId: function (newValue, oldValue) {
-            this.position = 0;
-            this.audioCanBePlayed = false;
-            this.$player.events.isPaused = true;
-            this.$player.events.isPlaying = false;
-            if (newValue) {
-                console.log("Buffering audio start");
-                this.$player.events.isLoading = true;
-                this.coverURL = null;
-                if (this.audioElement) {
-                    this.audioElement.src = "/api2/file/" + this.track.id;
-                    //const url = this.track.thumbnailURL;
-                    const url = "/api2/track/thumbnail/" + (this.customVinyl ? 'small' : 'normal') + "/" + this.track.id;
-                    let img = new Image();
-                    img.src = url
-                    img.onload = () => {
-                        this.coverURL = url;
-                    }
-                    img.onerror = () => {
-                        this.coverURL = null;
-                    }
-                    this.audioElement.load();
-                    //if (newValue && oldValue) {
-                    //this.play();
-                }
-                //}
-            }
+            this.loadTrackData(newValue);
         },
         audioCanBePlayed: function (newValue) {
             if (newValue) {
@@ -197,6 +174,7 @@ export default {
         }
     },
     created: function () {
+        console.log(this.track.id);
     },
     mounted: function () {
         console.debug('Creating audio element');
@@ -266,9 +244,38 @@ export default {
                 //this.$player.events.isPlaying = true;
             });
             this.createAnalyzer();
+            this.loadTrackData(this.trackId);
         }
     },
     methods: {
+        loadTrackData: function (id) {
+            this.position = 0;
+            this.audioCanBePlayed = false;
+            this.$player.events.isPaused = true;
+            this.$player.events.isPlaying = false;
+            if (id) {
+                console.log("Buffering audio start");
+                this.$player.events.isLoading = true;
+                this.coverURL = null;
+                if (this.audioElement) {
+                    this.audioElement.src = "/api2/file/" + id;
+                    //const url = this.track.thumbnailURL;
+                    const url = "/api2/track/thumbnail/" + (this.customVinyl ? 'small' : 'normal') + "/" + id;
+                    let img = new Image();
+                    img.src = url
+                    img.onload = () => {
+                        this.coverURL = url;
+                    }
+                    img.onerror = () => {
+                        this.coverURL = null;
+                    }
+                    this.audioElement.load();
+                    //if (newValue && oldValue) {
+                    //this.play();
+                }
+                //}
+            }
+        },
         createAnalyzer: function () {
             if (this.showAnalyzer) {
                 if (!this.audioElementMotion) {
@@ -354,7 +361,6 @@ export default {
                 this.audioElementMotion.toggleAnalyzer();
             }
         },
-
         onSeek: function () {
             if (this.position >= 0 && this.position < 1) {
                 this.audioElement.currentTime = this.audioElement.duration * this.position;
@@ -377,7 +383,6 @@ export default {
             this.$player.hasPreviousUserInteractions = true;
             this.pause();
         },
-
         onPreviousTrackButtonClick: function () {
             this.pause();
             this.$player.onPreviousTrack();
