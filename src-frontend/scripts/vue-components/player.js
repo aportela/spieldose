@@ -18,7 +18,7 @@ const template = function () {
                         </li>
                     </ul>
                     <div class="is-clickable" v-if="customVinyl" @click.prevent="customVinyl =! customVinyl">
-                        <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': playerEvents.isPlaying }">
+                        <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': $player.events.isPlaying }">
                             <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null"/>
                         </div>
                     </div>
@@ -58,16 +58,16 @@ const template = function () {
 
                 <div class="body__buttons">
                     <ul class="list list--buttons">
-                        <li><a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" @click.prevent="onPreviousTrackButtonClick"><i
+                        <li><a href="#" class="list__link" :class="{ 'disabled': this.$player.events.isLoading }" @click.prevent="onPreviousTrackButtonClick"><i
                                     class="fa-fw fa fa-step-backward"></i></a></li>
 
                         <li>
-                            <a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" v-show="! this.playerEvents.isLoading && this.playerEvents.isPaused" @click.prevent="onPlayButtonClick"><i class="fa-fw fa fa-play"></i></a>
-                            <a href="#" class="list__link" v-show="! this.playerEvents.isLoading && this.playerEvents.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>
-                            <a href="#" class="list__link" v-show="this.playerEvents.isLoading"><i class="fa-fw fa fa-cog fa-spin"></i></a>
+                            <a href="#" class="list__link" :class="{ 'disabled': this.$player.events.isLoading }" v-show="! this.$player.events.isLoading && this.$player.events.isPaused" @click.prevent="onPlayButtonClick"><i class="fa-fw fa fa-play"></i></a>
+                            <a href="#" class="list__link" v-show="! this.$player.events.isLoading && this.$player.events.isPlaying" @click.prevent="onPauseButtonClick"><i class="fa-fw fa fa-pause"></i></a>
+                            <a href="#" class="list__link" v-show="this.$player.events.isLoading"><i class="fa-fw fa fa-cog fa-spin"></i></a>
                         </li>
 
-                        <li><a href="#" class="list__link" :class="{ 'disabled': this.playerEvents.isLoading }" @click.prevent="onNextTrackButtonClick"><i
+                        <li><a href="#" class="list__link" :class="{ 'disabled': this.$player.events.isLoading }" @click.prevent="onNextTrackButtonClick"><i
                                     class="fa-fw fa fa-step-forward"></i></a></li>
                     </ul>
                     </div>
@@ -109,11 +109,6 @@ export default {
         return ({
             audioElement: null,
             audioCanBePlayed: false,
-            playerEvents: {
-                isLoading: false,
-                isPaused: true,
-                isPlaying: false
-            },
             oldVolume: 0,
             volume: 0,
             position: 0,
@@ -157,12 +152,11 @@ export default {
         trackId: function (newValue, oldValue) {
             this.position = 0;
             this.audioCanBePlayed = false;
-            this.playerEvents.isPaused = true;
-            this.playerEvents.isPlaying = false;
+            this.$player.events.isPaused = true;
+            this.$player.events.isPlaying = false;
             if (newValue) {
                 console.log("Buffering audio start");
-                this.playerEvents.isLoading = true;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                this.$player.events.isLoading = true;
                 this.coverURL = null;
                 if (this.audioElement) {
                     this.audioElement.src = "/api2/file/" + this.track.id;
@@ -221,44 +215,38 @@ export default {
                 console.log("Buffering audio end");
                 console.debug('Audio can be played');
                 this.audioCanBePlayed = true;
-                this.playerEvents.isLoading = false;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                this.$player.events.isLoading = false;
             });
             this.audioElement.addEventListener('pause', (event) => {
                 console.debug('Audio is paused');
-                this.playerEvents.isPaused = true;
-                this.playerEvents.isPlaying = false;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                this.$player.events.isPaused = true;
+                this.$player.events.isPlaying = false;
             });
             this.audioElement.addEventListener('play', (event) => {
                 console.debug('Audio is playing1');
-                //this.playerEvents.isPaused = false;
-                //this.playerEvents.isPlaying = true;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                //this.$player.events.isPaused = false;
+                //this.$player.events.isPlaying = true;
             });
             this.audioElement.addEventListener('playing', (event) => {
                 console.debug('Audio is playing2');
-                this.playerEvents.isPaused = false;
-                this.playerEvents.isPlaying = true;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                this.$player.events.isPaused = false;
+                this.$player.events.isPlaying = true;
             });
             this.audioElement.addEventListener('ended', (event) => {
                 console.debug('Audio is ended');
-                //this.playerEvents.isPaused = false;
+                //this.$player.events.isPaused = false;
                 this.$bus.emit('endTrack', this.track.id);
-                //this.playerEvents.isPlaying = true;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                //this.$player.events.isPlaying = true;
                 this.onNextTrackButtonClick();
             });
             this.audioElement.addEventListener('error', (event) => {
                 console.debug('Audio loading error');
                 console.log(event);
                 /*
-                this.playerEvents.isPaused = true;
-                this.playerEvents.isPlaying = false;
-                this.playerEvents.isLoading = false;
+                this.$player.events.isPaused = true;
+                this.$player.events.isPlaying = false;
+                this.$player.events.isLoading = false;
                 */
-                this.$bus.emit('playerEvent', this.playerEvents);
             });
 
             this.audioElement.addEventListener('timeupdate', (event) => {
@@ -274,9 +262,8 @@ export default {
                 //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
                 //console.log(this.audioElement.currentTime);
                 //console.debug(event);
-                //this.playerEvents.isPaused = false;
-                //this.playerEvents.isPlaying = true;
-                this.$bus.emit('playerEvent', this.playerEvents);
+                //this.$player.events.isPaused = false;
+                //this.$player.events.isPlaying = true;
             });
             this.createAnalyzer();
         }
@@ -346,7 +333,7 @@ export default {
             }
         },
         play: function () {
-            if (!this.playerEvents.isPaused) {
+            if (!this.$player.events.isPaused) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
             }
@@ -361,7 +348,7 @@ export default {
             }
         },
         pause: function () {
-            if (this.playerEvents.isPlaying) {
+            if (this.$player.events.isPlaying) {
                 console.debug('Audio is playing, stopping...');
                 this.audioElement.pause();
                 this.audioElementMotion.toggleAnalyzer();

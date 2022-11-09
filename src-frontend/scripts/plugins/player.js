@@ -10,6 +10,11 @@ export default {
         }
 
         let playerInstance = reactive({
+            events: {
+                isLoading: false,
+                isPaused: true,
+                isPlaying: false
+            },
             hasPreviousUserInteractions: false,
             currentPlaylist: {
                 tracks: previousPlaylistFound ? savedPlaylist : [],
