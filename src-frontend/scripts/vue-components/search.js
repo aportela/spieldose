@@ -1,4 +1,3 @@
-import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinNavigation, mixinLiveSearches, mixinAlbums, mixinArtists } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 

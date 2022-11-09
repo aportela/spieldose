@@ -1,4 +1,3 @@
-import { default as spieldoseAPI } from '../api.js';
 import { reactive } from "vue";
 
 let playerData = reactive({

@@ -1,5 +1,3 @@
-import { default as spieldoseAPI } from './api.js';
-
 /**
  * create & return a player data object
  */

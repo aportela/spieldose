@@ -1,4 +1,3 @@
-import { default as sharedPlayerData } from './playerData.js';
 import { default as getValidator } from './validator.js';
 
 /**

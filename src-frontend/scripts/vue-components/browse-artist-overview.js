@@ -1,4 +1,3 @@
-import { default as spieldoseAPI } from '../api.js';
 import { mixinAPIError, mixinPlayer, mixinPagination, mixinAlbums, mixinLiveSearches } from '../mixins.js';
 import { default as imageArtist } from './image-artist.js';
 import { default as dashboardTopList } from './dashboard-toplist.js';
