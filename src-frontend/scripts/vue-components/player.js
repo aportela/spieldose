@@ -124,7 +124,6 @@ export default {
         });
     },
     props: [
-        //'track',
         'showNavigationMenu',
         'showSectionDetails'
     ],

@@ -8,7 +8,7 @@ const template = function () {
                 <div class="columns is-desktop is-centered">
                     <!-- TODO: test class "is-hidden-touch" for mobile -->
                     <div class="is-narrow column" id="sidebar">
-                        <spieldose-component-player :track="currentTrack" @previous="onPreviousTrack" @next="onNextTrack" :showNavigationMenu="showNavigationMenu" @toggle-navigation-menu="onToggleNavigationMenu" :showSectionDetails="showSectionDetails" @toggle-section-details="onToggleSectionDetails">
+                        <spieldose-component-player :showNavigationMenu="showNavigationMenu" @toggle-navigation-menu="onToggleNavigationMenu" :showSectionDetails="showSectionDetails" @toggle-section-details="onToggleSectionDetails">
                             <template slot="top-left-icon">
                                 <a class="list__link" href="#" @click.prevent="loadTracks('')"><i class="fa fa-navicon"></i></a>
                             </template>
@@ -23,9 +23,6 @@ const template = function () {
                     </div>
                 </div>
             </section>
-            <!--
-            <player-navbar></player-navbar>
-            -->
         </div>
     `;
 };
@@ -35,7 +32,6 @@ export default {
     template: template(),
     data: function () {
         return ({
-            currentTrack: {},
             showNavigationMenu: true,
             showSectionDetails: true
         });
@@ -44,16 +40,7 @@ export default {
         'spieldose-component-player': player,
         'spieldose-menu-component': menu
     },
-    created: function () {
-        this.$bus.on('onTrackChanged', (data) => { this.currentTrack = data.track; });
-    },
     methods: {
-        onPreviousTrack: function () {
-
-        },
-        onNextTrack: function () {
-
-        },
         onToggleNavigationMenu: function () {
             this.showNavigationMenu = !this.showNavigationMenu;
         },
