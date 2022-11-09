@@ -159,14 +159,6 @@ img.album-cover-tile {
 
 /* signin page right block (album cover tile effect) */
 
-/* app sidebar */
-
-div#sidebar2 {
-    width: 400px;
-}
-
-/* player (sidebar) */
-
 div#player {
     background: #fff;
     border-radius: 0.25rem;
