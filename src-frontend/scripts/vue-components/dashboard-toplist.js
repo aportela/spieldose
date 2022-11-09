@@ -4,7 +4,7 @@ import { mixinTopRecentCharts } from '../mixins.js';
 const template = function () {
     return `
         <spieldose-dashboard-block :extraClass="'chart height-100'":loading="loading" :errors="errors" :reloadFunction="load">
-            <template #icon><i class="fa-fw fas list"></i></template>
+            <template #icon><i class="fa-fw fas fa-list"></i></template>
             <template #title>{{ title }}</template>
             <template #body>
                 <p class="panel-tabs">
