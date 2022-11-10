@@ -33,26 +33,16 @@ class Scanner
             break;
         }
 
-        if (!empty($coverFilename)) {
-            $this->dbh->query(
-                " REPLACE INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ",
-                array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename)
-                )
-            );
-        } else {
-            $this->dbh->query(
-                " REPLACE INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, NULL) ",
-                array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
-                )
-            );
-        }
+        $this->dbh->query(
+            " REPLACE INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+            )
+        );
+
         $this->dbh->query(
             " REPLACE INTO FILES (ID, DIRECTORY_ID, NAME, ATIME, MTIME) VALUES (:id, :path_id, :name, STRFTIME('%s'), :mtime) ",
             array(
@@ -185,7 +175,8 @@ class Scanner
             "
                 REPLACE INTO FILE_ID3_TAG
                     (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, TRACK_NUMBER, DISC_NUMBER, PLAYTIME_SECONDS, MB_ARTIST_ID, MB_ALBUM_ARTIST_ID, MB_ALBUM_ID, MB_RELEASE_GROUP_ID, MB_RELEASE_TRACK_ID, GENRE, MIME)
-                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id, :mb_release_group_id, :mb_release_track_id, :genre, :mime); ",
+                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id, :mb_release_group_id, :mb_release_track_id, :genre, :mime);
+            ",
             $params
         );
     }
