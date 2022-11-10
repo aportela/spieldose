@@ -58,7 +58,8 @@ if (count($missingExtensions) > 0) {
                 }
             }
             if ($cmdLine->hasParam(("cleanup"))) {
-                $logger->debug("Cleanup started");
+                echo "Cleaning database" . PHP_EOL;
+                $logger->debug("Cleaning database");
                 $scanner->cleanUp();
             }
         } else {
