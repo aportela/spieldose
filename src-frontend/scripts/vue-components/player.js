@@ -140,13 +140,17 @@ export default {
     },
     watch: {
         customVinyl: function (newValue) {
-            const url = "/api2/track/thumbnail/" + (newValue ? 'small' : 'normal') + "/" + this.track.id;
-            let img = new Image();
-            img.src = url
-            img.onload = () => {
-                this.coverURL = url;
-            }
-            img.onerror = () => {
+            if (this.track.id) {
+                const url = "/api2/track/thumbnail/" + (newValue ? 'small' : 'normal') + "/" + this.track.id;
+                let img = new Image();
+                img.src = url
+                img.onload = () => {
+                    this.coverURL = url;
+                }
+                img.onerror = () => {
+                    this.coverURL = null;
+                }
+            } else {
                 this.coverURL = null;
             }
         },
