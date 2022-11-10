@@ -34,6 +34,14 @@ if (count($missingExtensions) > 0) {
         if ($db->installSchema()) {
             echo "Database install success" . PHP_EOL;
             $logger->info("Database install success");
+            $currentVersion = $db->upgradeSchema();
+            if ($currentVersion !== -1) {
+                echo "Database upgraded with success" . PHP_EOL;
+                $logger->info("Database upgraded with success");
+            } else {
+                echo "Upgrade error, verify logs";
+                $logger->critical("Upgrade error, verify logs");
+            }
         } else {
             echo "Install error, verify logs";
             $logger->critical("Install error, verify logs");
@@ -42,20 +50,5 @@ if (count($missingExtensions) > 0) {
     } else {
         echo "Database already installed" . PHP_EOL;
         $logger->info("Database already installed");
-    }
-
-    if ($success) {
-        $results = [];
-        try {
-            $results = $db->query(" SELECT release_number, release_date FROM VERSION; ");
-        } catch (\Exception $e) {
-            $logger->critical("SQL Error retrieving current schema version: " . $e->getMessage());
-        }
-        if (is_array($results) && count($results) == 1) {
-            echo sprintf("Current version: %s (installed on: %s)%s", $results[0]->release_number, $results[0]->release_date, PHP_EOL);
-            $logger->debug(sprintf("Current version: %s (installed on: %s)", $results[0]->release_number, $results[0]->release_date));
-        } else {
-            echo "SQL Error retrieving current schema version" . PHP_EOL;
-        }
     }
 }
