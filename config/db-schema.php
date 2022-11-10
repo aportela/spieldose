@@ -103,5 +103,13 @@ return (array(
                 [JSON] TEXT NOT NULL
             );
         "
+    ),
+    11 => array(
+        "
+            ALTER TABLE FILE_ID3_TAG ADD MB_RELEASE_GROUP_ID CHAR(36);
+        ",
+        "
+            ALTER TABLE FILE_ID3_TAG ADD MB_RELEASE_TRACK_ID CHAR(36);
+        "
     )
 ));

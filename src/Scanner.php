@@ -151,6 +151,22 @@ class Scanner
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_id");
         }
 
+        $releaseGroupMBId = $this->id3->getMusicBrainzReleaseGroupId();
+        // multiple mbids (divided by "/") not supported
+        if (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_group_id", $releaseGroupMBId);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_group_id");
+        }
+
+        $releaseTrackMBId = $this->id3->getMusicBrainzReleaseTrackId();
+        // multiple mbids (divided by "/") not supported
+        if (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_track_id", $releaseTrackMBId);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_track_id");
+        }
+
         $genre = $this->id3->getGenre();
         if (!empty($genre)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
@@ -168,8 +184,8 @@ class Scanner
         $this->dbh->query(
             "
                 REPLACE INTO FILE_ID3_TAG
-                    (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, TRACK_NUMBER, DISC_NUMBER, PLAYTIME_SECONDS, MB_ARTIST_ID, MB_ALBUM_ARTIST_ID, MB_ALBUM_ID, GENRE, MIME)
-                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id, :genre, :mime); ",
+                    (ID, TITLE, ARTIST, ALBUM_ARTIST, ALBUM, YEAR, TRACK_NUMBER, DISC_NUMBER, PLAYTIME_SECONDS, MB_ARTIST_ID, MB_ALBUM_ARTIST_ID, MB_ALBUM_ID, MB_RELEASE_GROUP_ID, MB_RELEASE_TRACK_ID, GENRE, MIME)
+                VALUES (:id, :title, :artist, :album_artist, :album, :year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_album_id, :mb_release_group_id, :mb_release_track_id, :genre, :mime); ",
             $params
         );
     }
