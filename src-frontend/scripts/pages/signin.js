@@ -164,7 +164,7 @@ export default {
                 this.loading = false;
                 initialState.logged = true;
                 this.$player.hasPreviousUserInteractions = true;
-                this.$router.push({ name: 'nowPlaying' });
+                this.$router.push({ name: 'dashboard' });
             }).catch(error => {
                 this.loading = false;
                 switch (error.response.status) {
