@@ -33,7 +33,7 @@ class Scanner
             break;
         }
 
-        $this->dbh->query(
+        $this->dbh->exec(
             " INSERT INTO DIRECTORIES (ID, PATH, ATIME, MTIME, COVER_FILENAME) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime, COVER_FILENAME = :cover_filename ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
@@ -43,7 +43,7 @@ class Scanner
             )
         );
 
-        $this->dbh->query(
+        $this->dbh->exec(
             " INSERT INTO FILES (ID, DIRECTORY_ID, NAME, ATIME, MTIME) VALUES (:id, :path_id, :name, STRFTIME('%s'), :mtime) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($filePath)),
