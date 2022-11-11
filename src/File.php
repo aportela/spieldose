@@ -33,9 +33,10 @@ class File
             "
                 SELECT
                     (DIRECTORIES.PATH || :directory_separator || FILES.NAME) AS path,
-                    FILES.MIME AS mime
+                    FILE_ID3_TAG.MIME AS mime
                 FROM FILES
                 INNER JOIN DIRECTORIES ON DIRECTORIES.ID = FILES.DIRECTORY_ID
+                INNER JOIN FILE_ID3_TAG ON FILE_ID3_TAG.ID = FILES.ID
                 WHERE FILES.ID = :id
              ",
             array(
