@@ -216,8 +216,8 @@ export default {
             this.audioElement.addEventListener('ended', (event) => {
                 console.debug('Audio is ended');
                 //this.$player.events.isPaused = false;
-                this.$bus.emit('endTrack', this.track.id);
-                //this.$player.events.isPlaying = true;
+                this.onEndPlayTrack(this.trackId);
+                this.onEndPlayTrack();
                 this.onNextTrackButtonClick();
             });
             this.audioElement.addEventListener('error', (event) => {
@@ -422,6 +422,15 @@ export default {
         },
         onToggleSectionDetails: function () {
             this.$emit('toggleSectionDetails');
+        },
+        onEndPlayTrack: function (trackId) {
+            if (trackId) {
+                this.$api.track.increasePlayCount(trackId).then(success => {
+                    // TODO
+                }).catch(error => {
+                    // TODO
+                });
+            }
         },
         onToggleLoved: function () {
             if (this.track.loved) {
