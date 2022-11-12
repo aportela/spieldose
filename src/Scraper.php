@@ -362,4 +362,32 @@ class Scraper
     }
 
     */
+
+    public function fillMissingMBIdsWithExistent()
+    {
+        $this->dbh->exec(
+            "
+                UPDATE FILE_ID3_TAG
+                    SET MB_ARTIST_ID = (SELECT TMP.MB_ARTIST_ID FROM FILE_ID3_TAG TMP WHERE TMP.ARTIST = FILE_ID3_TAG.ARTIST AND TMP.MB_ARTIST_ID IS NOT NULL LIMIT 1)
+                WHERE FILE_ID3_TAG.ARTIST IS NOT NULL
+                AND FILE_ID3_TAG.MB_ARTIST_ID IS NULL
+            "
+        );
+        $this->dbh->exec(
+            "
+                UPDATE FILE_ID3_TAG
+                    SET MB_ALBUM_ID = (SELECT TMP.MB_ALBUM_ID FROM FILE_ID3_TAG TMP WHERE TMP.ALBUM = FILE_ID3_TAG.ALBUM AND TMP.ARTIST = FILE_ID3_TAG.ARTIST AND TMP.MB_ALBUM_ID IS NOT NULL LIMIT 1)
+                WHERE FILE_ID3_TAG.ALBUM IS NOT NULL AND FILE_ID3_TAG.ARTIST IS NOT NULL
+                AND FILE_ID3_TAG.MB_ALBUM_ID IS NULL
+            "
+        );
+        $this->dbh->exec(
+            "
+                UPDATE FILE_ID3_TAG
+                    SET MB_ALBUM_ARTIST_ID = (SELECT TMP.MB_ALBUM_ARTIST_ID FROM FILE_ID3_TAG TMP WHERE TMP.ALBUM_ARTIST = FILE_ID3_TAG.ALBUM_ARTIST AND TMP.MB_ALBUM_ARTIST_ID IS NOT NULL LIMIT 1)
+                WHERE FILE_ID3_TAG.ARTIST IS NOT NULL
+                AND FILE_ID3_TAG.MB_ALBUM_ARTIST_ID IS NULL
+            "
+        );
+    }
 }
