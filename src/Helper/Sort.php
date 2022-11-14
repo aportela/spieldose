@@ -12,7 +12,7 @@ class Sort
     public $field;
     public $order;
 
-    public function __construct(int $field, int $order)
+    public function __construct(string $field = "", string $order = "")
     {
         $this->field = $field;
         $this->order = $order;
