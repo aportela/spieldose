@@ -336,6 +336,22 @@ return function (App $app) {
                 }
             });
 
+            $group->get('/artists/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $params = $request->getQueryParams();
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $filter = array(
+                    "q" => $params['q'] ?? null
+                );
+                $data = \Spieldose\Artist::search($db, new \Spieldose\Helper\Pager(1, 32), new \Spieldose\Helper\Sort("name", "ASC"), $filter);
+                $payload = array("results" => $data);
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
             $group->get('/artist/{name}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());

@@ -119,6 +119,15 @@ export default {
                 }
             },
             artist: {
+                search: (searchQuery) => {
+                    return new Promise((resolve, reject) => {
+                        app.config.globalProperties.$axios.get('/api2/artists/?q=' + encodeURIComponent(searchQuery || '')).then(response => {
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                },
                 get: (name) => {
                     return new Promise((resolve, reject) => {
                         app.config.globalProperties.$axios.get('/api2/artist/' + encodeURIComponent(name)).then(response => {

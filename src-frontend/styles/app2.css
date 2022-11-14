@@ -535,6 +535,10 @@ table td {
 
 /* custom bulma overrides */
 
+.is-pink {
+    color: #d30320;
+}
+
 button.is-pink,
 button.is-pink:hover {
     background-color: #d30320;
@@ -746,4 +750,32 @@ div#bio {
 
 div#bio br {
     margin-bottom: 1em;
+}
+
+div.sp-artist-thumbnail-link {
+    width: 128px;
+    margin: 0px 24px;
+    margin-bottom: 16px;
+}
+
+
+div.sp-artist-thumbnail-link a {
+    w1idth: 128px;
+    h1eight: 128px;
+    display: block;
+    position: relative;
+    border-radius: 16%;
+    overflow: hidden;
+    padding-bottom: 2em;
+    text-align: center;
+}
+
+div.sp-artist-thumbnail-link a img {
+    width: 128px;
+    border: 0px;
+    z-index: 0;
+}
+
+div.sp-artist-thumbnail-link img {
+    width: 50%;
 }

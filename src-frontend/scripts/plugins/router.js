@@ -8,7 +8,7 @@ import { default as dashboard } from '../vue-components/dashboard.js';
 //import { default as nowPlaying } from '../vue-components/playlists.js';
 import { default as currentPlaylist } from '../pages/currentPlaylist.js';
 import { default as profile } from '../pages/profile.js';
-import { default as browseArtists } from '../vue-components/browse-artists.js';
+import { default as browseArtists } from '../pages/browseArtists.js';
 import { default as browseAlbums } from '../vue-components/browse-albums.js';
 import { default as browsePaths } from '../vue-components/browse-paths.js';
 import { default as browsePlaylists } from '../vue-components/browse-playlists.js';
@@ -188,7 +188,6 @@ router.beforeEach(async (to, from) => {
                 return { name: 'signin' }
             }
         }
-
     } else {
         if (to.name != 'upgrade') {
             return { name: 'upgrade' }
