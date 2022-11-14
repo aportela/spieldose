@@ -22,19 +22,19 @@ const template = function () {
             </div>
             <div class="control">
                 <div class="select is-small">
-                    <select>
-                        <option value="">ASCending order</option>
-                        <option value="">DESCending order</option>
+                    <select v-model="sort.order">
+                        <option value="ASC">ASCending order</option>
+                        <option value="DESC">DESCending order</option>
                     </select>
                 </div>
             </div>
             <div class="control">
                 <div class="select is-small">
-                    <select>
-                        <option value="">32 results/page</option>
-                        <option value="">64 results/page</option>
-                        <option value="">128 results/page</option>
-                        <option value="">all results</option>
+                    <select v-model.number="resultsPage">
+                        <option value="32">32 results/page</option>
+                        <option value="64">64 results/page</option>
+                        <option value="128">128 results/page</option>
+                        <option value="0">all results</option>
                     </select>
                 </div>
             </div>
@@ -60,6 +60,12 @@ export default {
         return ({
             loading: false,
             searchQuery: null,
+            currentPage: 1,
+            resultsPage: 32,
+            sort: {
+                field: 'name',
+                order: 'ASC'
+            },
             artists: []
         });
     },
@@ -71,7 +77,7 @@ export default {
             this.loading = true;
             this.tracks = [];
             this.currentTrackIndex = -1;
-            this.$api.artist.search(this.searchQuery).then(success => {
+            this.$api.artist.search(this.searchQuery, this.currentPage, this.resultsPage, this.sort.field, this.sort.order).then(success => {
                 this.loading = false;
                 this.artists = success.data.results.items;
             }).catch(error => {

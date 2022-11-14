@@ -119,9 +119,20 @@ export default {
                 }
             },
             artist: {
-                search: (searchQuery) => {
+                search: (searchQuery, currentPage, resultsPage, sortField, sortOrder) => {
                     return new Promise((resolve, reject) => {
-                        app.config.globalProperties.$axios.get('/api2/artists/?q=' + encodeURIComponent(searchQuery || '')).then(response => {
+                        const params = {
+                            q: searchQuery || null,
+                            pager: {
+                                currentPage: currentPage,
+                                resultsPage: resultsPage
+                            },
+                            sort: {
+                                field: sortField,
+                                order: sortOrder
+                            }
+                        };
+                        app.config.globalProperties.$axios.post('/api2/artists/', params).then(response => {
                             resolve(response);
                         }).catch(error => {
                             reject(error);

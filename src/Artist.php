@@ -162,11 +162,13 @@ class Artist
                     FROM FILE_ID3_TAG
                     WHERE FILE_ID3_TAG.ALBUM_ARTIST IS NOT NULL
                     %s
-                    ORDER BY 1
-                    LIMIT 64
+                    ORDER BY name %s
+                    %s
                 ",
                 count($queryParams) == 1 ? " AND FILE_ID3_TAG.ARTIST LIKE :query " : null,
                 count($queryParams) == 1 ? " AND FILE_ID3_TAG.ALBUM_ARTIST LIKE :query " : null,
+                $sort->order == \Spieldose\Helper\Sort::ASCENDING_ORDER ? \Spieldose\Helper\Sort::ASCENDING_ORDER : \Spieldose\Helper\Sort::DESCENDING_ORDER,
+                $pager->resultsPage > 0 ? sprintf(" LIMIT %d", $pager->resultsPage) : null
             ),
             $queryParams
         );

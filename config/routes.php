@@ -336,8 +336,8 @@ return function (App $app) {
                 }
             });
 
-            $group->get('/artists/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
-                $params = $request->getQueryParams();
+            $group->post('/artists/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
                 if (!\Spieldose\User::isLogged()) {
                     throw new \Spieldose\Exception\AuthenticationMissingException();
                 }
@@ -347,7 +347,15 @@ return function (App $app) {
                 $filter = array(
                     "q" => $params['q'] ?? null
                 );
-                $data = \Spieldose\Artist::search($db, new \Spieldose\Helper\Pager(1, 32), new \Spieldose\Helper\Sort("name", "ASC"), $filter);
+                $pager = new \Spieldose\Helper\Pager(
+                    $params['pager']['currentPage'] ?? 1,
+                    $params['pager']['resultsPage'] ?? 32
+                );
+                $sort = new \Spieldose\Helper\Sort(
+                    "name",
+                    $params['sort']['order'] ?? \Spieldose\Helper\Sort::ASCENDING_ORDER
+                );
+                $data = \Spieldose\Artist::search($db, $pager, $sort, $filter);
                 $payload = array("results" => $data);
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
