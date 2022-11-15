@@ -12,8 +12,8 @@ const template = function () {
                 </button>
                 <ul class="pagination-list">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
-                    <li v-for="pageNumber in data.totalPages" v-if="true || showIntermediatePage(pageNumber)">
-                        <button type="button" class="pagination-link" :class="{ 'is-current': data.currentPage == pageNumber }" :disabled="disabled" v-on:click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</button>
+                    <li v-for="pageNumber in pages">
+                        <button type="button" class="pagination-link" :class="{ 'is-current': data.currentPage == pageNumber.index }" :disabled="disabled" v-on:click.prevent="navigateTo(pageNumber.index);">{{ pageNumber.label }}</button>
                     </li>
                 </ul>
             </nav>
@@ -35,6 +35,21 @@ export default {
         },
         invalidPage: function () {
             return (this.data.totalPages > 0 && (this.data.currentPage < 1 || this.data.currentPage > this.data.totalPages));
+        },
+        pages: function () {
+            return (this.data && this.data.totalPages > 1 ? Array.from({ length: this.data.totalPages }, (_, i) => i + 1).map((item) => {
+                if (item < 3 || Math.abs(item - this.data.currentPage) < 3 || this.data.totalPages - 2 < item) {
+                    return ({
+                        index: item,
+                        label: item
+                    });
+                } else {
+                    return ({
+                        index: null,
+                        label: '...'
+                    });
+                }
+            }).filter((item) => item.index != null) : []); // this last is for removing "auto-hidden" pages
         }
     },
     methods: {
@@ -61,9 +76,6 @@ export default {
                     this.$emit('pagination-changed', this.data.currentPage);
                 }
             }
-        },
-        showIntermediatePage: function (pageNumber) {
-            return (pageNumber < 3 || Math.abs(pageNumber - this.data.currentPage) < 3 || this.data.totalPages - 2 < pageNumber);
         }
     }
 }
