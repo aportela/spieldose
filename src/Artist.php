@@ -168,12 +168,12 @@ class Artist
                 count($queryParams) == 1 ? " AND FILE_ID3_TAG.ARTIST LIKE :query " : null,
                 count($queryParams) == 1 ? " AND FILE_ID3_TAG.ALBUM_ARTIST LIKE :query " : null,
                 $sort->order == \Spieldose\Helper\Sort::ASCENDING_ORDER ? \Spieldose\Helper\Sort::ASCENDING_ORDER : \Spieldose\Helper\Sort::DESCENDING_ORDER,
-                $pager->resultsPage > 0 ? sprintf(" LIMIT %d", $pager->resultsPage) : null
+                $pager->resultsPage > 0 ? sprintf(" LIMIT %d, %d", $pager->getSQLQueryLimitFrom(), $pager->resultsPage) : null
             ),
             $queryParams
         );
-        $totalPagedResults = count($data->items);
-        if ($totalPagedResults >= $pager->resultsPage) {
+        $data->pager->setTotalResults(count($data->items));
+        if ($data->pager->currentPage > 1 || $data->pager->totalResults >= $pager->resultsPage) {
             $tmpCountResults = $dbh->query(
                 sprintf(
                     "
@@ -196,16 +196,8 @@ class Artist
                 $queryParams
             );
             if (count($tmpCountResults) == 1) {
-                $data->pager->totalResults = $tmpCountResults[0]->TOTAL;
-                if ($pager->resultsPage > 0) {
-                    $data->pager->totalPages = ceil($data->pager->totalResults / $pager->resultsPage);
-                } else {
-                    $data->pager->totalPages = 1;
-                }
+                $data->pager->setTotalResults($tmpCountResults[0]->TOTAL);
             }
-        } else {
-            $data->pager->totalResults = $totalPagedResults;
-            $data->pager->totalPages = 1;
         }
         return ($data);
     }

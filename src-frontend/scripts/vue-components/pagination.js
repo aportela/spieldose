@@ -1,19 +1,19 @@
 const template = function () {
     return `
         <div>
-            <nav class="pagination is-centered level" v-if="visible">
-                <a class="button is-link pagination-previous" v-bind:disabled="loading" v-on:click.prevent="previous();">
+            <nav class="pagination is-centered is-small" role="navigation" aria-label="pagination" v-if="visible">
+                <button type="button" class="button is-small is-pink pagination-previous" :disabled="disabled || data.currentPage == 1" v-on:click.prevent="previous();">
                     <span class="icon is-small"><i class="fas fa-caret-left" aria-hidden="true"></i></span>
                     <span>{{ $t("pagination.buttons.previousPage") }}</span>
-                    </a>
-                <a class="button is-link pagination-next" v-bind:disabled="loading" v-on:click.prevent="next();">
+                </button>
+                <button type="button" class="button is-small is-pink  pagination-next" :disabled="disabled || data.currentPage >= data.totalPages" v-on:click.prevent="next();">
                     <span>{{ $t("pagination.buttons.nextPage") }}</span>
                     <span class="icon is-small"><i class="fas fa-caret-right" aria-hidden="true"></i></span>
-                </a>
+                </button>
                 <ul class="pagination-list">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
-                    <li v-for="pageNumber in data.totalPages" v-if="showIntermediatePage(pageNumber)">
-                        <a class="pagination-link" :class="{'is-current': isCurrentPage(pageNumber) }" v-bind:disabled="loading" v-on:click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</a>
+                    <li v-for="pageNumber in data.totalPages" v-if="true || showIntermediatePage(pageNumber)">
+                        <button type="button" class="pagination-link" :class="{ 'is-current': data.currentPage == pageNumber }" :disabled="disabled" v-on:click.prevent="navigateTo(pageNumber);">{{ pageNumber }}</button>
                     </li>
                 </ul>
             </nav>
@@ -27,46 +27,43 @@ export default {
     name: 'spieldose-pagination',
     template: template(),
     props: [
-        'data', 'loading'
+        'data', 'disabled'
     ],
     computed: {
         visible: function () {
             return (this.data && this.data.totalPages > 1);
         },
         invalidPage: function () {
-            return (this.data.totalPages > 0 && (this.data.actualPage < 1 || this.data.actualPage > this.data.totalPages));
+            return (this.data.totalPages > 0 && (this.data.currentPage < 1 || this.data.currentPage > this.data.totalPages));
         }
     },
     methods: {
         previous: function () {
-            if (!this.loading) {
-                if (this.data.actualPage > 1) {
-                    this.data.actualPage--;
-                    this.$emit('pagination-changed', this.data.actualPage);
+            if (!this.disabled) {
+                if (this.data.currentPage > 1) {
+                    this.data.currentPage--;
+                    this.$emit('pagination-changed', this.data.currentPage);
                 }
             }
         },
         next: function () {
-            if (!this.loading) {
-                if (this.data.actualPage < this.data.totalPages) {
-                    this.data.actualPage++;
-                    this.$emit('pagination-changed', this.data.actualPage);
+            if (!this.disabled) {
+                if (this.data.currentPage < this.data.totalPages) {
+                    this.data.currentPage++;
+                    this.$emit('pagination-changed', this.data.currentPage);
                 }
             }
         },
         navigateTo: function (pageIdx) {
-            if (!this.loading) {
+            if (!this.disabled) {
                 if (pageIdx > 0 && pageIdx <= this.data.totalPages) {
-                    this.data.actualPage = pageIdx;
-                    this.$emit('pagination-changed', this.data.actualPage);
+                    this.data.currentPage = pageIdx;
+                    this.$emit('pagination-changed', this.data.currentPage);
                 }
             }
         },
         showIntermediatePage: function (pageNumber) {
-            return (pageNumber < 3 || Math.abs(pageNumber - this.data.actualPage) < 3 || this.data.totalPages - 2 < pageNumber);
-        },
-        isCurrentPage: function (pageNumber) {
-            return (this.data.actualPage === pageNumber);
+            return (pageNumber < 3 || Math.abs(pageNumber - this.data.currentPage) < 3 || this.data.totalPages - 2 < pageNumber);
         }
     }
 }
