@@ -25,10 +25,12 @@ const template = function () {
                 <span class="panel-icon"><i class="fas fa-circle"></i></span>
                 <span>{{ $t("menu.labels.browseAlbums") }}</span>
             </a>
-            <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('paths') }" v-on:click.prevent="changeSection('paths');">
+            -->
+            <router-link :to="{ name: 'browsePaths' }" :class="{'panel-block': true, 'is-active': isSectionActive('paths') }">
                 <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
                 <span>{{ $t("menu.labels.browsePaths") }}</span>
-            </a>
+            </router-link>
+            <!--
             <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('playlists') }" v-on:click.prevent="changeSection('playlists');">
                 <span class="panel-icon"><i class="fas fa-list-alt"></i></span>
                 <span>{{ $t("menu.labels.browsePlaylists") }}</span>

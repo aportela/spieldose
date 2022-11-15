@@ -1,85 +1,72 @@
 <?php
-    declare(strict_types=1);
 
-    namespace Spieldose;
+declare(strict_types=1);
 
-    class Path {
-	    public function __construct () { }
+namespace Spieldose;
 
-        public function __destruct() { }
-
-        /**
-         * search paths
-         *
-         * @param \Spieldose\Database\DB $dbh database handler
-         * @param int $page return results from this page
-         * @param int $resultsPage number of results / page
-         * @param array $filter the condition filter
-         * @param string $order results order
-         */
-        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
-            $whereCondition = "";
-            $params = array();
-            if (isset($filter)) {
-                $conditions = array();
-                if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
-                    $conditions[] = ' F.base_path LIKE :name ';
-                }
-                if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
-                    $conditions[] = ' F.base_path LIKE :partialName ';
-                }
-                $whereCondition = count($conditions) > 0 ? " WHERE " .  implode(" AND ", $conditions) : "";
-            }
-            $queryCount = '
-                SELECT
-                    COUNT(DISTINCT F.base_path) AS total
-                FROM FILE F
-                ' . $whereCondition . '
-            ';
-            $result = $dbh->query($queryCount, $params);
-            $data = new \stdClass();
-            $data->actualPage = $page;
-            $data->resultsPage = $resultsPage;
-            $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil($data->totalResults / $resultsPage);
-            if ($data->totalResults > 0) {
-                $sqlOrder = "";
-                switch($order) {
-                    case "random":
-                        $sqlOrder = " ORDER BY RANDOM() ";
-                    break;
-                    default:
-                        $sqlOrder = " ORDER BY F.base_path ";
-                    break;
-                }
-                $query = sprintf('
-                    SELECT
-                        DISTINCT F.base_path AS path, TMP_PT.totalTracks
-                    FROM FILE F
-                    LEFT JOIN (
-                        SELECT
-                            F.base_path, COUNT(*) AS totalTracks
-                        FROM FILE F
-                        GROUP BY F.base_path
-                    ) TMP_PT ON TMP_PT.base_path = F.base_path
-                    %s
-                    %s
-                    LIMIT %d OFFSET %d
-                    ',
-                    $whereCondition,
-                    $sqlOrder,
-                    $resultsPage,
-                    $resultsPage * ($page -1)
-                );
-                $data->results = $dbh->query($query, $params);
-            } else {
-                $data->results = array();
-            }
-            return($data);
-        }
-
+class Path
+{
+    public function __construct()
+    {
     }
 
-?>
+    public function __destruct()
+    {
+    }
+
+    /**
+     * search paths
+     *
+     * @param \Spieldose\Database\DB $dbh database handler
+     * @param int $page return results from this page
+     * @param int $resultsPage number of results / page
+     * @param array $filter the condition filter
+     * @param string $order results order
+     */
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, \Spieldose\Helper\Pager $pager, \Spieldose\Helper\Sort $sort, array $filter = array())
+    {
+        $data = new \Spieldose\Helper\BrowserResults($pager, $sort, []);
+        $queryParams = [];
+        if (isset($filter["q"]) && !empty($filter["q"])) {
+            $queryParams[] = new \aportela\DatabaseWrapper\Param\StringParam(":query", "%" . $filter["q"] . "%");
+        }
+        $data->items = $dbh->query(
+            sprintf(
+                "
+                    SELECT
+                        DIRECTORIES.ID AS id,
+                        DIRECTORIES.PATH as path,
+                        COUNT(FILES.ID) AS totalFiles
+                    FROM DIRECTORIES
+                    INNER JOIN FILES ON FILES.DIRECTORY_ID = DIRECTORIES.ID
+                    %s
+                    GROUP BY DIRECTORIES.ID
+                    ORDER BY path %s
+                    %s
+                ",
+                count($queryParams) == 1 ? " WHERE DIRECTORIES.PATH LIKE :query " : null,
+                $sort->order == \Spieldose\Helper\Sort::ASCENDING_ORDER ? \Spieldose\Helper\Sort::ASCENDING_ORDER : \Spieldose\Helper\Sort::DESCENDING_ORDER,
+                $pager->resultsPage > 0 ? sprintf(" LIMIT %d, %d", $pager->getSQLQueryLimitFrom(), $pager->resultsPage) : null
+            ),
+            $queryParams
+        );
+        $data->pager->setTotalResults(count($data->items));
+        if ($data->pager->currentPage > 1 || $data->pager->totalResults >= $pager->resultsPage) {
+            $tmpCountResults = $dbh->query(
+                sprintf(
+                    "
+                        SELECT COUNT(DIRECTORIES.ID) AS TOTAL
+                        FROM DIRECTORIES
+                        %s
+                    ",
+                    count($queryParams) == 1 ? " WHERE DIRECTORIES.PATH LIKE :query " : null,
+                ),
+                $queryParams
+            );
+            if (count($tmpCountResults) == 1) {
+                $data->pager->setTotalResults($tmpCountResults[0]->TOTAL);
+            }
+        }
+        return ($data);
+    }
+}
