@@ -360,6 +360,7 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
+
             $group->get('/artist/{name}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
@@ -385,6 +386,30 @@ return function (App $app) {
                 }
             });
 
+            $group->post('/paths/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $filter = array(
+                    "q" => $params['q'] ?? null
+                );
+                $pager = new \Spieldose\Helper\Pager(
+                    $params['pager']['currentPage'] ?? 1,
+                    $params['pager']['resultsPage'] ?? 32
+                );
+                $sort = new \Spieldose\Helper\Sort(
+                    "name",
+                    $params['sort']['order'] ?? \Spieldose\Helper\Sort::ASCENDING_ORDER
+                );
+                $data = \Spieldose\Path::search($db, $pager, $sort, $filter);
+                $payload = array("results" => $data);
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
             /* metrics */
 
             $group->post('/metrics/top_played_tracks', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
