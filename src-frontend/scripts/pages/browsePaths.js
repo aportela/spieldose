@@ -56,7 +56,7 @@ const template = function () {
                     <td class="has-text-centered">
                         <div class="field has-addons is-center">
                             <p class="control is-small">
-                                <button class="button is-small" disabled>
+                                <button class="button is-small" @click.prevent="onPlayEnqueuePath(directory.id, false)">
                                     <span class="icon is-small">
                                         <i class="cursor-pointer fa-fw fa fa-play"></i>
                                     </span>
@@ -64,7 +64,7 @@ const template = function () {
                                 </button>
                             </p>
                             <p class="control is-small">
-                                <button class="button is-small" disabled>
+                            <button class="button is-small" @click.prevent="onPlayEnqueuePath(directory.id, true)">
                                     <span class="icon is-small">
                                         <i class="cursor-pointer fa-fw fa fa-plus-square mr-1"></i>
                                     </span>
@@ -123,6 +123,24 @@ export default {
         },
         onPaginationChanged: function (event) {
             this.onSearch();
+        },
+        onPlayEnqueuePath: function (path, enqueue) {
+            this.$api.track.search(this.searchQuery, null, null, null, path).then(success => {
+                if (!enqueue) {
+                    this.$player.replaceCurrentPlaylist(success.data.tracks);
+                } else {
+                    this.$player.enqueueToCurrentPlaylist(success.data.tracks);
+                }
+                this.loading = false;
+            }).catch(error => {
+                console.log(error);
+                switch (error.response.status) {
+                    default:
+                        //this.setAPIError(error.getApiErrorData());
+                        break;
+                }
+                this.loading = false;
+            });
         }
     }
 }
