@@ -130,27 +130,12 @@ export default {
             this.loading = true;
             this.tracks = [];
             this.currentTrackIndex = -1;
-            this.$api.track.search(this.searchQuery, artist, albumArtist, album).then(success => {
+            this.$api.track.search(this.searchQuery, artist, albumArtist, album, null).then(success => {
                 this.$player.replaceCurrentPlaylist(success.data.tracks);
                 this.loading = false;
             }).catch(error => {
                 console.log(error);
                 switch (error.response.status) {
-                    case 400:
-                        if (error.isFieldInvalid('email')) {
-                            this.validator.setInvalid('signUpEmail', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signUpEmail.focus());
-                        } else if (error.isFieldInvalid('password')) {
-                            this.validator.setInvalid('signUpPassword', this.$t('commonErrors.invalidAPIParam'));
-                            this.$nextTick(() => this.$refs.signUpPassword.focus());
-                        } else {
-                            this.setAPIError(error.getApiErrorData());
-                        }
-                        break;
-                    case 409:
-                        this.validator.setInvalid('signUpEmail', this.$t('signUp.errorMessages.emailAlreadyUsed'));
-                        this.$nextTick(() => this.$refs.signUpEmail.focus());
-                        break;
                     default:
                         //this.setAPIError(error.getApiErrorData());
                         break;
