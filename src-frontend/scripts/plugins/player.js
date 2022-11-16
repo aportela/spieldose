@@ -31,6 +31,19 @@ export default {
                 app.config.globalProperties.$localStorage.set('currentPlaylist', tracks);
                 app.config.globalProperties.$localStorage.set('currentPlaylistTrackIndex', 0);
             },
+            enqueueToCurrentPlaylist: function (tracks) {
+                console.log("Enqueue to current playlist");
+                this.hasPreviousUserInteractions = true;
+                const hasPreviousTracks = this.currentPlaylist.tracks && this.currentPlaylist.tracks.length > 0;
+                this.currentPlaylist.tracks = this.currentPlaylist.tracks.concat(tracks);
+                if (!hasPreviousTracks) {
+                    this.currentPlaylist.trackIndex = 0;
+                }
+                app.config.globalProperties.$localStorage.set('currentPlaylist', this.currentPlaylist.tracks);
+                if (!hasPreviousTracks) {
+                    app.config.globalProperties.$localStorage.set('currentPlaylistTrackIndex', 0);
+                }
+            },
             onPreviousTrack: function () {
                 if (this.currentPlaylist.trackIndex > 0) {
                     this.currentPlaylist.trackIndex--;
