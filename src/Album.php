@@ -23,95 +23,52 @@ class Album
      * @param int $resultsPage number of results / page
      * @param array $filter the condition filter
      * @param string $order results order
-     *
      */
-    public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "")
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, \Spieldose\Helper\Pager $pager, \Spieldose\Helper\Sort $sort, array $filter = array())
     {
-        $params = array();
-        $whereCondition = "";
-        $filteredByArtist = false;
-        if (isset($filter)) {
-            $conditions = array();
-            if (isset($filter["partialName"]) && !empty($filter["partialName"])) {
-                $conditions[] = " COALESCE(MBA.ALBUM, FIT.ALBUM) LIKE :partialName ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialName", "%" . $filter["partialName"] . "%");
-            }
-            if (isset($filter["name"]) && !empty($filter["name"])) {
-                $conditions[] = " COALESCE(MBA.album, FIT.ALBUM) LIKE :name ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialName", $filter["name"]);
-            }
-            if (isset($filter["partialArtist"]) && !empty($filter["partialArtist"])) {
-                $conditions[] = " (MBA.ARTIST LIKE :partialArtist OR FIT.ALBUM_ARTIST LIKE :partialArtist OR FIT.ARTIST LIKE :partialArtist) ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":partialArtist", "%" . $filter["partialArtist"] . "%");
-                $filteredByArtist = true;
-            }
-            if (isset($filter["artist"]) && !empty($filter["artist"])) {
-                $conditions[] = " (MBA.ARTIST LIKE :artist OR MBA2.ARTIST LIKE :artist OR FIT.ALBUM_ARTIST LIKE :artist OR FIT.ARTIST LIKE :artist) ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $filter["artist"]);
-                $filteredByArtist = true;
-            }
-            if (isset($filter["year"]) && !empty($filter["year"])) {
-                $conditions[] = " COALESCE(MBA.year, F.year) = :year ";
-                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $filter["year"]);
-            }
-            $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
+        $data = new \Spieldose\Helper\BrowserResults($pager, $sort, []);
+        $queryParams = [];
+        if (isset($filter["q"]) && !empty($filter["q"])) {
+            $queryParams[] = new \aportela\DatabaseWrapper\Param\StringParam(":query", "%" . $filter["q"] . "%");
         }
-        $queryCount = '
-                SELECT
-                    COUNT (DISTINCT COALESCE(MBA.ALBUM, FIT.ALBUM) || COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") || COALESCE(MBA.YEAR, FIT.YEAR, 0)) AS total
-                FROM FILE F
-                LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
-                LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.MBID = FIT.MB_ALBUM_ID
-                LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.MBID = FIT.MB_ARTIST_ID
-                WHERE COALESCE(MBA.ALBUM, FIT.ALBUM) IS NOT NULL
-                ' . $whereCondition . '
-            ';
-        $result = $dbh->query($queryCount, $params);
-        $data = new \stdClass();
-        $data->actualPage = $page;
-        $data->resultsPage = $resultsPage;
-        $data->totalResults = $result[0]->total;
-        $data->totalPages = ceil($data->totalResults / $resultsPage);
-        if ($data->totalResults > 0) {
-            $sqlOrder = "";
-            switch ($order) {
-                case "random":
-                    $sqlOrder = " ORDER BY RANDOM() ";
-                    break;
-                case "year":
-                    $sqlOrder = " ORDER BY COALESCE(MBA.YEAR, FIT.YEAR, 0) ASC, COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ";
-                    break;
-                default:
-                    if ($filteredByArtist) {
-                        $sqlOrder = ' ORDER BY COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") COLLATE NOCASE ASC, COALESCE(MBA.YEAR, FIT.YEAR, 0) ASC, COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ';
-                    } else {
-                        $sqlOrder = " ORDER BY COALESCE(MBA.ALBUM, FIT.ALBUM) COLLATE NOCASE ASC ";
-                    }
-                    break;
-            }
-            $query = sprintf(
-                '
-                    SELECT DISTINCT
-                        COALESCE(MBA.ALBUM, FIT.ALBUM) as name,
-                        COALESCE(MBA.ARTIST, FIT.ALBUM_ARTIST, FIT.ARTIST, "") AS artist,
-                        COALESCE(MBA.YEAR, FIT.YEAR, 0) AS year,
-                    FROM FILE F
-                    LEFT JOIN FILE_ID3_TAG FIT ON FIT.ID = F.ID
-                    LEFT JOIN MB_CACHE_ALBUM MBA ON MBA.MBID = FIT.MB_ALBUM_ID
-                    LEFT JOIN MB_CACHE_ARTIST MBA2 ON MBA2.MBID = FIT.MB_ARTIST_ID
-                    WHERE COALESCE(MBA.ALBUM, FIT.ALBUM) IS NOT NULL
+        $data->items = $dbh->query(
+            sprintf(
+                "
+                    SELECT FILE_ID3_TAG.ALBUM AS name, FILE_ID3_TAG.ARTIST AS artist, FILE_ID3_TAG.ALBUM_ARTIST AS albumArtist, FILE_ID3_TAG.YEAR AS year
+                    FROM FILE_ID3_TAG
+                    WHERE FILE_ID3_TAG.ALBUM IS NOT NULL
+                    GROUP BY FILE_ID3_TAG.ALBUM, COALESCE(FILE_ID3_TAG.ALBUM_ARTIST, FILE_ID3_TAG.ARTIST), FILE_ID3_TAG.YEAR
                     %s
+                    ORDER BY name %s
                     %s
-                    LIMIT %d OFFSET %d
-                    ',
-                $whereCondition,
-                $sqlOrder,
-                $resultsPage,
-                $resultsPage * ($page - 1)
+                ",
+                count($queryParams) == 1 ? " AND FILE_ID3_TAG.ALBUM LIKE :query " : null,
+                $sort->order == \Spieldose\Helper\Sort::ASCENDING_ORDER ? \Spieldose\Helper\Sort::ASCENDING_ORDER : \Spieldose\Helper\Sort::DESCENDING_ORDER,
+                $pager->resultsPage > 0 ? sprintf(" LIMIT %d, %d", $pager->getSQLQueryLimitFrom(), $pager->resultsPage) : null
+            ),
+            $queryParams
+        );
+        $data->pager->setTotalResults(count($data->items));
+        if ($data->pager->currentPage > 1 || $data->pager->totalResults >= $pager->resultsPage) {
+            $tmpCountResults = $dbh->query(
+                sprintf(
+                    "
+                        SELECT COUNT(*) AS TOTAL
+                        FROM (
+                            SELECT FILE_ID3_TAG.ALBUM AS name, FILE_ID3_TAG.ARTIST AS artist, FILE_ID3_TAG.ALBUM_ARTIST AS albumArtist, FILE_ID3_TAG.YEAR AS year
+                            FROM FILE_ID3_TAG
+                            WHERE FILE_ID3_TAG.ALBUM IS NOT NULL
+                            GROUP BY FILE_ID3_TAG.ALBUM, COALESCE(FILE_ID3_TAG.ALBUM_ARTIST, FILE_ID3_TAG.ARTIST), FILE_ID3_TAG.YEAR
+                            %s
+                        )
+                    ",
+                    count($queryParams) == 1 ? " AND FILE_ID3_TAG.ALBUM LIKE :query " : null,
+                ),
+                $queryParams
             );
-            $data->results = $dbh->query($query, $params);
-        } else {
-            $data->results = array();
+            if (count($tmpCountResults) == 1) {
+                $data->pager->setTotalResults($tmpCountResults[0]->TOTAL);
+            }
         }
         return ($data);
     }

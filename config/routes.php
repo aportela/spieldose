@@ -361,6 +361,32 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/albums/', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+                $params = $request->getParsedBody();
+                if (!\Spieldose\User::isLogged()) {
+                    throw new \Spieldose\Exception\AuthenticationMissingException();
+                }
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $filter = array(
+                    "q" => $params['q'] ?? null
+                );
+                $pager = new \Spieldose\Helper\Pager(
+                    $params['pager']['currentPage'] ?? 1,
+                    $params['pager']['resultsPage'] ?? 32
+                );
+                $sort = new \Spieldose\Helper\Sort(
+                    "name",
+                    $params['sort']['order'] ?? \Spieldose\Helper\Sort::ASCENDING_ORDER
+                );
+                $data = \Spieldose\Album::search($db, $pager, $sort, $filter);
+                $payload = array("results" => $data);
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+
             $group->get('/artist/{name}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
                 $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
                 $logger->info($request->getMethod() . ' ' . $request->getUri()->getPath());

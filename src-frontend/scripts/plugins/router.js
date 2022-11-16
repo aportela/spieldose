@@ -9,7 +9,8 @@ import { default as dashboard } from '../vue-components/dashboard.js';
 import { default as currentPlaylist } from '../pages/currentPlaylist.js';
 import { default as profile } from '../pages/profile.js';
 import { default as browseArtists } from '../pages/browseArtists.js';
-import { default as browseAlbums } from '../vue-components/browse-albums.js';
+//import { default as browseAlbums } from '../vue-components/browse-albums.js';
+import { default as browseAlbums } from '../pages/browseAlbums.js';
 //import { default as browsePaths } from '../vue-components/browse-paths.js';
 import { default as browsePaths } from '../pages/browsePaths.js';
 import { default as browsePlaylists } from '../vue-components/browse-playlists.js';
@@ -55,7 +56,7 @@ const routes = [
             },
             {
                 path: 'albums',
-                name: 'albums',
+                name: 'browseAlbums',
                 component: browseAlbums,
                 children: [
                     {
