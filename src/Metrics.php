@@ -11,7 +11,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -52,7 +52,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -87,7 +87,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -122,7 +122,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -151,7 +151,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $query = sprintf('
                 /*
@@ -220,7 +220,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -251,7 +251,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -281,7 +281,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -312,7 +312,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -332,7 +332,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -352,7 +352,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
@@ -372,7 +372,7 @@ class Metrics
     {
         $metrics = array();
         $params = array(
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\User::getUserId())
         );
         $queryConditions = array(
             " S.USER = :user_id "
