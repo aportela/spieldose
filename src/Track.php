@@ -244,11 +244,11 @@ class Track
                     LEFT JOIN LOVED_FILE ON (LOVED_FILE.FILE = FILES.ID AND LOVED_FILE.USER = :USER)
                     %s
                     ORDER BY %s
-                    LIMIT %d
+                    %s
                 ",
                 count($whereConditions) > 0 ? ' WHERE ' . implode(" AND ", $whereConditions) : null,
                 empty($query) && empty($artist) && empty($albumArtist) && empty($album) && empty($pathId) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
-                empty($query) ? 32 : 64
+                empty($pathId) ? sprintf(" LIMIT %d ", (empty($query) ? 32 : 64)) : null
             ),
             $params
         );
