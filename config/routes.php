@@ -127,7 +127,7 @@ return function (App $app) {
                 $params = $request->getQueryParams();
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $payload = array(
-                    'tracks' => \Spieldose\Track::searchNew($db, $params['q'] ?? null, $params['artist'] ?? null, $params['albumArtist'] ?? null, $params['album'] ?? null)
+                    'tracks' => \Spieldose\Track::searchNew($db, $params['q'] ?? null, $params['artist'] ?? null, $params['albumArtist'] ?? null, $params['album'] ?? null, $params['path'] ?? null)
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

@@ -74,14 +74,15 @@ export default {
                 }
             },
             track: {
-                search: (query, artist, albumArtist, album) => {
+                search: (query, artist, albumArtist, album, path) => {
                     return new Promise((resolve, reject) => {
                         app.config.globalProperties.$axios.get('/api2/track/search', {
                             params: {
                                 q: query || null,
                                 artist: artist || null,
                                 albumArtist: albumArtist || null,
-                                album: album || null
+                                album: album || null,
+                                path: path || null
                             }
                         }).then(response => {
                             resolve(response);
