@@ -16,10 +16,10 @@ const template = function () {
                 <span>{{ $t("menu.labels.search") }}</span>
             </a>
             -->
-            <a class="panel-block" v-bind:class="{ 'is-active': isSectionActive('artists') }" v-on:click.prevent="changeSection('artists');">
+            <router-link :to="{ name: 'browseArtists' }" :class="{'panel-block': true, 'is-active': isSectionActive('artists') }">
                 <span class="panel-icon"><i class="fas fa-user"></i></span>
                 <span>{{ $t("menu.labels.browseArtists") }}</span>
-            </a>
+            </router-link>
             <router-link :to="{ name: 'browseAlbums' }" :class="{'panel-block': true, 'is-active': isSectionActive('albums') }">
                 <span class="panel-icon"><i class="fas fa-circle"></i></span>
                 <span>{{ $t("menu.labels.browseAlbums") }}</span>

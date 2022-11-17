@@ -44,7 +44,7 @@ const routes = [
             },
             {
                 path: 'artists',
-                name: 'artists',
+                name: 'browseArtists',
                 component: browseArtists,
                 children: [
                     {
