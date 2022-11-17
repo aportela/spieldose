@@ -89,6 +89,7 @@ export default {
         return ({
             loading: false,
             searchQuery: null,
+            resetPager: false,
             pager: {
                 currentPage: 1,
                 resultsPage: 32,
@@ -102,6 +103,11 @@ export default {
             directories: []
         });
     },
+    watch: {
+        searchQuery: function () {
+            this.resetPager = true;
+        }
+    },
     created: function () {
         this.onSearch();
     },
@@ -113,6 +119,10 @@ export default {
             this.loading = true;
             this.tracks = [];
             this.currentTrackIndex = -1;
+            if (this.resetPager) {
+                this.pager.currentPage = 1;
+                this.resetPager = false;
+            }
             this.$api.path.search(this.searchQuery, this.pager.currentPage, this.pager.resultsPage, this.sort.field, this.sort.order).then(success => {
                 this.loading = false;
                 this.directories = success.data.results.items;

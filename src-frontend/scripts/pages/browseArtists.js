@@ -63,6 +63,7 @@ export default {
         return ({
             loading: false,
             searchQuery: null,
+            resetPager: false,
             pager: {
                 currentPage: 1,
                 resultsPage: 32,
@@ -76,6 +77,11 @@ export default {
             artists: []
         });
     },
+    watch: {
+        searchQuery: function () {
+            this.resetPager = true;
+        }
+    },
     created: function () {
         this.onSearch();
     },
@@ -85,8 +91,10 @@ export default {
     methods: {
         onSearch: function () {
             this.loading = true;
-            this.tracks = [];
-            this.currentTrackIndex = -1;
+            if (this.resetPager) {
+                this.pager.currentPage = 1;
+                this.resetPager = false;
+            }
             this.$api.artist.search(this.searchQuery, this.pager.currentPage, this.pager.resultsPage, this.sort.field, this.sort.order).then(success => {
                 this.loading = false;
                 this.artists = success.data.results.items;
