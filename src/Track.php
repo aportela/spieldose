@@ -247,7 +247,7 @@ class Track
                     %s
                 ",
                 count($whereConditions) > 0 ? ' WHERE ' . implode(" AND ", $whereConditions) : null,
-                empty($query) && empty($artist) && empty($albumArtist) && empty($album) && empty($pathId) ? " RANDOM() " : " FILE_ID3_TAG.ARTIST, FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
+                empty($query) && empty($artist) && empty($albumArtist) && empty($album) && empty($pathId) ? " RANDOM() " : " FILE_ID3_TAG.ALBUM, FILE_ID3_TAG.DISC_NUMBER, FILE_ID3_TAG.TRACK_NUMBER ",
                 empty($pathId) ? sprintf(" LIMIT %d ", (empty($query) ? 32 : 64)) : null
             ),
             $params
