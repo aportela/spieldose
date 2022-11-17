@@ -143,7 +143,7 @@ export default {
             if (this.track.id) {
                 const url = "/api2/track/thumbnail/" + (newValue ? 'small' : 'normal') + "/" + this.track.id;
                 let img = new Image();
-                img.src = url
+                img.src = url;
                 img.onload = () => {
                     this.coverURL = url;
                 }
@@ -177,7 +177,6 @@ export default {
         }
     },
     created: function () {
-        console.log(this.track.id);
     },
     mounted: function () {
         console.debug('Creating audio element');
@@ -191,7 +190,7 @@ export default {
                 this.volume = 0.05;
                 console.debug('Setting audio volume at ' + this.volume + '%');
             }
-            console.debug('Setting audio available to play event');
+            console.debug('Setting audio events');
             this.audioElement.addEventListener('canplay', (event) => {
                 console.log("Buffering audio end");
                 console.debug('Audio can be played');
@@ -277,6 +276,10 @@ export default {
                     //this.play();
                 }
                 //}
+            } else {
+                this.audioElement.src = '';
+                this.coverURL = null;
+                this.pause();
             }
         },
         createAnalyzer: function () {
@@ -345,21 +348,25 @@ export default {
         play: function () {
             if (!this.$player.events.isPaused) {
                 console.debug('Audio is playing, stopping...');
-                this.audioElement.pause();
+                if (this.audioElement.src) {
+                    this.audioElement.pause();
+                }
             }
             if (this.hasPreviousUserInteractions) {
                 console.debug('Playing audio');
-                this.audioElement.play();
-                if (!this.audioElementMotion.isOn) {
-                    this.audioElementMotion.toggleAnalyzer();
+                if (this.audioElement.src) {
+                    this.audioElement.play();
+                    if (!this.audioElementMotion.isOn) {
+                        this.audioElementMotion.toggleAnalyzer();
+                    }
                 }
             } else {
                 console.debug('No previous user interactions found, browser will deny play');
             }
         },
         pause: function () {
-            if (this.$player.events.isPlaying) {
-                console.debug('Audio is playing, stopping...');
+            console.debug('Audio is playing, stopping...');
+            if (this.audioElement.src) {
                 this.audioElement.pause();
                 this.audioElementMotion.toggleAnalyzer();
             }
