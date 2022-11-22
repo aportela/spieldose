@@ -53,8 +53,8 @@ const template = function () {
             </thead>
             <tbody>
                 <tr v-for="directory in directories">
-                    <td class="has-text-centered">
-                        <div class="field has-addons is-center">
+                    <td>
+                        <div class="field has-addons has-addons-centered">
                             <p class="control is-small">
                                 <button class="button is-small" @click.prevent="onPlayEnqueuePath(directory.id, false)">
                                     <span class="icon is-small">
