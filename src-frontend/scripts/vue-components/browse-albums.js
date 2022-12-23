@@ -1,5 +1,5 @@
 import { default as spieldoseAPI } from '../api.js';
-import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists } from '../mixins.js';
+import { mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists, mixinPlayer } from '../mixins.js';
 import { default as inputTypeAHead } from './input-typeahead.js';
 import { default as pagination } from './pagination';
 import { default as apiError } from './api-error.js';
@@ -81,7 +81,7 @@ export default {
     name: 'spieldose-browse-albums',
     template: template(),
     mixins: [
-        mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists
+        mixinAPIError, mixinPagination, mixinLiveSearches, mixinNavigation, mixinAlbums, mixinArtists, mixinPlayer
     ],
     data: function () {
         return ({
