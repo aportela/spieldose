@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\Middleware;
+namespace Spìeldose\Middleware;
 
 class CheckAuth
 {
 
-    protected $logger;
-
-    public function __construct(\Monolog\Logger $logger)
+    public function __construct(\Psr\Container\ContainerInterface $container)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -24,11 +21,11 @@ class CheckAuth
      */
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Server\RequestHandlerInterface $handler): \Psr\Http\Message\ResponseInterface
     {
-        if (\Spieldose\User::isLogged()) {
+        if (\Spìeldose\UserSession::isLogged()) {
             $response = $handler->handle($request);
             return $response;
         } else {
-            throw new \Spieldose\Exception\AuthenticationMissingException($request->getMethod() . " " . $request->getUri()->getPath());
+            throw new \Spìeldose\Exception\UnauthorizedException($request->getMethod() . " " . $request->getUri()->getPath());
         }
     }
 }

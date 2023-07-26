@@ -1,25 +1,33 @@
 <?php
 
-    use DI\ContainerBuilder;
-    use Slim\App;
+use DI\ContainerBuilder;
+use Slim\App;
 
-    require_once __DIR__ . '/../vendor/autoload.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_set_cookie_params(["SameSite" => "Strict"]);
+    session_set_cookie_params(["Secure" => "true"]);
+    session_set_cookie_params(["HttpOnly" => "true"]);
+    session_start();
+}
 
-    $containerBuilder = new ContainerBuilder();
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-    // Set up settings
-    $containerBuilder->addDefinitions(__DIR__ . '/container.php');
+$containerBuilder = new ContainerBuilder();
 
-    // Build PHP-DI Container instance
-    $container = $containerBuilder->build();
+// Set up settings
+$containerBuilder->addDefinitions(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'container.php');
 
-    // Create App instance
-    $app = $container->get(App::class);
+// Build PHP-DI Container instance
+$container = $containerBuilder->build();
 
-    // Register routes
-    (require __DIR__ . '/routes.php')($app);
+// Create App instance
+$app = $container->get(App::class);
 
-    // Register middleware
-    (require __DIR__ . '/middleware.php')($app);
 
-    return $app;
+// Register routes
+(require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'routes.php')($app);
+
+// Register middleware
+(require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'middleware.php')($app);
+
+return $app;
