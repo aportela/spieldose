@@ -2,7 +2,7 @@
 
 // Settings
 $settings = [
-    'environment' => 'production' // (development|production)
+    'environment' => 'development' // (development|production)
 ];
 
 // Should be set to 0 (E_NONE) in production
