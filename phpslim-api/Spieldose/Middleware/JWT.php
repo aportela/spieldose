@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spìeldose\Middleware;
+namespace Spieldose\Middleware;
 
 class JWT
 {
@@ -12,7 +12,7 @@ class JWT
 
     public function __construct(\Psr\Container\ContainerInterface $container)
     {
-        $this->logger = $container->get(\Spìeldose\Logger\HTTPRequestLogger::class);
+        $this->logger = $container->get(\Spieldose\Logger\HTTPRequestLogger::class);
         $this->passphrase = $container->get('settings')['jwt']['passphrase'];
     }
 
@@ -26,39 +26,39 @@ class JWT
      */
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Server\RequestHandlerInterface $handler): \Psr\Http\Message\ResponseInterface
     {
-        $clientHeaderJWT = $request->hasHeader("Spìeldose-JWT") ? $request->getHeader("Spìeldose-JWT")[0] : null;
+        $clientHeaderJWT = $request->hasHeader("Spieldose-JWT") ? $request->getHeader("Spieldose-JWT")[0] : null;
         // user not logged (or session lost) && jwt auth header found => re-auth with jwt
-        if (!\Spìeldose\UserSession::isLogged() && !empty($clientHeaderJWT)) {
+        if (!\Spieldose\UserSession::isLogged() && !empty($clientHeaderJWT)) {
             // try decoding jwt data
-            $jwt = new \Spìeldose\JWT($this->logger, $this->passphrase);
+            $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
             $decoded = $jwt->decode($clientHeaderJWT);
             if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
                 $this->logger->notice("JWT valid data decoded", [print_r($decoded->data, true)]);
-                \Spìeldose\UserSession::set($decoded->data->userId, $decoded->data->email);
+                \Spieldose\UserSession::set($decoded->data->userId, $decoded->data->email);
             } else {
-                throw new \Spìeldose\Exception\InvalidParamsException("jwt");
+                throw new \Spieldose\Exception\InvalidParamsException("jwt");
             }
             $response = $handler->handle($request);
             if (!empty($clientHeaderJWT)) {
-                return $response->withHeader("Spìeldose-JWT", $clientHeaderJWT);
+                return $response->withHeader("Spieldose-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
             }
         } else {
             if (empty($clientHeaderJWT)) {
                 $response = $handler->handle($request);
-                if (\Spìeldose\UserSession::isLogged()) {
+                if (\Spieldose\UserSession::isLogged()) {
                     $payload = array(
                         "userId" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
                         "email" => isset($_SESSION["email"]) ? $_SESSION["email"] : null
                     );
-                    $jwt = new \Spìeldose\JWT($this->logger, $this->passphrase);
+                    $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
                     $clientHeaderJWT = $jwt->encode($payload);
                 }
             }
 
-            if ($clientHeaderJWT && \Spìeldose\UserSession::isLogged()) {
-                return $response->withHeader("Spìeldose-JWT", $clientHeaderJWT);
+            if ($clientHeaderJWT && \Spieldose\UserSession::isLogged()) {
+                return $response->withHeader("Spieldose-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
             }

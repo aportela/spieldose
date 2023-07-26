@@ -1,6 +1,6 @@
 <?php
 
-namespace Spìeldose;
+namespace Spieldose;
 
 class JWT
 {

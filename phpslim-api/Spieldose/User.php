@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spìeldose;
+namespace Spieldose;
 
 class User
 {
@@ -36,13 +36,13 @@ class User
                     );
                     $dbh->exec(" INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash) ", $params);
                 } else {
-                    throw new \Spìeldose\Exception\InvalidParamsException("password");
+                    throw new \Spieldose\Exception\InvalidParamsException("password");
                 }
             } else {
-                throw new \Spìeldose\Exception\InvalidParamsException("email");
+                throw new \Spieldose\Exception\InvalidParamsException("email");
             }
         } else {
-            throw new \Spìeldose\Exception\InvalidParamsException("id");
+            throw new \Spieldose\Exception\InvalidParamsException("id");
         }
     }
 
@@ -58,13 +58,13 @@ class User
                     );
                     $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params);
                 } else {
-                    throw new \Spìeldose\Exception\InvalidParamsException("password");
+                    throw new \Spieldose\Exception\InvalidParamsException("password");
                 }
             } else {
-                throw new \Spìeldose\Exception\InvalidParamsException("email");
+                throw new \Spieldose\Exception\InvalidParamsException("email");
             }
         } else {
-            throw new \Spìeldose\Exception\InvalidParamsException("id");
+            throw new \Spieldose\Exception\InvalidParamsException("id");
         }
     }
 
@@ -96,14 +96,14 @@ class User
                 )
             );
         } else {
-            throw new \Spìeldose\Exception\InvalidParamsException("id,email");
+            throw new \Spieldose\Exception\InvalidParamsException("id,email");
         }
         if (count($results) == 1) {
             $this->id = $results[0]->id;
             $this->email = $results[0]->email;
             $this->passwordHash = $results[0]->passwordHash;
         } else {
-            throw new \Spìeldose\Exception\NotFoundException("");
+            throw new \Spieldose\Exception\NotFoundException("");
         }
     }
 
@@ -123,7 +123,7 @@ class User
                 )
             );
         } else {
-            throw new \Spìeldose\Exception\InvalidParamsException("id,email");
+            throw new \Spieldose\Exception\InvalidParamsException("id,email");
         }
         return (count($results) == 1);
     }
@@ -133,19 +133,19 @@ class User
         if (!empty($this->password)) {
             $this->get($dbh);
             if (password_verify($this->password, $this->passwordHash)) {
-                \Spìeldose\UserSession::set($this->id, $this->email);
+                \Spieldose\UserSession::set($this->id, $this->email);
                 return (true);
             } else {
-                throw new \Spìeldose\Exception\UnauthorizedException("password");
+                throw new \Spieldose\Exception\UnauthorizedException("password");
             }
         } else {
-            throw new \Spìeldose\Exception\InvalidParamsException("password");
+            throw new \Spieldose\Exception\InvalidParamsException("password");
         }
     }
 
     public static function signOut(): bool
     {
-        \Spìeldose\UserSession::clear();
+        \Spieldose\UserSession::clear();
         return (true);
     }
 }

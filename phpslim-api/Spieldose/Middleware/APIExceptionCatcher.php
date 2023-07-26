@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Spìeldose\Middleware;
+namespace Spieldose\Middleware;
 
 class APIExceptionCatcher
 {
 
     protected $logger;
 
-    public function __construct(\Spìeldose\Logger\HTTPRequestLogger $logger)
+    public function __construct(\Spieldose\Logger\HTTPRequestLogger $logger)
     {
         $this->logger = $logger;
     }
@@ -29,30 +29,30 @@ class APIExceptionCatcher
             $this->logger->debug($request->getBody());
             $response = $handler->handle($request);
             return $response;
-        } catch (\Spìeldose\Exception\InvalidParamsException $e) {
+        } catch (\Spieldose\Exception\InvalidParamsException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode(['invalidOrMissingParams' => explode(",", $e->getMessage())]);
             $response->getBody()->write($payload);
             return ($response)->withStatus(400);
-        } catch (\Spìeldose\Exception\AlreadyExistsException $e) {
+        } catch (\Spieldose\Exception\AlreadyExistsException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode(['invalidOrMissingParams' => explode(",", $e->getMessage())]);
             $response->getBody()->write($payload);
             return ($response)->withStatus(409);
-        } catch (\Spìeldose\Exception\UnauthorizedException $e) {
+        } catch (\Spieldose\Exception\UnauthorizedException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode([]);
             return ($response)->withStatus(401);
-        } catch (\Spìeldose\Exception\AccessDeniedException $e) {
+        } catch (\Spieldose\Exception\AccessDeniedException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode([]);
             $response->getBody()->write($payload);
             return ($response)->withStatus(403);
-        } catch (\Spìeldose\Exception\NotFoundException $e) {
+        } catch (\Spieldose\Exception\NotFoundException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode(['keyNotFound' => $e->getMessage()]);
