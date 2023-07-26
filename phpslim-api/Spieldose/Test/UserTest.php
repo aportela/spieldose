@@ -1,268 +1,264 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    namespace Spieldose\Test;
+namespace Spieldose\Test;
 
-    require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class UserTest extends \PHPUnit\Framework\TestCase
+final class UserTest extends \Spieldose\Test\BaseTest
+{
+
+    public function testAddWithoutId(): void
     {
-        static private $app = null;
-        static private $container = null;
-        static private $dbh = null;
-
-        /**
-         * Called once just like normal constructor
-         */
-        public static function setUpBeforeClass (): void {
-            self::$app = (new \Spieldose\App())->get();
-            self::$container = self::$app->getContainer();
-            self::$dbh = new \Spieldose\Database\DB(self::$container);
-        }
-
-        /**
-         * Initialize the test case
-         * Called for every defined test
-         */
-        public function setUp(): void {
-            self::$dbh->beginTransaction();
-        }
-
-        /**
-         * Clean up the test case, called for every defined test
-         */
-        public function tearDown(): void {
-            self::$dbh->rollBack();
-        }
-
-        /**
-         * Clean up the whole test class
-         */
-        public static function tearDownAfterClass(): void {
-            self::$dbh = null;
-            self::$container = null;
-            self::$app = null;
-        }
-
-        public function testAddWithoutId(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("id");
-                (new \Spieldose\User("", "", ""))->add(self::$dbh);
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testAddWithoutEmail(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("email");
-                (new \Spieldose\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->add(self::$dbh);
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testAddWithoutValidEmail(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("email");
-                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Spieldose\User($id, $id, ""))->add(self::$dbh);
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testAddWithoutPassword(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("password");
-                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Spieldose\User($id, $id . "@server.com", ""))->add(self::$dbh);
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testAdd(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("password");
-                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $this->assertTrue((new \Spieldose\User($id, $id . "@server.com", ""))->add(self::$dbh));
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testUpdateWithoutId(): void {
+        if (self::$settings['common']['allowSignUp']) {
             $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
-            (new \Spieldose\User("", "", ""))->update(self::$dbh);
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User("", $id . "@localhost.localnet", "secret"))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
         }
-
-        public function testUpdateWithoutEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("email");
-            (new \Spieldose\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->update(self::$dbh);
-        }
-
-        public function testUpdateWithoutValidEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("email");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Spieldose\User($id, $id, ""))->update(self::$dbh);
-        }
-
-        public function testUpdateWithoutPassword(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Spieldose\User($id, $id . "@server.com", ""))->update(self::$dbh);
-        }
-
-        public function testUpdate(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "");
-            $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
-        }
-
-        public function testGetWithoutIdOrEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("id,email");
-            $u = new \Spieldose\User("", "", "");
-            $u->get(self::$dbh);
-        }
-
-        public function testGetWithoutValidEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("id,email");
-            $u = new \Spieldose\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString(), "");
-            $u->get(self::$dbh);
-        }
-
-        public function testGetWithNonExistentId(): void {
-            $this->expectException(\Spieldose\Exception\NotFoundException::class);
-            $u = new \Spieldose\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "");
-            $u->get(self::$dbh);
-        }
-
-        public function testGetWithNonExistentEmail(): void {
-            $this->expectException(\Spieldose\Exception\NotFoundException::class);
-            $u = new \Spieldose\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString() . "@server.com", "");
-            $u->get(self::$dbh);
-        }
-
-        public function testGet(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->get(self::$dbh);
-            $this->assertTrue($id == $u->id);
-        }
-
-        public function testLoginWithoutIdOrEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("id,email");
-            $this->assertTrue((new \Spieldose\User("", "", "secret"))->login(self::$dbh));
-        }
-
-        public function testLoginWithoutPassword(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Spieldose\User($id, $id . "@server.com", ""))->login(self::$dbh));
-        }
-
-        public function testLoginWithoutExistentEmail(): void {
-            $this->expectException(\Spieldose\Exception\NotFoundException::class);
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Spieldose\User($id, $id . "@server.com", "secret"))->login(self::$dbh));
-        }
-
-        public function testLoginWithoutValidEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Spieldose\User("", $id, "secret"))->login(self::$dbh));
-        }
-
-        public function testLoginWithInvalidPassword(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->password = "other";
-            $this->assertFalse($u->login(self::$dbh));
-        }
-
-        public function testLogin(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $this->assertTrue($u->login(self::$dbh));
-        }
-
-        public function testIsLoggedWithoutSession(): void {
-            \Spieldose\User::logout();
-            $this->assertFalse(\Spieldose\User::isLogged());
-
-        }
-
-        public function testIsLogged(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->login(self::$dbh);
-            $this->assertTrue(\Spieldose\User::isLogged());
-        }
-
-        public function testGetUserIdWithoutSession(): void {
-            \Spieldose\User::logout();
-            $this->assertNull(\Spieldose\User::getUserId());
-
-        }
-
-        public function testGetUserId(): void {
-            \Spieldose\User::logout();
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->login(self::$dbh);
-            $this->assertEquals($u->id, \Spieldose\User::getUserId());
-        }
-
-        public function testSetCredentialsWithoutId(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("id");
-            $u = new \Spieldose\User("", "", "");
-            $u->setCredentials(self::$dbh, "");
-        }
-
-
-        public function testSetCredentialsWithoutEmail(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("email");
-            $u = new \Spieldose\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "");
-            $u->setCredentials(self::$dbh, "");
-        }
-
-        public function testSetCredentialsWithoutPassword(): void {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "");
-            $u->setCredentials(self::$dbh, "");
-        }
-
-        public function testSetCredentials(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-            $this->assertTrue($u->setCredentials(self::$dbh, "secret"));
-        }
-
     }
-?>
+
+    public function testAddWithoutEmail(): void
+    {
+        if (self::$settings['common']['allowSignUp']) {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User($id, "", "secret"))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+        }
+    }
+
+    public function testAddWithoutValidEmailLength(): void
+    {
+        if (self::$settings['common']['allowSignUp']) {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User($id, str_repeat($id, 10) . "@localhost.localnet", "secret"))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+        }
+    }
+
+    public function testAddWithoutValidEmail(): void
+    {
+        if (self::$settings['common']['allowSignUp']) {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User($id, $id, "secret"))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+        }
+    }
+
+    public function testAddWithoutPassword(): void
+    {
+        if (self::$settings['common']['allowSignUp']) {
+            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("password");
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User($id, $id . "@localhost.localnet", ""))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+        }
+    }
+
+    public function testAddUserAccount(): void
+    {
+        if (self::$settings['common']['allowSignUp']) {
+            $this->expectNotToPerformAssertions();
+            $id = \Spieldose\Utils::uuidv4();
+            (new \Spieldose\User($id, $id . "@localhost.localnet", "secret"))->add(self::$dbh);
+        } else {
+            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+        }
+    }
+
+    public function testUpdateWithoutId(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("id");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User("", $id . "@localhost.localnet", "secret"))->update(self::$dbh);
+    }
+
+    public function testUpdateWithoutEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, "", "name of " . $id, "secret"))->update(self::$dbh);
+    }
+
+    public function testUpdateWithoutValidEmailLength(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, str_repeat($id, 10) . "@localhost.localnet", "secret"))->update(self::$dbh);
+    }
+
+    public function testUpdateWithoutValidEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, $id, "secret"))->update(self::$dbh);
+    }
+
+    public function testUpdateMyProfile(): void
+    {
+        $this->expectNotToPerformAssertions();
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $u->signIn(self::$dbh);
+        $u->update(self::$dbh);
+    }
+
+    public function testUpdateAdministratorAccountAccount(): void
+    {
+        $this->expectNotToPerformAssertions();
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $u->signIn(self::$dbh);
+        $u->update(self::$dbh);
+    }
+
+    public function testGetWithoutIdOrEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("id,email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User("", "", "secret"))->get(self::$dbh);
+    }
+
+    public function testGetWithoutValidEmailLength(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("id,email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User("", str_repeat($id, 10) . "@server.com", "secret"))->get(self::$dbh);
+    }
+
+    public function testGetWithoutValidEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("id,email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User("", $id, "secret"))->get(self::$dbh);
+    }
+
+    public function testGetWithNonExistentId(): void
+    {
+        $this->expectException(\Spieldose\Exception\NotFoundException::class);
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, $id, "secret"))->get(self::$dbh);
+    }
+
+    public function testGetWithNonExistentEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\NotFoundException::class);
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, $id . "@server.com", "secret"))->get(self::$dbh);
+    }
+
+    public function testGet(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $u->get(self::$dbh);
+        $this->assertTrue($id == $u->id);
+    }
+
+    public function testExistsEmailWithNonExistentEmail(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $this->assertFalse(\Spieldose\User::isEmailUsed(self::$dbh, $id . "@server.com"));
+    }
+
+    public function testExistsEmailWithExistentEmail(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $this->assertTrue(\Spieldose\User::isEmailUsed(self::$dbh, $u->email));
+    }
+
+    public function testSignInWithoutIdOrEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("id,email");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User("", "", "secret"))->signIn(self::$dbh);
+    }
+
+    public function testSignInWithoutPassword(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("password");
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, $id . "@server.com", ""))->signIn(self::$dbh);
+    }
+
+    public function testSignInWithoutExistentEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\NotFoundException::class);
+        $id = \Spieldose\Utils::uuidv4();
+        (new \Spieldose\User($id, $id . "@server.com", "secret"))->signIn(self::$dbh);
+    }
+
+    public function testSignInWithoutValidEmailLength(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("email");
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id, "secret");
+        $u->add(self::$dbh);
+        $u->email = str_repeat($id, 10) . "@server.com";
+        $u->signIn(self::$dbh);
+    }
+
+    public function testSignInWithoutValidEmail(): void
+    {
+        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
+        $this->expectExceptionMessage("email");
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id, "secret");
+        $u->add(self::$dbh);
+        $u->email = $id;
+        $u->signIn(self::$dbh);
+    }
+
+    public function testSignInWithInvalidPassword(): void
+    {
+        $this->expectException(\Spieldose\Exception\UnauthorizedException::class);
+        $this->expectExceptionMessage("password");
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $u->password = "other";
+        $u->signIn(self::$dbh);
+    }
+
+    public function testSignIn(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $this->assertTrue($u->signIn(self::$dbh));
+    }
+
+    public function testSignOut(): void
+    {
+        $this->assertTrue(\Spieldose\User::signOut());
+    }
+}
