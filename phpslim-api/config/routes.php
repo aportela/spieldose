@@ -11,7 +11,7 @@ return function (App $app) {
     })->add(\Spieldose\Middleware\JWT::class);
 
     $app->group(
-        '/api2',
+        '/api/2.x',
         function (RouteCollectorProxy $group) {
             $group->get('/initial_state', function (Request $request, Response $response, array $args) {
                 $payload = json_encode(
