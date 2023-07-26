@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HomeDocs;
+namespace Spieldose;
 
 class UserSession
 {
@@ -29,16 +29,16 @@ class UserSession
 
     public static function isLogged(): bool
     {
-        return (isset($_SESSION["userId"]));
+        return (isset($_SESSION["userId"]) && !empty($_SESSION["userId"]));
     }
 
-    public static function getUserId(): \stdClass
+    public static function getUserId(): string
     {
-        return (isset($_SESSION["userId"]) ? $_SESSION["userId"] : null);
+        return ($_SESSION["userId"] ?? "");
     }
 
-    public static function getEmail(): \stdClass
+    public static function getEmail(): string
     {
-        return (isset($_SESSION["email"]) ? $_SESSION["email"] : null);
+        return ($_SESSION["email"] ??  "");
     }
 }
