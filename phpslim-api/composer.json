@@ -13,21 +13,26 @@
         "sort-packages": true
     },
     "require": {
+        "aportela/db-wrapper": "^1.0",
+        "aportela/musicbrainz-wrapper": "^1.0",
+        "aportela/remote-thumbnail-cache-wrapper": "^1.0",
+        "firebase/php-jwt": "^6.8",
         "james-heinrich/getid3": "^1.9",
-        "monolog/monolog": "^2.5",
-        "php-di/php-di": "^6.4",
-        "ramsey/uuid": "^4.3",
-        "slim/psr7": "^1",
-        "slim/slim": "^4.10",
-        "slim/twig-view": "^3.3",
-        "sybio/image-workshop": "^2.2"
+        "monolog/monolog": "^3.4",
+        "php-di/php-di": "^7.0",
+        "ramsey/uuid": "^4.7",
+        "slim/psr7": "^1.6",
+        "slim/slim": "^4.12",
+        "slim/twig-view": "^3.3"
     },
     "autoload": {
         "psr-4": {
-            "Spieldose\\": "src"
+            "Spieldose\\": "Spieldose"
         }
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
     }
 }
