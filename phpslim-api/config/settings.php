@@ -41,15 +41,27 @@ $settings['logger'] = [
     'channels' => [
         'default'  => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'default.log',
-            'name' => 'Homedocs::Default'
+            'name' => 'Spieldose::Default'
         ],
         'http'  => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'http.log',
-            'name' => 'Homedocs::HTTP'
+            'name' => 'Spieldose::HTTP'
         ],
         'installer' => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'installer.log',
-            'name' => 'Homedocs::Installer'
+            'name' => 'Spieldose::Installer'
+        ],
+        'scanner' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'scanner.log',
+            'name' => 'Spieldose::Scanner'
+        ],
+        'scraper' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'scraper.log',
+            'name' => 'Spieldose::Scraper'
+        ],
+        'thumbnail' => [
+            'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'thumbnail.log',
+            'name' => 'Spieldose::Thumbnail'
         ],
         'database' => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'database.log',

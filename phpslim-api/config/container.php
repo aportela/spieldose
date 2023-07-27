@@ -106,6 +106,42 @@ return [
         return ($logger);
     },
 
+    \Spieldose\Logger\ScannerLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Spieldose\Logger\ScannerLogger($settings['channels']['scanner']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['scanner']['path'], 0, $settings['defaultLevel']);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
+    \Spieldose\Logger\ScraperLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Spieldose\Logger\ScraperLogger($settings['channels']['scraper']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['scraper']['path'], 0, $settings['defaultLevel']);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
+    \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new \Spieldose\Logger\ThumbnailLogger($settings['channels']['thumbnail']['name']);
+        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+        $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['thumbnail']['path'], 0, $settings['defaultLevel']);
+        $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
+        $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+        return ($logger);
+    },
+
     \Spieldose\Middleware\APIExceptionCatcher::class => function (ContainerInterface $container) {
         return (new \Spieldose\Middleware\APIExceptionCatcher($container->get(\Spieldose\Logger\HTTPRequestLogger::class)));
     }
