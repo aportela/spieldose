@@ -34,7 +34,7 @@ class Scanner
         }
 
         $this->dbh->exec(
-            " INSERT INTO DIRECTORIES (id, path, atime, mtime, cover_filename) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime, COVER_FILENAME = :cover_filename ",
+            " INSERT INTO DIRECTORY (id, path, atime, mtime, cover_filename) VALUES (:id, :path, STRFTIME('%s'), :mtime, :cover_filename) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime, COVER_FILENAME = :cover_filename ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1(dirname($filePath))),
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", dirname($filePath)),
@@ -44,7 +44,7 @@ class Scanner
         );
 
         $this->dbh->exec(
-            " INSERT INTO FILES (id, directory_id, name, atime, mtime) VALUES (:id, :path_id, :name, STRFTIME('%s'), :mtime) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime ",
+            " INSERT INTO FILE (id, directory_id, name, atime, mtime) VALUES (:id, :path_id, :name, STRFTIME('%s'), :mtime) ON CONFLICT (ID) DO UPDATE SET MTIME = :mtime ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", sha1($filePath)),
                 new \aportela\DatabaseWrapper\Param\StringParam(":path_id", sha1(dirname($filePath))),
@@ -184,7 +184,7 @@ class Scanner
     public function cleanUp()
     {
         $results = $this->dbh->query(
-            " SELECT FILES.id AS id, (DIRECTORIES.path || :directory_separator || FILES.name) AS filePath FROM FILES LEFT JOIN DIRECTORIES ON FILES.directory_id = DIRECTORIES.id ORDER BY DIRECTORIES.path, FILES.name ",
+            " SELECT FILE.id AS id, (DIRECTORY.path || :directory_separator || FILE.name) AS filePath FROM FILE LEFT JOIN DIRECTORY ON FILE.directory_id = DIRECTORY.id ORDER BY DIRECTORY.path, FILE.name ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
             )
@@ -202,7 +202,7 @@ class Scanner
                         )
                     );
                     $this->dbh->query(
-                        " DELETE FROM FILES WHERE id = :id ",
+                        " DELETE FROM FILE WHERE id = :id ",
                         array(
                             new \aportela\DatabaseWrapper\Param\StringParam(":id", $result->id)
                         )
@@ -210,6 +210,6 @@ class Scanner
                 }
             }
         }
-        $this->dbh->query(" DELETE FROM DIRECTORIES WHERE NOT EXISTS (SELECT DISTINCT directory_id FROM FILES); ", []);
+        $this->dbh->query(" DELETE FROM DIRECTORY WHERE NOT EXISTS (SELECT DISTINCT directory_id FROM FILE); ", []);
     }
 }
