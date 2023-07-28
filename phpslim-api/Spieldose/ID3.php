@@ -173,4 +173,10 @@ class ID3
 	{
 		return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id"));
 	}
+
+	public function isTagged(): bool
+	{
+		// TODO: eval all required tags
+		return ($this->tagData != null);
+	}
 }
