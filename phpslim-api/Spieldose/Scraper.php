@@ -4,7 +4,7 @@
 
     namespace Spieldose;
 
-    class Scrapper {
+    class Scraper {
 
         private $dbh = null;
         private $id3 = null;
@@ -278,5 +278,3 @@
         }
 
     }
-
-?>

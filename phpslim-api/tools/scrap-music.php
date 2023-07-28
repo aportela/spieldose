@@ -43,7 +43,7 @@
             exit;
         }
 
-        $scraper = new \Spieldose\Scrapper($dbh);
+        $scraper = new \Spieldose\Scraper($dbh);
         if ($scrapArtists) {
             echo "Artist scraping...." . PHP_EOL;
             //$c["scrapLogger"]->info("Scraping artists");
@@ -148,5 +148,3 @@
     } else {
         echo "No required params found: --artists or --albums or --all" . PHP_EOL;
     }
-
-?>
