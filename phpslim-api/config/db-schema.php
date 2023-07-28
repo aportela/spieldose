@@ -3,6 +3,9 @@
 return (array(
     1 => array(
         '
+            PRAGMA foreign_keys = ON;
+        ',
+        '
             CREATE TABLE `USER` (
                 `id` CHAR(36) NOT NULL,
                 `email` VARCHAR(255) NOT NULL UNIQUE,
@@ -14,7 +17,6 @@ return (array(
             CREATE TABLE DIRECTORY(
                 `id` CHAR(36) NOT NULL,
                 `path` VARCHAR(4096) NOT NULL UNIQUE,
-                `atime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
                 `cover_filename` VARCHAR(4096),
                 PRIMARY KEY (`id`)
@@ -25,9 +27,10 @@ return (array(
                 `id` CHAR(36) NOT NULL,
                 `directory_id` CHAR(36) NOT NULL,
                 `name` VARCHAR(255) NOT NULL,
-                `atime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
-                PRIMARY KEY (`id`)
+                PRIMARY KEY (`id`),
+                FOREIGN KEY(`directory_id`) REFERENCES DIRECTORY(`id`),
+                UNIQUE(`directory_id`, `name`)
             );
         ',
         '
@@ -48,7 +51,8 @@ return (array(
                 `mb_album_id` CHAR(36),
                 `mb_release_group_id` CHAR(36),
                 `mb_release_track_id` CHAR(36),
-                PRIMARY KEY (`id`)
+                PRIMARY KEY (`id`),
+                FOREIGN KEY(`id`) REFERENCES FILE(`id`)
             );
         '
     )
