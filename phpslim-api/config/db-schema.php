@@ -14,7 +14,7 @@ return (array(
             );
         ',
         '
-            CREATE TABLE DIRECTORY(
+            CREATE TABLE `DIRECTORY` (
                 `id` CHAR(36) NOT NULL,
                 `path` VARCHAR(4096) NOT NULL UNIQUE,
                 `mtime` INTEGER NOT NULL,
@@ -23,7 +23,7 @@ return (array(
             );
         ',
         '
-            CREATE TABLE FILE (
+            CREATE TABLE `FILE` (
                 `id` CHAR(36) NOT NULL,
                 `directory_id` CHAR(36) NOT NULL,
                 `name` VARCHAR(255) NOT NULL,
@@ -34,7 +34,7 @@ return (array(
             );
         ',
         '
-            CREATE TABLE IF NOT EXISTS FILE_ID3_TAG(
+            CREATE TABLE `FILE_ID3_TAG` (
                 `id` CHAR(36) NOT NULL,
                 `title` VARCHAR(128),
                 `artist` VARCHAR(128),
@@ -53,6 +53,48 @@ return (array(
                 `mb_release_track_id` CHAR(36),
                 PRIMARY KEY (`id`),
                 FOREIGN KEY(`id`) REFERENCES FILE(`id`)
+            );
+        ',
+        '
+            CREATE TABLE `MB_CACHE_ARTIST` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `artist` VARCHAR(128) NOT NULL,
+                `image` VARCHAR(8192),
+                `json` TEXT NOT NULL,
+                PRIMARY KEY (`mbid`)
+            );
+        ',
+        '
+            CREATE TABLE `MB_CACHE_ALBUM` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `album` VARCHAR(128) NOT NULL,
+                `album_artist_mbid` VARCHAR(36) NOT NULL,
+                `image` VARCHAR(8192),
+                `year` INTEGER,
+                `json` TEXT NOT NULL,
+                PRIMARY KEY (`mbid`)
+            );
+        ',
+        '
+            CREATE TABLE `MB_CACHE_TRACK` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `track` VARCHAR(128) NOT NULL,
+                `artist_mbid` VARCHAR(36),
+                `artist_name` VARCHAR(128),
+                `json` TEXT NOT NULL,
+                PRIMARY KEY (`mbid`)
+            );
+        ',
+        '
+            CREATE TABLE `MB_CACHE_RELEASE` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `title` VARCHAR(512) NOT NULL,
+                `year` INTEGER,
+                `artist_mbid` VARCHAR(36),
+                `artist_name` VARCHAR(128),
+                `track_count` INTEGER,
+                `json` TEXT NOT NULL,
+                PRIMARY KEY (`mbid`)
             );
         '
     )
