@@ -67,8 +67,19 @@ class Scraper
         $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
         $results = $mbArtist->search($artist, 1);
         if (count($results) == 1 && !empty($results[0]->mbId)) {
-            // TODO
-            die("TODO");
+            $query = "
+                UPDATE FILE_ID3_TAG
+                SET mb_artist_id = :mb_artist_id
+                WHERE mb_artist_id IS NULL
+                AND artist = :artist
+            ";
+            $this->dbh->query(
+                $query,
+                array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $results[0]->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
+                )
+            );
         }
     }
 
