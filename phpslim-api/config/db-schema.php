@@ -58,29 +58,8 @@ return (array(
         '
             CREATE TABLE `MB_CACHE_ARTIST` (
                 `mbid` VARCHAR(36) NOT NULL,
-                `artist` VARCHAR(128) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
                 `image` VARCHAR(8192),
-                `json` TEXT NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
-        ',
-        '
-            CREATE TABLE `MB_CACHE_ALBUM` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `album` VARCHAR(128) NOT NULL,
-                `album_artist_mbid` VARCHAR(36) NOT NULL,
-                `image` VARCHAR(8192),
-                `year` INTEGER,
-                `json` TEXT NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
-        ',
-        '
-            CREATE TABLE `MB_CACHE_TRACK` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `track` VARCHAR(128) NOT NULL,
-                `artist_mbid` VARCHAR(36),
-                `artist_name` VARCHAR(128),
                 `json` TEXT NOT NULL,
                 PRIMARY KEY (`mbid`)
             );
@@ -93,6 +72,16 @@ return (array(
                 `artist_mbid` VARCHAR(36),
                 `artist_name` VARCHAR(128),
                 `track_count` INTEGER,
+                `json` TEXT NOT NULL,
+                PRIMARY KEY (`mbid`)
+            );
+        ',
+        '
+            CREATE TABLE `MB_CACHE_TRACK` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `track` VARCHAR(128) NOT NULL,
+                `artist_mbid` VARCHAR(36),
+                `artist_name` VARCHAR(128),
                 `json` TEXT NOT NULL,
                 PRIMARY KEY (`mbid`)
             );

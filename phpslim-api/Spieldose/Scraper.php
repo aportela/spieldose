@@ -79,13 +79,13 @@ class Scraper
         if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
             $this->dbh->exec(
                 "
-                    INSERT INTO MB_CACHE_ARTIST (mbid, artist, image, json) VALUES (:mbid, :artist, :image, :json)
+                    INSERT INTO MB_CACHE_ARTIST (mbid, name, image, json) VALUES (:mbid, :name, :image, :json)
                     ON CONFLICT(mbid) DO
-                        UPDATE SET artist = :artist, image = :image, json = :json
+                        UPDATE SET name = :name, image = :image, json = :json
                 ",
                 array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbArtist->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist", $mbArtist->name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $mbArtist->name),
                     new \aportela\DatabaseWrapper\Param\NullParam(":image"),
                     new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbArtist->raw)
                 )
@@ -97,7 +97,7 @@ class Scraper
     {
         $albums = array();
         $query = "
-            SELECT DISTINCT artist, album_artist, album, year
+            SELECT DISTINCT COALESCE(album_artist, artist) AS artist, album, year
             FROM FILE_ID3_TAG
             WHERE mb_album_id IS NULL AND (artist IS NOT NULL OR album_artist IS NOT NULL) AND album IS NOT NULL
             ORDER BY RANDOM()
@@ -107,7 +107,6 @@ class Scraper
         for ($i = 0; $i < $totalAlbums; $i++) {
             $album = new \stdClass();
             $album->artist = $results[$i]->artist;
-            $album->albumArtist = $results[$i]->album_artist;
             $album->name = $results[$i]->album;
             $album->year = $results[$i]->year;
             $albums[] = $album;
@@ -140,7 +139,6 @@ class Scraper
         $results = $mbAlbum->search($album, $artist, $year, 1);
         if (count($results) == 1 && !empty($results[0]->mbId)) {
             // TODO
-            die("TODO");
         }
     }
 
@@ -149,6 +147,7 @@ class Scraper
         $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
         $mbAlbum->get($mbId);
         if (!empty($mbAlbum->mbId) && !empty($mbAlbum->title)) {
+
             $this->dbh->exec(
                 "
                     INSERT INTO MB_CACHE_RELEASE (mbid, title, year, artist_mbid, artist_name, track_count, json) VALUES (:mbid, :title, :year, :artist_mbid, :artist_name, :track_count, :json)
@@ -165,6 +164,8 @@ class Scraper
                     new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbAlbum->raw)
                 )
             );
+        } else {
+            die("NO");
         }
     }
 
