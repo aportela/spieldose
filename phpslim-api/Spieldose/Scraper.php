@@ -9,13 +9,11 @@ class Scraper
 
     private $dbh = null;
     private $logger;
-    private $id3 = null;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->id3 = new \Spieldose\ID3();
     }
 
     public function __destruct()
