@@ -145,21 +145,6 @@ class Scanner
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
             }
-
-            $trackAlbum = $this->id3->getAlbum();
-            if (!empty($trackAlbum)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
-            } else {
-                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
-            }
-
-            $trackAlbum = $this->id3->getAlbum();
-            if (!empty($trackAlbum)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
-            } else {
-                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
-            }
-
             $albumMBId = $this->id3->getMusicBrainzAlbumId();
             // multiple mbids (divided by "/") not supported
             if (!empty($albumMBId) && strlen($albumMBId) == 36) {
@@ -167,7 +152,6 @@ class Scanner
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_id");
             }
-
             $releaseGroupMBId = $this->id3->getMusicBrainzReleaseGroupId();
             // multiple mbids (divided by "/") not supported
             if (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) {
@@ -175,7 +159,6 @@ class Scanner
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_group_id");
             }
-
             $releaseTrackMBId = $this->id3->getMusicBrainzReleaseTrackId();
             // multiple mbids (divided by "/") not supported
             if (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) {
@@ -183,21 +166,18 @@ class Scanner
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_track_id");
             }
-
             $genre = $this->id3->getGenre();
             if (!empty($genre)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":genre");
             }
-
             $mime = $this->id3->getMimeType();
             if (!empty($mime)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mime", $mime);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mime");
             }
-
             $this->dbh->query(
                 "
                     REPLACE INTO FILE_ID3_TAG
@@ -216,8 +196,8 @@ class Scanner
             );
         }
     }
-    public function scan(string $filePath): void
 
+    public function scan(string $filePath): void
     {
         $this->logger->debug("Processing file: " . $filePath);
         if (!empty($filePath)) {
@@ -234,26 +214,29 @@ class Scanner
         }
     }
 
-    public function cleanUp()
+    public function cleanUp(): void
     {
         $results = $this->dbh->query(
-            " SELECT FILE.id AS id, (DIRECTORY.path || :directory_separator || FILE.name) AS filePath FROM FILE LEFT JOIN DIRECTORY ON FILE.directory_id = DIRECTORY.id ORDER BY DIRECTORY.path, FILE.name ",
+            " SELECT FILE.id AS id, (DIRECTORY.path || :directory_separator || FILE.name) AS filePath FROM FILE INNER JOIN DIRECTORY ON FILE.directory_id = DIRECTORY.id ORDER BY DIRECTORY.path, FILE.name ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
             )
         );
         $totalResults = count($results);
         if ($totalResults > 0) {
-            $this->logger->debug(sprintf("Validating %d paths", $totalResults));
+            $this->logger->debug(sprintf("Validating %d files", $totalResults));
             foreach ($results as $result) {
+                // file not found
                 if (!file_exists($result->filePath)) {
                     $this->logger->debug(sprintf("File id: %s - Path not found: %s", $result->id, $result->filePath));
+                    // delete tag entry
                     $this->dbh->query(
                         " DELETE FROM FILE_ID3_TAG WHERE id = :id ",
                         array(
                             new \aportela\DatabaseWrapper\Param\StringParam(":id", $result->id)
                         )
                     );
+                    // delete file entry
                     $this->dbh->query(
                         " DELETE FROM FILE WHERE id = :id ",
                         array(
@@ -263,6 +246,7 @@ class Scanner
                 }
             }
         }
+        // delete all empty directories
         $this->dbh->query(" DELETE FROM DIRECTORY WHERE NOT EXISTS (SELECT DISTINCT directory_id FROM FILE); ", []);
     }
 }
