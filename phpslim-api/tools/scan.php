@@ -33,7 +33,7 @@ if (count($missingExtensions) > 0) {
             exit;
         }
         $scanner = new \Spieldose\Scanner($db, $logger);
-        $cmdLine = new \Spieldose\CmdLine("", array("path:"));
+        $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
         if ($cmdLine->hasParam("path")) {
             $musicPath = realpath($cmdLine->getParamValue("path"));
             if (file_exists($musicPath)) {
@@ -55,8 +55,16 @@ if (count($missingExtensions) > 0) {
                 echo "Invalid music path / path not found" . PHP_EOL;
                 $logger->warning("Invalid music path / path not found");
             }
+        } else if ($cmdLine->hasParam("clean")) {
+            echo "Cleaning database...";
+            $scanner->cleanUp();
+            echo " ok!";
         } else {
-            echo "No required params found: --path <YOUR_MUSIC_PATH>" . PHP_EOL;
+            echo "No required params found." . PHP_EOL;
+            echo "Scan / update music path:" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --path <YOUR_MUSIC_PATH>" . PHP_EOL;
+            echo "Clean database (deleted/orphaned items):" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
         }
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
