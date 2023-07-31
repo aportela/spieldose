@@ -33,37 +33,30 @@ if (count($missingExtensions) > 0) {
             exit;
         }
         $scanner = new \Spieldose\Scanner($db, $logger);
-        $cmdLine = new \Spieldose\CmdLine("", array("path:", "cleanup"));
-        if ($cmdLine->hasParam("path") || $cmdLine->hasParam("cleanup")) {
-            if ($cmdLine->hasParam("path")) {
-                $musicPath = realpath($cmdLine->getParamValue("path"));
-                if (file_exists($musicPath)) {
-                    echo "Scanning base path: " . $musicPath . PHP_EOL;
-                    $logger->info("Scanning base path: " . $musicPath);
-                    $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
-                    $totalFiles = count($files);
-                    echo "Total files on path: " . $totalFiles . PHP_EOL;
-                    $logger->debug("Total files on path: " . $totalFiles);
-                    if ($totalFiles > 0) {
-                        echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
-                        $failed = array();
-                        for ($i = 0; $i < $totalFiles; $i++) {
-                            $scanner->scan(($files[$i]));
-                            \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
-                        }
+        $cmdLine = new \Spieldose\CmdLine("", array("path:"));
+        if ($cmdLine->hasParam("path")) {
+            $musicPath = realpath($cmdLine->getParamValue("path"));
+            if (file_exists($musicPath)) {
+                echo "Scanning base path: " . $musicPath . PHP_EOL;
+                $logger->info("Scanning base path: " . $musicPath);
+                $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
+                $totalFiles = count($files);
+                echo "Total files on path: " . $totalFiles . PHP_EOL;
+                $logger->debug("Total files on path: " . $totalFiles);
+                if ($totalFiles > 0) {
+                    echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
+                    $failed = array();
+                    for ($i = 0; $i < $totalFiles; $i++) {
+                        $scanner->scan(($files[$i]));
+                        \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
                     }
-                } else {
-                    echo "Invalid music path / path not found" . PHP_EOL;
-                    $logger->warning("Invalid music path / path not found");
                 }
-            }
-            if ($cmdLine->hasParam(("cleanup"))) {
-                echo "Cleaning database" . PHP_EOL;
-                $logger->debug("Cleaning database");
-                $scanner->cleanUp();
+            } else {
+                echo "Invalid music path / path not found" . PHP_EOL;
+                $logger->warning("Invalid music path / path not found");
             }
         } else {
-            echo "No required params found: --path or --cleanup" . PHP_EOL;
+            echo "No required params found: --path <YOUR_MUSIC_PATH>" . PHP_EOL;
         }
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
