@@ -24,7 +24,7 @@ class Utils
      * @params $total
      * @params $size
      */
-    public static function showProgressBar($done, $total, $size = 30)
+    public static function showProgressBar($done, $total, $size = 30, string $extraMessage = ""): void
     {
 
         static $start_time;
@@ -39,7 +39,7 @@ class Utils
 
         $bar = floor($perc * $size);
 
-        $status_bar = "\r[";
+        $status_bar = "\33[2K\r[";
         $status_bar .= str_repeat("=", intval($bar));
         if ($bar < $size) {
             $status_bar .= ">";
@@ -58,7 +58,11 @@ class Utils
 
         $elapsed = $now - $start_time;
 
-        $status_bar .= " remaining: " . number_format($eta) . " sec.  elapsed: " . number_format($elapsed) . " sec.";
+        $status_bar .= " remaining: " . number_format($eta) . " sec. elapsed: " . number_format($elapsed) . " sec.";
+
+        if (!empty($extraMessage)) {
+            $status_bar .= sprintf(" [%s]", $extraMessage);
+        }
 
         echo "$status_bar  ";
 
