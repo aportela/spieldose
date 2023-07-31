@@ -38,9 +38,12 @@ class Scraper
     {
         $mbId = null;
         $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, $this->apiFormat);
-        $results = $mbArtist->search($artistName, 1);
+        try {
+            $results = $mbArtist->search($artistName, 1);
+        } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+        }
         if (count($results) == 1 && !empty($results[0]->mbId)) {
-            return ($results[0]->mbId);
+            $mbId = $results[0]->mbId;
         }
         return ($mbId);
     }
@@ -114,38 +117,74 @@ class Scraper
     {
     }
 
-    public function getPendingAlbums()
+    public function getAlbumsWithoutMusicBrainzId(): array
     {
         $albums = array();
         $query = "
             SELECT DISTINCT COALESCE(album_artist, artist) AS artist, album, year
             FROM FILE_ID3_TAG
-            WHERE mb_album_id IS NULL AND (artist IS NOT NULL OR album_artist IS NOT NULL) AND album IS NOT NULL
-            ORDER BY RANDOM()
+            WHERE mb_album_id IS NULL
+            AND (artist IS NOT NULL OR album_artist IS NOT NULL)
+            AND album IS NOT NULL
+            ORDER BY album
         ";
         $results = $this->dbh->query($query);
         $totalAlbums = count($results);
         for ($i = 0; $i < $totalAlbums; $i++) {
             $album = new \stdClass();
             $album->artist = $results[$i]->artist;
-            $album->name = $results[$i]->album;
+            $album->album = $results[$i]->album;
             $album->year = $results[$i]->year;
             $albums[] = $album;
         }
         return ($albums);
     }
 
-    public function getPendingAlbumMBIds()
+    public function searchAlbumMusicBrainzId(string $album, string $artist, string $year = ""): ?string
+    {
+        $mbId = null;
+        $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+        try {
+            $results = $mbAlbum->search($album, $artist, $year, 1);
+            if (count($results) == 1 && !empty($results[0]->mbId)) {
+                $mbId = $results[0]->mbId;
+            }
+        } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+        }
+        return ($mbId);
+    }
+
+    public function saveAlbumMusicBrainzId(string $mbId, string $album, string $artist, string $year = ""): void
+    {
+        $whereConditions = array(
+            " mb_album_id IS NULL ",
+            " artist = :artist ",
+            " album = :album "
+        );
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
+            new \aportela\DatabaseWrapper\Param\StringParam(":album", $album),
+        );
+        if (!empty($year)) {
+            $whereConditions[] = " year = :year ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":year", $year);
+        }
+
+        $query = " UPDATE FILE_ID3_TAG SET mb_album_id = :mbid WHERE " . implode(" AND ", $whereConditions);
+        $this->dbh->exec($query, $params);
+    }
+
+    public function getAlbumMusicBrainzIdsWithoutCachedMetadata(): array
     {
         $mbIds = array();
         $query = '
-                SELECT
-                    DISTINCT FIT.mb_album_id AS mbid
-                FROM FILE_ID3_TAG FIT
-                WHERE FIT.mb_album_id IS NOT NULL
-                AND NOT EXISTS
-                    (SELECT mbid FROM MB_CACHE_ALBUM MCA WHERE MCA.mbid = FIT.mb_album_id)
-            ';
+            SELECT
+                DISTINCT FIT.mb_album_id AS mbid
+            FROM FILE_ID3_TAG FIT
+            WHERE FIT.mb_album_id IS NOT NULL
+            AND NOT EXISTS (SELECT mbid FROM MB_CACHE_RELEASE MCR WHERE MCR.mbid = FIT.mb_album_id)
+        ';
         $results = $this->dbh->query($query);
         $totalResults = count($results);
         for ($i = 0; $i < $totalResults; $i++) {
@@ -154,53 +193,30 @@ class Scraper
         return ($mbIds);
     }
 
-    public function mbAlbumScrap(string $album = "", string $artist = "", string $year = "")
+    public function getAlbumMusicBrainzMetadata($mbId): \aportela\MusicBrainzWrapper\Release
     {
-        $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        $results = $mbAlbum->search($album, $artist, $year, 1);
-        if (count($results) == 1 && !empty($results[0]->mbId)) {
-            $whereConditions = array(
-                " mb_album_id IS NULL ",
-                " artist = :artist ",
-                " album = :album "
-            );
-            if (!empty($year)) {
-                " year = :year ";
-            }
-            $query = " UPDATE FILE_ID3_TAG SET mb_album_id = :mbid WHERE " . implode(" AND ", $whereConditions);
-            $results = $this->dbh->exec($query, array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $results[0]->mbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
-                new \aportela\DatabaseWrapper\Param\StringParam(":album", $album),
-            ));
-        }
+        $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, $this->apiFormat);
+        $mbAlbum->get($mbId);
+        return ($mbAlbum);
     }
 
-    public function mbAlbumMBIdScrap(string $mbId = "")
+    public function saveAlbumMusicBrainzCachedMetadata(\aportela\MusicBrainzWrapper\Release $mbAlbum): void
     {
-        $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        $mbAlbum->get($mbId);
-        if (!empty($mbAlbum->mbId) && !empty($mbAlbum->title)) {
-
-            $this->dbh->exec(
-                "
-                    INSERT INTO MB_CACHE_RELEASE (mbid, title, year, artist_mbid, artist_name, track_count, json) VALUES (:mbid, :title, :year, :artist_mbid, :artist_name, :track_count, :json)
-                    ON CONFLICT(mbid) DO
-                        UPDATE SET title = :title, artist_mbid = :artist_mbid, artist_name = :artist_name, track_count = :track_count, json = :json
-                ",
-                array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbAlbum->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":title", $mbAlbum->title),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $mbAlbum->year > 0 ? intval($mbAlbum->year) : 0),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbAlbum->artist->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $mbAlbum->artist->name),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":track_count", $mbAlbum->trackCount > 0 ? intval($mbAlbum->trackCount) : 0),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbAlbum->raw)
-                )
-            );
-        } else {
-            die("NO");
-        }
+        $query = "
+            INSERT INTO MB_CACHE_RELEASE (mbid, title, year, artist_mbid, artist_name, track_count, json) VALUES (:mbid, :title, :year, :artist_mbid, :artist_name, :track_count, :json)
+                ON CONFLICT(mbid) DO
+            UPDATE SET title = :title, artist_mbid = :artist_mbid, artist_name = :artist_name, track_count = :track_count, json = :json
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbAlbum->mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":title", $mbAlbum->title),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $mbAlbum->year > 0 ? intval($mbAlbum->year) : 0),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbAlbum->artist->mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $mbAlbum->artist->name),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_count", $mbAlbum->trackCount > 0 ? intval($mbAlbum->trackCount) : 0),
+            new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbAlbum->raw)
+        );
+        $this->dbh->exec($query, $params);
     }
 
     public function getAllDatabaseFiles(): array
