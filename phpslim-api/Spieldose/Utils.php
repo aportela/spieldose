@@ -61,16 +61,16 @@ class Utils
         $status_bar .= " remaining: " . number_format($eta) . " sec. elapsed: " . number_format($elapsed) . " sec.";
 
         if (!empty($extraMessage)) {
-            $status_bar .= sprintf(" [%s]", $extraMessage);
+            echo "$status_bar " . sprintf(" [%s]", $extraMessage);
+        } else {
+            echo "$status_bar  ";
         }
-
-        echo "$status_bar  ";
 
         flush();
 
         // when done, send a newline
         if ($done == $total) {
-            echo "\n";
+            echo "$status_bar\n";
         }
     }
 
