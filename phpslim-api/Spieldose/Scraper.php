@@ -109,13 +109,6 @@ class Scraper
         $this->dbh->exec($query, $params);
     }
 
-    public function scrapAlbums(): void
-    {
-    }
-
-    public function cleanUp(): void
-    {
-    }
 
     public function getAlbumsWithoutMusicBrainzId(): array
     {
@@ -217,30 +210,5 @@ class Scraper
             new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbAlbum->raw)
         );
         $this->dbh->exec($query, $params);
-    }
-
-    public function getAllDatabaseFiles(): array
-    {
-        $results = array();
-        $query = "
-            SELECT F.id, D.path, F.name AS filename
-            FROM FILE F
-            INNER JOIN DIRECTORY D
-            ON D.id = F.directory_id
-            ORDER BY D.path, F.name
-        ";
-        $results = $this->dbh->query($query);
-        return ($results);
-    }
-
-    public function removeDatabaseReferences(string $fileId)
-    {
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":file_id", $fileId)
-        );
-        $this->dbh->exec(" DELETE FROM STATS WHERE file_id = :file_id ", $params);
-        $this->dbh->exec(" DELETE FROM PLAYLIST_TRACK WHERE file_id = :file_id ", $params);
-        $this->dbh->exec(" DELETE FROM LOVED_FILE WHERE file_id = :file_id ", $params);
-        $this->dbh->exec(" DELETE FROM FILE WHERE id = :file_id ", $params);
     }
 }
