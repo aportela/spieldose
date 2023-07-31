@@ -9,30 +9,53 @@ class Scraper
 
     private $dbh = null;
     private $logger;
+    private $apiFormat = null;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiFormat = \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
+        $this->apiFormat = $apiFormat;
     }
 
     public function __destruct()
     {
     }
 
-    public function getPendingArtists()
+    public function getArtistNamesWithoutMusicBrainzId(): array
     {
-        $artists = array();
+        $artistNames = array();
         $query = " SELECT DISTINCT artist FROM FILE_ID3_TAG WHERE mb_artist_id IS NULL AND artist IS NOT NULL ORDER BY RANDOM() ";
         $results = $this->dbh->query($query);
-        $totalArtists = count($results);
-        for ($i = 0; $i < $totalArtists; $i++) {
-            $artists[] = $results[$i]->artist;
+        $totalArtistNames = count($results);
+        for ($i = 0; $i < $totalArtistNames; $i++) {
+            $artistNames[] = $results[$i]->artist;
         }
-        return ($artists);
+        return ($artistNames);
     }
 
-    public function getPendingArtistMBIds()
+    public function searchArtistMusicBrainzIdByName(string $artistName): ?string
+    {
+        $mbId = null;
+        $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, $this->apiFormat);
+        $results = $mbArtist->search($artistName, 1);
+        if (count($results) == 1 && !empty($results[0]->mbId)) {
+            return ($results[0]->mbId);
+        }
+        return ($mbId);
+    }
+
+    public function saveArtistMusicBrainzId(string $mbId, string $artistName): void
+    {
+        $query = " UPDATE FILE_ID3_TAG SET mb_artist_id = :mbid WHERE mb_artist_id IS NULL AND artist = :artist ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artistName),
+        );
+        $this->dbh->exec($query, $params);
+    }
+
+    public function getArtistMusicBrainzIdsWithoutCachedMetadata(): array
     {
         $mbIds = array();
         $query = '
@@ -60,40 +83,35 @@ class Scraper
         return ($mbIds);
     }
 
-    public function mbArtistScrap($artist)
+    public function getArtistMusicBrainzMetadata($mbId): \aportela\MusicBrainzWrapper\Artist
     {
-        $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        $results = $mbArtist->search($artist, 1);
-        if (count($results) == 1 && !empty($results[0]->mbId)) {
-            $query = "
-                UPDATE FILE_ID3_TAG SET mb_artist_id = :mbid WHERE mb_artist_id IS NULL AND artist = :artist
-            ";
-            $results = $this->dbh->exec($query, array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $results[0]->mbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
-            ));
-        }
+        $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, $this->apiFormat);
+        $mbArtist->get($mbId);
+        return ($mbArtist);
     }
 
-    public function mbArtistMBIdscrap($mbId)
+    public function saveArtistMusicBrainzCachedMetadata(\aportela\MusicBrainzWrapper\Artist $mbArtist): void
     {
-        $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        $mbArtist->get($mbId);
-        if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
-            $this->dbh->exec(
-                "
-                    INSERT INTO MB_CACHE_ARTIST (mbid, name, image, json) VALUES (:mbid, :name, :image, :json)
-                    ON CONFLICT(mbid) DO
-                        UPDATE SET name = :name, image = :image, json = :json
-                ",
-                array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbArtist->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $mbArtist->name),
-                    new \aportela\DatabaseWrapper\Param\NullParam(":image"),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbArtist->raw)
-                )
-            );
-        }
+        $query = "
+            INSERT INTO MB_CACHE_ARTIST (mbid, name, image, json) VALUES (:mbid, :name, :image, :json)
+                ON CONFLICT(mbid) DO
+            UPDATE SET name = :name, image = :image, json = :json
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbArtist->mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $mbArtist->name),
+            new \aportela\DatabaseWrapper\Param\NullParam(":image"),
+            new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbArtist->raw)
+        );
+        $this->dbh->exec($query, $params);
+    }
+
+    public function scrapAlbums(): void
+    {
+    }
+
+    public function cleanUp(): void
+    {
     }
 
     public function getPendingAlbums()

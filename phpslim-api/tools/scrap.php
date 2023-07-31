@@ -41,6 +41,40 @@ if (count($missingExtensions) > 0) {
                 if ($scrapArtists) {
                     echo "Artist scraping...." . PHP_EOL;
                     $logger->info("Scraping artists");
+                    /* */
+                    $artistNames = $scraper->getArtistNamesWithoutMusicBrainzId();
+                    $totalArtistNames = count($artistNames);
+                    if ($totalArtistNames > 0) {
+                        echo sprintf("Processing %d artist name/s without MusicBrainzId%s", $totalArtistNames, PHP_EOL);
+                        for ($i = 0; $i < $totalArtistNames; $i++) {
+                            $mbId = $scraper->searchArtistMusicBrainzIdByName($artistNames[$i]);
+                            if (!empty($mbId)) {
+                                $scraper->saveArtistMusicBrainzId($mbId, $artistNames[$i]);
+                            }
+                            sleep(1); // wait 1 second between queries for prevent too much remote api requests in small amount of time and get banned
+                            \Spieldose\Utils::showProgressBar($i + 1, $totalArtistNames, 20);
+                        }
+                    } else {
+                        echo sprintf("No artist names without MusicBrainzId found%s", PHP_EOL);
+                    }
+                    $artistMBIds = $scraper->getArtistMusicBrainzIdsWithoutCachedMetadata();
+                    $totalArtistMBIds = count($artistMBIds);
+                    if ($totalArtistMBIds > 0) {
+                        echo sprintf("Processing %d artist without MusicBrainz cached metadata%s", $totalArtistMBIds, PHP_EOL);
+                        for ($i = 0; $i < $totalArtistMBIds; $i++) {
+                            $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
+                            if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
+                                $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
+                            }
+                            sleep(1); // wait 1 second between queries for prevent too much remote api requests in small amount of time and get banned
+                            \Spieldose\Utils::showProgressBar($i + 1, $totalArtistMBIds, 20);
+                        }
+                    } else {
+                        echo sprintf("All Artist MusicBrainz metadata is cached%s", PHP_EOL);
+                    }
+                    /* */
+                    /*
+
                     $pendingArtists = $scraper->getPendingArtists();
                     $totalPendingArtists = count($pendingArtists);
                     if ($totalPendingArtists > 0) {
@@ -88,6 +122,7 @@ if (count($missingExtensions) > 0) {
                     } else {
                         echo "No pending MusicBrainz Artist ids found to scrap" . PHP_EOL;
                     }
+                    */
                 }
                 if ($scrapAlbums) {
                     echo "Album scraping...." . PHP_EOL;
