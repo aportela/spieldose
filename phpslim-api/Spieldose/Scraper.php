@@ -190,7 +190,13 @@ class Scraper
     public function getAllDatabaseFiles(): array
     {
         $results = array();
-        $query = " SELECT id, base_path AS path, file_name as filename FROM FILE ORDER BY base_path, file_name ";
+        $query = "
+            SELECT F.id, D.path, F.name AS filename
+            FROM FILE F
+            INNER JOIN DIRECTORY D
+            ON D.id = F.directory_id
+            ORDER BY D.path, F.name
+        ";
         $results = $this->dbh->query($query);
         return ($results);
     }
