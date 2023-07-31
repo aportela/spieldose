@@ -41,14 +41,14 @@ if (count($missingExtensions) > 0) {
                 $logger->info("Scanning base path: " . $musicPath);
                 $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
                 $totalFiles = count($files);
-                echo "Total files on path: " . $totalFiles . PHP_EOL;
-                $logger->debug("Total files on path: " . $totalFiles);
+                echo "Total supported files on path: " . $totalFiles . PHP_EOL;
+                $logger->debug("Total supported files on path: " . $totalFiles);
                 if ($totalFiles > 0) {
                     echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
                     $failed = array();
                     for ($i = 0; $i < $totalFiles; $i++) {
                         $scanner->scan(($files[$i]));
-                        \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20);
+                        \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $files[$i]);
                     }
                 }
             } else {
