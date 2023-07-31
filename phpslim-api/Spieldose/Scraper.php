@@ -67,8 +67,13 @@ class Scraper
         $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
         $results = $mbArtist->search($artist, 1);
         if (count($results) == 1 && !empty($results[0]->mbId)) {
-            // TODO
-            die("TODO");
+            $query = "
+                UPDATE FILE_ID3_TAG SET mb_artist_id = :mbid WHERE mb_artist_id IS NULL AND artist = :artist
+            ";
+            $results = $this->dbh->exec($query, array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $results[0]->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
+            ));
         }
     }
 
@@ -138,7 +143,20 @@ class Scraper
         $mbAlbum = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
         $results = $mbAlbum->search($album, $artist, $year, 1);
         if (count($results) == 1 && !empty($results[0]->mbId)) {
-            // TODO
+            $whereConditions = array(
+                " mb_album_id IS NULL ",
+                " artist = :artist ",
+                " album = :album "
+            );
+            if (!empty($year)) {
+                " year = :year ";
+            }
+            $query = " UPDATE FILE_ID3_TAG SET mb_album_id = :mbid WHERE " . implode(" AND ", $whereConditions);
+            $results = $this->dbh->exec($query, array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $results[0]->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
+                new \aportela\DatabaseWrapper\Param\StringParam(":album", $album),
+            ));
         }
     }
 
@@ -182,9 +200,9 @@ class Scraper
         $params = array(
             (new \Spieldose\Database\DBParam())->str(":file_id", $fileId)
         );
-        $this->dbh->execute(" DELETE FROM STATS WHERE file_id = :file_id ", $params);
-        $this->dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE file_id = :file_id ", $params);
-        $this->dbh->execute(" DELETE FROM LOVED_FILE WHERE file_id = :file_id ", $params);
-        $this->dbh->execute(" DELETE FROM FILE WHERE id = :file_id ", $params);
+        $this->dbh->exec(" DELETE FROM STATS WHERE file_id = :file_id ", $params);
+        $this->dbh->exec(" DELETE FROM PLAYLIST_TRACK WHERE file_id = :file_id ", $params);
+        $this->dbh->exec(" DELETE FROM LOVED_FILE WHERE file_id = :file_id ", $params);
+        $this->dbh->exec(" DELETE FROM FILE WHERE id = :file_id ", $params);
     }
 }
