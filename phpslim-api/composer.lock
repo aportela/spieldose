@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a25e839e798adac23108259b8ebcbd2",
+    "content-hash": "902f6f15fbd7d3ef518f214927c7b82e",
     "packages": [
         {
             "name": "aportela/db-wrapper",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "e9296c4c588337fbed6a69ffb2481336c33dec93"
+                "reference": "a363c70f5feaee3decf8781e941cc25582fb9650"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/e9296c4c588337fbed6a69ffb2481336c33dec93",
-                "reference": "e9296c4c588337fbed6a69ffb2481336c33dec93",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/a363c70f5feaee3decf8781e941cc25582fb9650",
+                "reference": "a363c70f5feaee3decf8781e941cc25582fb9650",
                 "shasum": ""
             },
             "require": {
@@ -42,25 +42,26 @@
             "description": "Custom database wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/1.0.5"
+                "source": "https://github.com/aportela/db-wrapper/tree/1.0.6"
             },
-            "time": "2022-10-20T14:48:50+00:00"
+            "time": "2023-08-03T11:53:29+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
-            "version": "1.1.1",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/httprequest-wrapper.git",
-                "reference": "93e18f04f9483d167b15eb6bc077e82f83551f17"
+                "reference": "cd8a2abd20619d4342d22421b2bd8ff6a1d0c600"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/93e18f04f9483d167b15eb6bc077e82f83551f17",
-                "reference": "93e18f04f9483d167b15eb6bc077e82f83551f17",
+                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/cd8a2abd20619d4342d22421b2bd8ff6a1d0c600",
+                "reference": "cd8a2abd20619d4342d22421b2bd8ff6a1d0c600",
                 "shasum": ""
             },
             "require": {
+                "php": ">=8.0",
                 "psr/log": "^3.0"
             },
             "type": "library",
@@ -80,28 +81,30 @@
                 }
             ],
             "description": "Custom curl http request wrapper",
+            "homepage": "https://github.com/aportela/httprequest-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/httprequest-wrapper/issues",
-                "source": "https://github.com/aportela/httprequest-wrapper/tree/1.1.1"
+                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.1"
             },
-            "time": "2022-10-04T20:11:04+00:00"
+            "time": "2023-08-03T09:06:43+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "1.0.6",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "029d88154ee63516c5a886d7c2eb45aecdfd6674"
+                "reference": "2937f8a6e6edd3e76afb60c23d96f9e6d5b78bc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/029d88154ee63516c5a886d7c2eb45aecdfd6674",
-                "reference": "029d88154ee63516c5a886d7c2eb45aecdfd6674",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/2937f8a6e6edd3e76afb60c23d96f9e6d5b78bc2",
+                "reference": "2937f8a6e6edd3e76afb60c23d96f9e6d5b78bc2",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^1.1",
+                "aportela/httprequest-wrapper": "^2.0",
+                "php": ">=8.1",
                 "psr/log": "^3.0"
             },
             "require-dev": {
@@ -124,30 +127,35 @@
                 }
             ],
             "description": "Custom musicbrainz api wrapper",
+            "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/1.0.6"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.0.1"
             },
-            "time": "2023-07-31T09:48:36+00:00"
+            "time": "2023-08-08T08:26:03+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
-            "version": "1.0.3",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/remote-thumbnail-cache-wrapper.git",
-                "reference": "994fed3a5a3ba873b110c6372bc2027d20cb6ab3"
+                "reference": "9c6af583ae8088d543b7ee10dfbc518345004e23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/994fed3a5a3ba873b110c6372bc2027d20cb6ab3",
-                "reference": "994fed3a5a3ba873b110c6372bc2027d20cb6ab3",
+                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/9c6af583ae8088d543b7ee10dfbc518345004e23",
+                "reference": "9c6af583ae8088d543b7ee10dfbc518345004e23",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^1.1",
+                "aportela/httprequest-wrapper": "^2.0",
+                "php": ">=8.1",
                 "psr/log": "^3.0",
                 "sybio/image-workshop": "^2.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.3"
             },
             "type": "library",
             "autoload": {
@@ -166,11 +174,12 @@
                 }
             ],
             "description": "generate & cache thumbnails of remote images",
+            "homepage": "https://github.com/aportela/remote-thumbnail-cache-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/remote-thumbnail-cache-wrapper/issues",
-                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/1.0.3"
+                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.0"
             },
-            "time": "2022-10-14T21:29:07+00:00"
+            "time": "2023-08-07T13:17:28+00:00"
         },
         {
             "name": "brick/math",

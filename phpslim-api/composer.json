@@ -17,8 +17,8 @@
     "require": {
         "php": ">=8.0",
         "aportela/db-wrapper": "^1.0",
-        "aportela/musicbrainz-wrapper": "^1.0",
-        "aportela/remote-thumbnail-cache-wrapper": "^1.0",
+        "aportela/musicbrainz-wrapper": "^2.0",
+        "aportela/remote-thumbnail-cache-wrapper": "^2.0",
         "firebase/php-jwt": "^6.8",
         "james-heinrich/getid3": "^1.9",
         "monolog/monolog": "^3.4",
