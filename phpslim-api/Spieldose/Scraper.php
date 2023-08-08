@@ -138,6 +138,26 @@ class Scraper
                 }
             }
         }
+        $this->dbh->exec($query, $params);
+        $query = "
+            DELETE FROM MB_CACHE_ARTIST_GENRE WHERE artist_mbid = :artist_mbid
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId)
+        );
+        $this->dbh->exec($query, $params);
+        if (is_array($mbArtist->genres) && count($mbArtist->genres) > 0) {
+            foreach ($mbArtist->genres as $genre) {
+                $query = "
+                    INSERT INTO MB_CACHE_ARTIST_GENRE (artist_mbid, genre) VALUES (:artist_mbid, :genre)
+                ";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre)
+                );
+                $this->dbh->exec($query, $params);
+            }
+        }
     }
 
 

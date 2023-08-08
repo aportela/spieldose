@@ -102,5 +102,14 @@ return (array(
         '
             ALTER TABLE `MB_CACHE_ARTIST` ADD "country"	VARCHAR(36);
         '
-    )
+    ),
+    4 => array(
+        '
+            CREATE TABLE `MB_CACHE_ARTIST_GENRE` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `genre` VARCHAR(64) NOT NULL,
+                PRIMARY KEY (`artist_mbid`, `genre`)
+            );
+        '
+    ),
 ));
