@@ -7,11 +7,11 @@ namespace Spieldose;
 class Scraper
 {
 
-    private $dbh = null;
-    private $logger;
-    private $apiFormat = null;
+    private \aportela\DatabaseWrapper\DB $dbh;
+    private \Psr\Log\LoggerInterface $logger;
+    private \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiFormat = \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
@@ -96,9 +96,9 @@ class Scraper
     public function saveArtistMusicBrainzCachedMetadata(\aportela\MusicBrainzWrapper\Artist $mbArtist): void
     {
         $query = "
-            INSERT INTO MB_CACHE_ARTIST (mbid, name, image, json) VALUES (:mbid, :name, :image, :json)
+            INSERT INTO MB_CACHE_ARTIST (mbid, name, country, image, json) VALUES (:mbid, :name, :country, :image, :json)
                 ON CONFLICT(mbid) DO
-            UPDATE SET name = :name, image = :image, json = :json
+            UPDATE SET name = :name, country = :country, image = :image, json = :json
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbArtist->mbId),
@@ -106,7 +106,38 @@ class Scraper
             new \aportela\DatabaseWrapper\Param\NullParam(":image"),
             new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbArtist->raw)
         );
+        if (!empty($mbArtist->country)) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":country", $mbArtist->country);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":country");
+        }
         $this->dbh->exec($query, $params);
+        $query = "
+            DELETE FROM MB_CACHE_ARTIST_RELATION WHERE artist_mbid = :artist_mbid
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId)
+        );
+        $this->dbh->exec($query, $params);
+        $allowedRelations = array_column(\Spieldose\Entities\ArtistRelation::cases(), 'value');
+        if (is_array($mbArtist->relations) && count($mbArtist->relations) > 0) {
+            foreach ($mbArtist->relations as $relation) {
+                if (in_array($relation->typeId, $allowedRelations)) {
+                    $query = "
+                        INSERT INTO MB_CACHE_ARTIST_RELATION (artist_mbid, relation_type_id, name, url) VALUES (:artist_mbid, :relation_type_id, :name, :url)
+                            ON CONFLICT(artist_mbid, relation_type_id) DO
+                        UPDATE SET name = :name, url = :url
+                    ";
+                    $params = array(
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->name),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
+                    );
+                    $this->dbh->exec($query, $params);
+                }
+            }
+        }
     }
 
 
