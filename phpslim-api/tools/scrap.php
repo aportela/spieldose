@@ -32,11 +32,11 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums"));
+        $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums", "force"));
         $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
         $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
         if ($scrapArtists || $scrapAlbums) {
-            $scraper = new \Spieldose\Scraper($db, $logger);
+            $scraper = new \Spieldose\Scraper($db, $logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
             if ($scrapArtists) {
                 echo "Artist scraping...." . PHP_EOL;
                 $logger->info("Scraping artists");
@@ -55,7 +55,7 @@ if (count($missingExtensions) > 0) {
                 } else {
                     echo sprintf("No artist names without MusicBrainzId found%s", PHP_EOL);
                 }
-                $artistMBIds = $scraper->getArtistMusicBrainzIdsWithoutCachedMetadata();
+                $artistMBIds = !$cmdLine->hasParam("force") ? $scraper->getArtistMusicBrainzIdsWithoutCachedMetadata() : $scraper->getArtistMusicBrainzIds();
                 $totalArtistMBIds = count($artistMBIds);
                 if ($totalArtistMBIds > 0) {
                     echo sprintf("Processing %d artist without MusicBrainz cached metadata%s", $totalArtistMBIds, PHP_EOL);
@@ -90,7 +90,7 @@ if (count($missingExtensions) > 0) {
                     echo sprintf("No albums without MusicBrainzId found%s", PHP_EOL);
                 }
 
-                $albumMBIds = $scraper->getAlbumMusicBrainzIdsWithoutCachedMetadata();
+                $albumMBIds = !$cmdLine->hasParam("force") ? $scraper->getAlbumMusicBrainzIdsWithoutCachedMetadata() : $scraper->getAlbumMusicBrainzIds();
                 $totalAlbumMBIds = count($albumMBIds);
                 if ($totalAlbumMBIds > 0) {
                     echo sprintf("Processing %d albums without MusicBrainz cached metadata%s", $totalAlbumMBIds, PHP_EOL);

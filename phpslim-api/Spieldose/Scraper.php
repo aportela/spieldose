@@ -58,6 +58,29 @@ class Scraper
         $this->dbh->exec($query, $params);
     }
 
+    public function getArtistMusicBrainzIds(): array
+    {
+        $mbIds = array();
+        $query = '
+                SELECT
+                    DISTINCT FIT.mb_artist_id AS mbid
+                FROM FILE_ID3_TAG FIT
+                WHERE FIT.mb_artist_id IS NOT NULL
+
+                UNION
+
+                SELECT
+                    DISTINCT FIT.mb_album_artist_id AS mbid
+                FROM FILE_ID3_TAG FIT
+                WHERE FIT.mb_album_artist_id IS NOT NULL
+            ';
+        $results = $this->dbh->query($query);
+        $totalResults = count($results);
+        for ($i = 0; $i < $totalResults; $i++) {
+            $mbIds[] = $results[$i]->mbid;
+        }
+        return ($mbIds);
+    }
     public function getArtistMusicBrainzIdsWithoutCachedMetadata(): array
     {
         $mbIds = array();
@@ -160,7 +183,6 @@ class Scraper
         }
     }
 
-
     public function getAlbumsWithoutMusicBrainzId(): array
     {
         $albums = array();
@@ -219,6 +241,23 @@ class Scraper
         $this->dbh->exec($query, $params);
     }
 
+    public function getAlbumMusicBrainzIds(): array
+    {
+        $mbIds = array();
+        $query = '
+            SELECT
+                DISTINCT FIT.mb_album_id AS mbid
+            FROM FILE_ID3_TAG FIT
+            WHERE FIT.mb_album_id IS NOT NULL
+        ';
+        $results = $this->dbh->query($query);
+        $totalResults = count($results);
+        for ($i = 0; $i < $totalResults; $i++) {
+            $mbIds[] = $results[$i]->mbid;
+        }
+        return ($mbIds);
+    }
+
     public function getAlbumMusicBrainzIdsWithoutCachedMetadata(): array
     {
         $mbIds = array();
@@ -254,12 +293,41 @@ class Scraper
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbAlbum->mbId),
             new \aportela\DatabaseWrapper\Param\StringParam(":title", $mbAlbum->title),
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $mbAlbum->year > 0 ? intval($mbAlbum->year) : 0),
             new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbAlbum->artist->mbId),
             new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $mbAlbum->artist->name),
             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_count", $mbAlbum->trackCount > 0 ? intval($mbAlbum->trackCount) : 0),
             new \aportela\DatabaseWrapper\Param\StringParam(":json", $mbAlbum->raw)
         );
+        if (isset($mbAlbum->year) && $mbAlbum->year > 0) {
+            $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $mbAlbum->year);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
+        }
         $this->dbh->exec($query, $params);
+        $query = "
+            DELETE FROM MB_CACHE_RELEASE_TRACK WHERE release_mbid = :release_mbid
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $mbAlbum->mbId)
+        );
+        $this->dbh->exec($query, $params);
+        if (is_array($mbAlbum->tracks) && count($mbAlbum->tracks) > 0) {
+            foreach ($mbAlbum->tracks as $track) {
+                $query = "
+                    INSERT INTO MB_CACHE_RELEASE_TRACK (release_mbid, track_mbid, title, artist_mbid, artist_name, track_number) VALUES (:release_mbid, :track_mbid, :title, :artist_mbid, :artist_name, :track_number)
+                        ON CONFLICT(track_mbid) DO
+                    UPDATE SET release_mbid = :release_mbid, title = :title, artist_mbid = :artist_mbid, artist_name = :artist_name, track_number = :track_number
+                ";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $mbAlbum->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":track_mbid", $track->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":title", $track->title),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $track->artist->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $track->artist->name),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":track_number", $track->number)
+                );
+                $this->dbh->exec($query, $params);
+            }
+        }
     }
 }
