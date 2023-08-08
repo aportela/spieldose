@@ -86,5 +86,21 @@ return (array(
                 PRIMARY KEY (`mbid`)
             );
         '
+    ),
+    2 => array(
+        '
+            CREATE TABLE `MB_CACHE_ARTIST_RELATION` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `relation_type_id` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                `url` VARCHAR(2048) NOT NULL,
+                PRIMARY KEY (`artist_mbid`, `relation_type_id`)
+            );
+        '
+    ),
+    3 => array(
+        '
+            ALTER TABLE `MB_CACHE_ARTIST` ADD "country"	VARCHAR(36);
+        '
     )
 ));
