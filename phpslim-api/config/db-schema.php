@@ -112,4 +112,17 @@ return (array(
             );
         '
     ),
+    5 => array(
+        '
+            CREATE TABLE `MB_CACHE_RELEASE_TRACK` (
+                `release_mbid` VARCHAR(36) NOT NULL,
+                `track_mbid` VARCHAR(36) NOT NULL,
+                `title` VARCHAR(512) NOT NULL,
+                `artist_mbid` VARCHAR(36),
+                `artist_name` VARCHAR(128),
+                `track_number` INTEGER,
+                PRIMARY KEY (`track_mbid`)
+            );
+        ',
+    )
 ));
