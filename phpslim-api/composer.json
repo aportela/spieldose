@@ -17,6 +17,7 @@
     "require": {
         "php": ">=8.0",
         "aportela/db-wrapper": "^1.0",
+        "aportela/mediawiki-wrapper": "^1.0",
         "aportela/musicbrainz-wrapper": "^2.0",
         "aportela/remote-thumbnail-cache-wrapper": "^2.0",
         "firebase/php-jwt": "^6.8",
