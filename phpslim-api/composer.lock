@@ -93,16 +93,16 @@
         },
         {
             "name": "aportela/mediawiki-wrapper",
-            "version": "1.0.1",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/mediawiki-wrapper.git",
-                "reference": "065c761ca9bd648dd6ac53e0812c6fba5eec32ca"
+                "reference": "8ac6696d910625b0b289a3960222f1295420579e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/065c761ca9bd648dd6ac53e0812c6fba5eec32ca",
-                "reference": "065c761ca9bd648dd6ac53e0812c6fba5eec32ca",
+                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/8ac6696d910625b0b289a3960222f1295420579e",
+                "reference": "8ac6696d910625b0b289a3960222f1295420579e",
                 "shasum": ""
             },
             "require": {
@@ -132,9 +132,9 @@
             "homepage": "https://github.com/aportela/mediawiki-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/mediawiki-wrapper/issues",
-                "source": "https://github.com/aportela/mediawiki-wrapper/tree/1.0.1"
+                "source": "https://github.com/aportela/mediawiki-wrapper/tree/1.0.3"
             },
-            "time": "2023-08-10T08:18:28+00:00"
+            "time": "2023-08-10T09:51:39+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
