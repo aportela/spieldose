@@ -136,26 +136,25 @@ class Scraper
         }
         $this->dbh->exec($query, $params);
         $query = "
-            DELETE FROM MB_CACHE_ARTIST_RELATION WHERE artist_mbid = :artist_mbid
+            DELETE FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :artist_mbid
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId)
         );
         $this->dbh->exec($query, $params);
-        $allowedRelations = array_column(\Spieldose\Entities\ArtistRelation::cases(), 'value');
+        $allowedRelations = array_column(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::cases(), 'value');
         if (is_array($mbArtist->relations) && count($mbArtist->relations) > 0) {
             foreach ($mbArtist->relations as $relation) {
                 if (in_array($relation->typeId, $allowedRelations)) {
                     $query = "
-                        INSERT INTO MB_CACHE_ARTIST_RELATION (artist_mbid, relation_type_id, name, url) VALUES (:artist_mbid, :relation_type_id, :name, :url)
-                            ON CONFLICT(artist_mbid, relation_type_id) DO
-                        UPDATE SET name = :name, url = :url
+                        INSERT INTO MB_CACHE_ARTIST_URL_RELATIONSHIP (artist_mbid, url_relationship_typeid, url_relationship_value) VALUES (:artist_mbid, :url_relationship_typeid, :url_relationship_value)
+                            ON CONFLICT(artist_mbid, url_relationship_typeid, url_relationship_value) DO
+                        UPDATE SET url_relationship_value = :url_relationship_value
                     ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtist->mbId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->name),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":url_relationship_typeid", $relation->typeId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":url_relationship_value", $relation->url)
                     );
                     $this->dbh->exec($query, $params);
                 }
