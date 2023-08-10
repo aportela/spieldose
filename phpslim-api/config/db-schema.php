@@ -124,5 +124,10 @@ return (array(
                 PRIMARY KEY (`track_mbid`)
             );
         ',
+    ),
+    6 => array(
+        '
+            DROP TABLE `MB_CACHE_TRACK`;
+        '
     )
 ));
