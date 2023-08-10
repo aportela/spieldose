@@ -129,5 +129,28 @@ return (array(
         '
             DROP TABLE `MB_CACHE_TRACK`;
         '
+    ),
+    7 => array(
+        '
+            CREATE TABLE `MB_WIKIPEDIA_CACHE_ARTIST` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `language` VARCHAR(2) NOT NULL,
+                `html` TEXT NOT NULL,
+                PRIMARY KEY (`artist_mbid`, `language`)
+            );
+        ',
+    ),
+    8 => array(
+        '
+            DROP TABLE `MB_CACHE_ARTIST_RELATION`;
+        ',
+        '
+            CREATE TABLE `MB_CACHE_ARTIST_URL_RELATIONSHIP` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `url_relationship_typeid` VARCHAR(36) NOT NULL,
+                `url_relationship_value` VARCHAR(4096) NOT NULL,
+                PRIMARY KEY (`artist_mbid`, `url_relationship_typeid`, `url_relationship_value`)
+            );
+        ',
     )
 ));
