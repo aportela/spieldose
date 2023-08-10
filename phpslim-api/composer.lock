@@ -48,21 +48,24 @@
         },
         {
             "name": "aportela/httprequest-wrapper",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/httprequest-wrapper.git",
-                "reference": "cd8a2abd20619d4342d22421b2bd8ff6a1d0c600"
+                "reference": "c945f2eb7d3b6a007c8ff7afc4de8efeb3081792"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/cd8a2abd20619d4342d22421b2bd8ff6a1d0c600",
-                "reference": "cd8a2abd20619d4342d22421b2bd8ff6a1d0c600",
+                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/c945f2eb7d3b6a007c8ff7afc4de8efeb3081792",
+                "reference": "c945f2eb7d3b6a007c8ff7afc4de8efeb3081792",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0",
                 "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.3"
             },
             "type": "library",
             "autoload": {
@@ -84,22 +87,22 @@
             "homepage": "https://github.com/aportela/httprequest-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/httprequest-wrapper/issues",
-                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.1"
+                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.2"
             },
-            "time": "2023-08-03T09:06:43+00:00"
+            "time": "2023-08-09T07:25:58+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/mediawiki-wrapper.git",
-                "reference": "827030a14d4868a89894940286caf352d65f6ce8"
+                "reference": "065c761ca9bd648dd6ac53e0812c6fba5eec32ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/827030a14d4868a89894940286caf352d65f6ce8",
-                "reference": "827030a14d4868a89894940286caf352d65f6ce8",
+                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/065c761ca9bd648dd6ac53e0812c6fba5eec32ca",
+                "reference": "065c761ca9bd648dd6ac53e0812c6fba5eec32ca",
                 "shasum": ""
             },
             "require": {
@@ -129,9 +132,9 @@
             "homepage": "https://github.com/aportela/mediawiki-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/mediawiki-wrapper/issues",
-                "source": "https://github.com/aportela/mediawiki-wrapper/tree/1.0.0"
+                "source": "https://github.com/aportela/mediawiki-wrapper/tree/1.0.1"
             },
-            "time": "2023-08-09T09:54:41+00:00"
+            "time": "2023-08-10T08:18:28+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
@@ -735,16 +738,16 @@
         },
         {
             "name": "php-di/php-di",
-            "version": "7.0.3",
+            "version": "7.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-DI/PHP-DI.git",
-                "reference": "d5dad2500f409d8b78371823c8b382fe9b5d0917"
+                "reference": "8ed79468dfb163824bbf48de5e35d1729f9313b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/d5dad2500f409d8b78371823c8b382fe9b5d0917",
-                "reference": "d5dad2500f409d8b78371823c8b382fe9b5d0917",
+                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/8ed79468dfb163824bbf48de5e35d1729f9313b6",
+                "reference": "8ed79468dfb163824bbf48de5e35d1729f9313b6",
                 "shasum": ""
             },
             "require": {
@@ -792,7 +795,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-DI/PHP-DI/issues",
-                "source": "https://github.com/PHP-DI/PHP-DI/tree/7.0.3"
+                "source": "https://github.com/PHP-DI/PHP-DI/tree/7.0.4"
             },
             "funding": [
                 {
@@ -804,7 +807,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-17T10:21:14+00:00"
+            "time": "2023-08-08T15:59:16+00:00"
         },
         {
             "name": "psr/container",
