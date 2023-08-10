@@ -94,7 +94,8 @@ return (array(
                 `relation_type_id` VARCHAR(36) NOT NULL,
                 `name` VARCHAR(128) NOT NULL,
                 `url` VARCHAR(2048) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `relation_type_id`)
+                PRIMARY KEY (`artist_mbid`, `relation_type_id`),
+                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
             );
         '
     ),
@@ -108,7 +109,8 @@ return (array(
             CREATE TABLE `MB_CACHE_ARTIST_GENRE` (
                 `artist_mbid` VARCHAR(36) NOT NULL,
                 `genre` VARCHAR(64) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `genre`)
+                PRIMARY KEY (`artist_mbid`, `genre`),
+                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
             );
         '
     ),
@@ -121,7 +123,8 @@ return (array(
                 `artist_mbid` VARCHAR(36),
                 `artist_name` VARCHAR(128),
                 `track_number` INTEGER,
-                PRIMARY KEY (`track_mbid`)
+                PRIMARY KEY (`track_mbid`),
+                FOREIGN KEY(`release_mbid`) REFERENCES MB_CACHE_RELEASE (`mbid`)
             );
         ',
     ),
@@ -136,7 +139,8 @@ return (array(
                 `artist_mbid` VARCHAR(36) NOT NULL,
                 `language` VARCHAR(2) NOT NULL,
                 `html` TEXT NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `language`)
+                PRIMARY KEY (`artist_mbid`, `language`),
+                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
             );
         ',
     ),
@@ -149,7 +153,8 @@ return (array(
                 `artist_mbid` VARCHAR(36) NOT NULL,
                 `url_relationship_typeid` VARCHAR(36) NOT NULL,
                 `url_relationship_value` VARCHAR(4096) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `url_relationship_typeid`, `url_relationship_value`)
+                PRIMARY KEY (`artist_mbid`, `url_relationship_typeid`, `url_relationship_value`),
+                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
             );
         ',
     )
