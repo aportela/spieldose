@@ -182,6 +182,21 @@ class Scraper
         }
     }
 
+    public function saveArtistWikipediaCachedMetadata(string $mbArtistId, string $html): void
+    {
+        $query = "
+            INSERT INTO MB_WIKIPEDIA_CACHE_ARTIST (artist_mbid, language, html) VALUES (:artist_mbid, :language, :html)
+                ON CONFLICT(`artist_mbid`, `language`) DO
+            UPDATE SET html = :html
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtistId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":language", \aportela\MediaWikiWrapper\Language::ENGLISH->value),
+            new \aportela\DatabaseWrapper\Param\StringParam(":html", $html)
+        );
+        $this->dbh->exec($query, $params);
+    }
+
     public function getAlbumsWithoutMusicBrainzId(): array
     {
         $albums = array();
