@@ -157,5 +157,16 @@ return (array(
                 FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
             );
         ',
-    )
+    ),
+    9 => array(
+        '
+            CREATE TABLE `MB_LASTFM_CACHE_ARTIST` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `bio_summary` TEXT NOT NULL,
+                `bio_content` TEXT NOT NULL,
+                PRIMARY KEY (`artist_mbid`),
+                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
+            );
+        ',
+    ),
 ));

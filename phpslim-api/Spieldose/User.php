@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class User
 {
-
     public $id;
     public $email;
     public $password;
@@ -83,7 +82,7 @@ class User
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id))
                 )
             );
-        } else if (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
+        } elseif (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
             $results = $dbh->query(
                 "
                     SELECT

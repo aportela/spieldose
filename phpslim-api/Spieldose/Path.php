@@ -1,60 +1,68 @@
 <?php
-    declare(strict_types=1);
 
-    namespace Spieldose;
+declare(strict_types=1);
 
-    class Path {
-	    public function __construct () { }
+namespace Spieldose;
 
-        public function __destruct() { }
+class Path
+{
+    public function __construct()
+    {
+    }
 
-        /**
-         * search paths
-         *
-         * @param \Spieldose\Database\DB $dbh database handler
-         * @param int $page return results from this page
-         * @param int $resultsPage number of results / page
-         * @param array $filter the condition filter
-         * @param string $order results order
-         */
-        public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
-            $whereCondition = "";
-            $params = array();
-            if (isset($filter)) {
-                $conditions = array();
-                if (isset($filter["name"]) && ! empty($filter["name"])) {
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
-                    $conditions[] = ' F.base_path LIKE :name ';
-                }
-                if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                    $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
-                    $conditions[] = ' F.base_path LIKE :partialName ';
-                }
-                $whereCondition = count($conditions) > 0 ? " WHERE " .  implode(" AND ", $conditions) : "";
+    public function __destruct()
+    {
+    }
+
+    /**
+     * search paths
+     *
+     * @param \Spieldose\Database\DB $dbh database handler
+     * @param int $page return results from this page
+     * @param int $resultsPage number of results / page
+     * @param array $filter the condition filter
+     * @param string $order results order
+     */
+    public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "")
+    {
+        $whereCondition = "";
+        $params = array();
+        if (isset($filter)) {
+            $conditions = array();
+            if (isset($filter["name"]) && ! empty($filter["name"])) {
+                $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
+                $conditions[] = ' F.base_path LIKE :name ';
             }
-            $queryCount = '
+            if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
+                $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
+                $conditions[] = ' F.base_path LIKE :partialName ';
+            }
+            $whereCondition = count($conditions) > 0 ? " WHERE " .  implode(" AND ", $conditions) : "";
+        }
+        $queryCount = '
                 SELECT
                     COUNT(DISTINCT F.base_path) AS total
                 FROM FILE F
                 ' . $whereCondition . '
             ';
-            $result = $dbh->query($queryCount, $params);
-            $data = new \stdClass();
-            $data->actualPage = $page;
-            $data->resultsPage = $resultsPage;
-            $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil($data->totalResults / $resultsPage);
-            if ($data->totalResults > 0) {
-                $sqlOrder = "";
-                switch($order) {
-                    case "random":
-                        $sqlOrder = " ORDER BY RANDOM() ";
+        $result = $dbh->query($queryCount, $params);
+        $data = new \stdClass();
+        $data->actualPage = $page;
+        $data->resultsPage = $resultsPage;
+        $data->totalResults = $result[0]->total;
+        $data->totalPages = ceil($data->totalResults / $resultsPage);
+        if ($data->totalResults > 0) {
+            $sqlOrder = "";
+            switch($order) {
+                case "random":
+                    $sqlOrder = " ORDER BY RANDOM() ";
                     break;
-                    default:
-                        $sqlOrder = " ORDER BY F.base_path ";
+                default:
+                    $sqlOrder = " ORDER BY F.base_path ";
                     break;
-                }
-                $query = sprintf('
+            }
+            $query = sprintf(
+                '
                     SELECT
                         DISTINCT F.base_path AS path, TMP_PT.totalTracks
                     FROM FILE F
@@ -68,18 +76,16 @@
                     %s
                     LIMIT %d OFFSET %d
                     ',
-                    $whereCondition,
-                    $sqlOrder,
-                    $resultsPage,
-                    $resultsPage * ($page -1)
-                );
-                $data->results = $dbh->query($query, $params);
-            } else {
-                $data->results = array();
-            }
-            return($data);
+                $whereCondition,
+                $sqlOrder,
+                $resultsPage,
+                $resultsPage * ($page -1)
+            );
+            $data->results = $dbh->query($query, $params);
+        } else {
+            $data->results = array();
         }
-
+        return($data);
     }
 
-?>
+}

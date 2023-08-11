@@ -6,7 +6,6 @@ namespace Spieldose\Middleware;
 
 class JWT
 {
-
     protected $logger;
     private $passphrase;
 

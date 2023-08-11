@@ -6,7 +6,6 @@ namespace Spieldose\Middleware;
 
 class APIExceptionCatcher
 {
-
     protected $logger;
 
     public function __construct(\Spieldose\Logger\HTTPRequestLogger $logger)

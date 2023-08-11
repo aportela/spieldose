@@ -4,7 +4,7 @@ namespace Spieldose;
 
 class JWT
 {
-    const ALGORITHM = 'HS256';
+    public const ALGORITHM = 'HS256';
 
     private $logger;
     private $passphrase;

@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class Scraper
 {
-
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\MusicBrainzWrapper\APIFormat $apiFormat;

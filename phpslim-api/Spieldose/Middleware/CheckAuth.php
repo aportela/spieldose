@@ -6,7 +6,6 @@ namespace Spieldose\Middleware;
 
 class CheckAuth
 {
-
     public function __construct(\Psr\Container\ContainerInterface $container)
     {
     }

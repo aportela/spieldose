@@ -8,10 +8,10 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 class BaseTest extends \PHPUnit\Framework\TestCase
 {
-    static public $app = null;
-    static public $container = null;
-    static public $settings = null;
-    static public $dbh = null;
+    public static $app = null;
+    public static $container = null;
+    public static $settings = null;
+    public static $dbh = null;
 
     /**
      * Called once just like normal constructor

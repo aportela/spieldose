@@ -10,7 +10,7 @@ class Scanner
     private $logger;
     private $id3;
 
-    const VALID_COVER_FILENAMES = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+    public const VALID_COVER_FILENAMES = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {

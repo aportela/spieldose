@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class Utils
 {
-
     public static function setAppDefaults()
     {
         session_start();
@@ -30,9 +29,13 @@ class Utils
         static $start_time;
 
         // if we go over our bound, just ignore it
-        if ($done > $total) return;
+        if ($done > $total) {
+            return;
+        }
 
-        if (empty($start_time)) $start_time = time();
+        if (empty($start_time)) {
+            $start_time = time();
+        }
         $now = time();
 
         $perc = (float)($done / $total);

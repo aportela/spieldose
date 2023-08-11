@@ -7,7 +7,6 @@ use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ErrorMiddleware;
 
-
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 return [
