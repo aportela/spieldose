@@ -11,7 +11,7 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static $app = null;
     public static $container = null;
     public static $settings = null;
-    public static $dbh = null;
+    public static ?\aportela\DatabaseWrapper\DB $dbh = null;
 
     /**
      * Called once just like normal constructor
@@ -59,10 +59,5 @@ class BaseTest extends \PHPUnit\Framework\TestCase
         self::$dbh = null;
         self::$container = null;
         self::$app = null;
-    }
-
-    public function test(): void
-    {
-        $this->assertTrue(true);
     }
 }
