@@ -16,7 +16,8 @@ return function (App $app) {
             $group->get('/initial_state', function (Request $request, Response $response, array $args) {
                 $payload = json_encode(
                     [
-                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
+                        // TODO
+                        //'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
                     ]
                 );
                 $response->getBody()->write($payload);
@@ -37,11 +38,7 @@ return function (App $app) {
                             $params["password"] ?? ""
                         );
                         $user->add($db);
-                        $payload = json_encode(
-                            [
-                                'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
-                            ]
-                        );
+                        $payload = json_encode([]);
                         $response->getBody()->write($payload);
                         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                     }
@@ -60,11 +57,7 @@ return function (App $app) {
                     $params["password"] ?? ""
                 );
                 $user->signIn($db);
-                $payload = json_encode(
-                    [
-                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
-                    ]
-                );
+                $payload = json_encode([]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
@@ -72,11 +65,7 @@ return function (App $app) {
             $group->post('/user/sign-out', function (Request $request, Response $response, array $args) {
                 $settings = $this->get('settings');
                 \Spieldose\User::signOut();
-                $payload = json_encode(
-                    [
-                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
-                    ]
-                );
+                $payload = json_encode([]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
