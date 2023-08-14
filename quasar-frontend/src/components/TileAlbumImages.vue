@@ -1,37 +1,41 @@
 <template>
-  <div class="tile is-ancestor row" id="container_tiles" v-if="!loading">
-    <div class="row" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column">
-      <div class="col-2" v-for="row in [0, 1, 2, 3, 4, 5]" :key="row">
-        <img v-if="covers && covers.length > 0" :src="getImageSource(covers[(5 * column) + row])" style="width:100%"
-          @error="$event.target.src = '/images/vinyl.png'">
-        <div v-else style="width: 100%; height: auto;" :style="'background: ' + getRandomColor()"></div>
+  <div id="container_tiles" v-if="!loading">
+    <div v-for="column in [0, 1, 2, 3, 4, 5]" :key="column">
+      <div class="row" v-for="column in [0,1,2,3,4,5]" :key="column">
+          <div class="col-2" v-for="row in [0,1,2,3,4,5]" :key="row" :style="'background-color: ' + getRandomColor() + ';'">
+            <img class="album-cover-tile" v-if="imageURLs.length > 0" :src="getImgSource((5 * column) + row)"
+          @error="onImageError($event)">
+          <img class="album-cover-tile" :src="defaultImage" v-else>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style>
-div#container_tiles
-{
-    box-shadow: inset 24px 4px 64px -24px rgba(71,71,71,1);
-    background-color: #666;
-    height: 100vh;
-    overflow: hidden;
-    filter: blur(6px);
-    transition: filter 0.3s ease-in;
-    opacity: 0.5;
-}
-.tile:not(.is-child) {
-  display: flex;
+div#container_tiles {
+  box-shadow: inset 24px 4px 64px -24px rgba(71, 71, 71, 1);
+  background-color: #666;
+  height: 100vh;
+  overflow: hidden;
+  filter: blur(6px);
+  transition: filter 0.3s ease-in;
+  opacity: 0.5;
 }
 
-.tile {
-  align-items: stretch;
+/**
+  * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
+  * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
+*/
+
+img {
+  height: auto;
+  max-width: 100%;
 }
 
-.tile.is-vertical
-{
-  flex-direction: column;
+img.album-cover-tile {
+  width: 100%;
+  aspect-ratio: 1 / 1;
 }
 
 </style>
@@ -39,40 +43,39 @@ div#container_tiles
 <script setup>
 
 import { ref } from "vue";
-
+const defaultImage = 'images/vinyl.png';
+const imageURLs = ref([]);
 const loading = ref(false);
 
-const covers = ref([]);
-
-// https://stackoverflow.com/a/1484514
 function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
+  const allowed = "ABCDEF0123456789";
+  let S = "#";
+  while (S.length < 7) {
+    S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
   }
-  return color;
+  return (S);
 }
-function getImageSource(img) {
-  if (img) {
-    if (img.hash) {
-      return ('api/thumbnail?hash=' + img.hash);
-    } else if (img.url) {
-      return ('api/thumbnail?url=' + img.url);
-    } else {
-      return (null);
-    }
+
+function getImgSource(index) {
+  if (index < this.imageURLs.length) {
+    return (this.imageURLs[index]);
+  } else {
+    return (this.defaultImage);
   }
 }
+
 function loadRandomAlbumImages() {
-  this.loading = true;
-  spieldoseAPI.album.getRandomAlbumCovers(32, (response) => {
-    if (response.status == 200) {
-      if (response.data.covers.length == 32) {
-        this.covers = response.data.covers.map((cover, idx) => { cover.id = idx; return (cover); });
-      }
+  this.$api.album.getRandomAlbumCoverThumbnails().then(response => {
+    if (response.data.coverURLs.length >= 32) {
+      this.imageURLs = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
     }
-    this.loading = false;
+  }).catch(error => {
+    this.imageURLs = [];
   });
 }
+
+function onImageError(event) {
+  event.target.src = this.defaultImage;
+}
+
 </script>
