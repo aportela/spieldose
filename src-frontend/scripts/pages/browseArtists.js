@@ -45,7 +45,7 @@ const template = function () {
             </div>
         </div>
         <spieldose-pagination :disabled="loading" :data="pager" v-on:pagination-changed="onPaginationChanged"></spieldose-pagination>
-        <div>
+        <div class="is-vcentered">
             <div class="sp-artist-thumbnail-link is-pulled-left is-size-6" v-for="artist in artists" :key="artist.name">
                 <router-link :to="{ name: 'artistPage', params: { name: artist.name } }">
                     <img src="https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png">
