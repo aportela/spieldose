@@ -16,8 +16,7 @@ return function (App $app) {
             $group->get('/initial_state', function (Request $request, Response $response, array $args) {
                 $payload = json_encode(
                     [
-                        // TODO
-                        //'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
+                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
                     ]
                 );
                 $response->getBody()->write($payload);

@@ -6,6 +6,22 @@ namespace Spieldose;
 
 class Utils
 {
+    public static function getInitialState($container): array
+    {
+        $settings = $container->get('settings');
+        return ([
+            'locale' => $settings['common']['locale'],
+            'allowSignUp' => $settings['common']['allowSignUp'],
+            'defaultResultsPage' => $settings['common']['defaultResultsPage'],
+            'environment' => $settings['environment'],
+            'session' => array(
+                'logged' => \Spieldose\UserSession::isLogged(),
+                'id' => \Spieldose\UserSession::getUserId(),
+                'email' => \Spieldose\UserSession::getEmail()
+            )
+        ]
+        );
+    }
 
     /**
      * show console progress bar (// http://snipplr.com/view/29548/)
