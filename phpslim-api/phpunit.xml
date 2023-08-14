@@ -2,7 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" backupStaticProperties="false" colors="true" processIsolation="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd">
     <testsuites>
         <testsuite name="remote-thumbnail-cache-wrapper-test-suite">
-            <file>Spieldose/Test/BaseTest.php</file>
+            <file>Spieldose/Test/UserTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
