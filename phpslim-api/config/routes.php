@@ -11,12 +11,12 @@ return function (App $app) {
     })->add(\Spieldose\Middleware\JWT::class);
 
     $app->group(
-        '/api/2.x',
+        '/api/2',
         function (RouteCollectorProxy $group) {
             $group->get('/initial_state', function (Request $request, Response $response, array $args) {
                 $payload = json_encode(
                     [
-                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
+                        'initialState' => \Spieldose\Utils::getInitialState($this)
                     ]
                 );
                 $response->getBody()->write($payload);
@@ -47,7 +47,6 @@ return function (App $app) {
             });
 
             $group->post('/user/sign-in', function (Request $request, Response $response, array $args) {
-                $settings = $this->get('settings');
                 $params = $request->getParsedBody();
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $user = new \Spieldose\User(
@@ -62,7 +61,6 @@ return function (App $app) {
             });
 
             $group->post('/user/sign-out', function (Request $request, Response $response, array $args) {
-                $settings = $this->get('settings');
                 \Spieldose\User::signOut();
                 $payload = json_encode([]);
                 $response->getBody()->write($payload);
