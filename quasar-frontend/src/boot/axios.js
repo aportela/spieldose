@@ -54,7 +54,7 @@ const api = {
     initialState: function () {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2.x/initial_state", {})
+          .get("api/2/initial_state", {})
           .then((response) => {
             resolve(response);
           })
@@ -72,7 +72,7 @@ const api = {
           password: password,
         };
         axios
-          .post("api/2.x/user/sign-in", params)
+          .post("api/2/user/sign-in", params)
           .then((response) => {
             resolve(response);
           })
@@ -84,7 +84,7 @@ const api = {
     signOut: function () {
       return new Promise((resolve, reject) => {
         axios
-          .post("api/2.x/user/sign-out", {})
+          .post("api/2/user/sign-out", {})
           .then((response) => {
             resolve(response);
           })
@@ -101,7 +101,7 @@ const api = {
           password: password,
         };
         axios
-          .post("api/2.x/user/sign-up", params)
+          .post("api/2/user/sign-up", params)
           .then((response) => {
             resolve(response);
           })
@@ -110,7 +110,7 @@ const api = {
           });
       });
     },
-  }
+  },
 };
 
 export default boot(({ app }) => {
