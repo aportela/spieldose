@@ -26,7 +26,7 @@ class Scanner
     private function getDirectoryCoverFilename(string $path): ?string
     {
         $coverFilename = null;
-        foreach (glob(dirname($path) . DIRECTORY_SEPARATOR . self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
+        foreach (glob($path . DIRECTORY_SEPARATOR . self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
             $coverFilename = basename(realpath($file)); // get real file "case"
             break;
         }
