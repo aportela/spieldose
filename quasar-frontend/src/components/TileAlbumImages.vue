@@ -43,6 +43,8 @@ img.album-cover-tile {
 <script setup>
 
 import { ref } from "vue";
+import { api } from 'boot/axios'
+
 const defaultImage = 'images/vinyl.png';
 const imageURLs = ref([]);
 const loading = ref(false);
@@ -65,17 +67,18 @@ function getImgSource(index) {
 }
 
 function loadRandomAlbumImages() {
-  this.$api.album.getRandomAlbumCoverThumbnails().then(response => {
-    if (response.data.coverURLs.length >= 32) {
-      this.imageURLs = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
+  api.album.getRandomCovers().then(response => {
+    if (response.data.coverURLs.length >= 16) {
+      imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
     }
   }).catch(error => {
-    this.imageURLs = [];
+    imageURLs.value = [];
   });
 }
 
 function onImageError(event) {
-  event.target.src = this.defaultImage;
+  event.target.src = defaultImage;
 }
 
+loadRandomAlbumImages();
 </script>

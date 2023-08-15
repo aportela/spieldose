@@ -111,6 +111,20 @@ const api = {
       });
     },
   },
+  album: {
+    getRandomCovers: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("api/2/random_album_covers", {})
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
 };
 
 export default boot(({ app }) => {

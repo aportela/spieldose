@@ -181,7 +181,7 @@ class Track
         }
     }
 
-    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, $width, $height)
+    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
     {
         $results = $db->query(
             "
@@ -202,7 +202,7 @@ class Track
             if (!empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
                 $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
                 $thumbnail->setDimensions($width, $height);
-                $thumbnail->setQuality(\aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY);
+                $thumbnail->setQuality($quality);
                 if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath)) {
                     return ($thumbnail->path);
                 } else {
@@ -216,7 +216,7 @@ class Track
         }
     }
 
-    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, $width, $height)
+    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
     {
         $results = $db->query(
             "
@@ -234,7 +234,7 @@ class Track
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
             $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
             $thumbnail->setDimensions($width, $height);
-            $thumbnail->setQuality(\aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY);
+            $thumbnail->setQuality($quality);
             $url = null;
             if ($width < 250) {
                 $url = sprintf("https://coverartarchive.org/release/%s/front-250", $results[0]->musicBrainzAlbumId);

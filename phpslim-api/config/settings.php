@@ -99,17 +99,18 @@ $settings['twig'] = [
     'options' =>  ['auto_reload' => true, 'cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'twig_cache']
 ];
 
-
 $settings['thumbnails'] = [
-    'path' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails',
+    'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails',
     'sizes' => [
         'small' => [
             'width' => 100,
-            'height' => 100
+            'height' => 100,
+            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
         ],
         'normal' => [
             'width' => 400,
-            'height' => 400
+            'height' => 400,
+            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
         ]
     ]
 ];
