@@ -99,6 +99,21 @@ $settings['twig'] = [
     'options' =>  ['auto_reload' => true, 'cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'twig_cache']
 ];
 
+
+$settings['thumbnails'] = [
+    'path' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails',
+    'sizes' => [
+        'small' => [
+            'width' => 100,
+            'height' => 100
+        ],
+        'normal' => [
+            'width' => 400,
+            'height' => 400
+        ]
+    ]
+];
+
 $settings['common'] = [
     'defaultResultsPage' => 64,
     'allowSignUp' => true,

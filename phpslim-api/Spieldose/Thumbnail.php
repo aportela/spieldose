@@ -44,7 +44,7 @@ class Thumbnail
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             if ($httpCode == 200 && $image) {
                 $tmpFilename = tempnam(sys_get_temp_dir(), "THUMB");
-                if(file_exists($tmpFilename)) {
+                if (file_exists($tmpFilename)) {
                     unlink($tmpFilename);
                 }
                 $f = fopen($tmpFilename, 'w');
@@ -57,7 +57,7 @@ class Thumbnail
             if ($curl) {
                 curl_close($curl);
             }
-            return($tmpFilename);
+            return ($tmpFilename);
         }
     }
 
@@ -70,7 +70,7 @@ class Thumbnail
      */
     private static function getDir(string $hash)
     {
-        return(dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . substr($hash, 0, 1) . DIRECTORY_SEPARATOR . substr($hash, 1, 1));
+        return (dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . substr($hash, 0, 1) . DIRECTORY_SEPARATOR . substr($hash, 1, 1));
     }
 
     /**
@@ -82,7 +82,7 @@ class Thumbnail
      */
     private static function getFilename(string $hash)
     {
-        return(sprintf("%s%s", $hash, self::OUTPUT_FORMAT_EXTENSION));
+        return (sprintf("%s%s", $hash, self::OUTPUT_FORMAT_EXTENSION));
     }
 
     /**
@@ -95,7 +95,7 @@ class Thumbnail
      */
     private static function getCompletePath(string $baseDirectory = "", string $filename = "")
     {
-        return(sprintf("%s%s%s", $baseDirectory, DIRECTORY_SEPARATOR, $filename));
+        return (sprintf("%s%s%s", $baseDirectory, DIRECTORY_SEPARATOR, $filename));
     }
 
     /**
@@ -108,7 +108,7 @@ class Thumbnail
      */
     private static function generateThumbnail(string $sourcePath = "", string $destDir = "", string $destFilename = "")
     {
-        if (! empty($sourcePath) && file_exists($sourcePath)) {
+        if (!empty($sourcePath) && file_exists($sourcePath)) {
             try {
                 $thumb = ImageWorkshop::initFromPath($sourcePath);
                 if ($thumb->getWidth() > self::WIDTH) {
@@ -132,13 +132,13 @@ class Thumbnail
      */
     public static function getCachedLocalPathFromUrl(string $url = "")
     {
-        if (! empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+        if (!empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
             $hash = sha1($url);
             $dir = self::getDir($hash);
             $filename = self::getFilename($hash);
-            $thumbPath =self::getCompletePath($dir, $filename);
+            $thumbPath = self::getCompletePath($dir, $filename);
             // local cached file not found
-            if (! file_exists($thumbPath)) {
+            if (!file_exists($thumbPath)) {
                 // get remote image
                 $tmpFile = self::saveRemoteImageOnTemporalPath($url);
                 if ($tmpFile) {
@@ -146,10 +146,10 @@ class Thumbnail
                     self::generateThumbnail($tmpFile, $dir, $filename);
                     unlink($tmpFile);
                 } else {
-                    return(null);
+                    return (null);
                 }
             }
-            return($thumbPath);
+            return ($thumbPath);
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("url");
         }
@@ -165,17 +165,17 @@ class Thumbnail
      */
     public static function getCachedLocalPathFromHash(\Spieldose\Database\DB $dbh, string $hash = "")
     {
-        if (! empty($hash)) {
+        if (!empty($hash)) {
             $localPath = \Spieldose\Album::getLocalPath($dbh, $hash);
             $dir = self::getDir($hash);
             $filename = self::getFilename($hash);
-            $thumbPath =self::getCompletePath($dir, $filename);
+            $thumbPath = self::getCompletePath($dir, $filename);
             // local cached file not found
-            if (! file_exists($thumbPath)) {
+            if (!file_exists($thumbPath)) {
                 // generate local cached thumbnail from local folder existent image
                 self::generateThumbnail($localPath, $dir, $filename);
             }
-            return($thumbPath);
+            return ($thumbPath);
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("url");
         }
@@ -193,10 +193,9 @@ class Thumbnail
         $query = " SELECT DISTINCT(image) FROM MB_CACHE_ALBUM WHERE image IS NOT NULL ORDER BY RANDOM() ";
         $results = $dbh->query($query, array());
         $thumbnails = array();
-        foreach($results as $result) {
+        foreach ($results as $result) {
             $thumbnails[] = $result->image;
         }
-        return($thumbnails);
+        return ($thumbnails);
     }
-
 }

@@ -68,6 +68,58 @@ return function (App $app) {
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
+
+            $group->get('/track/thumbnail/{size}/{id}', function (Request $request, Response $response, array $args) {
+                if (!in_array($args['size'], ['small', 'normal'])) {
+                    throw new \Spieldose\Exception\InvalidParamsException('size');
+                }
+                $logger = $this->get(\Spieldose\Logger\HTTPRequestLogger::class);
+                $settings = $this->get('settings')['thumbnails'];
+
+                //$logger->info($request->getMethod() . " " . $request->getUri()->getPath());
+                //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                $localPathNormalSize = null;
+                try {
+                    $localPathNormalSize = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($settings['sizes']['normal']['height']), intval($settings['sizes']['normal']['height']));
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+                if (empty($localPathNormalSize)) {
+                    try {
+                        $localPathNormalSize = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($settings['sizes']['normal']['height']), intval($settings['sizes']['normal']['height']));
+                    } catch (\Spieldose\Exception\NotFoundException $e) {
+                    }
+                }
+                $localPathSmallSize = null;
+                try {
+                    $localPathSmallSize = \Spieldose\Track::getLocalThumbnail($db, $logger, $args['id'], intval($settings['sizes']['small']['height']), intval($settings['sizes']['small']['height']));
+                } catch (\Spieldose\Exception\NotFoundException $e) {
+                }
+                if (empty($localPathSmallSize)) {
+                    try {
+                        $localPathSmallSize = \Spieldose\Track::getRemoteThumbnail($db, $logger, $args['id'], intval($settings['sizes']['small']['height']), intval($settings['sizes']['small']['height']));
+                    } catch (\Spieldose\Exception\NotFoundException $e) {
+                    }
+                }
+                $localPath = $args['size'] == 'small' ? $localPathSmallSize : $localPathNormalSize;
+                if (!empty($localPath) && file_exists(($localPath))) {
+                    $filesize = filesize($localPath);
+                    $f = fopen($localPath, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    $response->getBody()->write($data);
+                    return $response
+                        ->withHeader('Content-Type', 'image/jpeg')
+                        ->withHeader('Content-Length', $filesize)
+                        ->withHeader('ETag', sha1($args['id'] . $localPath . $filesize))
+                        ->withHeader('Cache-Control', 'max-age=86400')
+                        ->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for id: ' . $args['id']);
+                }
+            });
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
