@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="row items-center">
-      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-4 offset-md-4 col-lg-4 offset-lg-0 col-xl-4 offset-xl-0 desktop-only justify-center q-pa-xl">
+      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-0 col-xl-3 offset-xl-0 desktop-only justify-center q-pa-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="equilizer" viewBox="0 0 128 128">
           <g>
             <title>Audio Equalizer</title>
@@ -57,7 +57,7 @@
           </form>
         </q-card>
       </div>
-      <div class="gt-md col-lg-8 col-xl-8 container_tiles">
+      <div class="gt-md col-lg-8 col-xl-9 container_tiles">
         <TileAlbumImages></TileAlbumImages>
       </div>
     </div>
