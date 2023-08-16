@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
 
 const localStorageBasilOptions = {
-  namespace: "homedocs",
+  namespace: "spieldose",
   storages: ["local", "cookie", "session", "memory"],
   storage: "local",
   expireDays: 3650,
