@@ -112,10 +112,10 @@ const api = {
     },
   },
   album: {
-    getRandomCovers: function () {
+    getSmallRandomCovers: function (count = 32) {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/random_album_covers", {})
+          .get("api/2/album/small_random_covers/" + count, {})
           .then((response) => {
             resolve(response);
           })

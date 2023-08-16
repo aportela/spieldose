@@ -152,13 +152,13 @@ return function (App $app) {
                 }
             });
 
-            $group->get('/random_album_covers', function (Request $request, Response $response, array $args) {
+            $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
                 $settings = $this->get('settings')['thumbnails'];
-                $lp = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
+                $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
                 $urls = [];
-                $hashes = array();
-                if (file_exists($lp)) {
-                    $rdi = new \RecursiveDirectoryIterator($lp);
+                if (file_exists($coverBasePath)) {
+                    $hashes = array();
+                    $rdi = new \RecursiveDirectoryIterator($coverBasePath);
                     foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
                         $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
                         if (in_array($extension, ['jpg'])) {
@@ -166,7 +166,10 @@ return function (App $app) {
                         }
                     }
                     shuffle($hashes);
-                    $hashes = array_slice($hashes, 0, 32);
+                    $count = intval($args["count"]);
+                    if (count($hashes) > $count) {
+                        $hashes = array_slice($hashes, 0, $count);
+                    }
                     $uri = $request->getUri();
                     $urls = array_map(
                         fn ($url) =>

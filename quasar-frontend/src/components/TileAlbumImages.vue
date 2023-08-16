@@ -1,19 +1,18 @@
 <template>
-  <div id="container_tiles" v-if="!loading">
-    <div v-for="column in [0, 1, 2, 3, 4, 5]" :key="column">
-      <div class="row" v-for="column in [0,1,2,3,4,5]" :key="column">
-          <div class="col-2" v-for="row in [0,1,2,3,4,5]" :key="row" :style="'background-color: ' + getRandomColor() + ';'">
-            <img class="album-cover-tile" v-if="imageURLs.length > 0" :src="getImgSource((5 * column) + row)"
+  <div id="spieldose-album-cover-tiles-container" v-if="!loading">
+    <div class="row" v-for="row in [0, 1, 2, 3, 4, 5]" :key="row">
+      <div class="col-2" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column"
+        :style="'background-color: ' + getRandomColor() + ';'">
+        <img class="spieldose-album-cover-tile" v-if="imageURLs.length > 0" :src="getImgSource((6*row) + column)"
           @error="onImageError($event)">
-          <img class="album-cover-tile" :src="defaultImage" v-else>
-        </div>
+        <img class="spieldose-album-cover-tile" :src="defaultImage" v-else>
       </div>
     </div>
   </div>
 </template>
 
 <style>
-div#container_tiles {
+div#spieldose-album-cover-tiles-container {
   box-shadow: inset 24px 4px 64px -24px rgba(71, 71, 71, 1);
   background-color: #666;
   height: 100vh;
@@ -23,21 +22,12 @@ div#container_tiles {
   opacity: 0.5;
 }
 
-/**
-  * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
-  * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
-*/
-
-img {
-  height: auto;
-  max-width: 100%;
-}
-
-img.album-cover-tile {
+img.spieldose-album-cover-tile {
   width: 100%;
+  max-width: 100%;
+  height: auto;
   aspect-ratio: 1 / 1;
 }
-
 </style>
 
 <script setup>
@@ -45,10 +35,17 @@ img.album-cover-tile {
 import { ref } from "vue";
 import { api } from 'boot/axios'
 
+/**
+  * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
+  * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
+*/
+
 const defaultImage = 'images/vinyl.png';
+
 const imageURLs = ref([]);
 const loading = ref(false);
 
+// https://stackoverflow.com/a/1484514
 function getRandomColor() {
   const allowed = "ABCDEF0123456789";
   let S = "#";
@@ -67,12 +64,12 @@ function getImgSource(index) {
 }
 
 function loadRandomAlbumImages() {
-  api.album.getRandomCovers().then(response => {
-    if (response.data.coverURLs.length >= 16) {
+  api.album.getSmallRandomCovers(32).then(response => {
+    if (response.data.coverURLs.length > 0) {
       imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
     }
   }).catch(error => {
-    imageURLs.value = [];
+    // TODO
   });
 }
 
@@ -81,4 +78,5 @@ function onImageError(event) {
 }
 
 loadRandomAlbumImages();
+
 </script>
