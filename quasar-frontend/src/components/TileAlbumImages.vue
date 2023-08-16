@@ -64,12 +64,14 @@ function getImgSource(index) {
 }
 
 function loadRandomAlbumImages() {
+  loading.value = true;
   api.album.getSmallRandomCovers(42).then(response => {
     if (response.data.coverURLs.length > 0) {
       imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
+      loading.value = false;
     }
   }).catch(error => {
-    // TODO
+    loading.value = false;
   });
 }
 
