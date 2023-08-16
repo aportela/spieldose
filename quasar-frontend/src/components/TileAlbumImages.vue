@@ -1,6 +1,6 @@
 <template>
   <div id="spieldose-album-cover-tiles-container" v-if="!loading">
-    <div class="row" v-for="row in [0, 1, 2, 3, 4, 5]" :key="row">
+    <div class="row" v-for="row in [0, 1, 2, 3, 4, 5, 6]" :key="row">
       <div class="col-2" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column"
         :style="'background-color: ' + getRandomColor() + ';'">
         <img class="spieldose-album-cover-tile" v-if="imageURLs.length > 0" :src="getImgSource((6*row) + column)"
@@ -64,7 +64,7 @@ function getImgSource(index) {
 }
 
 function loadRandomAlbumImages() {
-  api.album.getSmallRandomCovers(32).then(response => {
+  api.album.getSmallRandomCovers(42).then(response => {
     if (response.data.coverURLs.length > 0) {
       imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
     }
