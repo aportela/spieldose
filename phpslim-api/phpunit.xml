@@ -3,6 +3,7 @@
     <testsuites>
         <testsuite name="remote-thumbnail-cache-wrapper-test-suite">
             <file>Spieldose/Test/UserTest.php</file>
+            <file>Spieldose/Test/UserSessionTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
