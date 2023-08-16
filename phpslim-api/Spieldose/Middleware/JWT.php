@@ -25,7 +25,7 @@ class JWT
      */
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Server\RequestHandlerInterface $handler): \Psr\Http\Message\ResponseInterface
     {
-        $clientHeaderJWT = $request->hasHeader("Spieldose-JWT") ? $request->getHeader("Spieldose-JWT")[0] : null;
+        $clientHeaderJWT = $request->hasHeader("SPIELDOSE-JWT") ? $request->getHeader("SPIELDOSE-JWT")[0] : null;
         // user not logged (or session lost) && jwt auth header found => re-auth with jwt
         if (!\Spieldose\UserSession::isLogged() && !empty($clientHeaderJWT)) {
             // try decoding jwt data
@@ -39,7 +39,7 @@ class JWT
             }
             $response = $handler->handle($request);
             if (!empty($clientHeaderJWT)) {
-                return $response->withHeader("Spieldose-JWT", $clientHeaderJWT);
+                return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
             }
@@ -57,7 +57,7 @@ class JWT
             }
 
             if ($clientHeaderJWT && \Spieldose\UserSession::isLogged()) {
-                return $response->withHeader("Spieldose-JWT", $clientHeaderJWT);
+                return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
             } else {
                 return ($response);
             }
