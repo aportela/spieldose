@@ -49,6 +49,8 @@ axios.interceptors.response.use(
   }
 );
 
+const baseAPIPath = "api/2";
+
 const api = {
   common: {
     initialState: function () {
@@ -72,7 +74,7 @@ const api = {
           password: password,
         };
         axios
-          .post("api/2/user/sign-in", params)
+          .post(baseAPIPath + "/user/sign-in", params)
           .then((response) => {
             resolve(response);
           })
@@ -84,7 +86,7 @@ const api = {
     signOut: function () {
       return new Promise((resolve, reject) => {
         axios
-          .post("api/2/user/sign-out", {})
+          .post(baseAPIPath + "/user/sign-out", {})
           .then((response) => {
             resolve(response);
           })
@@ -101,7 +103,7 @@ const api = {
           password: password,
         };
         axios
-          .post("api/2/user/sign-up", params)
+          .post(baseAPIPath + "/user/sign-up", params)
           .then((response) => {
             resolve(response);
           })
@@ -115,7 +117,7 @@ const api = {
     getSmallRandomCovers: function (count = 32) {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/album/small_random_covers/" + count, {})
+          .get(baseAPIPath + "/album/small_random_covers/" + count, {})
           .then((response) => {
             resolve(response);
           })
