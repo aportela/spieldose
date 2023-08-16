@@ -1,7 +1,7 @@
 <template>
   <q-page class2="flex flex-center bg-grey-2">
     <div class="row items-center">
-      <div class="col col-12 col-md-8 col-lg-6 col-xl-4 desktop-only justify-center q-pa-xl">
+      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-4 offset-md-4 col-lg-4 offset-lg-0 col-xl-4 offset-xl-0" class_="col col-12 col-md-6 col-lg-4 col-xl-4 desktop-only justify-center q-pa-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="equilizer" viewBox="0 0 128 128">
           <g>
             <title>Audio Equalizer</title>
@@ -57,8 +57,8 @@
           </form>
         </q-card>
       </div>
-      <div class="col col-8 gt-lg container_tiles">
-        <TitleAlbumImages></TitleAlbumImages>
+      <div class="gt-md col-lg-8 col-xl-8 container_tiles">
+        <TileAlbumImages></TileAlbumImages>
       </div>
     </div>
   </q-page>
@@ -216,8 +216,7 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
-
-import { default as TitleAlbumImages } from "components/TileAlbumImages.vue";
+import { default as TileAlbumImages } from "components/TileAlbumImages.vue";
 
 const { t } = useI18n();
 
