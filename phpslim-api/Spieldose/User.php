@@ -6,10 +6,10 @@ namespace Spieldose;
 
 class User
 {
-    public $id;
-    public $email;
-    public $password;
-    public $passwordHash;
+    public ?string $id;
+    public ?string $email;
+    public ?string $password;
+    public ?string $passwordHash;
 
     public function __construct(string $id = "", string $email = "", string $password = "")
     {
