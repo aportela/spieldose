@@ -6,7 +6,7 @@ namespace Spieldose\Test;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-final class UserTest extends \Spieldose\Test\BaseTest
+final class UserTest extends BaseTest
 {
     public function testAddWithoutId(): void
     {

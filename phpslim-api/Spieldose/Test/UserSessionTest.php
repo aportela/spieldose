@@ -6,18 +6,8 @@ namespace Spieldose\Test;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-final class UserSessionTest extends \Spieldose\Test\BaseTest
+final class UserSessionTest extends BaseTest
 {
-    /**
-     * Clean up the whole test class
-     */
-    public static function tearDownAfterClass(): void
-    {
-        self::$dbh = null;
-        self::$container = null;
-        self::$app = null;
-    }
-
     public function testIsLoggedWithoutSession(): void
     {
         \Spieldose\User::signOut();
