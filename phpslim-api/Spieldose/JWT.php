@@ -6,8 +6,8 @@ class JWT
 {
     public const ALGORITHM = 'HS256';
 
-    private $logger;
-    private $passphrase;
+    private \Psr\Log\LoggerInterface $logger;
+    private string $passphrase;
 
     /**
      * jwt constructor
