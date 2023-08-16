@@ -1,7 +1,7 @@
 <template>
-  <q-page class2="flex flex-center bg-grey-2">
+  <q-page>
     <div class="row items-center">
-      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-4 offset-md-4 col-lg-4 offset-lg-0 col-xl-4 offset-xl-0" class_="col col-12 col-md-6 col-lg-4 col-xl-4 desktop-only justify-center q-pa-xl">
+      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-4 offset-md-4 col-lg-4 offset-lg-0 col-xl-4 offset-xl-0 desktop-only justify-center q-pa-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="equilizer" viewBox="0 0 128 128">
           <g>
             <title>Audio Equalizer</title>
