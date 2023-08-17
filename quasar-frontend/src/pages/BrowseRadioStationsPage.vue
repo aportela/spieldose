@@ -1,6 +1,6 @@
 <template>
   <leftSidebar></leftSidebar>
-  <div>Dashboard</div>
+  <div>Radio stations</div>
 </template>
 
 <script>
@@ -8,7 +8,7 @@ import { defineComponent } from 'vue'
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 
 export default defineComponent({
-  name: 'DashboardPage',
+  name: 'BrowseRadioStationsPage',
   components: {
     'leftSidebar': leftSidebar
   }

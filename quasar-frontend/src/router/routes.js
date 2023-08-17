@@ -29,6 +29,41 @@ const routes = [
         path: "dashboard",
         component: () => import("pages/DashboardPage.vue"),
       },
+      {
+        name: "currentPlaylist",
+        path: "current_playlist",
+        component: () => import("pages/CurrentPlaylistPage.vue"),
+      },
+      {
+        name: "search",
+        path: "search",
+        component: () => import("pages/SearchPage.vue"),
+      },
+      {
+        name: "artists",
+        path: "artists",
+        component: () => import("pages/BrowseArtistsPage.vue"),
+      },
+      {
+        name: "albums",
+        path: "albums",
+        component: () => import("pages/BrowseAlbumsPage.vue"),
+      },
+      {
+        name: "paths",
+        path: "paths",
+        component: () => import("pages/BrowsePathsPage.vue"),
+      },
+      {
+        name: "playlists",
+        path: "playlists",
+        component: () => import("pages/BrowsePlaylistsPage.vue"),
+      },
+      {
+        name: "radioStations",
+        path: "radio_stations",
+        component: () => import("pages/BrowseRadioStationsPage.vue"),
+      },
     ],
   },
   // Always leave this as last one,

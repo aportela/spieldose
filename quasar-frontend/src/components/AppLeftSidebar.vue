@@ -1,5 +1,4 @@
 <template>
-  <div>sidebar</div>
   <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="400">
     <leftSidebarPlayer></leftSidebarPlayer>
     <leftSidebarMenu></leftSidebarMenu>
