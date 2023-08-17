@@ -3,7 +3,6 @@ const routes = [
     path: "/",
     component: () => import("layouts/SignInSignUpLayout.vue"),
     children: [
-      { path: "index", component: () => import("pages/IndexPage.vue") },
       {
         name: "signIn",
         path: "/sign_in",
@@ -24,6 +23,11 @@ const routes = [
         name: "index",
         path: "index",
         component: () => import("pages/IndexPage.vue"),
+      },
+      {
+        name: "dashboard",
+        path: "dashboard",
+        component: () => import("pages/DashboardPage.vue"),
       },
     ],
   },

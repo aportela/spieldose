@@ -12,9 +12,9 @@ export default boot(({ app, router, store }) => {
     // TODO: not found page
     if (isLogged) {
       if (!to.name) {
-        // no route => index
+        // no route => dashboard
         next({
-          name: "index",
+          name: "dashboard",
         });
       } else {
         // go to specified route

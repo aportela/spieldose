@@ -1,7 +1,8 @@
 <template>
   <q-page>
     <div class="row items-center">
-      <div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-0 col-xl-3 offset-xl-0 desktop-only justify-center q-pa-xl">
+      <div
+        class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-0 col-xl-3 offset-xl-0 desktop-only justify-center q-pa-xl">
         <CSSAnimatedAudioEqualizer></CSSAnimatedAudioEqualizer>
         <q-card class="q-pa-md my_card">
           <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
@@ -19,8 +20,8 @@
                   <q-icon name="alternate_email" />
                 </template>
               </q-input>
-              <q-input dense outlined rounded class="q-mt-md" ref="passwordRef" v-model="password" name="password" type="password"
-                :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
+              <q-input dense outlined rounded class="q-mt-md" ref="passwordRef" v-model="password" name="password"
+                type="password" :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
                 :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
                 <template v-slot:prepend>
                   <q-icon name="key" />
@@ -124,7 +125,7 @@ function onSubmitForm() {
       // TODO
       //session.signIn();
       router.push({
-        name: "index",
+        name: "dashboard",
       });
       loading.value = false;
     })
