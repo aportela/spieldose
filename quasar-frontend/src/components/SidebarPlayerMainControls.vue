@@ -1,15 +1,14 @@
 <template>
-    <div id="player_controls">
-      <ul class="list list--buttons">
-        <li><a href="#" class="list__link"><q-icon name="skip_previous"></q-icon></a></li>
-        <li><a href="#" class="list__link" style=""><q-icon name="play_arrow"></q-icon></a></li>
-        <li><a href="#" class="list__link"><q-icon name="skip_next"></q-icon></a></li>
-      </ul>
-    </div>
+  <div id="player_controls">
+    <ul class="list list--buttons">
+      <li><a href="#" class="list__link"><q-icon name="skip_previous"></q-icon></a></li>
+      <li><a href="#" class="list__link" style=""><q-icon name="play_arrow" @click="onPlay"></q-icon></a></li>
+      <li><a href="#" class="list__link"><q-icon name="skip_next"></q-icon></a></li>
+    </ul>
+  </div>
 </template>
 
 <style>
-
 div#player_controls {
   padding-bottom: 1rem;
 }
@@ -61,9 +60,12 @@ a {
   cursor: pointer;
   text-decoration: none;
 }
-
 </style>
 
 <script setup>
 
+const emit = defineEmits(['play']);
+function onPlay() {
+  emit('play');
+}
 </script>
