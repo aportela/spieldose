@@ -1,6 +1,17 @@
 <template>
   <leftSidebar></leftSidebar>
   <div class="q-pa-md">
+
+
+    <q-btn-group spread>
+      <q-btn outline color="dark" label="Clear" icon="clear" />
+      <q-btn outline color="dark" label="Random" icon="shuffle" @click="search" />
+      <q-btn outline color="dark" label="Previous" icon="skip_previous" />
+      <q-btn outline color="dark" label="Play" icon="play_arrow" />
+      <q-btn outline color="dark" label="Next" icon="skip_next" />
+      <q-btn outline color="dark" label="Download" icon="save_alt" />
+    </q-btn-group>
+
     <q-markup-table flat bordered>
       <thead>
         <tr>
