@@ -31,10 +31,10 @@
             <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
                 v-if="currentTrackIndex == index"></q-icon>{{ index + 1 }}/32</td>
             <td class="text-left">{{ track.title }}</td>
-            <td class="text-left"><router-link :class="{ 'text-white text-bold': currentTrackIndex == index }"
+            <td class="text-left"><router-link v-if="track.artist" :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.artist } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
                   track.artist }}</router-link></td>
-            <td class="text-left"><router-link :class="{ 'text-white text-bold': currentTrackIndex == index }"
+            <td class="text-left"><router-link v-if="track.albumArtist" :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.albumArtist } }"><q-icon name="link"
                   class="q-mr-sm"></q-icon>{{ track.albumArtist }}</router-link></td>
             <td class="text-left">{{ track.album }}<span class="is-clickable"><i class="fas fa-link ml-1"></i></span></td>
