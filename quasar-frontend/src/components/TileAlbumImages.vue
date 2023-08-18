@@ -68,8 +68,9 @@ function loadRandomAlbumImages() {
   api.album.getSmallRandomCovers(42).then(response => {
     if (response.data.coverURLs.length > 0) {
       imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
-      loading.value = false;
+
     }
+    loading.value = false;
   }).catch(error => {
     loading.value = false;
   });
