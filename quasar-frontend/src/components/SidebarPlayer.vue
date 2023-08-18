@@ -89,29 +89,9 @@ div#current_track_actions ul {
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerVolumeControl } from "components/SidebarPlayerVolumeControl.vue";
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
-
-const volume = ref(8);
-const elapsedSeconds = ref(0);
-const style = "background: url(images/vinyl.png) no-repeat; background-size: auto; background-size: cover;";
-
-const coverURL = "http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e";
-const customVinyl = ref(false);
-
-const volumeIcon = computed(() => {
-  if (volume.value == 0) {
-    return ('volume_off');
-  } else if (volume.value < 4) {
-    return ('volume_mute');
-  } else if (volume.value < 7) {
-    return ('volume_down');
-  } else {
-    return ('volume_up');
-  }
-});
 
 </script>
