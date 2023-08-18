@@ -1,7 +1,5 @@
 <template>
   <leftSidebar></leftSidebar>
-  <div>Dashboard</div>
-
   <div class="row q-col-gutter-xl">
     <div class="col-4">
       <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played tracks'"></DashboardBaseBlock>
@@ -28,7 +26,7 @@
   </div>
   <DashboardBaseBlock :icon="'analytics'" :title="'Play statistics'">
     <template v-slot:body>
-      <q-tabs v-model="tab" no-caps class="text-pink-7">
+      <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab name="hour" label="By hour" />
         <q-tab name="weekday" label="By weekday" />
         <q-tab name="month" label="By month" />
