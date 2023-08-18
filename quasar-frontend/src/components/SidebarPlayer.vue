@@ -1,12 +1,6 @@
 <template>
   <div>
-    <div id="rotating_album_cover" :style="style" v-if="customVinyl" @click.prevent="customVinyl = !customVinyl">
-      <img :src="coverURL">
-    </div>
-    <div id="album_cover" v-else @click.prevent="customVinyl = !customVinyl">
-      <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null" />
-      <img v-else src="images/vinyl.png" alt="Vinyl" />
-    </div>
+    <SidebarPlayerAlbumCover></SidebarPlayerAlbumCover>
     <q-list>
       <q-item>
         <q-item-section side>
@@ -62,13 +56,8 @@
 </template>
 
 <style>
-img {
-  width: 400px;
-  height: 400px;
-}
-
 div#player_controls {
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .list--buttons {
@@ -119,32 +108,11 @@ a {
   text-decoration: none;
 }
 
-div#rotating_album_cover {
-  display: block;
-  width: 400px;
-  height: 400px;
-  background-size: auto;
-  background-size: cover;
-}
-
-div#rotating_album_cover img {
-  width: 130px;
-  height: 130px;
-  top: 136px;
-  position: relative;
-  margin-left: 137px;
-  border-radius: 100%;
-}
-
-div#album_cover img {
-  width: 400px;
-  height: 400px;
-  display: block;
-}
 
 div#current_track_actions {
   padding: 1rem 4rem;
 }
+
 div#current_track_actions ul {
   display: flex;
   margin: 0;
@@ -156,6 +124,7 @@ div#current_track_actions ul {
 
 <script setup>
 import { ref, computed } from "vue";
+import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 
 const volume = ref(8);
 const elapsedSeconds = ref(0);
