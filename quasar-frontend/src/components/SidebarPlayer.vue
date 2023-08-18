@@ -16,19 +16,7 @@
         <li><a href="#" class="list__link"><q-icon name="skip_next"></q-icon></a></li>
       </ul>
     </div>
-    <q-list>
-      <q-item>
-        <q-item-section side>
-          00:00
-        </q-item-section>
-        <q-item-section>
-          <q-slider v-model="elapsedSeconds" :min="0" :max="10" label />
-        </q-item-section>
-        <q-item-section side>
-          00:00
-        </q-item-section>
-      </q-item>
-    </q-list>
+    <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
     <div id="current_track_actions">
       <ul class="list list--footer">
         <li class="text-h5"><q-icon name="reorder" title="Toggle navigation menu"></q-icon></li>
@@ -114,6 +102,7 @@ div#current_track_actions ul {
 import { ref, computed } from "vue";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerVolumeControl } from "components/SidebarPlayerVolumeControl.vue";
+import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 
 const volume = ref(8);
 const elapsedSeconds = ref(0);
