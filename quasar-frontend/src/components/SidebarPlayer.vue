@@ -1,19 +1,7 @@
 <template>
   <div>
     <SidebarPlayerAlbumCover></SidebarPlayerAlbumCover>
-    <q-list>
-      <q-item>
-        <q-item-section side>
-          <q-icon :name="volumeIcon" />
-        </q-item-section>
-        <q-item-section>
-          <q-slider v-model="volume" :min="0" :max="10" label />
-        </q-item-section>
-        <q-item-section side>
-          {{ volume * 10 }}%
-        </q-item-section>
-      </q-item>
-    </q-list>
+    <SidebarPlayerVolumeControl></SidebarPlayerVolumeControl>
 
     <div id="song_info">
       <p class="song_info_track text-center text-weight-bolder" style="color: #d30320;">Won’t Get Fooled Again</p>
@@ -125,6 +113,7 @@ div#current_track_actions ul {
 <script setup>
 import { ref, computed } from "vue";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
+import { default as SidebarPlayerVolumeControl } from "components/SidebarPlayerVolumeControl.vue";
 
 const volume = ref(8);
 const elapsedSeconds = ref(0);
