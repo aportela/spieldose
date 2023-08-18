@@ -127,6 +127,20 @@ const api = {
       });
     },
   },
+  track: {
+    search: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/track/search", {})
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
 };
 
 export default boot(({ app }) => {

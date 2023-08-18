@@ -69,6 +69,14 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/track/search', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $tracks = \Spieldose\Entities\Track::search($db);
+                $payload = json_encode(["tracks" => $tracks]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/track/thumbnail/{size}/{id}', function (Request $request, Response $response, array $args) {
                 if (!in_array($args['size'], ['small', 'normal'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('size');
