@@ -45,6 +45,11 @@ const routes = [
         component: () => import("pages/BrowseArtistsPage.vue"),
       },
       {
+        name: "artist",
+        path: "artist/:name",
+        component: () => import("pages/ArtistPage.vue"),
+      },
+      {
         name: "albums",
         path: "albums",
         component: () => import("pages/BrowseAlbumsPage.vue"),
