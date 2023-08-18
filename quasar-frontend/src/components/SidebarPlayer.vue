@@ -17,17 +17,7 @@
       </ul>
     </div>
     <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
-    <div id="current_track_actions">
-      <ul class="list list--footer">
-        <li class="text-h5"><q-icon name="reorder" title="Toggle navigation menu"></q-icon></li>
-        <li class="text-h5"><q-icon name="bar_chart" title="Toggle analyzer"></q-icon></li>
-        <li class="text-h5"><q-icon name="favorite" title="Love/unlove track"></q-icon></li>
-        <li class="text-h5"><q-icon name="shuffle" title="Toggle random sort"></q-icon></li>
-        <li class="text-h5"><q-icon name="replay" title="Toggle repeat mode"></q-icon></li>
-        <li class="text-h5"><q-icon name="file_download" title="Download track"></q-icon></li>
-        <li class="text-h5"><q-icon name="screenshot_monitor" title="Toggle section details"></q-icon></li>
-      </ul>
-    </div>
+    <SidebarPlayerTrackActions></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -103,6 +93,7 @@ import { ref, computed } from "vue";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerVolumeControl } from "components/SidebarPlayerVolumeControl.vue";
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
+import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 
 const volume = ref(8);
 const elapsedSeconds = ref(0);
