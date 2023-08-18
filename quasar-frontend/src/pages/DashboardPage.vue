@@ -1,40 +1,42 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <div class="row q-col-gutter-xl">
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played tracks'"></DashboardBaseBlock>
+  <q-page>
+    <leftSidebar></leftSidebar>
+    <div class="row q-col-gutter-xl">
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played tracks'"></DashboardBaseBlock>
+      </div>
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played albums'"></DashboardBaseBlock>
+      </div>
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played artists'"></DashboardBaseBlock>
+      </div>
+      <q-separator spaced />
     </div>
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played albums'"></DashboardBaseBlock>
+    <div class="row q-col-gutter-xl">
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played genres'"></DashboardBaseBlock>
+      </div>
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'schedule'" :title="'Recently added'"></DashboardBaseBlock>
+      </div>
+      <div class="col-4">
+        <DashboardBaseBlock :icon="'schedule'" :title="'Recently added'"></DashboardBaseBlock>
+      </div>
+      <q-separator spaced />
     </div>
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played artists'"></DashboardBaseBlock>
-    </div>
-    <q-separator spaced />
-  </div>
-  <div class="row q-col-gutter-xl">
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played genres'"></DashboardBaseBlock>
-    </div>
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'schedule'" :title="'Recently added'"></DashboardBaseBlock>
-    </div>
-    <div class="col-4">
-      <DashboardBaseBlock :icon="'schedule'" :title="'Recently added'"></DashboardBaseBlock>
-    </div>
-    <q-separator spaced />
-  </div>
-  <DashboardBaseBlock :icon="'analytics'" :title="'Play statistics'">
-    <template v-slot:body>
-      <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
-        <q-tab name="hour" label="By hour" />
-        <q-tab name="weekday" label="By weekday" />
-        <q-tab name="month" label="By month" />
-        <q-tab name="year" label="By year" />
-      </q-tabs>
-      <div class="ct-chart"></div>
-    </template>
-  </DashboardBaseBlock>
+    <DashboardBaseBlock :icon="'analytics'" :title="'Play statistics'">
+      <template v-slot:body>
+        <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
+          <q-tab name="hour" label="By hour" />
+          <q-tab name="weekday" label="By weekday" />
+          <q-tab name="month" label="By month" />
+          <q-tab name="year" label="By year" />
+        </q-tabs>
+        <div class="ct-chart"></div>
+      </template>
+    </DashboardBaseBlock>
+  </q-page>
 </template>
 
 <style lang="scss">
@@ -55,7 +57,7 @@ export default defineComponent({
   },
   setup() {
     const tab = 'weekday';
-    return( { tab });
+    return ({ tab });
   },
   mounted() {
     new BarChart('.ct-chart', {

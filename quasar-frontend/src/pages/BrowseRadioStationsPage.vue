@@ -1,6 +1,8 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <div>Radio stations</div>
+  <q-page>
+    <leftSidebar></leftSidebar>
+    <div>Radio stations</div>
+  </q-page>
 </template>
 
 <script>

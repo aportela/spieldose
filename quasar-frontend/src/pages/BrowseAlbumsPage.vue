@@ -1,6 +1,8 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <div>Albums</div>
+  <q-page>
+    <leftSidebar></leftSidebar>
+    <div>Albums</div>
+  </q-page>
 </template>
 
 <script>

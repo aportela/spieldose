@@ -1,6 +1,8 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <div>Paths</div>
+  <q-page>
+    <leftSidebar></leftSidebar>
+    <div>Paths</div>
+  </q-page>
 </template>
 
 <script>

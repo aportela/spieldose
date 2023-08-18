@@ -1,6 +1,8 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <div>Search</div>
+  <q-page>
+    <leftSidebar></leftSidebar>
+    <div>Search</div>
+  </q-page>
 </template>
 
 <script>

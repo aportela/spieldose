@@ -1,6 +1,6 @@
 <template>
-  <leftSidebar></leftSidebar>
-  <q-page padding>
+  <q-page>
+    <leftSidebar></leftSidebar>
     <!-- content -->
     Artist: {{ artistName }}
   </q-page>
