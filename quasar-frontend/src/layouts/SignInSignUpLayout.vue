@@ -6,12 +6,5 @@
   </q-layout>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue'
-
-export default defineComponent({
-  name: 'SignInSignUpLayout',
-  setup () {
-  }
-})
+<script setup>
 </script>
