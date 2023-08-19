@@ -60,54 +60,43 @@ if (count($missingExtensions) > 0) {
                 if ($totalArtistMBIds > 0) {
                     echo sprintf("Processing %d artist without MusicBrainz cached metadata%s", $totalArtistMBIds, PHP_EOL);
                     for ($i = 0; $i < $totalArtistMBIds; $i++) {
-                        $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
-                        if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
-                            $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
-                            // TODO: check not found exceptions
-                            $wikipediaPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
-                            if (count($wikipediaPageURLs) > 0) {
-                                $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                $wikiPage->setURL($wikipediaPageURLs[0]);
-                                $html = $wikiPage->getHTML();
-                                $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
-                            } else {
-                                $wikiDataPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA);
-                                if (count($wikiDataPageURLs) > 0) {
-                                    $item = new \aportela\MediaWikiWrapper\Wikidata\Item($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                    $item->setURL($wikiDataPageURLs[0]);
-                                    $title = $item->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
-                                    if (!empty($title)) {
-                                        $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                        $wikiPage->setTitle($title);
-                                        $html = $wikiPage->getHTML();
-                                        $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
+                        try {
+                            $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
+                            if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
+                                $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
+                                // TODO: check not found exceptions
+                                $wikipediaPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
+                                if (count($wikipediaPageURLs) > 0) {
+                                    $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
+                                    $wikiPage->setURL($wikipediaPageURLs[0]);
+                                    $html = $wikiPage->getHTML();
+                                    $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
+                                } else {
+                                    $wikiDataPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA);
+                                    if (count($wikiDataPageURLs) > 0) {
+                                        $item = new \aportela\MediaWikiWrapper\Wikidata\Item($logger, \aportela\MediaWikiWrapper\APIType::REST);
+                                        $item->setURL($wikiDataPageURLs[0]);
+                                        $title = $item->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
+                                        if (!empty($title)) {
+                                            $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
+                                            $wikiPage->setTitle($title);
+                                            $html = $wikiPage->getHTML();
+                                            $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
+                                        }
                                     }
                                 }
-                            }
-                            // TODO: check not found exceptions
-                            $lastFMPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
-                            if (count($lastFMPageURLs) > 0) {
-                                $wikiPage = new \aportela\LastFMWrapper\Artist($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                $wikiPage->setURL($wikipediaPageURLs[0]);
-                                $html = $wikiPage->getHTML();
-                                $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
-                            } else {
-                                $wikiDataPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA);
-                                if (count($wikiDataPageURLs) > 0) {
-                                    $item = new \aportela\MediaWikiWrapper\Wikidata\Item($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                    $item->setURL($wikiDataPageURLs[0]);
-                                    $title = $item->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
-                                    if (!empty($title)) {
-                                        $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                        $wikiPage->setTitle($title);
-                                        $html = $wikiPage->getHTML();
-                                        $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
-                                    }
+                                // TODO: check not found exceptions
+                                $lastFMPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+                                if (count($lastFMPageURLs) > 0) {
+                                    $scraper->saveArtistLastFMCachedMetadata($artistMBIds[$i], "summary", "content");
                                 }
                             }
+                        } catch (\Throwable $e) {
+                            print_r($e->getMessage());
+                        } finally {
+                            sleep(1); // wait 1 second between queries for prevent too much remote api requests in small amount of time and get banned
+                            \Spieldose\Utils::showProgressBar($i + 1, $totalArtistMBIds, 20, "MusicBrainzId: " . $artistMBIds[$i]);
                         }
-                        sleep(1); // wait 1 second between queries for prevent too much remote api requests in small amount of time and get banned
-                        \Spieldose\Utils::showProgressBar($i + 1, $totalArtistMBIds, 20, "MusicBrainzId: " . $artistMBIds[$i]);
                     }
                 } else {
                     echo sprintf("All Artist MusicBrainz metadata is cached%s", PHP_EOL);
