@@ -196,6 +196,21 @@ class Scraper
         $this->dbh->exec($query, $params);
     }
 
+    public function saveArtistLastFMCachedMetadata(string $mbArtistId, string $bioSummary, string $bioContent): void
+    {
+        $query = "
+            INSERT INTO MB_WIKIPEDIA_CACHE_ARTIST (artist_mbid, bio_summary, bio_content) VALUES (:artist_mbid, :bio_summary, :bio_content)
+                ON CONFLICT(`artist_mbid`) DO
+            UPDATE SET bio_summary = :bio_summary, bio_content = :bio_content
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbArtistId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", $bioSummary),
+            new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", $bioContent)
+        );
+        $this->dbh->exec($query, $params);
+    }
+
     public function getAlbumsWithoutMusicBrainzId(): array
     {
         $albums = array();

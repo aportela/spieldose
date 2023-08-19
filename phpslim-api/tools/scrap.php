@@ -64,7 +64,6 @@ if (count($missingExtensions) > 0) {
                             $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
                             if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
                                 $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
-
                                 // TODO: check not found exceptions
                                 $wikipediaPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
                                 if (count($wikipediaPageURLs) > 0) {
@@ -89,12 +88,7 @@ if (count($missingExtensions) > 0) {
                                 // TODO: check not found exceptions
                                 $lastFMPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
                                 if (count($lastFMPageURLs) > 0) {
-                                    /*
-                                    $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\APIType::REST);
-                                    $wikiPage->setURL($wikipediaPageURLs[0]);
-                                    $html = $wikiPage->getHTML();
-                                    $scraper->saveArtistWikipediaCachedMetadata($artistMBIds[$i], $html);
-                                    */
+                                    $scraper->saveArtistLastFMCachedMetadata($artistMBIds[$i], "summary", "content");
                                 }
                             }
                         } catch (\Throwable $e) {
