@@ -8,7 +8,7 @@
       <div id="artist-header-block-background-overlay"></div>
       <div id="artist-header-block-content">
         <div class="q-pl-xl q-pt-xl">
-          <p class="text-h3 text-bold">{{ artistName }}</p>
+          <p class="text-h3 text-bold">{{ artistName }} <q-icon name="settings" class="rotate" v-if="loading"></q-icon></p>
           <p class="text-white text-bold"><span class="text-grey"><q-icon name="groups" size="sm"
                 class="q-mr-sm"></q-icon> Listeners: </span>
             <span class="text-white">0 user/s</span>
@@ -57,15 +57,15 @@
         </q-tabs>
       </div>
     </div>
-    <q-tab-panels v-model="tab" animated>
+    <q-tab-panels v-model="tab" animated v-if="artistData">
       <q-tab-panel name="overview">
-        <div class="text-h6">Mails</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        <div class="text-h6">Overview</div>
+        {{ artistData.bio.summary }}
       </q-tab-panel>
 
       <q-tab-panel name="biography">
         <div class="text-h6">Alarms</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        {{ artistData.bio.content }}
       </q-tab-panel>
 
       <q-tab-panel name="similarArtists">
@@ -89,6 +89,21 @@
 </template>
 
 <style>
+
+.rotate {
+  width: 100px;
+  animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 div#artist-header-block {
   overflow: hidden;
   color: #fff;
@@ -130,11 +145,39 @@ div#artist-header-block-content {
 <script setup>
 import { ref } from 'vue'
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
-
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useQuasar } from "quasar";
+import { api } from 'boot/axios'
+
+const { t } = useI18n();
+const $q = useQuasar();
+
 const route = useRoute()
 const artistName = route.params.name;
 
 const tab = ref('overview');
 
+const loading = ref(false);
+
+const artistData = ref(null);
+
+loading.value = true;
+api.artist.get(artistName)
+  .then((success) => {
+    artistData.value = success.data.artist;
+    loading.value = false;
+  })
+  .catch((error) => {
+    loading.value = false;
+    switch (error.response.status) {
+      default:
+        $q.notify({
+          type: "negative",
+          message: t("API Error: fatal error"),
+          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        });
+        break;
+    }
+  });
 </script>
