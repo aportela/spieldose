@@ -129,4 +129,6 @@ $settings['jwt'] = [
 
 $settings['phpRequiredExtensions'] = array('pdo_sqlite', 'mbstring', 'curl');
 
+$settings['lastFMAPIKey'] = ""; // LAST.FM API KEY: required for scraping data from last fm
+
 return $settings;
