@@ -9,6 +9,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $name;
     public $image;
     public $relations = array();
+    public object $bio;
 
     private function getMBIdFromName(string $name): ?string
     {
@@ -43,7 +44,7 @@ class Artist extends \Spieldose\Entities\Entity
                         // https://musicbrainz.org/relationships/artist-url
                         if ($relation->{"target-type"} == "url") {
                             switch ($relation->{"type-id"}) {
-                                // image
+                                    // image
                                 case "221132e9-e30e-43f2-a741-15afc4c5fa7c":
                                     // official homepage
                                 case "fe33d22f-c3b0-4d68-bd53-a856badf2b15":
@@ -62,6 +63,17 @@ class Artist extends \Spieldose\Entities\Entity
                             }
                         }
                     }
+                }
+                $query = " SELECT bio_summary, bio_content FROM MB_LASTFM_CACHE_ARTIST WHERE artist_mbid = :mbid ";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $results = $this->dbh->query($query, $params);
+                if (count($results) == 1) {
+                    $this->bio = (object) [
+                        "summary" => $results[0]->bio_summary,
+                        "content" => $results[0]->bio_content
+                    ];
                 }
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");

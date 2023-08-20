@@ -160,6 +160,20 @@ return function (App $app) {
                 }
             });
 
+            $group->get('/artist/{name}', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $artist = new \Spieldose\Entities\Artist($db);
+                $artist->name = $args["name"];
+                $artist->get();
+                $payload = json_encode(
+                    [
+                        'artist' => $artist
+                    ]
+                );
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
                 $settings = $this->get('settings')['thumbnails'];
                 $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
