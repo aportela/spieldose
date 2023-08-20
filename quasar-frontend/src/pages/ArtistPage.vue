@@ -2,13 +2,13 @@
   <q-page>
     <leftSidebar></leftSidebar>
     <div id="artist-header-block">
-      <div id="artist-header-block-background-image"
-        style="background-image: url(https://commons.wikimedia.org/w/thumb.php?f=Bob_Dylan_-_Azkena_Rock_Festival_2010_1.jpg&w=400);">
+      <div id="artist-header-block-background-image" :style="'background-image: url(' + (artistImage || '#') + ')'">
       </div>
       <div id="artist-header-block-background-overlay"></div>
       <div id="artist-header-block-content">
         <div class="q-pl-xl q-pt-xl">
-          <p class="text-h3 text-bold">{{ artistName }} <q-icon name="settings" class="rotate" v-if="loading"></q-icon></p>
+          <p class="text-h3 text-bold">{{ artistName }} <q-icon name="settings" class="rotate" v-if="loading"></q-icon>
+          </p>
           <p class="text-white text-bold"><span class="text-grey"><q-icon name="groups" size="sm"
                 class="q-mr-sm"></q-icon> Listeners: </span>
             <span class="text-white">0 user/s</span>
@@ -59,29 +59,106 @@
     </div>
     <q-tab-panels v-model="tab" animated v-if="artistData">
       <q-tab-panel name="overview">
-        <div class="text-h6">Overview</div>
-        {{ artistData.bio.summary }}
+        <div class="row q-col-gutter-lg">
+          <div class="col-10">
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered>
+              <q-card-section>
+                <div class="text-h6">Overview</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div v-html="nl2br(artistData.bio.summary)"></div>
+              </q-card-section>
+            </q-card>
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered>
+              <q-card-section>
+                <div class="text-h6">Top tracks</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                  <q-markup-table dense style="width: 50%">
+                    <tbody>
+                      <tr v-for="index in [10, 9, 8, 7, 6, 5 ,4 ,3, 2, 1]" :key="index">
+                        <td class="text-right">{{ index }}</td>
+                        <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"></q-icon></td>
+                        <td class="text-left">
+                          <q-avatar>
+                            <img src="http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e">
+                          </q-avatar>
+                        </td>
+                        <td class="text-center"><q-icon name="favorite_border" size="lg" class="cursor-pointer"></q-icon></td>
+                        <td class="text-bold">Track {{ index }} title</td>
+                        <td>
+                          <p :style="'height: 100%; width: ' + (index * 10)+ '%'" class="bg-pink text-white">{{ 22 * index }} plays</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </q-markup-table>
+              </q-card-section>
+            </q-card>
+          </div>
+          <div class="col-2">
+            <q-card class="my-card shadow-box shadow-10" bordered>
+              <q-card-section>
+                Similar
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div class="row">
+                  <div class="col-4" v-for="index in [1, 2, 3]" :key="index">
+                    <p class="text-center">
+                      <q-avatar class="q-mr-sm q-mb-sm" style="width: 2em; height: 2em;">
+                        <img :src="artistImage">
+                      </q-avatar>
+                      Similar {{ index + 1 }}
+                    </p>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+            <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered>
+              <q-card-section>
+                Stats
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div class="ct-chart"></div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
       </q-tab-panel>
 
       <q-tab-panel name="biography">
-        <div class="text-h6">Alarms</div>
-        {{ artistData.bio.content }}
+        <div class="row q-col-gutter-lg">
+          <div class="col-12">
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered>
+              <q-card-section>
+                <div class="text-h6">Biography</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div v-html="nl2br(artistData.bio.content)"></div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
       </q-tab-panel>
 
       <q-tab-panel name="similarArtists">
-        <div class="text-h6">Movies</div>
+        <div class="text-h6">Similar artists</div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit.
       </q-tab-panel>
       <q-tab-panel name="albums">
-        <div class="text-h6">Movies</div>
+        <div class="text-h6">Albums</div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit.
       </q-tab-panel>
       <q-tab-panel name="tracks">
-        <div class="text-h6">Movies</div>
+        <div class="text-h6">Tracks</div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit.
       </q-tab-panel>
       <q-tab-panel name="stats">
-        <div class="text-h6">Movies</div>
+        <div class="text-h6">Stats</div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit.
       </q-tab-panel>
     </q-tab-panels>
@@ -89,7 +166,6 @@
 </template>
 
 <style>
-
 .rotate {
   width: 100px;
   animation: rotation 2s infinite linear;
@@ -99,10 +175,12 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(359deg);
   }
 }
+
 
 div#artist-header-block {
   overflow: hidden;
@@ -143,12 +221,14 @@ div#artist-header-block-content {
 </style>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from "quasar";
 import { api } from 'boot/axios'
+import { BarChart } from 'chartist';
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -162,10 +242,38 @@ const loading = ref(false);
 
 const artistData = ref(null);
 
+const artistImage = ref(null);
+
+
+onMounted(() => {
+  /*
+    new BarChart('.ct-chart', {
+      labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      series: [
+        [12, 9, 7, 8, 5, 4, 3]
+      ]
+    }, {
+      fullWidth: true,
+      chartPadding: {
+        right: 40
+      }
+    });
+*/
+});
+
+// https://gist.github.com/yidas/41cc9272d3dff50f3c9560fb05e7255e
+function nl2br(str, replaceMode, isXhtml) {
+  var breakTag = (isXhtml) ? '<br />' : '<br>';
+  var replaceStr = (replaceMode) ? '$1' + breakTag : '$1' + breakTag + '$2';
+  return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
+}
+
 loading.value = true;
 api.artist.get(artistName)
   .then((success) => {
     artistData.value = success.data.artist;
+    artistImage.value = artistData.value.image;
+    console.log(artistImage.value);
     loading.value = false;
   })
   .catch((error) => {
