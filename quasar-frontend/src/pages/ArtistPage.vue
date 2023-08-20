@@ -55,10 +55,36 @@
           <q-tab name="tracks" label="Tracks" />
           <q-tab name="stats" label="Stats" />
         </q-tabs>
-
       </div>
-
     </div>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="overview">
+        <div class="text-h6">Mails</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+
+      <q-tab-panel name="biography">
+        <div class="text-h6">Alarms</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+
+      <q-tab-panel name="similarArtists">
+        <div class="text-h6">Movies</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+      <q-tab-panel name="albums">
+        <div class="text-h6">Movies</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+      <q-tab-panel name="tracks">
+        <div class="text-h6">Movies</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+      <q-tab-panel name="stats">
+        <div class="text-h6">Movies</div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+    </q-tab-panels>
   </q-page>
 </template>
 
