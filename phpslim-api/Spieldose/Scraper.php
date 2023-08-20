@@ -65,7 +65,6 @@ class Scraper
                     DISTINCT FIT.mb_artist_id AS mbid
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_artist_id IS NOT NULL
-
                 UNION
 
                 SELECT
@@ -80,6 +79,7 @@ class Scraper
         }
         return ($mbIds);
     }
+
     public function getArtistMusicBrainzIdsWithoutCachedMetadata(): array
     {
         $mbIds = array();
@@ -90,7 +90,6 @@ class Scraper
                 WHERE FIT.mb_artist_id IS NOT NULL
                 AND NOT EXISTS
                     (SELECT mbid FROM MB_CACHE_ARTIST MCA WHERE MCA.mbid = FIT.mb_artist_id)
-
                 UNION
 
                 SELECT
@@ -179,6 +178,18 @@ class Scraper
                 $this->dbh->exec($query, $params);
             }
         }
+    }
+
+    public function saveArtistImage(string $mbArtistId, string $url): void
+    {
+        $query = "
+            UPDATE MB_CACHE_ARTIST SET image = :url WHERE mbid = :mbid
+        ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":url", $url),
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbArtistId)
+        );
+        $this->dbh->exec($query, $params);
     }
 
     public function saveArtistWikipediaCachedMetadata(string $mbArtistId, string $html): void
