@@ -113,6 +113,20 @@ const api = {
       });
     },
   },
+  artist: {
+    get: function (name) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("api/2/artist/" + encodeURIComponent(name), {})
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
   album: {
     getSmallRandomCovers: function (count = 32) {
       return new Promise((resolve, reject) => {
