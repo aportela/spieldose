@@ -4,6 +4,9 @@ use DI\ContainerBuilder;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
+
+
+
 $containerBuilder = new ContainerBuilder();
 
 // Set up settings
@@ -17,6 +20,7 @@ echo "Spieldose scraper" . PHP_EOL;
 $logger = $container->get(\Spieldose\Logger\ScraperLogger::class);
 
 $logger->info("Scrap started");
+
 
 $settings = $container->get('settings');
 
@@ -64,6 +68,23 @@ if (count($missingExtensions) > 0) {
                             $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
                             if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
                                 $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
+                                $artistImageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::IMAGE);
+                                if (count($artistImageURLs) > 0) {
+                                    if (str_starts_with($artistImageURLs[0], "https://commons.wikimedia.org/wiki/File:")) {
+                                        $fields = explode("/File:", $artistImageURLs[0]);
+                                        if (count($fields) == 2) {
+                                            $f = new \aportela\MediaWikiWrapper\Wikipedia\File($logger, \aportela\MediaWikiWrapper\APIType::REST);
+                                            $f->setTitle($fields[1]);
+                                            $f->get();
+                                            $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
+                                            if (!empty($url)) {
+                                                $scraper->saveArtistImage($mbArtist->mbId, $url);
+                                            }
+                                        }
+                                    } else {
+                                        $scraper->saveArtistImage($mbArtist->mbId, $artistImageURLs[0]);
+                                    }
+                                }
                                 // TODO: check not found exceptions
                                 $wikipediaPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
                                 if (count($wikipediaPageURLs) > 0) {
@@ -85,17 +106,20 @@ if (count($missingExtensions) > 0) {
                                         }
                                     }
                                 }
-                                // TODO: check not found exceptions
-                                $lastFMPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
-                                if (count($lastFMPageURLs) > 0) {
-                                    $scraper->saveArtistLastFMCachedMetadata($artistMBIds[$i], "summary", "content");
+                                if (!empty($settings["lastFMAPIKey"])) {
+                                    // TODO: check not found exceptions
+                                    $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings["lastFMAPIKey"]);
+                                    $lastFMArtist->get($mbArtist->name);
+                                    if (isset($lastFMArtist->bio) && isset($lastFMArtist->bio->summary) && isset($lastFMArtist->bio->content)) {
+                                        $scraper->saveArtistLastFMCachedMetadata($artistMBIds[$i], $lastFMArtist->bio->summary, $lastFMArtist->bio->content);
+                                    }
                                 }
                             }
                         } catch (\Throwable $e) {
                             print_r($e->getMessage());
                         } finally {
                             sleep(1); // wait 1 second between queries for prevent too much remote api requests in small amount of time and get banned
-                            \Spieldose\Utils::showProgressBar($i + 1, $totalArtistMBIds, 20, "MusicBrainzId: " . $artistMBIds[$i]);
+                            \Spieldose\Utils::showProgressBar($i + 1, $totalArtistMBIds, 20, "MusicBrainzId: " . $artistMBIds[$i] . ($mbArtist->name ? " - " . $mbArtist->name : ""));
                         }
                     }
                 } else {
