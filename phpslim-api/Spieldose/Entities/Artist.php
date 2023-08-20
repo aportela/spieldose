@@ -31,38 +31,25 @@ class Artist extends \Spieldose\Entities\Entity
             $this->mbId = $this->getMBIdFromName(($this->name));
         }
         if (!empty($this->mbId)) {
-            $query = " SELECT name, json FROM MB_CACHE_ARTIST WHERE mbid = :mbid ";
+            $query = " SELECT name, image FROM MB_CACHE_ARTIST WHERE mbid = :mbid ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
             );
             $results = $this->dbh->query($query, $params);
             if (count($results) == 1) {
                 $this->name = $results[0]->name;
-                $json = json_decode($results[0]->json ?? "{}");
-                if (isset($json->relations) && is_array($json->relations)) {
-                    foreach ($json->relations as $relation) {
-                        // https://musicbrainz.org/relationships/artist-url
-                        if ($relation->{"target-type"} == "url") {
-                            switch ($relation->{"type-id"}) {
-                                    // image
-                                case "221132e9-e30e-43f2-a741-15afc4c5fa7c":
-                                    // official homepage
-                                case "fe33d22f-c3b0-4d68-bd53-a856badf2b15":
-                                    // last.fm
-                                case "08db8098-c0df-4b78-82c3-c8697b4bba7f":
-                                    // wikidata
-                                case "689870a4-a1e4-4912-b17f-7b2664215698":
-                                    // wikipedia
-                                case "29651736-fa6d-48e4-aadc-a557c6add1cb":
-                                    $item = new \stdClass();
-                                    $item->id = $relation->{"type-id"};
-                                    $item->name = $relation->type;
-                                    $item->url = $relation->url;
-                                    $this->relations[] = $item;
-                                    break;
-                            }
-                        }
+                $this->image = $results[0]->image;
+                $query = " SELECT url_relationship_typeid, url_relationship_value FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $results = $this->dbh->query($query, $params);
+                if (count($results) > 0) {
+                    foreach ($results as $result) {
+                        $this->relations[] = (object) ["type-id" => $result->url_relationship_typeid, "url" => $result->url_relationship_value];
                     }
+                } else {
+                    $this->relations = [];
                 }
                 $query = " SELECT bio_summary, bio_content FROM MB_LASTFM_CACHE_ARTIST WHERE artist_mbid = :mbid ";
                 $params = array(
