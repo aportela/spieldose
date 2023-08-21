@@ -21,6 +21,12 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       state.currentIndex >= 0 && state.tracks.length > 0
         ? state.tracks[state.currentIndex]
         : null,
+    allowSkipPrevious: (state) =>
+      state.currentIndex > 0 && state.tracks.length > 0,
+    allowSkipNext: (state) =>
+      state.currentIndex > 0 &&
+      state.tracks.length > 0 &&
+      state.currentIndex < state.tracks.length - 1,
   },
 
   actions: {

@@ -5,7 +5,7 @@
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls :disabled="disablePlayerControls" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
+    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious" :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
