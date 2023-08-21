@@ -205,6 +205,50 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
+
+            $group->get('/file/{id}', function (Request $request, Response $response, array $args) {
+                if (!empty($args['id'])) {
+                    $file = new \Spieldose\File($this, $args['id']);
+                    $file->get();
+                    if (file_exists($file->path)) {
+                        //$track->incPlayCount($db);
+                        $length = $file->length;
+                        // https://stackoverflow.com/a/157447
+                        $partialContent = false;
+                        $offset = 0;
+                        if (isset($_SERVER['HTTP_RANGE'])) {
+                            // if the HTTP_RANGE header is set we're dealing with partial content
+                            $partialContent = true;
+                            // find the requested range
+                            // this might be too simplistic, apparently the client can request
+                            // multiple ranges, which can become pretty complex, so ignore it for now
+                            preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                            $offset = intval($matches[1]);
+                            $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
+                        }
+                        $response->getBody()->write($file->getData($offset, $length));
+                        if ($partialContent) {
+                            // output the right headers for partial content
+                            return $response->withStatus(206)
+                                ->withHeader('Content-Type', $file->mime ? $file->mime : 'application/octet-stream')
+                                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file->path) . '"')
+                                ->withHeader('Content-Length', $file->length)
+                                ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
+                                ->withHeader('Accept-Ranges', 'bytes');
+                        } else {
+                            return $response->withStatus(200)
+                                ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
+                                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file->path) . '"')
+                                ->withHeader('Content-Length', $file->length)
+                                ->withHeader('Accept-Ranges', 'bytes');
+                        }
+                    } else {
+                        throw new \Spieldose\Exception\NotFoundException('id');
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
