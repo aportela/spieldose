@@ -136,6 +136,13 @@ onMounted(() => {
   audioElement.value.addEventListener('playing', (event) => {
     console.debug('Audio is playing2');
   });
+  audioElement.value.addEventListener('ended', (event) => {
+    console.debug('Audio is ended');
+    playerStatus.setStatusStopped();
+    if (currentPlaylist.allowSkipNext) {
+      skipNext();
+    }
+  });
   audioElement.value.addEventListener('error', (event) => {
     console.debug('Audio loading error');
     console.log(event);
