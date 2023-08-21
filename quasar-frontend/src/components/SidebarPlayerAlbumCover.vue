@@ -1,5 +1,6 @@
 <template>
-  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotate}" :style="style" v-if="customVinyl" @click.prevent="customVinyl = !customVinyl">
+  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotate }" :style="style" v-if="customVinyl"
+    @click.prevent="customVinyl = !customVinyl">
     <img :src="coverURLSmall" v-if="coverURLSmall" @error="coverURLSmall = null">
   </div>
   <div id="album_cover" v-else @click.prevent="customVinyl = !customVinyl">
@@ -38,63 +39,58 @@ div#album_cover img {
 }
 
 div.is_rotating_album_cover {
-    animation: rotation 8s linear infinite;
-    z-index: 1;
+  animation: rotation 8s linear infinite;
+  z-index: 1;
 }
 
 @keyframes rotation {
-    from {
-        transform: rotate(0deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
 
-    to {
-        transform: rotate(359deg);
-    }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 @-webkit-keyframes rotate {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
+  from {
+    -webkit-transform: rotate(0deg);
+  }
 
-    to {
-        -webkit-transform: rotate(359deg);
-    }
+  to {
+    -webkit-transform: rotate(359deg);
+  }
 }
 
 div#analyzer-container {
-    z-index: 2;
-    margin-top: 4px;
-    position: relative;
+  z-index: 2;
+  margin-top: 4px;
+  position: relative;
 }
-
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 
 const props = defineProps({
   trackId: String,
   rotate: Boolean
 });
 
+const coverURLSmall = ref(null);
+const coverURL = ref(null);
+
+const trackId = computed(() => {
+  return (props.trackId);
+});
+
+watch(trackId, (newValue) => {
+  coverURLSmall.value = "/api/2/track/thumbnail/small/" + newValue;
+  coverURL.value = "/api/2/track/thumbnail/normal/" + newValue;
+});
+
 const style = "background: url(images/vinyl.png) no-repeat; background-size: auto; background-size: cover;";
-
-const coverURL = computed(() => {
-  if (props.trackId) {
-    return("/api/2/track/thumbnail/normal/" + props.trackId);
-  } else {
-    return(null);
-  }
-});
-
-const coverURLSmall = computed(() => {
-  if (props.trackId) {
-    return("/api/2/track/thumbnail/small/" + props.trackId);
-  } else {
-    return(null);
-  }
-});
 
 const customVinyl = ref(false);
 
