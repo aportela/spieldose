@@ -4,7 +4,7 @@
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl></SidebarPlayerVolumeControl>
-    <SidebarPlayerTrackInfo></SidebarPlayerTrackInfo>
+    <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls @play="play"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions></SidebarPlayerTrackActions>
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
@@ -22,19 +22,27 @@ import { default as SidebarPlayerTrackInfo } from "components/SidebarPlayerTrack
 import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMainControls.vue";
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
 const audioElement = ref(null);
 const audioElementMotion = ref(null);
 
 const showAnalyzer = ref(true);
 const audioElementMotionMode = ref(4);
-onMounted(() => {
 
-  audioElement.value = document.getElementById('audio');
-  audioElement.value.volume = 1;
+const currentPlaylist = useCurrentPlaylistStore();
 
-  audioElement.value.src = "http://localhost:8181/api2/file/653c10ce39a8aa541e68730d975e17686ca5e940";
+const currentTrackURL = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return(currentTrack ? "api/2/file/" + currentTrack.id: null);
+});
 
+watch(currentTrackURL, (newValue) => {
+  audioElement.value.src = newValue;
+  play();
+});
+
+function createAnalyzer() {
   if (!audioElementMotion.value) {
     audioElementMotion.value = new AudioMotionAnalyzer(
       document.getElementById('analyzer-container'),
@@ -78,7 +86,12 @@ onMounted(() => {
   if (!audioElementMotion.value.isOn) {
     audioElementMotion.value.toggleAnalyzer();
   }
+}
 
+onMounted(() => {
+
+  audioElement.value = document.getElementById('audio');
+  audioElement.value.volume = 1;
 
   audioElement.value.addEventListener('canplay', (event) => {
     console.log("Buffering audio end");
@@ -101,6 +114,5 @@ function play() {
   audioElement.value.load();
   console.log("play");
   audioElement.value.play();
-
 }
 </script>
