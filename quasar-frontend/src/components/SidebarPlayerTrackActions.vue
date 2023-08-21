@@ -11,7 +11,7 @@
           title="Toggle random sort"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disabled="true"><q-icon name="replay" class="cursor-pointer"
           title="Toggle repeat mode"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="file_download" class="cursor-pointer"
+      <q-btn dense unelevated size="md" :disabled="true" :href="downloadURL || '#'"><q-icon name="file_download" class="cursor-pointer"
           title="Download track"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disabled="true"><q-icon name="screenshot_monitor" class="cursor-pointer"
           title="Toggle section details"></q-icon></q-btn>
@@ -28,7 +28,8 @@ div#current_track_actions {
 <script setup>
 
 const props = defineProps({
-  disabled: Boolean
+  disabled: Boolean,
+  downloadURL: String
 });
 
 const emit = defineEmits(['toggleAnalyzer']);

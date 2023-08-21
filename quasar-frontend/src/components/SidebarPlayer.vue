@@ -7,7 +7,7 @@
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious" :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentTrackURL" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -101,6 +101,7 @@ function createAnalyzer() {
 
 onMounted(() => {
 
+  console.log("mounted");
   audioElement.value = document.getElementById('audio');
   audioElement.value.volume = 1;
 
