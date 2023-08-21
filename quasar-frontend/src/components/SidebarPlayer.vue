@@ -3,7 +3,7 @@
     <SidebarPlayerAlbumCover></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
-    <SidebarPlayerVolumeControl></SidebarPlayerVolumeControl>
+    <SidebarPlayerVolumeControl @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls @play="play"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
@@ -115,5 +115,9 @@ function play() {
   audioElement.value.load();
   console.log("play");
   audioElement.value.play();
+}
+
+function onVolumeChange(volume) {
+  audioElement.value.volume = volume;
 }
 </script>

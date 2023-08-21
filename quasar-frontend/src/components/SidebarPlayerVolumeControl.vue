@@ -2,22 +2,39 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        <q-icon :name="volumeIcon" />
+        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" />
       </q-item-section>
       <q-item-section>
-        <q-slider v-model="volume" :min="0" :max="10" label />
+        <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="(volume * 100) + '%'" />
       </q-item-section>
       <q-item-section side>
-        {{ volume * 10 }}%
+        {{ volume * 100 }}%
       </q-item-section>
     </q-item>
   </q-list>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 
-const volume = ref(8);
+const oldVolume = ref(0);
+const volume = ref(0.8);
+const muted = ref(false);
+
+watch(volume, (newValue) => {
+  setVolume(newValue);
+});
+
+watch(muted, (newValue) => {
+  if (muted.value) {
+    oldVolume.value = volume.value;
+    volume.value = 0;
+  } else {
+    volume.value = oldVolume.value;
+  }
+});
+
+const emit = defineEmits(['volumeChange']);
 
 const volumeIcon = computed(() => {
   if (volume.value == 0) {
@@ -30,4 +47,25 @@ const volumeIcon = computed(() => {
     return ('volume_up');
   }
 });
+
+function onToggleMute() {
+  muted.value = ! muted.value;
+}
+
+function setVolume(volume) {
+  emit('volumeChange', volume);
+  /*
+            if (volume >= 0 && volume <= 1) {
+                if (this.audioElement) {
+                    this.audioElement.volume = volume;
+                    this.$localStorage.set('volume', volume);
+                } else {
+                    console.error("Audio element not mounted");
+                }
+            } else {
+                console.error("Error setting volume, invalid value:" + volume);
+            }
+            */
+}
+
 </script>
