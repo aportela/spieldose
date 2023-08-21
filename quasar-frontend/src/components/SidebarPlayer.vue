@@ -38,8 +38,8 @@ const currentTrackURL = computed(() => {
 });
 
 const currentTrackTimeData = ref({
-  duration: "00:00",
-  currentTime: "00:00",
+  duration: 0,
+  currentTime: 0,
   currentProgress: 0,
   position: 0,
 });
@@ -117,19 +117,13 @@ onMounted(() => {
 
   audioElement.value.addEventListener('timeupdate', (event) => {
     currentTrackTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
-    currentTrackTimeData.value.duration = formatSecondsAsTime(Math.floor(audioElement.value.duration).toString());
-    currentTrackTimeData.value.currentTime = formatSecondsAsTime(Math.floor(audioElement.value.currentTime).toString());
+    currentTrackTimeData.value.duration = Math.floor(audioElement.value.duration);
+    currentTrackTimeData.value.currentTime = Math.floor(audioElement.value.currentTime);
     if (!isNaN(currentTrackTimeData.value.currentProgress)) {
-      currentTrackTimeData.value.position = currentTrackTimeData.value.currentProgress.toFixed(2);
+      currentTrackTimeData.value.position = Number(currentTrackTimeData.value.currentProgress.toFixed(2));
     } else {
       currentTrackTimeData.value.position = 0;
     }
-
-    //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
-    //console.log(this.audioElement.currentTime);
-    //console.debug(event);
-    //this.$player.events.isPaused = false;
-    //this.$player.events.isPlaying = true;
   });
 
   createAnalyzer();
@@ -151,19 +145,6 @@ function onSeek(position) {
   }
 }
 
-function formatSecondsAsTime(secs, format) {
-  var hr = Math.floor(secs / 3600);
-  var min = Math.floor((secs - (hr * 3600)) / 60);
-  var sec = Math.floor(secs - (hr * 3600) - (min * 60));
 
-  if (min < 10) {
-    min = "0" + min;
-  }
-  if (sec < 10) {
-    sec = "0" + sec;
-  }
-
-  return min + ':' + sec;
-}
 
 </script>
