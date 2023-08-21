@@ -3,11 +3,11 @@
     <SidebarPlayerAlbumCover></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
-    <SidebarPlayerVolumeControl @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
+    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls @play="play"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
+    <SidebarPlayerMainControls :disabled="disablePlayerControls" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
+    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -35,6 +35,10 @@ const currentPlaylist = useCurrentPlaylistStore();
 const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
   return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+});
+
+const disablePlayerControls = computed(() => {
+  return(false);
 });
 
 const currentTrackTimeData = ref({
@@ -128,6 +132,16 @@ onMounted(() => {
 
   createAnalyzer();
 });
+
+function skipPrevious() {
+  console.log("previosu");
+  currentPlaylist.currentIndex--;
+}
+
+function skipNext() {
+  console.log("next");
+  currentPlaylist.currentIndex++;
+}
 
 function play() {
   audioElement.value.load();

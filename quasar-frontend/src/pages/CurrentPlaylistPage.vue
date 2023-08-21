@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { api } from 'boot/axios'
 
@@ -81,9 +81,17 @@ function search() {
   });
 }
 
-// single ref
+
 watch(currentTrackIndex, (newValue) => {
   currentPlaylist.saveCurrentTrackIndex(newValue);
+});
+
+const currentPlaylistTrackIndex = computed(() => {
+  return(currentPlaylist.getCurrentIndex);
+});
+
+watch(currentPlaylistTrackIndex, (newValue) => {
+  currentTrackIndex.value = newValue;
 });
 
 function onPreviusPlaylist() {

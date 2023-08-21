@@ -5,7 +5,7 @@
         <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" />
       </q-item-section>
       <q-item-section>
-        <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'" />
+        <q-slider :disable="disabled" v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'" />
       </q-item-section>
       <q-item-section side>
         {{ volumePercentValue }}%
@@ -16,6 +16,10 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+
+const props = defineProps({
+  disabled: Boolean
+});
 
 const oldVolume = ref(0);
 const volume = ref(0.8);

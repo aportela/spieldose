@@ -5,7 +5,7 @@
         {{ formatSecondsAsTime(currentTrackTimeData.currentTime) }}
       </q-item-section>
       <q-item-section>
-        <q-slider v-model="currentTime" :min="0" :max="1" :step="0.01" label
+        <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="1" :step="0.01" label
           :label-value="formatSecondsAsTime(currentTrackTimeData.currentTime)" @change="onSeek"/>
       </q-item-section>
       <q-item-section side>
@@ -20,6 +20,7 @@
 import { ref, watch, computed } from "vue";
 
 const props = defineProps({
+  disabled: Boolean,
   currentTrackTimeData: Object
 });
 
