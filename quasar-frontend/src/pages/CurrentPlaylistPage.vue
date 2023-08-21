@@ -66,6 +66,7 @@ const loading = ref(false);
 
 function clear() {
   tracks.value = [];
+  currentPlaylist.saveTracks([]);
 }
 
 function search() {
@@ -99,4 +100,5 @@ function onNextPlaylist() {
 
 tracks.value = currentPlaylist.getTracks;
 currentTrackIndex.value = currentPlaylist.getCurrentIndex;
+
 </script>
