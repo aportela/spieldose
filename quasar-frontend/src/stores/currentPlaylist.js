@@ -11,35 +11,40 @@ const localStorageBasilOptions = {
 export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   state: () => ({
     tracks: [],
-    currentTrackIndex: -1,
+    currentIndex: -1,
   }),
 
   getters: {
-    tracks: (state) => state.tracks,
-    currentTrackIndex: (state) => state.currentTrackIndex,
+    getTracks: (state) => state.tracks,
+    getCurrentIndex: (state) => state.currentIndex,
   },
 
   actions: {
     load() {
       const basil = useBasil(localStorageBasilOptions);
-      const tracks = basil.get("tracks");
-      if (tracks) {
-        this.tracks = tracks;
+      const currentPlaylistTracks = basil.get("currentPlaylistTracks");
+      if (currentPlaylistTracks) {
+        this.tracks = currentPlaylistTracks;
       }
-      const currentTrackIndex = basil.get("currentTrackIndex");
-      if (currentTrackIndex) {
-        this.currentTrackIndex = currentTrackIndex;
+      const currentPlaylistTrackIndex = basil.get("currentPlaylistTrackIndex");
+      if (currentPlaylistTrackIndex >= 0) {
+        this.currentIndex = currentPlaylistTrackIndex;
       }
     },
-    saveTracks(tracks) {
-      this.tracks = tracks;
+    saveTracks(newTracks) {
+      this.tracks = newTracks;
+      this.currentIndex = newTracks && newTracks.length > 0 ? 0 : -1;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("tracks", tracks);
+      basil.set("currentPlaylistTracks", newTracks);
+      basil.set(
+        "currentPlaylistTrackIndex",
+        newTracks && newTracks.length > 0 ? 0 : -1
+      );
     },
-    saveCurrentTrackIndex(index) {
-      this.currentTrackIndex = index;
+    saveCurrentTrackIndex(newIndex) {
+      this.currentIndex = newIndex >= 0 ? newIndex : -1;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentTrackIndex", index);
+      basil.set("currentPlaylistTrackIndex", newIndex >= 0 ? newIndex : -1);
     },
   },
 });

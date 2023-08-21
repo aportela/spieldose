@@ -2,15 +2,13 @@
   <q-page>
     <leftSidebar></leftSidebar>
     <div class="q-pa-md">
-
-
       <q-btn-group spread class="q-mb-md">
-        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" />
-        <q-btn outline color="dark" label="Random" icon="shuffle" @click="search" />
-        <q-btn outline color="dark" label="Previous" icon="skip_previous" />
-        <q-btn outline color="dark" label="Play" icon="play_arrow" />
-        <q-btn outline color="dark" label="Next" icon="skip_next" />
-        <q-btn outline color="dark" label="Download" icon="save_alt" />
+        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" :disable="loading" />
+        <q-btn outline color="dark" label="Random" icon="shuffle" @click="search" :disable="loading" />
+        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist" :disable="loading" />
+        <q-btn outline color="dark" label="Play" icon="play_arrow" :disable="loading" />
+        <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist" :disable="loading" />
+        <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading" />
       </q-btn-group>
 
       <q-markup-table flat bordered>
@@ -31,10 +29,12 @@
             <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
                 v-if="currentTrackIndex == index"></q-icon>{{ index + 1 }}/32</td>
             <td class="text-left">{{ track.title }}</td>
-            <td class="text-left"><router-link v-if="track.artist" :class="{ 'text-white text-bold': currentTrackIndex == index }"
+            <td class="text-left"><router-link v-if="track.artist"
+                :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.artist } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
                   track.artist }}</router-link></td>
-            <td class="text-left"><router-link v-if="track.albumArtist" :class="{ 'text-white text-bold': currentTrackIndex == index }"
+            <td class="text-left"><router-link v-if="track.albumArtist"
+                :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.albumArtist } }"><q-icon name="link"
                   class="q-mr-sm"></q-icon>{{ track.albumArtist }}</router-link></td>
             <td class="text-left">{{ track.album }}<span class="is-clickable"><i class="fas fa-link ml-1"></i></span></td>
@@ -48,25 +48,55 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { api } from 'boot/axios'
+
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const currentPlaylist = useCurrentPlaylistStore();
+
+currentPlaylist.load();
 
 const tracks = ref([]);
 
 const currentTrackIndex = ref(0);
+
+const loading = ref(false);
 
 function clear() {
   tracks.value = [];
 }
 
 function search() {
+  loading.value = true;
   currentTrackIndex.value = 0;
   api.track.search().then((success) => {
     tracks.value = success.data.tracks;
+    currentPlaylist.saveTracks(success.data.tracks);
+    loading.value = false;
   }).catch((error) => {
+    loading.value = false;
   });
 }
-search();
 
+// single ref
+watch(currentTrackIndex, (newValue) => {
+  currentPlaylist.saveCurrentTrackIndex(newValue);
+});
+
+function onPreviusPlaylist() {
+  if (currentTrackIndex.value > 0) {
+    currentTrackIndex.value--;
+  }
+}
+
+function onNextPlaylist() {
+  if (currentTrackIndex.value < tracks.value.length - 1) {
+    currentTrackIndex.value++;
+  }
+}
+
+tracks.value = currentPlaylist.getTracks;
+currentTrackIndex.value = currentPlaylist.getCurrentIndex;
 </script>
