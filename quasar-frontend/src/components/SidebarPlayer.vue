@@ -3,19 +3,16 @@
     <SidebarPlayerAlbumCover :trackId="currentTrackId" :rotate="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
-    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
+    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange">
+    </SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls
-    :disabled="disablePlayerControls"
-    :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
-    :allowPlay="true"
-    :allowSkipNext="currentPlaylist.allowSkipNext"
-    :isPlaying="playerStatus.isPlaying"
-    @skipPrevious="skipPrevious"
-    @play="play"
-    @skipNext="skipNext"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentTrackURL" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
+    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
+      :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying"
+      @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
+    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData"
+      @seek="onSeek"></SidebarPlayerSeekControl>
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentTrackURL"
+      @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -54,12 +51,12 @@ const currentTrackId = computed(() => {
 });
 
 const disablePlayerControls = computed(() => {
-  return(false);
+  return (false);
 });
 
 const musicBrainzAlbumId = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? currentTrack.musicBrainzAlbumId: null);
+  return (currentTrack ? currentTrack.musicBrainzAlbumId : null);
 });
 
 const currentTrackTimeData = ref({
@@ -71,7 +68,7 @@ const currentTrackTimeData = ref({
 
 watch(currentTrackURL, (newValue) => {
   audioElement.value.src = newValue;
-  play();
+  play(true);
 });
 
 function createAnalyzer() {
@@ -138,9 +135,10 @@ onMounted(() => {
   });
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
-    playerStatus.setStatusStopped();
     if (currentPlaylist.allowSkipNext) {
       skipNext();
+    } else {
+      playerStatus.setStatusStopped();
     }
   });
   audioElement.value.addEventListener('error', (event) => {
@@ -172,20 +170,27 @@ function skipNext() {
   currentPlaylist.currentIndex++;
 }
 
-function play() {
-  if (playerStatus.isPlaying) {
-    console.log("pause");
-    audioElement.value.pause();
-    playerStatus.setStatusPaused();
-  } else if (playerStatus.isPaused) {
-    console.log("resume");
-    audioElement.value.play();
-    playerStatus.setStatusPlaying();
-  } else {
+function play(ignoreStatus) {
+  if (ignoreStatus) {
     audioElement.value.load();
     console.log("play");
     audioElement.value.play();
     playerStatus.setStatusPlaying();
+  } else {
+    if (playerStatus.isPlaying) {
+      console.log("pause");
+      audioElement.value.pause();
+      playerStatus.setStatusPaused();
+    } else if (playerStatus.isPaused) {
+      console.log("resume");
+      audioElement.value.play();
+      playerStatus.setStatusPlaying();
+    } else {
+      audioElement.value.load();
+      console.log("play");
+      audioElement.value.play();
+      playerStatus.setStatusPlaying();
+    }
   }
 }
 
