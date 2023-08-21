@@ -36,5 +36,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set("tracks", tracks);
     },
+    saveCurrentTrackIndex(index) {
+      this.currentTrackIndex = index;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set("currentTrackIndex", index);
+    },
   },
 });
