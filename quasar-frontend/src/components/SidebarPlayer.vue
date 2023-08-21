@@ -173,10 +173,20 @@ function skipNext() {
 }
 
 function play() {
-  audioElement.value.load();
-  console.log("play");
-  audioElement.value.play();
-  playerStatus.setStatusPlaying();
+  if (playerStatus.isPlaying) {
+    console.log("pause");
+    audioElement.value.pause();
+    playerStatus.setStatusPaused();
+  } else if (playerStatus.isPaused) {
+    console.log("resume");
+    audioElement.value.play();
+    playerStatus.setStatusPlaying();
+  } else {
+    audioElement.value.load();
+    console.log("play");
+    audioElement.value.play();
+    playerStatus.setStatusPlaying();
+  }
 }
 
 function onVolumeChange(volume) {
