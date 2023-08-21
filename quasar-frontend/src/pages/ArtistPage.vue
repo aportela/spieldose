@@ -67,7 +67,7 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div v-html="nl2br(artistData.bio.summary)"></div>
+                <div v-html="artistData.bio ? nl2br(artistData.bio.summary): null"></div>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered>
@@ -138,7 +138,7 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div v-html="nl2br(artistData.bio.content)"></div>
+                <div v-html="artistData.bio ? nl2br(artistData.bio.content): null"></div>
               </q-card-section>
             </q-card>
           </div>
@@ -240,7 +240,10 @@ const tab = ref('overview');
 
 const loading = ref(false);
 
-const artistData = ref(null);
+const artistData = ref({
+  mbId: null,
+  name: null
+});
 
 const artistImage = ref(null);
 
