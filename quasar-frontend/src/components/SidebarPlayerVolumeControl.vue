@@ -2,7 +2,7 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" />
+        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" :class="{ 'text-pink': muted }"/>
       </q-item-section>
       <q-item-section>
         <q-slider :disable="disabled" v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'" />
