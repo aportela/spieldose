@@ -17,6 +17,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   getters: {
     getTracks: (state) => state.tracks,
     getCurrentIndex: (state) => state.currentIndex,
+    getCurrentTrack: (state) =>
+      state.currentIndex >= 0 && state.tracks.length > 0
+        ? state.tracks[state.currentIndex]
+        : null,
   },
 
   actions: {
