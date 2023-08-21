@@ -4,8 +4,16 @@
     <img :src="coverURLSmall" v-if="coverURLSmall" @error="coverURLSmall = null">
   </div>
   <div id="album_cover" v-else @click.prevent="customVinyl = !customVinyl">
-    <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null" />
-    <img v-else src="images/vinyl.png" alt="Vinyl" />
+    <q-img
+        v-if="coverURL"
+        :src="coverURL"
+        spinner-color="pink"
+        width="400px"
+        height="400px"
+        @error="coverURL = null"
+      />
+    <q-img v-else src="images/vinyl.png" alt="Vinyl" spinner-color="pink" width="400px"
+        height="400px" />
   </div>
 </template>
 
