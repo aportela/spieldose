@@ -5,10 +5,10 @@
         <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" />
       </q-item-section>
       <q-item-section>
-        <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="(volume * 100) + '%'" />
+        <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'" />
       </q-item-section>
       <q-item-section side>
-        {{ volume * 100 }}%
+        {{ volumePercentValue }}%
       </q-item-section>
     </q-item>
   </q-list>
@@ -39,13 +39,17 @@ const emit = defineEmits(['volumeChange']);
 const volumeIcon = computed(() => {
   if (volume.value == 0) {
     return ('volume_off');
-  } else if (volume.value < 4) {
+  } else if (volume.value < 0.4) {
     return ('volume_mute');
-  } else if (volume.value < 7) {
+  } else if (volume.value < 0.7) {
     return ('volume_down');
   } else {
     return ('volume_up');
   }
+});
+
+const volumePercentValue = computed(() => {
+  return(Math.round(volume.value * 100));
 });
 
 function onToggleMute() {
