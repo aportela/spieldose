@@ -5,7 +5,15 @@
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious" :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
+    <SidebarPlayerMainControls
+    :disabled="disablePlayerControls"
+    :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
+    :allowPlay="true"
+    :allowSkipNext="currentPlaylist.allowSkipNext"
+    :isPlaying="playerStatus.isPlaying"
+    @skipPrevious="skipPrevious"
+    @play="play"
+    @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentTrackURL" @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
@@ -23,6 +31,7 @@ import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMa
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+import { usePlayerStatusStore } from 'stores/playerStatus'
 
 const audioElement = ref(null);
 const audioElementMotion = ref(null);
@@ -31,6 +40,8 @@ const showAnalyzer = ref(true);
 const audioElementMotionMode = ref(4);
 
 const currentPlaylist = useCurrentPlaylistStore();
+
+const playerStatus = usePlayerStatusStore();
 
 const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
@@ -148,6 +159,7 @@ function play() {
   audioElement.value.load();
   console.log("play");
   audioElement.value.play();
+  playerStatus.setStatusPlaying();
 }
 
 function onVolumeChange(volume) {
