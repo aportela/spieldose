@@ -1,20 +1,14 @@
 <template>
   <div id="current_track_actions">
     <q-btn-group spread>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="reorder" class="cursor-pointer"
-          title="Toggle navigation menu"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="bar_chart" class="cursor-pointer"
-          title="Toggle analyzer" @click="onToggleAnalyzer"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="favorite" class="cursor-pointer"
-          title="Love/unlove track"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="shuffle" class="cursor-pointer"
-          title="Toggle random sort"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="replay" class="cursor-pointer"
-          title="Toggle repeat mode"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true" :href="downloadURL || '#'"><q-icon name="file_download" class="cursor-pointer"
-          title="Download track"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disabled="true"><q-icon name="screenshot_monitor" class="cursor-pointer"
-          title="Toggle section details"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Toggle navigation menu"><q-icon name="reorder"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Toggle analyzer"><q-icon name="bar_chart"  @click="onToggleAnalyzer"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Love/unlove track"><q-icon name="favorite" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Toggle random sort"><q-icon name="shuffle" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Toggle repeat mode"><q-icon name="replay" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled" title="Download track" v-if="downloadURL" :href="downloadURL"><q-icon name="file_download" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled || ! downloadURL" title="Download track" v-else><q-icon name="file_download" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disabled="disabled"><q-icon name="screenshot_monitor" title="Toggle section details"></q-icon></q-btn>
     </q-btn-group>
   </div>
 </template>
