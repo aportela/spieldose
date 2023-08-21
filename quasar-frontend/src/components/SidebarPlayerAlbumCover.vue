@@ -1,6 +1,6 @@
 <template>
-  <div id="rotating_album_cover" :style="style" v-if="customVinyl" @click.prevent="customVinyl = !customVinyl">
-    <img :src="coverURL">
+  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotate}" :style="style" v-if="customVinyl" @click.prevent="customVinyl = !customVinyl">
+    <img :src="coverURLSmall" v-if="coverURLSmall" @error="coverURLSmall = null">
   </div>
   <div id="album_cover" v-else @click.prevent="customVinyl = !customVinyl">
     <img v-if="coverURL" :src="coverURL" alt="Album cover" @error="coverURL = null" />
@@ -36,14 +36,66 @@ div#album_cover img {
   height: 400px;
   display: block;
 }
+
+div.is_rotating_album_cover {
+    animation: rotation 8s linear infinite;
+    z-index: 1;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
+div#analyzer-container {
+    z-index: 2;
+    margin-top: 4px;
+    position: relative;
+}
+
 </style>
 
 <script setup>
 import { ref, computed } from "vue";
 
+const props = defineProps({
+  trackId: String,
+  rotate: Boolean
+});
+
 const style = "background: url(images/vinyl.png) no-repeat; background-size: auto; background-size: cover;";
 
-const coverURL = "http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e";
+const coverURL = computed(() => {
+  if (props.trackId) {
+    return("/api/2/track/thumbnail/normal/" + props.trackId);
+  } else {
+    return(null);
+  }
+});
+
+const coverURLSmall = computed(() => {
+  if (props.trackId) {
+    return("/api/2/track/thumbnail/small/" + props.trackId);
+  } else {
+    return(null);
+  }
+});
+
 const customVinyl = ref(false);
 
 </script>

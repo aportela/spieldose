@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :trackId="currentTrackId" :rotate="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
@@ -48,8 +48,18 @@ const currentTrackURL = computed(() => {
   return (currentTrack ? "api/2/file/" + currentTrack.id : null);
 });
 
+const currentTrackId = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return (currentTrack ? currentTrack.id : null);
+});
+
 const disablePlayerControls = computed(() => {
   return(false);
+});
+
+const musicBrainzAlbumId = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return (currentTrack ? currentTrack.musicBrainzAlbumId: null);
 });
 
 const currentTrackTimeData = ref({
