@@ -7,7 +7,7 @@
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls @play="play"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions></SidebarPlayerTrackActions>
+    <SidebarPlayerTrackActions @toggleAnalyzer="showAnalyzer = ! showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -108,6 +108,7 @@ onMounted(() => {
     console.log(event);
   });
 
+  createAnalyzer();
 });
 
 function play() {
