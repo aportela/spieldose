@@ -6,8 +6,8 @@
     <SidebarPlayerVolumeControl @volumeChange="onVolumeChange"></SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls @play="play"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions @toggleAnalyzer="showAnalyzer = ! showAnalyzer"></SidebarPlayerTrackActions>
+    <SidebarPlayerSeekControl :currentTrackTimeData="currentTrackTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
+    <SidebarPlayerTrackActions @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
 
@@ -34,7 +34,14 @@ const currentPlaylist = useCurrentPlaylistStore();
 
 const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return(currentTrack ? "api/2/file/" + currentTrack.id: null);
+  return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+});
+
+const currentTrackTimeData = ref({
+  duration: "00:00",
+  currentTime: "00:00",
+  currentProgress: 0,
+  position: 0,
 });
 
 watch(currentTrackURL, (newValue) => {
@@ -108,6 +115,23 @@ onMounted(() => {
     console.log(event);
   });
 
+  audioElement.value.addEventListener('timeupdate', (event) => {
+    currentTrackTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
+    currentTrackTimeData.value.duration = formatSecondsAsTime(Math.floor(audioElement.value.duration).toString());
+    currentTrackTimeData.value.currentTime = formatSecondsAsTime(Math.floor(audioElement.value.currentTime).toString());
+    if (!isNaN(currentTrackTimeData.value.currentProgress)) {
+      currentTrackTimeData.value.position = currentTrackTimeData.value.currentProgress.toFixed(2);
+    } else {
+      currentTrackTimeData.value.position = 0;
+    }
+
+    //this.currentPlayedSeconds = Math.floor(aa.currentTime).toString();
+    //console.log(this.audioElement.currentTime);
+    //console.debug(event);
+    //this.$player.events.isPaused = false;
+    //this.$player.events.isPlaying = true;
+  });
+
   createAnalyzer();
 });
 
@@ -120,4 +144,26 @@ function play() {
 function onVolumeChange(volume) {
   audioElement.value.volume = volume;
 }
+
+function onSeek(position) {
+  if (position >= 0 && position < 1) {
+    audioElement.value.currentTime = audioElement.value.duration * position;
+  }
+}
+
+function formatSecondsAsTime(secs, format) {
+  var hr = Math.floor(secs / 3600);
+  var min = Math.floor((secs - (hr * 3600)) / 60);
+  var sec = Math.floor(secs - (hr * 3600) - (min * 60));
+
+  if (min < 10) {
+    min = "0" + min;
+  }
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+
+  return min + ':' + sec;
+}
+
 </script>

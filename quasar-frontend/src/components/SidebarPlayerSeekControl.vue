@@ -5,10 +5,11 @@
         00:00
       </q-item-section>
       <q-item-section>
-        <q-slider v-model="elapsedSeconds" :min="0" :max="10" label />
+        <q-slider v-model="currentTime" :min="0" :max="1" :step="0.01" label
+          :label-value="currentTrackTimeData.currentTime" @change="onSeek"/>
       </q-item-section>
       <q-item-section side>
-        00:00
+        {{ currentTrackTimeData.duration }}
       </q-item-section>
     </q-item>
   </q-list>
@@ -16,6 +17,27 @@
 
 
 <script setup>
-import { ref } from "vue";
-const elapsedSeconds = ref(0);
+import { ref, watch, computed } from "vue";
+
+const props = defineProps({
+  currentTrackTimeData: Object
+});
+
+const emit = defineEmits(['seek']);
+
+const position = computed(() => {
+  return (props.currentTrackTimeData.position);
+});
+
+
+watch(position, (newValue) => {
+  currentTime.value = parseFloat(newValue);
+});
+
+const currentTime = ref(0);
+
+function onSeek() {
+  emit('seek', currentTime.value);
+};
+
 </script>
