@@ -1,9 +1,10 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage" :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
+      :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
-    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange">
+    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" :defaultValue="defaultVolume" @volumeChange="onVolumeChange">
     </SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
@@ -21,6 +22,8 @@ import { ref, computed, onMounted, watch } from "vue";
 
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
+import { usePlayer } from 'stores/player';
+
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerVolumeControl } from "components/SidebarPlayerVolumeControl.vue";
 import { default as SidebarPlayerTrackInfo } from "components/SidebarPlayerTrackInfo.vue";
@@ -30,7 +33,11 @@ import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTr
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
 
+const defaultVolume = 0.5;
+const player = usePlayer();
+
 const audioElement = ref(null);
+
 const audioElementMotion = ref(null);
 
 const showAnalyzer = ref(true);
@@ -76,8 +83,10 @@ const currentTrackTimeData = ref({
 });
 
 watch(currentTrackURL, (newValue) => {
-  audioElement.value.src = newValue;
-  play(true);
+  if (audioElement.value) {
+    audioElement.value.src = newValue;
+    play(true);
+  }
 });
 
 function createAnalyzer() {
@@ -127,8 +136,8 @@ function createAnalyzer() {
 }
 
 onMounted(() => {
-  audioElement.value = document.getElementById('audio');
-  audioElement.value.volume = 1;
+  audioElement.value = player.getElement;
+  player.setVolume(1);
 
   audioElement.value.addEventListener('canplay', (event) => {
     console.log("Buffering audio end");

@@ -2,10 +2,11 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" :class="{ 'text-pink': muted }"/>
+        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" :class="{ 'text-pink': muted }" />
       </q-item-section>
       <q-item-section>
-        <q-slider :disable="disabled" v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'" />
+        <q-slider :disable="disabled" v-model="volume" :min="0" :max="1" :step="0.05" label
+          :label-value="volumePercentValue + '%'" @change="setVolume(volume)" />
       </q-item-section>
       <q-item-section side>
         {{ volumePercentValue }}%
@@ -15,30 +16,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+
+import { ref, computed } from "vue";
 
 const props = defineProps({
-  disabled: Boolean
-});
-
-const oldVolume = ref(0);
-const volume = ref(0.8);
-const muted = ref(false);
-
-watch(volume, (newValue) => {
-  setVolume(newValue);
-});
-
-watch(muted, (newValue) => {
-  if (muted.value) {
-    oldVolume.value = volume.value;
-    volume.value = 0;
-  } else {
-    volume.value = oldVolume.value;
-  }
+  disabled: Boolean,
+  defaultValue: Number
 });
 
 const emit = defineEmits(['volumeChange']);
+
+const oldVolume = ref(0);
+const volume = ref(props.defaultValue || 1);
+const muted = ref(false);
 
 const volumeIcon = computed(() => {
   if (volume.value == 0) {
@@ -53,27 +43,22 @@ const volumeIcon = computed(() => {
 });
 
 const volumePercentValue = computed(() => {
-  return(Math.round(volume.value * 100));
+  return (Math.round(volume.value * 100));
 });
 
 function onToggleMute() {
-  muted.value = ! muted.value;
+  muted.value = !muted.value;
+  if (muted.value) {
+    oldVolume.value = volume.value;
+    volume.value = 0;
+  } else {
+    volume.value = oldVolume.value;
+  }
+  emit('volumeChange', volume.value);
 }
 
 function setVolume(volume) {
   emit('volumeChange', volume);
-  /*
-            if (volume >= 0 && volume <= 1) {
-                if (this.audioElement) {
-                    this.audioElement.volume = volume;
-                    this.$localStorage.set('volume', volume);
-                } else {
-                    console.error("Audio element not mounted");
-                }
-            } else {
-                console.error("Error setting volume, invalid value:" + volume);
-            }
-            */
 }
 
 </script>
