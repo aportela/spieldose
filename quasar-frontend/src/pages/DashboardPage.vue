@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    <leftSidebar></leftSidebar>
     <div class="row q-col-gutter-xl">
       <div class="col-4">
         <DashboardBaseBlock :icon="'format_list_numbered'" :title="'Top played tracks'"></DashboardBaseBlock>
@@ -45,14 +44,12 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { BarChart } from 'chartist';
 
 export default defineComponent({
   name: 'DashboardPage',
   components: {
-    'leftSidebar': leftSidebar,
     'DashboardBaseBlock': dashboardBaseBlock
   },
   setup() {

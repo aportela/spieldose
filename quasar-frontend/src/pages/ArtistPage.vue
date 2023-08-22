@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    <leftSidebar></leftSidebar>
     <div id="artist-header-block">
       <div id="artist-header-block-background-image" :style="'background-image: url(' + (artistImage || '#') + ')'">
       </div>
@@ -222,8 +221,6 @@ div#artist-header-block-content {
 
 <script setup>
 import { ref, onMounted } from 'vue'
-
-import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from "quasar";

@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    <leftSidebar></leftSidebar>
     <div class="q-pa-md">
       <q-btn-group spread class="q-mb-md">
         <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" :disable="loading" />
