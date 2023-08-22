@@ -47,6 +47,10 @@
 
 <script setup>
 
+import { usePlayer } from 'stores/player';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
+
+const player = usePlayer();
+player.create();
 
 </script>
