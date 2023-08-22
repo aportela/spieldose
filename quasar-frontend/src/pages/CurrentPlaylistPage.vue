@@ -1,15 +1,21 @@
 <template>
   <q-page>
-    <div class="q-pa-md">
+    <q-card class="q-pa-lg">
+      <q-breadcrumbs class="q-mb-lg">
+        <q-breadcrumbs-el icon="home" label="Spieldose" />
+        <q-breadcrumbs-el icon="list_alt" label="Current playlist" />
+      </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
-        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" :disable="loading" />
-        <q-btn outline color="dark" label="Random" icon="shuffle" @click="search" :disable="loading" />
-        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist" :disable="loading" />
-        <q-btn outline color="dark" label="Play" icon="play_arrow" :disable="loading" />
+        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" :disable="loading || ! (tracks && tracks.length > 0)" />
+        <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading" />
+        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist" :disable="loading || currentPlaylist.allowSkipPrevious" />
+        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading" v-if="playerStatus.isStopped"/>
+        <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading" v-else-if="playerStatus.isPlaying"/>
+        <q-btn outline color="dark" label="Resume" icon="play_arrow" @click="onResume" :disable="loading" v-else-if="playerStatus.isPaused" />
+        <q-btn outline color="dark" label="Stop" icon="stop" @click="onStop" :disable="loading || playerStatus.isStopped" />
         <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist" :disable="loading" />
         <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading" />
       </q-btn-group>
-
       <q-markup-table flat bordered>
         <thead>
           <tr class="bg-grey-2 text-grey-10">
@@ -42,7 +48,7 @@
           </tr>
         </tbody>
       </q-markup-table>
-    </div>
+    </q-card>
   </q-page>
 </template>
 
@@ -50,9 +56,12 @@
 import { ref, watch, computed } from "vue";
 import { api } from 'boot/axios'
 
+import { usePlayerStatusStore } from 'stores/playerStatus'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
 const currentPlaylist = useCurrentPlaylistStore();
+
+const playerStatus = usePlayerStatusStore();
 
 currentPlaylist.load();
 
@@ -85,7 +94,7 @@ watch(currentTrackIndex, (newValue) => {
 });
 
 const currentPlaylistTrackIndex = computed(() => {
-  return(currentPlaylist.getCurrentIndex);
+  return (currentPlaylist.getCurrentIndex);
 });
 
 watch(currentPlaylistTrackIndex, (newValue) => {
@@ -96,6 +105,24 @@ function onPreviusPlaylist() {
   if (currentTrackIndex.value > 0) {
     currentTrackIndex.value--;
   }
+}
+
+function onPlay() {
+
+
+}
+
+function onPause() {
+
+}
+
+
+function onResume() {
+
+}
+
+function onStop() {
+
 }
 
 function onNextPlaylist() {
