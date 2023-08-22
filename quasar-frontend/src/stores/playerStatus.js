@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 export const usePlayerStatusStore = defineStore("playerStatus", {
   state: () => ({
-    status: null,
+    status: "stopped",
   }),
 
   getters: {
