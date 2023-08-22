@@ -65,6 +65,9 @@ import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
 import { default as CSSAnimatedAudioEqualizer } from "components/CSSAnimatedAudioEqualizer.vue";
 import { default as TileAlbumImages } from "components/TileAlbumImages.vue";
+import { usePlayer } from 'stores/player';
+
+const player = usePlayer();
 
 const { t } = useI18n();
 
@@ -122,6 +125,7 @@ function onSubmitForm() {
   api.user
     .signIn(email.value, password.value)
     .then((success) => {
+      player.interact();
       // TODO
       //session.signIn();
       router.push({
