@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover :trackId="currentTrackId" :rotate="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :trackId="currentTrackId" :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange">

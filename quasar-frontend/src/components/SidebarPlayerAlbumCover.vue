@@ -1,5 +1,5 @@
 <template>
-  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotate }" :style="style" v-if="customVinyl"
+  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotateVinyl }" :style="style" v-if="customVinyl"
     @click.prevent="customVinyl = !customVinyl">
     <img :src="coverURLSmall" v-if="coverURLSmall" @error="coverURLSmall = null">
   </div>
@@ -83,7 +83,7 @@ import { ref, computed, watch } from "vue";
 
 const props = defineProps({
   trackId: String,
-  rotate: Boolean
+  rotateVinyl: Boolean
 });
 
 const coverURLSmall = ref(null);
