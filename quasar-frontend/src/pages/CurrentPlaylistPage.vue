@@ -94,7 +94,7 @@ function clear() {
 function search() {
   loading.value = true;
   currentTrackIndex.value = 0;
-  api.track.search().then((success) => {
+  api.track.search(0, 32, {}).then((success) => {
     tracks.value = success.data.tracks;
     currentPlaylist.saveTracks(success.data.tracks);
     loading.value = false;
