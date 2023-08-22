@@ -142,10 +142,15 @@ const api = {
     },
   },
   track: {
-    search: function () {
+    search: function (currentPage, resultsPage, filter) {
       return new Promise((resolve, reject) => {
+        const params = {
+          currentPage: currentPage,
+          resultsPage: resultsPage,
+          filter: filter || {},
+        };
         axios
-          .post(baseAPIPath + "/track/search", {})
+          .post(baseAPIPath + "/track/search", params)
           .then((response) => {
             resolve(response);
           })

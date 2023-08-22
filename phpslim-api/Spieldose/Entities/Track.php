@@ -20,6 +20,10 @@ class Track extends \Spieldose\Entities\Entity
             $filterConditions[] = " FIT.artist LIKE :artist";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", "%" . $filter["artist"] . "%");
         }
+        if (isset($filter["text"]) && !empty($filter["text"])) {
+            $filterConditions[] = " (FIT.title LIKE :text OR FIT.artist LIKE :text OR FIT.album LIKE :text) ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":text", "%" . $filter["text"] . "%");
+        }
         $query = sprintf(
             "
                 SELECT FIT.id, FIT.title, FIT.artist, FIT.album, FIT.album_artist AS albumArtist, FIT.year, FIT.track_number as trackNumber, FIT.mb_album_id AS musicBrainzAlbumId

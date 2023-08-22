@@ -71,7 +71,11 @@ return function (App $app) {
 
             $group->post('/track/search', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $filter = array();
+                $params = $request->getParsedBody();
+                $filter = array(
+                    "text" => $params["filter"]["text"] ?? ""
+                );
+                $params = $request->getParsedBody();
                 $tracks = \Spieldose\Entities\Track::search($db, 1, 32, $filter);
                 $payload = json_encode(["tracks" => $tracks]);
                 $response->getBody()->write($payload);
