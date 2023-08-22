@@ -48,7 +48,6 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
-import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { api } from 'boot/axios'
 
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
