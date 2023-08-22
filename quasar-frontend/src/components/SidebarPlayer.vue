@@ -127,8 +127,6 @@ function createAnalyzer() {
 }
 
 onMounted(() => {
-
-  console.log("mounted");
   audioElement.value = document.getElementById('audio');
   audioElement.value.volume = 1;
 
