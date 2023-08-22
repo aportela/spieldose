@@ -71,7 +71,8 @@ return function (App $app) {
 
             $group->post('/track/search', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $tracks = \Spieldose\Entities\Track::search($db);
+                $filter = array();
+                $tracks = \Spieldose\Entities\Track::search($db, 1, 32, $filter);
                 $payload = json_encode(["tracks" => $tracks]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
