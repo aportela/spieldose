@@ -1,33 +1,24 @@
 <template>
-  <div id="rotating_album_cover" :class="{ 'is_rotating_album_cover': rotateVinyl }" :style="style" v-if="customVinyl"
-    @click.prevent="customVinyl = !customVinyl">
-    <img :src="coverURLSmall" v-if="coverURLSmall" @error="coverURLSmall = null">
+  <div id="vinyl_container" :class="{ 'rotation_enabled': rotateVinyl }" :style="style" v-if="showVinyl"
+    @click="toggleMode">
+    <q-img v-if="coverURLSmall" :src="coverURLSmall" @error="coverURLSmall = null" img-class="vinyl_mini_cover"
+      no-spinner></q-img>
   </div>
-  <div id="album_cover" v-else @click.prevent="customVinyl = !customVinyl">
-    <q-img
-        v-if="coverURL"
-        :src="coverURL"
-        spinner-color="pink"
-        width="400px"
-        height="400px"
-        @error="coverURL = null"
-      />
-    <q-img v-else src="images/vinyl.png" alt="Vinyl" spinner-color="pink" width="400px"
-        height="400px" />
+  <div id="cover_container" v-else @click="toggleMode">
+    <q-img v-if="coverURL" :src="coverURL" @error="coverURL = null" alt="Album cover" width="400px" height="400px"
+      spinner-color="pink" />
+    <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" />
   </div>
 </template>
 
 <style>
-div#rotating_album_cover {
-  display: block;
+div#vinyl_container {
   width: 400px;
   height: 400px;
-  background-size: auto;
-  background-size: cover;
   overflow: hidden;
 }
 
-div#rotating_album_cover img {
+div#vinyl_container img.vinyl_mini_cover {
   width: 130px;
   height: 130px;
   top: 136px;
@@ -36,17 +27,11 @@ div#rotating_album_cover img {
   border-radius: 100%;
 }
 
-div#album_cover {
+div#cover_container {
   overflow: hidden;
 }
 
-div#album_cover img {
-  width: 400px;
-  height: 400px;
-  display: block;
-}
-
-div.is_rotating_album_cover {
+div.rotation_enabled {
   animation: rotation 8s linear infinite;
   z-index: 1;
 }
@@ -70,36 +55,43 @@ div.is_rotating_album_cover {
     -webkit-transform: rotate(359deg);
   }
 }
-
-div#analyzer-container {
-  z-index: 2;
-  margin-top: 4px;
-  position: relative;
-}
 </style>
 
 <script setup>
 import { ref, computed, watch } from "vue";
 
+// custom style for avoiding "images/vinyl.png" asset loading error if we put this on the <style> block
+const style = "background: url(images/vinyl.png) no-repeat; background-size: cover;";
+
 const props = defineProps({
-  trackId: String,
-  rotateVinyl: Boolean
+  rotateVinyl: Boolean,
+  smallVinylImage: String,
+  coverImage: String
 });
 
 const coverURLSmall = ref(null);
 const coverURL = ref(null);
 
-const trackId = computed(() => {
-  return (props.trackId);
+const smallVinylImage = computed(() => {
+  return (props.smallVinylImage);
 });
 
-watch(trackId, (newValue) => {
-  coverURLSmall.value = "/api/2/track/thumbnail/small/" + newValue;
-  coverURL.value = "/api/2/track/thumbnail/normal/" + newValue;
+const coverImage = computed(() => {
+  return (props.coverImage);
 });
 
-const style = "background: url(images/vinyl.png) no-repeat; background-size: auto; background-size: cover;";
+watch(smallVinylImage, (newValue) => {
+  coverURLSmall.value = newValue;
+});
 
-const customVinyl = ref(false);
+watch(coverImage, (newValue) => {
+  coverURL.value = newValue;
+});
 
+
+const showVinyl = ref(false);
+
+function toggleMode() {
+  showVinyl.value = !showVinyl.value;
+}
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover :trackId="currentTrackId" :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage" :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
     <div id="analyzer-container" v-show="showAnalyzer" @click="onChangeaudioElementMotionAnalyzerMode"></div>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" @volumeChange="onVolumeChange">
@@ -50,6 +50,15 @@ const currentTrackId = computed(() => {
   return (currentTrack ? currentTrack.id : null);
 });
 
+const coverImage = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return (currentTrack ? "/api/2/track/thumbnail/normal/" + currentTrack.id : null);
+});
+
+const smallVinylImage = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return (currentTrack ? "/api/2/track/thumbnail/small/" + currentTrack.id : null);
+});
 const disablePlayerControls = computed(() => {
   return (false);
 });
