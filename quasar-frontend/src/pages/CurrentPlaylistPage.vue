@@ -6,13 +6,19 @@
         <q-breadcrumbs-el icon="list_alt" label="Current playlist" />
       </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
-        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear" :disable="loading || ! (tracks && tracks.length > 0)" />
+        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear"
+          :disable="loading || !(tracks && tracks.length > 0)" />
         <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading" />
-        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist" :disable="loading || currentPlaylist.allowSkipPrevious" />
-        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading" v-if="playerStatus.isStopped"/>
-        <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading" v-else-if="playerStatus.isPlaying"/>
-        <q-btn outline color="dark" label="Resume" icon="play_arrow" @click="onResume" :disable="loading" v-else-if="playerStatus.isPaused" />
-        <q-btn outline color="dark" label="Stop" icon="stop" @click="onStop" :disable="loading || playerStatus.isStopped" />
+        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
+          :disable="loading || currentPlaylist.allowSkipPrevious" />
+        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading"
+          v-if="playerStatus.isStopped" />
+        <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading"
+          v-else-if="playerStatus.isPlaying" />
+        <q-btn outline color="dark" label="Resume" icon="play_arrow" @click="onResume" :disable="loading"
+          v-else-if="playerStatus.isPaused" />
+        <q-btn outline color="dark" label="Stop" icon="stop" @click="onStop"
+          :disable="loading || playerStatus.isStopped" />
         <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist" :disable="loading" />
         <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading" />
       </q-btn-group>
@@ -26,6 +32,7 @@
             <th class="text-left">Album</th>
             <th class="text-right">Album Track nº</th>
             <th class="text-right">Year</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +52,14 @@
             <td class="text-left">{{ track.album }}<span class="is-clickable"><i class="fas fa-link ml-1"></i></span></td>
             <td class="text-right">{{ track.trackNumber }}</td>
             <td class="text-right">{{ track.year }}</td>
+            <td class="text-center">
+              <q-btn-group outline>
+                <q-btn size="sm" color="white" text-color="grey-5" icon="north" title="Up" disabled/>
+                <q-btn size="sm" color="white" text-color="grey-5" icon="south" title="Down" disabled/>
+                <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" title="Toggle favorite" disabled/>
+                <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" disabled/>
+              </q-btn-group>
+            </td>
           </tr>
         </tbody>
       </q-markup-table>
