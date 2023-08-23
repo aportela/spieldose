@@ -165,6 +165,19 @@ return function (App $app) {
                 }
             });
 
+            $group->post('/artist/search', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $filter = array(
+                    "name" => $params["filter"]["name"] ?? ""
+                );
+                $params = $request->getParsedBody();
+                $artists = \Spieldose\Entities\Artist::search($db, 1, 32, $filter);
+                $payload = json_encode(["artists" => $artists]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/artist/{name}', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $artist = new \Spieldose\Entities\Artist($db);

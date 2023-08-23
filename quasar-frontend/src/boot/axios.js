@@ -114,6 +114,23 @@ const api = {
     },
   },
   artist: {
+    search: function (currentPage, resultsPage, filter) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          currentPage: currentPage,
+          resultsPage: resultsPage,
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/artist/search", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     get: function (name) {
       return new Promise((resolve, reject) => {
         axios
