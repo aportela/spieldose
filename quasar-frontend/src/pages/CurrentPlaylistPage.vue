@@ -37,7 +37,7 @@
         </thead>
         <tbody>
           <tr v-for="track, index in tracks" :key="track.id" class="non-selectable cursor-pointer"
-            :class="{ 'bg-pink text-white': currentTrackIndex == index }" @click="currentTrackIndex = index">
+            :class="{ 'bg-pink text-white': currentTrackIndex == index }" @click="setCurrentTrackIndex(index)">
             <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
                 v-if="currentTrackIndex == index"></q-icon>{{ index + 1 }}/32</td>
             <td class="text-left">{{ track.title }}</td>
@@ -70,10 +70,11 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { api } from 'boot/axios'
-
+import { usePlayer } from 'stores/player';
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
+const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const playerStatus = usePlayerStatusStore();
@@ -89,6 +90,11 @@ function clear() {
   currentPlaylist.saveTracks([]);
 }
 
+function setCurrentTrackIndex(index) {
+  player.interact();
+  currentPlaylist.saveCurrentTrackIndex(index);
+}
+
 function search() {
   loading.value = true;
   currentTrackIndex.value = 0;
@@ -101,11 +107,12 @@ function search() {
   });
 }
 
-
-watch(currentTrackIndex, (newValue) => {
+/*
+watch(currentTrackIndex, (newValue, oldValue) => {
   currentPlaylist.saveCurrentTrackIndex(newValue);
 });
 
+*/
 const currentPlaylistTrackIndex = computed(() => {
   return (currentPlaylist.getCurrentIndex);
 });
@@ -115,33 +122,45 @@ watch(currentPlaylistTrackIndex, (newValue) => {
 });
 
 function onPreviusPlaylist() {
+  player.interact();
+  currentPlaylist.skipPrevious();
+  /*
   if (currentTrackIndex.value > 0) {
     currentTrackIndex.value--;
   }
+  */
 }
 
 function onPlay() {
-
+  player.interact();
+  player.play();
 
 }
 
 function onPause() {
-
+  player.interact();
+  player.play();
 }
 
 
 function onResume() {
-
+  player.interact();
+  player.play();
 }
 
 function onStop() {
-
+  player.stop();
+  player.setCurrentTime(0);
 }
 
 function onNextPlaylist() {
+  player.interact();
+  currentPlaylist.skipNext();
+  /*
   if (currentTrackIndex.value < tracks.value.length - 1) {
     currentTrackIndex.value++;
   }
+  */
 }
 
 tracks.value = currentPlaylist.getTracks;

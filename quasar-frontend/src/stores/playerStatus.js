@@ -6,6 +6,9 @@ export const usePlayerStatusStore = defineStore("playerStatus", {
   }),
 
   getters: {
+    getStatus(state) {
+      return state.status;
+    },
     isPlaying(state) {
       return state.status == "playing";
     },

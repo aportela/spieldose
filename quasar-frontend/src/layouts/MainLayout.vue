@@ -69,6 +69,8 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, watch } from "vue";
+
 import { useRouter } from "vue-router";
 import { api } from 'boot/axios';
 import { useSessionStore } from "stores/session";
@@ -137,10 +139,34 @@ const router = useRouter();
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 const playerStatus = usePlayerStatusStore();
+const audioElement = ref(null);
+
+const currentTrackURL = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentTrack;
+  return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+});
+
+
+watch(currentTrackURL, (newValue) => {
+  if (audioElement.value) {
+    audioElement.value.src = newValue;
+    if (player.hasPreviousUserInteractions) {
+      player.play(true);
+    }
+  }
+});
 
 player.create();
 
+audioElement.value = player.getElement;
+
 currentPlaylist.load();
+
+if (player.hasPreviousUserInteractions) {
+  if (! playerStatus.isPlaying) {
+    player.play(true);
+  }
+}
 
 function signOut() {
   player.stop();

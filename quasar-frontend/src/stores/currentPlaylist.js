@@ -1,5 +1,8 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
+import { usePlayer } from "stores/player";
+
+const player = usePlayer();
 
 const localStorageBasilOptions = {
   namespace: "spieldose",
@@ -54,7 +57,18 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     saveCurrentTrackIndex(newIndex) {
       this.currentIndex = newIndex >= 0 ? newIndex : -1;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentPlaylistTrackIndex", newIndex >= 0 ? newIndex : -1);
+      basil.set("currentPlaylistTrackIndex", this.currentIndex);
+      /*
+      if (this.currentIndex >= 0) {
+        player.play(true);
+      }
+      */
+    },
+    skipPrevious() {
+      this.currentIndex--;
+    },
+    skipNext() {
+      this.currentIndex++;
     },
   },
 });

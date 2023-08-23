@@ -82,14 +82,6 @@ const currentTrackTimeData = ref({
   position: 0,
 });
 
-watch(currentTrackURL, (newValue) => {
-  if (audioElement.value) {
-    audioElement.value.src = newValue;
-    play(true);
-  }
-});
-
-
 onMounted(() => {
   audioElement.value = player.getElement;
   player.setVolume(1);
@@ -133,46 +125,28 @@ onMounted(() => {
 });
 
 function skipPrevious() {
-  console.log("previosu");
-  currentPlaylist.currentIndex--;
+  player.interact();
+  currentPlaylist.skipPrevious();
+}
+
+
+function play(ignoreStatus) {
+  player.interact();
+  player.play(ignoreStatus);
 }
 
 function skipNext() {
-  console.log("next");
-  currentPlaylist.currentIndex++;
-}
-
-function play(ignoreStatus) {
-  if (ignoreStatus) {
-    audioElement.value.load();
-    console.log("play");
-    audioElement.value.play();
-    playerStatus.setStatusPlaying();
-  } else {
-    if (playerStatus.isPlaying) {
-      console.log("pause");
-      audioElement.value.pause();
-      playerStatus.setStatusPaused();
-    } else if (playerStatus.isPaused) {
-      console.log("resume");
-      audioElement.value.play();
-      playerStatus.setStatusPlaying();
-    } else {
-      audioElement.value.load();
-      console.log("play");
-      audioElement.value.play();
-      playerStatus.setStatusPlaying();
-    }
-  }
+  player.interact();
+  currentPlaylist.skipNext();
 }
 
 function onVolumeChange(volume) {
-  audioElement.value.volume = volume;
+  player.setVolume(volume);
 }
 
 function onSeek(position) {
   if (position >= 0 && position < 1) {
-    audioElement.value.currentTime = audioElement.value.duration * position;
+    player.setCurrentTime(player.getDuration * position);
   }
 }
 
