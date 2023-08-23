@@ -5,16 +5,13 @@
         <q-breadcrumbs-el icon="home" label="Spieldose" />
         <q-breadcrumbs-el icon="search" label="Search" />
       </q-breadcrumbs>
-
       <q-card>
         <q-tabs v-model="tab" dense class2="text-grey" active-color2="primary" indicator-color2="primary" align="justify"
           narrow-indicator>
           <q-tab name="global" label="Global search" />
           <q-tab name="advanced" label="Advanced search" />
         </q-tabs>
-
         <q-separator />
-
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="global">
             <q-select ref="search" outline use-input hide-selected class="q-mx-md q-mb-lg" color="white"
@@ -30,25 +27,22 @@
               </template>
             </q-select>
           </q-tab-panel>
-
           <q-tab-panel name="advanced">
             <form>
-              <q-input outlined v-model="text" label="Track title" placeholder="type text condition" hint="Search on track title" dense clearable
-        clear-icon="close"/>
- <q-input outlined v-model="text" label="Artist name" placeholder="type text condition" hint="Search on artist name" dense clearable
-        clear-icon="close"/>
- <q-input outlined v-model="text" label="Album name" placeholder="type text condition" hint="Search on album name" dense clearable
-        clear-icon="close"/>
-        <q-input outlined v-model="text" label="Album artist" placeholder="type text condition" hint="Search on album artist" dense clearable
-        clear-icon="close"/>
-        <q-input outlined v-model="text" label="Year" placeholder="type year condition" hint="Search on track year" dense clearable
-        clear-icon="close"/>
+              <q-input outlined v-model="text" label="Track title" placeholder="type text condition"
+                hint="Search on track title" dense clearable clear-icon="close" />
+              <q-input outlined v-model="text" label="Artist name" placeholder="type text condition"
+                hint="Search on artist name" dense clearable clear-icon="close" />
+              <q-input outlined v-model="text" label="Album name" placeholder="type text condition"
+                hint="Search on album name" dense clearable clear-icon="close" />
+              <q-input outlined v-model="text" label="Album artist" placeholder="type text condition"
+                hint="Search on album artist" dense clearable clear-icon="close" />
+              <q-input outlined v-model="text" label="Year" placeholder="type year condition" hint="Search on track year"
+                dense clearable clear-icon="close" />
             </form>
           </q-tab-panel>
-
         </q-tab-panels>
       </q-card>
-
       <q-btn v-if="tracks && tracks.length > 0" @click="onSendPlaylist">Send to playlist</q-btn>
       <q-markup-table flat bordered v-if="tracks && tracks.length > 0">
         <thead>

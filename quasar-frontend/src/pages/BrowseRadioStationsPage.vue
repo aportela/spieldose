@@ -1,13 +1,13 @@
 <template>
   <q-page>
-    <div>Radio stations</div>
+    <q-card class="q-pa-lg">
+      <q-breadcrumbs class="q-mb-lg">
+        <q-breadcrumbs-el icon="home" label="Spieldose" />
+        <q-breadcrumbs-el icon="radio" label="Browse radio stations" />
+      </q-breadcrumbs>
+    </q-card>
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'BrowseRadioStationsPage',
-})
+<script setup>
 </script>

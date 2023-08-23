@@ -54,10 +54,10 @@
             <td class="text-right">{{ track.year }}</td>
             <td class="text-center">
               <q-btn-group outline>
-                <q-btn size="sm" color="white" text-color="grey-5" icon="north" title="Up" disabled/>
-                <q-btn size="sm" color="white" text-color="grey-5" icon="south" title="Down" disabled/>
-                <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" title="Toggle favorite" disabled/>
-                <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" disabled/>
+                <q-btn size="sm" color="white" text-color="grey-5" icon="north" title="Up" disabled />
+                <q-btn size="sm" color="white" text-color="grey-5" icon="south" title="Down" disabled />
+                <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" title="Toggle favorite" disabled />
+                <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" disabled />
               </q-btn-group>
             </td>
           </tr>

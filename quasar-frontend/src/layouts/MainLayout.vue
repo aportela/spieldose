@@ -1,23 +1,23 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-page-container class="bg-grey-3">
-      <q-header>
-        <q-toolbar class="bg-purple text-white shadow-2 rounded-borders">
-      <q-btn flat label="Homepage" />
-      <q-space />
+  <q-layout view="hHh Lpr lff">
 
-      <!--
+    <q-header>
+      <q-toolbar class="bg-grey-3 text-black shadow-2 rounded-borders">
+        <q-toolbar-title>Spieldose</q-toolbar-title>
+        <q-input></q-input>
+        <q-space />
+        <!--
         notice shrink property since we are placing it
         as child of QToolbar
       -->
-      <q-tabs v-model="tab" shrink>
-        <q-tab name="tab1" label="Tab 1" />
-        <q-tab name="tab2" label="Tab 2" />
-        <q-tab name="tab3" label="Tab 3" />
-      </q-tabs>
-    </q-toolbar>
-      </q-header>
-      <!--
+        <q-tabs shrink>
+          <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
+            :icon="link.icon" :label="link.text" no-caps inline-label exact />
+        </q-tabs>
+        <q-btn icon="logout" label="Signout" flat no-caps stack />
+      </q-toolbar>
+    </q-header>
+    <!--
       <q-header elevated>
         <q-toolbar class="bg-pink text-white">
           <q-btn flat round dense icon="menu" class="q-mr-sm" />
@@ -49,6 +49,10 @@
         </q-toolbar>
       </q-header>
       -->
+    <q-drawer side="left" persistent show-if-above :width="450" class="bg-grey-3">
+      <leftSidebar></leftSidebar>
+    </q-drawer>
+    <!--
       <div class="row q-gutter-lg q-pa-lg">
         <div class="col" style="width: 400px; max-width: 400px;">
           <leftSidebar></leftSidebar>
@@ -57,6 +61,9 @@
           <router-view />
         </div>
       </div>
+      -->
+    <q-page-container class="bg-grey-3 q-mt-lg">
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
@@ -65,6 +72,57 @@
 
 import { usePlayer } from 'stores/player';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
+
+const links = [
+  {
+    name: 'dashboard',
+    text: 'Dashboard',
+    icon: 'analytics',
+    linkRouteName: 'dashboard'
+  },
+  {
+    name: 'current_playlist',
+    text: 'Current playlist',
+    icon: 'list_alt',
+    linkRouteName: 'currentPlaylist'
+  },
+  {
+    name: 'search',
+    text: 'Search',
+    icon: 'search',
+    linkRouteName: 'search'
+  },
+  {
+    name: 'browse_artists',
+    text: 'Browse artists',
+    icon: 'person',
+    linkRouteName: 'artists'
+  },
+  {
+    name: 'browse_albums',
+    text: 'Browse albums',
+    icon: 'album',
+    linkRouteName: 'albums'
+  },
+  {
+    name: 'browse_paths',
+    text: 'Browse paths',
+    icon: 'folder_open',
+    linkRouteName: 'paths'
+  },
+  {
+    name: 'browse_playlists',
+    text: 'Browse playlists',
+    icon: 'list',
+    linkRouteName: 'playlists'
+  },
+  {
+    name: 'browse_radio_stations',
+    text: 'Browse radio stations',
+    icon: 'radio',
+    linkRouteName: 'radioStations'
+  }
+];
 
 const player = usePlayer();
 player.create();
