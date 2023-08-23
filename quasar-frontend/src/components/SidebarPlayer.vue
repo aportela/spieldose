@@ -94,6 +94,7 @@ onMounted(() => {
   audioElement.value = player.getElement;
   player.setVolume(1);
 
+  /*
   audioElement.value.addEventListener('canplay', (event) => {
     console.log("Buffering audio end");
     console.debug('Audio can be played');
@@ -104,6 +105,7 @@ onMounted(() => {
   audioElement.value.addEventListener('playing', (event) => {
     console.debug('Audio is playing2');
   });
+  */
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
     if (currentPlaylist.allowSkipNext) {
