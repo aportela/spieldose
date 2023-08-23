@@ -18,6 +18,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   }),
 
   getters: {
+    hasTracks: (state) => state.tracks && state.tracks.length > 0,
     getTracks: (state) => state.tracks,
     getCurrentIndex: (state) => state.currentIndex,
     getCurrentTrack: (state) =>
@@ -34,6 +35,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       state.currentIndex >= 0 &&
       state.tracks.length > 0 &&
       state.currentIndex < state.tracks.length - 1,
+    allowPlay: (state) => true,
+    allowPause: (state) => true,
+    allowResume: (state) => true,
+    allowStop: (state) => true
   },
 
   actions: {
