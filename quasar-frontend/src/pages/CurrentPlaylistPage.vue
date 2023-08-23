@@ -21,7 +21,7 @@
           :disable="loading || playerStatus.isStopped" />
         <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist"
           :disable="loading || !currentPlaylist.allowSkipNext" />
-        <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading" />
+        <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading || ! currentPlaylist.getCurrentTrackURL" :href="currentPlaylist.getCurrentTrackURL"/>
       </q-btn-group>
       <q-markup-table flat bordered>
         <thead>
