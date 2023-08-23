@@ -10,7 +10,7 @@
           :disable="loading || !(tracks && tracks.length > 0)" />
         <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading" />
         <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
-          :disable="loading || currentPlaylist.allowSkipPrevious" />
+          :disable="loading || !currentPlaylist.allowSkipPrevious" />
         <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading"
           v-if="playerStatus.isStopped" />
         <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading"
@@ -19,7 +19,8 @@
           v-else-if="playerStatus.isPaused" />
         <q-btn outline color="dark" label="Stop" icon="stop" @click="onStop"
           :disable="loading || playerStatus.isStopped" />
-        <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist" :disable="loading" />
+        <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist"
+          :disable="loading || !currentPlaylist.allowSkipNext" />
         <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading" />
       </q-btn-group>
       <q-markup-table flat bordered>
