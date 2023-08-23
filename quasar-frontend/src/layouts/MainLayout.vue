@@ -63,6 +63,7 @@
       </div>
       -->
     <q-page-container class="bg-grey-3 q-mt-lg">
+      <q-ajax-bar></q-ajax-bar>
       <router-view />
     </q-page-container>
   </q-layout>
