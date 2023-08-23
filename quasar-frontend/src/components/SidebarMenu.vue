@@ -23,8 +23,8 @@
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import { useSessionStore } from "stores/session";
-import { api } from 'boot/axios'
-import { useI18n } from 'vue-i18n'
+import { api } from 'boot/axios';
+import { useI18n } from 'vue-i18n';
 
 import { usePlayer } from 'stores/player';
 
