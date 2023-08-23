@@ -14,7 +14,7 @@
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="link.text" no-caps inline-label exact />
         </q-tabs>
-        <q-btn icon="logout" label="Signout" flat no-caps stack />
+        <q-btn icon="logout" label="Signout" flat no-caps stack @click="signOut" />
       </q-toolbar>
     </q-header>
     <!--
@@ -69,9 +69,15 @@
 </template>
 
 <script setup>
-
-import { usePlayer } from 'stores/player';
+import { useRouter } from "vue-router";
+import { api } from 'boot/axios';
+import { useSessionStore } from "stores/session";
+import { useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
+import { usePlayer } from 'stores/player';
+import { usePlayerStatusStore } from 'stores/playerStatus'
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
 const links = [
   {
@@ -124,7 +130,35 @@ const links = [
   }
 ];
 
+const { t } = useI18n();
+const $q = useQuasar();
+const session = useSessionStore();
+const router = useRouter();
 const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
+const playerStatus = usePlayerStatusStore();
+
 player.create();
+
+currentPlaylist.load();
+
+function signOut() {
+  player.stop();
+  api.user
+    .signOut()
+    .then((success) => {
+      session.signOut();
+      router.push({
+        name: "signIn",
+      });
+    })
+    .catch((error) => {
+      $q.notify({
+        type: "negative",
+        message: t("API Error: fatal error"),
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      });
+    });
+}
 
 </script>
