@@ -13,7 +13,7 @@
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentTrackURL"
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentTrackURL"
       @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
   </div>
 </template>
@@ -46,11 +46,6 @@ const showAnalyzer = ref(true);
 const currentPlaylist = useCurrentPlaylistStore();
 
 const playerStatus = usePlayerStatusStore();
-
-const currentTrackURL = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? "api/2/file/" + currentTrack.id : null);
-});
 
 const currentTrackId = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
