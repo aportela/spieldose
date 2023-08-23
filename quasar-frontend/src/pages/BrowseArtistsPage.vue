@@ -7,9 +7,9 @@
       </q-breadcrumbs>
 
       <q-card-section>
-        <div class="q-gutter-sm row items-start" v-if="artists">
+        <div class="q-gutter-md row items-start" v-if="artists">
             <router-link :to="{ name: 'artist', params: { name: artist.name }}" v-for="artist in artists" :key="artist">
-            <q-img :src="artist.image || '#'" width="300px" height="300px" fit="cover">
+            <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
               {{ artist.name }}
               </div>
