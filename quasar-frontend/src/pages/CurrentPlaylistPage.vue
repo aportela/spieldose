@@ -78,8 +78,6 @@ const currentPlaylist = useCurrentPlaylistStore();
 
 const playerStatus = usePlayerStatusStore();
 
-currentPlaylist.load();
-
 const tracks = ref([]);
 
 const currentTrackIndex = ref(0);
