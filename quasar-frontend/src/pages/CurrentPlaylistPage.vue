@@ -7,8 +7,10 @@
       </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
         <q-btn outline color="dark" label="Clear" icon="clear" @click="clear"
-          :disable="loading || !(tracks && tracks.length > 0)" />
-        <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading" />
+           :disable="loading || !(tracks && tracks.length > 0)" >
+        </q-btn>
+        <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading">
+      </q-btn>
         <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
         <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading"
@@ -36,7 +38,7 @@
             <th class="text-center">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="! loading">
           <tr v-for="track, index in tracks" :key="track.id" class="non-selectable cursor-pointer"
             :class="{ 'bg-pink text-white': currentTrackIndex == index }" @click="setCurrentTrackIndex(index)">
             <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
@@ -63,7 +65,20 @@
             </td>
           </tr>
         </tbody>
+        <tbody v-else>
+          <tr>
+            <td colspan="8" class="text-center">
+              <q-spinner v-show="loading"
+          color="pink"
+          size="xl"
+          class="q-ml-sm"
+          :thickness="10"
+        />
+            </td>
+          </tr>
+        </tbody>
       </q-markup-table>
+
     </q-card>
   </q-page>
 </template>
