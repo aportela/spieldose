@@ -17,9 +17,9 @@ class Artist extends \Spieldose\Entities\Entity
         $params = array(
             new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $resultsPage)
         );
-        $filterConditions = array();
+        $filterConditions = array(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ");
         if (isset($filter["name"]) && !empty($filter["name"])) {
-            $filterConditions[] = " FIT.artist LIKE :name";
+            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :name";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter["name"] . "%");
         }
         $query = sprintf(
