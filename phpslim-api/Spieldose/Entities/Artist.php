@@ -28,7 +28,7 @@ class Artist extends \Spieldose\Entities\Entity
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-                ORDER BY RANDOM()
+                ORDER BY name
                 LIMIT :resultsPage
             ",
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
