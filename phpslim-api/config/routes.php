@@ -161,7 +161,7 @@ return function (App $app) {
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for id: ' . $args['id']);
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for hash: ' . $args['hash']);
                 }
             });
 
@@ -214,6 +214,10 @@ return function (App $app) {
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
                 $data = \Spieldose\Entities\Album::search($db, $filter, $sort, $pager);
+                $data->items = array_map(function ($result) {
+                    $result->image = "http://127.0.0.1:8081/api/2/cache/thumbnail/normal/128d2cfa24f9129fe1c2e995000d485b643ed57f";
+                    return ($result);
+                }, $data->items);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
