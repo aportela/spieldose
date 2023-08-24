@@ -7,6 +7,7 @@ namespace Spieldose\Entities;
 class Album extends \Spieldose\Entities\Entity
 {
 
+    public $mbId;
     public string $title;
     public object $artist;
     public ?string $image;
@@ -21,11 +22,12 @@ class Album extends \Spieldose\Entities\Entity
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
         }
         $fieldDefinitions = [
-            "title" => "DISTINCT COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+            "albumMbId" => "FIT.mb_album_id",
+            "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)",
             "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, NULL)",
             "image" => " NULL ",
-            "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))"
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
         ];
 
         $fieldCountDefinition = [
@@ -40,6 +42,10 @@ class Album extends \Spieldose\Entities\Entity
                     $result->artist = new \stdClass();
                     $result->artist->mbId = $result->artistMbId;
                     $result->artist->name = $result->artistName;
+                    if (!empty($result->albumMbId)) {
+                        $result->image = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $result->albumMbId);
+                    }
+                    unset($result->albumMbId);
                     unset($result->artistMbId);
                     unset($result->artistName);
                     return ($result);
@@ -51,7 +57,7 @@ class Album extends \Spieldose\Entities\Entity
         $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
         $query = sprintf(
             "
-                SELECT %s
+                SELECT DISTINCT %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
