@@ -29,10 +29,23 @@ class Artist extends \Spieldose\Entities\Entity
             "totalResults" => " COUNT(DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter);
+
+        $afterBrowseFunction = function ($data) {
+            $data->items = array_map(
+                function ($result) {
+                    if (!empty($result->image)) {
+                        $result->image = sprintf("api/2/thumbnail_remote/normal/?url=%s", urlencode($result->image));
+                    }
+                    return ($result);
+                },
+                $data->items
+            );
+        };
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
+
         $query = sprintf(
             "
                 SELECT %s
