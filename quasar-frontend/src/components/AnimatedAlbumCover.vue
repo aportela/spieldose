@@ -1,13 +1,13 @@
 <template>
   <div class="browse-album-item">
     <a class="play-album">
-      <q-img class="album-thumbnail" :src="album.image" width="174px" height="174px" v-if="album.image" spinner-color="pink" @load="onLoad" @error="onError">
+      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" :src="imageURL" width="174px" height="174px" v-if="imageURL" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
-      <img class="album-thumbnail" src="images/image-album-not-set.png" v-else />
+      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" src="images/image-album-not-set.png" v-else />
       <!--
       <i class="fas fa-play fa-4x"></i>
       -->
-      <img class="vinyl no-cover" src="images/vinyl.png" v-if="! loading"/>
+      <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors"/>
     </a>
     <div class="album-info">
       <p class="album-name">{{ album.title }}</p>
@@ -55,15 +55,15 @@ div.browse-album-item a img.vynil {
 
 /* album cover effect (hover -> move to left) */
 
-div.browse-album-item a.play-album .album-thumbnail {
+div.browse-album-item a.play-album .album-thumbnail-animated {
   -webkit-transition: all 0.2s ease-out;
   -moz-transition: all 0.2s ease-out;
   -o-transition: all 0.2s ease-out;
   transition: all 0.2s ease-out;
-  b2ackground: #000;
+  /* background: #000; */
 }
 
-div.browse-album-item a.play-album:hover .album-thumbnail {
+div.browse-album-item a.play-album:hover .album-thumbnail-animated {
   left: -80px;
 }
 
@@ -137,23 +137,31 @@ div.browse-album-item div.album-info p. * {
 </style>
 <script setup>
 
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   album: Object,
 });
 
-const loading = ref(true);
+const loading = ref(false);
+const loaded = ref(false);
+const errors = ref(false);
 
-if (! props.album.image) {
-  loading.value = false;
+const imageURL = computed(() => {
+  return(! errors.value ? props.album.image: null)
+});
+
+if (props.album.image) {
+  loading.value = true;
 }
 
 function onLoad() {
   loading.value = false;
+  loaded.value = true;
 }
 
 function onError() {
   loading.value = false;
+  errors.value = true;
 }
 </script>
