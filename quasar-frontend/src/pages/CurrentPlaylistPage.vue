@@ -6,10 +6,10 @@
         <q-breadcrumbs-el icon="list_alt" label="Current playlist" />
       </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
-        <q-btn outline color="dark" label="Clear" icon="clear" @click="clear"
+        <q-btn outline color="dark" label="Clear" icon="clear" @click="onClear"
            :disable="loading || !(tracks && tracks.length > 0)" >
         </q-btn>
-        <q-btn outline color="dark" label="Random" icon="bolt" @click="search" :disable="loading">
+        <q-btn outline color="dark" label="Random" icon="bolt" @click="onRandom" :disable="loading">
       </q-btn>
         <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
@@ -101,7 +101,8 @@ const currentTrackIndex = ref(0);
 
 const loading = ref(false);
 
-function clear() {
+function onClear() {
+  player.stop();
   tracks.value = [];
   currentPlaylist.saveTracks([]);
 }
@@ -136,6 +137,11 @@ const currentPlaylistTrackIndex = computed(() => {
 watch(currentPlaylistTrackIndex, (newValue) => {
   currentTrackIndex.value = newValue;
 });
+
+function onRandom() {
+  player.stop();
+  search();
+}
 
 function onPreviusPlaylist() {
   player.interact();
