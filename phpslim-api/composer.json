@@ -16,7 +16,8 @@
     },
     "require": {
         "php": ">=8.0",
-        "aportela/db-wrapper": "^1.0",
+        "aportela/db-browser-wrapper": "^1.0",
+        "aportela/db-wrapper": "^2.0",
         "aportela/lastfm-wrapper": "^1.0",
         "aportela/mediawiki-wrapper": "^1.0",
         "aportela/musicbrainz-wrapper": "^2.0",

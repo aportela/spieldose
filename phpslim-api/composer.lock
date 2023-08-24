@@ -4,24 +4,75 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "834090c16ac302f37661236ab567680e",
+    "content-hash": "2423103b50e00056c8dea8d269e9706e",
     "packages": [
         {
-            "name": "aportela/db-wrapper",
-            "version": "1.0.6",
+            "name": "aportela/db-browser-wrapper",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "a363c70f5feaee3decf8781e941cc25582fb9650"
+                "url": "https://github.com/aportela/db-browser-wrapper.git",
+                "reference": "f5f9359f24e9efed20ffe514f49eaa3516456926"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/a363c70f5feaee3decf8781e941cc25582fb9650",
-                "reference": "a363c70f5feaee3decf8781e941cc25582fb9650",
+                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/f5f9359f24e9efed20ffe514f49eaa3516456926",
+                "reference": "f5f9359f24e9efed20ffe514f49eaa3516456926",
                 "shasum": ""
             },
             "require": {
+                "aportela/db-wrapper": "^2.0",
+                "php": ">=8.1",
                 "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.22",
+                "phpunit/phpunit": "^10.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "aportela\\DatabaseBrowserWrapper\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "alex",
+                    "email": "766f6964+github@gmail.com"
+                }
+            ],
+            "description": "Custom php (pdo) database element browsing wrapper ",
+            "homepage": "https://github.com/aportela/db-browser-wrapper",
+            "support": {
+                "issues": "https://github.com/aportela/db-browser-wrapper/issues",
+                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.1"
+            },
+            "time": "2023-08-24T10:21:34+00:00"
+        },
+        {
+            "name": "aportela/db-wrapper",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aportela/db-wrapper.git",
+                "reference": "418f350e90fa0e8d7991713d25209d23b2ea5572"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/418f350e90fa0e8d7991713d25209d23b2ea5572",
+                "reference": "418f350e90fa0e8d7991713d25209d23b2ea5572",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0",
+                "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.2"
             },
             "type": "library",
             "autoload": {
@@ -39,12 +90,13 @@
                     "email": "766f6964+github@gmail.com"
                 }
             ],
-            "description": "Custom database wrapper",
+            "description": "Custom PDO database wrapper",
+            "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/1.0.6"
+                "source": "https://github.com/aportela/db-wrapper/tree/2.0.1"
             },
-            "time": "2023-08-03T11:53:29+00:00"
+            "time": "2023-08-04T09:27:37+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
