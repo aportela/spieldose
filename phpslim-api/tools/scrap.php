@@ -84,6 +84,15 @@ if (count($missingExtensions) > 0) {
                                     } else {
                                         $scraper->saveArtistImage($mbArtist->mbId, $artistImageURLs[0]);
                                     }
+                                } else {
+                                    $artistLastFMURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+                                    if (count($artistLastFMURLs) > 0) {
+                                        $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings["lastFMAPIKey"]);
+                                        $url = $lastFMArtist->getImageFromArtistPageURL($artistLastFMURLs[0]);
+                                        if (!empty($url)) {
+                                            $scraper->saveArtistImage($mbArtist->mbId, $url);
+                                        }
+                                    }
                                 }
                                 // TODO: check not found exceptions
                                 $wikipediaPageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
