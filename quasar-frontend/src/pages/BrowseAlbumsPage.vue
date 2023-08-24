@@ -19,12 +19,13 @@
             <router-link :to="{ name: 'album', params: { title: album.title }}" v-for="album in albums" :key="album">
             <q-img src="images/vinyl.png" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
-              {{ album.title }}
+                {{ album.title }}
+                <p v-if="album.artist.name || album.year"><span v-if="album.artist.name">by {{  album.artist.name }}</span><span v-if="album.year"> ({{  album.year }})</span></p>
               </div>
               <template v-slot:error>
                 <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                   <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
-                    {{ album.title }}
+                    {{ album.title }} by {{  album.artist.name }}
                   </div>
                 </div>
               </template>
