@@ -103,6 +103,9 @@ class Artist extends \Spieldose\Entities\Entity
             if (count($results) == 1) {
                 $this->name = $results[0]->name;
                 $this->image = $results[0]->image;
+                if (!empty($this->image)) {
+                    $this->image = sprintf("api/2/thumbnail_remote/normal/?url=%s", urlencode($this->image));
+                }
                 $query = " SELECT url_relationship_typeid, url_relationship_value FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
