@@ -1,5 +1,5 @@
 <template>
-  <div id="spieldose-album-cover-tiles-container" v-if="!loading">
+  <div id="spieldose-album-cover-tiles-container">
     <div class="row" v-for="row in [0, 1, 2, 3, 4, 5, 6]" :key="row">
       <div class="col-2" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column"
         :style="'background-color: ' + getRandomColor() + ';'">
