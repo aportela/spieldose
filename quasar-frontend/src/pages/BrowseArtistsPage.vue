@@ -9,7 +9,7 @@
       <q-card-section v-if="artists">
 
         <q-input v-model="artistName" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search">
+          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search" @clear="noArtistsFound = false" :error="noArtistsFound" :errorMessage="'No artists found with specified condition'">
           <template v-slot:prepend>
             <q-icon name="filter_alt" />
           </template>
@@ -49,6 +49,7 @@ import { ref } from "vue";
 import { api } from 'boot/axios'
 
 const artistName = ref(null);
+const noArtistsFound = ref(false);
 const loading = ref(false);
 const artists = ref([]);
 
@@ -56,10 +57,14 @@ const totalPages = ref(10);
 const currentPageIndex = ref(1);
 
 function search() {
+  noArtistsFound.value = false;
   loading.value = true;
   api.artist.search(currentPageIndex.value, 32, { name: artistName.value }).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
+    if (artistName.value && success.data.data.pager.totalResults < 1) {
+      noArtistsFound.value = true;
+    }
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
