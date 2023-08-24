@@ -15,10 +15,12 @@ class Album extends \Spieldose\Entities\Entity
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
-        $filterConditions = array(" COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ");
+        $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE :title";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
+        } else {
+            $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ";
         }
         $fieldDefinitions = [
             "albumMbId" => "FIT.mb_album_id",
@@ -54,6 +56,9 @@ class Album extends \Spieldose\Entities\Entity
         };
 
         $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        foreach ($params as $param) {
+            $browser->addDBQueryParam($param);
+        }
         $query = sprintf(
             "
                 SELECT DISTINCT %s
@@ -61,7 +66,6 @@ class Album extends \Spieldose\Entities\Entity
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-
                 %s
                 %s
             ",
@@ -78,7 +82,6 @@ class Album extends \Spieldose\Entities\Entity
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-
             ",
             $browser->getQueryCountFields(),
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
