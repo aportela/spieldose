@@ -79,7 +79,7 @@ class Path
                 $whereCondition,
                 $sqlOrder,
                 $resultsPage,
-                $resultsPage * ($page -1)
+                $resultsPage * ($page - 1)
             );
             $data->results = $dbh->query($query, $params);
         } else {

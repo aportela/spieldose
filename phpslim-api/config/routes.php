@@ -172,7 +172,6 @@ return function (App $app) {
                     "name" => $params["filter"]["name"] ?? ""
                 );
                 $params = $request->getParsedBody();
-
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
                         new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)

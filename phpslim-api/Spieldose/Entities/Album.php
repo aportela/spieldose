@@ -6,14 +6,13 @@ namespace Spieldose\Entities;
 
 class Album extends \Spieldose\Entities\Entity
 {
-
     public $mbId;
     public string $title;
     public object $artist;
     public ?string $image;
     public ?int $year;
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager,): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
         $filterConditions = array(" COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ");

@@ -265,7 +265,7 @@ class Playlist
                 (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),
                 $sqlOrder,
                 $resultsPage,
-                $resultsPage * ($page -1)
+                $resultsPage * ($page - 1)
             );
             $data->results = $dbh->query($query, $params);
         } else {

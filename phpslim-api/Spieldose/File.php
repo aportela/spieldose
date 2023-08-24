@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class File
 {
-
     private $dbh;
     public $id;
     public $path;
