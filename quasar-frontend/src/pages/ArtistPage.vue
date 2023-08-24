@@ -273,7 +273,6 @@ api.artist.get(artistName)
   .then((success) => {
     artistData.value = success.data.artist;
     artistImage.value = artistData.value.image;
-    console.log(artistImage.value);
     loading.value = false;
   })
   .catch((error) => {
