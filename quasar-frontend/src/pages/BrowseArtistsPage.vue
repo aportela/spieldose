@@ -11,7 +11,7 @@
         <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
                 <q-pagination v-model="currentPageIndex" color="dark"
                   :max="totalPages" :max-pages="5" boundary-numbers direction-links
-                  boundary-links @update:model-value="onPaginationChanged" :disable="searching" />
+                  boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
               </div>
         <div class="q-gutter-md row items-start" >
 

@@ -50,6 +50,11 @@ const routes = [
         component: () => import("pages/BrowseAlbumsPage.vue"),
       },
       {
+        name: "album",
+        path: "album/:title",
+        component: () => import("pages/AlbumPage.vue"),
+      },
+      {
         name: "paths",
         path: "paths",
         component: () => import("pages/BrowsePathsPage.vue"),

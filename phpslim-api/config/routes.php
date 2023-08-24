@@ -199,6 +199,26 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/album/search', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $filter = array(
+                    "title" => $params["filter"]["title"] ?? ""
+                );
+                $params = $request->getParsedBody();
+
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $data = \Spieldose\Entities\Album::search($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
                 $settings = $this->get('settings')['thumbnails'];
                 $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];

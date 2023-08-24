@@ -147,6 +147,25 @@ const api = {
     },
   },
   album: {
+    search: function (currentPageIndex, resultsPage, filter) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/album/search", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     getSmallRandomCovers: function (count = 32) {
       return new Promise((resolve, reject) => {
         axios
