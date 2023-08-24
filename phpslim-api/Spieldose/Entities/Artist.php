@@ -12,16 +12,17 @@ class Artist extends \Spieldose\Entities\Entity
     public $relations = null;
     public $bio = null;
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, int $currentPage = 1, int $resultsPage = 32, $filter = array(), string $sortBy = "", string $sortOrder = ""): array
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager,): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $resultsPage)
+            //new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $resultsPage)
         );
         $filterConditions = array(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ");
         if (isset($filter["name"]) && !empty($filter["name"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :name";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter["name"] . "%");
         }
+        /*
         $query = sprintf(
             "
                 SELECT DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist) AS name, MB_CACHE_ARTIST.image
@@ -35,6 +36,46 @@ class Artist extends \Spieldose\Entities\Entity
         );
         $results = $dbh->query($query, $params);
         return ($results);
+        */
+        $fieldDefinitions = [
+            "name" => "DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "image" => "MB_CACHE_ARTIST.image"
+        ];
+
+        $fieldCountDefinition = [
+            "totalResults" => " COUNT(DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
+        ];
+
+
+        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter);
+        $query = sprintf(
+            "
+                SELECT %s
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                %s
+                %s
+                %s
+            ",
+            $browser->getQueryFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $browser->getQuerySort(),
+            $pager->getQueryLimit()
+        );
+        $queryCount = sprintf(
+            "
+                SELECT
+                %s
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                %s
+            ",
+            $browser->getQueryCountFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+        $data = $browser->launch($query, $queryCount);
+        return ($data);
     }
 
     private function getMBIdFromName(string $name)

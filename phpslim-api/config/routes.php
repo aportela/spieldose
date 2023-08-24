@@ -172,8 +172,15 @@ return function (App $app) {
                     "name" => $params["filter"]["name"] ?? ""
                 );
                 $params = $request->getParsedBody();
-                $artists = \Spieldose\Entities\Artist::search($db, 1, 32, $filter);
-                $payload = json_encode(["artists" => $artists]);
+
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $data = \Spieldose\Entities\Artist::search($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });

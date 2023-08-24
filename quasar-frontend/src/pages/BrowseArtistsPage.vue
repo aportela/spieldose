@@ -6,8 +6,16 @@
         <q-breadcrumbs-el icon="person" label="Browse artists" />
       </q-breadcrumbs>
 
-      <q-card-section>
-        <div class="q-gutter-md row items-start" v-if="artists">
+      <q-card-section v-if="artists">
+
+        <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
+                <q-pagination v-model="currentPageIndex" color="dark"
+                  :max="totalPages" :max-pages="5" boundary-numbers direction-links
+                  boundary-links @update:model-value="onPaginationChanged" :disable="searching" />
+              </div>
+        <div class="q-gutter-md row items-start" >
+
+
             <router-link :to="{ name: 'artist', params: { name: artist.name }}" v-for="artist in artists" :key="artist">
             <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
@@ -36,14 +44,23 @@ import { api } from 'boot/axios'
 const loading = ref(false);
 const artists = ref([]);
 
+const totalPages = ref(10);
+const currentPageIndex  =ref(1);
+
 function search() {
   loading.value = true;
-  api.artist.search(0, 32, { }).then((success) => {
-    artists.value = success.data.artists;
+  api.artist.search(currentPageIndex.value, 32, { }).then((success) => {
+    artists.value = success.data.data.items;
+    totalPages.value = success.data.data.pager.totalPages;
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
   });
+}
+
+function onPaginationChanged(pageIndex) {
+  currentPageIndex.value = pageIndex;
+  search();
 }
 
 search();

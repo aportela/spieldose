@@ -114,11 +114,13 @@ const api = {
     },
   },
   artist: {
-    search: function (currentPage, resultsPage, filter) {
+    search: function (currentPageIndex, resultsPage, filter) {
       return new Promise((resolve, reject) => {
         const params = {
-          currentPage: currentPage,
-          resultsPage: resultsPage,
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
           filter: filter || {},
         };
         axios
