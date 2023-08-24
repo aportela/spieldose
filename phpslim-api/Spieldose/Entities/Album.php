@@ -56,7 +56,7 @@ class Album extends \Spieldose\Entities\Entity
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-                GROUP BY COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)
+
                 %s
                 %s
             ",
@@ -73,7 +73,7 @@ class Album extends \Spieldose\Entities\Entity
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-                GROUP BY COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)
+
             ",
             $browser->getQueryCountFields(),
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
