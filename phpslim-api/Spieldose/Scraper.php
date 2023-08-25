@@ -107,6 +107,21 @@ class Scraper
         return ($mbIds);
     }
 
+    public function getArtistsImageURLs(): array
+    {
+        $images = array();
+        $query = '
+                SELECT DISTINCT image FROM MB_CACHE_ARTIST
+                WHERE image IS NOT NULL
+            ';
+        $results = $this->dbh->query($query);
+        $totalResults = count($results);
+        for ($i = 0; $i < $totalResults; $i++) {
+            $images[] = $results[$i]->image;
+        }
+        return ($images);
+    }
+
     public function getArtistMusicBrainzMetadata($mbId): \aportela\MusicBrainzWrapper\Artist
     {
         $mbArtist = new \aportela\MusicBrainzWrapper\Artist($this->logger, $this->apiFormat);
