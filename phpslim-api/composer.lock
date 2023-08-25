@@ -285,16 +285,16 @@
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/remote-thumbnail-cache-wrapper.git",
-                "reference": "35432be10b6bb9d15e4d81a58b6f371072fe5e21"
+                "reference": "24a3428983b91a43b9b364661b1229fed9c89a09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/35432be10b6bb9d15e4d81a58b6f371072fe5e21",
-                "reference": "35432be10b6bb9d15e4d81a58b6f371072fe5e21",
+                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/24a3428983b91a43b9b364661b1229fed9c89a09",
+                "reference": "24a3428983b91a43b9b364661b1229fed9c89a09",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +315,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0-only"
+                "AGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -327,9 +327,9 @@
             "homepage": "https://github.com/aportela/remote-thumbnail-cache-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/remote-thumbnail-cache-wrapper/issues",
-                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.1"
+                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.2"
             },
-            "time": "2023-08-15T09:10:38+00:00"
+            "time": "2023-08-25T09:05:13+00:00"
         },
         {
             "name": "brick/math",
