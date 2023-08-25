@@ -23,7 +23,7 @@ class Album extends \Spieldose\Entities\Entity
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ";
         }
         $fieldDefinitions = [
-            "albumMbId" => "FIT.mb_album_id",
+            "mbId" => "FIT.mb_album_id",
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)",
             "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, NULL)",
@@ -43,11 +43,10 @@ class Album extends \Spieldose\Entities\Entity
                     $result->artist = new \stdClass();
                     $result->artist->mbId = $result->artistMbId;
                     $result->artist->name = $result->artistName;
-                    if (!empty($result->albumMbId)) {
-                        $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $result->albumMbId);
+                    if (!empty($result->mbId)) {
+                        $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $result->mbId);
                         $result->image = sprintf("api/2/thumbnail/normal/remote/album/?url=%s", urlencode($coverArtURL));
                     }
-                    unset($result->albumMbId);
                     unset($result->artistMbId);
                     unset($result->artistName);
                     return ($result);
