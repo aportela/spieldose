@@ -3,7 +3,7 @@
     <a class="play-album">
       <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" :src="imageURL" width="174px" height="174px" v-if="imageURL" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
-      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" src="images/image-album-not-set.png" v-else />
+      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" src="images/image-album-not-set.png" @load="onLoad" @error="onError" v-else />
       <!--
       <i class="fas fa-play fa-4x"></i>
       -->
