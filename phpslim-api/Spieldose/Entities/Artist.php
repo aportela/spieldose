@@ -12,6 +12,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $bio = null;
     public $popularAlbum = null;
     public $latestAlbum = null;
+    public $topTracks = null;
 
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
@@ -163,6 +164,24 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->latestAlbum->year = $results[0]->year;
                     $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
                     $this->latestAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                }
+                $query = sprintf(
+                    "
+                        SELECT FIT.id, FIT.title, FIT.artist, FIT.album, FIT.album_artist AS albumArtist, FIT.year, FIT.track_number as trackNumber, FIT.mb_album_id AS musicBrainzAlbumId
+                        FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                        WHERE FIT.mb_artist_id = :mbid
+                        AND FIT.title IS NOT NULL
+                        ORDER BY RANDOM()
+                        LIMIT 10
+                    "
+                );
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $this->topTracks = $this->dbh->query($query, $params);
+                foreach ($this->topTracks as $track) {
+                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $track->musicBrainzAlbumId);
+                    $track->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
                 }
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");

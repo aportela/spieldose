@@ -75,20 +75,21 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                  <q-markup-table dense style="width: 50%">
+                  <q-markup-table dense>
                     <tbody>
-                      <tr v-for="index in [10, 9, 8, 7, 6, 5 ,4 ,3, 2, 1]" :key="index">
+                      <tr v-for="track, index in artistData.topTracks" :key="track.id">
                         <td class="text-right">{{ index }}</td>
                         <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"></q-icon></td>
                         <td class="text-left">
                           <q-avatar>
-                            <img src="http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e">
+                            <img :src="track.image">
                           </q-avatar>
+                          {{ track.album }}
                         </td>
                         <td class="text-center"><q-icon name="favorite_border" size="lg" class="cursor-pointer"></q-icon></td>
-                        <td class="text-bold">Track {{ index }} title</td>
+                        <td class="text-bold">{{ track.title }}</td>
                         <td>
-                          <p :style="'height: 100%; width: ' + (index * 10)+ '%'" class="bg-pink text-white">{{ 22 * index }} plays</p>
+                          <p :style="'height: 100%; width: ' + (22 * (artistData.topTracks.length - index)) + '%'" class="bg-pink text-white">{{ 22 * (artistData.topTracks.length - index) }} plays</p>
                         </td>
                       </tr>
                     </tbody>
@@ -248,7 +249,8 @@ const artistData = ref({
     title: null,
     year: null,
     image: null
-  }
+  },
+  topTracks: []
 });
 
 const artistImage = ref(null);
