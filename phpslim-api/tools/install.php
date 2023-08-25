@@ -51,4 +51,16 @@ if (count($missingExtensions) > 0) {
         echo "Database already installed" . PHP_EOL;
         $logger->info("Database already installed");
     }
+
+    echo "Creating thumnail cache dirs" . PHP_EOL;
+    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
+        if (!mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+            $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
+        }
+    }
+    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
+        if (!mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+            $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
+        }
+    }
 }
