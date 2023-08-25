@@ -18,7 +18,7 @@
           <div class="row q-mt-xl">
             <div class="col-6 ">
               <div class="float-left" style="width: 96px; height:96px;">
-                <q-img src="http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e"
+                <q-img :src="artistData.latestAlbum.image"
                   spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-0">
@@ -27,12 +27,12 @@
                 </q-img>
               </div>
               <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">LATEST RELEASE
-                  <br><strong class="text-white">Album name</strong><br><span class="text-white">1999</span></span>
+                  <br><strong class="text-white">{{  artistData.latestAlbum.title }}</strong><br><span class="text-white">{{ artistData.latestAlbum.year }}</span></span>
               </p>
             </div>
             <div class="col-6">
               <div class="float-left" style="width: 96px; height:96px;">
-                <q-img src="http://127.0.0.1:8081/api/2/cache/thumbnail/small/d7af7e7a3c07f69f56beaa92b3029d173e7c9d8e"
+                <q-img :src="artistData.popularAlbum.image"
                   spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-0">
@@ -41,7 +41,7 @@
                 </q-img>
               </div>
               <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">POPULAR
-                  <br><strong class="text-white">Album name</strong><br><span class="text-white">1999</span></span>
+                  <br><strong class="text-white">{{  artistData.popularAlbum.title }}</strong><br><span class="text-white">{{  artistData.popularAlbum.year }}</span></span>
               </p>
             </div>
           </div>
@@ -238,7 +238,17 @@ const loading = ref(false);
 
 const artistData = ref({
   mbId: null,
-  name: null
+  name: null,
+  popularAlbum: {
+    title: null,
+    year: null,
+    image: null
+  },
+  latestAlbum: {
+    title: null,
+    year: null,
+    image: null
+  }
 });
 
 const artistImage = ref(null);

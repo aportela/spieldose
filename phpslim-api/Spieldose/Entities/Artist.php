@@ -10,6 +10,9 @@ class Artist extends \Spieldose\Entities\Entity
     public $image = null;
     public $relations = null;
     public $bio = null;
+    public $popularAlbum = null;
+    public $latestAlbum = null;
+
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
@@ -128,6 +131,38 @@ class Artist extends \Spieldose\Entities\Entity
                         "summary" => $results[0]->bio_summary,
                         "content" => $results[0]->bio_content
                     ];
+                }
+                $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $results = $this->dbh->query($query, $params);
+                $this->popularAlbum = (object) [
+                    'title' => null,
+                    'year' => null,
+                    'image' => null
+                ];
+                if (count($results) == 1) {
+                    $this->popularAlbum->title = $results[0]->album;
+                    $this->popularAlbum->year = $results[0]->year;
+                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
+                    $this->popularAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                }
+                $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $results = $this->dbh->query($query, $params);
+                $this->latestAlbum = (object) [
+                    'title' => null,
+                    'year' => null,
+                    'image' => null
+                ];
+                if (count($results) == 1) {
+                    $this->latestAlbum->title = $results[0]->album;
+                    $this->latestAlbum->year = $results[0]->year;
+                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
+                    $this->latestAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
                 }
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");
