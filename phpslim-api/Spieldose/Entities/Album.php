@@ -45,7 +45,7 @@ class Album extends \Spieldose\Entities\Entity
                     $result->artist->name = $result->artistName;
                     if (!empty($result->albumMbId)) {
                         $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $result->albumMbId);
-                        $result->image = sprintf("api/2/thumbnail_remote/normal/?url=%s", urlencode($coverArtURL));
+                        $result->image = sprintf("api/2/thumbnail/normal/remote/album/?url=%s", urlencode($coverArtURL));
                     }
                     unset($result->albumMbId);
                     unset($result->artistMbId);
