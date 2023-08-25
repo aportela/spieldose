@@ -106,8 +106,7 @@
                 <div class="row">
                   <div class="col-4" v-for="index in [1, 2, 3]" :key="index">
                     <p class="text-center">
-                      <q-avatar class="q-mr-sm q-mb-sm" style="width: 2em; height: 2em;">
-                        <img :src="artistImage">
+                      <q-avatar class="q-mr-sm q-mb-sm" color="dark" text-color="white" size="xl" icon="person">
                       </q-avatar>
                       Similar {{ index + 1 }}
                     </p>
