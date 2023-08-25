@@ -105,11 +105,11 @@
               <q-separator />
               <q-card-section>
                 <div class="row">
-                  <div class="col-4" v-for="index in [1, 2, 3]" :key="index">
+                  <div class="col-4" v-for="similar in artistData.similar" :key="similar.name">
                     <p class="text-center">
-                      <q-avatar class="q-mr-sm q-mb-sm" color="dark" text-color="white" size="xl" icon="person">
+                      <q-avatar class="q-mr-sm q-mb-sm" color="dark" text-color="white" size="xl" :src="similar.image">
                       </q-avatar>
-                      Similar {{ index + 1 }}
+                      <br><router-link :to="{ name: 'artist', params: { name: similar.name }}">{{ similar.name }}</router-link>
                     </p>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ div#artist-header-block-content {
 </style>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from "quasar";
@@ -231,7 +231,7 @@ const { t } = useI18n();
 const $q = useQuasar();
 
 const route = useRoute()
-const artistName = route.params.name;
+const artistName = ref(route.params.name);
 
 const tab = ref('overview');
 
@@ -250,11 +250,20 @@ const artistData = ref({
     year: null,
     image: null
   },
-  topTracks: []
+  topTracks: [],
+  similar: []
 });
 
 const artistImage = ref(null);
 
+const currentArtist = computed(() => { return(route.params.name); });
+
+watch(currentArtist, (newValue, oldValue) => {
+  artistName.value = newValue;
+  if (artistName.value) {
+    get(artistName.value);
+  }
+});
 
 onMounted(() => {
   /*
@@ -279,8 +288,10 @@ function nl2br(str, replaceMode, isXhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
 }
 
-loading.value = true;
-api.artist.get(artistName)
+
+function get(name) {
+  loading.value = true;
+api.artist.get(name)
   .then((success) => {
     artistData.value = success.data.artist;
     artistImage.value = artistData.value.image;
@@ -298,4 +309,7 @@ api.artist.get(artistName)
         break;
     }
   });
+}
+
+get(artistName.value);
 </script>

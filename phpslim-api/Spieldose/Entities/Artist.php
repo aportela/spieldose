@@ -13,6 +13,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $popularAlbum = null;
     public $latestAlbum = null;
     public $topTracks = null;
+    public $similar = null;
 
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
@@ -182,6 +183,18 @@ class Artist extends \Spieldose\Entities\Entity
                 foreach ($this->topTracks as $track) {
                     $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $track->musicBrainzAlbumId);
                     $track->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                }
+                $query = sprintf(
+                    "
+                        SELECT mbid, name, image FROM MB_CACHE_ARTIST
+                        WHERE image IS NOT NULL
+                        ORDER BY RANDOM()
+                        LIMIT 3
+                    "
+                );
+                $this->similar = $this->dbh->query($query, []);
+                foreach ($this->similar as $similar) {
+                    $similar->image = sprintf("api/2/thumbnail/small/remote/artist/?url=%s", urlencode($similar->image));
                 }
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");
