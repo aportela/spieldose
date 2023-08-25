@@ -138,6 +138,16 @@ if (count($missingExtensions) > 0) {
                 }
             }
             if ($scrapArtistsThumbnails) {
+                if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
+                    if (!mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+                        $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
+                    }
+                }
+                if (!file_exists($settings['thumbnails']['albums']['basePath'])) {
+                    if (!mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
+                        $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
+                    }
+                }
                 $artistImageURLs = $scraper->getArtistsImageURLs();
                 $totalArtistsImageURLs = count($artistImageURLs);
                 echo sprintf("Processing %d artist images%s", $totalArtistsImageURLs, PHP_EOL);
