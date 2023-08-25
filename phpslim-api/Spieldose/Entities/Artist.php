@@ -34,7 +34,7 @@ class Artist extends \Spieldose\Entities\Entity
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->image)) {
-                        $result->image = sprintf("api/2/thumbnail_remote/normal/?url=%s", urlencode($result->image));
+                        $result->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($result->image));
                     }
                     return ($result);
                 },
@@ -104,7 +104,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $this->name = $results[0]->name;
                 $this->image = $results[0]->image;
                 if (!empty($this->image)) {
-                    $this->image = sprintf("api/2/thumbnail_remote/normal/?url=%s", urlencode($this->image));
+                    $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
                 $query = " SELECT url_relationship_typeid, url_relationship_value FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
                 $params = array(

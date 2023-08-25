@@ -82,13 +82,13 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/thumbnail_remote/{size}/', function (Request $request, Response $response, array $args) {
+            $group->get('/thumbnail/{size}/remote/artist/', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 if (isset($queryParams["url"]) && !empty($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL)) {
                     if (!in_array($args['size'], ['small', 'normal'])) {
                         throw new \Spieldose\Exception\InvalidParamsException('size');
                     }
-                    $settings = $this->get('settings')['thumbnails'];
+                    $settings = $this->get('settings')['thumbnails']['artists'];
                     //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
                     $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
                     $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
@@ -96,7 +96,6 @@ return function (App $app) {
                     $thumbnail->setDimensions($settings['sizes'][$args['size']]['width'], $settings['sizes'][$args['size']]['height']);
                     $thumbnail->setQuality($settings['sizes'][$args['size']]['quality']);
                     if ($thumbnail->getFromRemoteURL($queryParams["url"]) && !empty($thumbnail->path) && file_exists(($thumbnail->path))) {
-
                         $filesize = filesize($thumbnail->path);
                         $f = fopen($thumbnail->path, 'r');
                         fseek($f, 0);

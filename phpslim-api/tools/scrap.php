@@ -36,10 +36,12 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums", "force"));
+        $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums", "force", "artiststhumbnails"));
         $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
         $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
-        if ($scrapArtists || $scrapAlbums) {
+        $scrapArtistsThumbnails = $cmdLine->hasParam("artiststhumbnails");
+        $force = $cmdLine->hasParam("force");
+        if ($scrapArtists || $scrapAlbums || $scrapArtistsThumbnails) {
             $scraper = new \Spieldose\Scraper($db, $logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
             if ($scrapArtists) {
                 echo "Artist scraping...." . PHP_EOL;
@@ -59,7 +61,7 @@ if (count($missingExtensions) > 0) {
                 } else {
                     echo sprintf("No artist names without MusicBrainzId found%s", PHP_EOL);
                 }
-                $artistMBIds = !$cmdLine->hasParam("force") ? $scraper->getArtistMusicBrainzIdsWithoutCachedMetadata() : $scraper->getArtistMusicBrainzIds();
+                $artistMBIds = !$force ? $scraper->getArtistMusicBrainzIdsWithoutCachedMetadata() : $scraper->getArtistMusicBrainzIds();
                 $totalArtistMBIds = count($artistMBIds);
                 if ($totalArtistMBIds > 0) {
                     echo sprintf("Processing %d artist without MusicBrainz cached metadata%s", $totalArtistMBIds, PHP_EOL);
@@ -135,6 +137,20 @@ if (count($missingExtensions) > 0) {
                     echo sprintf("All Artist MusicBrainz metadata is cached%s", PHP_EOL);
                 }
             }
+            if ($scrapArtistsThumbnails) {
+                $artistImageURLs = $scraper->getArtistsImageURLs();
+                $totalArtistsImageURLs = count($artistImageURLs);
+                echo sprintf("Processing %d artist images%s", $totalArtistsImageURLs, PHP_EOL);
+                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $settings['thumbnails']['artists']['basePath']);
+                for ($i = 0; $i < $totalArtistsImageURLs; $i++) {
+                    foreach (array_keys($settings['thumbnails']['artists']['sizes']) as $size) {
+                        $thumbnail->setQuality($settings['thumbnails']['artists']['sizes'][$size]['quality']);
+                        $thumbnail->setDimensions($settings['thumbnails']['artists']['sizes'][$size]['width'], $settings['thumbnails']['artists']['sizes'][$size]['height']);
+                        $thumbnail->getFromRemoteURL($artistImageURLs[$i], $force);
+                    }
+                    \Spieldose\Utils::showProgressBar($i + 1, $totalArtistsImageURLs, 20, "URL: " . $artistImageURLs[$i]);
+                }
+            }
             if ($scrapAlbums) {
                 echo "Album scraping...." . PHP_EOL;
                 $logger->info("Scraping albums");
@@ -154,7 +170,7 @@ if (count($missingExtensions) > 0) {
                     echo sprintf("No albums without MusicBrainzId found%s", PHP_EOL);
                 }
 
-                $albumMBIds = !$cmdLine->hasParam("force") ? $scraper->getAlbumMusicBrainzIdsWithoutCachedMetadata() : $scraper->getAlbumMusicBrainzIds();
+                $albumMBIds = !$force ? $scraper->getAlbumMusicBrainzIdsWithoutCachedMetadata() : $scraper->getAlbumMusicBrainzIds();
                 $totalAlbumMBIds = count($albumMBIds);
                 if ($totalAlbumMBIds > 0) {
                     echo sprintf("Processing %d albums without MusicBrainz cached metadata%s", $totalAlbumMBIds, PHP_EOL);
@@ -176,6 +192,8 @@ if (count($missingExtensions) > 0) {
             echo "\tphp " . $argv[0] . " --artists" . PHP_EOL;
             echo "Scrap & cache pending/missing albums:" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --albums" . PHP_EOL;
+            echo "Scrap & cache pending/missing artists thumbnails:" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --artists-thumbnails" . PHP_EOL;
         }
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
