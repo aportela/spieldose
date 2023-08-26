@@ -143,9 +143,10 @@
                 <div class="row">
                   <div class="col-4" v-for="similar in artistData.similar" :key="similar.name">
                     <p class="text-center">
+                      <router-link :to="{ name: 'artist', params: { name: similar.name } }" style="text-decoration: none">
                       <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
-                        fit="cover" width="96px" height="96px" />
-                      <br><router-link :to="{ name: 'artist', params: { name: similar.name } }">{{ similar.name
+                        fit="cover" width="96px" height="96px" spinner-color="pink" />
+                      <br>{{ similar.name
                       }}</router-link>
                     </p>
                   </div>
