@@ -199,17 +199,10 @@ const api = {
     },
   },
   path: {
-    search: function (currentPageIndex, resultsPage, filter) {
+    getTree: function () {
       return new Promise((resolve, reject) => {
-        const params = {
-          pager: {
-            currentPageIndex: currentPageIndex,
-            resultsPage: resultsPage,
-          },
-          filter: filter || {},
-        };
         axios
-          .post(baseAPIPath + "/path/search", params)
+          .get(baseAPIPath + "/path/tree")
           .then((response) => {
             resolve(response);
           })

@@ -339,21 +339,10 @@ return function (App $app) {
                 }
             });
 
-            $group->post('/path/search', function (Request $request, Response $response, array $args) {
+            $group->get('/path/tree', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $params = $request->getParsedBody();
-                $filter = array(
-                    "path" => $params["filter"]["path"] ?? ""
-                );
-                $params = $request->getParsedBody();
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                    [
-                        new \aportela\DatabaseBrowserWrapper\SortItem("path", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
-                    ]
-                );
-                $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $data = \Spieldose\Path::search($db, $filter, $sort, $pager);
-                $payload = json_encode(["data" => $data]);
+                $data = \Spieldose\Path::getTree($db);
+                $payload = json_encode(["items" => $data], JSON_PRETTY_PRINT);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });

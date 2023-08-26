@@ -52,10 +52,10 @@ const currentPageIndex = ref(1);
 
 const pathTree = ref([]);
 
-function search() {
+function getTree() {
   noPathsFound.value = false;
   loading.value = true;
-  api.path.search(currentPageIndex.value, 32, { path: pathName.value }).then((success) => {
+  api.path.getTree(currentPageIndex.value, 32, { path: pathName.value }).then((success) => {
     directories.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (pathName.value && success.data.data.pager.totalResults < 1) {
@@ -70,9 +70,9 @@ function search() {
 
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
-  search();
+  getTree();
 }
 
-search();
+getTree();
 
 </script>
