@@ -13,6 +13,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $popularAlbum = null;
     public $latestAlbum = null;
     public $topTracks = null;
+    public $topAlbums = null;
     public $similar = null;
 
 
@@ -183,6 +184,35 @@ class Artist extends \Spieldose\Entities\Entity
                 foreach ($this->topTracks as $track) {
                     $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $track->musicBrainzAlbumId);
                     $track->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                }
+                $query = sprintf(
+                    "
+                        SELECT DISTINCT
+                            FIT.mb_album_id AS mbId,
+                            COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
+                            COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist) AS artistName,
+                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id) AS artistMBId,
+                            COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year
+                        FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id) = :mbid
+                        ORDER BY RANDOM()
+                        LIMIT 5
+                    "
+                );
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $this->topAlbums = $this->dbh->query($query, $params);
+                foreach ($this->topAlbums as $album) {
+                    $album->artist = new \stdClass();
+                    $album->artist->mbId = $album->artistMBId;
+                    $album->artist->name = $album->artistName;
+                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $album->mbId);
+                    $album->image = sprintf("api/2/thumbnail/normal/remote/album/?url=%s", urlencode($coverArtURL));
+                    unset($album->artistMbId);
+                    unset($album->artistName);
                 }
                 $query = sprintf(
                     "

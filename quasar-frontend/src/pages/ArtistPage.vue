@@ -102,6 +102,18 @@
                 </q-markup-table>
               </q-card-section>
             </q-card>
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.topAlbums">
+              <q-card-section>
+                <div class="text-h6">Top albums</div>
+              </q-card-section>
+              <q-card-section>
+                <div class="q-pa-lg flex flex-center">
+                  <div class="q-gutter-md row items-start">
+                    <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album"></AnimatedAlbumCover>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
           </div>
           <div class="col-2">
             <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations">
@@ -243,6 +255,7 @@ import { useQuasar } from "quasar";
 import { api } from 'boot/axios'
 import { BarChart } from 'chartist';
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
+import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 
 const { t } = useI18n();
 const $q = useQuasar();
