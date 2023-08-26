@@ -16,7 +16,7 @@
               Total
               plays: </span> <span class="text-white">0 times</span></p>
           <div class="row q-mt-xl">
-            <div class="col-6 ">
+            <div class="col-6" v-if="artistData.latestAlbum.title">
               <div class="float-left" style="width: 96px; height:96px;">
                 <q-img :src="artistData.latestAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
@@ -25,13 +25,14 @@
                   </template>
                 </q-img>
               </div>
-              <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">LATEST RELEASE
-                  <br><strong class="text-white">{{ artistData.latestAlbum.title }}</strong><br><span
-                    class="text-white">{{ artistData.latestAlbum.year }}</span></span>
-              </p>
+              <div class="float-left oneline-ellipsis" style="margin-left: 24px; margin-top: 10px;">
+                <p class="q-mb-none text-grey">LATEST RELEASE</p>
+                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.latestAlbum.title }}</p>
+                <p class="q-mt-none text-white" v-if="artistData.latestAlbum.year">{{ artistData.latestAlbum.year }}</p>
+              </div>
             </div>
-            <div class="col-6">
-              <div class="float-left" style="width: 96px; height:96px;">
+            <div class="col-6" v-if="artistData.popularAlbum.title">
+              <div class="float-left oneline-ellipsis" style="width: 96px; height:96px;">
                 <q-img :src="artistData.popularAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-0">
@@ -39,10 +40,11 @@
                   </template>
                 </q-img>
               </div>
-              <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">POPULAR
-                  <br><strong class="text-white">{{ artistData.popularAlbum.title }}</strong><br><span
-                    class="text-white">{{ artistData.popularAlbum.year }}</span></span>
-              </p>
+              <div class="float-left oneline-ellipsis" style="margin-left: 24px; margin-top: 10px;">
+                <p class="q-mb-none text-grey">POPULAR</p>
+                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.popularAlbum.title }}</p>
+                <p class="q-mt-none text-white" v-if="artistData.popularAlbum.year">{{ artistData.popularAlbum.year }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -66,7 +68,8 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div>
+                <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+                <div v-else>
                   <div v-html="artistData.bio ? nl2br(artistData.bio.summary) : null">
                   </div>
                   <p class="q-mt-md" v-if="artistData.relations">
@@ -199,6 +202,7 @@
 </template>
 
 <style>
+
 .rotate {
   width: 100px;
   animation: rotation 2s infinite linear;
@@ -213,7 +217,6 @@
     transform: rotate(359deg);
   }
 }
-
 
 div#artist-header-block {
   overflow: hidden;
@@ -250,6 +253,13 @@ div#artist-header-block-background-overlay {
 div#artist-header-block-content {
   width: 50%;
   z-index: 2;
+}
+
+p.header-mini-album-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 16em;
 }
 </style>
 
@@ -349,7 +359,7 @@ function get(name) {
     .then((success) => {
       artistData.value = success.data.artist;
       artistImage.value = artistData.value.image;
-      loading.value = false;
+      //loading.value = false;
     })
     .catch((error) => {
       loading.value = false;
