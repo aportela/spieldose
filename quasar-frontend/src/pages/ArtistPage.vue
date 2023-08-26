@@ -314,6 +314,7 @@ watch(currentArtist, (newValue, oldValue) => {
       topTracks: [],
       similar: []
     }
+    artistImage.value = null;
     get(artistName.value);
   }
 });
