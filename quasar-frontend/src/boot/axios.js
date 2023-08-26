@@ -180,12 +180,15 @@ const api = {
     },
   },
   track: {
-    search: function (currentPageIndex, resultsPage, filter) {
+    search: function (currentPageIndex, resultsPage, randomSort, filter) {
       return new Promise((resolve, reject) => {
         const params = {
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
+          },
+          sort: {
+            random: randomSort,
           },
           filter: filter || {},
         };

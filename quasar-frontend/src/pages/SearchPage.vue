@@ -104,14 +104,14 @@ const loading = ref(false);
 
 const filteredOptions = ref([]);
 
-const tab = ref('advanced');
+const tab = ref('global');
 
 function onFilter(val, update) {
   if (val && val.trim().length > 0) {
     filteredOptions.value = [];
     loading.value = true;
     update(() => {
-      api.track.search(0, 128, { text: val })
+      api.track.search(0, 32, false, { text: val })
         .then((success) => {
           tracks.value = success.data.tracks;
           /*

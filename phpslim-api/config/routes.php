@@ -78,7 +78,7 @@ return function (App $app) {
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
-                        new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                        $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
                     ]
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);

@@ -5,7 +5,7 @@
         <q-breadcrumbs-el icon="home" label="Spieldose" />
         <q-breadcrumbs-el icon="person" label="Browse paths" />
       </q-breadcrumbs>
-      <q-card-section v-if="directories">
+      <q-card-section v-if="directories && directories.length > 0">
         <div>
           <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name"
             children-key="children" no-transition @update:selected="onTreeNodeSelected">
@@ -81,13 +81,14 @@ function onTreeNodeSelected(nodeHash) {
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id) {
     loading.value = true;
-    api.track.search(1, 0, { path: node.id }).then((success) => {
+    api.track.search(1, 0, false, { path: node.id }).then((success) => {
       currentPlaylist.saveTracks(success.data.tracks);
       loading.value = false;
     }).catch((error) => {
       loading.value = false;
     });
   }
+  return(true);
 }
 
 getTree();

@@ -9,9 +9,6 @@ class Track extends \Spieldose\Entities\Entity
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
         $params = array();
-        if ($pager->enabled) {
-            $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $pager->resultsPage);
-        }
         $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $filterConditions[] = " FIT.title LIKE :title";
@@ -29,18 +26,51 @@ class Track extends \Spieldose\Entities\Entity
             $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
         }
+        $fieldDefinitions = [
+            "id " => "FIT.id",
+            "title" => "FIT.title",
+            "artist" => "FIT.artist",
+            "album" => "FIT.album",
+            "albumArtist" => "FIT.album_artist",
+            "year" => "FIT.year",
+            "trackNumber" => "FIT.track_number",
+            "musicBrainzAlbumId" => "FIT.mb_album_id"
+        ];
+        $fieldCountDefinition = [
+            "totalResults" => " COUNT(FIT.id)"
+        ];
+        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
+
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter);
+        foreach ($params as $param) {
+            $browser->addDBQueryParam($param);
+        }
+
         $query = sprintf(
             "
-                SELECT FIT.id, FIT.title, FIT.artist, FIT.album, FIT.album_artist AS albumArtist, FIT.year, FIT.track_number as trackNumber, FIT.mb_album_id AS musicBrainzAlbumId
+                SELECT
+                %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.id = FIT.id
                 %s
-                ORDER BY RANDOM()
+                %s
                 %s
             ",
+            $browser->getQueryFields(),
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
-            $pager->enabled ? "LIMIT :resultsPage" : null
+            $browser->getQuerySort(),
+            $pager->getQueryLimit()
         );
-        $results = $dbh->query($query, $params);
-        return ($results);
+        $queryCount = sprintf(
+            "
+                SELECT
+                    %s
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.id = FIT.id
+                %s
+            ",
+            $browser->getQueryCountFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+        $data = $browser->launch($query, $queryCount);
+        return ($data->items);
     }
 }
