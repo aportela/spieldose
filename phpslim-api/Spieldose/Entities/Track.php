@@ -24,10 +24,14 @@ class Track extends \Spieldose\Entities\Entity
             $filterConditions[] = " (FIT.title LIKE :text OR FIT.artist LIKE :text OR FIT.album LIKE :text) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":text", "%" . $filter["text"] . "%");
         }
+        if (isset($filter["path"]) && !empty($filter["path"])) {
+            $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
+        }
         $query = sprintf(
             "
                 SELECT FIT.id, FIT.title, FIT.artist, FIT.album, FIT.album_artist AS albumArtist, FIT.year, FIT.track_number as trackNumber, FIT.mb_album_id AS musicBrainzAlbumId
-                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.id = FIT.id
                 %s
                 ORDER BY RANDOM()
                 LIMIT :resultsPage
