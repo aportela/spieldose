@@ -69,7 +69,10 @@
                 <div>
                   <div v-html="artistData.bio ? nl2br(artistData.bio.summary) : null">
                   </div>
-                  <p class="q-mt-md" v-if="artistData.relations"><ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url" :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip></p>
+                  <p class="q-mt-md" v-if="artistData.relations">
+                    <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
+                      :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
+                  </p>
                 </div>
               </q-card-section>
             </q-card>
@@ -109,7 +112,8 @@
               <q-card-section>
                 <div class="q-pa-lg flex flex-center">
                   <div class="q-gutter-md row items-start">
-                    <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album"></AnimatedAlbumCover>
+                    <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album">
+                    </AnimatedAlbumCover>
                   </div>
                 </div>
               </q-card-section>
@@ -122,7 +126,9 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <p v-for="relation in artistData.relations" :key="relation.url"><ArtistURLRelationshipChip :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip></p>
+                <p v-for="relation in artistData.relations" :key="relation.url">
+                  <ArtistURLRelationshipChip :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
+                </p>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered>
@@ -289,8 +295,25 @@ const artistImage = ref(null);
 const currentArtist = computed(() => { return (route.params.name); });
 
 watch(currentArtist, (newValue, oldValue) => {
+
   artistName.value = newValue;
   if (artistName.value) {
+    artistData.value = {
+      mbId: null,
+      name: null,
+      popularAlbum: {
+        title: null,
+        year: null,
+        image: null
+      },
+      latestAlbum: {
+        title: null,
+        year: null,
+        image: null
+      },
+      topTracks: [],
+      similar: []
+    }
     get(artistName.value);
   }
 });
