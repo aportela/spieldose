@@ -85,7 +85,8 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <q-markup-table dense>
+                <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+                <q-markup-table v-else dense>
                   <tbody>
                     <tr v-for="track, index in artistData.topTracks" :key="track.id">
                       <td class="text-right">{{ index }}</td>
@@ -113,7 +114,8 @@
                 <div class="text-h6">Top albums</div>
               </q-card-section>
               <q-card-section>
-                <div class="q-pa-lg flex flex-center">
+                <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+                <div class="q-pa-lg flex flex-center" v-else>
                   <div class="q-gutter-md row items-start">
                     <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album">
                     </AnimatedAlbumCover>
@@ -129,6 +131,7 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
+                <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <p v-for="relation in artistData.relations" :key="relation.url">
                   <ArtistURLRelationshipChip :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
                 </p>
@@ -360,7 +363,7 @@ function get(name) {
     .then((success) => {
       artistData.value = success.data.artist;
       artistImage.value = artistData.value.image;
-      //loading.value = false;
+      loading.value = false;
     })
     .catch((error) => {
       loading.value = false;
