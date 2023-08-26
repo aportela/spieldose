@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
-            "version": "1.0.4",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-browser-wrapper.git",
-                "reference": "48985bdbe94cb54a5c694efb55c30dfb474ecb8f"
+                "reference": "530a1a1e004019922e64e022713e45abee5a81c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/48985bdbe94cb54a5c694efb55c30dfb474ecb8f",
-                "reference": "48985bdbe94cb54a5c694efb55c30dfb474ecb8f",
+                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/530a1a1e004019922e64e022713e45abee5a81c2",
+                "reference": "530a1a1e004019922e64e022713e45abee5a81c2",
                 "shasum": ""
             },
             "require": {
@@ -49,9 +49,9 @@
             "homepage": "https://github.com/aportela/db-browser-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-browser-wrapper/issues",
-                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.4"
+                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.5"
             },
-            "time": "2023-08-24T21:37:51+00:00"
+            "time": "2023-08-26T23:03:11+00:00"
         },
         {
             "name": "aportela/db-wrapper",
@@ -4317,16 +4317,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v6.3.2",
+            "version": "v6.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "aa5d64ad3f63f2e48964fc81ee45cb318a723898"
+                "reference": "eca495f2ee845130855ddf1cf18460c38966c8b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/aa5d64ad3f63f2e48964fc81ee45cb318a723898",
-                "reference": "aa5d64ad3f63f2e48964fc81ee45cb318a723898",
+                "url": "https://api.github.com/repos/symfony/console/zipball/eca495f2ee845130855ddf1cf18460c38966c8b6",
+                "reference": "eca495f2ee845130855ddf1cf18460c38966c8b6",
                 "shasum": ""
             },
             "require": {
@@ -4387,7 +4387,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v6.3.2"
+                "source": "https://github.com/symfony/console/tree/v6.3.4"
             },
             "funding": [
                 {
@@ -4403,7 +4403,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-19T20:17:28+00:00"
+            "time": "2023-08-16T10:10:12+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -4989,16 +4989,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v6.3.2",
+            "version": "v6.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "c5ce962db0d9b6e80247ca5eb9af6472bd4d7b5d"
+                "reference": "0b5c29118f2e980d455d2e34a5659f4579847c54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/c5ce962db0d9b6e80247ca5eb9af6472bd4d7b5d",
-                "reference": "c5ce962db0d9b6e80247ca5eb9af6472bd4d7b5d",
+                "url": "https://api.github.com/repos/symfony/process/zipball/0b5c29118f2e980d455d2e34a5659f4579847c54",
+                "reference": "0b5c29118f2e980d455d2e34a5659f4579847c54",
                 "shasum": ""
             },
             "require": {
@@ -5030,7 +5030,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v6.3.2"
+                "source": "https://github.com/symfony/process/tree/v6.3.4"
             },
             "funding": [
                 {
@@ -5046,7 +5046,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-12T16:00:22+00:00"
+            "time": "2023-08-07T10:39:22+00:00"
         },
         {
             "name": "symfony/service-contracts",
