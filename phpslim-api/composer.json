@@ -42,7 +42,7 @@
     },
     "scripts": {
         "fix" : "vendor/bin/php-cs-fixer fix Spieldose",
-        "start": "php -S 127.0.0.1:8081 -t public",
+        "start": "php -S 127.0.0.1:8081 -t public public/cliserver.php",
         "test": "vendor/bin/phpunit"
     }
 }
