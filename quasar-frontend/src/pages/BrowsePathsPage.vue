@@ -5,30 +5,15 @@
         <q-breadcrumbs-el icon="home" label="Spieldose" />
         <q-breadcrumbs-el icon="person" label="Browse paths" />
       </q-breadcrumbs>
-
       <q-card-section v-if="directories">
-
-        <q-input v-model="pathName" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search paths with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search"
-          @clear="noPathsFound = false" :error="noPathsFound" :errorMessage="'No paths found with specified condition'">
-          <template v-slot:prepend>
-            <q-icon name="filter_alt" />
-          </template>
-          <template v-slot:append>
-            <q-icon name="search" class="cursor-pointer" @click="search" />
-          </template>
-        </q-input>
-        <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
-          <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
-            direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
-        </div>
         <div>
-          <q-tree :nodes="directories" :label-key="path" no-transition node-key="label" no-connectors>
+          <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name"
+            children-key="children" no-transition @update:selected="onTreeNodeSelected">
             <template v-slot:default-header="prop">
-              <div v-if="prop.node.totalFiles">
-                {{ prop.node.path }} ({{ prop.node.totalFiles}} total tracks)
+              <div v-if="prop.node.totalFiles > 0">
+                <q-icon name="playlist_play"/> <q-icon name="playlist_add" /> {{ prop.node.name }} ({{ prop.node.totalFiles }} total tracks)
               </div>
-              <span v-else>{{ prop.node.path }} {{ prop.node.totalFiles}}</span>
+              <span v-else>{{ prop.node.name }}</span>
             </template>
           </q-tree>
         </div>
@@ -41,26 +26,21 @@
 
 import { ref } from "vue";
 import { api } from 'boot/axios'
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
-const pathName = ref(null);
+const currentPlaylist = useCurrentPlaylistStore();
+
 const noPathsFound = ref(false);
 const loading = ref(false);
 const directories = ref([]);
 
-const totalPages = ref(10);
-const currentPageIndex = ref(1);
-
-const pathTree = ref([]);
+const selected = ref(null);
 
 function getTree() {
   noPathsFound.value = false;
   loading.value = true;
-  api.path.getTree(currentPageIndex.value, 32, { path: pathName.value }).then((success) => {
-    directories.value = success.data.data.items;
-    totalPages.value = success.data.data.pager.totalPages;
-    if (pathName.value && success.data.data.pager.totalResults < 1) {
-      noPathsFound.value = true;
-    }
+  api.path.getTree().then((success) => {
+    directories.value = success.data.items;
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
@@ -68,9 +48,46 @@ function getTree() {
 }
 
 
-function onPaginationChanged(pageIndex) {
-  currentPageIndex.value = pageIndex;
-  getTree();
+// https://stackoverflow.com/a/22222867
+function findNode(hash, currentNode) {
+  var i,
+    currentChild,
+    result;
+
+  if (hash == currentNode.hash) {
+    return currentNode;
+  } else {
+
+    // Use a for loop instead of forEach to avoid nested functions
+    // Otherwise "return" will not work properly
+    for (i = 0; i < currentNode.children.length; i += 1) {
+      currentChild = currentNode.children[i];
+
+      // Search in the current child
+      result = findNode(hash, currentChild);
+
+      // Return the result if the node has been found
+      if (result !== false) {
+        return result;
+      }
+    }
+
+    // The node has not been found and we have no more options
+    return false;
+  }
+}
+
+function onTreeNodeSelected(nodeHash) {
+  let node = findNode(nodeHash, directories.value[0]);
+  if (node && node.id) {
+    loading.value = true;
+    api.track.search(1, 32, { path: node.id }).then((success) => {
+      currentPlaylist.saveTracks(success.data.tracks);
+      loading.value = false;
+    }).catch((error) => {
+      loading.value = false;
+    });
+  }
 }
 
 getTree();

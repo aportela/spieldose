@@ -73,7 +73,8 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "text" => $params["filter"]["text"] ?? ""
+                    "text" => $params["filter"]["text"] ?? "",
+                    "path" => $params["filter"]["path"] ?? "",
                 );
                 $params = $request->getParsedBody();
                 $tracks = \Spieldose\Entities\Track::search($db, 1, 32, $filter);
@@ -342,7 +343,7 @@ return function (App $app) {
             $group->get('/path/tree', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $data = \Spieldose\Path::getTree($db);
-                $payload = json_encode(["items" => $data], JSON_PRETTY_PRINT);
+                $payload = json_encode(["items" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
