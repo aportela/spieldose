@@ -76,8 +76,13 @@ return function (App $app) {
                     "text" => $params["filter"]["text"] ?? "",
                     "path" => $params["filter"]["path"] ?? "",
                 );
-                $params = $request->getParsedBody();
-                $tracks = \Spieldose\Entities\Track::search($db, 1, 32, $filter);
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $tracks = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
                 $payload = json_encode(["tracks" => $tracks]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -217,7 +222,6 @@ return function (App $app) {
                 $filter = array(
                     "name" => $params["filter"]["name"] ?? ""
                 );
-                $params = $request->getParsedBody();
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
                         new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
@@ -250,8 +254,6 @@ return function (App $app) {
                 $filter = array(
                     "title" => $params["filter"]["title"] ?? ""
                 );
-                $params = $request->getParsedBody();
-
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
                         new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)

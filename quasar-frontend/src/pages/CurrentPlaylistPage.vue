@@ -115,7 +115,7 @@ function setCurrentTrackIndex(index) {
 function search() {
   loading.value = true;
   currentTrackIndex.value = 0;
-  api.track.search(0, 32, {}).then((success) => {
+  api.track.search(1, 32, {}).then((success) => {
     tracks.value = success.data.tracks;
     currentPlaylist.saveTracks(success.data.tracks);
     loading.value = false;

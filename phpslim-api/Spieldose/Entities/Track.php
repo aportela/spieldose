@@ -6,11 +6,12 @@ namespace Spieldose\Entities;
 
 class Track extends \Spieldose\Entities\Entity
 {
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, int $currentPage = 1, int $resultsPage = 32, $filter = array(), string $sortBy = "", string $sortOrder = ""): array
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $resultsPage)
-        );
+        $params = array();
+        if ($pager->enabled) {
+            $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":resultsPage", $pager->resultsPage);
+        }
         $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $filterConditions[] = " FIT.title LIKE :title";
@@ -34,9 +35,10 @@ class Track extends \Spieldose\Entities\Entity
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.id = FIT.id
                 %s
                 ORDER BY RANDOM()
-                LIMIT :resultsPage
+                %s
             ",
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $pager->enabled ? "LIMIT :resultsPage" : null
         );
         $results = $dbh->query($query, $params);
         return ($results);
