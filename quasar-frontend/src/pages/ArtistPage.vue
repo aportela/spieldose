@@ -18,8 +18,7 @@
           <div class="row q-mt-xl">
             <div class="col-6 ">
               <div class="float-left" style="width: 96px; height:96px;">
-                <q-img :src="artistData.latestAlbum.image"
-                  spinner-color="white" style="height: 96px; max-width: 96px">
+                <q-img :src="artistData.latestAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-0">
                     </div>
@@ -27,13 +26,13 @@
                 </q-img>
               </div>
               <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">LATEST RELEASE
-                  <br><strong class="text-white">{{  artistData.latestAlbum.title }}</strong><br><span class="text-white">{{ artistData.latestAlbum.year }}</span></span>
+                  <br><strong class="text-white">{{ artistData.latestAlbum.title }}</strong><br><span
+                    class="text-white">{{ artistData.latestAlbum.year }}</span></span>
               </p>
             </div>
             <div class="col-6">
               <div class="float-left" style="width: 96px; height:96px;">
-                <q-img :src="artistData.popularAlbum.image"
-                  spinner-color="white" style="height: 96px; max-width: 96px">
+                <q-img :src="artistData.popularAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-0">
                     </div>
@@ -41,7 +40,8 @@
                 </q-img>
               </div>
               <p class="float-left" style="margin-left: 24px; margin-top: 10px;"><span class="text-grey">POPULAR
-                  <br><strong class="text-white">{{  artistData.popularAlbum.title }}</strong><br><span class="text-white">{{  artistData.popularAlbum.year }}</span></span>
+                  <br><strong class="text-white">{{ artistData.popularAlbum.title }}</strong><br><span
+                    class="text-white">{{ artistData.popularAlbum.year }}</span></span>
               </p>
             </div>
           </div>
@@ -66,7 +66,11 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div v-html="artistData.bio ? nl2br(artistData.bio.summary): null"></div>
+                <div>
+                  <div v-html="artistData.bio ? nl2br(artistData.bio.summary) : null">
+                  </div>
+                  <p class="q-mt-md" v-if="artistData.relations"><ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url" :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip></p>
+                </div>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered>
@@ -75,30 +79,41 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                  <q-markup-table dense>
-                    <tbody>
-                      <tr v-for="track, index in artistData.topTracks" :key="track.id">
-                        <td class="text-right">{{ index }}</td>
-                        <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"></q-icon></td>
-                        <td class="text-left">
-                          <q-avatar>
-                            <img :src="track.image">
-                          </q-avatar>
-                          {{ track.album }}
-                        </td>
-                        <td class="text-center"><q-icon name="favorite_border" size="lg" class="cursor-pointer"></q-icon></td>
-                        <td class="text-bold">{{ track.title }}</td>
-                        <td>
-                          <p :style="'height: 100%; width: ' + (22 * (artistData.topTracks.length - index)) + '%'" class="bg-pink text-white">{{ 22 * (artistData.topTracks.length - index) }} plays</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </q-markup-table>
+                <q-markup-table dense>
+                  <tbody>
+                    <tr v-for="track, index in artistData.topTracks" :key="track.id">
+                      <td class="text-right">{{ index }}</td>
+                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"></q-icon></td>
+                      <td class="text-left">
+                        <q-avatar>
+                          <img :src="track.image">
+                        </q-avatar>
+                        {{ track.album }}
+                      </td>
+                      <td class="text-center"><q-icon name="favorite_border" size="lg" class="cursor-pointer"></q-icon>
+                      </td>
+                      <td class="text-bold">{{ track.title }}</td>
+                      <td>
+                        <p :style="'height: 100%; width: ' + (22 * (artistData.topTracks.length - index)) + '%'"
+                          class="bg-pink text-white">{{ 22 * (artistData.topTracks.length - index) }} plays</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </q-markup-table>
               </q-card-section>
             </q-card>
           </div>
           <div class="col-2">
-            <q-card class="my-card shadow-box shadow-10" bordered>
+            <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations">
+              <q-card-section>
+                Relations
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <p v-for="relation in artistData.relations" :key="relation.url"><ArtistURLRelationshipChip :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip></p>
+              </q-card-section>
+            </q-card>
+            <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered>
               <q-card-section>
                 Similar
               </q-card-section>
@@ -107,8 +122,10 @@
                 <div class="row">
                   <div class="col-4" v-for="similar in artistData.similar" :key="similar.name">
                     <p class="text-center">
-                      <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image" fit="cover" width="96px" height="96px"/>
-                      <br><router-link :to="{ name: 'artist', params: { name: similar.name }}">{{ similar.name }}</router-link>
+                      <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
+                        fit="cover" width="96px" height="96px" />
+                      <br><router-link :to="{ name: 'artist', params: { name: similar.name } }">{{ similar.name
+                      }}</router-link>
                     </p>
                   </div>
                 </div>
@@ -136,7 +153,7 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div v-html="artistData.bio ? nl2br(artistData.bio.content): null"></div>
+                <div v-html="artistData.bio ? nl2br(artistData.bio.content) : null"></div>
               </q-card-section>
             </q-card>
           </div>
@@ -225,6 +242,7 @@ import { useI18n } from 'vue-i18n'
 import { useQuasar } from "quasar";
 import { api } from 'boot/axios'
 import { BarChart } from 'chartist';
+import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -255,7 +273,7 @@ const artistData = ref({
 
 const artistImage = ref(null);
 
-const currentArtist = computed(() => { return(route.params.name); });
+const currentArtist = computed(() => { return (route.params.name); });
 
 watch(currentArtist, (newValue, oldValue) => {
   artistName.value = newValue;
@@ -290,24 +308,24 @@ function nl2br(str, replaceMode, isXhtml) {
 
 function get(name) {
   loading.value = true;
-api.artist.get(name)
-  .then((success) => {
-    artistData.value = success.data.artist;
-    artistImage.value = artistData.value.image;
-    loading.value = false;
-  })
-  .catch((error) => {
-    loading.value = false;
-    switch (error.response.status) {
-      default:
-        $q.notify({
-          type: "negative",
-          message: t("API Error: fatal error"),
-          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-        });
-        break;
-    }
-  });
+  api.artist.get(name)
+    .then((success) => {
+      artistData.value = success.data.artist;
+      artistImage.value = artistData.value.image;
+      loading.value = false;
+    })
+    .catch((error) => {
+      loading.value = false;
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: fatal error"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 get(artistName.value);
