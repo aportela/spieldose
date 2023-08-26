@@ -198,6 +198,27 @@ const api = {
       });
     },
   },
+  path: {
+    search: function (currentPageIndex, resultsPage, filter) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/path/search", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
 };
 
 export default boot(({ app }) => {

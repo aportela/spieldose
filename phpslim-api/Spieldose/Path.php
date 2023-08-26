@@ -14,78 +14,73 @@ class Path
     {
     }
 
-    /**
-     * search paths
-     *
-     * @param \Spieldose\Database\DB $dbh database handler
-     * @param int $page return results from this page
-     * @param int $resultsPage number of results / page
-     * @param array $filter the condition filter
-     * @param string $order results order
-     */
-    public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "")
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $whereCondition = "";
         $params = array();
-        if (isset($filter)) {
-            $conditions = array();
-            if (isset($filter["name"]) && ! empty($filter["name"])) {
-                $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
-                $conditions[] = ' F.base_path LIKE :name ';
-            }
-            if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%" . $filter["partialName"] . "%");
-                $conditions[] = ' F.base_path LIKE :partialName ';
-            }
-            $whereCondition = count($conditions) > 0 ? " WHERE " .  implode(" AND ", $conditions) : "";
+        $filterConditions = array();
+        if (isset($filter["path"]) && !empty($filter["path"])) {
+            $filterConditions[] = " D.path LIKE :path";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", "%" . $filter["path"] . "%");
         }
-        $queryCount = '
-                SELECT
-                    COUNT(DISTINCT F.base_path) AS total
-                FROM FILE F
-                ' . $whereCondition . '
-            ';
-        $result = $dbh->query($queryCount, $params);
-        $data = new \stdClass();
-        $data->actualPage = $page;
-        $data->resultsPage = $resultsPage;
-        $data->totalResults = $result[0]->total;
-        $data->totalPages = ceil($data->totalResults / $resultsPage);
-        if ($data->totalResults > 0) {
-            $sqlOrder = "";
-            switch($order) {
-                case "random":
-                    $sqlOrder = " ORDER BY RANDOM() ";
-                    break;
-                default:
-                    $sqlOrder = " ORDER BY F.base_path ";
-                    break;
-            }
-            $query = sprintf(
-                '
-                    SELECT
-                        DISTINCT F.base_path AS path, TMP_PT.totalTracks
-                    FROM FILE F
-                    LEFT JOIN (
-                        SELECT
-                            F.base_path, COUNT(*) AS totalTracks
-                        FROM FILE F
-                        GROUP BY F.base_path
-                    ) TMP_PT ON TMP_PT.base_path = F.base_path
-                    %s
-                    %s
-                    LIMIT %d OFFSET %d
-                    ',
-                $whereCondition,
-                $sqlOrder,
-                $resultsPage,
-                $resultsPage * ($page - 1)
-            );
-            $data->results = $dbh->query($query, $params);
-        } else {
-            $data->results = array();
-        }
-        return($data);
-    }
+        $fieldDefinitions = [
+            "id" => "D.id",
+            "path" => "D.path",
+            "totalFiles" => "COALESCE(TMP_COUNT.total_files, 0)"
+        ];
 
+        $fieldCountDefinition = [
+            "totalResults" => " COUNT(D.id)"
+        ];
+
+        $afterBrowseFunction = function ($data) {
+            $tree = [];
+            $data->items = array_map(
+                function ($result) {
+                    $result->children = [];
+                    return ($result);
+                },
+                $data->items
+            );
+            foreach ($data->items as $item) {
+                $tree[] = $item;
+            }
+            $data->items = $tree;
+        };
+
+        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
+
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        foreach ($params as $param) {
+            $browser->addDBQueryParam($param);
+        }
+        $query = sprintf(
+            "
+                SELECT
+                    %s
+                FROM DIRECTORY D
+                LEFT JOIN (
+                    SELECT COUNT(FILE.id) AS total_files, FILE.directory_id FROM FILE GROUP BY FILE.directory_id
+                ) TMP_COUNT ON TMP_COUNT.directory_id = D.id
+                %s
+                %s
+                %s
+            ",
+            $browser->getQueryFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $browser->getQuerySort(),
+            $pager->getQueryLimit()
+        );
+        $queryCount = sprintf(
+            "
+                SELECT
+                    %s
+                FROM DIRECTORY D
+                %s
+            ",
+            $browser->getQueryCountFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+        $data = $browser->launch($query, $queryCount);
+        return ($data);
+    }
 }
