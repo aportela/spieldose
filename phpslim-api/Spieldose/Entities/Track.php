@@ -6,6 +6,17 @@ namespace Spieldose\Entities;
 
 class Track extends \Spieldose\Entities\Entity
 {
+
+    public string $id;
+
+    public function __construct(string $id)
+    {
+        $this->id = $id;
+    }
+
+    public function __destruct()
+    {
+    }
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
         $params = array();
@@ -72,5 +83,15 @@ class Track extends \Spieldose\Entities\Entity
         );
         $data = $browser->launch($query, $queryCount);
         return ($data->items);
+    }
+
+    public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)
+    {
+        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, time()) ";
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+        );
+        $dbh->exec($query, $params);
     }
 }

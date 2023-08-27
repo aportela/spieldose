@@ -169,4 +169,16 @@ return (array(
             );
         ',
     ),
+    10 => array(
+        '
+            CREATE TABLE `FILE_PLAYCOUNT_STATS` (
+                `file_id` CHAR(36) NOT NULL,
+                `user_id` CHAR(36) NOT NULL,
+                `play_timestamp` INTEGER NOT NULL,
+                FOREIGN KEY(`file_id`) REFERENCES FILE(`id`),
+                FOREIGN KEY(`user_id`) REFERENCES USER(`id`),
+                PRIMARY KEY(`file_id`, `user_id`, `play_timestamp`)
+            );
+        '
+    )
 ));

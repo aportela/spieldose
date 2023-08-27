@@ -6,39 +6,55 @@ namespace Spieldose;
 
 class Metrics
 {
-    public static function GetTopPlayedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
+    public static function GetTopPlayedTracks(\aportela\DatabaseWrapper\DB $dbh, array $filter = [], int $count = 5): array
     {
         $metrics = array();
         $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count)
         );
         $queryConditions = array(
-            " S.user_id = :user_id "
+            " FPS.user_id = :user_id ",
         );
-        if (isset($filter["fromDate"]) && ! empty($filter["fromDate"]) && isset($filter["toDate"]) && ! empty($filter["toDate"])) {
-            $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate AND :toDate ";
+        if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
+            $queryConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
             $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
             $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
         }
-        if (isset($filter["artist"]) && ! empty($filter["artist"])) {
-            $queryConditions[] = " ( MB.artist LIKE :artist OR F.track_artist LIKE :artist OR MBA1.artist LIKE :artist OR F.album_artist LIKE :artist ) ";
-            $params[] = (new \Spieldose\Database\DBParam())->str(":artist", $filter["artist"]);
+        $fieldDefinitions = [
+            "id " => "FIT.id",
+            "title" => "FIT.title",
+            "artist" => "FIT.artist",
+            "album" => "FIT.album",
+            "albumArtist" => "FIT.album_artist",
+            "year" => "FIT.year",
+            "trackNumber" => "FIT.track_number",
+            "musicBrainzAlbumId" => "FIT.mb_album_id",
+        ];
+        $queryFields = [];
+        foreach ($fieldDefinitions as $fieldAlias => $SQLfield) {
+            $queryFields[] = $SQLfield;
         }
-        $query = sprintf('
-                SELECT S.file_id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, F.playtime_seconds AS playtimeSeconds, F.playtime_string AS playtimeString, COUNT(S.played) AS total
-                FROM STATS S
-                LEFT JOIN FILE F ON F.id = S.file_id
-                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
-                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
-                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
-                %s
-                GROUP BY S.file_id
-                HAVING title NOT NULL
-                ORDER BY total DESC
-                LIMIT %d;
-            ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''), $count);
+        $query = sprintf(
+            '
+                SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
+                FROM (
+                    SELECT FPS.file_id, COUNT(*) AS playCount
+                    FROM FILE_PLAYCOUNT_STATS FPS
+                    %s
+                    GROUP BY FPS.file_id
+                    ORDER BY playCount DESC
+                    LIMIT :count
+                ) TMP_FILE_PLAYCOUNT_STATS
+
+                INNER JOIN FILE F ON F.id = TMP_FILE_PLAYCOUNT_STATS.file_id
+                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = TMP_FILE_PLAYCOUNT_STATS.file_id
+            ',
+            implode(", ", $queryFields),
+            (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),
+        );
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetTopArtists(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -50,7 +66,7 @@ class Metrics
         $queryConditions = array(
             " S.user_id = :user_id "
         );
-        if (isset($filter["fromDate"]) && ! empty($filter["fromDate"]) && isset($filter["toDate"]) && ! empty($filter["toDate"])) {
+        if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate  AND :toDate ";
             $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
             $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
@@ -67,7 +83,7 @@ class Metrics
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''), $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetTopGenres(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -79,7 +95,7 @@ class Metrics
         $queryConditions = array(
             " S.user_id = :user_id "
         );
-        if (isset($filter["fromDate"]) && ! empty($filter["fromDate"]) && isset($filter["toDate"]) && ! empty($filter["toDate"])) {
+        if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', S.played) BETWEEN :fromDate  AND :toDate ";
             $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
             $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
@@ -95,7 +111,7 @@ class Metrics
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''), $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyAddedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -115,7 +131,7 @@ class Metrics
                 LIMIT %d;
             ', $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyAddedArtists(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -130,7 +146,7 @@ class Metrics
                 LIMIT %d;
             ', $count);
         $metrics = $dbh->query($query, array());
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyAddedAlbums(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -146,7 +162,7 @@ class Metrics
                 LIMIT %d;
             ', $count);
         $metrics = $dbh->query($query, array());
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyPlayedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -171,7 +187,7 @@ class Metrics
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions) : ''), $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyPlayedArtists(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -195,7 +211,7 @@ class Metrics
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions) : ''), $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetRecentlyPlayedAlbums(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
@@ -220,7 +236,7 @@ class Metrics
                 LIMIT %d;
             ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions) : ''), $count);
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetPlayStatsByHour(\Spieldose\Database\DB $dbh, $filter): array
@@ -240,7 +256,7 @@ class Metrics
                 ORDER BY hour
             ', "%H", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetPlayStatsByWeekDay(\Spieldose\Database\DB $dbh, $filter): array
@@ -260,7 +276,7 @@ class Metrics
                 ORDER BY weekDay
             ', "%w", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetPlayStatsByMonth(\Spieldose\Database\DB $dbh, $filter): array
@@ -280,7 +296,7 @@ class Metrics
                 ORDER BY month
             ', "%m", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
 
     public static function GetPlayStatsByYear(\Spieldose\Database\DB $dbh, $filter): array
@@ -300,7 +316,6 @@ class Metrics
                 ORDER BY year
             ', "%Y", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
         $metrics = $dbh->query($query, $params);
-        return($metrics);
+        return ($metrics);
     }
-
 }

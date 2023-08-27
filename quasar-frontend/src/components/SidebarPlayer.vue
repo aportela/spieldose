@@ -34,6 +34,7 @@ import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSee
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
+import { api } from "src/boot/axios";
 
 const defaultVolume = 1;
 const player = usePlayer();
@@ -95,6 +96,7 @@ onMounted(() => {
   */
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
+    increasePlayCount(currentTrackId.value);
     if (currentPlaylist.allowSkipNext) {
       skipNext();
     } else {
@@ -119,8 +121,26 @@ onMounted(() => {
 
 });
 
+function increasePlayCount(trackId) {
+  api.track.increasePlayCount(trackId).then((success) => {
+    })
+    .catch((error) => {
+      loading.value = false;
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: fatal error"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
 function skipPrevious() {
   player.interact();
+  increasePlayCount(currentTrackId.value);
   currentPlaylist.skipPrevious();
 }
 
@@ -132,6 +152,7 @@ function play(ignoreStatus) {
 
 function skipNext() {
   player.interact();
+  increasePlayCount(currentTrackId.value);
   currentPlaylist.skipNext();
 }
 

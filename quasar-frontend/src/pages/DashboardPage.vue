@@ -25,7 +25,7 @@
           <component class="q-mx-lg" :is="dashboardBaseBlock" :icon="'schedule'" :title="'Recently added'"></component>
         </div>
         <div class="col-xl-4 col-lg-4 col-12">
-          <component :is="dashboardBaseBlock" :icon="'schedule'" :title="'Recently added'"></component>
+          <component :is="dashboardBaseBlock" :icon="'schedule'" :title="'Recently played'"></component>
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'">

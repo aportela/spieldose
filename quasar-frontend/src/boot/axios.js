@@ -202,12 +202,38 @@ const api = {
           });
       });
     },
+    increasePlayCount(id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/increase_play_count/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   path: {
     getTree: function () {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/path/tree")
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
+  metrics: {
+    getTopPlayedTracks: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/track/top_played")
           .then((response) => {
             resolve(response);
           })

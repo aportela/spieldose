@@ -88,6 +88,14 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->get('/track/increase_play_count/{id}', function (Request $request, Response $response, array $args) {
+                $track = new \Spieldose\Entities\Track($args["id"]);
+                $track->increasePlayCount($this->get(\aportela\DatabaseWrapper\DB::class));
+                $payload = json_encode([]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/thumbnail/{size}/remote/{entity}/', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 if (isset($queryParams["url"]) && !empty($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL)) {
@@ -346,6 +354,13 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $data = \Spieldose\Path::getTree($db);
                 $payload = json_encode(["items" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->post('/metrics/track/top_played', function (Request $request, Response $response, array $args) {
+                $data = \Spieldose\Metrics::GetTopPlayedTracks($this->get(\aportela\DatabaseWrapper\DB::class), [], 5);
+                $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
