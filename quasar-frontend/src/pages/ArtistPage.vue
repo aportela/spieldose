@@ -90,7 +90,7 @@
                   <tbody>
                     <tr v-for="track, index in artistData.topTracks" :key="track.id">
                       <td class="text-right">{{ index }}</td>
-                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"></q-icon></td>
+                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer" @click="onPlayTracks([track])"></q-icon></td>
                       <td class="text-left">
                         <q-avatar>
                           <img :src="track.image">
@@ -276,6 +276,11 @@ import { api } from 'boot/axios'
 import { BarChart } from 'chartist';
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+import { usePlayer } from 'stores/player';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -356,6 +361,12 @@ function nl2br(str, replaceMode, isXhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
 }
 
+function onPlayTracks(tracks) {
+  player.stop();
+  currentPlaylist.saveTracks(tracks);
+  player.interact();
+  player.play(false);
+}
 
 function get(name) {
   loading.value = true;

@@ -19,8 +19,7 @@
 
           <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
             <li class="is-size-6-5" v-for="item in items" :key="item.id">
-              <i class="cursor-pointer fa-fw fa fa-play"></i>
-              <i class="cursor-pointer fa-fw fa fa-plus-square mr-1"></i>
+              <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer" @click="onPlayTracks([item])" />
               <span>{{ item.title }}</span>
               <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }">{{
                 item.artist }}</router-link></span>
@@ -53,6 +52,12 @@
 import { ref } from 'vue'
 import { api } from 'boot/axios'
 
+import { usePlayer } from 'stores/player';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
+
 const props = defineProps({
   icon: {
     type: String,
@@ -79,6 +84,13 @@ function refresh() {
   }).catch((error) => {
     loading.value = false;
   });
+}
+
+function onPlayTracks(tracks) {
+  player.stop();
+  currentPlaylist.saveTracks(tracks);
+  player.interact();
+  player.play(false);
 }
 
 refresh();
