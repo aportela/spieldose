@@ -6,18 +6,27 @@
     </q-card-section>
     <q-card-section class="bg-white text-black">
       <slot name="body">
-        <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
-          <li class="is-size-6-5" v-for="item in items" :key="item.id">
-            <i class="cursor-pointer fa-fw fa fa-play"
-              ></i>
-            <i class="cursor-pointer fa-fw fa fa-plus-square mr-1"
-              ></i>
-            <span>{{ item.title }}</span>
-            <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }"
-                >{{ item.artist }}</router-link></span>
-            <span v-if="true || showPlayCount"> ({{ item.playCount }} plays)</span>
-          </li>
-          <!--
+
+        <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+        <div v-else>
+          <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
+            <q-tab name="today" label="Today" />
+            <q-tab name="lastWeek" label="Last week" />
+            <q-tab name="lastMonth" label="Last month" />
+            <q-tab name="lastYear" label="Last year" />
+            <q-tab name="always" label="Always" />
+          </q-tabs>
+
+          <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
+            <li class="is-size-6-5" v-for="item in items" :key="item.id">
+              <i class="cursor-pointer fa-fw fa fa-play"></i>
+              <i class="cursor-pointer fa-fw fa fa-plus-square mr-1"></i>
+              <span>{{ item.title }}</span>
+              <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }">{{
+                item.artist }}</router-link></span>
+              <span v-if="true || showPlayCount"> ({{ item.playCount }} plays)</span>
+            </li>
+            <!--
           <li class="is-size-6-5" v-if="isTopAlbumsType" v-for="item in items">
             <span>{{ item.album }}</span>
             <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }"
@@ -33,7 +42,8 @@
             <span v-if="showPlayCount"> ({{ item.playCount }} plays }})</span>
           </li>
           -->
-        </ol>
+          </ol>
+        </div>
       </slot>
     </q-card-section>
   </q-card>
@@ -53,6 +63,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const tab = ref('always');
 
 const loading = ref(false);
 
