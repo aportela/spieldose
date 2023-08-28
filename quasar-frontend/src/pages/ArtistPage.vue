@@ -121,7 +121,7 @@
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <div class="q-pa-lg flex flex-center" v-else>
                   <div class="q-gutter-md row items-start">
-                    <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 3)" :key="album.title" :album="album">
+                    <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title" :album="album">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
