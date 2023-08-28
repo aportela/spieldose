@@ -70,8 +70,19 @@ const coverImage = computed(() => {
 
 const smallVinylImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? "/api/2/track/thumbnail/small/" + currentTrack.id : null);
+  if (currentTrack) {
+    if (currentTrack.coverPathId) {
+      return ("api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(currentTrack.coverPathId));
+    } else if (currentTrack.covertArtArchiveURL) {
+      return ("api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(currentTrack.covertArtArchiveURL));
+    } else {
+      return (null);
+    }
+  } else {
+    return(null);
+  }
 });
+
 const disablePlayerControls = computed(() => {
   return (false);
 });
