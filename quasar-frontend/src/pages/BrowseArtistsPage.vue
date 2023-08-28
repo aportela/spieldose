@@ -25,7 +25,7 @@
         </div>
         <div class="q-gutter-md row items-start">
           <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artists" :key="artist">
-            <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
+            <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
                 {{ artist.name }}
               </div>
@@ -44,6 +44,22 @@
   </q-page>
 </template>
 
+<style>
+img.artist_image {
+  opacity: 0.5;
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%) blur(2px);
+  transition: filter 0.2s ease-in;
+}
+
+img.artist_image:hover {
+  opacity: 1;
+  -webkit-filter: none; /* Safari 6.0 - 9.0 */
+  filter: none;
+  transition: filter 0.2s ease-out;
+
+}
+</style>
 <script setup>
 
 import { ref } from "vue";
