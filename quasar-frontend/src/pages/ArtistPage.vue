@@ -149,7 +149,7 @@
               <q-separator />
               <q-card-section>
                 <div class="row">
-                  <div class="col-4" v-for="similar in artistData.similar" :key="similar.name">
+                  <div class="col-4" v-for="similar in artistData.similar.slice(0, 3)" :key="similar.name">
                     <p class="text-center">
                       <router-link :to="{ name: 'artist', params: { name: similar.name } }" style="text-decoration: none">
                         <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
@@ -192,7 +192,22 @@
 
       <q-tab-panel name="similarArtists">
         <div class="text-h6">Similar artists</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        <div class="q-gutter-md row items-start">
+          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar" :key="artist">
+            <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
+              <div class="absolute-bottom text-subtitle1 text-center">
+                {{ artist.name }}
+              </div>
+              <template v-slot:error>
+                <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                  <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                    {{ artist.name }}
+                  </div>
+                </div>
+              </template>
+            </q-img>
+          </router-link>
+        </div>
       </q-tab-panel>
       <q-tab-panel name="albums">
         <div class="text-h6">Albums</div>
