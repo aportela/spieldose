@@ -381,15 +381,14 @@ function get(name) {
         if (track.coverPathId) {
           track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
         } else if (props.album.covertArtArchiveURL) {
-          track.image =  "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
         } else {
           track.image = null;
         }
-        return(track);
+        return (track);
       });
       loading.value = false;
-    })
-    .catch((error) => {
+    }).catch((error) => {
       loading.value = false;
       switch (error.response.status) {
         default:
