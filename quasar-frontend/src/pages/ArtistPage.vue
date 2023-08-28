@@ -123,6 +123,7 @@
                 </div>
               </q-card-section>
             </q-card>
+            <!-- TODO: appears on album ? -->
           </div>
           <div class="col-2">
             <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations">

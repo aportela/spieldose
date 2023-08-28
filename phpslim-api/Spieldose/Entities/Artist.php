@@ -169,8 +169,19 @@ class Artist extends \Spieldose\Entities\Entity
                 }
                 $query = sprintf(
                     "
-                        SELECT FIT.id, FIT.title, FIT.artist, FIT.album, FIT.album_artist AS albumArtist, FIT.year, FIT.track_number as trackNumber, FIT.mb_album_id AS musicBrainzAlbumId
-                        FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                        SELECT
+                            FIT.id,
+                            FIT.title,
+                            FIT.artist,
+                            FIT.album,
+                            FIT.album_artist AS albumArtist,
+                            FIT.year,
+                            FIT.track_number as trackNumber,
+                            FIT.mb_album_id AS musicBrainzAlbumId,
+                            D.id AS coverPathId
+                        FROM FILE_ID3_TAG FIT
+                        INNER JOIN FILE F ON F.ID = FIT.id
+                        LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         WHERE FIT.mb_artist_id = :mbid
                         AND FIT.title IS NOT NULL
                         ORDER BY RANDOM()
@@ -182,21 +193,28 @@ class Artist extends \Spieldose\Entities\Entity
                 );
                 $this->topTracks = $this->dbh->query($query, $params);
                 foreach ($this->topTracks as $track) {
-                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $track->musicBrainzAlbumId);
-                    $track->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                    if (!empty($track->musicBrainzAlbumId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $track->covertArtArchiveURL = $cover->getReleaseImageURL($track->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    } else {
+                        $track->covertArtArchiveURL = null;
+                    }
                 }
                 $query = sprintf(
                     "
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
-                            COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist) AS artistName,
-                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id) AS artistMBId,
-                            COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year
+                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist) AS artistName,
+                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) AS artistMBId,
+                            COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year,
+                            D.id AS coverPathId
                         FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                        LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                         LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
-                        WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id) = :mbid
+                        WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) = :mbid
+                        GROUP BY FIT.mb_album_id
                         ORDER BY RANDOM()
                         LIMIT 5
                     "
@@ -209,8 +227,12 @@ class Artist extends \Spieldose\Entities\Entity
                     $album->artist = new \stdClass();
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
-                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $album->mbId);
-                    $album->image = sprintf("api/2/thumbnail/normal/remote/album/?url=%s", urlencode($coverArtURL));
+                    if (!empty($album->mbId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    } else {
+                        $album->covertArtArchiveURL = null;
+                    }
                     unset($album->artistMbId);
                     unset($album->artistName);
                 }

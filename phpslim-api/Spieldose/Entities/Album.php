@@ -28,7 +28,9 @@ class Album extends \Spieldose\Entities\Entity
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
-        $filterConditions = array();
+        $filterConditions = array(
+            //"COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE '100 Hits: The Best Soft Ro%'"
+        );
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE :title";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
@@ -38,8 +40,8 @@ class Album extends \Spieldose\Entities\Entity
         $fieldDefinitions = [
             "mbId" => "FIT.mb_album_id",
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
-            "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)",
-            "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, NULL)",
+            "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)",
+            "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "coverPathId" => "D.id"
         ];
@@ -75,6 +77,7 @@ class Album extends \Spieldose\Entities\Entity
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
+
         $query = sprintf(
             "
                 SELECT DISTINCT %s
@@ -84,6 +87,7 @@ class Album extends \Spieldose\Entities\Entity
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
+                GROUP BY FIT.mb_album_id
                 %s
                 %s
             ",
