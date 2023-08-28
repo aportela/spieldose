@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2423103b50e00056c8dea8d269e9706e",
+    "content-hash": "b186283c79a1851d037757190c0d5a09",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -238,16 +238,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "bf3d22ad065f741247c12dc88a10c9e426eb4373"
+                "reference": "9d77439d385256d4e32ae0a8bb9ed73eb2f57ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/bf3d22ad065f741247c12dc88a10c9e426eb4373",
-                "reference": "bf3d22ad065f741247c12dc88a10c9e426eb4373",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/9d77439d385256d4e32ae0a8bb9ed73eb2f57ac9",
+                "reference": "9d77439d385256d4e32ae0a8bb9ed73eb2f57ac9",
                 "shasum": ""
             },
             "require": {
@@ -267,7 +267,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0-only"
+                "AGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -279,9 +279,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.0.5"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.0.6"
             },
-            "time": "2023-08-20T21:34:36+00:00"
+            "time": "2023-08-27T18:46:13+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
