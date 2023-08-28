@@ -40,8 +40,8 @@ class Album extends \Spieldose\Entities\Entity
         $fieldDefinitions = [
             "mbId" => "FIT.mb_album_id",
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
-            "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)",
-            "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id)",
+            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "albumArtistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "coverPathId" => "D.id"
         ];
@@ -56,16 +56,16 @@ class Album extends \Spieldose\Entities\Entity
             $data->items = array_map(
                 function ($result) {
                     $result->artist = new \stdClass();
-                    $result->artist->mbId = $result->artistMbId;
-                    $result->artist->name = $result->artistName;
+                    $result->artist->mbId = $result->albumArtistMbId;
+                    $result->artist->name = $result->albumArtistName;
                     if (!empty($result->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
                         $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $result->covertArtArchiveURL = null;
                     }
-                    unset($result->artistMbId);
-                    unset($result->artistName);
+                    unset($result->albumArtistMbId);
+                    unset($result->albumArtistName);
                     return ($result);
                 },
                 $data->items
@@ -85,9 +85,8 @@ class Album extends \Spieldose\Entities\Entity
                 INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-                GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.title, FIT.album), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id), COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)
+                GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id), COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
                 %s
                 %s
             ",
@@ -105,9 +104,8 @@ class Album extends \Spieldose\Entities\Entity
                     INNER JOIN FILE F ON F.ID = FIT.id
                     LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                     LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                    LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                     %s
-                    GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.title, FIT.album), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id), COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)
+                    GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id), COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
                 )
 
             ",
