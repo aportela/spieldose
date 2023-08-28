@@ -7,7 +7,9 @@
       </q-breadcrumbs>
       <q-card-section v-if="albums">
         <q-input v-model="albumTitle" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search" @clear="noAlbumsFound = false" :error="noAlbumsFound" :errorMessage="'No albums found with specified condition'">
+          hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search"
+          @clear="noAlbumsFound = false" :error="noAlbumsFound"
+          :errorMessage="'No albums found with specified condition'">
           <template v-slot:prepend>
             <q-icon name="filter_alt" />
           </template>
@@ -32,7 +34,10 @@
 
 import { ref, watch, computed } from "vue";
 import { api } from 'boot/axios'
+import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+
+const $q = useQuasar();
 
 const albumTitle = ref(null);
 const noAlbumsFound = ref(false);
@@ -45,7 +50,7 @@ const currentPageIndex = ref(1);
 function search() {
   noAlbumsFound.value = false;
   loading.value = true;
-  api.album.search(currentPageIndex.value, 32,{ title: albumTitle.value }).then((success) => {
+  api.album.search(currentPageIndex.value, 32, { title: albumTitle.value }).then((success) => {
     albums.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (albumTitle.value && success.data.data.pager.totalResults < 1) {
@@ -53,6 +58,11 @@ function search() {
     }
     loading.value = false;
   }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading albums",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
     loading.value = false;
   });
 }

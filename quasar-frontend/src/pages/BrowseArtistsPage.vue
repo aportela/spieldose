@@ -9,7 +9,9 @@
       <q-card-section v-if="artists">
 
         <q-input v-model="artistName" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search" @clear="noArtistsFound = false" :error="noArtistsFound" :errorMessage="'No artists found with specified condition'">
+          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search"
+          @clear="noArtistsFound = false" :error="noArtistsFound"
+          :errorMessage="'No artists found with specified condition'">
           <template v-slot:prepend>
             <q-icon name="filter_alt" />
           </template>
@@ -46,7 +48,9 @@
 
 import { ref } from "vue";
 import { api } from 'boot/axios'
+import { useQuasar } from "quasar";
 
+const $q = useQuasar();
 const artistName = ref(null);
 const noArtistsFound = ref(false);
 const loading = ref(false);
@@ -66,6 +70,11 @@ function search() {
     }
     loading.value = false;
   }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading artists",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
     loading.value = false;
   });
 }

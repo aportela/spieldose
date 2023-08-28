@@ -11,7 +11,8 @@
             children-key="children" no-transition @update:selected="onTreeNodeSelected">
             <template v-slot:default-header="prop">
               <div v-if="prop.node.totalFiles > 0">
-                <q-icon name="playlist_play"/> <q-icon name="playlist_add" /> {{ prop.node.name }} ({{ prop.node.totalFiles }} total tracks)
+                <q-icon name="playlist_play" /> <q-icon name="playlist_add" /> {{ prop.node.name }} ({{
+                  prop.node.totalFiles }} total tracks)
               </div>
               <span v-else>{{ prop.node.name }}</span>
             </template>
@@ -26,7 +27,11 @@
 
 import { ref } from "vue";
 import { api } from 'boot/axios'
+import { useQuasar } from "quasar";
+
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const $q = useQuasar();
 
 const currentPlaylist = useCurrentPlaylistStore();
 
@@ -43,6 +48,11 @@ function getTree() {
     directories.value = success.data.items;
     loading.value = false;
   }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading paths",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
     loading.value = false;
   });
 }
@@ -88,7 +98,7 @@ function onTreeNodeSelected(nodeHash) {
       loading.value = false;
     });
   }
-  return(true);
+  return (true);
 }
 
 getTree();

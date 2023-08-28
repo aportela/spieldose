@@ -88,10 +88,13 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
+import { useQuasar } from "quasar";
 import { api } from 'boot/axios'
 
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const $q = useQuasar();
 
 const currentPlaylist = useCurrentPlaylistStore();
 const playerStatus = usePlayerStatusStore();
@@ -124,13 +127,11 @@ function onFilter(val, update) {
         })
         .catch((error) => {
           loading.value = false;
-          /*
           $q.notify({
-            type: "negative",
-            message: t("API Error: fatal error"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          */
+      type: "negative",
+      message: "API Error: error searching tracks",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
           return;
         });
     });

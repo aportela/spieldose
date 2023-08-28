@@ -7,10 +7,10 @@
       </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
         <q-btn outline color="dark" label="Clear" icon="clear" @click="onClear"
-           :disable="loading || !(tracks && tracks.length > 0)" >
+          :disable="loading || !(tracks && tracks.length > 0)">
         </q-btn>
         <q-btn outline color="dark" label="Random" icon="bolt" @click="onRandom" :disable="loading">
-      </q-btn>
+        </q-btn>
         <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
         <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading"
@@ -23,7 +23,8 @@
           :disable="loading || playerStatus.isStopped" />
         <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist"
           :disable="loading || !currentPlaylist.allowSkipNext" />
-        <q-btn outline color="dark" label="Download" icon="save_alt" :disable="loading || ! currentPlaylist.getCurrentTrackURL" :href="currentPlaylist.getCurrentTrackURL"/>
+        <q-btn outline color="dark" label="Download" icon="save_alt"
+          :disable="loading || !currentPlaylist.getCurrentTrackURL" :href="currentPlaylist.getCurrentTrackURL" />
       </q-btn-group>
       <q-markup-table flat bordered>
         <thead>
@@ -38,7 +39,7 @@
             <th class="text-center">Actions</th>
           </tr>
         </thead>
-        <tbody v-if="! loading">
+        <tbody v-if="!loading">
           <tr v-for="track, index in tracks" :key="track.id" class="non-selectable cursor-pointer"
             :class="{ 'bg-pink text-white': currentTrackIndex == index }" @click="setCurrentTrackIndex(index)">
             <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
@@ -60,7 +61,8 @@
                 <q-btn size="sm" color="white" text-color="grey-5" icon="north" title="Up" disabled />
                 <q-btn size="sm" color="white" text-color="grey-5" icon="south" title="Down" disabled />
                 <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" title="Toggle favorite" disabled />
-                <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" :disable="loading" :href="'api/2/file/' + track.id" />
+                <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" :disable="loading"
+                  :href="'api/2/file/' + track.id" />
               </q-btn-group>
             </td>
           </tr>
@@ -68,12 +70,7 @@
         <tbody v-else>
           <tr>
             <td colspan="8" class="text-center">
-              <q-spinner v-show="loading"
-          color="pink"
-          size="xl"
-          class="q-ml-sm"
-          :thickness="10"
-        />
+              <q-spinner v-show="loading" color="pink" size="xl" class="q-ml-sm" :thickness="10" />
             </td>
           </tr>
         </tbody>
@@ -85,10 +82,13 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
+import { useQuasar } from "quasar";
 import { api } from 'boot/axios'
 import { usePlayer } from 'stores/player';
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+const $q = useQuasar();
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
@@ -120,6 +120,11 @@ function search() {
     currentPlaylist.saveTracks(success.data.tracks);
     loading.value = false;
   }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading tracks",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
     loading.value = false;
   });
 }
