@@ -47,7 +47,7 @@ class Album extends \Spieldose\Entities\Entity
         ];
 
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(DISTINCT COALESCE(MB_CACHE_RELEASE.title, FIT.album))"
+            "totalResults" => " COUNT(*)"
         ];
 
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
@@ -80,14 +80,14 @@ class Album extends \Spieldose\Entities\Entity
 
         $query = sprintf(
             "
-                SELECT DISTINCT %s
+                SELECT %s
                 FROM FILE_ID3_TAG FIT
                 INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
-                GROUP BY FIT.mb_album_id
+                GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.title, FIT.album), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id), COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)
                 %s
                 %s
             ",
@@ -98,15 +98,22 @@ class Album extends \Spieldose\Entities\Entity
         );
         $queryCount = sprintf(
             "
-                SELECT
-                %s
-                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
-                LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
-                %s
+                SELECT %s
+                FROM (
+                    SELECT %s
+                    FROM FILE_ID3_TAG FIT
+                    INNER JOIN FILE F ON F.ID = FIT.id
+                    LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                    LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                    LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                    %s
+                    GROUP BY FIT.mb_album_id, COALESCE(MB_CACHE_RELEASE.title, FIT.album), COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id), COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist)
+                )
+
             ",
             $browser->getQueryCountFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            $browser->getQueryFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
         );
         $data = $browser->launch($query, $queryCount);
         return ($data);
