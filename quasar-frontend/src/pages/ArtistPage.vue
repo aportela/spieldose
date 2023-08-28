@@ -27,7 +27,8 @@
               </div>
               <div class="float-left oneline-ellipsis" style="margin-left: 24px; margin-top: 10px;">
                 <p class="q-mb-none text-grey">LATEST RELEASE</p>
-                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.latestAlbum.title }}</p>
+                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.latestAlbum.title
+                }}</p>
                 <p class="q-mt-none text-white" v-if="artistData.latestAlbum.year">{{ artistData.latestAlbum.year }}</p>
               </div>
             </div>
@@ -42,7 +43,8 @@
               </div>
               <div class="float-left oneline-ellipsis" style="margin-left: 24px; margin-top: 10px;">
                 <p class="q-mb-none text-grey">POPULAR</p>
-                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.popularAlbum.title }}</p>
+                <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{
+                  artistData.popularAlbum.title }}</p>
                 <p class="q-mt-none text-white" v-if="artistData.popularAlbum.year">{{ artistData.popularAlbum.year }}</p>
               </div>
             </div>
@@ -90,7 +92,8 @@
                   <tbody>
                     <tr v-for="track, index in artistData.topTracks" :key="track.id">
                       <td class="text-right">{{ index }}</td>
-                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer" @click="onPlayTracks([track])"></q-icon></td>
+                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"
+                          @click="onPlayTracks([track])"></q-icon></td>
                       <td class="text-left">
                         <q-avatar>
                           <img :src="track.image">
@@ -148,10 +151,10 @@
                   <div class="col-4" v-for="similar in artistData.similar" :key="similar.name">
                     <p class="text-center">
                       <router-link :to="{ name: 'artist', params: { name: similar.name } }" style="text-decoration: none">
-                      <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
-                        fit="cover" width="96px" height="96px" spinner-color="pink" />
-                      <br>{{ similar.name
-                      }}</router-link>
+                        <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
+                          fit="cover" width="96px" height="96px" spinner-color="pink" />
+                        <br>{{ similar.name
+                        }}</router-link>
                     </p>
                   </div>
                 </div>
@@ -207,7 +210,6 @@
 </template>
 
 <style>
-
 .rotate {
   width: 100px;
   animation: rotation 2s infinite linear;
@@ -375,6 +377,16 @@ function get(name) {
     .then((success) => {
       artistData.value = success.data.artist;
       artistImage.value = artistData.value.image;
+      artistData.value.topTracks = artistData.value.topTracks.map((track) => {
+        if (track.coverPathId) {
+          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+        } else if (props.album.covertArtArchiveURL) {
+          track.image =  "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+        } else {
+          track.image = null;
+        }
+        return(track);
+      });
       loading.value = false;
     })
     .catch((error) => {
