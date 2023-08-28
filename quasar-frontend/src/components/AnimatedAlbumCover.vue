@@ -1,13 +1,15 @@
 <template>
   <div class="browse-album-item">
     <a class="play-album">
-      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" :src="imageURL" width="174px" height="174px" v-if="imageURL" spinner-color="pink" @load="onLoad" @error="onError">
+      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded || errors }" :src="imageURL"
+        width="174px" height="174px" v-if="imageURL" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
-      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded ||errors }" src="images/image-album-not-set.png" @load="onLoad" @error="onError" v-else />
+      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded || errors }"
+        src="images/image-album-not-set.png" @load="onLoad" @error="onError" v-else />
       <!--
       <i class="fas fa-play fa-4x"></i>
       -->
-      <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors"/>
+      <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
     </a>
     <div class="album-info">
       <p class="album-name">{{ album.title }}</p>
@@ -147,8 +149,19 @@ const loading = ref(false);
 const loaded = ref(false);
 const errors = ref(false);
 
+
 const imageURL = computed(() => {
-  return(! errors.value ? props.album.image: null)
+  if (!errors.value) {
+    if (props.album.coverPathId) {
+      return ("api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(props.album.coverPathId));
+    } else if (props.album.covertArtArchiveURL) {
+      return ("api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(props.album.covertArtArchiveURL));
+    } else {
+      return (null);
+    }
+  } else {
+    return (null);
+  }
 });
 
 if (props.album.image) {

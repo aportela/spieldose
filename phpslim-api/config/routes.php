@@ -116,7 +116,6 @@ return function (App $app) {
                     }
                     //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
                     $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
-                    $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
                     $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $settings['basePath']);
                     $thumbnail->setDimensions($settings['sizes'][$args['size']]['width'], $settings['sizes'][$args['size']]['height']);
                     $thumbnail->setQuality($settings['sizes'][$args['size']]['quality']);
@@ -138,6 +137,52 @@ return function (App $app) {
                     }
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty url param');
+                }
+            });
+
+            $group->get('/thumbnail/{size}/local/{entity}/', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                if (isset($queryParams["path"]) && !empty($queryParams["path"])) {
+                    if (!in_array($args['size'], ['small', 'normal'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException('size');
+                    }
+                    if (!in_array($args['entity'], ['album'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException('entity');
+                    }
+                    $settings = null;
+                    switch ($args['entity']) {
+                        case 'artist':
+                            $settings = $this->get('settings')['thumbnails']['artists'];
+                            break;
+                        case 'album':
+                            $settings = $this->get('settings')['thumbnails']['albums'];
+                            break;
+                    }
+                    //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                    $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                    $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $settings['basePath']);
+                    $thumbnail->setDimensions($settings['sizes'][$args['size']]['width'], $settings['sizes'][$args['size']]['height']);
+                    $thumbnail->setQuality($settings['sizes'][$args['size']]['quality']);
+                    $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $local = \Spieldose\Entities\Album::getAlbumLocalPathCoverFromPathId($dbh, $queryParams["path"]);
+                    if ($thumbnail->getFromLocalFilesystem($local) && !empty($thumbnail->path) && file_exists(($thumbnail->path))) {
+                        $filesize = filesize($thumbnail->path);
+                        $f = fopen($thumbnail->path, 'r');
+                        fseek($f, 0);
+                        $data = fread($f, $filesize);
+                        fclose($f);
+                        $response->getBody()->write($data);
+                        return $response
+                            ->withHeader('Content-Type', 'image/jpeg')
+                            ->withHeader('Content-Length', $filesize)
+                            ->withHeader('ETag', sha1($queryParams["path"] . $thumbnail->path . $filesize))
+                            ->withHeader('Cache-Control', 'max-age=86400')
+                            ->withStatus(200);
+                    } else {
+                        throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for path: ' . $queryParams["path"]);
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty path param');
                 }
             });
 
@@ -190,6 +235,7 @@ return function (App $app) {
                 }
             });
 
+            // TODO: add entity
             $group->get('/cache/thumbnail/{size}/{hash}', function (Request $request, Response $response, array $args) {
                 if (!in_array($args['size'], ['small', 'normal'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('size');

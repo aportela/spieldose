@@ -45,14 +45,30 @@ class Track extends \Spieldose\Entities\Entity
             "albumArtist" => "FIT.album_artist",
             "year" => "FIT.year",
             "trackNumber" => "FIT.track_number",
-            "musicBrainzAlbumId" => "FIT.mb_album_id"
+            "musicBrainzAlbumId" => "FIT.mb_album_id",
+            "coverPathId" => "D.id"
         ];
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter);
+        $afterBrowseFunction = function ($data) {
+            $data->items = array_map(
+                function ($result) {
+                    if (!empty($result->musicBrainzAlbumId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    } else {
+                        $result->covertArtArchiveURL = null;
+                    }
+                    return ($result);
+                },
+                $data->items
+            );
+        };
+
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
@@ -61,7 +77,9 @@ class Track extends \Spieldose\Entities\Entity
             "
                 SELECT
                 %s
-                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.id = FIT.id
+                FROM FILE_ID3_TAG FIT
+                INNER JOIN FILE F ON F.id = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 %s
                 %s
                 %s

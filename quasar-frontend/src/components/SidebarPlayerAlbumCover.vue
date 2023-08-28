@@ -88,6 +88,8 @@ watch(coverImage, (newValue) => {
   coverURL.value = newValue;
 });
 
+coverURLSmall.value = smallVinylImage.value;
+coverURL.value = coverImage.value;
 
 const showVinyl = ref(false);
 

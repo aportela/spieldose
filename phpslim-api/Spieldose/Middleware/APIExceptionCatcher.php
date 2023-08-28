@@ -44,6 +44,7 @@ class APIExceptionCatcher
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode([]);
+            $response->getBody()->write($payload);
             return ($response)->withStatus(401);
         } catch (\Spieldose\Exception\AccessDeniedException $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
@@ -55,14 +56,23 @@ class APIExceptionCatcher
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
             $payload = json_encode(['keyNotFound' => $e->getMessage()]);
+            $response->getBody()->write($payload);
             return ($response)->withStatus(404);
         } catch (\Throwable $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();
-            $payload = json_encode([
-                'exceptionDetails' => $e->getMessage(),
+            $exception = [
+                'type' => get_class($e),
+                'message' => $e->getMessage(),
                 'file' => $e->getLine(),
                 'line' => $e->getFile()
+            ];
+            $parent = $e->getPrevious();
+            if ($parent) {
+                $exception['parent'] = ['type' => get_class($parent), 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
+            }
+            $payload = json_encode([
+                'exception' => $exception
             ]);
             $response->getBody()->write($payload);
             return ($response)->withStatus(500);
