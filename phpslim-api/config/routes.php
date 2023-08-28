@@ -241,7 +241,7 @@ return function (App $app) {
                     throw new \Spieldose\Exception\InvalidParamsException('size');
                 }
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
-                $settings = $this->get('settings')['thumbnails'];
+                $settings = $this->get('settings')['thumbnails']['albums'];
                 $localPath = null;
                 try {
                     $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $settings["basePath"]);
@@ -321,7 +321,7 @@ return function (App $app) {
             });
 
             $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
-                $settings = $this->get('settings')['thumbnails'];
+                $settings = $this->get('settings')['thumbnails']['albums'];
                 $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
                 $urls = [];
                 if (file_exists($coverBasePath)) {
