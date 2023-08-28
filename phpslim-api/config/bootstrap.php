@@ -7,6 +7,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params(["SameSite" => "Strict"]);
     session_set_cookie_params(["Secure" => "true"]);
     session_set_cookie_params(["HttpOnly" => "true"]);
+    session_id('SPIELDOSE');
+    session_name('SPIELDOSE');
     session_start();
 }
 
