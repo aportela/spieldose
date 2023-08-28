@@ -121,7 +121,7 @@
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <div class="q-pa-lg flex flex-center" v-else>
                   <div class="q-gutter-md row items-start">
-                    <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album">
+                    <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 3)" :key="album.title" :album="album">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
@@ -210,8 +210,10 @@
         </div>
       </q-tab-panel>
       <q-tab-panel name="albums">
-        <div class="text-h6">Albums</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        <div class="text-h6 q-mb-xl">Albums</div>
+        <div class="q-gutter-md row items-start">
+          <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album"></AnimatedAlbumCover>
+        </div>
       </q-tab-panel>
       <q-tab-panel name="tracks">
         <div class="text-h6">Tracks</div>

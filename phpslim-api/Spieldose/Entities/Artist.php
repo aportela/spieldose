@@ -216,8 +216,7 @@ class Artist extends \Spieldose\Entities\Entity
                         LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                         WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) = :mbid
                         GROUP BY FIT.mb_album_id
-                        ORDER BY RANDOM()
-                        LIMIT 5
+                        ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
                     "
                 );
                 $params = array(
