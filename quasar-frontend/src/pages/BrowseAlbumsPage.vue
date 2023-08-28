@@ -7,7 +7,7 @@
       </q-breadcrumbs>
       <q-card-section v-if="albums">
         <q-input v-model="albumTitle" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search"
+          hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
           @clear="noAlbumsFound = false" :error="noAlbumsFound"
           :errorMessage="'No albums found with specified condition'">
           <template v-slot:prepend>
@@ -44,10 +44,13 @@ const noAlbumsFound = ref(false);
 const loading = ref(false);
 const albums = ref([]);
 
-const totalPages = ref(10);
+const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-function search() {
+function search(resetPager) {
+  if (resetPager) {
+    currentPageIndex.value = 1;
+  }
   noAlbumsFound.value = false;
   loading.value = true;
   api.album.search(currentPageIndex.value, 32, { title: albumTitle.value }).then((success) => {
@@ -69,9 +72,9 @@ function search() {
 
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
-  search();
+  search(false);
 }
 
-search();
+search(true);
 
 </script>

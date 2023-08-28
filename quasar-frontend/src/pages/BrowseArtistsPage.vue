@@ -9,7 +9,7 @@
       <q-card-section v-if="artists">
 
         <q-input v-model="artistName" rounded clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search"
+          hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
           @clear="noArtistsFound = false" :error="noArtistsFound"
           :errorMessage="'No artists found with specified condition'">
           <template v-slot:prepend>
@@ -72,10 +72,13 @@ const noArtistsFound = ref(false);
 const loading = ref(false);
 const artists = ref([]);
 
-const totalPages = ref(10);
+const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-function search() {
+function search(resetPager) {
+  if (resetPager) {
+    currentPageIndex.value = 1;
+  }
   noArtistsFound.value = false;
   loading.value = true;
   api.artist.search(currentPageIndex.value, 32, { name: artistName.value }).then((success) => {
@@ -97,9 +100,9 @@ function search() {
 
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
-  search();
+  search(false);
 }
 
-search();
+search(true);
 
 </script>
