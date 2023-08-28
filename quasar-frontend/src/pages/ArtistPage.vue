@@ -88,22 +88,23 @@
               <q-separator />
               <q-card-section>
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
-                <q-markup-table v-else dense>
+                <q-markup-table v-else>
                   <tbody>
-                    <tr v-for="track, index in artistData.topTracks" :key="track.id">
-                      <td class="text-right">{{ index }}</td>
-                      <td class="text-center"><q-icon name="play_arrow" size="lg" class="cursor-pointer"
-                          @click="onPlayTracks([track])"></q-icon></td>
-                      <td class="text-left">
+                    <tr class="row" v-for="track, index in artistData.topTracks" :key="track.id">
+                      <td class="text-right col-1">{{ index }}</td>
+                      <td class="text-center col-1">
+                        <q-icon name="play_arrow" size="lg" class="cursor-pointer"
+                          @click="onPlayTracks([track])"></q-icon>
+                          <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
+                      </td>
+                      <td class="text-bold col-4">{{ track.title }}</td>
+                      <td class="text-left col-4">
                         <q-avatar>
                           <img :src="track.image">
                         </q-avatar>
                         {{ track.album }}
                       </td>
-                      <td class="text-center"><q-icon name="favorite_border" size="lg" class="cursor-pointer"></q-icon>
-                      </td>
-                      <td class="text-bold">{{ track.title }}</td>
-                      <td>
+                      <td class="col-2">
                         <p :style="'height: 100%; width: ' + (22 * (artistData.topTracks.length - index)) + '%'"
                           class="bg-pink text-white">{{ 22 * (artistData.topTracks.length - index) }} plays</p>
                       </td>
