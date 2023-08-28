@@ -9,8 +9,21 @@ class Album extends \Spieldose\Entities\Entity
     public $mbId;
     public string $title;
     public object $artist;
-    public ?string $image;
     public ?int $year;
+    public ?string $pathId;
+
+    public static function getAlbumLocalPathCoverFromPathId(\aportela\DatabaseWrapper\DB $dbh, string $pathId): ?string
+    {
+        $params = [new \aportela\DatabaseWrapper\Param\StringParam(":pathId", $pathId)];
+        $results = $dbh->query("SELECT D.path AS localCoverPath, D.cover_filename AS localCoverFilename FROM DIRECTORY D WHERE D.id = :pathId", $params);
+        if (count($results) == 1) {
+            if ($results[0]->localCoverPath && $results[0]->localCoverFilename) {
+                $localPath = $results[0]->localCoverPath . DIRECTORY_SEPARATOR . $results[0]->localCoverFilename;
+                return ($localPath);
+            }
+        }
+        return (null);
+    }
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
@@ -27,8 +40,8 @@ class Album extends \Spieldose\Entities\Entity
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "artistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, MB_CACHE_ARTIST.name, FIT.album_artist, FIT.artist)",
             "artistMbId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, NULL)",
-            "image" => " NULL ",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
+            "coverPathId" => "D.id"
         ];
 
         $fieldCountDefinition = [
@@ -44,8 +57,10 @@ class Album extends \Spieldose\Entities\Entity
                     $result->artist->mbId = $result->artistMbId;
                     $result->artist->name = $result->artistName;
                     if (!empty($result->mbId)) {
-                        $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $result->mbId);
-                        $result->image = sprintf("api/2/thumbnail/normal/remote/album/?url=%s", urlencode($coverArtURL));
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    } else {
+                        $result->covertArtArchiveURL = null;
                     }
                     unset($result->artistMbId);
                     unset($result->artistName);
@@ -56,13 +71,16 @@ class Album extends \Spieldose\Entities\Entity
         };
 
         $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
         $query = sprintf(
             "
                 SELECT DISTINCT %s
-                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                FROM FILE_ID3_TAG FIT
+                INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
