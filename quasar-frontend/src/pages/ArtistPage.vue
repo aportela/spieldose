@@ -105,8 +105,11 @@
                         {{ track.album }}
                       </td>
                       <td class="col-2">
-                        <p :style="'height: 100%; width: ' + (22 * (artistData.topTracks.length - index)) + '%'"
-                          class="bg-pink text-white">{{ 22 * (artistData.topTracks.length - index) }} plays</p>
+                        <q-linear-progress size="32px" :value="track.percentPlay" color="pink-2">
+                          <div class="absolute-full flex flex-center">
+                            <q-badge class="transparent" text-color="grey-10" :label="Math.floor(track.percentPlay * 100) + ' plays'" />
+                          </div>
+                        </q-linear-progress>
                       </td>
                     </tr>
                   </tbody>
@@ -403,6 +406,7 @@ function get(name) {
         } else {
           track.image = null;
         }
+        track.percentPlay = Math.random();
         return (track);
       });
       loading.value = false;
