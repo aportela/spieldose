@@ -40,6 +40,7 @@ class Artist extends \Spieldose\Entities\Entity
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->image)) {
+                        // TODO: DO ON CLIENT
                         $result->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($result->image));
                     }
                     return ($result);
@@ -241,7 +242,7 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT mbid, name, image FROM MB_CACHE_ARTIST
                         WHERE image IS NOT NULL
                         ORDER BY RANDOM()
-                        LIMIT 3
+                        LIMIT 32
                     "
                 );
                 $this->similar = $this->dbh->query($query, []);
