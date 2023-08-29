@@ -6,6 +6,16 @@ namespace Spieldose;
 
 class Metrics
 {
+    /*
+    DELETE FROM FILE_PLAYCOUNT_STATS;
+    INSERT INTO FILE_PLAYCOUNT_STATS
+    SELECT FILE.id, USER.id, datetime(strftime("%s", CURRENT_TIMESTAMP) - abs(random() % 10000000),'unixepoch')
+    FROM FILE
+    LEFT JOIN USER
+    INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FILE.id
+    ORDER BY RANDOM()
+    LIMIT 500;
+    */
     public static function GetTopPlayedTracks(\aportela\DatabaseWrapper\DB $dbh, array $filter = [], int $count = 5): array
     {
         $metrics = array();
