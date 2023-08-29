@@ -105,7 +105,7 @@ class Track extends \Spieldose\Entities\Entity
 
     public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)
     {
-        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, time()) ";
+        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, CURRENT_TIMESTAMP) ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
