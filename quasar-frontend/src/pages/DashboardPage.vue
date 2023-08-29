@@ -19,8 +19,10 @@
           <DashboardBaseBlockTopGenres></DashboardBaseBlockTopGenres>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
+          <DashboardBaseBlockRecentlyTracks></DashboardBaseBlockRecentlyTracks>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
+          <DashboardBaseBlockRecentlyArtists></DashboardBaseBlockRecentlyArtists>
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">
@@ -43,12 +45,15 @@
 import { ref, onMounted } from "vue";
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockTabs } from 'components/DashboardBaseBlockTabs.vue';
-import { default as DashboardBaseBlockList } from 'components/DashboardBaseBlockList.vue';
 import { default as DashboardBaseBlockTopTracks } from 'components/DashboardBaseBlockTopTracks.vue';
 import { default as DashboardBaseBlockTopArtists } from 'components/DashboardBaseBlockTopArtists.vue';
 import { default as DashboardBaseBlockTopAlbums } from 'components/DashboardBaseBlockTopAlbums.vue';
 import { default as DashboardBaseBlockTopGenres } from 'components/DashboardBaseBlockTopGenres.vue';
-import { api } from 'boot/axios';
+import { default as DashboardBaseBlockRecentlyTracks } from 'components/DashboardBaseBlockRecentlyTracks.vue';
+import { default as DashboardBaseBlockRecentlyArtists } from 'components/DashboardBaseBlockRecentlyArtists.vue';
+import { default as DashboardBaseBlockRecentlyAlbums } from 'components/DashboardBaseBlockRecentlyAlbums.vue';
+
+
 import { BarChart } from 'chartist';
 
 
