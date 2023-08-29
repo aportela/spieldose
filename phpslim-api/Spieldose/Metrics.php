@@ -84,7 +84,7 @@ class Metrics
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
         }
         $fieldDefinitions = [
-            "name" => "DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
             "image" => "MB_CACHE_ARTIST.image"
         ];
         $queryFields = [];
@@ -93,17 +93,15 @@ class Metrics
         }
         $query = sprintf(
             '
-                SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
-                FROM (
-                    SELECT FPS.file_id, COUNT(*) AS playCount
-                    FROM FILE_PLAYCOUNT_STATS FPS
-                    %s
-                    GROUP BY FPS.file_id
-                    ORDER BY playCount DESC
-                    LIMIT :count
-                ) TMP_FILE_PLAYCOUNT_STATS
-                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = TMP_FILE_PLAYCOUNT_STATS.file_id
+                SELECT %s, COUNT(*) AS playCount
+                FROM FILE_PLAYCOUNT_STATS FPS
+                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FPS.file_id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                %s
+                GROUP BY COALESCE(MB_CACHE_ARTIST.name, FIT.artist)
+                HAVING COALESCE(MB_CACHE_ARTIST.name, FIT.artist) NOT NULL
+                ORDER BY playCount DESC
+                LIMIT :count
             ',
             implode(", ", $queryFields),
             (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),
