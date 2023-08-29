@@ -230,8 +230,9 @@ const api = {
     },
   },
   metrics: {
-    getTopPlayedTracks: function (count) {
+    getTopPlayedTracks: function (filter, count) {
       const params = {
+        filter: filter || {},
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
@@ -245,8 +246,9 @@ const api = {
           });
       });
     },
-    getTopPlayedAlbums: function (count) {
+    getTopPlayedAlbums: function (filter, count) {
       const params = {
+        filter: filter || {},
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
@@ -260,8 +262,9 @@ const api = {
           });
       });
     },
-    getTopPlayedArtists: function (count) {
+    getTopPlayedArtists: function (filter, count) {
       const params = {
+        filter: filter || {},
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
@@ -275,8 +278,9 @@ const api = {
           });
       });
     },
-    getTopPlayedGenres: function (count) {
+    getTopPlayedGenres: function (filter, count) {
       const params = {
+        filter: filter || {},
         count: count || 5,
       };
       return new Promise((resolve, reject) => {

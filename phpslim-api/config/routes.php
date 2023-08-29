@@ -406,7 +406,7 @@ return function (App $app) {
 
             $group->post('/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $data = \Spieldose\Metrics::GetTopPlayedTracks($this->get(\aportela\DatabaseWrapper\DB::class), [], $params["count"] ?? 5);
+                $data = \Spieldose\Metrics::GetTopPlayedTracks($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -414,7 +414,7 @@ return function (App $app) {
 
             $group->post('/metrics/top_played_artists', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $data = \Spieldose\Metrics::GetTopPlayedArtists($this->get(\aportela\DatabaseWrapper\DB::class), [], $params["count"] ?? 5);
+                $data = \Spieldose\Metrics::GetTopPlayedArtists($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -422,7 +422,7 @@ return function (App $app) {
 
             $group->post('/metrics/top_played_albums', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $data = \Spieldose\Metrics::GetTopPlayedAlbums($this->get(\aportela\DatabaseWrapper\DB::class), [], $params["count"] ?? 5);
+                $data = \Spieldose\Metrics::GetTopPlayedAlbums($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -430,7 +430,7 @@ return function (App $app) {
 
             $group->post('/metrics/top_played_genres', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $data = \Spieldose\Metrics::GetTopPlayedGenres($this->get(\aportela\DatabaseWrapper\DB::class), [], $params["count"] ?? 5);
+                $data = \Spieldose\Metrics::GetTopPlayedGenres($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

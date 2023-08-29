@@ -28,8 +28,8 @@ class Metrics
         );
         if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-            $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
         }
         $fieldDefinitions = [
             "id " => "FIT.id",
@@ -80,8 +80,8 @@ class Metrics
         );
         if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-            $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
         }
         $fieldDefinitions = [
             "name" => "DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
@@ -124,8 +124,8 @@ class Metrics
         );
         if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-            $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
         }
         $fieldDefinitions = [
             "mbId" => "FIT.mb_album_id",
@@ -175,8 +175,8 @@ class Metrics
         );
         if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $queryConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-            $params[] = (new \Spieldose\Database\DBParam())->str(":fromDate", $filter["fromDate"]);
-            $params[] = (new \Spieldose\Database\DBParam())->str(":toDate", $filter["toDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
         }
         $fieldDefinitions = [
             "name" => "FIT.genre",
@@ -187,16 +187,14 @@ class Metrics
         }
         $query = sprintf(
             '
-                SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
-                FROM (
-                    SELECT FPS.file_id, COUNT(*) AS playCount
-                    FROM FILE_PLAYCOUNT_STATS FPS
-                    %s
-                    GROUP BY FPS.file_id
-                    ORDER BY playCount DESC
-                    LIMIT :count
-                ) TMP_FILE_PLAYCOUNT_STATS
-                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = TMP_FILE_PLAYCOUNT_STATS.file_id AND FIT.genre IS NOT NULL
+                SELECT %s, COUNT(*) AS playCount
+                FROM FILE_PLAYCOUNT_STATS FPS
+                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FPS.file_id
+                %s
+                GROUP BY FIT.genre
+                HAVING FIT.genre NOT NULL
+                ORDER BY playCount DESC
+                LIMIT :count
             ',
             implode(", ", $queryFields),
             (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),

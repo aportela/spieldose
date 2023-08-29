@@ -6,6 +6,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { date } from "quasar";
 
 const props = defineProps({
   tabType: {
@@ -72,7 +73,35 @@ switch (props.tabType) {
 }
 
 watch(tab, (newValue, oldValue) => {
-  emit('change', newValue)
+  if (props.tabType == 'dateRanges') {
+    let filter = {
+      fromDate: null,
+      toDate: null
+    };
+    switch (newValue) {
+      case 'today':
+        filter.fromDate = date.formatDate(Date.now(), 'YYYYMMDD');
+        filter.toDate = date.formatDate(Date.now(), 'YYYYMMDD');
+        break;
+      case 'lastWeek':
+        filter.fromDate = date.formatDate(date.addToDate(Date.now(), { days: -7 }), 'YYYYMMDD');
+        filter.toDate = date.formatDate(Date.now(), 'YYYYMMDD');
+        break;
+      case 'lastMonth':
+        filter.fromDate = date.formatDate(date.addToDate(Date.now(), { months: -1 }), 'YYYYMMDD');
+        filter.toDate = date.formatDate(Date.now(), 'YYYYMMDD');
+        break;
+      case 'lastYear':
+        filter.fromDate = date.formatDate(date.addToDate(Date.now(), { years: -1 }), 'YYYYMMDD');
+        filter.toDate = date.formatDate(Date.now(), 'YYYYMMDD');
+        break;
+      case 'always':
+        break;
+    }
+    emit('change', { tab: newValue, filter: filter });
+  } else if (props.tabType == 'entities') {
+    emit('change', { tab: newValue });
+  }
 });
 
 </script>

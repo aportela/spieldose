@@ -1,7 +1,8 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="'Top played albums'" :loading="loading" @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="'Top played albums'" :loading="loading"
+    @refresh="refresh">
     <template #tabs>
-      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always" @change="refresh">
+      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always" @change="onChangeDateFilter">
       </component>
     </template>
     <template #list>
@@ -9,9 +10,10 @@
         <li class="is-size-6-5" v-for="item in items" :key="item.id">
           <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer" @click="playAlbum(item)" />
           <span>{{ item.title }}</span>
-          <span v-if="item.albumArtistName"> / <router-link :to="{ name: 'artist', params: { name: item.albumArtistName } }">{{
-            item.albumArtistName }}</router-link></span>
-            <span v-if="item.year"> [{{ item.year }}] </span>
+          <span v-if="item.albumArtistName"> / <router-link
+              :to="{ name: 'artist', params: { name: item.albumArtistName } }">{{
+                item.albumArtistName }}</router-link></span>
+          <span v-if="item.year"> [{{ item.year }}] </span>
           <span> ({{ item.playCount }} plays)</span>
         </li>
       </ol>
@@ -35,9 +37,15 @@ const currentPlaylist = useCurrentPlaylistStore();
 const loading = ref(false);
 const items = ref([]);
 
+const count = 5;
+let filter = {
+  fromDate: null,
+  toDate: null
+};
+
 function refresh() {
   loading.value = true;
-  api.metrics.getTopPlayedAlbums().then((success) => {
+  api.metrics.getTopPlayedAlbums(filter, count).then((success) => {
     items.value = success.data.data;
     loading.value = false;
   }).catch((error) => {
@@ -48,6 +56,11 @@ function refresh() {
       caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
     });
   });
+}
+
+function onChangeDateFilter(d) {
+  filter = d.filter;
+  refresh();
 }
 
 function playAlbum(album) {

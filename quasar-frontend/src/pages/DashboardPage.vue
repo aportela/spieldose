@@ -21,33 +21,13 @@
           <DashboardBaseBlockTopGenres></DashboardBaseBlockTopGenres>
         </div>
         <div class="col-xl-4 col-lg-4 col-12">
-          <component class="q-mx-lg" :is="dashboardBaseBlock" :icon="'schedule'" :title="'Recently added'"
-            @refresh="onRefreshRecentlyAdded">
-            <template #tabs>
-              <component :is="DashboardBaseBlockTabs" tab-type="entities" selected-tab="tracks"
-                @change="onChangeEntityFilter"></component>
-            </template>
-            <template #list>
-              <DashboardBaseBlockList  items-type="tracks" :items="recentlyAdded"></DashboardBaseBlockList>
-            </template>
-          </component>
         </div>
         <div class="col-xl-4 col-lg-4 col-12">
-          <component :is="dashboardBaseBlock" :icon="'schedule'" :title="'Recently played'" @refresh="onRefreshRecentlyPlayed">
-            <template #tabs>
-              <component :is="DashboardBaseBlockTabs" tab-type="entities" selected-tab="tracks"
-                @change="onChangeEntityFilter"></component>
-            </template>
-            <template #list>
-              <DashboardBaseBlockList  items-type="tracks" :items="recentlyPlayed"></DashboardBaseBlockList>
-            </template>
-          </component>
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">
         <template #tabs>
-          <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always"
-            @change="onChangeDateFilter"></component>
+          <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always"></component>
         </template>
         <template #chart>
           <div class="ct-chart"></div>
@@ -73,14 +53,7 @@ import { default as DashboardBaseBlockTopGenres } from 'components/DashboardBase
 import { api } from 'boot/axios';
 import { BarChart } from 'chartist';
 
-const loading = ref(false);
 
-const topPlayedTracks = ref([]);
-const topPlayedAlbums = ref([]);
-const topPlayedArtists = ref([]);
-const topPlayedGenres = ref([]);
-const recentlyAdded = ref([]);
-const recentlyPlayed = ref([]);
 
 onMounted(() => {
   new BarChart('.ct-chart', {
@@ -96,102 +69,4 @@ onMounted(() => {
   });
 });
 
-function onChangeDateFilter(data) {
-  //refresh();
-}
-
-function onChangeEntityFilter(data) {
-  //refresh();
-}
-
-function onRefreshTopPlayedTracks() {
-  refreshTopPlayedTracks();
-}
-
-function refreshTopPlayedTracks() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    topPlayedTracks.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-function onRefreshTopPlayedAlbums() {
-  refreshTopPlayedAlbums();
-}
-
-function refreshTopPlayedAlbums() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    topPlayedAlbums.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-function onRefreshTopPlayedArtists() {
-  refreshTopPlayedArtists();
-}
-
-function refreshTopPlayedArtists() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    topPlayedArtists.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-function onRefreshTopPlayedGenres() {
-  refreshTopPlayedGenres();
-}
-
-function refreshTopPlayedGenres() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    topPlayedGenres.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-function onRefreshRecentlyAdded() {
-  refreshRecentlyAdded();
-}
-
-function refreshRecentlyAdded() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    recentlyAdded.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-function onRefreshRecentlyPlayed() {
-  refreshRecentlyPlayed();
-}
-
-function refreshRecentlyPlayed() {
-  loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
-    recentlyPlayed.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
-}
-
-refreshTopPlayedTracks();
-refreshTopPlayedAlbums();
-refreshTopPlayedArtists();
-refreshTopPlayedGenres();
-refreshRecentlyAdded();
-refreshRecentlyPlayed();
 </script>

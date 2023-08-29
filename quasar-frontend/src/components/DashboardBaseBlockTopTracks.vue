@@ -1,7 +1,8 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="'Top played tracks'" :loading="loading" @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="'Top played tracks'" :loading="loading"
+    @refresh="refresh">
     <template #tabs>
-      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always" @change="refresh">
+      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always" @change="onChangeDateFilter">
       </component>
     </template>
     <template #list>
@@ -34,9 +35,15 @@ const currentPlaylist = useCurrentPlaylistStore();
 const loading = ref(false);
 const items = ref([]);
 
+const count = 5;
+let filter = {
+  fromDate: null,
+  toDate: null
+};
+
 function refresh() {
   loading.value = true;
-  api.metrics.getTopPlayedTracks().then((success) => {
+  api.metrics.getTopPlayedTracks(filter, count).then((success) => {
     items.value = success.data.data;
     loading.value = false;
   }).catch((error) => {
@@ -47,6 +54,11 @@ function refresh() {
       caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
     });
   });
+}
+
+function onChangeDateFilter(d) {
+  filter = d.filter;
+  refresh();
 }
 
 function playTrack(tracks) {
