@@ -13,7 +13,7 @@
     </q-card-section>
     <q-card-section class="bg-white text-black">
       <slot name="body">
-        <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+        <q-skeleton type="text" square animation="blink" height="198px" v-if="loading" />
         <div v-else>
           <slot name="tabs"></slot>
           <slot name="list"></slot>
