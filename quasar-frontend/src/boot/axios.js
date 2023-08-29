@@ -230,10 +230,58 @@ const api = {
     },
   },
   metrics: {
-    getTopPlayedTracks: function () {
+    getTopPlayedTracks: function (count) {
+      const params = {
+        count: count || 5,
+      };
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/track/top_played")
+          .post(baseAPIPath + "/metrics/top_played_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getTopPlayedAlbums: function (count) {
+      const params = {
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/top_played_albums", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getTopPlayedArtists: function (count) {
+      const params = {
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/top_played_artists", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getTopPlayedGenres: function (count) {
+      const params = {
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/top_played_genres", params)
           .then((response) => {
             resolve(response);
           })

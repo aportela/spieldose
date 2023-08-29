@@ -1,47 +1,23 @@
 <template>
-  <q-card class="my-card">
+  <q-card class="my-card" :class="className">
     <q-card-section class="bg-grey-3 text-black">
-      <div class="text-h6"><q-icon :name="icon" class="cursor-pointer q-mr-sm"></q-icon>{{ title }}<q-icon name="refresh"
-          class="cursor-pointer"></q-icon></div>
+      <div class="text-h6 row">
+        <div class="col text-left">
+          <q-icon :name="icon" class="cursor-pointer q-mr-sm"></q-icon>{{ title }}
+        </div>
+        <div class="col text-right">
+          <q-spinner v-if="loading" color="pink" size="sm" class="q-ml-sm" :thickness="8" />
+          <q-icon name="refresh" class="cursor-pointer" @click="onRefresh" v-else></q-icon>
+        </div>
+      </div>
     </q-card-section>
     <q-card-section class="bg-white text-black">
       <slot name="body">
-
         <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
         <div v-else>
-          <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
-            <q-tab name="today" label="Today" />
-            <q-tab name="lastWeek" label="Last week" />
-            <q-tab name="lastMonth" label="Last month" />
-            <q-tab name="lastYear" label="Last year" />
-            <q-tab name="always" label="Always" />
-          </q-tabs>
-
-          <ol class="pl-5 is-size-6-5" v-if="items.length > 0">
-            <li class="is-size-6-5" v-for="item in items" :key="item.id">
-              <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer" @click="onPlayTracks([item])" />
-              <span>{{ item.title }}</span>
-              <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }">{{
-                item.artist }}</router-link></span>
-              <span v-if="true || showPlayCount"> ({{ item.playCount }} plays)</span>
-            </li>
-            <!--
-          <li class="is-size-6-5" v-if="isTopAlbumsType" v-for="item in items">
-            <span>{{ item.album }}</span>
-            <span v-if="item.artist"> / <router-link :to="{ name: 'artist', params: { name: item.artist } }"
-                >{{ item.artist }}</router-link></span>
-          </li>
-          <li class="is-size-6-5" v-if="isTopArtistsType" v-for="item in items">
-            <router-link :to="{ name: 'artist', params: { name: item.artist } }"
-              >{{ item.artist }}</router-link>
-            <span v-if="showPlayCount"> ({{ item.playCount }} plays </span>
-          </li>
-          <li class="is-size-6-5" v-if="isTopGenresType" v-for="item in items">
-            <span>{{ item.genre }}</span>
-            <span v-if="showPlayCount"> ({{ item.playCount }} plays }})</span>
-          </li>
-          -->
-          </ol>
+          <slot name="tabs"></slot>
+          <slot name="list"></slot>
+          <slot name="chart"></slot>
         </div>
       </slot>
     </q-card-section>
@@ -49,16 +25,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { api } from 'boot/axios'
-
-import { usePlayer } from 'stores/player';
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
-
-const player = usePlayer();
-const currentPlaylist = useCurrentPlaylistStore();
 
 const props = defineProps({
+  className: {
+    type: String
+  },
+  loading: {
+    type: Boolean,
+  },
   icon: {
     type: String,
     required: true
@@ -67,31 +41,12 @@ const props = defineProps({
     type: String,
     required: true
   }
-})
+});
 
-const tab = ref('always');
+const emit = defineEmits(['refresh']);
 
-const loading = ref(false);
-
-const items = ref([]);
-
-function refresh() {
-  loading.value = true;
-
-  api.metrics.getTopPlayedTracks().then((success) => {
-    items.value = success.data.data;
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
+function onRefresh() {
+  emit('refresh');
 }
 
-function onPlayTracks(tracks) {
-  player.stop();
-  currentPlaylist.saveTracks(tracks);
-  player.interact();
-  player.play(false);
-}
-
-refresh();
 </script>
