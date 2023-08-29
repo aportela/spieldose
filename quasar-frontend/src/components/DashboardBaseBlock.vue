@@ -1,5 +1,5 @@
 <template>
-  <q-card class="my-card" :class="className">
+  <q-card class="my-card q-ma-md">
     <q-card-section class="bg-grey-3 text-black">
       <div class="text-h6 row">
         <div class="col text-left">

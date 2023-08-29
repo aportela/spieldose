@@ -5,24 +5,22 @@
         <q-breadcrumbs-el icon="home" label="Spieldose" />
         <q-breadcrumbs-el icon="analytics" label="Dashboard" />
       </q-breadcrumbs>
-      <div class="row q-mb-lg">
-        <div class="col-xl-4 col-lg-4 col-12">
+      <div class="row">
+        <div class="col-xl-4 col-lg-6 col-12">
           <DashboardBaseBlockTopTracks></DashboardBaseBlockTopTracks>
         </div>
-        <div class="col-xl-4 col-lg-4 col-12">
-          <DashboardBaseBlockTopArtists className="q-mx-lg"></DashboardBaseBlockTopArtists>
+        <div class="col-xl-4 col-lg-6 col-12">
+          <DashboardBaseBlockTopArtists></DashboardBaseBlockTopArtists>
         </div>
-        <div class="col-xl-4 col-lg-4 col-12">
+        <div class="col-xl-4 col-lg-6 col-12">
           <DashboardBaseBlockTopAlbums></DashboardBaseBlockTopAlbums>
         </div>
-      </div>
-      <div class="row q-mb-lg">
-        <div class="col-xl-4 col-lg-4 col-12">
+        <div class="col-xl-4 col-lg-6 col-12">
           <DashboardBaseBlockTopGenres></DashboardBaseBlockTopGenres>
         </div>
-        <div class="col-xl-4 col-lg-4 col-12">
+        <div class="col-xl-4 col-lg-6 col-12">
         </div>
-        <div class="col-xl-4 col-lg-4 col-12">
+        <div class="col-xl-4 col-lg-6 col-12">
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">
