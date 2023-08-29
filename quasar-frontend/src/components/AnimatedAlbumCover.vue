@@ -13,7 +13,7 @@
     </a>
     <div class="album-info">
       <p class="album-name">{{ album.title }}</p>
-      <p v-if="album.artist" class="artist-name">by <router-link
+      <p v-if="album.artist && album.artist.name" class="artist-name">by <router-link
           :to="{ name: 'artist', params: { name: album.artist.name } }">{{ album.artist.name }}</router-link><span
           v-show="album.year"> ({{ album.year }})</span></p>
       <p v-else class="artist-name">by unknownArtist <span v-show="album.year"> ({{ album.year }})</span></p>
