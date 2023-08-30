@@ -7,11 +7,7 @@
     </template>
     <template #list>
       <ol class="pl-5 is-size-6-5">
-        <li class="is-size-6-5" v-for="item in items" :key="item.id">
-          <q-icon name="link" size="sm" />
-          <span>{{ item.name }}</span>
-          <span> ({{ item.playCount }} plays)</span>
-        </li>
+        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item"></DashboardBaseBlockListElementGenre>
       </ol>
     </template>
   </component>
@@ -22,6 +18,7 @@ import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockTabs } from 'components/DashboardBaseBlockTabs.vue';
+import { default as DashboardBaseBlockListElementGenre } from 'components/DashboardBaseBlockListElementGenre.vue';
 import { api } from 'boot/axios';
 
 const $q = useQuasar();

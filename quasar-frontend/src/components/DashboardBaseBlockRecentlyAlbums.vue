@@ -7,15 +7,7 @@
     </template>
     <template #list>
       <ol class="pl-5 is-size-6-5">
-        <li class="is-size-6-5" v-for="item in items" :key="item.id">
-          <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer" @click="playAlbum(item)" />
-          <span>{{ item.title }}</span>
-          <span v-if="item.albumArtistName"> / <router-link
-              :to="{ name: 'artist', params: { name: item.albumArtistName } }">{{
-                item.albumArtistName }}</router-link></span>
-          <span v-if="item.year"> [{{ item.year }}] </span>
-          <span> ({{ item.playCount }} plays)</span>
-        </li>
+        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item"></DashboardBaseBlockListElementAlbum>
       </ol>
     </template>
   </component>
@@ -26,6 +18,7 @@ import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockTabs } from 'components/DashboardBaseBlockTabs.vue';
+import { default as DashboardBaseBlockListElementAlbum } from 'components/DashboardBaseBlockListElementAlbum.vue';
 import { api } from 'boot/axios';
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
