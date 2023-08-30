@@ -32,6 +32,10 @@ const entities = [
     label: 'Albums',
     value: 'albums'
   },
+  {
+    label: 'Genres',
+    value: 'genres'
+  }
 ];
 
 const dateRanges = [
