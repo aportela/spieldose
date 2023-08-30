@@ -180,5 +180,10 @@ return (array(
                 PRIMARY KEY(`file_id`, `user_id`, `play_timestamp`)
             );
         '
-    )
+    ),
+    11 => array(
+        '
+            ALTER TABLE `FILE` ADD "added_timestamp" INTEGER NOT NULL DEFAULT 0;
+        '
+    ),
 ));

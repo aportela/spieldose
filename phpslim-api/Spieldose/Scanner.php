@@ -58,7 +58,7 @@ class Scanner
     private function saveFile(string $directoryId, string $fileName, int $mtime): ?string
     {
         $this->dbh->exec(
-            " INSERT INTO FILE (id, directory_id, name, mtime) VALUES (:id, :directory_id, :name, :mtime) ON CONFLICT (`directory_id`, `name`) DO UPDATE SET MTIME = :mtime ",
+            " INSERT INTO FILE (id, directory_id, name, mtime, added_timestamp) VALUES (:id, :directory_id, :name, :mtime, strftime('%s', 'now')) ON CONFLICT (`directory_id`, `name`) DO UPDATE SET MTIME = :mtime ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
