@@ -247,23 +247,6 @@ const api = {
           });
       });
     },
-    getTopPlayedTracks: function (filter, count) {
-      const params = {
-        filter: filter || {},
-        sortField: "playCount",
-        count: count || 5,
-      };
-      return new Promise((resolve, reject) => {
-        axios
-          .post(baseAPIPath + "/metrics/tracks", params)
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-    },
     getTopPlayedAlbums: function (filter, count) {
       const params = {
         filter: filter || {},

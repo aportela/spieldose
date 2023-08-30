@@ -134,53 +134,6 @@ class Metrics
         return ($data->items);
     }
 
-    public static function GetTopPlayedTracks(\aportela\DatabaseWrapper\DB $dbh, array $filter = [], int $count = 5): array
-    {
-        $metrics = array();
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count)
-        );
-        $queryConditions = array(
-            " FPS.user_id = :user_id ",
-        );
-        $fieldDefinitions = [
-            "id " => "FIT.id",
-            "title" => "FIT.title",
-            "artistName" => "FIT.artist",
-            "albumTitle" => "FIT.album",
-            "albumArtist" => "FIT.album_artist",
-            "year" => "FIT.year",
-            "trackNumber" => "FIT.track_number",
-            "musicBrainzAlbumId" => "FIT.mb_album_id",
-            "coverPathId" => "D.id"
-        ];
-        $queryFields = [];
-        foreach ($fieldDefinitions as $fieldAlias => $SQLfield) {
-            $queryFields[] = sprintf("%s AS %s", $SQLfield, $fieldAlias);
-        }
-        $query = sprintf(
-            '
-                SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
-                FROM (
-                    SELECT FPS.file_id, COUNT(*) AS playCount
-                    FROM FILE_PLAYCOUNT_STATS FPS
-                    %s
-                    GROUP BY FPS.file_id
-                    ORDER BY playCount DESC
-                    LIMIT :count
-                ) TMP_FILE_PLAYCOUNT_STATS
-                INNER JOIN FILE F ON F.id = TMP_FILE_PLAYCOUNT_STATS.file_id
-                INNER JOIN FILE_ID3_TAG FIT ON FIT.id = TMP_FILE_PLAYCOUNT_STATS.file_id
-                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
-            ',
-            implode(", ", $queryFields),
-            (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),
-        );
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
-    }
-
     public static function GetTopPlayedArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter = [], int $count = 5): array
     {
         $metrics = array();
@@ -314,26 +267,6 @@ class Metrics
         return ($metrics);
     }
 
-    public static function GetRecentlyAddedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
-    {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $query = sprintf('
-                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, F.playtime_seconds AS playtimeSeconds, F.playtime_string AS playtimeString
-                FROM FILE F
-                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
-                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
-                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
-                WHERE title IS NOT NULL
-                ORDER BY created DESC
-                LIMIT %d;
-            ', $count);
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
-    }
-
     public static function GetRecentlyAddedArtists(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
     {
         $metrics = array();
@@ -362,31 +295,6 @@ class Metrics
                 LIMIT %d;
             ', $count);
         $metrics = $dbh->query($query, array());
-        return ($metrics);
-    }
-
-    public static function GetRecentlyPlayedTracks(\Spieldose\Database\DB $dbh, $filter, int $count = 5): array
-    {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $queryConditions = array(
-            " S.user_id = :user_id "
-        );
-        $query = sprintf('
-                SELECT F.id AS id, F.track_name AS title, COALESCE(MB.artist, F.track_artist) AS artist, MBA1.image AS image, F.genre, COALESCE(MBA1.album, F.album_name) AS album, COALESCE(MBA1.year, F.year) AS year, COALESCE(LF.loved, 0) AS loved, F.playtime_seconds AS playtimeSeconds, F.playtime_string AS playtimeString
-                FROM STATS S
-                LEFT JOIN FILE F ON F.id = S.file_id
-                LEFT JOIN MB_CACHE_ARTIST MB ON MB.mbid = F.artist_mbid
-                LEFT JOIN MB_CACHE_ALBUM MBA1 ON MBA1.mbid = F.album_mbid
-                LEFT JOIN LOVED_FILE LF ON (LF.file_id = F.id AND LF.user_id = :user_id)
-                WHERE title IS NOT NULL
-                %s
-                ORDER BY S.played DESC
-                LIMIT %d;
-            ', (count($queryConditions) > 0 ? 'AND ' . implode(" AND ", $queryConditions) : ''), $count);
-        $metrics = $dbh->query($query, $params);
         return ($metrics);
     }
 

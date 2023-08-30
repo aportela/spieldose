@@ -425,14 +425,6 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->post('/metrics/top_played_tracks', function (Request $request, Response $response, array $args) {
-                $params = $request->getParsedBody();
-                $data = \Spieldose\Metrics::GetTopPlayedTracks($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
-                $payload = json_encode(["data" => $data]);
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
-
             $group->post('/metrics/top_played_artists', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Metrics::GetTopPlayedArtists($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);
