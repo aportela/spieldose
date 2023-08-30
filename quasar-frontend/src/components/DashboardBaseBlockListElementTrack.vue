@@ -4,11 +4,13 @@
     <span>{{ track.title }}</span>
     <span v-if="track.artist"> / <router-link :to="{ name: 'artist', params: { name: track.artist } }">{{
       track.artist }}</router-link></span>
-    <span> ({{ track.playCount }} plays)</span>
+    <span class="q-ml-sm" v-if="track.playCount"> ({{ track.playCount }} plays)</span>
+    <span class="q-ml-sm" v-if="track.addedTimestamp"> {{ diff }} hours ago</span>
   </li>
 </template>
 
 <script setup>
+import { date } from 'quasar';
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
@@ -21,6 +23,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const diff = date.getDateDiff(Date.now(), props.track.addedTimestamp * 1000, 'hours');
 
 function playTrack(track) {
   player.stop();

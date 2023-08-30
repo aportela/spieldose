@@ -425,6 +425,27 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/metrics/artists', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = [];
+                if (isset($params["filter"])) {
+                    $filter = ["fromDate" => $params["filter"]["fromDate"] ?? null, "toDate" => $params["filter"]["toDate"] ?? null];
+                }
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager();
+                $pager->enabled = false;
+                $pager->resultsPage = $params["count"] ?? 5;
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $data = \Spieldose\Metrics::searchArtists($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->post('/metrics/top_played_artists', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
                 $data = \Spieldose\Metrics::GetTopPlayedArtists($this->get(\aportela\DatabaseWrapper\DB::class), ["fromDate" => $params["filter"]["fromDate"], "toDate" => $params["filter"]["toDate"]], $params["count"] ?? 5);

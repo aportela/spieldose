@@ -19,10 +19,10 @@
           <DashboardBaseBlockTopGenres></DashboardBaseBlockTopGenres>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
-          <DashboardBaseBlockRecently :title="'Recently played'"></DashboardBaseBlockRecently>
+          <DashboardBaseBlockRecently :played="true"></DashboardBaseBlockRecently>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
-          <DashboardBaseBlockRecently :title="'Recently added'"></DashboardBaseBlockRecently>
+          <DashboardBaseBlockRecently :added="true"></DashboardBaseBlockRecently>
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">

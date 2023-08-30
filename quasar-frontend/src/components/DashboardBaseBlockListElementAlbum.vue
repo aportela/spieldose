@@ -6,11 +6,16 @@
         :to="{ name: 'artist', params: { name: album.albumArtistName } }">{{
           album.albumArtistName }}</router-link></span>
     <span v-if="album.year"> [{{ album.year }}] </span>
-    <span> ({{ album.playCount }} plays)</span>
+    <span class="q-ml-sm" v-if="album.playCount > 0"> ({{ album.playCount }} plays)</span>
+    <span class="q-ml-sm" v-if="album.addedTimestamp"> {{ diff }} hours ago</span>
   </li>
 </template>
 
 <script setup>
+import { date } from 'quasar';
+
+const diff = date.getDateDiff(Date.now(), props.album.addedTimestamp * 1000, 'hours');
+
 const props = defineProps({
   album: {
     type: Object,

@@ -246,6 +246,22 @@ const api = {
             reject(error);
           });
       });
+    },getArtists: function (filter, sortField, count) {
+      const params = {
+        filter: filter || {},
+        sortField: sortField,
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/artists", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
     getTopPlayedAlbums: function (filter, count) {
       const params = {
