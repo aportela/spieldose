@@ -2,7 +2,7 @@
   <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="'Recently played artists'" :loading="loading"
     @refresh="refresh">
     <template #tabs>
-      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" selected-tab="always" @change="onChangeDateFilter">
+      <component :is="DashboardBaseBlockTabs" tab-type="dateRanges" :selected-tab="currentTab" @change="onChangeDateFilter">
       </component>
     </template>
     <template #list>
@@ -29,6 +29,7 @@ import { api } from 'boot/axios';
 const $q = useQuasar();
 
 const loading = ref(false);
+const currentTab = ref('always');
 const items = ref([]);
 
 const count = 5;
@@ -54,6 +55,7 @@ function refresh() {
 
 function onChangeDateFilter(d) {
   filter = d.filter;
+  currentTab.value = d.tab;
   refresh();
 }
 
