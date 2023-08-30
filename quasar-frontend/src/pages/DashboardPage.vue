@@ -19,10 +19,10 @@
           <DashboardBaseBlockTopGenres></DashboardBaseBlockTopGenres>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
-          <DashboardBaseBlockRecentlyTracks></DashboardBaseBlockRecentlyTracks>
+          <DashboardBaseBlockRecently :title="'Recently played'"></DashboardBaseBlockRecently>
         </div>
         <div class="col-xl-4 col-lg-6 col-12">
-          <DashboardBaseBlockRecentlyArtists></DashboardBaseBlockRecentlyArtists>
+          <DashboardBaseBlockRecently :title="'Recently added'"></DashboardBaseBlockRecently>
         </div>
       </div>
       <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">
@@ -49,6 +49,7 @@ import { default as DashboardBaseBlockTopTracks } from 'components/DashboardBase
 import { default as DashboardBaseBlockTopArtists } from 'components/DashboardBaseBlockTopArtists.vue';
 import { default as DashboardBaseBlockTopAlbums } from 'components/DashboardBaseBlockTopAlbums.vue';
 import { default as DashboardBaseBlockTopGenres } from 'components/DashboardBaseBlockTopGenres.vue';
+import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
 import { default as DashboardBaseBlockRecentlyTracks } from 'components/DashboardBaseBlockRecentlyTracks.vue';
 import { default as DashboardBaseBlockRecentlyArtists } from 'components/DashboardBaseBlockRecentlyArtists.vue';
 import { default as DashboardBaseBlockRecentlyAlbums } from 'components/DashboardBaseBlockRecentlyAlbums.vue';

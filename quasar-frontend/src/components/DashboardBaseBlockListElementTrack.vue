@@ -2,8 +2,8 @@
   <li class="is-size-6-5">
     <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer" @click="playTrack(track)" />
     <span>{{ track.title }}</span>
-    <span v-if="track.artistName"> / <router-link :to="{ name: 'artist', params: { name: track.artistName } }">{{
-      track.artistName }}</router-link></span>
+    <span v-if="track.artist"> / <router-link :to="{ name: 'artist', params: { name: track.artist } }">{{
+      track.artist }}</router-link></span>
     <span> ({{ track.playCount }} plays)</span>
   </li>
 </template>

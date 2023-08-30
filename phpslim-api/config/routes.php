@@ -163,8 +163,8 @@ return function (App $app) {
                     $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $settings['basePath']);
                     $thumbnail->setDimensions($settings['sizes'][$args['size']]['width'], $settings['sizes'][$args['size']]['height']);
                     $thumbnail->setQuality($settings['sizes'][$args['size']]['quality']);
-                    $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
-                    $local = \Spieldose\Entities\Album::getAlbumLocalPathCoverFromPathId($dbh, $queryParams["path"]);
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $local = \Spieldose\Entities\Album::getAlbumLocalPathCoverFromPathId($db, $queryParams["path"]);
                     if ($thumbnail->getFromLocalFilesystem($local) && !empty($thumbnail->path) && file_exists(($thumbnail->path))) {
                         $filesize = filesize($thumbnail->path);
                         $f = fopen($thumbnail->path, 'r');
@@ -400,6 +400,27 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $data = \Spieldose\Path::getTree($db);
                 $payload = json_encode(["items" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->post('/metrics/tracks', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = [];
+                if (isset($params["filter"])) {
+                    $filter = ["fromDate" => $params["filter"]["fromDate"] ?? null, "toDate" => $params["filter"]["toDate"] ?? null];
+                }
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager();
+                $pager->enabled = false;
+                $pager->resultsPage = $params["count"] ?? 5;
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $data = \Spieldose\Metrics::searchTracks($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });

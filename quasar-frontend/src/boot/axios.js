@@ -230,14 +230,32 @@ const api = {
     },
   },
   metrics: {
-    getTopPlayedTracks: function (filter, count) {
+    getTracks: function (filter, sortField, count) {
       const params = {
         filter: filter || {},
+        sortField: sortField,
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/top_played_tracks", params)
+          .post(baseAPIPath + "/metrics/tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getTopPlayedTracks: function (filter, count) {
+      const params = {
+        filter: filter || {},
+        sortField: "playCount",
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/tracks", params)
           .then((response) => {
             resolve(response);
           })
