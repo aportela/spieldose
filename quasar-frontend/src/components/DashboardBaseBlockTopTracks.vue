@@ -40,7 +40,6 @@ let filter = {
 
 function refresh() {
   loading.value = true;
-  console.log(filter);
   api.metrics.getTracks(filter, 'playCount', count).then((success) => {
     items.value = success.data.data;
     loading.value = false;
