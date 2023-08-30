@@ -6,9 +6,10 @@
       </component>
     </template>
     <template #list>
-      <ol class="pl-5 is-size-6-5">
+      <ol class="pl-5 is-size-6-5" v-if="items && items.length > 0">
         <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item"></DashboardBaseBlockListElementAlbum>
       </ol>
+      <h5 class="text-h5 text-center" v-else-if="! loading"><q-icon name="warning" size="xl"></q-icon> No enought data</h5>
     </template>
   </component>
 </template>
