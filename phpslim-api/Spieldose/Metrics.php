@@ -103,13 +103,6 @@ class Metrics
             case "recentlyPlayed":
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                 $filterConditions[] = " FPS.user_id = :user_id ";
-                /*
-                if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
-                    $filterConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
-                }
-                */
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -214,13 +207,6 @@ class Metrics
             case "recentlyPlayed":
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                 $filterConditions[] = " FPS.user_id = :user_id ";
-                /*
-                if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
-                    $filterConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
-                }
-                */
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -328,13 +314,6 @@ class Metrics
             case "recentlyPlayed":
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                 $filterConditions[] = " FPS.user_id = :user_id ";
-                /*
-                if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
-                    $filterConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
-                }
-                */
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -439,13 +418,6 @@ class Metrics
             case "recentlyPlayed":
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                 $filterConditions[] = " FPS.user_id = :user_id ";
-                /*
-                if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
-                    $filterConditions[] = " strftime('%Y%m%d', FPS.play_timestamp) BETWEEN :fromDate AND :toDate ";
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
-                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
-                }
-                */
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
