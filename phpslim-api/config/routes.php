@@ -292,7 +292,8 @@ return function (App $app) {
                 $queryParams = $request->getQueryParams();
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $artist = new \Spieldose\Entities\Artist($db);
-                $artist->name = $queryParams["name"];
+                $artist->mbId = $queryParams["mbId"] ?? null;
+                $artist->name = $queryParams["name"] ?? null;
                 $artist->get();
                 $payload = json_encode(
                     [
