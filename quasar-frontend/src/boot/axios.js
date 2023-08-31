@@ -136,7 +136,7 @@ const api = {
     get: function (name) {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/artist/" + encodeURIComponent(name), {})
+          .get("api/2/artist?name=" + encodeURIComponent(name), {})
           .then((response) => {
             resolve(response);
           })
@@ -246,7 +246,8 @@ const api = {
             reject(error);
           });
       });
-    },getArtists: function (filter, sortField, count) {
+    },
+    getArtists: function (filter, sortField, count) {
       const params = {
         filter: filter || {},
         sortField: sortField,
@@ -263,14 +264,15 @@ const api = {
           });
       });
     },
-    getTopPlayedAlbums: function (filter, count) {
+    getAlbums: function (filter, sortField, count) {
       const params = {
         filter: filter || {},
+        sortField: sortField,
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/top_played_albums", params)
+          .post(baseAPIPath + "/metrics/albums", params)
           .then((response) => {
             resolve(response);
           })
@@ -279,14 +281,15 @@ const api = {
           });
       });
     },
-    getTopPlayedArtists: function (filter, count) {
+    getGenres: function (filter, sortField, count) {
       const params = {
         filter: filter || {},
+        sortField: sortField,
         count: count || 5,
       };
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/top_played_artists", params)
+          .post(baseAPIPath + "/metrics/genres", params)
           .then((response) => {
             resolve(response);
           })
@@ -295,14 +298,10 @@ const api = {
           });
       });
     },
-    getTopPlayedGenres: function (filter, count) {
-      const params = {
-        filter: filter || {},
-        count: count || 5,
-      };
+    getDataRanges: function (range) {
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/top_played_genres", params)
+          .get(baseAPIPath + "/metrics/date_range/" + range)
           .then((response) => {
             resolve(response);
           })
