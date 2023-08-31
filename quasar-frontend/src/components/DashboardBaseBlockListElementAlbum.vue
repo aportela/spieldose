@@ -2,7 +2,7 @@
   <li class="is-size-6-5" v-if="album">
     <slot name="prepend">
     </slot>
-    <q-icon name="album" size="sm" />
+    <q-icon name="album" size="sm" class="q-mr-xs" />
     <span>{{ album.title }}</span>
     <span v-if="album.albumArtistName"> / <router-link
         :to="{ name: 'artist', params: { name: album.albumArtistName } }">{{
