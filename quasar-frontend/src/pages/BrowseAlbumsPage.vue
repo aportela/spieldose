@@ -22,17 +22,17 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <AnimatedAlbumCover v-for="album in albums" :key="album.title" :album="album"></AnimatedAlbumCover>
+          <AnimatedAlbumCover v-for="album in albums" :key="album.title" :image="album.image" :title="album.title"
+            :artistName="album.artist.name" :year="album.year"></AnimatedAlbumCover>
         </div>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
-
 <script setup>
 
-import { ref, watch, computed } from "vue";
+import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
@@ -54,7 +54,16 @@ function search(resetPager) {
   noAlbumsFound.value = false;
   loading.value = true;
   api.album.search(currentPageIndex.value, 32, { title: albumTitle.value }).then((success) => {
-    albums.value = success.data.data.items;
+    albums.value = success.data.data.items.map((item) => {
+      if (item.coverPathId) {
+        item.image = "api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(item.coverPathId);
+      } else if (item.covertArtArchiveURL) {
+        item.image = "api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(item.covertArtArchiveURL);
+      } else {
+        item.image = null;
+      }
+      return (item);
+    });
     totalPages.value = success.data.data.pager.totalPages;
     if (albumTitle.value && success.data.data.pager.totalResults < 1) {
       noAlbumsFound.value = true;

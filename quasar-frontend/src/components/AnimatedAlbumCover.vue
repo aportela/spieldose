@@ -1,22 +1,20 @@
 <template>
   <div class="browse-album-item">
     <a class="play-album">
-      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded || errors }" :src="imageURL"
-        width="174px" height="174px" v-if="imageURL" spinner-color="pink" @load="onLoad" @error="onError">
+      <q-img class="album-thumbnail" :class="{ 'album-thumbnail-animated': loaded || errors }" :src="imageSrc"
+        width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
-      <q-img :class="{ 'album-thumbnail': true, 'album-thumbnail-animated': loaded || errors }"
-        src="images/image-album-not-set.png" @load="onLoad" @error="onError" v-else />
       <!--
       <i class="fas fa-play fa-4x"></i>
       -->
       <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
     </a>
-    <div class="album-info">
-      <p class="album-name">{{ album.title }}</p>
-      <p v-if="album.artist && album.artist.name" class="artist-name">by <router-link
-          :to="{ name: 'artist', params: { name: album.artist.name } }">{{ album.artist.name }}</router-link><span
-          v-show="album.year"> ({{ album.year }})</span></p>
-      <p v-else class="artist-name">by unknownArtist <span v-show="album.year"> ({{ album.year }})</span></p>
+    <div class="album-info text-center">
+      <p class="album-name" v-if="title" :title="title">{{ title }}</p>
+      <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
+          :to="{ name: 'artist', params: { name: artistName } }">{{ artistName }}</router-link> <span v-if="year">({{ year
+          }})</span></p>
+      <p v-else-if="year">({{ year }})</p>
     </div>
   </div>
 </template>
@@ -142,39 +140,25 @@ div.browse-album-item div.album-info p. * {
 import { ref, computed } from "vue";
 
 const props = defineProps({
-  album: Object,
+  title: String,
+  artistName: String,
+  year: Number,
+  image: String
 });
 
-const loading = ref(false);
 const loaded = ref(false);
 const errors = ref(false);
 
-
-const imageURL = computed(() => {
-  if (!errors.value) {
-    if (props.album.coverPathId) {
-      return ("api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(props.album.coverPathId));
-    } else if (props.album.covertArtArchiveURL) {
-      return ("api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(props.album.covertArtArchiveURL));
-    } else {
-      return (null);
-    }
-  } else {
-    return (null);
-  }
+const imageSrc = computed(() => {
+  return((props.image && ! errors.value) ? props.image : "images/image-album-not-set.png");
 });
 
-if (props.album.image) {
-  loading.value = true;
-}
-
 function onLoad() {
-  loading.value = false;
   loaded.value = true;
 }
 
 function onError() {
-  loading.value = false;
   errors.value = true;
 }
+
 </script>
