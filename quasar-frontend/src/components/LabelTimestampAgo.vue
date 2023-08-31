@@ -1,10 +1,6 @@
 <template>
   <span :class="className">
-    <slot name="prepend">
-    </slot>
-    {{ label }}
-    <slot name="append">
-    </slot>
+    <slot name="prepend"></slot>{{ label }}<slot name="append"></slot>
   </span>
 </template>
 
