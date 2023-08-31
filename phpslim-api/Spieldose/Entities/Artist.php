@@ -101,6 +101,7 @@ class Artist extends \Spieldose\Entities\Entity
         if (empty($this->mbId) && !empty($this->name)) {
             $this->mbId = $this->getMBIdFromName(($this->name));
         }
+        // TODO: get if no mbId
         if (!empty($this->mbId)) {
             $query = " SELECT name, image FROM MB_CACHE_ARTIST WHERE mbid = :mbid ";
             $params = array(
