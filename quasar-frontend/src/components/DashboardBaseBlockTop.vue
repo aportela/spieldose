@@ -1,5 +1,5 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="'format_list_numbered'" :title="title" :loading="loading" @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading" @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in dateRanges" :key="tabElement.value" :name="tabElement.value"
@@ -114,6 +114,9 @@ const dateRanges = [
 ];
 
 const props = defineProps({
+  icon: {
+    type: String
+  },
   entity: {
     type: String,
     required: true

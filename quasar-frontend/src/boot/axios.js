@@ -298,46 +298,10 @@ const api = {
           });
       });
     },
-    getTopPlayedAlbums: function (filter, count) {
-      const params = {
-        filter: filter || {},
-        count: count || 5,
-      };
+    getDataRanges: function (range) {
       return new Promise((resolve, reject) => {
         axios
-          .post(baseAPIPath + "/metrics/top_played_albums", params)
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-    },
-    getTopPlayedArtists: function (filter, count) {
-      const params = {
-        filter: filter || {},
-        count: count || 5,
-      };
-      return new Promise((resolve, reject) => {
-        axios
-          .post(baseAPIPath + "/metrics/top_played_artists", params)
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-    },
-    getTopPlayedGenres: function (filter, count) {
-      const params = {
-        filter: filter || {},
-        count: count || 5,
-      };
-      return new Promise((resolve, reject) => {
-        axios
-          .post(baseAPIPath + "/metrics/top_played_genres", params)
+          .get(baseAPIPath + "/metrics/date_range/" + range)
           .then((response) => {
             resolve(response);
           })

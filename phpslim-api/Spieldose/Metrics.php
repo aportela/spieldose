@@ -472,83 +472,35 @@ class Metrics
         return ($data->items);
     }
 
-    public static function GetPlayStatsByHour(\Spieldose\Database\DB $dbh, $filter): array
+    public static function searchPlaysByDateRange(\aportela\DatabaseWrapper\DB $dbh, string $dateRange): array
     {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $queryConditions = array(
-            " S.user_id = :user_id "
-        );
+        $format = null;
+        switch ($dateRange) {
+            case "hour":
+                $format = "%H";
+                break;
+            case "weekday":
+                $format = "%w";
+                break;
+            case "month":
+                $format = "%m";
+                break;
+            case "year":
+                $format = "%Y";
+                break;
+            default:
+                throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
+                break;
+        }
         $query = sprintf('
-                SELECT strftime("%s", S.played, "localtime") AS hour, COUNT(*) AS total
-                FROM STATS S
-                %s
-                GROUP BY hour
-                ORDER BY hour
-            ', "%H", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
-    }
-
-    public static function GetPlayStatsByWeekDay(\Spieldose\Database\DB $dbh, $filter): array
-    {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $queryConditions = array(
-            " S.user_id = :user_id "
-        );
-        $query = sprintf('
-                SELECT strftime("%s", S.played, "localtime") AS weekDay, COUNT(*) AS total
-                FROM STATS S
-                %s
-                GROUP BY weekDay
-                ORDER BY weekDay
-            ', "%w", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
-    }
-
-    public static function GetPlayStatsByMonth(\Spieldose\Database\DB $dbh, $filter): array
-    {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $queryConditions = array(
-            " S.user_id = :user_id "
-        );
-        $query = sprintf('
-                SELECT strftime("%s", S.played, "localtime") AS month, COUNT(*) AS total
-                FROM STATS S
-                %s
-                GROUP BY month
-                ORDER BY month
-            ', "%m", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
-    }
-
-    public static function GetPlayStatsByYear(\Spieldose\Database\DB $dbh, $filter): array
-    {
-        $metrics = array();
-        $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
-        );
-        $queryConditions = array(
-            " S.user_id = :user_id "
-        );
-        $query = sprintf('
-                SELECT strftime("%s", S.played, "localtime") AS year, COUNT(*) AS total
-                FROM STATS S
-                %s
-                GROUP BY year
-                ORDER BY year
-            ', "%Y", (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''));
-        $metrics = $dbh->query($query, $params);
-        return ($metrics);
+            SELECT strftime("%s", datetime(FPS.play_timestamp, "unixepoch"), "localtime") AS %s, COUNT(*) AS total
+            FROM FILE_PLAYCOUNT_STATS FPS
+            WHERE FPS.user_id = :user_id
+            GROUP BY %s
+            ORDER BY %s
+        ', $format, $dateRange, $dateRange, $dateRange);
+        return ($dbh->query($query, [
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+        ]));
     }
 }

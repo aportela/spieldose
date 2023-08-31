@@ -25,41 +25,13 @@
           <DashboardBaseBlockRecently :added="true"></DashboardBaseBlockRecently>
         </div>
       </div>
-      <component :is="dashboardBaseBlock" :icon="'analytics'" :title="'Play statistics'" @refresh="console.log(0)">
-        <template #chart>
-          <div class="ct-chart"></div>
-        </template>
-      </component>
+      <DashboardBaseBlockChart></DashboardBaseBlockChart>
     </q-card>
   </q-page>
 </template>
 
-<style lang="scss">
-@import "~chartist/dist/index.css";
-</style>
-
 <script setup>
-import { ref, onMounted } from "vue";
-import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
 import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
-
-import { BarChart } from 'chartist';
-
-
-
-onMounted(() => {
-  new BarChart('.ct-chart', {
-    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    series: [
-      [12, 9, 7, 8, 5, 4, 3]
-    ]
-  }, {
-    fullWidth: true,
-    chartPadding: {
-      right: 40
-    }
-  });
-});
-
+import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
 </script>
