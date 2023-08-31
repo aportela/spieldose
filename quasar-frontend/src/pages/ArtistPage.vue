@@ -95,7 +95,7 @@
                       <td class="text-center col-1">
                         <q-icon name="play_arrow" size="lg" class="cursor-pointer"
                           @click="onPlayTracks([track])"></q-icon>
-                          <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
+                        <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
                       </td>
                       <td class="text-bold col-4">{{ track.title }}</td>
                       <td class="text-left col-4">
@@ -107,7 +107,8 @@
                       <td class="col-2">
                         <q-linear-progress size="32px" :value="track.percentPlay" color="pink-2">
                           <div class="absolute-full flex flex-center">
-                            <q-badge class="transparent" text-color="grey-10" :label="Math.floor(track.percentPlay * 100) + ' plays'" />
+                            <q-badge class="transparent" text-color="grey-10"
+                              :label="Math.floor(track.percentPlay * 100) + ' plays'" />
                           </div>
                         </q-linear-progress>
                       </td>
@@ -124,7 +125,8 @@
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <div class="q-pa-lg flex flex-center" v-else>
                   <div class="q-gutter-md row items-start">
-                    <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title" :album="album">
+                    <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title"
+                      :album="album">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
@@ -196,7 +198,8 @@
       <q-tab-panel name="similarArtists">
         <div class="text-h6">Similar artists</div>
         <div class="q-gutter-md row items-start">
-          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar" :key="artist">
+          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar"
+            :key="artist">
             <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
                 {{ artist.name }}
@@ -215,7 +218,8 @@
       <q-tab-panel name="albums">
         <div class="text-h6 q-mb-xl">Albums</div>
         <div class="q-gutter-md row items-start">
-          <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album"></AnimatedAlbumCover>
+          <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :album="album">
+          </AnimatedAlbumCover>
         </div>
       </q-tab-panel>
       <q-tab-panel name="tracks">
@@ -394,34 +398,34 @@ function onPlayTracks(tracks) {
 
 function get(name) {
   loading.value = true;
-  api.artist.get(name)
-    .then((success) => {
-      artistData.value = success.data.artist;
-      artistImage.value = artistData.value.image;
-      artistData.value.topTracks = artistData.value.topTracks.map((track) => {
-        if (track.coverPathId) {
-          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
-        } else if (props.album.covertArtArchiveURL) {
-          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
-        } else {
-          track.image = null;
-        }
-        track.percentPlay = Math.random();
-        return (track);
-      });
-      loading.value = false;
-    }).catch((error) => {
-      loading.value = false;
-      switch (error.response.status) {
-        default:
-          $q.notify({
-            type: "negative",
-            message: t("API Error: fatal error"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
+  api.artist.get(null, name).then((success) => {
+    artistData.value = success.data.artist;
+    artistImage.value = artistData.value.image;
+    artistData.value.topTracks = artistData.value.topTracks.map((track) => {
+      if (track.coverPathId) {
+        track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+      } else if (track.covertArtArchiveURL) {
+        track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+      } else {
+        track.image = null;
       }
+      track.percentPlay = Math.random();
+      return (track);
     });
+    loading.value = false;
+  }).catch((error) => {
+    console.log(error);
+    loading.value = false;
+    switch (error.response.status) {
+      default:
+        $q.notify({
+          type: "negative",
+          message: t("API Error: fatal error"),
+          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        });
+        break;
+    }
+  });
 }
 
 get(artistName.value);
