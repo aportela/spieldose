@@ -10,40 +10,64 @@
       <ol class="pl-5 is-size-6-5" v-if="tab == 'tracks'">
         <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
           <template #append v-if="played">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
           <template #append v-else-if="added">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="pl-5 is-size-6-5" v-else-if="tab == 'artists'">
         <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
           <template #append v-if="played">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
           <template #append v-else-if="added">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="pl-5 is-size-6-5" v-else-if="tab == 'albums'">
         <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
           <template #append v-if="played">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
           <template #append v-else-if="added">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="pl-5 is-size-6-5" v-else-if="tab == 'genres'">
         <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item">
           <template #append v-if="played">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
           <template #append v-else-if="added">
-            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000"></LabelTimestampAgo>
+            <LabelTimestampAgo className="q-ml-sm" :timestamp="item.addedTimestamp * 1000">
+              <template #prepend>(</template>
+              <template #append>)</template>
+            </LabelTimestampAgo>
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
