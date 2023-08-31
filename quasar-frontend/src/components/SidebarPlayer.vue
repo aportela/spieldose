@@ -143,6 +143,7 @@ onMounted(() => {
 });
 
 function increasePlayCount(trackId) {
+  // WARNING: TODO CALL MULTIPLE TIMES ?
   api.track.increasePlayCount(trackId).then((success) => {
     })
     .catch((error) => {

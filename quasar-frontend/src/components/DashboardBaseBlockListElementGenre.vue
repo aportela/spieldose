@@ -1,16 +1,15 @@
 <template>
-  <li class="is-size-6-5">
-    <q-icon name="link" size="sm" />
+  <li class="is-size-6-5" v-if="genre">
+    <slot name="prepend">
+    </slot>
+    <q-icon name="tag" size="sm" />
     <span>{{ genre.name }}</span>
-    <span class="q-ml-sm" v-if="genre.playCount"> ({{ genre.playCount }} plays)</span>
-    <span class="q-ml-sm" v-if="genre.addedTimestamp"> {{ diff }} hours ago</span>
+    <slot name="append">
+    </slot>
   </li>
 </template>
 
 <script setup>
-import { date } from 'quasar';
-
-const diff = date.getDateDiff(Date.now(), props.genre.addedTimestamp * 1000, 'hours');
 
 const props = defineProps({
   genre: {

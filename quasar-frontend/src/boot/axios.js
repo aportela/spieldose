@@ -246,7 +246,8 @@ const api = {
             reject(error);
           });
       });
-    },getArtists: function (filter, sortField, count) {
+    },
+    getArtists: function (filter, sortField, count) {
       const params = {
         filter: filter || {},
         sortField: sortField,
@@ -255,6 +256,40 @@ const api = {
       return new Promise((resolve, reject) => {
         axios
           .post(baseAPIPath + "/metrics/artists", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getAlbums: function (filter, sortField, count) {
+      const params = {
+        filter: filter || {},
+        sortField: sortField,
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/albums", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getGenres: function (filter, sortField, count) {
+      const params = {
+        filter: filter || {},
+        sortField: sortField,
+        count: count || 5,
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/genres", params)
           .then((response) => {
             resolve(response);
           })

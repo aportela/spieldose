@@ -21,10 +21,12 @@
         </div>
       </slot>
     </q-card-section>
+
   </q-card>
 </template>
 
 <script setup>
+
 
 const props = defineProps({
   className: {

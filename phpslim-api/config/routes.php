@@ -357,6 +357,8 @@ return function (App $app) {
                     $file = new \Spieldose\File($this, $args['id']);
                     $file->get();
                     if (file_exists($file->path)) {
+                        $t = new \Spieldose\Entities\Track($args['id']);
+                        $t->increasePlayCount($this->get(\aportela\DatabaseWrapper\DB::class));
                         //$track->incPlayCount($db);
                         $length = $file->length;
                         // https://stackoverflow.com/a/157447
@@ -406,10 +408,7 @@ return function (App $app) {
 
             $group->post('/metrics/tracks', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $filter = [];
-                if (isset($params["filter"])) {
-                    $filter = ["fromDate" => $params["filter"]["fromDate"] ?? null, "toDate" => $params["filter"]["toDate"] ?? null];
-                }
+                $filter = $params["filter"] ?? [];
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
                         new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
@@ -427,10 +426,7 @@ return function (App $app) {
 
             $group->post('/metrics/artists', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $filter = [];
-                if (isset($params["filter"])) {
-                    $filter = ["fromDate" => $params["filter"]["fromDate"] ?? null, "toDate" => $params["filter"]["toDate"] ?? null];
-                }
+                $filter = $params["filter"] ?? [];
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
                         new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
@@ -441,6 +437,42 @@ return function (App $app) {
                 $pager->resultsPage = $params["count"] ?? 5;
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $data = \Spieldose\Metrics::searchArtists($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->post('/metrics/albums', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = $params["filter"] ?? [];
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager();
+                $pager->enabled = false;
+                $pager->resultsPage = $params["count"] ?? 5;
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $data = \Spieldose\Metrics::searchAlbums($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->post('/metrics/genres', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = $params["filter"] ?? [];
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem($params["sortField"], \aportela\DatabaseBrowserWrapper\Order::DESC, false)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager();
+                $pager->enabled = false;
+                $pager->resultsPage = $params["count"] ?? 5;
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $data = \Spieldose\Metrics::searchGenres($db, $filter, $sort, $pager);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
