@@ -288,10 +288,11 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/artist/{name}', function (Request $request, Response $response, array $args) {
+            $group->get('/artist', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $artist = new \Spieldose\Entities\Artist($db);
-                $artist->name = $args["name"];
+                $artist->name = $queryParams["name"];
                 $artist->get();
                 $payload = json_encode(
                     [

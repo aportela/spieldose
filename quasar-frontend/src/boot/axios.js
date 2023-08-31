@@ -136,7 +136,7 @@ const api = {
     get: function (name) {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/artist/" + encodeURIComponent(name), {})
+          .get("api/2/artist?name=" + encodeURIComponent(name), {})
           .then((response) => {
             resolve(response);
           })
