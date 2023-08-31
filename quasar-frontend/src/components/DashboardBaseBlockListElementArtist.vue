@@ -14,8 +14,7 @@
 
 const props = defineProps({
   artist: {
-    type: Object,
-    required: true
+    type: Object
   }
 })
 

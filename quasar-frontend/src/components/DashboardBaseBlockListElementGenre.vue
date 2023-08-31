@@ -13,8 +13,7 @@
 
 const props = defineProps({
   genre: {
-    type: Object,
-    required: true
+    type: Object
   }
 })
 

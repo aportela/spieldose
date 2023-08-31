@@ -13,8 +13,7 @@ const props = defineProps({
     type: String
   },
   timestamp: {
-    type: Number,
-    required: true
+    type: Number
   }
 });
 

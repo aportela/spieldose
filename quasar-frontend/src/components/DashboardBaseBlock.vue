@@ -36,12 +36,10 @@ const props = defineProps({
     type: Boolean,
   },
   icon: {
-    type: String,
-    required: true
+    type: String
   },
   title: {
-    type: String,
-    required: true
+    type: String
   }
 });
 

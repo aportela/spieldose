@@ -21,8 +21,7 @@ const currentPlaylist = useCurrentPlaylistStore();
 
 const props = defineProps({
   track: {
-    type: Object,
-    required: true
+    type: Object
   }
 })
 
