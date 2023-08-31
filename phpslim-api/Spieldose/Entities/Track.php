@@ -17,6 +17,7 @@ class Track extends \Spieldose\Entities\Entity
     public function __destruct()
     {
     }
+
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
         $params = array();
@@ -105,7 +106,7 @@ class Track extends \Spieldose\Entities\Entity
 
     public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)
     {
-        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, CURRENT_TIMESTAMP) ";
+        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, strftime('%s', 'now')) ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
