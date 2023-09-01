@@ -242,7 +242,8 @@ class Metrics
         $filterConditions = array();
         $fieldDefinitions = [
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
-            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)"
+            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, FIT.year)"
         ];
 
         $fieldCountDefinition = [
