@@ -133,10 +133,16 @@ const api = {
           });
       });
     },
-    get: function (name) {
+    get: function (mbId, name) {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/artist?name=" + encodeURIComponent(name), {})
+          .get(
+            "api/2/artist?mbId=" +
+              encodeURIComponent(mbId || "") +
+              "&name=" +
+              encodeURIComponent(name || ""),
+            {}
+          )
           .then((response) => {
             resolve(response);
           })
