@@ -113,6 +113,7 @@ function setCurrentTrackIndex(index) {
 }
 
 function search() {
+  player.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
   api.track.search(1, 32, true, {}).then((success) => {
