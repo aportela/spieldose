@@ -38,6 +38,10 @@ class Track extends \Spieldose\Entities\Entity
             $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
         }
+        if (isset($filter["albumMbId"]) && !empty($filter["albumMbId"])) {
+            $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_id", $filter["albumMbId"]);
+        }
         $fieldDefinitions = [
             "id " => "FIT.id",
             "title" => "FIT.title",

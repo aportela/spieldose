@@ -75,12 +75,15 @@ return function (App $app) {
                 $filter = array(
                     "text" => $params["filter"]["text"] ?? "",
                     "path" => $params["filter"]["path"] ?? "",
+                    "albumMbId" => $params["filter"]["albumMbId"] ?? ""
                 );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                    [
-                        $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
-                    ]
-                );
+                $sortItems = [];
+                if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
+                    $sortItems[] = $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                } else {
+                    $sortItems[] = $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                }
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
                 $tracks = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
                 $payload = json_encode(["tracks" => $tracks]);
