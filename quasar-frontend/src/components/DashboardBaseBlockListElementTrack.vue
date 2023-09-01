@@ -1,5 +1,5 @@
 <template>
-  <li class="is-size-6-5" v-if="track">
+  <li class="is-size-6-5 dashboard_list_item" v-if="track">
     <slot name="prepend">
     </slot>
     <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
@@ -10,6 +10,14 @@
     </slot>
   </li>
 </template>
+
+<style>
+li.dashboard_list_item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
 
 <script setup>
 

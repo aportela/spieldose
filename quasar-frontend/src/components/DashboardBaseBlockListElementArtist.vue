@@ -1,5 +1,5 @@
 <template>
-  <li class="is-size-6-5" v-if="artist">
+  <li class="is-size-6-5 dashboard_list_item" v-if="artist">
     <slot name="prepend">
     </slot>
     <q-icon name="link" size="sm" class="q-mr-xs" />
@@ -9,6 +9,14 @@
     </slot>
   </li>
 </template>
+
+<style>
+li.dashboard_list_item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
 
 <script setup>
 
