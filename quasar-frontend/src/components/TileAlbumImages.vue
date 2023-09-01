@@ -3,8 +3,8 @@
     <div class="row" v-for="row in [0, 1, 2, 3, 4, 5, 6]" :key="row">
       <div class="col-2" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column"
         :style="'background-color: ' + getRandomColor() + ';'">
-        <img class="spieldose-album-cover-tile" v-if="imageURLs.length > 0" :src="getImgSource((6*row) + column)"
-          @error="onImageError($event)">
+        <img class="spieldose-album-cover-tile" :src="getImageSourceFromIndex((6 * row) + column)"
+          v-if="images.length > 0" @error="onImageError($event)">
         <img class="spieldose-album-cover-tile" :src="defaultImage" v-else>
       </div>
     </div>
@@ -42,8 +42,7 @@ import { api } from 'boot/axios'
 
 const defaultImage = 'images/vinyl.png';
 
-const imageURLs = ref([]);
-const loading = ref(false);
+const images = ref([]);
 
 // https://stackoverflow.com/a/1484514
 function getRandomColor() {
@@ -55,24 +54,19 @@ function getRandomColor() {
   return (S);
 }
 
-function getImgSource(index) {
-  if (index < this.imageURLs.length) {
-    return (this.imageURLs[index]);
+function getImageSourceFromIndex(index) {
+  if (index < this.images.length) {
+    return (this.images[index]);
   } else {
     return (this.defaultImage);
   }
 }
 
 function loadRandomAlbumImages() {
-  loading.value = true;
   api.album.getSmallRandomCovers(42).then(response => {
-    if (response.data.coverURLs.length > 0) {
-      imageURLs.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
-
-    }
-    loading.value = false;
+    images.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
   }).catch(error => {
-    loading.value = false;
+    console.error(error.response);
   });
 }
 
