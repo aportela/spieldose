@@ -63,10 +63,7 @@ const props = defineProps({
 const chartOptions = {
   low: 0,
   showArea: true,
-  fullWidth: true,
-  chartPadding: {
-    right: 40,
-  }
+  fullWidth: true
 };
 
 function drawChart() {
@@ -90,14 +87,12 @@ function drawChart() {
     new LineChart('.ct-chart', {
       labels: labels,
       series: [values],
-      chartOptions
-    });
+    }, chartOptions);
   } else {
     new BarChart('.ct-chart', {
       labels: labels,
       series: [values],
-      chartOptions
-    });
+    }, chartOptions);
   }
 }
 
