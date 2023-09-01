@@ -7,28 +7,28 @@
       </q-tabs>
     </template>
     <template #list>
-      <ol class="pl-5 is-size-6-5" v-if="entity == 'tracks'">
+      <ol class="q-px-sm" v-if="entity == 'tracks'">
         <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} plays</span>
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="entity == 'artists'">
+      <ol class="q-px-sm" v-else-if="entity == 'artists'">
         <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} plays</span>
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="entity == 'albums'">
+      <ol class="q-px-sm" v-else-if="entity == 'albums'">
         <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} plays</span>
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="entity == 'genres'">
+      <ol class="q-px-sm" v-else-if="entity == 'genres'">
         <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} plays</span>

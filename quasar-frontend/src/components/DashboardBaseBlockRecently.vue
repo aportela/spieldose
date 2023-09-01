@@ -7,7 +7,7 @@
       </q-tabs>
     </template>
     <template #list>
-      <ol class="pl-5 is-size-6-5" v-if="tab == 'tracks'">
+      <ol class="q-px-sm" v-if="tab == 'tracks'">
         <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
@@ -23,7 +23,7 @@
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="tab == 'artists'">
+      <ol class="q-px-sm" v-else-if="tab == 'artists'">
         <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
@@ -39,7 +39,7 @@
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="tab == 'albums'">
+      <ol class="q-px-sm" v-else-if="tab == 'albums'">
         <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
@@ -55,7 +55,7 @@
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
-      <ol class="pl-5 is-size-6-5" v-else-if="tab == 'genres'">
+      <ol class="q-px-sm" v-else-if="tab == 'genres'">
         <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
