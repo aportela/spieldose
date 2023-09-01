@@ -60,9 +60,18 @@ const props = defineProps({
   }
 })
 
+const chartOptions = {
+  low: 0,
+  showArea: true,
+  fullWidth: true,
+  chartPadding: {
+    right: 40,
+  }
+};
+
 function drawChart() {
   let labels = [];
-  let values = items.value.map((item) => { return (item.total); });
+  const values = items.value.map((item) => { return (item.total); });
   switch (tab.value) {
     case 'hour':
       labels = items.value.map((item) => { return (item.hour); });
@@ -80,26 +89,14 @@ function drawChart() {
   if (labels.length > 1) {
     new LineChart('.ct-chart', {
       labels: labels,
-      series: [values]
-    }, {
-      low: 0,
-      showArea: true,
-      fullWidth: true,
-      chartPadding: {
-        right: 40
-      }
+      series: [values],
+      chartOptions
     });
   } else {
     new BarChart('.ct-chart', {
       labels: labels,
-      series: [values]
-    }, {
-      low: 0,
-      showArea: true,
-      fullWidth: true,
-      chartPadding: {
-        right: 40,
-      }
+      series: [values],
+      chartOptions
     });
   }
 }
