@@ -1,6 +1,6 @@
 <template>
   <div class="animated-album-cover-item">
-    <a class="play-album" title="Play album">
+    <div class="play-album" title="Play album" @click="onPlay">
       <q-img class="album-thumbnail" :class="{ 'album-thumbnail-animated': loaded || errors }" :src="imageSrc"
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
@@ -9,7 +9,7 @@
       <i class="fas fa-play fa-4x"></i>
       -->
       <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
-    </a>
+    </div>
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">{{ title }}</p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
@@ -30,7 +30,7 @@ div.animated-album-cover-item {
   margin-bottom: 16px;
 }
 
-div.animated-album-cover-item a.play-album {
+div.animated-album-cover-item div.play-album {
   width: 174px;
   height: 174px;
   display: block;
@@ -40,11 +40,11 @@ div.animated-album-cover-item a.play-album {
   cursor: pointer;
 }
 
-div.animated-album-cover-item a.play-album img.no-cover {
+div.animated-album-cover-item div.play-album img.no-cover {
   display: block !important;
 }
 
-div.animated-album-cover-item a.play-album .album-thumbnail,
+div.animated-album-cover-item div.play-album .album-thumbnail,
 div.animated-album-cover-item a img.vynil {
   width: 174px;
   height: 174px;
@@ -57,7 +57,7 @@ div.animated-album-cover-item a img.vynil {
 
 /* album cover effect (hover -> move to left) */
 
-div.animated-album-cover-item a.play-album .album-thumbnail-animated {
+div.animated-album-cover-item div.play-album .album-thumbnail-animated {
   -webkit-transition: all 0.2s ease-out;
   -moz-transition: all 0.2s ease-out;
   -o-transition: all 0.2s ease-out;
@@ -65,7 +65,7 @@ div.animated-album-cover-item a.play-album .album-thumbnail-animated {
   /* background: #000; */
 }
 
-div.animated-album-cover-item a.play-album:hover .album-thumbnail-animated {
+div.animated-album-cover-item div.play-album:hover .album-thumbnail-animated {
   left: -80px;
 }
 
@@ -73,7 +73,7 @@ div.animated-album-cover-item a.play-album:hover .album-thumbnail-animated {
 
 /* album (internal) vinyl effect (hover -> rotate) */
 
-div.animated-album-cover-item a.play-album img.vinyl {
+div.animated-album-cover-item div.play-album img.vinyl {
   z-index: 0;
   display: none;
   width: 174px;
@@ -88,7 +88,7 @@ div.animated-album-cover-item a.play-album img.vinyl {
   transition-property: transform;
 }
 
-div.animated-album-cover-item a.play-album:hover img.vinyl {
+div.animated-album-cover-item div.play-album:hover img.vinyl {
   z-index: 0;
   display: block;
   -webkit-transform: rotate(360deg);
@@ -100,7 +100,7 @@ div.animated-album-cover-item a.play-album:hover img.vinyl {
 
 /* play icon (hover cover) */
 
-div.animated-album-cover-item a.play-album i {
+div.animated-album-cover-item div.play-album i {
   display: none;
   position: absolute;
   top: 24px;
@@ -109,7 +109,7 @@ div.animated-album-cover-item a.play-album i {
   color: #ccc;
 }
 
-div.animated-album-cover-item a.play-album:hover i {
+div.animated-album-cover-item div.play-album:hover i {
   display: block;
 }
 
@@ -137,6 +137,8 @@ div.animated-album-cover-item div.album-info p {
 
 import { ref, computed } from "vue";
 
+const emit = defineEmits(['play']);
+
 const props = defineProps({
   title: String,
   artistName: String,
@@ -157,6 +159,10 @@ function onLoad() {
 
 function onError() {
   errors.value = true;
+}
+
+function onPlay() {
+  emit('play');
 }
 
 </script>
