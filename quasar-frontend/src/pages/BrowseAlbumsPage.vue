@@ -22,7 +22,7 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <AnimatedAlbumCover v-for="album in albums" :key="album.title" :image="album.image" :title="album.title"
+          <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image" :title="album.title"
             :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"></AnimatedAlbumCover>
         </div>
       </q-card-section>
