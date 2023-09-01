@@ -126,7 +126,7 @@
                 <div class="q-pa-lg flex flex-center" v-else>
                   <div class="q-gutter-md row items-start">
                     <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title"
-                      :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year">
+                      :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
@@ -219,7 +219,7 @@
         <div class="text-h6 q-mb-xl">Albums</div>
         <div class="q-gutter-md row items-start">
           <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
-            :title="album.title" :artistName="album.artist.name" :year="album.year"></AnimatedAlbumCover>
+            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"></AnimatedAlbumCover>
         </div>
       </q-tab-panel>
       <q-tab-panel name="tracks">
@@ -435,6 +435,17 @@ function get(name) {
         break;
     }
   });
+}
+
+function onPlayAlbum(album) {
+  player.interact();
+  loading.value = true;
+    api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
+      currentPlaylist.saveTracks(success.data.tracks);
+      loading.value = false;
+    }).catch((error) => {
+      loading.value = false;
+    });
 }
 
 get(artistName.value);

@@ -23,7 +23,7 @@
         </div>
         <div class="q-gutter-md row items-start">
           <AnimatedAlbumCover v-for="album in albums" :key="album.title" :image="album.image" :title="album.title"
-            :artistName="album.artist.name" :year="album.year"></AnimatedAlbumCover>
+            :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"></AnimatedAlbumCover>
         </div>
       </q-card-section>
     </q-card>
@@ -36,8 +36,13 @@ import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+import { usePlayer } from 'stores/player'
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
 
 const $q = useQuasar();
+const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
 
 const albumTitle = ref(null);
 const noAlbumsFound = ref(false);
@@ -82,6 +87,17 @@ function search(resetPager) {
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
   search(false);
+}
+
+function onPlayAlbum(album) {
+  player.interact();
+  loading.value = true;
+    api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
+      currentPlaylist.saveTracks(success.data.tracks);
+      loading.value = false;
+    }).catch((error) => {
+      loading.value = false;
+    });
 }
 
 search(true);
