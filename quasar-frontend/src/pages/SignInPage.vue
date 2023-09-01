@@ -13,14 +13,14 @@
               <div class="text-grey-8">{{ $t('Sign in below to access your account') }}</div>
             </q-card-section>
             <q-card-section>
-              <q-input dense outlined rounded ref="emailRef" v-model="email" type="email" name="email" :label="t('Email')"
+              <q-input dense outlined ref="emailRef" v-model="email" type="email" name="email" :label="t('Email')"
                 :disable="loading" :autofocus="true" :rules="requiredFieldRules" lazy-rules
                 :error="remoteValidation.email.hasErrors" :errorMessage="remoteValidation.email.message">
                 <template v-slot:prepend>
                   <q-icon name="alternate_email" />
                 </template>
               </q-input>
-              <q-input dense outlined rounded class="q-mt-md" ref="passwordRef" v-model="password" name="password"
+              <q-input dense outlined class="q-mt-md" ref="passwordRef" v-model="password" name="password"
                 type="password" :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
                 :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
                 <template v-slot:prepend>
