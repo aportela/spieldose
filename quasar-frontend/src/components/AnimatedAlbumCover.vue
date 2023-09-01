@@ -1,5 +1,5 @@
 <template>
-  <div class="browse-album-item">
+  <div class="animated-album-cover-item">
     <a class="play-album">
       <q-img class="album-thumbnail" :class="{ 'album-thumbnail-animated': loaded || errors }" :src="imageSrc"
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
@@ -22,14 +22,14 @@
 <style scoped>
 /* album thumb */
 
-div.browse-album-item {
+div.animated-album-cover-item {
   width: 174px;
   float: left;
   margin: 0px 24px;
   margin-bottom: 16px;
 }
 
-div.browse-album-item a.play-album {
+div.animated-album-cover-item a.play-album {
   width: 174px;
   height: 174px;
   display: block;
@@ -38,12 +38,12 @@ div.browse-album-item a.play-album {
   overflow: hidden;
 }
 
-div.browse-album-item a.play-album img.no-cover {
+div.animated-album-cover-item a.play-album img.no-cover {
   display: block !important;
 }
 
-div.browse-album-item a.play-album .album-thumbnail,
-div.browse-album-item a img.vynil {
+div.animated-album-cover-item a.play-album .album-thumbnail,
+div.animated-album-cover-item a img.vynil {
   width: 174px;
   height: 174px;
   border: 0px;
@@ -55,7 +55,7 @@ div.browse-album-item a img.vynil {
 
 /* album cover effect (hover -> move to left) */
 
-div.browse-album-item a.play-album .album-thumbnail-animated {
+div.animated-album-cover-item a.play-album .album-thumbnail-animated {
   -webkit-transition: all 0.2s ease-out;
   -moz-transition: all 0.2s ease-out;
   -o-transition: all 0.2s ease-out;
@@ -63,7 +63,7 @@ div.browse-album-item a.play-album .album-thumbnail-animated {
   /* background: #000; */
 }
 
-div.browse-album-item a.play-album:hover .album-thumbnail-animated {
+div.animated-album-cover-item a.play-album:hover .album-thumbnail-animated {
   left: -80px;
 }
 
@@ -71,7 +71,7 @@ div.browse-album-item a.play-album:hover .album-thumbnail-animated {
 
 /* album (internal) vinyl effect (hover -> rotate) */
 
-div.browse-album-item a.play-album img.vinyl {
+div.animated-album-cover-item a.play-album img.vinyl {
   z-index: 0;
   display: none;
   width: 174px;
@@ -86,7 +86,7 @@ div.browse-album-item a.play-album img.vinyl {
   transition-property: transform;
 }
 
-div.browse-album-item a.play-album:hover img.vinyl {
+div.animated-album-cover-item a.play-album:hover img.vinyl {
   z-index: 0;
   display: block;
   -webkit-transform: rotate(360deg);
@@ -98,7 +98,7 @@ div.browse-album-item a.play-album:hover img.vinyl {
 
 /* play icon (hover cover) */
 
-div.browse-album-item a.play-album i {
+div.animated-album-cover-item a.play-album i {
   display: none;
   position: absolute;
   top: 60px;
@@ -107,18 +107,18 @@ div.browse-album-item a.play-album i {
   color: #ccc;
 }
 
-div.browse-album-item a.play-album:hover i {
+div.animated-album-cover-item a.play-album:hover i {
   display: block;
 }
 
 /* artist / album name (below cover) */
 
-div.browse-album-item div.album_info {
+div.animated-album-cover-item div.album_info {
   padding: 8px;
   overflow: hidden;
 }
 
-div.browse-album-item div.album-info p {
+div.animated-album-cover-item div.album-info p {
   margin: 0px;
   font-size: 13px;
   font-family: Tahoma;
@@ -129,7 +129,7 @@ div.browse-album-item div.album-info p {
   text-overflow: ellipsis;
 }
 
-div.browse-album-item div.album-info p. * {
+div.animated-album-cover-item div.album-info p. * {
   color: #939aa0;
 }
 
@@ -150,7 +150,7 @@ const loaded = ref(false);
 const errors = ref(false);
 
 const imageSrc = computed(() => {
-  return((props.image && ! errors.value) ? props.image : "images/image-album-not-set.png");
+  return((props.image && ! errors.value) ? props.image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=");
 });
 
 function onLoad() {
