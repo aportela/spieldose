@@ -2,11 +2,11 @@
   <div id="player_controls">
     <div class="q-pa-md q-gutter-sm text-center">
       <q-btn round dense size="md" :disable="disabled || ! allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
-          title="Toggle navigation menu"></q-icon></q-btn>
+          title="Skip to previous track"></q-icon></q-btn>
       <q-btn round dense size="lg" :disable="disabled || ! allowPlay" @click="onPlay" class="q-mx-md"><q-icon :name="isPlaying ? 'pause': 'play_arrow'"
-          title="Toggle navigation menu" :class="{ 'text-pink-6': isPlaying }"></q-icon></q-btn>
+          title="Play/Pause/Resume track" :class="{ 'text-pink-6': isPlaying }"></q-icon></q-btn>
       <q-btn round dense size="md" :disable="disabled || ! allowSkipNext" @click="onSkipNext"><q-icon name="skip_next"
-          title="Toggle navigation menu"></q-icon></q-btn>
+          title="Skip to next track"></q-icon></q-btn>
     </div>
   </div>
 </template>
