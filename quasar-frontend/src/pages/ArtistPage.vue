@@ -72,7 +72,7 @@
               <q-card-section>
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <div v-else>
-                  <div v-html="artistData.bio ? nl2br(artistData.bio.summary) : null">
+                  <div v-html="artistData.bio ? nl2br(artistData.bio.summary || '') : ''">
                   </div>
                   <p class="q-mt-md" v-if="artistData.relations">
                     <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
@@ -188,7 +188,7 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div v-html="artistData.bio ? nl2br(artistData.bio.content) : null"></div>
+                <div v-html="artistData.bio ? nl2br(artistData.bio.content || '') : ''"></div>
               </q-card-section>
             </q-card>
           </div>
