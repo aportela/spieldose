@@ -1,15 +1,16 @@
 <template>
   <div class="animated-album-cover-item">
-    <a class="play-album">
+    <a class="play-album" title="Play album">
       <q-img class="album-thumbnail" :class="{ 'album-thumbnail-animated': loaded || errors }" :src="imageSrc"
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
+      <q-icon name="play_arrow" class="browse_album_play_icon" size="128px" color="white"></q-icon>
       <!--
       <i class="fas fa-play fa-4x"></i>
       -->
       <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
     </a>
-    <div class="album-info text-center">
+    <div class="album-info">
       <p class="album-name" v-if="title" :title="title">{{ title }}</p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
           :to="{ name: 'artist', params: { name: artistName } }">{{ artistName }}</router-link> <span v-if="year">({{ year
@@ -36,6 +37,7 @@ div.animated-album-cover-item a.play-album {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 div.animated-album-cover-item a.play-album img.no-cover {
@@ -101,8 +103,8 @@ div.animated-album-cover-item a.play-album:hover img.vinyl {
 div.animated-album-cover-item a.play-album i {
   display: none;
   position: absolute;
-  top: 60px;
-  left: 72px;
+  top: 24px;
+  left: 24px;
   z-index: 2;
   color: #ccc;
 }
@@ -113,28 +115,24 @@ div.animated-album-cover-item a.play-album:hover i {
 
 /* artist / album name (below cover) */
 
-div.animated-album-cover-item div.album_info {
-  padding: 8px;
-  overflow: hidden;
+div.animated-album-cover-item div.album-info {
+  margin-top: 4px;
+  text-align: center;
 }
 
 div.animated-album-cover-item div.album-info p {
   margin: 0px;
   font-size: 13px;
   font-family: Tahoma;
-  width: 100%;
   height: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-div.animated-album-cover-item div.album-info p. * {
-  color: #939aa0;
-}
-
 /* album thumb */
 </style>
+
 <script setup>
 
 import { ref, computed } from "vue";
@@ -150,7 +148,7 @@ const loaded = ref(false);
 const errors = ref(false);
 
 const imageSrc = computed(() => {
-  return((props.image && ! errors.value) ? props.image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=");
+  return ((props.image && !errors.value) ? props.image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=");
 });
 
 function onLoad() {
