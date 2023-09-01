@@ -8,7 +8,7 @@
       <q-card-section v-if="albums">
         <q-input v-model="albumTitle" rounded clearable type="search" outlined dense placeholder="Text condition"
           hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
-          @clear="noAlbumsFound = false" :error="noAlbumsFound"
+          @clear="noAlbumsFound = false; search(true)" :error="noAlbumsFound"
           :errorMessage="'No albums found with specified condition'">
           <template v-slot:prepend>
             <q-icon name="filter_alt" />

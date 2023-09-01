@@ -10,7 +10,7 @@
 
         <q-input v-model="artistName" rounded clearable type="search" outlined dense placeholder="Text condition"
           hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
-          @clear="noArtistsFound = false" :error="noArtistsFound"
+          @clear="noArtistsFound = false; search(true)" :error="noArtistsFound"
           :errorMessage="'No artists found with specified condition'">
           <template v-slot:prepend>
             <q-icon name="filter_alt" />
