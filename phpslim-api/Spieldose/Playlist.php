@@ -199,7 +199,7 @@ class Playlist
                 WHERE DIRECTORY.cover_filename IS NOT NULL
                 AND EXISTS ( SELECT * FROM PLAYLIST_TRACK WHERE PLAYLIST_TRACK.playlist_id = :playlist_id AND FILE.id = PLAYLIST_TRACK.track_id )
                 ORDER BY RANDOM()
-                LIMIT 6
+                LIMIT 16
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
