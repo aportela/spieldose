@@ -27,9 +27,11 @@
               {{ playlist.name }}
             </q-card-section>
             <q-separator />
+            <!--
             <q-card-section style="height: 120px;">
               <q-avatar v-for="n in 5" :key="n" size="80px" class="overlapping" :style="`left: ${n * 25}px`">
-                <img :src="playlist.covers[n]" :class=" 'rotate-' + (45 * (n+3))">
+                <img :src="playlist.covers[n]" :class=" 'rotate-' + (45 * (n+3))" v-if="playlist.covers[n]">
+                <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
               </q-avatar>
             </q-card-section>
             <q-separator />
@@ -38,6 +40,17 @@
               <q-icon name="play_arrow" size="sm" title="play" class="cursor-pointer"></q-icon>
               {{ playlist.trackCount }} track/s
             </q-card-section>
+            -->
+            <div>
+            <div class="row">
+                <div class="col-6"><q-img :src="playlist.covers[0]"></q-img></div>
+                <div class="col-6"><q-img :src="playlist.covers[1]"></q-img></div>
+            </div>
+            <div class="row">
+                <div class="col-6"><q-img :src="playlist.covers[2]"></q-img></div>
+                <div class="col-6"><q-img :src="playlist.covers[3]"></q-img></div>
+            </div>
+            </div>
           </q-card>
         </div>
       </q-card-section>
@@ -45,10 +58,17 @@
   </q-page>
 </template>
 
-<style lang="sass" scoped>
-.overlapping
-  border: 2px solid white
-  position: absolute
+<style>
+
+div.no_cover {
+  width: 100px;
+  height: 100px;
+}
+.overlapping {
+  border: 2px solid white;
+  position: absolute;
+}
+
 </style>
 
 <script setup>
@@ -69,13 +89,14 @@ const currentPageIndex = ref(1);
 
 const covers = ref([]);
 
-function loadRandomCovers(callback) {
-  api.album.getSmallRandomCovers(128).then(response => {
-    covers.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
-    callback();
-  }).catch(error => {
-    console.error(error.response);
-  });
+// https://stackoverflow.com/a/1484514
+function getRandomColor() {
+  const allowed = "ABCDEF0123456789";
+  let S = "#";
+  while (S.length < 7) {
+    S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
+  }
+  return (S);
 }
 
 function search(resetPager) {
