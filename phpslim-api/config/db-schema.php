@@ -186,4 +186,26 @@ return (array(
             ALTER TABLE `FILE` ADD "added_timestamp" INTEGER NOT NULL DEFAULT 0;
         '
     ),
+    12 => array(
+        '
+            CREATE TABLE `PLAYLIST` (
+                `id` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                `user_id` VARCHAR(36) NOT NULL,
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                PRIMARY KEY (`id`),
+                FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
+            );
+        ',
+        '
+            CREATE TABLE `PLAYLIST_TRACK` (
+                `playlist_id` VARCHAR(36) NOT NULL,
+                `track_id` VARCHAR(36) NOT NULL,
+                `track_index` INTEGER NOT NULL,
+                PRIMARY KEY (`playlist_id`, `track_id`),
+                FOREIGN KEY(`playlist_id`) REFERENCES PLAYLIST (`id`)
+            );
+        '
+    ),
 ));

@@ -490,6 +490,24 @@ return function (App $app) {
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
+
+            $group->post('/playlist/search', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $filter = array(
+                    "name" => $params["filter"]["name"] ?? ""
+                );
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $data = \Spieldose\Playlist::search($db, $filter, $sort, $pager);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };

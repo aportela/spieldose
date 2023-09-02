@@ -138,9 +138,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -317,6 +317,27 @@ const api = {
       });
     },
   },
+  playlist: {
+    search: function (currentPageIndex, resultsPage, filter) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/playlist/search", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  }
 };
 
 export default boot(({ app }) => {
