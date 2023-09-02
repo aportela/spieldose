@@ -190,7 +190,21 @@ class Playlist
     private static function getPlaylistCovers(\aportela\DatabaseWrapper\DB $dbh, string $playlistId)
     {
         $covers = [];
-        foreach ($dbh->query(" SELECT id FROM DIRECTORY WHERE cover_filename IS NOT NULL ORDER BY RANDOM() LIMIT 6") as $cover) {
+        foreach ($dbh->query(
+            "
+                SELECT
+                    DIRECTORY.id
+                FROM DIRECTORY
+                INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id
+                WHERE DIRECTORY.cover_filename IS NOT NULL
+                AND EXISTS ( SELECT * FROM PLAYLIST_TRACK WHERE PLAYLIST_TRACK.playlist_id = :playlist_id AND FILE.id = PLAYLIST_TRACK.track_id )
+                ORDER BY RANDOM()
+                LIMIT 6
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
+            ]
+        ) as $cover) {
             $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
         }
         return ($covers);
