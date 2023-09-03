@@ -40,11 +40,11 @@
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <tr v-for="track, index in tracks" :key="track.id" class="non-selectable cursor-pointer"
-            :class="{ 'bg-pink text-white': currentTrackIndex == index }" @click="setCurrentTrackIndex(index)">
-            <td class="text-right"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
+          <tr v-for="track, index in tracks" :key="track.id" class="non-selectable"
+            :class="{ 'bg-pink text-white': currentTrackIndex == index }">
+            <td class="text-right cursor-pointer" @click="setCurrentTrackIndex(index)"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
                 v-if="currentTrackIndex == index"></q-icon>{{ index + 1 }}/32</td>
-            <td class="text-left">{{ track.title }}</td>
+            <td class="text-left cursor-pointer" @click="setCurrentTrackIndex(index)">{{ track.title }}</td>
             <td class="text-left"><router-link v-if="track.artist"
                 :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.artist } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
