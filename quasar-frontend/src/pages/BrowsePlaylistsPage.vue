@@ -26,8 +26,8 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <PlaylistMosaic v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style">
-          </PlaylistMosaic>
+          <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style">
+          </BrowsePlaylistItem>
         </div>
       </q-card-section>
     </q-card>
@@ -40,7 +40,7 @@
 import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
-import { default as PlaylistMosaic } from "components/PlaylistMosaic.vue"
+import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
 
 const $q = useQuasar();
 
