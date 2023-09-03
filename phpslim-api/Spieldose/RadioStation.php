@@ -29,7 +29,7 @@ class RadioStation
 
     public function isAllowed(\Spieldose\Database\DB $dbh)
     {
-        if (isset($this->id) && ! empty($this->id)) {
+        if (isset($this->id) && !empty($this->id)) {
             $params = array();
             $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
             $query = sprintf(
@@ -41,7 +41,7 @@ class RadioStation
             );
             $data = $dbh->query($query, $params);
             if (count($data) == 1) {
-                return($data[0]->userId == \Spieldose\User::getUserId());
+                return ($data[0]->userId == \Spieldose\User::getUserId());
             } else {
                 throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
             }
@@ -52,9 +52,9 @@ class RadioStation
 
     public function add(\Spieldose\Database\DB $dbh)
     {
-        if (! empty($this->id)) {
-            if (! empty($this->name)) {
-                if (! empty($this->url) && filter_var($this->url, FILTER_VALIDATE_URL)) {
+        if (!empty($this->id)) {
+            if (!empty($this->name)) {
+                if (!empty($this->url) && filter_var($this->url, FILTER_VALIDATE_URL)) {
                     $params = array(
                         (new \Spieldose\Database\DBParam())->str(":id", $this->id),
                         (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
@@ -63,7 +63,7 @@ class RadioStation
                         (new \Spieldose\Database\DBParam())->int(":url_type", $this->urlType),
                         (new \Spieldose\Database\DBParam())->str(":image", $this->image)
                     );
-                    return($dbh->execute(" INSERT INTO RADIO_STATION (id, user_id, name, url, url_type, image) VALUES(:id, :user_id, :name, :url, :url_type, :image) ", $params));
+                    return ($dbh->execute(" INSERT INTO RADIO_STATION (id, user_id, name, url, url_type, image) VALUES(:id, :user_id, :name, :url, :url_type, :image) ", $params));
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("url");
                 }
@@ -77,9 +77,9 @@ class RadioStation
 
     public function update(\Spieldose\Database\DB $dbh)
     {
-        if (! empty($this->id)) {
-            if (! empty($this->name)) {
-                if (! empty($this->url) && filter_var($this->url, FILTER_VALIDATE_URL)) {
+        if (!empty($this->id)) {
+            if (!empty($this->name)) {
+                if (!empty($this->url) && filter_var($this->url, FILTER_VALIDATE_URL)) {
                     $params = array(
                         (new \Spieldose\Database\DBParam())->str(":id", $this->id),
                         (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
@@ -88,7 +88,7 @@ class RadioStation
                         (new \Spieldose\Database\DBParam())->int(":url_type", $this->urlType),
                         (new \Spieldose\Database\DBParam())->str(":image", $this->image)
                     );
-                    return($dbh->execute(" UPDATE RADIO_STATION SET name = :name, url = :url, url_type = :url_type, image = :image WHERE id = :id AND user_id = :user_id ", $params));
+                    return ($dbh->execute(" UPDATE RADIO_STATION SET name = :name, url = :url, url_type = :url_type, image = :image WHERE id = :id AND user_id = :user_id ", $params));
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("url");
                 }
@@ -102,7 +102,7 @@ class RadioStation
 
     public function remove(\Spieldose\Database\DB $dbh)
     {
-        if (! empty($this->id)) {
+        if (!empty($this->id)) {
             $params = array(
                 (new \Spieldose\Database\DBParam())->str(":id", $this->id),
                 (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId()),
@@ -115,7 +115,7 @@ class RadioStation
 
     public function get(\Spieldose\Database\DB $dbh)
     {
-        if (! empty($this->id)) {
+        if (!empty($this->id)) {
             $params = array();
             $params[] = (new \Spieldose\Database\DBParam())->str(":id", $this->id);
             $query = sprintf(
@@ -131,7 +131,7 @@ class RadioStation
                 $this->name = $data[0]->name;
                 $this->url = $data[0]->url;
                 $this->urlType = $data[0]->urlType;
-                switch($this->urlType) {
+                switch ($this->urlType) {
                     case 0:
                         $this->streamUrls = array($this->url);
                         break;
@@ -155,97 +155,91 @@ class RadioStation
     {
         $streamUrls = array();
         $data = \Spieldose\Net::httpRequest($url);
-        if (! empty($data)) {
+        if (!empty($data)) {
             $lines = explode("\n", $data);
-            foreach($lines as $line) {
+            foreach ($lines as $line) {
                 if (substr($data, 0, 4) === "http") {
                     array_push($streamUrls, trim($line));
                 }
             }
         }
-        return($streamUrls);
+        return ($streamUrls);
     }
 
     private function getStreamFromPLS($url)
     {
         $streamUrls = array();
         $data = \Spieldose\Net::httpRequest($url);
-        if (! empty($data)) {
+        if (!empty($data)) {
             $parsedData = parse_ini_string($data, true, INI_SCANNER_RAW);
             if (isset($parsedData["playlist"]) && is_array(($parsedData["playlist"]))) {
-                foreach($parsedData["playlist"] as $key => $value) {
+                foreach ($parsedData["playlist"] as $key => $value) {
                     if (substr($key, 0, 4) === "File" && substr($value, 0, 4) === "http") {
                         array_push($streamUrls, $value);
                     }
                 }
             }
         }
-        return($streamUrls);
+        return ($streamUrls);
     }
 
-    public static function search(\Spieldose\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "")
+    /*
+        DELETE FROM RADIO_STATION;
+        INSERT INTO RADIO_STATION('6541fd27-4f4e-459a-8cd4-6b68525dbee8', `nectarine`, (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), 'http://necta.burn.net:8000/nectarine.m3u', 'm3u', 'https://www.amigafrance.com/wp-content/uploads/hm_bbpui/30863/fqmxiyy7y6075ema9vwwkxu7qtztzqx4.jpg');
+    */
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $params = array();
         $params = array(
-            (new \Spieldose\Database\DBParam())->str(":user_id", \Spieldose\User::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
         );
-        $queryConditions = array(
-            " RS.user_id = :user_id "
+        $filterConditions = array(
+            " RADIO_STATION.user_id = :user_id"
         );
-        $whereCondition = "";
-        if (isset($filter)) {
-            if (isset($filter["partialName"]) && ! empty($filter["partialName"])) {
-                $queryConditions[] = " RS.name LIKE :partialName ";
-                $params[] = (new \Spieldose\Database\DBParam())->str(":partialName", "%". $filter["partialName"] . "%");
-            }
-            if (isset($filter["name"]) && ! empty($filter["name"])) {
-                $queryConditions[] = " RS.name LIKE :name ";
-                $params[] = (new \Spieldose\Database\DBParam())->str(":name", $filter["name"]);
-            }
+        if (isset($filter["name"]) && !empty($filter["name"])) {
+            $filterConditions[] = " RADIO_STATION.name LIKE :name";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter["name"] . "%");
         }
-        $whereCondition = count($queryConditions) > 0 ? " WHERE " .  implode(" AND ", $queryConditions) : "";
-        $queryCount = sprintf('
-                SELECT SUM(TMP.total) AS total
-                FROM (
-                    SELECT
-                        COUNT (RS.id) AS total
-                    FROM RADIO_STATION RS
-                    %s
-                ) TMP
-            ', $whereCondition);
-        $result = $dbh->query($queryCount, $params);
-        $data = new \stdClass();
-        $data->actualPage = $page;
-        $data->resultsPage = $resultsPage;
-        $data->totalResults = $result[0]->total;
-        $data->totalPages = ceil($data->totalResults / $resultsPage);
-        if ($data->totalResults > 0) {
-            $sqlOrder = "";
-            switch($order) {
-                case "random":
-                    $sqlOrder = " ORDER BY RANDOM() ";
-                    break;
-                default:
-                    $sqlOrder = " ORDER BY name COLLATE NOCASE ASC ";
-                    break;
-            }
-            $query = sprintf(
-                '
-                    SELECT RS.id, RS.name, RS.image
-                    FROM RADIO_STATION RS
-                    %s
-                    %s
-                    LIMIT %d OFFSET %d
-                    ',
-                (count($queryConditions) > 0 ? 'WHERE ' . implode(" AND ", $queryConditions) : ''),
-                $sqlOrder,
-                $resultsPage,
-                $resultsPage * ($page - 1)
-            );
-            $data->results = $dbh->query($query, $params);
-        } else {
-            $data->results = array();
+        $fieldDefinitions = [
+            "id" => "RADIO_STATION.id",
+            "name" => "RADIO_STATION.name",
+            "url" => "RADIO_STATION.url",
+            "urlType" => "RADIO_STATION.url_type",
+            "image" => "RADIO_STATION.image"
+        ];
+        $fieldCountDefinition = [
+            "totalResults" => " COUNT(RADIO_STATION.id)"
+        ];
+        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
+
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter);
+        foreach ($params as $param) {
+            $browser->addDBQueryParam($param);
         }
-        return($data);
+
+        $query = sprintf(
+            "
+                SELECT %s
+                FROM RADIO_STATION
+                %s
+                %s
+                %s
+            ",
+            $browser->getQueryFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $browser->getQuerySort(),
+            $pager->getQueryLimit()
+        );
+        $queryCount = sprintf(
+            "
+                SELECT %s
+                FROM RADIO_STATION
+                %s
+            ",
+            $browser->getQueryCountFields(),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+        $data = $browser->launch($query, $queryCount);
+
+        return ($data);
     }
 }

@@ -144,7 +144,16 @@ const audioElement = ref(null);
 
 const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+  if (currentTrack) {
+    if (! currentTrack.radioStation) {
+    return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+  } else {
+    return (currentTrack.radioStation.url);
+  }
+  } else {
+    return(null);
+  }
+
 });
 
 

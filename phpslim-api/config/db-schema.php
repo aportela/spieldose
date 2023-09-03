@@ -208,4 +208,19 @@ return (array(
             );
         '
     ),
+    13 => array(
+        '
+            CREATE TABLE `RADIO_STATION` (
+                `id` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                `user_id` VARCHAR(36) NOT NULL,
+                `ctime` INTEGER NOT NULL,
+                `url` VARCHAR(4096) NOT NULL,
+                `url_type` INTEGER NOT NULL,
+                `image` VARCHAR(4096) NOT NULL,
+                PRIMARY KEY (`id`),
+                FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
+            );
+        '
+    )
 ));
