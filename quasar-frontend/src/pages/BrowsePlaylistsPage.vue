@@ -17,78 +17,30 @@
             <q-icon name="search" class="cursor-pointer" @click="search" />
           </template>
         </q-input>
+        <q-btn-toggle class="q-my-md" push toggle-color="pink" v-model="style" :options="[
+          { label: 'style: mosaic', value: 'mosaic' },
+          { label: 'style: vinyl collection', value: 'vinylCollection' }
+        ]" />
         <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
           <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <q-card class="col-2 shadow-box shadow-10 q-mt-lg" bordered v-for="playlist in playlists" :key="playlist.id">
-            <q-card-section>
-              {{ playlist.name }}
-            </q-card-section>
-            <q-separator />
-            <q-card-section>
-              <div class="row">
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[0] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[1] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[2] || defaultImage"/></div>
-              </div>
-              <div class="row">
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[3] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[4] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[5] || defaultImage"/></div>
-              </div>
-              <div class="row">
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[6] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[7] || defaultImage"/></div>
-                <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[8] || defaultImage"/></div>
-              </div>
-            </q-card-section>
-            <q-separator />
-            <q-card-section style="height: 120px;">
-              <q-avatar v-for="n in 5" :key="n" size="80px" class="overlapping" :style="`left: ${n * 25}px`">
-                <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n + 3))" v-if="playlist.covers[n]" />
-                <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
-              </q-avatar>
-            </q-card-section>
-            <q-separator />
-            <q-card-section>
-              <q-icon name="edit" size="sm" title="edit playlist" class="cursor-pointer"></q-icon>
-              <q-icon name="play_arrow" size="sm" title="play" class="cursor-pointer"></q-icon>
-              {{ playlist.trackCount }} track/s
-            </q-card-section>
-
-          </q-card>
+          <PlaylistMosaic v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style">
+          </PlaylistMosaic>
         </div>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
-<style>
-div.no_cover {
-  width: 100px;
-  height: 100px;
-}
-
-img.mosaic_cover_element {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-}
-
-.overlapping {
-  border: 2px solid white;
-  position: absolute;
-}
-</style>
 
 <script setup>
 
 import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
+import { default as PlaylistMosaic } from "components/PlaylistMosaic.vue"
 
 const $q = useQuasar();
 
@@ -100,9 +52,8 @@ const playlists = ref([]);
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-const defaultImage = 'images/vinyl.png';
+const style = ref('mosaic');
 
-const covers = ref([]);
 
 // https://stackoverflow.com/a/1484514
 function getRandomColor() {
@@ -143,6 +94,5 @@ function onPaginationChanged(pageIndex) {
 }
 
 search(true);
-
 
 </script>
