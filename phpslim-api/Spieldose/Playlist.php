@@ -6,11 +6,11 @@ namespace Spieldose;
 
 class Playlist
 {
-    public $id;
-    public $name;
-    public $tracks;
+    public string $id;
+    public string $name;
+    public array $tracks = [];
 
-    public function __construct(string $id, string $name, array $tracks = array())
+    public function __construct(string $id, string $name, array $tracks = [])
     {
         $this->id = $id;
         $this->name = $name;
@@ -210,6 +210,18 @@ class Playlist
         return ($covers);
     }
 
+    /*
+        DELETE FROM PLAYLIST_TRACK;
+        DELETE FROM PLAYLIST;
+        INSERT INTO PLAYLIST VALUES ('9c30f484-8992-4750-9631-fcb14639812a', 'my loved tracks', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
+        INSERT INTO PLAYLIST_TRACK SELECT '9c30f484-8992-4750-9631-fcb14639812a', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 32;
+        INSERT INTO PLAYLIST VALUES ('c383f465-3bf6-48c2-b29a-049eb3cf5fb7', 'oldies', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
+        INSERT INTO PLAYLIST_TRACK SELECT 'c383f465-3bf6-48c2-b29a-049eb3cf5fb7', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 64;
+        INSERT INTO PLAYLIST VALUES ('c0f9c3bd-f101-4097-9ff4-c4b417cd7e40', 'rock', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
+        INSERT INTO PLAYLIST_TRACK SELECT 'c0f9c3bd-f101-4097-9ff4-c4b417cd7e40', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 128;
+        INSERT INTO PLAYLIST VALUES ('b6ecf269-6a80-4453-847b-5abe594f3daf', 'dance/disco', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
+        INSERT INTO PLAYLIST_TRACK SELECT 'b6ecf269-6a80-4453-847b-5abe594f3daf', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 18;
+    */
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
