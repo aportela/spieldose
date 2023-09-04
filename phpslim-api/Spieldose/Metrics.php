@@ -401,7 +401,7 @@ class Metrics
             case "recentlyAdded":
                 $query = sprintf(
                     "
-                        SELECT %s, F.added_timestamp AS addedTimestamp
+                        SELECT %s, MAX(F.added_timestamp) AS addedTimestamp
                         FROM FILE F
                         INNER JOIN FILE_ID3_TAG FIT ON FIT.id = F.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
@@ -421,7 +421,7 @@ class Metrics
                 $filterConditions[] = " FPS.user_id = :user_id ";
                 $query = sprintf(
                     "
-                        SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
+                        SELECT %s, MAX(FPS.play_timestamp) AS lastPlayTimestamp
                         FROM FILE_PLAYCOUNT_STATS FPS
                         INNER JOIN FILE F ON F.id = FPS.file_id
                         INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FPS.file_id
