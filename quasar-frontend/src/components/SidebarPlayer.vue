@@ -14,14 +14,16 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentTrackURL"
-      @toggleAnalyzer="showAnalyzer = !showAnalyzer"></SidebarPlayerTrackActions>
+      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleTrackDetailsModal="detailsModal = true">
+    </SidebarPlayerTrackActions>
+    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :track="currentPlaylist.getCurrentTrack"
+      @hide="detailsModal = false">
+    </SidebarPlayerTrackDetailsModal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-
-
 
 import { usePlayer } from 'stores/player';
 
@@ -32,6 +34,7 @@ import { default as SidebarPlayerTrackInfo } from "components/SidebarPlayerTrack
 import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMainControls.vue";
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
+import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { api } from "src/boot/axios";
@@ -41,6 +44,7 @@ const player = usePlayer();
 
 const audioElement = ref(null);
 
+const detailsModal = ref(false);
 
 const showAnalyzer = ref(true);
 
@@ -64,7 +68,7 @@ const coverImage = computed(() => {
       return (null);
     }
   } else {
-    return(null);
+    return (null);
   }
 });
 
@@ -79,12 +83,12 @@ const smallVinylImage = computed(() => {
       return (null);
     }
   } else {
-    return(null);
+    return (null);
   }
 });
 
 const disablePlayerControls = computed(() => {
-  return (false);
+  return(currentTrackId.value == null);
 });
 
 const musicBrainzAlbumId = computed(() => {
@@ -145,7 +149,7 @@ onMounted(() => {
 function increasePlayCount(trackId) {
   // WARNING: TODO CALL MULTIPLE TIMES ?
   api.track.increasePlayCount(trackId).then((success) => {
-    })
+  })
     .catch((error) => {
       loading.value = false;
       switch (error.response.status) {
@@ -187,7 +191,5 @@ function onSeek(position) {
     player.setCurrentTime(player.getDuration * position);
   }
 }
-
-
 
 </script>
