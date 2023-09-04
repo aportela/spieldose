@@ -1,5 +1,77 @@
 export default {
   Spieldose: "Spieldose",
+  // menu labels
+  Dashboard: "Panel de control",
+  "Current playlist": "Lista de reproducción actual",
+  Search: "Búsqueda",
+  "Browse artists": "Artistas",
+  "Browse albums": "Álbumes",
+  "Browse paths": "Rutas",
+  "Browse playlists": "Listas de reproducción",
+  "Browse radio stations": "Estaciones de radio",
+  Signout: "Salir",
+
+  // locale settings
+  "Selected language": "Idioma seleccionado",
+
+  // entities
+  Tracks: "Canciones",
+  Artists: "Artistas",
+  Albums: "Álbumes",
+  Genres: "Géneros",
+
+  // date ranges
+  Today: "Hora",
+  "Last week": "Última semana",
+  "Last month": "Último mes",
+  "Last year": "Último año",
+  Always: "Siempre",
+  Hour: "Hora",
+  Weekday: "Día de la semana",
+  Month: "Mes",
+  Year: "Año",
+  Sunday: "Domingo",
+  Monday: "Lunes",
+  Tuesday: "Martes",
+  Wednesday: "Miércoles",
+  Thursday: "Jueves",
+  Friday: "Viernes",
+  Saturday: "Sábado",
+  January: "Enero",
+  February: "Febrero",
+  March: "Marzo",
+  April: "Abril",
+  May: "Mayo",
+  June: "Junio",
+  July: "Julio",
+  August: "Agosto",
+  September: "Septiembre",
+  October: "Octubre",
+  November: "Noviembre",
+  December: "Diciembre",
+  oneSecondAgo: "hace {count} segundo",
+  nSecondsAgo: "hace {count} segundos",
+  oneMinuteAgo: "hace {count} minuto",
+  nMinutesAgo: "hace {count} minutos",
+  oneHourAgo: "hace {count} hora",
+  nHoursAgo: "hace {count} horas",
+  oneDayAgo: "hace {count} día",
+  nDaysAgo: "hace {count} días",
+  oneMonthAgo: "hace {count} mes",
+  nMonthsAgo: "hace {count} meses",
+  oneYearAgo: "hace {count} año",
+  nYearsAgo: "hace {count} años",
+
+  // actions
+  reload: "recargar",
+
+  // general api errors
+  "API Error: invalid/missing param":
+    "Error de API: falta un parámetro o es incorrecto",
+  "API Error: fatal error": "Error de API: error fatal",
+  "API Error: fatal error details": "HTTP {status} ({statusText})",
+
+  // signin / signup
   "Sign in": "Iniciar sesión",
   "Sign in below to access your account":
     "Introduzca los datos para acceder a su cuenta",
@@ -22,8 +94,17 @@ export default {
   "Your account has been created": "Su cuenta ha sido creada",
   "API Error: missing email param": "Error de API: falta el correo electrónico",
   "API Error: missing password param": "Error de API: falta la contraseña",
-  "API Error: invalid/missing param":
-    "Error de API: falta un parámetro o es incorrecto",
-  "API Error: fatal error": "Error de API: error fatal",
-  "API Error: fatal error details": "HTTP {status} ({statusText})",
+
+  // dashboard
+  "Top played tracks": "Canciones más escuchadas",
+  "Top played artists": "Artistas más escuchados",
+  "Top played albums": "Álbumes más escuchados",
+  "Top played genres": "Géneros más escuchados",
+  "Recently added": "Añadido recientemente",
+  "Recently played": "Escuchado recientemente",
+  "Play stats": "Estadísticas de escucha",
+  "API Error: error loading metrics":
+    "API Error: error cargando métricas/estadísticas",
+  onePlayCount: " 1 vez",
+  nPlayCounts: " {count} veces",
 };

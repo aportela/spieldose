@@ -1,5 +1,75 @@
 export default {
   Spieldose: "Spieldose",
+  // menu labels
+  Dashboard: "Dashboard",
+  "Current playlist": "Current playlist",
+  Search: "Search",
+  "Browse artists": "Browse artists",
+  "Browse albums": "Browse albums",
+  "Browse paths": "Browse paths",
+  "Browse playlists": "Browse playlists",
+  "Browse radio stations": "Browse radio stations",
+  Signout: "Signout",
+
+  // locale settings
+  "Selected language": "Selected language",
+
+  // entities
+  Tracks: "Tracks",
+  Artists: "Artists",
+  Albums: "Albums",
+  Genres: "Genres",
+
+  // date ranges
+  Today: "Today",
+  "Last week": "Last week",
+  "Last month": "Last month",
+  "Last year": "Last year",
+  Always: "Always",
+  Hour: "Hour",
+  Weekday: "Weekday",
+  Month: "Month",
+  Year: "Year",
+  Sunday: "Sunday",
+  Monday: "Monday",
+  Tuesday: "Tuesday",
+  Wednesday: "Wednesday",
+  Thursday: "Thursday",
+  Friday: "Friday",
+  Saturday: "Saturday",
+  January: "January",
+  February: "February",
+  March: "March",
+  April: "April",
+  May: "May",
+  June: "June",
+  July: "July",
+  August: "August",
+  September: "September",
+  October: "October",
+  November: "November",
+  December: "December",
+  oneSecondAgo: "{count} second ago",
+  nSecondsAgo: "{count} seconds ago",
+  oneMinuteAgo: "{count} minute ago",
+  nMinutesAgo: "{count} minutes ago",
+  oneHourAgo: "{count} hour ago",
+  nHoursAgo: "{count} hours ago",
+  oneDayAgo: "{count} day ago",
+  nDaysAgo: "{count} days ago",
+  oneMonthAgo: "{count} month ago",
+  nMonthsAgo: "{count} months ago",
+  oneYearAgo: "{count} year ago",
+  nYearsAgo: "{count} years ago",
+
+  // actions
+  reload: "reload",
+
+  // general api errors
+  "API Error: invalid/missing param": "API Error: invalid/missing param",
+  "API Error: fatal error": "API Error: fatal error",
+  "API Error: fatal error details": "HTTP {status} ({statusText})",
+
   "Sign in": "Sign in",
   "Sign in below to access your account":
     "Sign in below to access your account",
@@ -22,7 +92,16 @@ export default {
   "Your account has been created": "Your account has been created",
   "API Error: missing email param": "API Error: missing email param",
   "API Error: missing password param": "API Error: missing password param",
-  "API Error: invalid/missing param": "API Error: invalid/missing param",
-  "API Error: fatal error": "API Error: fatal error",
-  "API Error: fatal error details": "HTTP {status} ({statusText})",
+
+  // dashboard
+  "Top played tracks": "Top played tracks",
+  "Top played artists": "Top played artists",
+  "Top played albums": "Top played albums",
+  "Top played genres": "Top played genres",
+  "Recently added": "Recently added",
+  "Recently played": "Recently played",
+  "Play stats": "Play stats",
+  "API Error: error loading metrics": "API Error: error loading metrics",
+  onePlayCount: " 1 time",
+  nPlayCounts: " {count} times",
 };

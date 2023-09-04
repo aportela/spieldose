@@ -7,6 +7,9 @@
 <script setup>
 
 import { date } from 'quasar';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 
 const props = defineProps({
   className: {
@@ -29,21 +32,21 @@ if (diff < 1) {
         diff = date.getDateDiff(Date.now(), props.timestamp, 'minutes');
         if (diff < 1) {
           diff = date.getDateDiff(Date.now(), props.timestamp, 'seconds');
-          label = diff + ' second' + (diff > 1 ? 's': '') + ' ago';
+          label = t(diff > 1 ? 'nSecondsAgo': 'oneSecondAgo', { count: diff });
         } else {
-          label = diff + ' minute' + (diff > 1 ? 's': '') + ' ago';
+          label = t(diff > 1 ? 'nMinutesAgo': 'oneMinuteAgo', { count: diff });
         }
       } else {
-        label = diff + ' hour' + (diff > 1 ? 's': '') + ' ago';
+        label = t(diff > 1 ? 'nHoursAgo': 'oneHourAgo', { count: diff });
       }
     } else {
-      label = diff + ' day' + (diff > 1 ? 's': '') + ' ago';
+      label = t(diff > 1 ? 'nDaysAgo': 'oneDayAgo', { count: diff });
     }
   } else {
-    label = diff + ' month' + (diff > 1 ? 's': '') + ' ago';
+    label = t(diff > 1 ? 'nMonthsAgo': 'oneMonthAgo', { count: diff });
   }
 } else {
-  label = diff + ' year' + (diff > 1 ? 's': '') + ' ago';
+  label = t(diff > 1 ? 'nYearsAgo': 'oneYearAgo', { count: diff });
 }
 
 </script>

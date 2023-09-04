@@ -7,7 +7,7 @@
         </div>
         <div class="col text-right">
           <q-spinner v-if="loading" color="pink" size="sm" class="q-ml-sm" :thickness="8" />
-          <q-icon name="refresh" class="cursor-pointer" @click="onRefresh" v-else></q-icon>
+          <q-icon name="refresh" class="cursor-pointer" @click="onRefresh" v-else :title="t('reload')"></q-icon>
         </div>
       </div>
     </q-card-section>
@@ -27,6 +27,9 @@
 
 <script setup>
 
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 
 const props = defineProps({
   className: {

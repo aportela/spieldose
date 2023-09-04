@@ -10,11 +10,33 @@
         notice shrink property since we are placing it
         as child of QToolbar
       -->
+
         <q-tabs shrink>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="link.text" no-caps inline-label exact />
+            :icon="link.icon" :label="t(link.text)" no-caps inline-label exact />
         </q-tabs>
-        <q-btn icon="logout" label="Signout" flat no-caps stack @click="signOut" />
+        <q-btn flat no-caps stack icon="language">
+          {{ selectedLanguage.shortLabel }}
+          <q-icon name="arrow_drop_down" size="16px" />
+          <q-menu auto-close>
+            <q-list dense style="min-width: 200px">
+              <q-item class="GL__menu-link-signed-in">
+                <q-item-section>
+                  <div>{{ t("Selected language") }}: <strong>{{ selectedLanguage.label }}</strong></div>
+                </q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable :disable="selectedLanguage.value == availableLanguage.value" v-close-popup
+                v-for="availableLanguage in availableLanguages" :key="availableLanguage.value"
+                @click="onSelectLanguage(availableLanguage, true)">
+                <q-item-section>
+                  <div>{{ availableLanguage.label }}</div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+        <q-btn icon="logout" :label="t('Signout')" flat no-caps stack @click="signOut" />
       </q-toolbar>
     </q-header>
     <!--
@@ -77,10 +99,53 @@ import { api } from 'boot/axios';
 import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
+import { i18n } from "src/boot/i18n";
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { usePlayer } from 'stores/player';
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+
+
+const { t } = useI18n();
+const $q = useQuasar();
+const router = useRouter();
+const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
+const playerStatus = usePlayerStatusStore();
+const audioElement = ref(null);
+
+const session = useSessionStore();
+
+const availableLanguages = ref([
+  {
+    shortLabel: 'EN',
+    label: 'English',
+    value: 'en-US'
+  },
+  {
+    shortLabel: 'ES',
+    label: 'Español',
+    value: 'es-ES'
+  },
+  {
+    shortLabel: 'GL',
+    label: 'Galego',
+    value: 'gl-GL'
+  }
+]);
+
+const previousLang = availableLanguages.value.find((lang) => lang.value == session.lang);
+
+const selectedLanguage = ref(previousLang || availableLanguages.value[0]);
+onSelectLanguage(selectedLanguage.value, false);
+
+function onSelectLanguage(language, save) {
+  selectedLanguage.value = language;
+  i18n.global.locale.value = language.value;
+  if (save) {
+    session.saveLang(language.value);
+  }
+}
 
 const links = [
   {
@@ -133,25 +198,16 @@ const links = [
   }
 ];
 
-const { t } = useI18n();
-const $q = useQuasar();
-const session = useSessionStore();
-const router = useRouter();
-const player = usePlayer();
-const currentPlaylist = useCurrentPlaylistStore();
-const playerStatus = usePlayerStatusStore();
-const audioElement = ref(null);
-
 const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
   if (currentTrack) {
-    if (! currentTrack.radioStation) {
-    return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+    if (!currentTrack.radioStation) {
+      return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+    } else {
+      return (currentTrack.radioStation.url);
+    }
   } else {
-    return (currentTrack.radioStation.url);
-  }
-  } else {
-    return(null);
+    return (null);
   }
 
 });
@@ -173,7 +229,7 @@ audioElement.value = player.getElement;
 currentPlaylist.load();
 
 if (player.hasPreviousUserInteractions) {
-  if (! playerStatus.isPlaying) {
+  if (!playerStatus.isPlaying) {
     player.play(true);
   }
 }

@@ -1,9 +1,10 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading" @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading"
+    @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in entities" :key="tabElement.value" :name="tabElement.value"
-          :label="tabElement.label" />
+          :label="t(tabElement.label)" />
       </q-tabs>
     </template>
     <template #list>
@@ -80,6 +81,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n'
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockListElementTrack } from 'components/DashboardBaseBlockListElementTrack.vue';
 import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';
@@ -89,6 +91,7 @@ import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
 import { api } from 'boot/axios';
 
 const $q = useQuasar();
+const { t } = useI18n();
 
 const loading = ref(false);
 const items = ref([]);
@@ -96,9 +99,9 @@ const items = ref([]);
 const title = computed(() => {
   let str = null;
   if (props.played) {
-    str = 'Recently played';
+    str = t('Recently played');
   } else if (props.added) {
-    str = 'Recently added';
+    str = t('Recently added');
   }
   return (str);
 });
@@ -170,8 +173,8 @@ function refresh() {
       loading.value = false;
       $q.notify({
         type: "negative",
-        message: "API Error: error loading top played tracks metrics",
-        caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+        message: "API Error: error loading metrics",
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
       });
     });
   }

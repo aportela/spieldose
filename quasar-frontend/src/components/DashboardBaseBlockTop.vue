@@ -1,37 +1,38 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading" @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading"
+    @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in dateRanges" :key="tabElement.value" :name="tabElement.value"
-          :label="tabElement.label" />
+          :label="t(tabElement.label)" />
       </q-tabs>
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="entity == 'tracks'">
         <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
           <template #append>
-            <span class="q-ml-sm">{{ item.playCount }} plays</span>
+            <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'artists'">
         <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
           <template #append>
-            <span class="q-ml-sm">{{ item.playCount }} plays</span>
+            <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'albums'">
         <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
           <template #append>
-            <span class="q-ml-sm">{{ item.playCount }} plays</span>
+            <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'genres'">
         <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item">
           <template #append>
-            <span class="q-ml-sm">{{ item.playCount }} plays</span>
+            <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
@@ -40,8 +41,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { date, useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n'
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockListElementTrack } from 'components/DashboardBaseBlockListElementTrack.vue';
 import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';
@@ -51,6 +53,7 @@ import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
 import { api } from 'boot/axios';
 
 const $q = useQuasar();
+const { t } = useI18n();
 
 const loading = ref(false);
 const items = ref([]);
@@ -122,28 +125,45 @@ const props = defineProps({
   }
 })
 
+const title = computed(() => {
+  switch (props.entity) {
+    case 'tracks':
+      return (t('Top played tracks'));
+      break;
+    case 'artists':
+      return (t('Top played artists'));
+      break;
+    case 'albums':
+      return (t('Top played albums'));
+      break;
+    case 'genres':
+      return (t('Top played genres'));
+      break;
+    default:
+      return (null);
+      break;
+  }
+});
+
 const count = 5;
 
 let apiFunction = null;
-let title = null;
+
 switch (props.entity) {
   case 'tracks':
-    title = 'Top played tracks';
     apiFunction = api.metrics.getTracks;
     break;
   case 'artists':
-    title = 'Top played artists';
     apiFunction = api.metrics.getArtists;
     break;
   case 'albums':
-    title = 'Top played albums';
     apiFunction = api.metrics.getAlbums;
     break;
   case 'genres':
-    title = 'Top played genres';
     apiFunction = api.metrics.getGenres;
     break;
 }
+
 function refresh() {
   if (tab.value) {
     loading.value = true;
@@ -154,8 +174,8 @@ function refresh() {
       loading.value = false;
       $q.notify({
         type: "negative",
-        message: "API Error: error loading top played metrics",
-        caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+        message: "API Error: error loading metrics",
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
       });
     });
   }

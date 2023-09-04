@@ -1,10 +1,10 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="icon || 'analytics'" title="Play stats" :loading="loading"
+  <component :is="dashboardBaseBlock" :icon="icon || 'analytics'" :title="t('Play stats')" :loading="loading"
     @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in dateRanges" :key="tabElement.value" :name="tabElement.value"
-          :label="tabElement.label" />
+          :label="t(tabElement.label)" />
       </q-tabs>
     </template>
     <template #chart>
@@ -20,11 +20,13 @@
 <script setup>
 import { ref, watch, nextTick } from "vue";
 import { useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n'
 import { BarChart, LineChart } from 'chartist';
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { api } from 'boot/axios';
 
 const $q = useQuasar();
+const { t } = useI18n();
 
 const loading = ref(false);
 const items = ref([]);
@@ -63,10 +65,12 @@ const props = defineProps({
 const chartOptions = {
   low: 0,
   showArea: true,
-  fullWidth: true
+  fullWidth: true,
+  chartPadding: { left: 48, right: 48 }
 };
 
 function drawChart() {
+  // TODO: labels are not reactive on i18n changes
   let labels = [];
   const values = items.value.map((item) => { return (item.total); });
   switch (tab.value) {
@@ -74,10 +78,10 @@ function drawChart() {
       labels = items.value.map((item) => { return (item.hour); });
       break;
     case 'weekday':
-      labels = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      labels = [t('Sunday'), t('Monday'), t('Tuesday'), t('Wednesday'), t('Thursday'), t('Friday'), t('Saturday')];
       break;
     case 'month':
-      labels = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+      labels = [t('January'), t('February'), t('March'), t('April'), t('May'), t('June'), t('July'), t('August'), t('September'), t('October'), t('November'), t('December')]
       break;
     case 'year':
       labels = items.value.map((item) => { return (item.year); });
@@ -109,13 +113,13 @@ function refresh() {
       loading.value = false;
       $q.notify({
         type: "negative",
-        message: "API Error: error loading chart metrics",
-        caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+        message: "API Error: error loading metrics",
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
       });
     });
   }
 }
 
-tab.value = 'hour';
+tab.value = 'weekday';
 
 </script>
