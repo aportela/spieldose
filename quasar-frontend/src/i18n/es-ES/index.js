@@ -6,7 +6,7 @@ export default {
   Email: "Correo electrónico",
   Password: "Contraseña",
   "Loading...": "Cargando...",
-  "Don't have an account yet ?": "¿ Aún no dispone de una cuenta",
+  "Don't have an account yet ?": "¿ Aún no dispone de una cuenta ?",
   "Click here to sign up": "Haga click aquí para crear una",
   "Field is required": "Este campo es requerido",
   "Email not registered": "El correo electrónico no está asociado",
