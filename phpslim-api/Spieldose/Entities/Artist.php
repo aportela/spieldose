@@ -29,11 +29,12 @@ class Artist extends \Spieldose\Entities\Entity
             $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ";
         }
         $fieldDefinitions = [
-            "name" => "DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "mbId" => "FIT.mb_artist_id",
+            "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
             "image" => "MB_CACHE_ARTIST.image"
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(DISTINCT COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
+            "totalResults" => " COUNT(COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
