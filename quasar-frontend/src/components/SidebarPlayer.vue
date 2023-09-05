@@ -59,7 +59,7 @@ const currentTrackId = computed(() => {
 
 const coverImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  if (!currentTrack.radioStation && currentTrack.covers) {
+  if (currentTrack && !currentTrack.radioStation && currentTrack.covers) {
     return (currentTrack.covers.normal);
   } else {
     return (null);
@@ -68,7 +68,7 @@ const coverImage = computed(() => {
 
 const smallVinylImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  if (!currentTrack.radioStation && currentTrack.covers) {
+  if (currentTrack && !currentTrack.radioStation && currentTrack.covers) {
     return (currentTrack.covers.small);
   } else {
     return (null);

@@ -1,5 +1,5 @@
 <template>
-  <div id="song_info" v-if="! currentTrack.radioStation">
+  <div id="song_info" v-if="currentTrack && ! currentTrack.radioStation">
     <p class="song_info_track text-center text-weight-bolder" style="color: #d30320;">{{ currentTrack ?
       currentTrack.title : "&nbsp;" }}</p>
     <p class="song_info_album text-center">{{ currentTrack ? currentTrack.album.title : "&nbsp;" }}</p>
