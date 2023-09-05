@@ -13,7 +13,7 @@
         </q-btn>
         <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
-        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading"
+        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay" :disable="loading || ! currentPlaylist.hasTracks"
           v-if="playerStatus.isStopped" />
         <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading"
           v-else-if="playerStatus.isPlaying" />
