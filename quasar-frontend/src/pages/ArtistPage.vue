@@ -100,7 +100,8 @@
                       <td class="text-bold col-4">{{ track.title }}</td>
                       <td class="text-left col-4">
                         <q-avatar square>
-                          <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl.png'" width="48px" height="48px" spinner-color="pink" />
+                          <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl.png'" width="48px"
+                            height="48px" spinner-color="pink" />
                         </q-avatar>
                         {{ track.album.title }}
                       </td>
@@ -117,7 +118,8 @@
                 </q-markup-table>
               </q-card-section>
             </q-card>
-            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
+              v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
               <q-card-section>
                 <div class="text-h6">Top albums</div>
               </q-card-section>
@@ -133,7 +135,8 @@
                 </div>
               </q-card-section>
             </q-card>
-            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.appearsOnAlbums && artistData.appearsOnAlbums.length > 0">
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
+              v-if="artistData.appearsOnAlbums && artistData.appearsOnAlbums.length > 0">
               <q-card-section>
                 <div class="text-h6">Appears on</div>
               </q-card-section>
@@ -389,35 +392,41 @@ watch(currentArtist, (newValue, oldValue) => {
 });
 
 onMounted(() => {
+  /*
   const chartOptions = {
     low: 0,
     showArea: true,
     fullWidth: true,
-    //chartPadding: { left: 48, right: 48 },
+    chartPadding: { left: 48, right: 48 },
     axisX: {
       type: FixedScaleAxis,
-      divisor: 3,
-      /*
+      divisor: 5,
       labelInterpolationFnc: function(value) {
-        return date.formatDate(value, 'MM');
+        console.log(value);
+        return date.formatDate(value, 'MMM');
       }
-      */
+    },
+    axisY: {
     }
   };
 
-  let count = 3;
+  let count = 16;
 
-  let data = {
-      labels: [],
-     series:[]
- }
+  let labels = [];
+  let series = [];
   while (count > 0) {
-    data.labels.push(date.formatDate(date.addToDate(new Date(), { months: -count }), 'X'));
-    data.series.push(Math.round(Math.random() * 501))
+    labels.push(date.formatDate(date.addToDate(new Date(), { months: -count }), 'X'));
+    series.push(Math.round(Math.random() * 501))
     count--;
   }
 
-  new LineChart('.ct-chart', data,chartOptions);
+  const data = {
+    labels : labels,
+    series: [series]
+  };
+
+  new LineChart('.ct-chart', data, chartOptions);
+  */
 });
 
 // https://gist.github.com/yidas/41cc9272d3dff50f3c9560fb05e7255e
