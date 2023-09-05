@@ -55,10 +55,10 @@ function getRandomColor() {
 }
 
 function getImageSourceFromIndex(index) {
-  if (index < this.images.length) {
-    return (this.images[index]);
+  if (index < images.value.length) {
+    return (images.value[index]);
   } else {
-    return (this.defaultImage);
+    return (defaultImage);
   }
 }
 
