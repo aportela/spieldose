@@ -25,29 +25,52 @@ class Metrics
         $filterConditions = array();
         $fieldDefinitions = [
             "id " => "FIT.id",
+            "mbId" => "FIT.mb_release_track_id",
             "title" => "FIT.title",
-            "artist" => "FIT.artist",
-            "album" => "FIT.album",
-            "albumArtist" => "FIT.album_artist",
-            "year" => "FIT.year",
+            "artistMBId" => "FIT.mb_artist_id",
+            "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "releaseMBId" => "FIT.mb_album_id",
+            "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+            "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
+            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
-            "musicBrainzAlbumId" => "FIT.mb_album_id",
             "coverPathId" => "D.id"
         ];
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data) use ($sort) {
             $data->items = array_map(
-                function ($result) {
-                    if (!empty($result->musicBrainzAlbumId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
-                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
-                    } else {
-                        $result->covertArtArchiveURL = null;
+                function ($result) use ($sort) {
+                    $newResult = new \stdClass();
+                    $newResult->track = new \Spieldose\Entities\Track(
+                        $result->id,
+                        $result->mbId,
+                        $result->title,
+                        $result->artistMBId,
+                        $result->artistName,
+                        $result->releaseMBId,
+                        $result->releaseTitle,
+                        $result->albumArtistMBId,
+                        $result->albumArtistName,
+                        $result->year,
+                        $result->trackNumber,
+                        $result->coverPathId
+                    );
+                    switch ($sort->items[0]->field) {
+                        case "playCount":
+                            $newResult->playCount = $result->playCount;
+                            break;
+                        case "recentlyAdded":
+                            $newResult->addedTimestamp = $result->addedTimestamp;
+                            break;
+                        case "recentlyPlayed":
+                            $newResult->lastPlayTimestamp = $result->lastPlayTimestamp;
+                            break;
                     }
-                    return ($result);
+                    return ($newResult);
                 },
                 $data->items
             );
@@ -75,9 +98,11 @@ class Metrics
                             ORDER BY playCount %s
                             LIMIT :count
                         ) TMP_FILE_PLAYCOUNT_STATS
-                        INNER JOIN FILE F ON F.id = TMP_FILE_PLAYCOUNT_STATS.file_id
                         INNER JOIN FILE_ID3_TAG FIT ON FIT.id = TMP_FILE_PLAYCOUNT_STATS.file_id
+                        INNER JOIN FILE F ON F.id = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                     ",
                     $browser->getQueryFields(),
                     count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
@@ -88,9 +113,11 @@ class Metrics
                 $query = sprintf(
                     "
                         SELECT %s, F.added_timestamp AS addedTimestamp
-                        FROM FILE F
-                        INNER JOIN FILE_ID3_TAG FIT ON FIT.id = F.id
+                        FROM FILE_ID3_TAG FIT
+                        INNER JOIN FILE F ON F.id = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                         %s
                         ORDER BY F.added_timestamp %s
                         LIMIT :count
@@ -107,9 +134,11 @@ class Metrics
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
                         FROM FILE_PLAYCOUNT_STATS FPS
-                        INNER JOIN FILE F ON F.id = FPS.file_id
                         INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FPS.file_id
+                        INNER JOIN FILE F ON F.id = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                         %s
                         ORDER BY FPS.play_timestamp %s
                         LIMIT :count

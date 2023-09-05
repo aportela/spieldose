@@ -4,8 +4,8 @@
     </slot>
     <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
     <span>{{ track.title }}</span>
-    <span v-if="track.artist"> / <router-link :to="{ name: 'artist', params: { name: track.artist } }">{{
-      track.artist }}</router-link></span>
+    <span v-if="track.artist.name"> / <router-link :to="{ name: 'artist', params: { name: track.artist.name } }">{{
+      track.artist.name }}</router-link></span>
     <slot name="append">
     </slot>
   </li>

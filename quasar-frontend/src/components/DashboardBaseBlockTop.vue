@@ -9,7 +9,7 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="entity == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>

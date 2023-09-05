@@ -9,7 +9,7 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="tab == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
