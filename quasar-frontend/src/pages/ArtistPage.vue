@@ -117,7 +117,7 @@
                 </q-markup-table>
               </q-card-section>
             </q-card>
-            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.topAlbums">
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
               <q-card-section>
                 <div class="text-h6">Top albums</div>
               </q-card-section>
@@ -133,7 +133,22 @@
                 </div>
               </q-card-section>
             </q-card>
-            <!-- TODO: appears on album ? -->
+            <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered v-if="artistData.appearsOnAlbums && artistData.appearsOnAlbums.length > 0">
+              <q-card-section>
+                <div class="text-h6">Appears on</div>
+              </q-card-section>
+              <q-card-section>
+                <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
+                <div class="q-pa-lg flex flex-center" v-else>
+                  <div class="q-gutter-md row items-start">
+                    <AnimatedAlbumCover v-for="album in artistData.appearsOnAlbums.slice(0, 6)" :key="album.title"
+                      :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year"
+                      @play="onPlayAlbum(album)">
+                    </AnimatedAlbumCover>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
           </div>
           <div class="col-2">
             <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations">

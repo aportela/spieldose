@@ -14,6 +14,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $latestAlbum = null;
     public $topTracks = null;
     public $topAlbums = null;
+    public $appearsOnAlbums = null;
     public $similar = null;
 
 
@@ -227,15 +228,15 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
-                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist) AS artistName,
-                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) AS artistMBId,
+                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist) AS artistName,
+                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) AS artistMBId,
                             COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year,
                             D.id AS coverPathId
                         FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                         LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
-                        WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) = :mbid
+                        WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) = :mbid
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
                     "
@@ -245,6 +246,42 @@ class Artist extends \Spieldose\Entities\Entity
                 );
                 $this->topAlbums = $this->dbh->query($query, $params);
                 foreach ($this->topAlbums as $album) {
+                    $album->artist = new \stdClass();
+                    $album->artist->mbId = $album->artistMBId;
+                    $album->artist->name = $album->artistName;
+                    if (!empty($album->mbId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    } else {
+                        $album->covertArtArchiveURL = null;
+                    }
+                    unset($album->artistMbId);
+                    unset($album->artistName);
+                }
+                $query = sprintf(
+                    "
+                        SELECT DISTINCT
+                            FIT.mb_album_id AS mbId,
+                            COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
+                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist) AS artistName,
+                            COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) AS artistMBId,
+                            COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year,
+                            D.id AS coverPathId
+                        FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                        LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        WHERE FIT.mb_artist_id = :mbid
+                        AND COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) <> :mbid
+                        GROUP BY FIT.mb_album_id
+                        ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
+                    "
+                );
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $this->appearsOnAlbums = $this->dbh->query($query, $params);
+                foreach ($this->appearsOnAlbums as $album) {
                     $album->artist = new \stdClass();
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
