@@ -45,17 +45,17 @@
             <td class="text-right cursor-pointer" @click="setCurrentTrackIndex(index)"><q-icon name="play_arrow" size="sm" class="q-mr-sm"
                 v-if="currentTrackIndex == index"></q-icon>{{ index + 1 }}/32</td>
             <td class="text-left cursor-pointer" @click="setCurrentTrackIndex(index)">{{ track.title }}</td>
-            <td class="text-left"><router-link v-if="track.artist.name"
+            <td class="text-left"><router-link v-if="track.artist && track.artist.name"
                 :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.artist.name } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
                   track.artist.name }}</router-link></td>
-            <td class="text-left"><router-link v-if="track.album.artist.name"
+            <td class="text-left"><router-link v-if="track.album && track.album.artist.name"
                 :class="{ 'text-white text-bold': currentTrackIndex == index }"
                 :to="{ name: 'artist', params: { name: track.album.artist.name } }"><q-icon name="link"
                   class="q-mr-sm"></q-icon>{{ track.album.artist.name }}</router-link></td>
-            <td class="text-left">{{ track.album.title }}<span class="is-clickable"><i class="fas fa-link ml-1"></i></span></td>
+            <td class="text-left">{{ track.album ? track.album.title: null }}<span class="is-clickable"><i class="fas fa-link ml-1"></i></span></td>
             <td class="text-right">{{ track.trackNumber }}</td>
-            <td class="text-right">{{ track.album.year }}</td>
+            <td class="text-right">{{ track.album ? track.album.year: null }}</td>
             <td class="text-center">
               <q-btn-group outline>
                 <q-btn size="sm" color="white" text-color="grey-5" icon="north" title="Up" disabled />
