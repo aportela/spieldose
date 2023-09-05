@@ -27,7 +27,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
         : null,
     getCurrentTrackURL: (state) =>
       state.currentIndex >= 0 && state.tracks.length > 0
-        ? "api/2/file/" + state.tracks[state.currentIndex].id
+        ? state.tracks[state.currentIndex].url
         : null,
     allowSkipPrevious: (state) =>
       state.currentIndex > 0 && state.tracks.length > 0,
@@ -38,7 +38,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     allowPlay: (state) => true,
     allowPause: (state) => true,
     allowResume: (state) => true,
-    allowStop: (state) => true
+    allowStop: (state) => true,
   },
 
   actions: {

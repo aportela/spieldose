@@ -78,10 +78,12 @@ return function (App $app) {
                     "albumMbId" => $params["filter"]["albumMbId"] ?? ""
                 );
                 $sortItems = [];
-                if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
-                    $sortItems[] = $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                if ($params["sort"]["random"]) {
+                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItemRandom();
+                } else if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
+                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
                 } else {
-                    $sortItems[] = $params["sort"]["random"] ? new \aportela\DatabaseBrowserWrapper\SortItemRandom() : new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
                 }
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);

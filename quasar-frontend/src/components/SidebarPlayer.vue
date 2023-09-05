@@ -59,41 +59,16 @@ const currentTrackId = computed(() => {
 
 const coverImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  if (currentTrack) {
-    if (currentTrack.coverPathId) {
-      return ("api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(currentTrack.coverPathId));
-    } else if (currentTrack.covertArtArchiveURL) {
-      return ("api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(currentTrack.covertArtArchiveURL));
-    } else {
-      return (null);
-    }
-  } else {
-    return (null);
-  }
+  return(currentTrack.covers.normal);
 });
 
 const smallVinylImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  if (currentTrack) {
-    if (currentTrack.coverPathId) {
-      return ("api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(currentTrack.coverPathId));
-    } else if (currentTrack.covertArtArchiveURL) {
-      return ("api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(currentTrack.covertArtArchiveURL));
-    } else {
-      return (null);
-    }
-  } else {
-    return (null);
-  }
+  return(currentTrack.covers.small);
 });
 
 const disablePlayerControls = computed(() => {
   return(currentTrackId.value == null);
-});
-
-const musicBrainzAlbumId = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? currentTrack.musicBrainzAlbumId : null);
 });
 
 const currentTrackTimeData = ref({

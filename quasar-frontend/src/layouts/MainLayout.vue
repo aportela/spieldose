@@ -202,7 +202,7 @@ const currentTrackURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
   if (currentTrack) {
     if (!currentTrack.radioStation) {
-      return (currentTrack ? "api/2/file/" + currentTrack.id : null);
+      return (currentTrack.url);
     } else {
       return (currentTrack.radioStation.url);
     }
@@ -211,7 +211,6 @@ const currentTrackURL = computed(() => {
   }
 
 });
-
 
 watch(currentTrackURL, (newValue) => {
   if (audioElement.value) {
