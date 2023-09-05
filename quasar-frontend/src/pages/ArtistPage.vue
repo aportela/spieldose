@@ -312,13 +312,18 @@ p.header-mini-album-title {
 }
 </style>
 
+<style lang="scss">
+@import "~chartist/dist/index.css";
+</style>
+
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useQuasar } from "quasar";
+import { useQuasar, date } from "quasar";
 import { api } from 'boot/axios'
-import { BarChart } from 'chartist';
+import { LineChart, FixedScaleAxis } from 'chartist';
+
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { usePlayer } from 'stores/player';
@@ -384,19 +389,35 @@ watch(currentArtist, (newValue, oldValue) => {
 });
 
 onMounted(() => {
-  /*
-    new BarChart('.ct-chart', {
-      labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      series: [
-        [12, 9, 7, 8, 5, 4, 3]
-      ]
-    }, {
-      fullWidth: true,
-      chartPadding: {
-        right: 40
+  const chartOptions = {
+    low: 0,
+    showArea: true,
+    fullWidth: true,
+    //chartPadding: { left: 48, right: 48 },
+    axisX: {
+      type: FixedScaleAxis,
+      divisor: 3,
+      /*
+      labelInterpolationFnc: function(value) {
+        return date.formatDate(value, 'MM');
       }
-    });
-*/
+      */
+    }
+  };
+
+  let count = 3;
+
+  let data = {
+      labels: [],
+     series:[]
+ }
+  while (count > 0) {
+    data.labels.push(date.formatDate(date.addToDate(new Date(), { months: -count }), 'X'));
+    data.series.push(Math.round(Math.random() * 501))
+    count--;
+  }
+
+  new LineChart('.ct-chart', data,chartOptions);
 });
 
 // https://gist.github.com/yidas/41cc9272d3dff50f3c9560fb05e7255e
