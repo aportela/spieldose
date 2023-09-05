@@ -347,8 +347,8 @@ return function (App $app) {
                     }
                     $uri = $request->getUri();
                     $urls = array_map(
-                        fn ($url) =>
-                        sprintf("%s://%s:%d/api/2/cache/thumbnail/%s/%s", $uri->getScheme(), $uri->getHost(), $uri->getPort(), 'small', $url),
+                        fn ($hash) =>
+                        sprintf(\Spieldose\API::CACHED_HASH_SMALL_THUMBNAIL, $hash),
                         $hashes
                     );
                 }
