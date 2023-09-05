@@ -36,6 +36,8 @@
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
+      <h5 class="text-h5 text-center" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
+          size="xl"></q-icon> No enought data</h5>
     </template>
   </component>
 </template>
