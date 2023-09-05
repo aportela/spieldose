@@ -1,0 +1,1 @@
+img.radiostation_image{filter:grayscale(100%) blur(2px);opacity:.5;transition:filter .2s ease-in}img.radiostation_image:hover{filter:none;opacity:1;transition:filter .2s ease-out}

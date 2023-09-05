@@ -1,0 +1,1 @@
+"use strict";(globalThis["webpackChunkspieldose"]=globalThis["webpackChunkspieldose"]||[]).push([[395],{6395:(e,s,n)=>{n.r(s),n.d(s,{default:()=>i});var a=n(9835);function o(e,s){const n=(0,a.up)("q-page");return(0,a.wg)(),(0,a.j4)(n)}var p=n(1639),r=n(9885),t=n(9984),u=n.n(t);const c={},l=(0,p.Z)(c,[["render",o]]),i=l;u()(c,"components",{QPage:r.Z})}}]);
