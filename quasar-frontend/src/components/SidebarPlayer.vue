@@ -59,16 +59,24 @@ const currentTrackId = computed(() => {
 
 const coverImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return(currentTrack.covers.normal);
+  if (!currentTrack.radioStation && currentTrack.covers) {
+    return (currentTrack.covers.normal);
+  } else {
+    return (null);
+  }
 });
 
 const smallVinylImage = computed(() => {
   const currentTrack = currentPlaylist.getCurrentTrack;
-  return(currentTrack.covers.small);
+  if (!currentTrack.radioStation && currentTrack.covers) {
+    return (currentTrack.covers.small);
+  } else {
+    return (null);
+  }
 });
 
 const disablePlayerControls = computed(() => {
-  return(currentTrackId.value == null);
+  return (currentTrackId.value == null);
 });
 
 const currentTrackTimeData = ref({
