@@ -59,7 +59,7 @@ class Album extends \Spieldose\Entities\Entity
                     $result->artist->mbId = $result->albumArtistMbId;
                     $result->artist->name = $result->albumArtistName;
                     if (!empty($result->mbId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $result->covertArtArchiveURL = null;

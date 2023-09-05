@@ -250,7 +250,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
                     if (!empty($album->mbId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $album->covertArtArchiveURL = null;
@@ -286,7 +286,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
                     if (!empty($album->mbId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $album->covertArtArchiveURL = null;
@@ -376,7 +376,7 @@ class Artist extends \Spieldose\Entities\Entity
             $this->topTracks = $this->dbh->query($query, $params);
             foreach ($this->topTracks as $track) {
                 if (!empty($track->musicBrainzAlbumId)) {
-                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $track->covertArtArchiveURL = $cover->getReleaseImageURL($track->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                 } else {
                     $track->covertArtArchiveURL = null;
@@ -409,7 +409,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $album->artist->mbId = $album->artistMBId;
                 $album->artist->name = $album->artistName;
                 if (!empty($album->mbId)) {
-                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\apiFormat::JSON);
+                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                 } else {
                     $album->covertArtArchiveURL = null;
