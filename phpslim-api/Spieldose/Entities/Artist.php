@@ -20,6 +20,7 @@ class Artist extends \Spieldose\Entities\Entity
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
+        // TODO: ignore ids like "/"
         $params = array();
         $filterConditions = array();
         if (isset($filter["name"]) && !empty($filter["name"])) {
@@ -349,38 +350,61 @@ class Artist extends \Spieldose\Entities\Entity
                 $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
                 $this->latestAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
             }
+            $trackFields = [
+                "id " => "FIT.id",
+                "mbId" => "FIT.mb_release_track_id",
+                "title" => "FIT.title",
+                "artistMBId" => "FIT.mb_artist_id",
+                "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+                "releaseMBId" => "FIT.mb_album_id",
+                "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+                "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
+                "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+                "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
+                "trackNumber" => "FIT.track_number",
+                "coverPathId" => "D.id"
+            ];
+
+            $fields = [];
+            foreach ($trackFields as $key => $value) {
+                $fields[] = $value . " AS " . $key;
+            }
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
+            );
             $query = sprintf(
                 "
-                        SELECT
-                            FIT.id,
-                            FIT.title,
-                            FIT.artist,
-                            FIT.album,
-                            FIT.album_artist AS albumArtist,
-                            FIT.year,
-                            FIT.track_number as trackNumber,
-                            FIT.mb_album_id AS musicBrainzAlbumId,
-                            D.id AS coverPathId
-                        FROM FILE_ID3_TAG FIT
-                        INNER JOIN FILE F ON F.ID = FIT.id
-                        LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
-                        WHERE FIT.artist = :name
-                        AND FIT.title IS NOT NULL
-                        ORDER BY RANDOM()
-                        LIMIT 10
-                    "
+                    SELECT
+                        %s
+                    FROM FILE_ID3_TAG FIT
+                    INNER JOIN FILE F ON F.id = FIT.id
+                    LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                    LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                    LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                    WHERE FIT.artist = :name
+                    ORDER BY RANDOM()
+                    LIMIT 10
+                ",
+                implode(", ", $fields)
             );
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
             );
-            $this->topTracks = $this->dbh->query($query, $params);
-            foreach ($this->topTracks as $track) {
-                if (!empty($track->musicBrainzAlbumId)) {
-                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                    $track->covertArtArchiveURL = $cover->getReleaseImageURL($track->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
-                } else {
-                    $track->covertArtArchiveURL = null;
-                }
+            foreach ($this->dbh->query($query, $params) as $result) {
+                $this->topTracks[] = new \Spieldose\Entities\Track(
+                    $result->id,
+                    $result->mbId,
+                    $result->title,
+                    $result->artistMBId,
+                    $result->artistName,
+                    $result->releaseMBId,
+                    $result->releaseTitle,
+                    $result->albumArtistMBId,
+                    $result->albumArtistName,
+                    $result->year,
+                    $result->trackNumber,
+                    $result->coverPathId
+                );
             }
             $query = sprintf(
                 "
