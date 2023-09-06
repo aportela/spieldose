@@ -12,11 +12,13 @@ export const useSessionStore = defineStore("session", {
   state: () => ({
     jwt: null,
     lang: "en",
+    volume: null,
   }),
 
   getters: {
     isLogged: (state) => state.jwt != null,
     getJWT: (state) => state.jwt,
+    getVolume: (state) => state.volume,
   },
   actions: {
     load() {
@@ -27,11 +29,20 @@ export const useSessionStore = defineStore("session", {
       }
       const lang = basil.get("lang");
       this.lang = lang || "en-US";
+      const volume = basil.get("volume");
+      if (volume) {
+        this.volume = volume;
+      }
     },
     saveLang(lang) {
       this.lang = lang;
       const basil = useBasil(localStorageBasilOptions);
       basil.set("lang", lang);
+    },
+    saveVolume(volume) {
+      this.volume = volume;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set("volume", volume);
     },
     save(jwt) {
       const basil = useBasil(localStorageBasilOptions);

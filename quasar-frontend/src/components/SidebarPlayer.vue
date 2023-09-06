@@ -35,11 +35,17 @@ import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMa
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
+import { useSessionStore } from 'stores/session'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { api } from "src/boot/axios";
 
-const defaultVolume = 1;
+const session = useSessionStore();
+
+session.load();
+
+const defaultVolume = session.getVolume || 1;
+
 const player = usePlayer();
 
 const audioElement = ref(null);
@@ -126,7 +132,6 @@ onMounted(() => {
       currentTrackTimeData.value.position = 0;
     }
   });
-
 });
 
 function increasePlayCount(trackId) {
@@ -153,7 +158,6 @@ function skipPrevious() {
   currentPlaylist.skipPrevious();
 }
 
-
 function play(ignoreStatus) {
   player.interact();
   player.play(ignoreStatus);
@@ -167,6 +171,7 @@ function skipNext() {
 
 function onVolumeChange(volume) {
   player.setVolume(volume);
+  session.saveVolume(volume);
 }
 
 function onSeek(position) {
