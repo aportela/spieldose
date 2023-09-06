@@ -34,7 +34,7 @@ class Artist extends \Spieldose\Entities\Entity
             "image" => "MB_CACHE_ARTIST.image"
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
+            "totalResults" => " COUNT(DISTINCT FIT.mb_artist_id || COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -42,8 +42,7 @@ class Artist extends \Spieldose\Entities\Entity
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->image)) {
-                        // TODO: DO ON CLIENT
-                        $result->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($result->image));
+                        $result->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($result->image));
                     }
                     return ($result);
                 },
@@ -57,7 +56,7 @@ class Artist extends \Spieldose\Entities\Entity
 
         $query = sprintf(
             "
-                SELECT %s
+                SELECT DISTINCT %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 %s
