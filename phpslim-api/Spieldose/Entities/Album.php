@@ -29,7 +29,6 @@ class Album extends \Spieldose\Entities\Entity
     {
         $params = array();
         $filterConditions = array(
-            " FIT.artist LIKE 'Milladoiro'"
             //"COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE '100 Hits: The Best Soft Ro%'"
         );
         if (isset($filter["title"]) && !empty($filter["title"])) {
