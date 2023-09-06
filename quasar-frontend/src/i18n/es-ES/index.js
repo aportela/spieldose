@@ -64,6 +64,7 @@ export default {
 
   // actions
   reload: "recargar",
+  "play track": "reproducir canción",
 
   // general api errors
   "API Error: invalid/missing param":

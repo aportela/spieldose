@@ -2,7 +2,7 @@
   <li class="is-size-6-5 dashboard_list_item" v-if="track">
     <slot name="prepend">
     </slot>
-    <q-icon name="play_arrow" size="sm" title="play track" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
+    <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
     <span>{{ track.title }}</span>
     <span v-if="track.artist.name"> / <router-link :to="{ name: 'artist', params: { name: track.artist.name } }">{{
       track.artist.name }}</router-link></span>
@@ -21,9 +21,11 @@ li.dashboard_list_item {
 
 <script setup>
 
+import { useI18n } from 'vue-i18n'
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
+const { t } = useI18n();
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
