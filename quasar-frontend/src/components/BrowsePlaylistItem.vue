@@ -1,5 +1,5 @@
 <template>
-  <q-card class="col-2 shadow-box shadow-10 q-mt-lg" bordered>
+  <q-card class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 shadow-box shadow-10 q-mt-lg" bordered>
     <q-card-section>
       {{ playlist.name }} ({{ playlist.trackCount }} track/s)
     </q-card-section>
