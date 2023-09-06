@@ -25,10 +25,11 @@ class Album extends \Spieldose\Entities\Entity
         return (null);
     }
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager, bool $useLocalCovers): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
         $filterConditions = array(
+            " FIT.artist LIKE 'Milladoiro'"
             //"COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE '100 Hits: The Best Soft Ro%'"
         );
         if (isset($filter["title"]) && !empty($filter["title"])) {
@@ -52,20 +53,33 @@ class Album extends \Spieldose\Entities\Entity
 
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data) use ($useLocalCovers) {
             $data->items = array_map(
-                function ($result) {
+                function ($result) use ($useLocalCovers) {
                     $result->artist = new \stdClass();
                     $result->artist->mbId = $result->albumArtistMbId;
                     $result->artist->name = $result->albumArtistName;
-                    if (!empty($result->mbId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
-                    } else {
-                        $result->covertArtArchiveURL = null;
-                    }
                     unset($result->albumArtistMbId);
                     unset($result->albumArtistName);
+                    if ($useLocalCovers && !empty($result->coverPathId)) {
+                        $result->covers = [
+                            "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $result->coverPathId),
+                            "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $result->coverPathId)
+                        ];
+                    } else if (!empty($result->mbId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $url = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $result->covers = [
+                            "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
+                            "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                        ];
+                    } else {
+                        $result->covers = [
+                            "small" => null,
+                            "normal" => null
+                        ];
+                    }
+                    unset($result->coverPathId);
                     return ($result);
                 },
                 $data->items

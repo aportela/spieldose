@@ -22,8 +22,9 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image" :title="album.title"
-            :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"></AnimatedAlbumCover>
+          <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
+            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)">
+          </AnimatedAlbumCover>
         </div>
       </q-card-section>
     </q-card>
@@ -60,13 +61,7 @@ function search(resetPager) {
   loading.value = true;
   api.album.search(currentPageIndex.value, 32, { title: albumTitle.value }).then((success) => {
     albums.value = success.data.data.items.map((item) => {
-      if (item.coverPathId) {
-        item.image = "api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(item.coverPathId);
-      } else if (item.covertArtArchiveURL) {
-        item.image = "api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(item.covertArtArchiveURL);
-      } else {
-        item.image = null;
-      }
+      item.image = item.covers.small;
       return (item);
     });
     totalPages.value = success.data.data.pager.totalPages;
@@ -92,12 +87,12 @@ function onPaginationChanged(pageIndex) {
 function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
-    api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-      currentPlaylist.saveElements(success.data.tracks);
-      loading.value = false;
-    }).catch((error) => {
-      loading.value = false;
-    });
+  api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
+    currentPlaylist.saveElements(success.data.tracks);
+    loading.value = false;
+  }).catch((error) => {
+    loading.value = false;
+  });
 }
 
 search(true);

@@ -320,8 +320,9 @@ return function (App $app) {
                         new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
                     ]
                 );
+                $settings = $this->get('settings')['thumbnails']['albums'];
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $data = \Spieldose\Entities\Album::search($db, $filter, $sort, $pager);
+                $data = \Spieldose\Entities\Album::search($db, $filter, $sort, $pager, $settings['useLocalCovers']);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
