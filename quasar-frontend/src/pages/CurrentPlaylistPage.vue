@@ -40,7 +40,7 @@
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index" :selected="currentTrackIndex == index" @changeIndex="setCurrentTrackIndex(index)" :disabled="loading"></CurrentPlaylistTableRow>
+          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index" :selected="currentTrackIndex == index" @changeIndex="setCurrentTrackIndex(index)" :disabled="loading" :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped"></CurrentPlaylistTableRow>
         </tbody>
         <tbody v-else>
           <tr>
@@ -86,6 +86,9 @@ function onClear() {
 function setCurrentTrackIndex(index) {
   player.interact();
   currentPlaylist.saveCurrentTrackIndex(index);
+  if (! playerStatus.isPlaying) {
+    player.play();
+  }
 }
 
 function search() {

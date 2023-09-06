@@ -1,7 +1,8 @@
 <template>
   <tr v-if="element.track" class="non-selectable" :class="{ 'bg-pink text-white': selected }">
-    <td class="text-right cursor-pointer" @click="setcurrentIndex(index)"><q-icon name="play_arrow" size="sm"
-        class="q-mr-sm" v-if="selected"></q-icon>{{ index + 1 }}/32</td>
+    <td class="text-right cursor-pointer" @click="setcurrentIndex(index)">
+      <q-icon :name="icon" size="sm" class="q-mr-sm" v-if="selected"></q-icon>{{ index + 1 }}/32
+    </td>
     <td class="text-left cursor-pointer" @click="setcurrentIndex(index)">{{ element.track.title }}</td>
     <td class="text-left"><router-link v-if="element.track.artist && element.track.artist.name"
         :class="{ 'text-white text-bold': selected }"
@@ -29,12 +30,28 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 
 const props = defineProps({
   disabled: Boolean,
   index: Number,
   selected: Boolean,
+  isPlaying: Boolean,
+  isPaused: Boolean,
+  isStopped: Boolean,
   element: Object
+});
+
+const icon = computed(() => {
+  if (props.isPlaying) {
+    return ('play_arrow');
+  } else if (props.isPaused) {
+    return ('pause');
+  } else if (props.isStopped) {
+    return ('stop');
+  } else {
+    return ('play_arrow');
+  }
 });
 
 const emit = defineEmits(['changeIndex']);
