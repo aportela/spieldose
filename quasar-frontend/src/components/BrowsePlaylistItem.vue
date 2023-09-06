@@ -40,7 +40,7 @@
   </q-card>
 </template>
 
-<style >
+<style>
 div.no_cover {
   width: 100px;
   height: 100px;
