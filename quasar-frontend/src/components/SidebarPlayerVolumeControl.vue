@@ -17,7 +17,7 @@
 
 <script setup>
 
-import { ref, computed } from "vue";
+import { ref, watch, computed } from "vue";
 
 const props = defineProps({
   disabled: Boolean,
@@ -29,6 +29,12 @@ const emit = defineEmits(['volumeChange']);
 const oldVolume = ref(0);
 const volume = ref(props.defaultValue || 1);
 const muted = ref(false);
+
+watch(volume, (newValue, oldValue) => {
+  if (newValue > 0 && muted.value) {
+    muted.value = false;
+  }
+});
 
 const volumeIcon = computed(() => {
   if (volume.value == 0) {
@@ -47,13 +53,13 @@ const volumePercentValue = computed(() => {
 });
 
 function onToggleMute() {
-  muted.value = !muted.value;
   if (muted.value) {
+    volume.value = oldVolume.value;
+  } else {
     oldVolume.value = volume.value;
     volume.value = 0;
-  } else {
-    volume.value = oldVolume.value;
   }
+  muted.value = !muted.value;
   emit('volumeChange', volume.value);
 }
 
