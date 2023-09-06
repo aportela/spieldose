@@ -114,7 +114,7 @@ function onPaginationChanged(pageIndex) {
 
 function onPlayRadioStation(radioStation) {
   player.interact();
-  currentPlaylist.saveTracks([ { radioStation: radioStation }]);
+  currentPlaylist.saveElements([ { radioStation: radioStation }]);
 }
 search(true);
 

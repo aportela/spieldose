@@ -2,14 +2,14 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        {{ formatSecondsAsTime(currentTrackTimeData.currentTime) }}
+        {{ formatSecondsAsTime(currentElementTimeData.currentTime) }}
       </q-item-section>
       <q-item-section>
         <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="1" :step="0.01" label
-          :label-value="formatSecondsAsTime(currentTrackTimeData.currentTime)" @change="onSeek"/>
+          :label-value="formatSecondsAsTime(currentElementTimeData.currentTime)" @change="onSeek"/>
       </q-item-section>
       <q-item-section side>
-        {{ formatSecondsAsTime(currentTrackTimeData.duration) }}
+        {{ formatSecondsAsTime(currentElementTimeData.duration) }}
       </q-item-section>
     </q-item>
   </q-list>
@@ -21,13 +21,13 @@ import { ref, watch, computed } from "vue";
 
 const props = defineProps({
   disabled: Boolean,
-  currentTrackTimeData: Object
+  currentElementTimeData: Object
 });
 
 const emit = defineEmits(['seek']);
 
 const position = computed(() => {
-  return (props.currentTrackTimeData.position);
+  return (props.currentElementTimeData.position);
 });
 
 

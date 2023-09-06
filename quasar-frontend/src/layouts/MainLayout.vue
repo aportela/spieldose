@@ -198,21 +198,17 @@ const links = [
   }
 ];
 
-const currentTrackURL = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  if (currentTrack) {
-    if (!currentTrack.radioStation) {
-      return (currentTrack.url);
-    } else {
-      return (currentTrack.radioStation.url);
-    }
+const currentElementURL = computed(() => {
+  const currentTrack = currentPlaylist.getCurrentElement;
+  if (currentTrack && currentTrack.track) {
+      return (currentTrack.track.url);
   } else {
-    return (null);
+    //TODO
+    return(null);
   }
-
 });
 
-watch(currentTrackURL, (newValue) => {
+watch(currentElementURL, (newValue) => {
   if (audioElement.value) {
     audioElement.value.src = newValue;
     if (player.hasPreviousUserInteractions) {

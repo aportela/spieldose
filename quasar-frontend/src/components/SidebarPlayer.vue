@@ -7,16 +7,16 @@
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" :defaultValue="defaultVolume"
       @volumeChange="onVolumeChange">
     </SidebarPlayerVolumeControl>
-    <SidebarPlayerTrackInfo :currentTrack="currentPlaylist.getCurrentTrack"></SidebarPlayerTrackInfo>
+    <SidebarPlayerTrackInfo :currentElement="currentPlaylist.getCurrentElement"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
       :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying"
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentTrackTimeData="currentTrackTimeData"
+    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentElementTimeData="currentElementTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentTrackURL"
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentElementURL"
       @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
-    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :track="currentPlaylist.getCurrentTrack"
+    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :track="currentPlaylist.getCurrentElement"
       @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
   </div>
@@ -58,34 +58,43 @@ const currentPlaylist = useCurrentPlaylistStore();
 
 const playerStatus = usePlayerStatusStore();
 
-const currentTrackId = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  return (currentTrack ? currentTrack.id : null);
+const isCurrentElementTrack = computed(() => {
+  const currentElement = currentPlaylist.getCurrentElement;
+  return(currentElement.track != null);
+});
+
+const currentElementId = computed(() => {
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement && currentElement.track) {
+    return (currentElement.track.id || null);
+  } else {
+    return(null);
+  }
 });
 
 const coverImage = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  if (currentTrack && !currentTrack.radioStation && currentTrack.covers) {
-    return (currentTrack.covers.normal);
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement && currentElement.track && currentElement.track.covers) {
+    return (currentElement.track.covers.normal || null);
   } else {
     return (null);
   }
 });
 
 const smallVinylImage = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentTrack;
-  if (currentTrack && !currentTrack.radioStation && currentTrack.covers) {
-    return (currentTrack.covers.small);
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement && currentElement.track && currentElement.track.covers) {
+    return (currentElement.track.covers.small || null);
   } else {
     return (null);
   }
 });
 
 const disablePlayerControls = computed(() => {
-  return (currentTrackId.value == null);
+  return (currentElementId.value == null);
 });
 
-const currentTrackTimeData = ref({
+const currentElementTimeData = ref({
   duration: 0,
   currentTime: 0,
   currentProgress: 0,
@@ -110,7 +119,9 @@ onMounted(() => {
   */
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
-    increasePlayCount(currentTrackId.value);
+    if (isCurrentElementTrack.value) {
+      increasePlayCount(currentElementId.value);
+    }
     if (currentPlaylist.allowSkipNext) {
       skipNext();
     } else {
@@ -123,13 +134,13 @@ onMounted(() => {
   });
 
   audioElement.value.addEventListener('timeupdate', (event) => {
-    currentTrackTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
-    currentTrackTimeData.value.duration = Math.floor(audioElement.value.duration);
-    currentTrackTimeData.value.currentTime = Math.floor(audioElement.value.currentTime);
-    if (!isNaN(currentTrackTimeData.value.currentProgress)) {
-      currentTrackTimeData.value.position = Number(currentTrackTimeData.value.currentProgress.toFixed(2));
+    currentElementTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
+    currentElementTimeData.value.duration = Math.floor(audioElement.value.duration);
+    currentElementTimeData.value.currentTime = Math.floor(audioElement.value.currentTime);
+    if (!isNaN(currentElementTimeData.value.currentProgress)) {
+      currentElementTimeData.value.position = Number(currentElementTimeData.value.currentProgress.toFixed(2));
     } else {
-      currentTrackTimeData.value.position = 0;
+      currentElementTimeData.value.position = 0;
     }
   });
 });
@@ -154,7 +165,7 @@ function increasePlayCount(trackId) {
 
 function skipPrevious() {
   player.interact();
-  increasePlayCount(currentTrackId.value);
+  increasePlayCount(currentElementId.value);
   currentPlaylist.skipPrevious();
 }
 
@@ -165,7 +176,7 @@ function play(ignoreStatus) {
 
 function skipNext() {
   player.interact();
-  increasePlayCount(currentTrackId.value);
+  increasePlayCount(currentElementId.value);
   currentPlaylist.skipNext();
 }
 

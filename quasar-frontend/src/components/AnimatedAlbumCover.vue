@@ -5,9 +5,6 @@
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
       <q-icon name="play_arrow" class="browse_album_play_icon" size="128px" color="white"></q-icon>
-      <!--
-      <i class="fas fa-play fa-4x"></i>
-      -->
       <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
     </div>
     <div class="album-info">
@@ -20,7 +17,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 /* album thumb */
 
 div.animated-album-cover-item {

@@ -144,7 +144,7 @@ function onFilter(val, update) {
 }
 
 function onSendPlaylist() {
-  currentPlaylist.saveTracks(tracks.value);
+  currentPlaylist.saveElements(tracks.value);
 }
 
 </script>

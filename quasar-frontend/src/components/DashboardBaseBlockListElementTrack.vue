@@ -35,7 +35,7 @@ const props = defineProps({
 
 function playTrack(track) {
   player.stop();
-  currentPlaylist.saveTracks([track]);
+  currentPlaylist.saveElements([track]);
   player.interact();
   player.play(false);
 }

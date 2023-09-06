@@ -438,7 +438,7 @@ function nl2br(str, replaceMode, isXhtml) {
 
 function onPlayTracks(tracks) {
   player.stop();
-  currentPlaylist.saveTracks(tracks);
+  currentPlaylist.saveElements(tracks);
   player.interact();
   player.play(false);
 }
@@ -488,7 +488,7 @@ function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
   api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-    currentPlaylist.saveTracks(success.data.tracks);
+    currentPlaylist.saveElements(success.data.tracks);
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

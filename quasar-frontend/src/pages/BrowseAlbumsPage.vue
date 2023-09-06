@@ -93,7 +93,7 @@ function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
     api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-      currentPlaylist.saveTracks(success.data.tracks);
+      currentPlaylist.saveElements(success.data.tracks);
       loading.value = false;
     }).catch((error) => {
       loading.value = false;

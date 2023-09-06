@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
-import { usePlayer } from "stores/player";
+//import { usePlayer } from "stores/player";
 
-const player = usePlayer();
+//const player = usePlayer();
 
 const localStorageBasilOptions = {
   namespace: "spieldose",
@@ -13,28 +13,28 @@ const localStorageBasilOptions = {
 
 export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   state: () => ({
-    tracks: [],
+    elements: [],
     currentIndex: -1,
   }),
 
   getters: {
-    hasTracks: (state) => state.tracks && state.tracks.length > 0,
-    getTracks: (state) => state.tracks,
+    hasElements: (state) => state.elements && state.elements.length > 0,
+    getElements: (state) => state.elements,
     getCurrentIndex: (state) => state.currentIndex,
-    getCurrentTrack: (state) =>
-      state.currentIndex >= 0 && state.tracks.length > 0
-        ? state.tracks[state.currentIndex]
+    getCurrentElement: (state) =>
+      state.currentIndex >= 0 && state.elements.length > 0
+        ? state.elements[state.currentIndex]
         : null,
-    getCurrentTrackURL: (state) =>
-      state.currentIndex >= 0 && state.tracks.length > 0
-        ? state.tracks[state.currentIndex].url
+    getCurrentElementURL: (state) =>
+      state.currentIndex >= 0 && state.elements.length > 0
+        ? state.elements[state.currentIndex].url
         : null,
     allowSkipPrevious: (state) =>
-      state.currentIndex > 0 && state.tracks.length > 0,
+      state.currentIndex > 0 && state.elements.length > 0,
     allowSkipNext: (state) =>
       state.currentIndex >= 0 &&
-      state.tracks.length > 0 &&
-      state.currentIndex < state.tracks.length - 1,
+      state.elements.length > 0 &&
+      state.currentIndex < state.elements.length - 1,
     allowPlay: (state) => true,
     allowPause: (state) => true,
     allowResume: (state) => true,
@@ -44,29 +44,31 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   actions: {
     load() {
       const basil = useBasil(localStorageBasilOptions);
-      const currentPlaylistTracks = basil.get("currentPlaylistTracks");
-      if (currentPlaylistTracks) {
-        this.tracks = currentPlaylistTracks;
+      const currentPlaylistElements = basil.get("currentPlaylistElements");
+      if (currentPlaylistElements) {
+        this.elements = currentPlaylistElements;
       }
-      const currentPlaylistTrackIndex = basil.get("currentPlaylistTrackIndex");
-      if (currentPlaylistTrackIndex >= 0) {
-        this.currentIndex = currentPlaylistTrackIndex;
+      const currentPlaylistElementIndex = basil.get(
+        "currentPlaylistElementIndex"
+      );
+      if (currentPlaylistElementIndex >= 0) {
+        this.currentIndex = currentPlaylistElementIndex;
       }
     },
-    saveTracks(newTracks) {
-      this.tracks = newTracks;
-      this.currentIndex = newTracks && newTracks.length > 0 ? 0 : -1;
+    saveElements(newElements) {
+      this.elements = newElements;
+      this.currentIndex = newElements && newElements.length > 0 ? 0 : -1;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentPlaylistTracks", newTracks);
+      basil.set("currentPlaylistElements", newElements);
       basil.set(
-        "currentPlaylistTrackIndex",
-        newTracks && newTracks.length > 0 ? 0 : -1
+        "currentPlaylistElementIndex",
+        newElements && newElements.length > 0 ? 0 : -1
       );
     },
     saveCurrentTrackIndex(newIndex) {
       this.currentIndex = newIndex >= 0 ? newIndex : -1;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentPlaylistTrackIndex", this.currentIndex);
+      basil.set("currentPlaylistElementIndex", this.currentIndex);
       /*
       if (this.currentIndex >= 0) {
         player.play(true);
