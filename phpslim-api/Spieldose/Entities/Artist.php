@@ -43,7 +43,7 @@ class Artist extends \Spieldose\Entities\Entity
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->image)) {
-                        $result->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($result->image));
+                        $result->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($result->image));
                     }
                     return ($result);
                 },

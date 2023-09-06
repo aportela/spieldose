@@ -9,6 +9,9 @@ class API
 
     public const FILE_URL = "/api/2/file/%s";
 
+    public const REMOTE_ARTIST_URL_SMALL_THUMBNAIL = "/api/2/thumbnail/small/remote/artist/?url=%s";
+    public const REMOTE_ARTIST_URL_NORMAL_THUMBNAIL = "/api/2/thumbnail/normal/remote/artist/?url=%s";
+
     public const LOCAL_COVER_PATH_SMALL_THUMBNAIL = "/api/2/thumbnail/small/local/album/?path=%s";
     public const LOCAL_COVER_PATH_NORMAL_THUMBNAIL = "/api/2/thumbnail/normal/local/album/?path=%s";
 
