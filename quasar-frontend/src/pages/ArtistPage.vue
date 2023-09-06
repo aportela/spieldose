@@ -94,7 +94,7 @@
                       <td class="text-right col-1">{{ index }}</td>
                       <td class="text-center col-1">
                         <q-icon name="play_arrow" size="lg" class="cursor-pointer"
-                          @click="onPlayTracks([track])"></q-icon>
+                          @click="onPlayTrack(track)"></q-icon>
                         <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
                       </td>
                       <td class="text-bold col-4">{{ track.title }}</td>
@@ -436,9 +436,10 @@ function nl2br(str, replaceMode, isXhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
 }
 
-function onPlayTracks(tracks) {
+function onPlayTrack(track) {
+  // TODO: change icon if current index equals to this track, do not reload again
   player.stop();
-  currentPlaylist.saveElements(tracks);
+  currentPlaylist.saveElements([ { track: track } ]);
   player.interact();
   player.play(false);
 }
