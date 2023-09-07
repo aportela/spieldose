@@ -188,6 +188,70 @@ class Artist extends \Spieldose\Entities\Entity
         return ($topTracks);
     }
 
+    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    {
+        $artistFields = [
+            "mbId" => "FIT.mb_artist_id",
+            "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "image" => "MB_CACHE_ARTIST.image",
+            "totalTracks" => " COALESCE(TOTAL_TRACKS.total, 0) "
+        ];
+
+        $fields = [];
+        foreach ($artistFields as $key => $value) {
+            $fields[] = $value . " AS " . $key;
+        }
+
+        $params = [];
+
+        $filterConditions = [
+            " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL "
+        ];
+
+        if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
+            $filterConditions[] = "
+                EXISTS (
+                    SELECT * FROM MB_CACHE_ARTIST_GENRE MB1
+                    WHERE MB1.artist_mbid <> :mbid
+                    AND MB1.artist_mbid = FIT.mb_artist_id
+                    AND MB1.genre IN (
+                        SELECT MB2.genre FROM MB_CACHE_ARTIST_GENRE MB2
+                        WHERE MB2.artist_mbid = :mbid
+                    )
+                )
+            ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
+        } else if (isset($filter["name"]) && !empty($filter["name"])) {
+        }
+
+        $query = sprintf(
+            "
+                SELECT DISTINCT %s
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN (
+                    SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
+                    FROM FILE_ID3_TAG
+                    GROUP BY FILE_ID3_TAG.mb_artist_id
+                    HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
+                ) AS TOTAL_TRACKS ON TOTAL_TRACKS.artistMBId = FIT.mb_artist_id
+                %s
+                ORDER BY RANDOM()
+                LIMIT 64
+            ",
+            implode(", ", $fields),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+
+        $similarArtists = $dbh->query($query, $params);
+        foreach ($similarArtists as $artist) {
+            if (!empty($artist->image)) {
+                $artist->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($artist->image));
+            }
+        }
+        return ($similarArtists);
+    }
+
     public function get(): void
     {
         if (empty($this->mbId) && !empty($this->name)) {
@@ -349,18 +413,7 @@ class Artist extends \Spieldose\Entities\Entity
                     unset($album->artistMbId);
                     unset($album->artistName);
                 }
-                $query = sprintf(
-                    "
-                        SELECT mbid, name, image FROM MB_CACHE_ARTIST
-                        WHERE image IS NOT NULL
-                        ORDER BY RANDOM()
-                        LIMIT 32
-                    "
-                );
-                $this->similar = $this->dbh->query($query, []);
-                foreach ($this->similar as $similar) {
-                    $similar->image = sprintf("api/2/thumbnail/small/remote/artist/?url=%s", urlencode($similar->image));
-                }
+                $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");
             }
@@ -463,18 +516,7 @@ class Artist extends \Spieldose\Entities\Entity
                 unset($album->artistMbId);
                 unset($album->artistName);
             }
-            $query = sprintf(
-                "
-                        SELECT mbid, name, image FROM MB_CACHE_ARTIST
-                        WHERE image IS NOT NULL
-                        ORDER BY RANDOM()
-                        LIMIT 32
-                    "
-            );
-            $this->similar = $this->dbh->query($query, []);
-            foreach ($this->similar as $similar) {
-                $similar->image = sprintf("api/2/thumbnail/small/remote/artist/?url=%s", urlencode($similar->image));
-            }
+            $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
         }
     }
 }
