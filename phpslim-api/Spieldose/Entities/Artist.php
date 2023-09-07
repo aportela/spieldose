@@ -32,7 +32,8 @@ class Artist extends \Spieldose\Entities\Entity
         $fieldDefinitions = [
             "mbId" => "FIT.mb_artist_id",
             "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
-            "image" => "MB_CACHE_ARTIST.image"
+            "image" => "MB_CACHE_ARTIST.image",
+            "totalTracks" => " COALESCE(TOTAL_TRACKS.total, 0) "
         ];
         $fieldCountDefinition = [
             "totalResults" => " COUNT(DISTINCT FIT.mb_artist_id || COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
@@ -60,6 +61,12 @@ class Artist extends \Spieldose\Entities\Entity
                 SELECT DISTINCT %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN (
+                    SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
+                    FROM FILE_ID3_TAG
+                    GROUP BY FILE_ID3_TAG.mb_artist_id
+                    HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
+                ) AS TOTAL_TRACKS ON TOTAL_TRACKS.artistMBId = FIT.mb_artist_id
                 %s
                 %s
                 %s
