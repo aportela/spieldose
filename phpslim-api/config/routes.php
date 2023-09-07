@@ -279,11 +279,15 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "name" => $params["filter"]["name"] ?? ""
+                    "name" => isset($params["filter"]) && isset($params["filter"]["name"]) && !empty($params["filter"]["name"]) ? $params["filter"]["name"] : null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
-                        new \aportela\DatabaseBrowserWrapper\SortItem($params["sort"]["field"], $params["sort"]["order"] == "DESC" ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                        new \aportela\DatabaseBrowserWrapper\SortItem(
+                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                            true
+                        )
                     ]
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
@@ -313,11 +317,15 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "title" => $params["filter"]["title"] ?? ""
+                    "title" => isset($params["filter"]) && isset($params["filter"]["title"]) && !empty($params["filter"]["title"]) ? $params["filter"]["title"] : null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
-                        new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                        new \aportela\DatabaseBrowserWrapper\SortItem(
+                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
+                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                            true
+                        )
                     ]
                 );
                 $settings = $this->get('settings')['thumbnails']['albums'];

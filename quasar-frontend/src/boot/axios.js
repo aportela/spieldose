@@ -115,14 +115,15 @@ const api = {
   },
   artist: {
     search: function (
+      name,
       currentPageIndex,
       resultsPage,
-      filter,
       sortField,
       sortOrder
     ) {
       return new Promise((resolve, reject) => {
         const params = {
+          filter: { name: name },
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
@@ -131,7 +132,6 @@ const api = {
             field: sortField,
             order: sortOrder,
           },
-          filter: filter || {},
         };
         axios
           .post(baseAPIPath + "/artist/search", params)
@@ -163,14 +163,24 @@ const api = {
     },
   },
   album: {
-    search: function (currentPageIndex, resultsPage, filter) {
+    search: function (
+      title,
+      currentPageIndex,
+      resultsPage,
+      sortField,
+      sortOrder
+    ) {
       return new Promise((resolve, reject) => {
         const params = {
+          filter: { title: title },
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
           },
-          filter: filter || {},
+          sort: {
+            field: sortField,
+            order: sortOrder,
+          },
         };
         axios
           .post(baseAPIPath + "/album/search", params)
