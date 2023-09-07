@@ -92,8 +92,7 @@
                   <tbody>
                     <tr class="row" v-for="track in artistData.topTracks" :key="track.id">
                       <td class="text-center col-1">
-                        <q-icon name="play_arrow" size="lg" class="cursor-pointer"
-                          @click="onPlayTrack(track)"></q-icon>
+                        <q-icon name="play_arrow" size="lg" class="cursor-pointer" @click="onPlayTrack(track)"></q-icon>
                         <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
                       </td>
                       <td class="text-bold col-4">{{ track.title }}</td>
@@ -107,15 +106,15 @@
                       <td class="col-2">
                         <q-linear-progress size="32px" :value="track.percentPlay" color="pink-2">
                           <div class="absolute-full flex flex-center">
-                            <q-badge class="transparent" text-color="grey-10"
-                              :label="track.playCount + ' plays'" />
+                            <q-badge class="transparent" text-color="grey-10" :label="track.playCount + ' plays'" />
                           </div>
                         </q-linear-progress>
                       </td>
                     </tr>
                   </tbody>
                 </q-markup-table>
-                <h5 class="text-h5 text-center" v-if="! loading && ! (artistData.topTracks.length > 0)"><q-icon name="warning" size="xl"></q-icon> No enought data</h5>
+                <h5 class="text-h5 text-center" v-if="!loading && !(artistData.topTracks.length > 0)"><q-icon
+                    name="warning" size="xl"></q-icon> No enought data</h5>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
@@ -439,7 +438,7 @@ function nl2br(str, replaceMode, isXhtml) {
 function onPlayTrack(track) {
   // TODO: change icon if current index equals to this track, do not reload again
   player.stop();
-  currentPlaylist.saveElements([ { track: track } ]);
+  currentPlaylist.saveElements([{ track: track }]);
   player.interact();
   player.play(false);
 }
@@ -492,8 +491,8 @@ function get(name) {
 function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
-  api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-    currentPlaylist.saveElements(success.data.tracks.map((track) => { return({track: track}); }));
+  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

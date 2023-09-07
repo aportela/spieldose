@@ -133,8 +133,8 @@ function onPaginationChanged(pageIndex) {
 function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
-  api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-    currentPlaylist.saveElements(success.data.tracks.map((track) => { return({track: track}); }));
+  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

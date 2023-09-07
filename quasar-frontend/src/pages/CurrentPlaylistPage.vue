@@ -40,7 +40,10 @@
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index" :selected="currentTrackIndex == index" @changeIndex="setCurrentTrackIndex(index)" :disabled="loading" :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped"></CurrentPlaylistTableRow>
+          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
+            :selected="currentTrackIndex == index" @changeIndex="setCurrentTrackIndex(index)" :disabled="loading"
+            :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
+          </CurrentPlaylistTableRow>
         </tbody>
         <tbody v-else>
           <tr>
@@ -86,7 +89,7 @@ function onClear() {
 function setCurrentTrackIndex(index) {
   player.interact();
   currentPlaylist.saveCurrentTrackIndex(index);
-  if (! playerStatus.isPlaying) {
+  if (!playerStatus.isPlaying) {
     player.play();
   }
 }
@@ -95,8 +98,8 @@ function search() {
   player.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
-  api.track.search(1, 32, true, {}).then((success) => {
-    elements.value = success.data.data.items.map((item) => { return({ track: item }); } );
+  api.track.search({}, 1, 32, true, null, null).then((success) => {
+    elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
     currentPlaylist.saveElements(elements.value);
     loading.value = false;
   }).catch((error) => {

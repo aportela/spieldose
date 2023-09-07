@@ -206,7 +206,14 @@ const api = {
     },
   },
   track: {
-    search: function (currentPageIndex, resultsPage, randomSort, filter) {
+    search: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      randomSort,
+      sortField,
+      sortOrder
+    ) {
       return new Promise((resolve, reject) => {
         const params = {
           pager: {
@@ -215,6 +222,8 @@ const api = {
           },
           sort: {
             random: randomSort,
+            field: sortField,
+            order: sortOrder,
           },
           filter: filter || {},
         };
