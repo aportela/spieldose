@@ -26,11 +26,11 @@
                 </q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable :disable="selectedLocale.value == availableLanguage.value" v-close-popup
-                v-for="availableLanguage in availableLocales" :key="availableLanguage.value"
-                @click="onSelectLanguage(availableLanguage, true)">
+              <q-item clickable :disable="selectedLocale.value == availableLocale.value" v-close-popup
+                v-for="availableLocale in availableLocales" :key="availableLocale.value"
+                @click="onSelectLocale(availableLocale, true)">
                 <q-item-section>
-                  <div>{{ availableLanguage.label }}</div>
+                  <div>{{ availableLocale.label }}</div>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -134,12 +134,11 @@ const availableLocales = ref([
   }
 ]);
 
-
 const defaultBrowserLocale = availableLocales.value.find((lang) => lang.value == defaultLocale);
 
 const selectedLocale = ref(defaultBrowserLocale || availableLocales.value[0]);
 
-function onSelectLanguage(locale, save) {
+function onSelectLocale(locale, save) {
   selectedLocale.value = locale;
   i18n.global.locale.value = locale.value;
   if (save) {
