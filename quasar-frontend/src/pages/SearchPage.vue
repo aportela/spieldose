@@ -27,15 +27,15 @@
           <q-tab-panel name="advanced">
             <form>
               <q-input outlined v-model="text" label="Track title" placeholder="type text condition"
-                hint="Search on track title" dense clearable clear-icon="close" />
+                hint="Search on track title" dense clearable clear-icon="close" :disable="loading" />
               <q-input outlined v-model="text" label="Artist name" placeholder="type text condition"
-                hint="Search on artist name" dense clearable clear-icon="close" />
+                hint="Search on artist name" dense clearable clear-icon="close" :disable="loading" />
               <q-input outlined v-model="text" label="Album name" placeholder="type text condition"
-                hint="Search on album name" dense clearable clear-icon="close" />
+                hint="Search on album name" dense clearable clear-icon="close" :disable="loading" />
               <q-input outlined v-model="text" label="Album artist" placeholder="type text condition"
-                hint="Search on album artist" dense clearable clear-icon="close" />
+                hint="Search on album artist" dense clearable clear-icon="close" :disable="loading" />
               <q-input outlined v-model="text" label="Year" placeholder="type year condition" hint="Search on track year"
-                dense clearable clear-icon="close" />
+                dense clearable clear-icon="close" :disable="loading" />
             </form>
           </q-tab-panel>
         </q-tab-panels>
