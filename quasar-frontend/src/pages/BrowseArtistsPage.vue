@@ -49,6 +49,16 @@
                 <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
                   'track') }}</p>
               </div>
+              <template v-slot:loading>
+                <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                  <q-spinner color="pink" size="xl" />
+                  <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                    {{ artist.name }}
+                    <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                      'track') }}</p>
+                  </div>
+                </div>
+              </template>
               <template v-slot:error>
                 <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                   <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
