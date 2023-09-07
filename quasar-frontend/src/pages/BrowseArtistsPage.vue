@@ -21,8 +21,7 @@
         </q-input>
       </div>
       <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-        <q-select outlined dense v-model="sortOrder" :options="[ 'ASC', 'DESC']" label="Sort order">
-        </q-select>
+        <q-select outlined dense v-model="sortOrder" :options="[ 'ASC', 'DESC' ]" label="Sort order" @update:model-value="search(true)"></q-select>
       </div>
         </div>
         <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -91,7 +90,7 @@ function search(resetPager) {
   }
   noArtistsFound.value = false;
   loading.value = true;
-  api.artist.search(currentPageIndex.value, 32, { name: artistName.value }).then((success) => {
+  api.artist.search(currentPageIndex.value, 32, { name: artistName.value }, "name", sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (artistName.value && success.data.data.pager.totalResults < 1) {

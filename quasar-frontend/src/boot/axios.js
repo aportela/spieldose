@@ -114,12 +114,22 @@ const api = {
     },
   },
   artist: {
-    search: function (currentPageIndex, resultsPage, filter) {
+    search: function (
+      currentPageIndex,
+      resultsPage,
+      filter,
+      sortField,
+      sortOrder
+    ) {
       return new Promise((resolve, reject) => {
         const params = {
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
+          },
+          sort: {
+            field: sortField,
+            order: sortOrder,
           },
           filter: filter || {},
         };
