@@ -17,7 +17,7 @@
             <form @submit.prevent.stop="onSearch" autocorrect="off" autocapitalize="off" autocomplete="off"
               spellcheck="false">
               <q-input clearable clear-icon="close" dense outlined type="text" name="searchText"
-                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)">
+                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)" :disable="loading">
                 <template v-slot:prepend>
                   <q-icon name="search" />
                 </template>
