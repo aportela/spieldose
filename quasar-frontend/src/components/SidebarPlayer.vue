@@ -103,7 +103,7 @@ const currentElementTimeData = ref({
 
 onMounted(() => {
   audioElement.value = player.getElement;
-  player.setVolume(1);
+  player.setVolume(defaultVolume);
 
   /*
   audioElement.value.addEventListener('canplay', (event) => {
