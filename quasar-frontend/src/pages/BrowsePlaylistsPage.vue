@@ -6,7 +6,7 @@
         <q-breadcrumbs-el icon="list" label="Browse playlists" />
       </q-breadcrumbs>
       <q-card-section v-if="playlists">
-        <q-input v-model="playlistName" rounded clearable type="search" outlined dense placeholder="Text condition"
+        <q-input v-model="playlistName" clearable type="search" outlined dense placeholder="Text condition"
           hint="Search playlists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
           @clear="noPlaylistsFound = false; search(true)" :error="noPlaylistsFound"
           :errorMessage="'No playlists found with specified condition'">
