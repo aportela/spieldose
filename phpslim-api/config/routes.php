@@ -83,7 +83,11 @@ return function (App $app) {
                 } else if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
                     $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
                 } else {
-                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+                        (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                        (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                        true
+                    );
                 }
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);

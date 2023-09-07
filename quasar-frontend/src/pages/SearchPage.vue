@@ -47,16 +47,29 @@
         </div>
         <q-markup-table flat bordered>
           <caption class="q-pa-sm bg-grey-2">
-            <q-btn outline @click="onSendPlaylist" :disable="!allowSendToPlayList" class="full-width">Send results to playlist</q-btn>
+            <q-btn outline @click="onSendPlaylist" :disable="!allowSendToPlayList" class="full-width">Send results to
+              playlist</q-btn>
           </caption>
           <thead>
             <tr class="bg-grey-2 text-grey-10">
-              <th class="text-left cursor-pointer" @click="onSortBy('title')">Title</th>
-              <th class="text-left cursor-pointer" @click="onSortBy('artistName')">Artist</th>
-              <th class="text-left cursor-pointer" @click="onSortBy('albumArtist')">Album Artist</th>
-              <th class="text-left cursor-pointer" @click="onSortBy('albumTitle')">Album</th>
-              <th class="text-right cursor-pointer" @click="onSortBy('trackNumber')">Album Track nº</th>
-              <th class="text-right cursor-pointer" @click="onSortBy('albumYear')">Year</th>
+              <th class="text-left cursor-pointer" @click="onSortBy('title')">Title <q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'title'"></q-icon></th>
+              <th class="text-left cursor-pointer" @click="onSortBy('artistName')">Artist <q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'artistName'"></q-icon></th>
+              <th class="text-left cursor-pointer" @click="onSortBy('albumArtistName')">Album Artist <q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'albumArtistName'"></q-icon></th>
+              <th class="text-left cursor-pointer" @click="onSortBy('releaseTitle')">Album <q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'releaseTitle'"></q-icon></th>
+              <th class="text-right cursor-pointer" @click="onSortBy('trackNumber')"><q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'trackNumber'"></q-icon> Album Track nº</th>
+              <th class="text-right cursor-pointer" @click="onSortBy('year')"><q-icon size="xl"
+                  :name="sortOrder.value == 'DESC' ? 'arrow_drop_down' : 'arrow_drop_up'"
+                  v-if="sortField == 'year'"></q-icon> Year</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
@@ -85,6 +98,9 @@
               </td>
             </tr>
           </tbody>
+          <q-inner-loading :showing="loading">
+            <q-spinner-gears size="50px" color="pink" />
+          </q-inner-loading>
         </q-markup-table>
       </div>
     </q-card>
@@ -121,13 +137,34 @@ const allowSendToPlayList = ref(false);
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
+const sortField = ref('title');
+
+const sortOrderValues = [
+  {
+    label: 'Ascending',
+    value: 'ASC'
+  },
+  {
+    label: 'Descending',
+    value: 'DESC'
+  }
+];
+
+const sortOrder = ref(sortOrderValues[0]);
+
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
   onSearch(false);
 }
 
 function onSortBy(field) {
-onSearch();
+  if (field == sortField.value) {
+    sortOrder.value = sortOrder.value.value == 'DESC' ? sortOrderValues[0] : sortOrderValues[1];
+  } else {
+    sortOrder.value = sortOrderValues[0];
+    sortField.value = field;
+  }
+  onSearch();
 }
 
 function onSearch(resetPager) {
@@ -137,7 +174,7 @@ function onSearch(resetPager) {
   allowSendToPlayList.value = false;
   if (searchText.value && searchText.value.trim().length > 0) {
     loading.value = true;
-    api.track.search(currentPageIndex.value, 32, false, { text: searchText.value })
+    api.track.search({ text: searchText.value }, currentPageIndex.value, 16, false, sortField.value, sortOrder.value.value)
       .then((success) => {
         totalPages.value = success.data.data.pager.totalPages;
         searchResults.value = success.data.data.items.map((item) => { return ({ track: item }); });
