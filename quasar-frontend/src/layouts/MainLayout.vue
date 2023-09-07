@@ -16,18 +16,18 @@
             :icon="link.icon" :label="t(link.text)" no-caps inline-label exact />
         </q-tabs>
         <q-btn flat no-caps stack icon="language">
-          {{ selectedLanguage.shortLabel }}
+          {{ selectedLocale.shortLabel }}
           <q-icon name="arrow_drop_down" size="16px" />
           <q-menu auto-close>
             <q-list dense style="min-width: 200px">
               <q-item class="GL__menu-link-signed-in">
                 <q-item-section>
-                  <div>{{ t("Selected language") }}: <strong>{{ selectedLanguage.label }}</strong></div>
+                  <div>{{ t("Selected language") }}: <strong>{{ selectedLocale.label }}</strong></div>
                 </q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable :disable="selectedLanguage.value == availableLanguage.value" v-close-popup
-                v-for="availableLanguage in availableLanguages" :key="availableLanguage.value"
+              <q-item clickable :disable="selectedLocale.value == availableLanguage.value" v-close-popup
+                v-for="availableLanguage in availableLocales" :key="availableLanguage.value"
                 @click="onSelectLanguage(availableLanguage, true)">
                 <q-item-section>
                   <div>{{ availableLanguage.label }}</div>
@@ -99,7 +99,7 @@ import { api } from 'boot/axios';
 import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
-import { i18n } from "src/boot/i18n";
+import { i18n, defaultLocale } from "src/boot/i18n";
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { usePlayer } from 'stores/player';
 import { usePlayerStatusStore } from 'stores/playerStatus'
@@ -116,7 +116,7 @@ const audioElement = ref(null);
 
 const session = useSessionStore();
 
-const availableLanguages = ref([
+const availableLocales = ref([
   {
     shortLabel: 'EN',
     label: 'English',
@@ -134,16 +134,16 @@ const availableLanguages = ref([
   }
 ]);
 
-const previousLang = availableLanguages.value.find((lang) => lang.value == session.lang);
 
-const selectedLanguage = ref(previousLang || availableLanguages.value[0]);
-onSelectLanguage(selectedLanguage.value, false);
+const defaultBrowserLocale = availableLocales.value.find((lang) => lang.value == defaultLocale);
 
-function onSelectLanguage(language, save) {
-  selectedLanguage.value = language;
-  i18n.global.locale.value = language.value;
+const selectedLocale = ref(defaultBrowserLocale || availableLocales.value[0]);
+
+function onSelectLanguage(locale, save) {
+  selectedLocale.value = locale;
+  i18n.global.locale.value = locale.value;
   if (save) {
-    session.saveLang(language.value);
+    session.saveLocale(locale.value);
   }
 }
 
@@ -201,10 +201,10 @@ const links = [
 const currentElementURL = computed(() => {
   const currentTrack = currentPlaylist.getCurrentElement;
   if (currentTrack && currentTrack.track) {
-      return (currentTrack.track.url);
+    return (currentTrack.track.url);
   } else {
     //TODO
-    return(null);
+    return (null);
   }
 });
 
