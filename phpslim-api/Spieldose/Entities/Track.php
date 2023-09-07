@@ -56,7 +56,7 @@ class Track extends \Spieldose\Entities\Entity
     {
     }
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
         $filterConditions = array();
@@ -160,7 +160,7 @@ class Track extends \Spieldose\Entities\Entity
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
         );
         $data = $browser->launch($query, $queryCount);
-        return ($data->items);
+        return ($data);
     }
 
     public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)

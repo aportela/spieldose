@@ -96,7 +96,7 @@ function search() {
   loading.value = true;
   currentTrackIndex.value = 0;
   api.track.search(1, 32, true, {}).then((success) => {
-    elements.value = success.data.tracks.map((track) => { return({ track: track }); } );
+    elements.value = success.data.data.items.map((item) => { return({ track: item }); } );
     currentPlaylist.saveElements(elements.value);
     loading.value = false;
   }).catch((error) => {
