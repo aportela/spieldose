@@ -105,6 +105,89 @@ class Artist extends \Spieldose\Entities\Entity
         }
     }
 
+    private function getTopTracks(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    {
+        $trackFields = [
+            "id " => "FIT.id",
+            "mbId" => "FIT.mb_release_track_id",
+            "title" => "FIT.title",
+            "artistMBId" => "FIT.mb_artist_id",
+            "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "releaseMBId" => "FIT.mb_album_id",
+            "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+            "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
+            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
+            "trackNumber" => "FIT.track_number",
+            "coverPathId" => "D.id",
+            "playCount" => "COALESCE(TMP_COUNT.total, 0)"
+        ];
+
+        $fields = [];
+        foreach ($trackFields as $key => $value) {
+            $fields[] = $value . " AS " . $key;
+        }
+
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+        ];
+
+        $filterConditions = [];
+
+        if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
+            $filterConditions[] = " FIT.mb_artist_id = :mbid ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
+        } else if (isset($filter["name"]) && !empty($filter["name"])) {
+            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) = :name ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", $filter["name"]);
+        }
+
+        $query = sprintf(
+            "
+                SELECT
+                    %s
+                FROM FILE_ID3_TAG FIT
+                INNER JOIN FILE F ON F.id = FIT.id
+                INNER JOIN (
+                    SELECT file_id, COUNT(*) AS total
+                    FROM FILE_PLAYCOUNT_STATS
+                    WHERE user_id = :user_id
+                    GROUP BY file_id
+                    HAVING COUNT(*) > 0
+                ) TMP_COUNT ON TMP_COUNT.file_id = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                %s
+                ORDER BY COALESCE(TMP_COUNT.total, 0) DESC
+                LIMIT 10
+            ",
+            implode(", ", $fields),
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+        );
+
+        $topTracks = [];
+        foreach ($dbh->query($query, $params) as $result) {
+            $track = (array) new \Spieldose\Entities\Track(
+                $result->id,
+                $result->mbId,
+                $result->title,
+                $result->artistMBId,
+                $result->artistName,
+                $result->releaseMBId,
+                $result->releaseTitle,
+                $result->albumArtistMBId,
+                $result->albumArtistName,
+                $result->year,
+                $result->trackNumber,
+                $result->coverPathId
+            );
+            $track["playCount"] = $result->playCount;
+            $topTracks[] = $track;
+        }
+        return ($topTracks);
+    }
+
     public function get(): void
     {
         if (empty($this->mbId) && !empty($this->name)) {
@@ -193,44 +276,8 @@ class Artist extends \Spieldose\Entities\Entity
                     "coverPathId" => "D.id"
                 ];
 
-                $fields = [];
-                foreach ($trackFields as $key => $value) {
-                    $fields[] = $value . " AS " . $key;
-                }
-                $query = sprintf(
-                    "
-                        SELECT
-                            %s
-                        FROM FILE_ID3_TAG FIT
-                        INNER JOIN FILE F ON F.id = FIT.id
-                        LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
-                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
-                        LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                        WHERE FIT.mb_artist_id = :mbid
-                        ORDER BY RANDOM()
-                        LIMIT 10
-                    ",
-                    implode(", ", $fields)
-                );
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-                );
-                foreach ($this->dbh->query($query, $params) as $result) {
-                    $this->topTracks[] = new \Spieldose\Entities\Track(
-                        $result->id,
-                        $result->mbId,
-                        $result->title,
-                        $result->artistMBId,
-                        $result->artistName,
-                        $result->releaseMBId,
-                        $result->releaseTitle,
-                        $result->albumArtistMBId,
-                        $result->albumArtistName,
-                        $result->year,
-                        $result->trackNumber,
-                        $result->coverPathId
-                    );
-                }
+                $this->topTracks = $this->getTopTracks($this->dbh, ["mbId" => $this->mbId, "name" => null]);
+
                 $query = sprintf(
                     "
                         SELECT DISTINCT
@@ -379,40 +426,8 @@ class Artist extends \Spieldose\Entities\Entity
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
             );
-            $query = sprintf(
-                "
-                    SELECT
-                        %s
-                    FROM FILE_ID3_TAG FIT
-                    INNER JOIN FILE F ON F.id = FIT.id
-                    LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
-                    LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
-                    LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                    WHERE FIT.artist = :name
-                    ORDER BY RANDOM()
-                    LIMIT 10
-                ",
-                implode(", ", $fields)
-            );
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
-            );
-            foreach ($this->dbh->query($query, $params) as $result) {
-                $this->topTracks[] = new \Spieldose\Entities\Track(
-                    $result->id,
-                    $result->mbId,
-                    $result->title,
-                    $result->artistMBId,
-                    $result->artistName,
-                    $result->releaseMBId,
-                    $result->releaseTitle,
-                    $result->albumArtistMBId,
-                    $result->albumArtistName,
-                    $result->year,
-                    $result->trackNumber,
-                    $result->coverPathId
-                );
-            }
+
+            $this->topTracks = $this->getTopTracks($this->dbh, ["mbId" => null, "name" => $this->name]);
             $query = sprintf(
                 "
                         SELECT DISTINCT

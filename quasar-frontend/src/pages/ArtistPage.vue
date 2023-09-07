@@ -108,13 +108,14 @@
                         <q-linear-progress size="32px" :value="track.percentPlay" color="pink-2">
                           <div class="absolute-full flex flex-center">
                             <q-badge class="transparent" text-color="grey-10"
-                              :label="Math.floor(track.percentPlay * 100) + ' plays'" />
+                              :label="track.playCount + ' plays'" />
                           </div>
                         </q-linear-progress>
                       </td>
                     </tr>
                   </tbody>
                 </q-markup-table>
+                <h5 class="text-h5 text-center" v-if="! loading && ! (artistData.topTracks.length > 0)"><q-icon name="warning" size="xl"></q-icon> No enought data</h5>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
@@ -448,6 +449,10 @@ function get(name) {
   api.artist.get(null, name).then((success) => {
     artistData.value = success.data.artist;
     artistImage.value = artistData.value.image;
+    let totalPlays = 0;
+    artistData.value.topTracks.forEach((track) => {
+      totalPlays += track.playCount;
+    });
     artistData.value.topTracks = artistData.value.topTracks.map((track) => {
       if (track.coverPathId) {
         track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
@@ -456,7 +461,7 @@ function get(name) {
       } else {
         track.image = null;
       }
-      track.percentPlay = Math.random();
+      track.percentPlay = Math.round(track.playCount * 100 / totalPlays) / 100;
       return (track);
     });
     artistData.value.topAlbums.value = artistData.value.topAlbums.map((item) => {
