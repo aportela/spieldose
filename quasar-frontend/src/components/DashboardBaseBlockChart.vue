@@ -120,6 +120,6 @@ function refresh() {
   }
 }
 
-tab.value = 'weekday';
+tab.value = 'hour';
 
 </script>
