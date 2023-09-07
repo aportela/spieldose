@@ -21,7 +21,7 @@ export default {
   Genres: "Géneros",
 
   // date ranges
-  Today: "Hora",
+  Today: "Hoy",
   "Last week": "Última semana",
   "Last month": "Último mes",
   "Last year": "Último año",

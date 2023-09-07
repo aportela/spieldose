@@ -21,7 +21,7 @@ export default {
   Genres: "Xéneros",
 
   // date ranges
-  Today: "Hora",
+  Today: "Hoxe",
   "Last week": "Última semana",
   "Last month": "Último mes",
   "Last year": "Último ano",
