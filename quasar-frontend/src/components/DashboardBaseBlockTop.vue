@@ -183,7 +183,7 @@ function refresh() {
   }
 }
 
-tab.value = 'always';
+tab.value = 'lastWeek';
 
 
 </script>
