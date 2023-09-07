@@ -90,8 +90,7 @@
                 <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
                 <q-markup-table v-else>
                   <tbody>
-                    <tr class="row" v-for="track, index in artistData.topTracks" :key="track.id">
-                      <td class="text-right col-1">{{ index }}</td>
+                    <tr class="row" v-for="track in artistData.topTracks" :key="track.id">
                       <td class="text-center col-1">
                         <q-icon name="play_arrow" size="lg" class="cursor-pointer"
                           @click="onPlayTrack(track)"></q-icon>
