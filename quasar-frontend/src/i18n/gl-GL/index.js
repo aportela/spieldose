@@ -105,7 +105,7 @@ export default {
   "Play stats": "Estadísticas de escoita",
   "API Error: error loading metrics":
     "API Error: error cargando métricas/estadísticas",
-  onePlayCount: " 1 vez",
+  onePlayCount: " vez",
   nPlayCounts: " {count} veces",
   "No enought data": "Non hai datos suficientes",
 };
