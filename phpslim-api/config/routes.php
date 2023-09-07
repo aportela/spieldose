@@ -279,7 +279,7 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "name" => isset($params["filter"]) && isset($params["filter"]["name"]) && !empty($params["filter"]["name"]) ? $params["filter"]["name"] : null
+                    "name" => $params["filter"]["name"] ?? null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
@@ -317,7 +317,7 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "title" => isset($params["filter"]) && isset($params["filter"]["title"]) && !empty($params["filter"]["title"]) ? $params["filter"]["title"] : null
+                    "title" => $params["filter"]["title"] ?? null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
