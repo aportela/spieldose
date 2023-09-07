@@ -105,4 +105,5 @@ export default {
   "API Error: error loading metrics": "API Error: error loading metrics",
   onePlayCount: " 1 time",
   nPlayCounts: " {count} times",
+  "No enought data": "No enought data",
 };

@@ -8,7 +8,9 @@
       </q-tabs>
     </template>
     <template #chart>
-      <div class="ct-chart"></div>
+      <div class="ct-chart" v-show="items && items.length > 0"></div>
+      <h5 class="text-h5 text-center" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
+          size="xl"></q-icon> {{ t('No enought data') }}</h5>
     </template>
   </component>
 </template>

@@ -108,4 +108,5 @@ export default {
     "API Error: error cargando métricas/estadísticas",
   onePlayCount: " 1 vez",
   nPlayCounts: " {count} veces",
+  "No enought data": "No hay datos suficientes",
 };
