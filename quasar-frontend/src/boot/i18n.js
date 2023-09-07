@@ -13,10 +13,10 @@ if (session.getLocale) {
   defaultLocale = session.getLocale;
 } else {
   switch ((navigator.language || navigator.userLanguage).substring(0, 2)) {
-    case 'es':
+    case "es":
       defaultLocale = "es-ES";
       break;
-    case 'gl':
+    case "gl":
       defaultLocale = "gl-GL";
       break;
     default:
