@@ -25,7 +25,11 @@
           <DashboardBaseBlockRecently :added="true"></DashboardBaseBlockRecently>
         </div>
       </div>
-      <DashboardBaseBlockChart></DashboardBaseBlockChart>
+      <div class="row">
+        <div class="col-12">
+          <DashboardBaseBlockChart></DashboardBaseBlockChart>
+        </div>
+      </div>
     </q-card>
   </q-page>
 </template>
