@@ -24,8 +24,12 @@ class Artist extends \Spieldose\Entities\Entity
         $params = array();
         $filterConditions = array();
         if (isset($filter["name"]) && !empty($filter["name"])) {
-            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :name";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter["name"] . "%");
+            $words = explode(" ", trim($filter["name"]));
+            foreach ($words as $word) {
+                $paramName = ":name_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         } else {
             $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ";
         }

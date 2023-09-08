@@ -64,16 +64,28 @@ class Track extends \Spieldose\Entities\Entity
         );
         $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
-            $filterConditions[] = " FIT.title LIKE :title";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
+            $words = explode(" ", trim($filter["title"]));
+            foreach ($words as $word) {
+                $paramName = ":title_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["artistName"]) && !empty($filter["artistName"])) {
-            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :artistName";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artistName", "%" . $filter["artistName"] . "%");
+            $words = explode(" ", trim($filter["artistName"]));
+            foreach ($words as $word) {
+                $paramName = ":artistname_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["text"]) && !empty($filter["text"])) {
-            $filterConditions[] = " (FIT.title LIKE :text OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :text OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE :text) ";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":text", "%" . $filter["text"] . "%");
+            $words = explode(" ", trim($filter["text"]));
+            foreach ($words as $word) {
+                $paramName = ":text_" . uniqid();
+                $filterConditions[] = sprintf(" (FIT.title LIKE %s OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s)", $paramName, $paramName, $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["path"]) && !empty($filter["path"])) {
             $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
