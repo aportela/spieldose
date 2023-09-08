@@ -23,8 +23,8 @@
                   <q-icon name="filter_alt" />
                 </template>
                 <template v-slot:after>
-                  <q-btn type="submit" label="launch search" outline icon="search" :loading="loading" :disable="loading || ! searchText" class="q-pa-sm"
-                    @click="onSearch"></q-btn>
+                  <q-btn type="submit" label="launch search" outline icon="search" :loading="loading"
+                    :disable="loading || !searchText" class="q-pa-sm" @click="onSearch"></q-btn>
                 </template>
               </q-input>
             </form>
@@ -98,7 +98,9 @@
                     @click="onPlayTrack(searchResult)" />
                   <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" :disable="loading"
                     :href="searchResult.track.url" />
-                  <q-btn size="sm" color="white" :text-color="searchResult.track.favorited ? 'pink': 'grey-5'" icon="favorite" title="Toggle favorite" :disable="loading" @click="onToggleFavorite(searchResult.track)" />
+                  <q-btn size="sm" color="white" :text-color="searchResult.track.favorited ? 'pink' : 'grey-5'"
+                    icon="favorite" title="Toggle favorite" :disable="loading"
+                    @click="onToggleFavorite(searchResult.track)" />
                 </q-btn-group>
               </td>
             </tr>
@@ -219,9 +221,9 @@ function onSendPlaylist() {
 }
 
 function onToggleFavorite(track) {
-    if (track && track.id) {
-      //loading.value = true;
-    const funct = track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+  if (track && track.id) {
+    //loading.value = true;
+    const funct = track.favorited ? api.track.unSetFavorite : api.track.setFavorite;
     funct(track.id).then((success) => {
       track.favorited = success.data.favorited;
       // TODO use store
@@ -240,7 +242,7 @@ function onToggleFavorite(track) {
             break;
         }
       });
-    }
+  }
 }
 
 onMounted(() => {
