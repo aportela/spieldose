@@ -15,10 +15,10 @@
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
         <q-btn outline color="dark" :label="t('Play')" icon="play_arrow" @click="onPlay"
           :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-        <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause" :disable="loading || !(elements && elements.length > 0)"
-          v-else-if="playerStatus.isPlaying" />
-        <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume" :disable="loading || !(elements && elements.length > 0)"
-          v-else-if="playerStatus.isPaused" />
+        <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause"
+          :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
+        <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume"
+          :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
         <q-btn outline color="dark" :label="t('Stop')" icon="stop" @click="onStop"
           :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
         <q-btn outline color="dark" :label="t('Next')" icon="skip_next" @click="onNextPlaylist"
@@ -40,8 +40,10 @@
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index" :lastIndex="elements.length"
-            :selected="currentTrackIndex == index" @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)" @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)" :disabled="loading"
+          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
+            :lastIndex="elements.length" :selected="currentTrackIndex == index"
+            @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)"
+            @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)" :disabled="loading"
             :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
           </CurrentPlaylistTableRow>
         </tbody>
@@ -75,6 +77,16 @@ const { t } = useI18n();
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
+const currentPlayListElementsLastChanges = computed(() => {
+  return (currentPlaylist.getElementsLastChangeTimestamp);
+});
+
+watch(currentPlayListElementsLastChanges, (newValue) => {
+  elements.value = currentPlaylist.getElements;
+  currentTrackIndex.value = currentPlaylist.getCurrentIndex;
+
+});
+
 const playerStatus = usePlayerStatusStore();
 
 const elements = ref([]);
@@ -100,23 +112,23 @@ function setCurrentTrackIndex(index) {
 
 function onMoveUpTrackAtIndex(index) {
   // https://stackoverflow.com/a/6470794
-    const element = elements.value[index];
-    elements.value.splice(index, 1);
-    elements.value.splice(index - 1, 0, element);
+  const element = elements.value[index];
+  elements.value.splice(index, 1);
+  elements.value.splice(index - 1, 0, element);
 }
 
 function onMoveDownTrackAtIndex(index) {
   // https://stackoverflow.com/a/6470794
   const element = elements.value[index];
-    elements.value.splice(index, 1);
-    elements.value.splice(index + 1, 0, element);
+  elements.value.splice(index, 1);
+  elements.value.splice(index + 1, 0, element);
 }
 
 function onToggleFavoriteAtIndex(index) {
   const currentElement = elements.value[index];
   if (currentElement) {
     //loading.value = true;
-    const funct = currentElement.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    const funct = currentElement.favorited ? api.track.unSetFavorite : api.track.setFavorite;
     funct(currentElement.id).then((success) => {
       currentElement.favorited = success.data.favorited;
       currentPlaylist.saveElements(elements.value);
@@ -138,7 +150,6 @@ function onToggleFavoriteAtIndex(index) {
       });
   }
 }
-
 
 function search() {
   player.interact();

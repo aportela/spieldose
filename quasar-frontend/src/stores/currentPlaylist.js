@@ -15,11 +15,14 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   state: () => ({
     elements: [],
     currentIndex: -1,
+    elementsLastChangeTimestamp: null,
   }),
 
   getters: {
     hasElements: (state) => state.elements && state.elements.length > 0,
     getElements: (state) => state.elements,
+    getElementsLastChangeTimestamp: (state) =>
+      state.elementsLastChangeTimestamp,
     getCurrentIndex: (state) => state.currentIndex,
     getCurrentElement: (state) =>
       state.currentIndex >= 0 && state.elements.length > 0
@@ -64,6 +67,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
         "currentPlaylistElementIndex",
         newElements && newElements.length > 0 ? 0 : -1
       );
+      this.elementsLastChangeTimestamp = Date.now();
     },
     saveCurrentTrackIndex(newIndex) {
       this.currentIndex = newIndex >= 0 ? newIndex : -1;
