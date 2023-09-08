@@ -3,14 +3,40 @@
 
     <q-header>
       <q-toolbar class="bg-grey-3 text-black shadow-2 rounded-borders">
+        <q-avatar square size="42px" class="q-mr-sm">
+          <img src="icons/favicon-96x96.png" />
+        </q-avatar>
         <q-toolbar-title>Spieldose</q-toolbar-title>
-        <q-input></q-input>
+        <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" color2="dark" :stack-label="false"
+          :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter">
+          <template v-slot:no-option v-if="searching">
+            <q-item>
+              <q-item-section>
+                <div class="text-center">
+                  <q-spinner color="pink" size="32px" />
+                </div>
+              </q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:option="scope">
+            <q-list class="bg-grey-2 text-dark">
+              <q-item v-bind="scope.itemProps" @click="onPlayTrack(scope.opt.id)">
+                <q-item-section side>
+                  <q-icon name="music_note" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.label }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.caption }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </template>
+        </q-select>
         <q-space />
         <!--
         notice shrink property since we are placing it
         as child of QToolbar
-      -->
-
+        -->
         <q-tabs shrink>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="t(link.text)" no-caps inline-label exact />
@@ -92,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, watch } from "vue";
 
 import { useRouter } from "vue-router";
 import { api } from 'boot/axios';
@@ -115,6 +141,56 @@ const playerStatus = usePlayerStatusStore();
 const audioElement = ref(null);
 
 const session = useSessionStore();
+
+const searchText = ref(null);
+
+const filteredOptions = ref([]);
+
+const searching = ref(false);
+
+const searchResults = ref([]);
+
+function onFilter(val, update) {
+  if (val && val.trim().length > 0) {
+    filteredOptions.value = [];
+    searching.value = true;
+    update(() => {
+      api.track.search({ text: val }, 1, 5, false, 'title', 'ASC')
+        .then((success) => {
+          searchResults.value = success.data.data.items;
+          filteredOptions.value = searchResults.value.map((item) => {
+            return ({ id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+          });
+          searching.value = false;
+          return;
+        })
+        .catch((error) => {
+          searching.value = false;
+          $q.notify({
+            type: "negative",
+            message: t("API Error: fatal error"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          return;
+        });
+    });
+  } else {
+    update(() => {
+      filteredOptions.value = [];
+    });
+    return;
+  }
+}
+
+function onPlayTrack(trackId) {
+  const element = searchResults.value.find((element) => element.id == trackId);
+  if (element) {
+    currentPlaylist.saveElements([{ track: element }]);
+    if (! playerStatus.isPlaying) {
+      player.play();
+    }
+  }
+}
 
 const availableLocales = ref([
   {
