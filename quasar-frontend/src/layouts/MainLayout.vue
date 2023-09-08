@@ -7,8 +7,8 @@
           <img src="icons/favicon-96x96.png" />
         </q-avatar>
         <q-toolbar-title>Spieldose</q-toolbar-title>
-        <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" color2="dark" :stack-label="false"
-          :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter">
+        <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
+          :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="width: 40%; max-width: 500px;">
           <template v-slot:no-option v-if="searching">
             <q-item>
               <q-item-section>
@@ -152,28 +152,30 @@ const searchResults = ref([]);
 
 function onFilter(val, update) {
   if (val && val.trim().length > 0) {
-    filteredOptions.value = [];
-    searching.value = true;
-    update(() => {
-      api.track.search({ text: val }, 1, 5, false, 'title', 'ASC')
-        .then((success) => {
-          searchResults.value = success.data.data.items;
-          filteredOptions.value = searchResults.value.map((item) => {
-            return ({ id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+    if (! searching.value) {
+      filteredOptions.value = [];
+      searching.value = true;
+      update(() => {
+        api.track.search({ text: val }, 1, 5, false, 'title', 'ASC')
+          .then((success) => {
+            searchResults.value = success.data.data.items;
+            filteredOptions.value = searchResults.value.map((item) => {
+              return ({ id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+            });
+            searching.value = false;
+            return;
+          })
+          .catch((error) => {
+            searching.value = false;
+            $q.notify({
+              type: "negative",
+              message: t("API Error: fatal error"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            return;
           });
-          searching.value = false;
-          return;
-        })
-        .catch((error) => {
-          searching.value = false;
-          $q.notify({
-            type: "negative",
-            message: t("API Error: fatal error"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          return;
-        });
-    });
+      });
+    }
   } else {
     update(() => {
       filteredOptions.value = [];
