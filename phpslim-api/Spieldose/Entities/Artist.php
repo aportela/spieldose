@@ -120,7 +120,8 @@ class Artist extends \Spieldose\Entities\Entity
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
             "coverPathId" => "D.id",
-            "playCount" => "COALESCE(TMP_COUNT.total, 0)"
+            "playCount" => "COALESCE(TMP_COUNT.total, 0)",
+            "favorited" => "FF.favorited"
         ];
 
         $fields = [];
@@ -158,6 +159,7 @@ class Artist extends \Spieldose\Entities\Entity
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
                 %s
                 ORDER BY COALESCE(TMP_COUNT.total, 0) DESC
                 LIMIT 10
@@ -180,7 +182,8 @@ class Artist extends \Spieldose\Entities\Entity
                 $result->albumArtistName,
                 $result->year,
                 $result->trackNumber,
-                $result->coverPathId
+                $result->coverPathId,
+                $result->favorited
             );
             $track["playCount"] = $result->playCount;
             $topTracks[] = $track;

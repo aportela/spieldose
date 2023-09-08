@@ -198,6 +198,7 @@ function onToggleFavorite() {
         loading.value = false;
         switch (error.response.status) {
           default:
+            // TODO: custom message
             $q.notify({
               type: "negative",
               message: t("API Error: fatal error"),

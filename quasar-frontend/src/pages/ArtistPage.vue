@@ -93,7 +93,7 @@
                     <tr class="row" v-for="track in artistData.topTracks" :key="track.id">
                       <td class="text-center col-1">
                         <q-icon name="play_arrow" size="lg" class="cursor-pointer" @click="onPlayTrack(track)"></q-icon>
-                        <q-icon name="favorite_border" size="md" class="cursor-pointer"></q-icon>
+                        <q-icon name="favorite" size="md" class="cursor-pointer" :color="track.favorited ? 'pink': ''" @click="onToggleFavorite(track)"></q-icon>
                       </td>
                       <td class="text-bold col-4">{{ track.title }}</td>
                       <td class="text-left col-4">
@@ -441,6 +441,32 @@ function onPlayTrack(track) {
   currentPlaylist.saveElements([{ track: track }]);
   player.interact();
   player.play(false);
+}
+
+function onToggleFavorite(track) {
+
+    if (track && track.id) {
+      //loading.value = true;
+    const funct = track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    funct(track.id).then((success) => {
+      track.favorited = success.data.favorited;
+      // TODO use store
+      //loading.value = false;
+    })
+      .catch((error) => {
+        //loading.value = false;
+        switch (error.response.status) {
+          default:
+            // TODO: custom message
+            $q.notify({
+              type: "negative",
+              message: t("API Error: fatal error"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
+    }
 }
 
 function get(name) {
