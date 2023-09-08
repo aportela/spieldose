@@ -15,12 +15,12 @@
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
         <q-btn outline color="dark" :label="t('Play')" icon="play_arrow" @click="onPlay"
           :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-        <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause" :disable="loading"
+        <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause" :disable="loading || !(elements && elements.length > 0)"
           v-else-if="playerStatus.isPlaying" />
-        <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume" :disable="loading"
+        <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume" :disable="loading || !(elements && elements.length > 0)"
           v-else-if="playerStatus.isPaused" />
         <q-btn outline color="dark" :label="t('Stop')" icon="stop" @click="onStop"
-          :disable="loading || playerStatus.isStopped" />
+          :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
         <q-btn outline color="dark" :label="t('Next')" icon="skip_next" @click="onNextPlaylist"
           :disable="loading || !currentPlaylist.allowSkipNext" />
         <q-btn outline color="dark" :label="t('Download')" icon="save_alt"
