@@ -109,6 +109,8 @@ export default {
   "API Error: missing password param": "Error de API: falta la contraseña",
 
   // dashboard
+  "My stats": "Mis estadísticas",
+  "Global stats": "Estadísticas globales",
   "Top played tracks": "Canciones más escuchadas",
   "Top played artists": "Artistas más escuchados",
   "Top played albums": "Álbumes más escuchados",

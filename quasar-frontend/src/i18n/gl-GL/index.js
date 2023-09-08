@@ -108,6 +108,8 @@ export default {
   "API Error: missing password param": "Error de API: falta o contrasinal",
 
   // dashboard
+  "My stats": "As miñas estadísticas",
+  "Global stats": "Estadísticas globais",
   "Top played tracks": "Cancións máis escoitadas",
   "Top played artists": "Artistas máis escoitados",
   "Top played albums": "Álbumes máis escoitados",
