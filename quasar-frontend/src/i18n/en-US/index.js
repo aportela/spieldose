@@ -136,4 +136,8 @@ export default {
   Actions: "Actions",
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
+
+  // radio stations
+  "My radio stations": "My radio stations",
+  "Public radio stations": "Public radio stations",
 };

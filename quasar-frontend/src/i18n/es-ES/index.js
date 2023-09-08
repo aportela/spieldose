@@ -139,4 +139,8 @@ export default {
   Actions: "Acciones",
   "API Error: error loading random tracks":
     "API Error: error cargando las canciones aleatorias",
+
+  // radio stations
+  "My radio stations": "Mis estaciones de radio",
+  "Public radio stations": "Estaciones de radio públicas",
 };
