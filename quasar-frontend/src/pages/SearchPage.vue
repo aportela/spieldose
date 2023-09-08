@@ -17,9 +17,12 @@
             <form @submit.prevent.stop="onSearch" autocorrect="off" autocapitalize="off" autocomplete="off"
               spellcheck="false">
               <q-input clearable clear-icon="close" dense outlined type="text" name="searchText"
-                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)" :disable="loading">
+                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)" :disable="loading" ref="inputSearchTextRef">
                 <template v-slot:prepend>
                   <q-icon name="search" />
+                </template>
+                <template v-slot:after>
+                  <q-btn type="submit" label="launch search" outline icon="troubleshoot" class="q-pa-sm" @click="onSearch"></q-btn>
                 </template>
               </q-input>
             </form>
@@ -108,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, nextTick } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { api } from 'boot/axios';
 
@@ -122,6 +125,7 @@ const currentPlaylist = useCurrentPlaylistStore();
 const player = usePlayer();
 const playerStatus = usePlayerStatusStore();
 
+const inputSearchTextRef = ref(null);
 const searchText = ref("");
 
 const searchResults = ref([]);
@@ -180,6 +184,9 @@ function onSearch(resetPager) {
         searchResults.value = success.data.data.items.map((item) => { return ({ track: item }); });
         allowSendToPlayList.value = true;
         loading.value = false;
+        nextTick(() => {
+          inputSearchTextRef.value.$el.focus();
+        });
       })
       .catch((error) => {
         loading.value = false;
@@ -209,4 +216,9 @@ function onSendPlaylist() {
   });
 }
 
+onMounted(() => {
+  nextTick(() => {
+          inputSearchTextRef.value.$el.focus();
+        });
+});
 </script>
