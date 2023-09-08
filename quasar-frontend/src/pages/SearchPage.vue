@@ -98,7 +98,7 @@
                     @click="onPlayTrack(searchResult)" />
                   <q-btn size="sm" color="white" text-color="grey-5" icon="download" title="Download" :disable="loading"
                     :href="searchResult.track.url" />
-                  <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" title="Toggle favorite" disabled />
+                  <q-btn size="sm" color="white" :text-color="searchResult.track.favorited ? 'pink': 'grey-5'" icon="favorite" title="Toggle favorite" :disable="loading" @click="onToggleFavorite(searchResult.track)" />
                 </q-btn-group>
               </td>
             </tr>
@@ -216,6 +216,31 @@ function onSendPlaylist() {
   nextTick(() => {
     player.play(true);
   });
+}
+
+function onToggleFavorite(track) {
+    if (track && track.id) {
+      //loading.value = true;
+    const funct = track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    funct(track.id).then((success) => {
+      track.favorited = success.data.favorited;
+      // TODO use store
+      //loading.value = false;
+    })
+      .catch((error) => {
+        //loading.value = false;
+        switch (error.response.status) {
+          default:
+            // TODO: custom message
+            $q.notify({
+              type: "negative",
+              message: t("API Error: fatal error"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
+    }
 }
 
 onMounted(() => {
