@@ -17,12 +17,14 @@
             <form @submit.prevent.stop="onSearch" autocorrect="off" autocapitalize="off" autocomplete="off"
               spellcheck="false">
               <q-input clearable clear-icon="close" dense outlined type="text" name="searchText"
-                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)" :disable="loading" ref="inputSearchTextRef">
+                label="Search text on all fields..." v-model="searchText" @key:model-value="onSearch(true)"
+                :disable="loading" ref="inputSearchTextRef">
                 <template v-slot:prepend>
-                  <q-icon name="search" />
+                  <q-icon name="filter_alt" />
                 </template>
                 <template v-slot:after>
-                  <q-btn type="submit" label="launch search" outline icon="troubleshoot" class="q-pa-sm" @click="onSearch"></q-btn>
+                  <q-btn type="submit" label="launch search" outline icon="search" :loading="loading" class="q-pa-sm"
+                    @click="onSearch"></q-btn>
                 </template>
               </q-input>
             </form>
@@ -218,7 +220,7 @@ function onSendPlaylist() {
 
 onMounted(() => {
   nextTick(() => {
-          inputSearchTextRef.value.$el.focus();
-        });
+    inputSearchTextRef.value.$el.focus();
+  });
 });
 </script>
