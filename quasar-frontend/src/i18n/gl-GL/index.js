@@ -65,6 +65,18 @@ export default {
   // actions
   reload: "recargar",
   "play track": "reproducir canción",
+  Clear: "Vaciar",
+  Randomize: "Aleatoria",
+  Previous: "Anterior",
+  Play: "Reproducir",
+  Pause: "Pausar",
+  Resume: "Reanudar",
+  Stop: "Deter",
+  Next: "Seguinte",
+  Download: "Descargar",
+  Up: "Arriba",
+  Down: "Abaixo",
+  "Toggle favorite": "Alternar como favorita",
 
   // general api errors
   "API Error: invalid/missing param":
@@ -108,4 +120,16 @@ export default {
   onePlayCount: " vez",
   nPlayCounts: " {count} veces",
   "No enought data": "Non hai datos suficientes",
+
+  // current playlist
+  Index: "Índice",
+  Title: "Título",
+  Artist: "Intérprete",
+  "Album Artist": "Intérprete do álbum",
+  Album: "Album",
+  "Album Track nº": "nº de pista do álbum",
+  Year: "Ano",
+  Actions: "Accións",
+  "API Error: error loading random tracks":
+    "API Error: error cargando as cancións aleatorias",
 };

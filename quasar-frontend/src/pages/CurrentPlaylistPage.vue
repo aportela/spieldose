@@ -3,45 +3,45 @@
     <q-card class="q-pa-lg">
       <q-breadcrumbs class="q-mb-lg">
         <q-breadcrumbs-el icon="home" label="Spieldose" />
-        <q-breadcrumbs-el icon="list_alt" label="Current playlist" />
+        <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
       </q-breadcrumbs>
       <q-btn-group spread class="q-mb-md">
-        <q-btn outline color="dark" label="Clear" icon="clear" @click="onClear"
+        <q-btn outline color="dark" :label="t('Clear')" icon="clear" @click="onClear"
           :disable="loading || !(elements && elements.length > 0)">
         </q-btn>
-        <q-btn outline color="dark" label="Random" icon="bolt" @click="onRandom" :disable="loading">
+        <q-btn outline color="dark" :label="t('Randomize')" icon="bolt" @click="onRandom" :disable="loading">
         </q-btn>
-        <q-btn outline color="dark" label="Previous" icon="skip_previous" @click="onPreviusPlaylist"
+        <q-btn outline color="dark" :label="t('Previous')" icon="skip_previous" @click="onPreviusPlaylist"
           :disable="loading || !currentPlaylist.allowSkipPrevious" />
-        <q-btn outline color="dark" label="Play" icon="play_arrow" @click="onPlay"
+        <q-btn outline color="dark" :label="t('Play')" icon="play_arrow" @click="onPlay"
           :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-        <q-btn outline color="dark" label="Pause" icon="pause" @click="onPause" :disable="loading"
+        <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause" :disable="loading"
           v-else-if="playerStatus.isPlaying" />
-        <q-btn outline color="dark" label="Resume" icon="play_arrow" @click="onResume" :disable="loading"
+        <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume" :disable="loading"
           v-else-if="playerStatus.isPaused" />
-        <q-btn outline color="dark" label="Stop" icon="stop" @click="onStop"
+        <q-btn outline color="dark" :label="t('Stop')" icon="stop" @click="onStop"
           :disable="loading || playerStatus.isStopped" />
-        <q-btn outline color="dark" label="Next" icon="skip_next" @click="onNextPlaylist"
+        <q-btn outline color="dark" :label="t('Next')" icon="skip_next" @click="onNextPlaylist"
           :disable="loading || !currentPlaylist.allowSkipNext" />
-        <q-btn outline color="dark" label="Download" icon="save_alt"
+        <q-btn outline color="dark" :label="t('Download')" icon="save_alt"
           :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
       </q-btn-group>
       <q-markup-table flat bordered>
         <thead>
           <tr class="bg-grey-2 text-grey-10">
-            <th class="text-right">Index</th>
-            <th class="text-left">Title</th>
-            <th class="text-left">Artist</th>
-            <th class="text-left">Album Artist</th>
-            <th class="text-left">Album</th>
-            <th class="text-right">Album Track nº</th>
-            <th class="text-right">Year</th>
-            <th class="text-center">Actions</th>
+            <th class="text-right">{{ t('Index') }}</th>
+            <th class="text-left">{{ t('Title') }}</th>
+            <th class="text-left">{{ t('Artist') }}</th>
+            <th class="text-left">{{ t('Album Artist') }}</th>
+            <th class="text-left">{{ t('Album') }}</th>
+            <th class="text-right">{{ t('Album Track nº') }}</th>
+            <th class="text-right">{{ t('Year') }}</th>
+            <th class="text-center">{{ t('Actions') }}</th>
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
-            :selected="currentTrackIndex == index" @changeIndex="setCurrentTrackIndex(index)" :disabled="loading"
+          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index" :lastIndex="elements.length"
+            :selected="currentTrackIndex == index" @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)" @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)" :disabled="loading"
             :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
           </CurrentPlaylistTableRow>
         </tbody>
@@ -61,13 +61,16 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { useQuasar } from "quasar";
-import { api } from 'boot/axios'
+import { useI18n } from 'vue-i18n';
+import { api } from 'boot/axios';
 import { usePlayer } from 'stores/player';
-import { usePlayerStatusStore } from 'stores/playerStatus'
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+import { usePlayerStatusStore } from 'stores/playerStatus';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
 
 const $q = useQuasar();
+
+const { t } = useI18n();
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
@@ -94,6 +97,25 @@ function setCurrentTrackIndex(index) {
   }
 }
 
+
+function onMoveUpTrackAtIndex(index) {
+  // https://stackoverflow.com/a/6470794
+    const element = elements.value[index];
+    elements.value.splice(index, 1);
+    elements.value.splice(index - 1, 0, element);
+}
+
+function onMoveDownTrackAtIndex(index) {
+  // https://stackoverflow.com/a/6470794
+  const element = elements.value[index];
+    elements.value.splice(index, 1);
+    elements.value.splice(index + 1, 0, element);
+}
+
+function onToggleFavoriteAtIndex(index) {
+
+}
+
 function search() {
   player.interact();
   loading.value = true;
@@ -105,19 +127,13 @@ function search() {
   }).catch((error) => {
     $q.notify({
       type: "negative",
-      message: "API Error: error loading elements",
-      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+      message: t("API Error: error loading random tracks"),
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
   });
 }
 
-/*
-watch(currentTrackIndex, (newValue, oldValue) => {
-  currentPlaylist.saveCurrentTrackIndex(newValue);
-});
-
-*/
 const currentPlaylistTrackIndex = computed(() => {
   return (currentPlaylist.getCurrentIndex);
 });
@@ -134,11 +150,6 @@ function onRandom() {
 function onPreviusPlaylist() {
   player.interact();
   currentPlaylist.skipPrevious();
-  /*
-  if (currentTrackIndex.value > 0) {
-    currentTrackIndex.value--;
-  }
-  */
 }
 
 function onPlay() {
@@ -165,11 +176,6 @@ function onStop() {
 function onNextPlaylist() {
   player.interact();
   currentPlaylist.skipNext();
-  /*
-  if (currentTrackIndex.value < elements.value.length - 1) {
-    currentTrackIndex.value++;
-  }
-  */
 }
 
 elements.value = currentPlaylist.getElements;
