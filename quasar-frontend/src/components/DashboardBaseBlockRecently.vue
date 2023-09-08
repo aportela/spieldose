@@ -156,7 +156,9 @@ const useGlobalStats = computed(() => {
 });
 
 watch(useGlobalStats, (newValue) => {
-  refresh();
+  if (props.played) {
+    refresh();
+  }
 });
 
 const count = 5;
