@@ -5,14 +5,8 @@
         <q-breadcrumbs-el icon="home" label="Spieldose" />
         <q-breadcrumbs-el icon="analytics" :label="t('Dashboard')" />
       </q-breadcrumbs>
-      <!--
-        my stats | global stats
-        notify new added
-        save spectrum analyzer type
-        save cover mode type
-      -->
-      <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
-        <q-tab v-for="tabElement in tabs" :key="tabElement.value" :name="tabElement.value"
+      <q-tabs v-model="tab" inline-label no-caps dense class="text-pink-7 q-mb-md shadow-2">
+        <q-tab v-for="tabElement in tabs" :key="tabElement.value" :name="tabElement.value" :icon="tabElement.icon"
           :label="t(tabElement.label)" />
       </q-tabs>
       <div class="row">
@@ -53,7 +47,7 @@ import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBloc
 
 const { t } = useI18n();
 
-const tabs = ref([ { label: 'My stats', value: 'myStats' }, { label: 'Global stats', value: 'globalStats'}]);
+const tabs = ref([ { label: 'My stats', value: 'myStats', icon: 'person' }, { label: 'Global stats', value: 'globalStats', icon: 'public'}]);
 
 const tab = ref(tabs.value[0].value)
 </script>
