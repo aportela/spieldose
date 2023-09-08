@@ -6,7 +6,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer"><q-icon name="bar_chart"
           @click="onToggleAnalyzer"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track"><q-icon
-          name="favorite"></q-icon></q-btn>
+          name="favorite" :color="favorited ? 'pink': ''" @click="onToggleFavorite"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle random sort"><q-icon
           name="shuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle repeat mode"><q-icon
@@ -33,13 +33,18 @@ div#current_track_actions {
 
 const props = defineProps({
   disabled: Boolean,
+  favorited: Number,
   downloadURL: String
 });
 
-const emit = defineEmits(['toggleAnalyzer']);
+const emit = defineEmits(['toggleAnalyzer', 'toggleFavorite']);
 
 function onToggleAnalyzer() {
   emit('toggleAnalyzer');
+}
+
+function onToggleFavorite() {
+  emit('toggleFavorite');
 }
 
 function onShowTrackDetailsModal() {

@@ -105,6 +105,22 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->get('/track/set_favorite/{id}', function (Request $request, Response $response, array $args) {
+                $track = new \Spieldose\Entities\Track($args["id"]);
+                $track->toggleFavorite($this->get(\aportela\DatabaseWrapper\DB::class), true);
+                $payload = json_encode(["favorited" => $track->favorited]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->get('/track/unset_favorite/{id}', function (Request $request, Response $response, array $args) {
+                $track = new \Spieldose\Entities\Track($args["id"]);
+                $track->toggleFavorite($this->get(\aportela\DatabaseWrapper\DB::class), false);
+                $payload = json_encode(["favorited" => null]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->get('/thumbnail/{size}/remote/{entity}/', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 if (isset($queryParams["url"]) && !empty($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL)) {

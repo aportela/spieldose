@@ -45,7 +45,7 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { date, useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockListElementTrack } from 'components/DashboardBaseBlockListElementTrack.vue';
 import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';

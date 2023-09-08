@@ -249,6 +249,30 @@ const api = {
           });
       });
     },
+    setFavorite(id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/set_favorite/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    unSetFavorite(id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/unset_favorite/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   path: {
     getTree: function () {

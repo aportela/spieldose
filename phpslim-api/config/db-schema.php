@@ -222,5 +222,17 @@ return (array(
                 FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
             );
         '
+    ),
+    14 => array(
+        '
+            CREATE TABLE `FILE_FAVORITE` (
+                `file_id` VARCHAR(36) NOT NULL,
+                `user_id` VARCHAR(36) NOT NULL,
+                `favorited` INTEGER NOT NULL,
+                PRIMARY KEY (`file_id`, `user_id`),
+                FOREIGN KEY(`file_id`) REFERENCES FILE (`id`)
+                FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
+            );
+        '
     )
 ));

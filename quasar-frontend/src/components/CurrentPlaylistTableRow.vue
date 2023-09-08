@@ -23,7 +23,7 @@
           @click="onUp" />
         <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="disabled || index == lastIndex - 1"
           @click="onDown" />
-        <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" :title="t('Toggle favorite')"
+        <q-btn size="sm" color="white"  :text-color="element.favorited ? 'pink': 'grey-5'" icon="favorite" :title="t('Toggle favorite')"
           :disable="disabled" @click="onToggleFavorite" />
         <q-btn size="sm" color="white" text-color="grey-5" icon="download" :title="t('Download')" :disable="disabled"
           :href="element.track.url" />

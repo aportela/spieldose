@@ -113,8 +113,32 @@ function onMoveDownTrackAtIndex(index) {
 }
 
 function onToggleFavoriteAtIndex(index) {
-
+  const currentElement = elements.value[index];
+  if (currentElement) {
+    //loading.value = true;
+    const funct = currentElement.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    funct(currentElement.id).then((success) => {
+      currentElement.favorited = success.data.favorited;
+      currentPlaylist.saveElements(elements.value);
+      // TODO use store
+      //loading.value = false;
+    })
+      .catch((error) => {
+        //loading.value = false;
+        switch (error.response.status) {
+          default:
+            // TODO: custom error
+            $q.notify({
+              type: "negative",
+              message: t("API Error: fatal error"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
+  }
 }
+
 
 function search() {
   player.interact();
