@@ -444,7 +444,6 @@ function onPlayTrack(track) {
 }
 
 function onToggleFavorite(track) {
-
     if (track && track.id) {
       //loading.value = true;
     const funct = track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
