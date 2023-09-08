@@ -76,6 +76,7 @@ const useGlobalStats = computed(() => {
 });
 
 watch(useGlobalStats, (newValue) => {
+  filter.global = useGlobalStats.value;
   refresh();
 });
 

@@ -160,6 +160,7 @@ const useGlobalStats = computed(() => {
 
 watch(useGlobalStats, (newValue) => {
   if (props.played) {
+    filter.global = useGlobalStats.value;
     refresh();
   }
 });
