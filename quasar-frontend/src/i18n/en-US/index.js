@@ -63,6 +63,7 @@ export default {
   nYearsAgo: "{count} years ago",
 
   // actions
+  "Search...": "Search...",
   reload: "reload",
   "play track": "play track",
   Clear: "Clear",

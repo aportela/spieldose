@@ -63,6 +63,7 @@ export default {
   nYearsAgo: "fai {count} anos",
 
   // actions
+  "Search...": "Procurar...",
   reload: "recargar",
   "play track": "reproducir canción",
   Clear: "Vaciar",
