@@ -35,14 +35,18 @@
           <DashboardBaseBlockRecently :added="true" :globalStats="tab == 'globalStats'"></DashboardBaseBlockRecently>
         </div>
       </div>
-      <DashboardBaseBlockChart :globalStats="tab == 'globalStats'"></DashboardBaseBlockChart>
+      <div class="row">
+        <div class="col-12">
+          <DashboardBaseBlockChart :globalStats="tab == 'globalStats'"></DashboardBaseBlockChart>
+        </div>
+      </div>
     </q-card>
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
 import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
 import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';

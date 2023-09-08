@@ -83,7 +83,11 @@ return function (App $app) {
                 } else if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
                     $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
                 } else {
-                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("title", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
+                    $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+                        (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                        (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                        true
+                    );
                 }
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager($params["pager"]["resultsPage"] != 0, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
@@ -97,6 +101,22 @@ return function (App $app) {
                 $track = new \Spieldose\Entities\Track($args["id"]);
                 $track->increasePlayCount($this->get(\aportela\DatabaseWrapper\DB::class));
                 $payload = json_encode([]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->get('/track/set_favorite/{id}', function (Request $request, Response $response, array $args) {
+                $track = new \Spieldose\Entities\Track($args["id"]);
+                $track->toggleFavorite($this->get(\aportela\DatabaseWrapper\DB::class), true);
+                $payload = json_encode(["favorited" => $track->favorited]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->get('/track/unset_favorite/{id}', function (Request $request, Response $response, array $args) {
+                $track = new \Spieldose\Entities\Track($args["id"]);
+                $track->toggleFavorite($this->get(\aportela\DatabaseWrapper\DB::class), false);
+                $payload = json_encode(["favorited" => null]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
@@ -279,7 +299,7 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "name" => isset($params["filter"]) && isset($params["filter"]["name"]) && !empty($params["filter"]["name"]) ? $params["filter"]["name"] : null
+                    "name" => $params["filter"]["name"] ?? null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
@@ -317,7 +337,7 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "title" => isset($params["filter"]) && isset($params["filter"]["title"]) && !empty($params["filter"]["title"]) ? $params["filter"]["title"] : null
+                    "title" => $params["filter"]["title"] ?? null
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [

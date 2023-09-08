@@ -9,9 +9,9 @@
         <div class="row q-gutter-xs">
           <div class="col">
             <q-input v-model="artistName" clearable type="search" outlined dense placeholder="Text condition"
-              hint="Search artists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
+              hint="Search artists with name" :loading="loading" @keydown.enter.prevent="search(true)"
               @clear="noArtistsFound = false; search(true)" :error="noArtistsFound"
-              :errorMessage="'No artists found with specified condition'">
+              :errorMessage="'No artists found with specified condition'" :disable="loading" ref="artistNameRef">
               <template v-slot:prepend>
                 <q-icon name="filter_alt" />
               </template>
@@ -22,7 +22,7 @@
           </div>
           <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
             <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
-              @update:model-value="search(true)">
+              @update:model-value="search(true)" :disable="loading">
               <template v-slot:selected-item="scope">
                 {{ scope.opt.label }}
               </template>
@@ -30,7 +30,7 @@
           </div>
           <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
             <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-              @update:model-value="search(true)">
+              @update:model-value="search(true)" :disable="loading">
               <template v-slot:selected-item="scope">
                 {{ scope.opt.label }}
               </template>
@@ -97,7 +97,7 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 
@@ -137,6 +137,8 @@ const totalPages = ref(0);
 
 const currentPageIndex = ref(1);
 
+const artistNameRef = ref(null);
+
 function search(resetPager) {
   if (resetPager) {
     currentPageIndex.value = 1;
@@ -149,6 +151,9 @@ function search(resetPager) {
     if (artistName.value && success.data.data.pager.totalResults < 1) {
       noArtistsFound.value = true;
     }
+    nextTick(() => {
+      artistNameRef.value.$el.focus();
+    });
     loading.value = false;
   }).catch((error) => {
     $q.notify({

@@ -11,7 +11,7 @@
             <q-input v-model="albumTitle" clearable type="search" outlined dense placeholder="Text condition"
               hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
               @clear="noAlbumsFound = false; search(true)" :error="noAlbumsFound"
-              :errorMessage="'No albums found with specified condition'">
+              :errorMessage="'No albums found with specified condition'" ref="albumTitleRef">
               <template v-slot:prepend>
                 <q-icon name="filter_alt" />
               </template>
@@ -22,7 +22,7 @@
           </div>
           <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
             <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
-              @update:model-value="search(true)">
+              @update:model-value="search(true)" :disable="loading">
               <template v-slot:selected-item="scope">
                 {{ scope.opt.label }}
               </template>
@@ -30,7 +30,7 @@
           </div>
           <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
             <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-              @update:model-value="search(true)">
+              @update:model-value="search(true)" :disable="loading">
               <template v-slot:selected-item="scope">
                 {{ scope.opt.label }}
               </template>
@@ -53,7 +53,7 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
@@ -99,6 +99,8 @@ const albums = ref([]);
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
+const albumTitleRef= ref(null);
+
 function search(resetPager) {
   if (resetPager) {
     currentPageIndex.value = 1;
@@ -114,6 +116,9 @@ function search(resetPager) {
     if (albumTitle.value && success.data.data.pager.totalResults < 1) {
       noAlbumsFound.value = true;
     }
+    nextTick(() => {
+      albumTitleRef.value.$el.focus();
+    });
     loading.value = false;
   }).catch((error) => {
     $q.notify({
@@ -133,8 +138,8 @@ function onPaginationChanged(pageIndex) {
 function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
-  api.track.search(1, 0, false, { albumMbId: album.mbId }).then((success) => {
-    currentPlaylist.saveElements(success.data.tracks.map((track) => { return({track: track}); }));
+  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

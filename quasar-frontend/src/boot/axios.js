@@ -206,7 +206,14 @@ const api = {
     },
   },
   track: {
-    search: function (currentPageIndex, resultsPage, randomSort, filter) {
+    search: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      randomSort,
+      sortField,
+      sortOrder
+    ) {
       return new Promise((resolve, reject) => {
         const params = {
           pager: {
@@ -215,6 +222,8 @@ const api = {
           },
           sort: {
             random: randomSort,
+            field: sortField,
+            order: sortOrder,
           },
           filter: filter || {},
         };
@@ -232,6 +241,30 @@ const api = {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/track/increase_play_count/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    setFavorite(id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/set_favorite/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    unSetFavorite(id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/unset_favorite/" + id)
           .then((response) => {
             resolve(response);
           })

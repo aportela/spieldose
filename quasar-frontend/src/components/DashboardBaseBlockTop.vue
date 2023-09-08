@@ -36,8 +36,8 @@
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
-      <h5 class="text-h5 text-center" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
-          size="xl"></q-icon> No enought data</h5>
+      <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
+          size="xl"></q-icon> {{ t('No enought data') }}</h5>
     </template>
   </component>
 </template>
@@ -45,7 +45,7 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { date, useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
 import { default as DashboardBaseBlockListElementTrack } from 'components/DashboardBaseBlockListElementTrack.vue';
 import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';
@@ -193,7 +193,7 @@ function refresh() {
   }
 }
 
-tab.value = 'always';
+tab.value = 'lastWeek';
 
 
 </script>

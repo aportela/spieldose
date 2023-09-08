@@ -28,12 +28,14 @@ class Album extends \Spieldose\Entities\Entity
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager, bool $useLocalCovers): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
-        $filterConditions = array(
-            //"COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE '100 Hits: The Best Soft Ro%'"
-        );
+        $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
-            $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE :title";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
+            $words = explode(" ", trim($filter["title"]));
+            foreach ($words as $word) {
+                $paramName = ":title_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         } else {
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ";
         }

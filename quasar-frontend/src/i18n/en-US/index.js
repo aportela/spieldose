@@ -65,6 +65,18 @@ export default {
   // actions
   reload: "reload",
   "play track": "play track",
+  Clear: "Clear",
+  Randomize: "Randomize",
+  Previous: "Previous",
+  Play: "Play",
+  Pause: "Pause",
+  Resume: "Resume",
+  Stop: "Stop",
+  Next: "Next",
+  Download: "Download",
+  Up: "Up",
+  Down: "Down",
+  "Toggle favorite": "Toggle favorite",
 
   // general api errors
   "API Error: invalid/missing param": "API Error: invalid/missing param",
@@ -103,6 +115,19 @@ export default {
   "Recently played": "Recently played",
   "Play stats": "Play stats",
   "API Error: error loading metrics": "API Error: error loading metrics",
-  onePlayCount: " 1 time",
+  onePlayCount: " time",
   nPlayCounts: " {count} times",
+  "No enought data": "No enought data",
+
+  // current playlist
+  Index: "Index",
+  Title: "Title",
+  Artist: "Artist",
+  "Album Artist": "Album Artist",
+  Album: "Album",
+  "Album Track nº": "Album Track nº",
+  Year: "Year",
+  Actions: "Actions",
+  "API Error: error loading random tracks":
+    "API Error: error loading random tracks",
 };

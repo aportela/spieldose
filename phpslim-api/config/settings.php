@@ -116,6 +116,7 @@ $settings['thumbnails'] = [
         ]
     ],
     'albums' => [
+        'useLocalCovers' => true, // if true, always use local cover stored on file path (cover.jpg, font.jpg...) and not the remote musicbrainz from covert art archive
         'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'albums',
         'sizes' => [
             'small' => [

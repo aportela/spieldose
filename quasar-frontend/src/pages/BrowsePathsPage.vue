@@ -91,7 +91,7 @@ function onTreeNodeSelected(nodeHash) {
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id) {
     loading.value = true;
-    api.track.search(1, 0, false, { path: node.id }).then((success) => {
+    api.track.search({ path: node.id }, 1, 0, false, 'title', 'ASC').then((success) => {
       currentPlaylist.saveElements(success.data.tracks);
       loading.value = false;
     }).catch((error) => {

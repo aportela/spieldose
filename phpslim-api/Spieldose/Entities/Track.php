@@ -14,9 +14,9 @@ class Track extends \Spieldose\Entities\Entity
     public object $album;
     public ?int $trackNumber;
     public array $covers;
+    public ?int $favorited;
 
-
-    public function __construct(string $id, ?string $mbId = null, ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, ?int $trackNumber = null, ?string $coverPathId = null)
+    public function __construct(string $id, ?string $mbId = null, ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, ?int $trackNumber = null, ?string $coverPathId = null, ?int $favorited = null)
     {
         $this->id = $id;
         $this->url = sprintf(\Spieldose\API::FILE_URL, $id);
@@ -50,6 +50,7 @@ class Track extends \Spieldose\Entities\Entity
                 "normal" => null
             ];
         }
+        $this->favorited = $favorited;
     }
 
     public function __destruct()
@@ -58,19 +59,33 @@ class Track extends \Spieldose\Entities\Entity
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $params = array();
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+        );
         $filterConditions = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
-            $filterConditions[] = " FIT.title LIKE :title";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter["title"] . "%");
+            $words = explode(" ", trim($filter["title"]));
+            foreach ($words as $word) {
+                $paramName = ":title_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["artistName"]) && !empty($filter["artistName"])) {
-            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :artistName";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artistName", "%" . $filter["artistName"] . "%");
+            $words = explode(" ", trim($filter["artistName"]));
+            foreach ($words as $word) {
+                $paramName = ":artistname_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["text"]) && !empty($filter["text"])) {
-            $filterConditions[] = " (FIT.title LIKE :text OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE :text OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE :text) ";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":text", "%" . $filter["text"] . "%");
+            $words = explode(" ", trim($filter["text"]));
+            foreach ($words as $word) {
+                $paramName = ":text_" . uniqid();
+                $filterConditions[] = sprintf(" (FIT.title LIKE %s OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s)", $paramName, $paramName, $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         if (isset($filter["path"]) && !empty($filter["path"])) {
             $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
@@ -92,7 +107,8 @@ class Track extends \Spieldose\Entities\Entity
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
-            "coverPathId" => "D.id"
+            "coverPathId" => "D.id",
+            "favorited" => "FF.favorited"
         ];
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"
@@ -114,7 +130,8 @@ class Track extends \Spieldose\Entities\Entity
                         $result->albumArtistName,
                         $result->year,
                         $result->trackNumber,
-                        $result->coverPathId
+                        $result->coverPathId,
+                        $result->favorited
                     );
                     return ($result);
                 },
@@ -136,6 +153,7 @@ class Track extends \Spieldose\Entities\Entity
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
                 %s
                 %s
                 %s
@@ -154,6 +172,7 @@ class Track extends \Spieldose\Entities\Entity
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
                 %s
             ",
             $browser->getQueryCountFields(),
@@ -165,11 +184,39 @@ class Track extends \Spieldose\Entities\Entity
 
     public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)
     {
-        $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, strftime('%s', 'now')) ";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-        );
-        $dbh->exec($query, $params);
+        if (!empty($this->id)) {
+            $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, strftime('%s', 'now')) ";
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+            );
+            $dbh->exec($query, $params);
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("id");
+        }
+    }
+
+    public function toggleFavorite(\aportela\DatabaseWrapper\DB $dbh, bool $flag)
+    {
+        if (!empty($this->id)) {
+            $query = null;
+            if ($flag) {
+                $query = " INSERT INTO FILE_FAVORITE (file_id, user_id, favorited) VALUES (:file_id, :user_id, strftime('%s', 'now')) ON CONFLICT (file_id, user_id) DO UPDATE SET favorited = strftime('%s', 'now') ";
+            } else {
+                $query = " DELETE FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
+            }
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+            );
+            $dbh->exec($query, $params);
+            if ($flag) {
+                $query = " SELECT favorited FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
+                $data = $dbh->query($query, $params);
+                $this->favorited = count($data) == 1 ? $data[0]->favorited : null;
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("id");
+        }
     }
 }

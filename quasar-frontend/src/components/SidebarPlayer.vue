@@ -14,10 +14,12 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentElementTimeData="currentElementTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentElementURL"
-      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleTrackDetailsModal="detailsModal = true">
+    :favorited="currentElementFavorited"
+      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleTrackDetailsModal="detailsModal = true"
+      @toggleFavorite="onToggleFavorite">
     </SidebarPlayerTrackActions>
-    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :track="currentPlaylist.getCurrentElement"
-      @hide="detailsModal = false">
+    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage"
+      :track="currentPlaylist.getCurrentElement" @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
   </div>
 </template>
@@ -26,6 +28,9 @@
 import { ref, computed, onMounted, watch } from "vue";
 
 import { usePlayer } from 'stores/player';
+
+import { useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n';
 
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerSpectrumAnalyzer } from "components/SidebarPlayerSpectrumAnalyzer.vue";
@@ -40,9 +45,14 @@ import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
 import { api } from "src/boot/axios";
 
+const $q = useQuasar();
+const { t } = useI18n();
+
 const session = useSessionStore();
 
 session.load();
+
+const loading = ref(false);
 
 const defaultVolume = session.getVolume || 1;
 
@@ -60,15 +70,26 @@ const playerStatus = usePlayerStatusStore();
 
 const isCurrentElementTrack = computed(() => {
   const currentElement = currentPlaylist.getCurrentElement;
-  return(currentElement.track != null);
+  return (currentElement.track != null);
 });
+
+// TODO: use currentElement globally
 
 const currentElementId = computed(() => {
   const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement && currentElement.track) {
     return (currentElement.track.id || null);
   } else {
-    return(null);
+    return (null);
+  }
+});
+
+const currentElementFavorited = computed(() => {
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement && currentElement.track) {
+    return (currentElement.track.favorited || null);
+  } else {
+    return (null);
   }
 });
 
@@ -103,7 +124,7 @@ const currentElementTimeData = ref({
 
 onMounted(() => {
   audioElement.value = player.getElement;
-  player.setVolume(1);
+  player.setVolume(defaultVolume);
 
   /*
   audioElement.value.addEventListener('canplay', (event) => {
@@ -162,6 +183,33 @@ function increasePlayCount(trackId) {
       }
     });
 }
+
+function onToggleFavorite() {
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement && currentElement.track) {
+    loading.value = true;
+    const funct = currentElement.track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    funct(currentElement.track.id).then((success) => {
+      currentElement.track.favorited = success.data.favorited;
+      // TODO use store
+      loading.value = false;
+    })
+      .catch((error) => {
+        loading.value = false;
+        switch (error.response.status) {
+          default:
+            // TODO: custom message
+            $q.notify({
+              type: "negative",
+              message: t("API Error: fatal error"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
+  }
+}
+
 
 function skipPrevious() {
   player.interact();
