@@ -18,7 +18,7 @@
 </style>
 
 <script setup>
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n'
 import { BarChart, LineChart } from 'chartist';
@@ -58,9 +58,18 @@ const dateRanges = [
 
 const props = defineProps({
   icon: {
-    type: String
-  }
+    type: String,
+  },
+  globalStats: Boolean
 })
+
+const useGlobalStats = computed(() => {
+  return(props.globalStats || false);
+});
+
+watch(useGlobalStats, (newValue) => {
+  refresh();
+});
 
 const chartOptions = {
   low: 0,

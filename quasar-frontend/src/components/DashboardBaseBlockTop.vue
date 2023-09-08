@@ -118,14 +118,24 @@ const dateRanges = [
   },
 ];
 
+
 const props = defineProps({
   icon: {
     type: String
   },
   entity: {
     type: String
-  }
+  },
+  globalStats: Boolean
 })
+
+const useGlobalStats = computed(() => {
+  return(props.globalStats || false);
+});
+
+watch(useGlobalStats, (newValue) => {
+  refresh();
+});
 
 const title = computed(() => {
   switch (props.entity) {

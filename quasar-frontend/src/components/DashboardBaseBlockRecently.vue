@@ -146,9 +146,18 @@ const props = defineProps({
   },
   added: {
     type: Boolean
-  }
+  },
+  globalStats: Boolean
 })
 
+
+const useGlobalStats = computed(() => {
+  return(props.globalStats || false);
+});
+
+watch(useGlobalStats, (newValue) => {
+  refresh();
+});
 
 const count = 5;
 let filter = {
