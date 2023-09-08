@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
 import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
 import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
