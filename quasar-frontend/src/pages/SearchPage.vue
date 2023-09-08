@@ -23,7 +23,7 @@
                   <q-icon name="filter_alt" />
                 </template>
                 <template v-slot:after>
-                  <q-btn type="submit" label="launch search" outline icon="search" :loading="loading" class="q-pa-sm"
+                  <q-btn type="submit" label="launch search" outline icon="search" :loading="loading" :disable="loading || ! searchText" class="q-pa-sm"
                     @click="onSearch"></q-btn>
                 </template>
               </q-input>
