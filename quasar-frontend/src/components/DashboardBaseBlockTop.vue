@@ -61,16 +61,36 @@ const loading = ref(false);
 const items = ref([]);
 
 const tab = ref(null);
+const props = defineProps({
+  icon: {
+    type: String
+  },
+  entity: {
+    type: String
+  },
+  globalStats: Boolean
+})
+
+const useGlobalStats = computed(() => {
+  return(props.globalStats || false);
+});
+
+watch(useGlobalStats, (newValue) => {
+  refresh();
+});
+
 
 let filter = {
   fromDate: null,
-  toDate: null
+  toDate: null,
+  global: useGlobalStats.value
 };
 
 watch(tab, (newValue) => {
   filter = {
     fromDate: null,
-    toDate: null
+    toDate: null,
+    global: useGlobalStats.value
   };
   switch (newValue) {
     case 'today':
@@ -119,23 +139,6 @@ const dateRanges = [
 ];
 
 
-const props = defineProps({
-  icon: {
-    type: String
-  },
-  entity: {
-    type: String
-  },
-  globalStats: Boolean
-})
-
-const useGlobalStats = computed(() => {
-  return(props.globalStats || false);
-});
-
-watch(useGlobalStats, (newValue) => {
-  refresh();
-});
 
 const title = computed(() => {
   switch (props.entity) {

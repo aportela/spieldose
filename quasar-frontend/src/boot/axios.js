@@ -357,10 +357,13 @@ const api = {
           });
       });
     },
-    getDataRanges: function (range) {
+    getDataRanges: function (filter) {
+      const params = {
+        filter: filter || {},
+      };
       return new Promise((resolve, reject) => {
         axios
-          .get(baseAPIPath + "/metrics/date_range/" + range)
+          .post(baseAPIPath + "/metrics/date_range", params)
           .then((response) => {
             resolve(response);
           })

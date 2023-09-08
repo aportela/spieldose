@@ -114,7 +114,7 @@ function drawChart() {
 function refresh() {
   if (tab.value) {
     loading.value = true;
-    api.metrics.getDataRanges(tab.value).then((success) => {
+    api.metrics.getDataRanges({ dateRange: tab.value, global: useGlobalStats.value }).then((success) => {
       items.value = success.data.data;
       loading.value = false;
       nextTick(() => {

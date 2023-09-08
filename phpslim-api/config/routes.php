@@ -514,9 +514,11 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/metrics/date_range/{range}', function (Request $request, Response $response, array $args) {
+            $group->post('/metrics/date_range', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = $params["filter"] ?? [];
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $data = \Spieldose\Metrics::searchPlaysByDateRange($db, $args["range"]);
+                $data = \Spieldose\Metrics::searchPlaysByDateRange($db, $filter);
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -554,6 +556,24 @@ return function (App $app) {
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
                 $data = \Spieldose\RadioStation::search($db, $filter, $sort, $pager);
                 $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->get('/public_radio_stations', function (Request $request, Response $response, array $args) {
+                $radioStations = [
+                    array(
+                        "name" => "Nectarine",
+                        "url" => "https://scenestream.net/demovibes/",
+                        "playlist" => "http://necta.burn.net:8000/nectarine.m3u",
+                        "directStream" => "http://necta.burn.net:8000/nectarine",
+                        "image" => "https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg",
+                        "language" => "en",
+                        "country" => "world",
+                        "tags" => array("demoscene", "videogames", "chiptunes")
+                    )
+                ];
+                $payload = json_encode(["radioStations" => $radioStations]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });

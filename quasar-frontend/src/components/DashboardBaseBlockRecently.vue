@@ -109,6 +109,9 @@ const title = computed(() => {
 const tab = ref(null);
 
 watch(tab, () => {
+  filter = {
+  global: useGlobalStats.value
+};
   refresh();
 });
 
@@ -162,8 +165,9 @@ watch(useGlobalStats, (newValue) => {
 });
 
 const count = 5;
+
 let filter = {
-  entity: 'tracks'
+  global: useGlobalStats.value
 };
 
 function refresh() {

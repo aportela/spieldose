@@ -80,13 +80,15 @@ class Metrics
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
-                $filterConditions[] = " FPS.user_id = :user_id ";
                 $query = sprintf(
                     "
                         SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
@@ -128,8 +130,10 @@ class Metrics
                 );
                 break;
             case "recentlyPlayed":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-                $filterConditions[] = " FPS.user_id = :user_id ";
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -190,13 +194,15 @@ class Metrics
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
-                $filterConditions[] = " FPS.user_id = :user_id ";
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -234,8 +240,10 @@ class Metrics
                 );
                 break;
             case "recentlyPlayed":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-                $filterConditions[] = " FPS.user_id = :user_id ";
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -298,13 +306,15 @@ class Metrics
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
-                $filterConditions[] = " FPS.user_id = :user_id ";
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -342,8 +352,10 @@ class Metrics
                 );
                 break;
             case "recentlyPlayed":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-                $filterConditions[] = " FPS.user_id = :user_id ";
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -404,13 +416,15 @@ class Metrics
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
-                $filterConditions[] = " FPS.user_id = :user_id ";
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -446,8 +460,10 @@ class Metrics
                 );
                 break;
             case "recentlyPlayed":
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-                $filterConditions[] = " FPS.user_id = :user_id ";
+                if (!(isset($filter["global"]) && $filter["global"])) {
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $filterConditions[] = " FPS.user_id = :user_id ";
+                }
                 $query = sprintf(
                     "
                         SELECT %s, MAX(FPS.play_timestamp) AS lastPlayTimestamp
@@ -474,35 +490,43 @@ class Metrics
         return ($data->items);
     }
 
-    public static function searchPlaysByDateRange(\aportela\DatabaseWrapper\DB $dbh, string $dateRange): array
+    public static function searchPlaysByDateRange(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
     {
         $format = null;
-        switch ($dateRange) {
-            case "hour":
-                $format = "%H";
-                break;
-            case "weekday":
-                $format = "%w";
-                break;
-            case "month":
-                $format = "%m";
-                break;
-            case "year":
-                $format = "%Y";
-                break;
-            default:
-                throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
-                break;
+        if (isset($filter["dateRange"])) {
+            switch ($filter["dateRange"]) {
+                case "hour":
+                    $format = "%H";
+                    break;
+                case "weekday":
+                    $format = "%w";
+                    break;
+                case "month":
+                    $format = "%m";
+                    break;
+                case "year":
+                    $format = "%Y";
+                    break;
+                default:
+                    throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
+                    break;
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
+        }
+        $params = [];
+        $whereCondition = null;
+        if (!(isset($filter["global"]) && $filter["global"])) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+            $whereCondition = " WHERE FPS.user_id = :user_id ";
         }
         $query = sprintf('
             SELECT strftime("%s", datetime(FPS.play_timestamp, "unixepoch"), "localtime") AS %s, COUNT(*) AS total
             FROM FILE_PLAYCOUNT_STATS FPS
-            WHERE FPS.user_id = :user_id
-            GROUP BY %s
-            ORDER BY %s
-        ', $format, $dateRange, $dateRange, $dateRange);
-        return ($dbh->query($query, [
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-        ]));
+            %s
+            GROUP BY 1
+            ORDER BY 1
+        ', $format, $filter["dateRange"], $whereCondition);
+        return ($dbh->query($query, $params));
     }
 }
