@@ -79,6 +79,9 @@ export default {
   Down: "Abaixo",
   "Toggle favorite": "Alternar como favorita",
 
+  // fast search
+  fastSearchResultCaption: "por {artistName} / {albumTitle} ({albumYear})",
+
   // general api errors
   "API Error: invalid/missing param":
     "Error de API: falta un parámetro ou e incorrecto",
