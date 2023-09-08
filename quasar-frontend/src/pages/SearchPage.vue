@@ -80,7 +80,7 @@
           </thead>
           <tbody>
             <tr v-for="searchResult in searchResults" :key="searchResult.track.id" class="non-selectable">
-              <td class="text-left cursor-pointer">{{ searchResult.track.title }}</td>
+              <td class="text-left">{{ searchResult.track.title }}</td>
               <td class="text-left"><router-link v-if="searchResult.track.artist && searchResult.track.artist.name"
                   :to="{ name: 'artist', params: { name: searchResult.track.artist.name } }"><q-icon name="link"
                     class="q-mr-sm"></q-icon>{{
