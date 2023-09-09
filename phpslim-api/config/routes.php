@@ -542,6 +542,20 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/playlist/add', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $playlist = new \Spieldose\Playlist(
+                    $params["playlist"]["id"] ?? "",
+                    $params["playlist"]["name"] ?? "",
+                    $params["playlist"]["tracks"] ?? []
+                );
+                $playlist->add($db);
+                $payload = json_encode(["playlist" => $params["playlist"]]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();

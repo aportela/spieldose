@@ -45,7 +45,7 @@ class Playlist
         }
     }
 
-    public function add(\Spieldose\Database\DB $dbh)
+    public function add(\aportela\DatabaseWrapper\DB $dbh)
     {
         if (!empty($this->id)) {
             if (!empty($this->name)) {
@@ -59,6 +59,7 @@ class Playlist
                     foreach ($this->tracks as $trackIndex => $trackId) {
                         $params = array(
                             new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
                         );

@@ -393,6 +393,25 @@ const api = {
           });
       });
     },
+    add: function (id, name, tracks) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          playlist: {
+            id: id,
+            name: name,
+            tracks: tracks,
+          },
+        };
+        axios
+          .post(baseAPIPath + "/playlist/add", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {

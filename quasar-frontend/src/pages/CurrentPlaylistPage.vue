@@ -25,6 +25,8 @@
           :disable="loading || !currentPlaylist.allowSkipNext" />
         <q-btn outline color="dark" :label="t('Download')" icon="save_alt"
           :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
+          <q-btn outline color="dark" :label="t('Save as')" icon="save_alt"
+          :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
       </q-btn-group>
       <q-markup-table flat bordered>
         <thead>
@@ -56,14 +58,29 @@
           </tr>
         </tbody>
       </q-markup-table>
-
     </q-card>
+    <q-dialog v-model="showSavePlaylistDialog">
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Save current playlist</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false" label="Playlist name"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="">
+          <q-btn outline label="Cancel" v-close-popup />
+          <q-btn outline label="Save" :disable="! newPlaylistName" @click="onSavePlaylistElements"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
 import { ref, watch, computed } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, uid } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from 'boot/axios';
 import { usePlayer } from 'stores/player';
@@ -95,6 +112,10 @@ const elements = ref([]);
 const currentTrackIndex = ref(0);
 
 const loading = ref(false);
+
+const showSavePlaylistDialog = ref(false);
+
+const newPlaylistName = ref(null);
 
 function onClear() {
   player.stop();
@@ -217,6 +238,30 @@ function onStop() {
 function onNextPlaylist() {
   player.interact();
   currentPlaylist.skipNext();
+}
+
+function onSavePlaylist() {
+  newPlaylistName.value = null;
+  showSavePlaylistDialog.value = true;
+}
+
+function onSavePlaylistElements() {
+  player.interact();
+  loading.value = true;
+  currentTrackIndex.value = 0;
+  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => {return(element.track.id); }) ).then((success) => {
+    //elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
+    //currentPlaylist.saveElements(elements.value);
+    loading.value = false;
+    showSavePlaylistDialog.value = false;
+  }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: t("API Error: error loading random tracks"),
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+    });
+    loading.value = false;
+  });
 }
 
 elements.value = currentPlaylist.getElements;
