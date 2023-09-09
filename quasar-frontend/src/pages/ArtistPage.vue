@@ -128,7 +128,7 @@
                   <div class="q-gutter-md row items-start">
                     <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title"
                       :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year"
-                      @play="onPlayAlbum(album)">
+                      @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
@@ -145,7 +145,7 @@
                   <div class="q-gutter-md row items-start">
                     <AnimatedAlbumCover v-for="album in artistData.appearsOnAlbums.slice(0, 6)" :key="album.title"
                       :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year"
-                      @play="onPlayAlbum(album)">
+                      @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
                     </AnimatedAlbumCover>
                   </div>
                 </div>
@@ -237,7 +237,7 @@
         <div class="text-h6 q-mb-xl">Albums</div>
         <div class="q-gutter-md row items-start">
           <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
-            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)">
+            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
           </AnimatedAlbumCover>
         </div>
       </q-tab-panel>
@@ -518,6 +518,17 @@ function onPlayAlbum(album) {
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    loading.value = false;
+  }).catch((error) => {
+    loading.value = false;
+  });
+}
+
+function onEnqueueAlbum(album) {
+  player.interact();
+  loading.value = true;
+  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

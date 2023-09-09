@@ -1,10 +1,14 @@
 <template>
   <div class="animated-album-cover-item">
-    <div class="play-album" title="Play album" @click="onPlay">
+    <div class="play-album">
       <q-img class="album-thumbnail" :class="{ 'album-thumbnail-animated': loaded || errors }" :src="imageSrc"
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
-      <q-icon name="play_arrow" class="browse_album_play_icon" size="128px" color="white"></q-icon>
+      <div class="album-actions">
+        <q-icon class="cursor-pointer" name="add_box" size="80px" color="pink" title="Enqueue album" style="left: 10px;" @click="onEnqueue"></q-icon>
+        <q-icon class="cursor-pointer" name="play_arrow" size="80px" color="pink" title="Play album" style="left: 80px;" @click="onPlay"></q-icon>
+        <span class="clear: both;"></span>
+      </div>
       <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
     </div>
     <div class="album-info">
@@ -34,7 +38,6 @@ div.animated-album-cover-item div.play-album {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  cursor: pointer;
 }
 
 div.animated-album-cover-item div.play-album img.no-cover {
@@ -50,6 +53,21 @@ div.animated-album-cover-item a img.vynil {
   top: 0px;
   left: 0px;
   z-index: 1;
+}
+
+div.album-actions {
+  display: block;
+  width: 174px;
+  height: 80px;
+  z-index: 12000;
+  top: 44px;
+  position: absolute;
+
+}
+
+div.animated-album-cover-item div.play-album:hover div.album-actions {
+  background: #ccc;
+  opacity: 0.7;
 }
 
 /* album cover effect (hover -> move to left) */
@@ -99,11 +117,10 @@ div.animated-album-cover-item div.play-album:hover img.vinyl {
 
 div.animated-album-cover-item div.play-album i {
   display: none;
-  position: absolute;
-  top: 24px;
-  left: 24px;
   z-index: 2;
   color: #ccc;
+  position: absolute;
+  top: 0px;
 }
 
 div.animated-album-cover-item div.play-album:hover i {
@@ -134,7 +151,7 @@ div.animated-album-cover-item div.album-info p {
 
 import { ref, computed } from "vue";
 
-const emit = defineEmits(['play']);
+const emit = defineEmits(['play', 'enqueue']);
 
 const props = defineProps({
   title: String,
@@ -160,6 +177,10 @@ function onError() {
 
 function onPlay() {
   emit('play');
+}
+
+function onEnqueue() {
+  emit('enqueue');
 }
 
 </script>

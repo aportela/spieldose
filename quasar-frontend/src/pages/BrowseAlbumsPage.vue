@@ -43,7 +43,7 @@
         </div>
         <div class="q-gutter-md row items-start">
           <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
-            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)">
+            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
           </AnimatedAlbumCover>
         </div>
       </q-card-section>
@@ -140,6 +140,17 @@ function onPlayAlbum(album) {
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    loading.value = false;
+  }).catch((error) => {
+    loading.value = false;
+  });
+}
+
+function onEnqueueAlbum(album) {
+  player.interact();
+  loading.value = true;
+  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
