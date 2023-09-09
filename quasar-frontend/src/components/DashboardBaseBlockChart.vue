@@ -113,8 +113,6 @@ function drawChart() {
       values = items.value.map((item) => { return (item.total); });
       break;
   }
-  console.log(labels);
-  console.log(values);
   if (labels.length > 1) {
     new LineChart('.ct-chart', {
       labels: labels,
