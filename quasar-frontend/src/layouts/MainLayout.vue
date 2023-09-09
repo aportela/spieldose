@@ -38,9 +38,9 @@
                 </q-item-section>
                 <q-item-section top side>
                   <div class="text-grey-8 q-gutter-xs">
-                    <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" title="play"
+                    <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" :title="t('play track')"
                       @click="onPlayTrack(scope.opt.id)" />
-                    <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" title="enqueue"
+                    <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue track')"
                       @click="onAppendTrack(scope.opt.id)" />
                   </div>
                 </q-item-section>
