@@ -97,7 +97,7 @@
         </q-toolbar>
       </q-header>
       -->
-    <q-drawer side="left" persistent show-if-above :width="450" class="bg-grey-3">
+    <q-drawer side="left" persistent show-if-above :width="450" class="bg-grey-3 overflow-hidden">
       <leftSidebar></leftSidebar>
     </q-drawer>
     <!--
