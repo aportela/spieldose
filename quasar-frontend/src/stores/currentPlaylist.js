@@ -69,6 +69,13 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       );
       this.elementsLastChangeTimestamp = Date.now();
     },
+    appendElements(newElements) {
+      this.elements = this.elements.concat(newElements);
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set("currentPlaylistElements", this.elements);
+      basil.set("currentPlaylistElementIndex", this.currentIndex);
+      this.elementsLastChangeTimestamp = Date.now();
+    },
     saveCurrentTrackIndex(newIndex) {
       this.currentIndex = newIndex >= 0 ? newIndex : -1;
       const basil = useBasil(localStorageBasilOptions);
