@@ -8,6 +8,14 @@
       <span v-else>&nbsp;</span>
     </p>
   </div>
+  <div id="song_info" v-else-if="currentElement && currentElement.radioStation">
+    <p class="song_info_track text-center text-weight-bolder" style="color: #d30320;">{{ currentElement.radioStation.name || "&nbsp;" }}</p>
+    <p class="song_info_album text-center">&nbsp;</p>
+    <p class="song_info_artist text-center">
+      <a v-if="currentElement.radioStation.url" :href="currentElement.radioStation.url" target="_blank" style="text-decoration: none;">{{ currentElement.radioStation.url }}</a>
+      <span>&nbsp;</span>
+    </p>
+  </div>
 </template>
 
 <script setup>
