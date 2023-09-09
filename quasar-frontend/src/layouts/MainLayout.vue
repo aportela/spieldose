@@ -7,8 +7,9 @@
           <img src="icons/favicon-96x96.png" />
         </q-avatar>
         <q-toolbar-title>Spieldose</q-toolbar-title>
-        <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
-          :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="width: 40%; max-width: 500px;">
+        <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink"
+          :stack-label="false" :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter"
+          style="width: 40%;">
           <template v-slot:no-option v-if="searching">
             <q-item>
               <q-item-section>
@@ -20,13 +21,28 @@
           </template>
           <template v-slot:option="scope">
             <q-list class="bg-grey-2 text-dark">
-              <q-item v-bind="scope.itemProps" @click="onPlayTrack(scope.opt.id)">
-                <q-item-section side>
-                  <q-icon name="music_note" />
+              <q-item>
+                <q-item-section avatar top>
+                  <q-icon name="music_note" color="black" size="34px" />
                 </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ scope.opt.label }}</q-item-label>
-                  <q-item-label caption>{{ scope.opt.caption }}</q-item-label>
+                <q-item-section top class="col-1 gt-sm">
+                  <q-item-label class="q-mt-sm">Track</q-item-label>
+                </q-item-section>
+                <q-item-section top>
+                  <q-item-label lines="1">
+                    <span class="text-weight-medium">{{ scope.opt.label }}</span>
+                  </q-item-label>
+                  <q-item-label caption lines="1">
+                    {{ scope.opt.caption }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section top side>
+                  <div class="text-grey-8 q-gutter-xs">
+                    <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" title="play"
+                      @click="onPlayTrack(scope.opt.id)" />
+                    <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" title="enqueue"
+                      @click="onAppendTrack(scope.opt.id)" />
+                  </div>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -152,7 +168,7 @@ const searchResults = ref([]);
 
 function onFilter(val, update) {
   if (val && val.trim().length > 0) {
-    if (! searching.value) {
+    if (!searching.value) {
       filteredOptions.value = [];
       searching.value = true;
       update(() => {
@@ -188,7 +204,17 @@ function onPlayTrack(trackId) {
   const element = searchResults.value.find((element) => element.id == trackId);
   if (element) {
     currentPlaylist.saveElements([{ track: element }]);
-    if (! playerStatus.isPlaying) {
+    if (!playerStatus.isPlaying) {
+      player.play();
+    }
+  }
+}
+
+function onAppendTrack(trackId) {
+  const element = searchResults.value.find((element) => element.id == trackId);
+  if (element) {
+    currentPlaylist.appendElements([{ track: element }]);
+    if (!playerStatus.isPlaying) {
       player.play();
     }
   }
@@ -283,7 +309,7 @@ const currentElementURL = computed(() => {
     } else if (currentElement.radioStation && currentElement.radioStation.directStream) {
       return (currentElement.radioStation.directStream);
     } else {
-      return(null);
+      return (null);
     }
   } else {
     return (null);
