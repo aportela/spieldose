@@ -572,59 +572,8 @@ return function (App $app) {
                     ]
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $image = "https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg";
-                $m3u = "http://necta.burn.net:8000/nectarine.m3u";
-                $r1 = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger(""), "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1");
-                $r2 = $r1->get($m3u);
-                $stream = trim($r2->body);
                 $data = [
-                    "items" => [
-                        array(
-                            "id" => " 00000000-0000-0000-0000-000000000000",
-                            "name" => "Nectarine",
-                            "url" => "https://scenestream.net/demovibes/",
-                            "playlist" => $m3u,
-                            "directStream" => $stream,
-                            "images" =>
-                            array(
-                                "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode($image)),
-                                "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode($image))
-                            ),
-                            "language" => "en",
-                            "country" => "world",
-                            "tags" => array("demoscene", "videogames", "chiptunes")
-                        ),
-                        array(
-                            "id" => " 10000000-0000-0000-0000-000000000000",
-                            "name" => "Cadena ser",
-                            "url" => "https://cadenaser.com/",
-                            "playlist" => null,
-                            "directStream" => "https://25453.live.streamtheworld.com/CADENASER.mp3",
-                            "images" =>
-                            array(
-                                "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/e6xdJAvSZu.png")),
-                                "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/e6xdJAvSZu.png"))
-                            ),
-                            "language" => "es",
-                            "country" => "spain",
-                            "tags" => array("news")
-                        ),
-                        array(
-                            "id" => " 20000000-0000-0000-0000-000000000000",
-                            "name" => "esRadio",
-                            "url" => "https://esradio.libertaddigital.com/",
-                            "playlist" => null,
-                            "directStream" => "http://livestreaming3.esradio.fm/stream64.mp3",
-                            "images" =>
-                            array(
-                                "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://media.vozpopuli.com/2021/02/imagen-discurso-Federico-Jimenez-Losantos_1409569095_16036296_1200x675.jpg")),
-                                "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://media.vozpopuli.com/2021/02/imagen-discurso-Federico-Jimenez-Losantos_1409569095_16036296_1200x675.jpg"))
-                            ),
-                            "language" => "es",
-                            "country" => "spain",
-                            "tags" => array("news")
-                        )
-                    ]
+                    "items" => include "../Spieldose/RadioStations.php"
                 ];
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);

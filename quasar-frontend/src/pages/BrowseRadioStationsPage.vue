@@ -38,6 +38,16 @@
                   <div class="absolute-bottom text-subtitle1 text-center">
                     {{ radioStation.name }}
                   </div>
+                  <template v-slot:loading>
+                    <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                      <q-spinner color="pink" size="xl" />
+                      <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                        <p class="q-mt-none">{{ radioStation.name }}</p>
+                        <q-chip size="md" icon="tag" truncate-chip-labels v-for="tag in radioStation.tags" :key="tag">{{
+                          tag }}</q-chip>
+                      </div>
+                    </div>
+                  </template>
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                       <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
@@ -94,6 +104,16 @@
                     <q-chip size="md" icon="tag" truncate-chip-labels2 v-for="tag in radioStation.tags" :key="tag">{{ tag
                     }}</q-chip>
                   </div>
+                  <template v-slot:loading>
+                    <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                      <q-spinner color="pink" size="xl" />
+                      <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                        <p class="q-mt-none">{{ radioStation.name }}</p>
+                        <q-chip size="md" icon="tag" truncate-chip-labels v-for="tag in radioStation.tags" :key="tag">{{
+                          tag }}</q-chip>
+                      </div>
+                    </div>
+                  </template>
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                       <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
