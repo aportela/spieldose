@@ -18,6 +18,9 @@ class API
     public const REMOTE_COVER_URL_SMALL_THUMBNAIL = "/api/2/thumbnail/small/remote/album/?url=%s";
     public const REMOTE_COVER_URL_NORMAL_THUMBNAIL = "/api/2/thumbnail/normal/remote/album/?url=%s";
 
+    public const REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL = "/api/2/thumbnail/small/remote/radiostation/?url=%s";
+    public const REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL = "/api/2/thumbnail/normal/remote/radiostation/?url=%s";
+
     public const CACHED_HASH_SMALL_THUMBNAIL = "/api/2/cache/thumbnail/small/%s";
     public const CACHED_HASH_NORMAL_THUMBNAIL = "/api/2/cache/thumbnail/normal/%s";
 }

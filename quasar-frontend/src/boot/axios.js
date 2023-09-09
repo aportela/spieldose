@@ -414,6 +414,25 @@ const api = {
           });
       });
     },
+    searchPublic: function (currentPageIndex, resultsPage, filter) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/radio_station/search_public", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
 };
 

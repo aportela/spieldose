@@ -127,7 +127,7 @@ return function (App $app) {
                     if (!in_array($args['size'], ['small', 'normal'])) {
                         throw new \Spieldose\Exception\InvalidParamsException('size');
                     }
-                    if (!in_array($args['entity'], ['artist', 'album'])) {
+                    if (!in_array($args['entity'], ['artist', 'album', 'radiostation'])) {
                         throw new \Spieldose\Exception\InvalidParamsException('entity');
                     }
                     $settings = null;
@@ -137,6 +137,9 @@ return function (App $app) {
                             break;
                         case 'album':
                             $settings = $this->get('settings')['thumbnails']['albums'];
+                            break;
+                        case 'radiostation':
+                            $settings = $this->get('settings')['thumbnails']['radioStations'];
                             break;
                     }
                     //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
@@ -560,20 +563,39 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/public_radio_stations', function (Request $request, Response $response, array $args) {
-                $radioStations = [
-                    array(
-                        "name" => "Nectarine",
-                        "url" => "https://scenestream.net/demovibes/",
-                        "playlist" => "http://necta.burn.net:8000/nectarine.m3u",
-                        "directStream" => "http://necta.burn.net:8000/nectarine",
-                        "image" => "https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg",
-                        "language" => "en",
-                        "country" => "world",
-                        "tags" => array("demoscene", "videogames", "chiptunes")
-                    )
+            $group->post('/radio_station/search_public', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $filter = array(
+                    "name" => $params["filter"]["name"] ?? ""
+                );
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                    ]
+                );
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $image = "https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg";
+                $data = [
+                    "items" => [
+                        array(
+                            "id" => " 00000000-0000-0000-0000-000000000000",
+                            "name" => "Nectarine",
+                            "url" => "https://scenestream.net/demovibes/",
+                            "playlist" => "http://necta.burn.net:8000/nectarine.m3u",
+                            "directStream" => "http://necta.burn.net:8000/nectarine",
+                            "images" =>
+                            array(
+                                "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode($image)),
+                                "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode($image))
+                            ),
+                            "language" => "en",
+                            "country" => "world",
+                            "tags" => array("demoscene", "videogames", "chiptunes")
+                        )
+                    ]
                 ];
-                $payload = json_encode(["radioStations" => $radioStations]);
+                $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });

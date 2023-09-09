@@ -130,7 +130,22 @@ $settings['thumbnails'] = [
                 'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
             ]
         ]
-    ]
+    ],
+    'radioStations' => [
+        'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'radiostations',
+        'sizes' => [
+            'small' => [
+                'width' => 100,
+                'height' => 100,
+                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+            ],
+            'normal' => [
+                'width' => 400,
+                'height' => 400,
+                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+            ]
+        ]
+    ],
 ];
 
 $settings['common'] = [

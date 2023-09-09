@@ -276,11 +276,16 @@ const links = [
 ];
 
 const currentElementURL = computed(() => {
-  const currentTrack = currentPlaylist.getCurrentElement;
-  if (currentTrack && currentTrack.track) {
-    return (currentTrack.track.url);
+  const currentElement = currentPlaylist.getCurrentElement;
+  if (currentElement) {
+    if (currentElement.track && currentElement.track.url) {
+      return (currentElement.track.url);
+    } else if (currentElement.radioStation && currentElement.radioStation.directStream) {
+      return (currentElement.radioStation.directStream);
+    } else {
+      return(null);
+    }
   } else {
-    //TODO
     return (null);
   }
 });

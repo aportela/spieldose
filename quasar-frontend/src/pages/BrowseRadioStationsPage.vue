@@ -16,14 +16,14 @@
           <q-card-section v-if="personalRadioStations">
             <q-input v-model="personalRadioStationName" clearable type="search" outlined dense
               placeholder="Text condition" hint="Search radio stations with name" :loading="loading" :disable="loading"
-              @keydown.enter.prevent="search(true)" @clear="noRadioStationsFound = false; search(true)"
+              @keydown.enter.prevent="searchPersonalRadioStations(true)" @clear="noRadioStationsFound = false; searchPersonalRadioStations(true)"
               :error="noRadioStationsFound" :errorMessage="'No radio stations found with specified condition'"
               ref="personalRadioStationNameRef">
               <template v-slot:prepend>
                 <q-icon name="filter_alt" />
               </template>
               <template v-slot:append>
-                <q-icon name="search" class="cursor-pointer" @click="search" />
+                <q-icon name="search" class="cursor-pointer" @click="searchPersonalRadioStations" />
               </template>
             </q-input>
             <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -31,7 +31,7 @@
                 direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
             </div>
             <div class="q-gutter-md row items-start">
-              <div v-for="radioStation in radioStations" :key="radioStation.id" :radioStation="radioStation"
+              <div v-for="radioStation in personalRadioStationName" :key="radioStation.id" :radioStation="radioStation"
                 class="cursor-pointer" @click="onPlayRadioStation(radioStation)">
                 <q-img img-class="radiostation_image" :src="radioStation.image || '#'" width="250px" height="250px"
                   fit="cover">
@@ -51,19 +51,19 @@
           </q-card-section>
         </q-tab-panel>
         <q-tab-panel name="publicRadioStations">
-          <q-card-section v-if="personalRadioStations">
+          <q-card-section v-if="publicRadioStations">
             <div class="row q-gutter-xs">
               <div class="col">
                 <q-input v-model="personalRadioStationName" clearable type="search" outlined dense
                   placeholder="Text condition" hint="Search radio stations with name" :loading="loading"
-                  :disable="loading" @keydown.enter.prevent="search(true)"
-                  @clear="noRadioStationsFound = false; search(true)" :error="noRadioStationsFound"
+                  :disable="loading" @keydown.enter.prevent="searchPublicRadioStations(true)"
+                  @clear="noRadioStationsFound = false; searchPublicRadioStations(true)" :error="noRadioStationsFound"
                   :errorMessage="'No radio stations found with specified condition'" ref="personalRadioStationNameRef">
                   <template v-slot:prepend>
                     <q-icon name="filter_alt" />
                   </template>
                   <template v-slot:append>
-                    <q-icon name="search" class="cursor-pointer" @click="search" />
+                    <q-icon name="search" class="cursor-pointer" @click="searchPublicRadioStations" />
                   </template>
                 </q-input>
               </div>
@@ -82,9 +82,9 @@
                 direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
             </div>
             <div class="q-gutter-md row items-start">
-              <div v-for="radioStation in radioStations" :key="radioStation.id" :radioStation="radioStation"
+              <div v-for="radioStation in publicRadioStations" :key="radioStation.id" :radioStation="radioStation"
                 class="cursor-pointer" @click="onPlayRadioStation(radioStation)">
-                <q-img img-class="radiostation_image" :src="radioStation.image || '#'" width="250px" height="250px"
+                <q-img img-class="radiostation_image" :src="radioStation.images.normal || '#'" width="250px" height="250px"
                   fit="cover">
                   <div class="absolute-bottom text-subtitle1 text-center">
                     {{ radioStation.name }}
@@ -144,7 +144,7 @@ const { t } = useI18n();
 
 const tabs = ref([{ label: 'My radio stations', value: 'myRadioStations', icon: 'person' }, { label: 'Public radio stations', value: 'publicRadioStations', icon: 'public' }]);
 
-const tab = ref(tabs.value[0].value)
+const tab = ref(tabs.value[1].value)
 
 const country = ref(null);
 const language = ref(null);
@@ -154,11 +154,12 @@ const personalRadioStationName = ref(null);
 const noRadioStationsFound = ref(false);
 const loading = ref(false);
 const personalRadioStations = ref([]);
+const publicRadioStations = ref([]);
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-function search(resetPager) {
+function searchPersonalRadioStations(resetPager) {
   if (resetPager) {
     currentPageIndex.value = 1;
   }
@@ -181,9 +182,34 @@ function search(resetPager) {
   });
 }
 
+function searchPublicRadioStations(resetPager) {
+  if (resetPager) {
+    //currentPageIndex.value = 1;
+  }
+  //noRadioStationsFound.value = false;
+  loading.value = true;
+  api.radioStation.searchPublic(currentPageIndex.value, 32, { name: personalRadioStationName.value }).then((success) => {
+    publicRadioStations.value = success.data.data.items;
+    /*
+    totalPages.value = success.data.data.pager.totalPages;
+    if (personalRadioStationName.value && success.data.data.pager.totalResults < 1) {
+      noRadioStationsFound.value = true;
+    }
+    */
+    loading.value = false;
+  }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading radio stations",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
+    loading.value = false;
+  });
+}
+
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
-  search(false);
+  searchPersonalRadioStations(false);
 }
 
 function onPlayRadioStation(radioStation) {
@@ -191,6 +217,7 @@ function onPlayRadioStation(radioStation) {
   currentPlaylist.saveElements([{ radioStation: radioStation }]);
 }
 
-search(true);
+searchPersonalRadioStations(true);
+searchPublicRadioStations(true);
 
 </script>

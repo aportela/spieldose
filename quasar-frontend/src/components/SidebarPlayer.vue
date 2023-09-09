@@ -14,9 +14,8 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentElementTimeData="currentElementTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentElementURL"
-    :favorited="currentElementFavorited"
-      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleTrackDetailsModal="detailsModal = true"
-      @toggleFavorite="onToggleFavorite">
+      :favorited="currentElementFavorited" @toggleAnalyzer="showAnalyzer = !showAnalyzer"
+      @toggleTrackDetailsModal="detailsModal = true" @toggleFavorite="onToggleFavorite">
     </SidebarPlayerTrackActions>
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage"
       :track="currentPlaylist.getCurrentElement" @hide="detailsModal = false">
@@ -79,6 +78,8 @@ const currentElementId = computed(() => {
   const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement && currentElement.track) {
     return (currentElement.track.id || null);
+  } else if (currentElement && currentElement.radioStation) {
+    return (currentElement.radioStation.id || null);
   } else {
     return (null);
   }
@@ -95,8 +96,14 @@ const currentElementFavorited = computed(() => {
 
 const coverImage = computed(() => {
   const currentElement = currentPlaylist.getCurrentElement;
-  if (currentElement && currentElement.track && currentElement.track.covers) {
-    return (currentElement.track.covers.normal || null);
+  if (currentElement) {
+    if (currentElement.track && currentElement.track.covers) {
+      return (currentElement.track.covers.normal || null);
+    } else if (currentElement.radioStation.images) {
+      return (currentElement.radioStation.images.normal || null);
+    } else {
+      return (null);
+    }
   } else {
     return (null);
   }
@@ -104,10 +111,16 @@ const coverImage = computed(() => {
 
 const smallVinylImage = computed(() => {
   const currentElement = currentPlaylist.getCurrentElement;
-  if (currentElement && currentElement.track && currentElement.track.covers) {
-    return (currentElement.track.covers.small || null);
+  if (currentElement) {
+    if (currentElement.track && currentElement.track.covers) {
+      return (currentElement.track.covers.small || null);
+    } else if (currentElement.radioStation.images) {
+      return (currentElement.radioStation.images.small || null);
+    } else {
+      return (null);
+    }
   } else {
-    return (null);
+    return(null);
   }
 });
 
@@ -188,7 +201,7 @@ function onToggleFavorite() {
   const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement && currentElement.track) {
     loading.value = true;
-    const funct = currentElement.track.favorited ? api.track.unSetFavorite: api.track.setFavorite;
+    const funct = currentElement.track.favorited ? api.track.unSetFavorite : api.track.setFavorite;
     funct(currentElement.track.id).then((success) => {
       currentElement.track.favorited = success.data.favorited;
       // TODO use store
