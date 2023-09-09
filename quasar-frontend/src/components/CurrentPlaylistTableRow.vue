@@ -30,6 +30,28 @@
       </q-btn-group>
     </td>
   </tr>
+  <tr v-else-if="element.radioStation" class="non-selectable" :class="{ 'bg-pink text-white': selected }">
+    <td class="text-right cursor-pointer" @click="setcurrentIndex">
+      <q-icon :name="icon" size="sm" class="q-mr-sm" v-if="selected"></q-icon>{{ index + 1 }}/32
+    </td>
+    <td colspan="2" class="text-left cursor-pointer" @click="setcurrentIndex">{{ element.radioStation.name }}</td>
+    <td class="gt-lg"></td>
+    <td></td>
+    <td class="gt-lg"></td>
+    <td></td>
+    <td class="text-center">
+      <q-btn-group outline>
+        <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" :disable="disabled || index == 0"
+          @click="onUp" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="disabled || index == lastIndex - 1"
+          @click="onDown" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" :title="t('Toggle favorite')"
+          :disable="true" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="link" :title="t('View url')" :disable="disabled"
+          :href="element.radioStation.url" target="_blank"/>
+      </q-btn-group>
+    </td>
+  </tr>
 </template>
 
 <script setup>
