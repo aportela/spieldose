@@ -11,7 +11,7 @@
     <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
       :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying"
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :disabled="disablePlayerControls" :currentElementTimeData="currentElementTimeData"
+    <SidebarPlayerSeekControl :disabled="disablePlayerControls || ! isCurrentElementTrack" :currentElementTimeData="currentElementTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentElementURL"
       :favorited="currentElementFavorited" @toggleAnalyzer="showAnalyzer = !showAnalyzer"
