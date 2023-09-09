@@ -63,6 +63,11 @@ img.mosaic_cover_element {
 
 import { ref, computed } from "vue";
 
+/**
+  * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
+  * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
+*/
+
 const defaultImage = 'images/vinyl.png';
 
 const emit = defineEmits(['play']);
