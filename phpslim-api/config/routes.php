@@ -396,9 +396,6 @@ return function (App $app) {
                     $file = new \Spieldose\File($this, $args['id']);
                     $file->get();
                     if (file_exists($file->path)) {
-                        $t = new \Spieldose\Entities\Track($args['id']);
-                        $t->increasePlayCount($this->get(\aportela\DatabaseWrapper\DB::class));
-                        //$track->incPlayCount($db);
                         $length = $file->length;
                         // https://stackoverflow.com/a/157447
                         $partialContent = false;
