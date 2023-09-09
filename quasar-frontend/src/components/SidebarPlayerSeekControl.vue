@@ -42,7 +42,7 @@ function onSeek() {
 };
 
 function formatSecondsAsTime(secs, format) {
-  if (secs && secs > 0) {
+  if (secs && Number.isInteger(secs) && secs > 0) {
     var hr = Math.floor(secs / 3600);
     var min = Math.floor((secs - (hr * 3600)) / 60);
     var sec = Math.floor(secs - (hr * 3600) - (min * 60));
