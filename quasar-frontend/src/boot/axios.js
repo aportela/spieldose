@@ -393,13 +393,14 @@ const api = {
           });
       });
     },
-    add: function (id, name, tracks) {
+    add: function (id, name, tracks, isPublic) {
       return new Promise((resolve, reject) => {
         const params = {
           playlist: {
             id: id,
             name: name,
             tracks: tracks,
+            public: isPublic,
           },
         };
         axios

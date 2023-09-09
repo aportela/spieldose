@@ -234,5 +234,10 @@ return (array(
                 FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
             );
         '
-    )
+    ),
+    15 => array(
+        '
+            ALTER TABLE `PLAYLIST` ADD "public"	VARCHAR(1) DEFAULT "N";
+        '
+    ),
 ));

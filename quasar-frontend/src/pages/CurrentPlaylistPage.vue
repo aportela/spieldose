@@ -69,6 +69,10 @@
           <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false" label="Playlist name"/>
         </q-card-section>
 
+        <q-card-section class="q-pt-none">
+          <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
+        </q-card-section>
+
         <q-card-actions align="right" class="">
           <q-btn outline label="Cancel" v-close-popup />
           <q-btn outline label="Save" :disable="! newPlaylistName" @click="onSavePlaylistElements"/>
@@ -116,6 +120,8 @@ const loading = ref(false);
 const showSavePlaylistDialog = ref(false);
 
 const newPlaylistName = ref(null);
+
+const newPlaylistPublic = ref(false);
 
 function onClear() {
   player.stop();
@@ -249,7 +255,7 @@ function onSavePlaylistElements() {
   player.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
-  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => {return(element.track.id); }) ).then((success) => {
+  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => {return(element.track.id); }), newPlaylistPublic.value).then((success) => {
     //elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
     //currentPlaylist.saveElements(elements.value);
     loading.value = false;

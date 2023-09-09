@@ -548,7 +548,8 @@ return function (App $app) {
                 $playlist = new \Spieldose\Playlist(
                     $params["playlist"]["id"] ?? "",
                     $params["playlist"]["name"] ?? "",
-                    $params["playlist"]["tracks"] ?? []
+                    $params["playlist"]["tracks"] ?? [],
+                    $params["playlist"]["public"] ?? false
                 );
                 $playlist->add($db);
                 $payload = json_encode(["playlist" => $params["playlist"]]);

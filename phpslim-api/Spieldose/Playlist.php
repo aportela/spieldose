@@ -9,8 +9,9 @@ class Playlist
     public string $id;
     public string $name;
     public array $tracks = [];
+    public $public = false;
 
-    public function __construct(string $id, string $name, array $tracks = [])
+    public function __construct(string $id, string $name, array $tracks = [], bool $public = false)
     {
         $this->id = $id;
         $this->name = $name;
@@ -52,9 +53,10 @@ class Playlist
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
                 );
-                $dbh->exec(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now')) ", $params);
+                $dbh->exec(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime, public) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now'), :public) ", $params);
                 if (is_array($this->tracks) && count($this->tracks) > 0) {
                     foreach ($this->tracks as $trackIndex => $trackId) {
                         $params = array(
@@ -229,7 +231,7 @@ class Playlist
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
         );
         $filterConditions = array(
-            " PLAYLIST.user_id = :user_id"
+            " PLAYLIST.user_id = :user_id OR PLAYLIST.public = 'S' "
         );
         if (isset($filter["name"]) && !empty($filter["name"])) {
             $filterConditions[] = " PLAYLIST.name LIKE :name";

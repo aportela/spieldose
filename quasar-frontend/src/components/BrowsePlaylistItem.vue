@@ -31,9 +31,9 @@
     <q-separator />
     <q-card-section>
       <q-btn-group spread outline>
-        <q-btn label="play" stack icon="play_arrow" />
-        <q-btn label="edit" stack icon="edit" />
-        <q-btn label="delete" stack icon="delete" />
+        <q-btn label="play" stack icon="play_arrow" disabled />
+        <q-btn label="edit" stack icon="edit" disabled/>
+        <q-btn label="delete" stack icon="delete" disabled />
       </q-btn-group>
     </q-card-section>
 
@@ -83,6 +83,16 @@ const showVinylCollection = computed(() => { return (props.mode == 'vinylCollect
 
 function onPlay() {
   emit('play');
+}
+
+// https://stackoverflow.com/a/1484514
+function getRandomColor() {
+  const allowed = "ABCDEF0123456789";
+  let S = "#";
+  while (S.length < 7) {
+    S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
+  }
+  return (S);
 }
 
 </script>
