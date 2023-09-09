@@ -36,4 +36,21 @@ if (count($missingExtensions) > 0) {
         echo "Upgrade error, verify logs";
         $logger->critical("Upgrade error, verify logs");
     }
+
+    echo "Checking thumbnail cache dirs" . PHP_EOL;
+    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
+        if (!mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+            $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
+        }
+    }
+    if (!file_exists($settings['thumbnails']['albums']['basePath'])) {
+        if (!mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
+            $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
+        }
+    }
+    if (!file_exists($settings['thumbnails']['radioStations']['basePath'])) {
+        if (!mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
+            $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
+        }
+    }
 }
