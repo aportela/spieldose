@@ -19,6 +19,8 @@ export const usePlayer = defineStore("player", {
     create() {
       this.element = document.createElement("audio");
       this.element.id = "audio_player";
+      // required for radio stations streams
+      this.element.crossOrigin = "anonymous";
     },
     setVolume(volume) {
       this.element.volume = volume;
