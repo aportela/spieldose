@@ -21,12 +21,14 @@
       <q-btn-group outline>
         <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" :disable="disabled || index == 0"
           @click="onUp" />
-        <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="disabled || index == lastIndex - 1"
-          @click="onDown" />
-        <q-btn size="sm" color="white"  :text-color="element.favorited ? 'pink': 'grey-5'" icon="favorite" :title="t('Toggle favorite')"
-          :disable="disabled" @click="onToggleFavorite" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')"
+          :disable="disabled || index == lastIndex - 1" @click="onDown" />
+        <q-btn size="sm" color="white" :text-color="element.favorited ? 'pink' : 'grey-5'" icon="favorite"
+          :title="t('Toggle favorite')" :disable="disabled" @click="onToggleFavorite" />
         <q-btn size="sm" color="white" text-color="grey-5" icon="download" :title="t('Download')" :disable="disabled"
           :href="element.track.url" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
+          :disable="disabled || (isPlaying && selected)" @click="onRemove" />
       </q-btn-group>
     </td>
   </tr>
@@ -43,12 +45,14 @@
       <q-btn-group outline>
         <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" :disable="disabled || index == 0"
           @click="onUp" />
-        <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="disabled || index == lastIndex - 1"
-          @click="onDown" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')"
+          :disable="disabled || index == lastIndex - 1" @click="onDown" />
         <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" :title="t('Toggle favorite')"
           :disable="true" />
         <q-btn size="sm" color="white" text-color="grey-5" icon="link" :title="t('View url')" :disable="disabled"
-          :href="element.radioStation.url" target="_blank"/>
+          :href="element.radioStation.url" target="_blank" />
+        <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
+          :disable="disabled || (isPlaying && selected)" @click="onRemove" />
       </q-btn-group>
     </td>
   </tr>
@@ -83,7 +87,7 @@ const icon = computed(() => {
   }
 });
 
-const emit = defineEmits(['setcurrentIndex', 'up', 'down', 'toggleFavorite']);
+const emit = defineEmits(['setcurrentIndex', 'up', 'down', 'toggleFavorite', 'remove']);
 
 function setcurrentIndex() {
   emit('setcurrentIndex', props.index);
@@ -99,6 +103,10 @@ function onDown() {
 
 function onToggleFavorite() {
   emit('toggleFavorite', props.index);
+}
+
+function onRemove() {
+  emit('remove', props.index);
 }
 
 </script>

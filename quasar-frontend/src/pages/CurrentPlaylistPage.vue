@@ -43,8 +43,9 @@
           <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
             :lastIndex="elements.length" :selected="currentTrackIndex == index"
             @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)"
-            @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)" :disabled="loading"
-            :isPlaying="playerStatus.isPlaying" :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
+            @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)"
+            @remove="onRemoveElementAtIndex(index)" :disabled="loading" :isPlaying="playerStatus.isPlaying"
+            :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
           </CurrentPlaylistTableRow>
         </tbody>
         <tbody v-else>
@@ -149,6 +150,11 @@ function onToggleFavoriteAtIndex(index) {
         }
       });
   }
+}
+
+function onRemoveElementAtIndex(index) {
+  elements.value.splice(index, 1);
+  currentPlaylist.saveElements(elements.value);
 }
 
 function search() {

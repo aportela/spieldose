@@ -78,6 +78,7 @@ export default {
   Up: "Up",
   Down: "Down",
   "Toggle favorite": "Toggle favorite",
+  Remove: "Remove",
 
   // fast search
   fastSearchResultCaption: "by {artistName} / {albumTitle} ({albumYear})",
