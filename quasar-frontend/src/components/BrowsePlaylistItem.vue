@@ -23,7 +23,7 @@
     </q-card-section>
     <q-card-section style="height: 140px;" v-else-if="showVinylCollection">
       <q-avatar v-for="n in 9" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
-        <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n + 3))"
+        <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n -1))"
           v-if="playlist.covers[n]" />
         <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
       </q-avatar>
