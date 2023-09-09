@@ -66,6 +66,7 @@ export default {
   "Search...": "Buscar...",
   reload: "recargar",
   "play track": "reproducir canción",
+  "enqueue track": "encolar canción",
   Clear: "Vaciar",
   Randomize: "Aleatoria",
   Previous: "Anterior",

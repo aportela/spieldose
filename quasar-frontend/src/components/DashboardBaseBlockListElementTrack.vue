@@ -3,6 +3,7 @@
     <slot name="prepend">
     </slot>
     <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
+    <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs" @click="enqueueTrack(track)" />
     <span>{{ track.title }}</span>
     <span v-if="track.artist.name"> / <router-link :to="{ name: 'artist', params: { name: track.artist.name } }">{{
       track.artist.name }}</router-link></span>
@@ -42,4 +43,8 @@ function playTrack(track) {
   player.play(false);
 }
 
+function enqueueTrack(track) {
+  currentPlaylist.appendElements([{ track: track }]);
+  player.interact();
+}
 </script>

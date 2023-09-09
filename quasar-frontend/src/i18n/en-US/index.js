@@ -66,6 +66,7 @@ export default {
   "Search...": "Search...",
   reload: "reload",
   "play track": "play track",
+  "enqueue track": "enqueue track",
   Clear: "Clear",
   Randomize: "Randomize",
   Previous: "Previous",
