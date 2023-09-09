@@ -226,7 +226,6 @@ function onToggleFavorite() {
 
 function skipPrevious() {
   player.interact();
-  increasePlayCount(currentElementId.value);
   currentPlaylist.skipPrevious();
 }
 
@@ -237,7 +236,6 @@ function play(ignoreStatus) {
 
 function skipNext() {
   player.interact();
-  increasePlayCount(currentElementId.value);
   currentPlaylist.skipNext();
 }
 
