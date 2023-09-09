@@ -16,9 +16,9 @@
           <q-card-section v-if="personalRadioStations">
             <q-input v-model="personalRadioStationName" clearable type="search" outlined dense
               placeholder="Text condition" hint="Search radio stations with name" :loading="loading" :disable="loading"
-              @keydown.enter.prevent="searchPersonalRadioStations(true)" @clear="noRadioStationsFound = false; searchPersonalRadioStations(true)"
-              :error="noRadioStationsFound" :errorMessage="'No radio stations found with specified condition'"
-              ref="personalRadioStationNameRef">
+              @keydown.enter.prevent="searchPersonalRadioStations(true)"
+              @clear="noRadioStationsFound = false; searchPersonalRadioStations(true)" :error="noRadioStationsFound"
+              :errorMessage="'No radio stations found with specified condition'" ref="personalRadioStationNameRef">
               <template v-slot:prepend>
                 <q-icon name="filter_alt" />
               </template>
@@ -68,13 +68,16 @@
                 </q-input>
               </div>
               <div class="col-xl-2">
-                <q-select label="Country" dense outlined :options="[ 'Spain', 'Portugal', 'France']" v-model="country"></q-select>
+                <q-select label="Country" dense outlined :options="['Spain', 'Portugal', 'France']"
+                  v-model="country"></q-select>
               </div>
               <div class="col-xl-2">
-                <q-select label="Language" dense outlined :options="[ 'English', 'Spanish', 'Galician']" v-model="language"></q-select>
+                <q-select label="Language" dense outlined :options="['English', 'Spanish', 'Galician']"
+                  v-model="language"></q-select>
               </div>
               <div class="col-xl-2">
-                <q-select label="Tags" dense outlined :options="[ 'news', 'music', 'rock']" multiple v-model="tags"></q-select>
+                <q-select label="Tags" dense outlined :options="['news', 'music', 'rock']" multiple
+                  v-model="tags"></q-select>
               </div>
             </div>
             <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -84,15 +87,19 @@
             <div class="q-gutter-md row items-start">
               <div v-for="radioStation in publicRadioStations" :key="radioStation.id" :radioStation="radioStation"
                 class="cursor-pointer" @click="onPlayRadioStation(radioStation)">
-                <q-img img-class="radiostation_image" :src="radioStation.images.normal || '#'" width="250px" height="250px"
-                  fit="cover">
+                <q-img img-class="radiostation_image" :src="radioStation.images.normal || '#'" width="300px"
+                  height="300px" fit="cover">
                   <div class="absolute-bottom text-subtitle1 text-center">
-                    {{ radioStation.name }}
+                    <p class="q-mt-none">{{ radioStation.name }}</p>
+                    <q-chip size="md" icon="tag" truncate-chip-labels2 v-for="tag in radioStation.tags" :key="tag">{{ tag
+                    }}</q-chip>
                   </div>
                   <template v-slot:error>
                     <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                       <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
-                        {{ radioStation.name }}
+                        <p class="q-mt-none">{{ radioStation.name }}</p>
+                        <q-chip size="md" icon="tag" truncate-chip-labels v-for="tag in radioStation.tags" :key="tag">{{
+                          tag }}</q-chip>
                       </div>
                     </div>
                   </template>
