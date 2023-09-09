@@ -32,9 +32,9 @@
             <th class="text-right">{{ t('Index') }}</th>
             <th class="text-left">{{ t('Title') }}</th>
             <th class="text-left">{{ t('Artist') }}</th>
-            <th class="text-left">{{ t('Album Artist') }}</th>
+            <th class="text-left gt-lg">{{ t('Album Artist') }}</th>
             <th class="text-left">{{ t('Album') }}</th>
-            <th class="text-right">{{ t('Album Track nº') }}</th>
+            <th class="text-right gt-lg">{{ t('Album Track nº') }}</th>
             <th class="text-right">{{ t('Year') }}</th>
             <th class="text-center">{{ t('Actions') }}</th>
           </tr>

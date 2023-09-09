@@ -9,13 +9,13 @@
         :to="{ name: 'artist', params: { name: element.track.artist.name } }"><q-icon name="link"
           class="q-mr-sm"></q-icon>{{
             element.track.artist.name }}</router-link></td>
-    <td class="text-left"><router-link v-if="element.track.album && element.track.album.artist.name"
+    <td class="text-left gt-lg"><router-link v-if="element.track.album && element.track.album.artist.name"
         :class="{ 'text-white text-bold': selected }"
         :to="{ name: 'artist', params: { name: element.track.album.artist.name } }"><q-icon name="link"
           class="q-mr-sm"></q-icon>{{ element.track.album.artist.name }}</router-link></td>
     <td class="text-left">{{ element.track.album ? element.track.album.title : null }}<span class="is-clickable"><i
           class="fas fa-link ml-1"></i></span></td>
-    <td class="text-right">{{ element.track.trackNumber }}</td>
+    <td class="text-right gt-lg">{{ element.track.trackNumber }}</td>
     <td class="text-right">{{ element.track.album ? element.track.album.year : null }}</td>
     <td class="text-center">
       <q-btn-group outline>
