@@ -54,10 +54,10 @@
           <q-tab icon="summarize" name="overview" label="Overview" />
           <q-tab icon="menu_book" name="biography" label="Biography" />
           <q-tab icon="groups" name="similarArtists" label="Similar artists">
-            <q-badge color="pink" floating>{{ artistData.similar.length }}</q-badge>
+            <q-badge color="pink" floating v-if="artistData.similar">{{ artistData.similar.length }}</q-badge>
           </q-tab>
           <q-tab icon="album" name="albums" label="Albums">
-            <q-badge color="pink" floating>{{ artistData.topAlbums.length }}</q-badge>
+            <q-badge color="pink" floating v-if="artistData.topAlbums">{{ artistData.topAlbums.length }}</q-badge>
           </q-tab>
           <q-tab icon="audiotrack" name="tracks" label="Tracks" />
           <q-tab icon="analytics" name="stats" label="Stats" />
@@ -96,7 +96,8 @@
                   <tbody>
                     <tr class="row" v-for="track in artistData.topTracks" :key="track.id">
                       <td class="text-center col-1">
-                        <q-icon name="play_arrow" size="lg" class="cursor-pointer" @click="onPlayTrack(track)"></q-icon>
+                        <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
+                        <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs" @click="enqueueTrack(track)" />
                         <q-icon name="favorite" size="md" class="cursor-pointer" :color="track.favorited ? 'pink': ''" @click="onToggleFavorite(track)"></q-icon>
                       </td>
                       <td class="text-bold col-4">{{ track.title }}</td>
@@ -242,7 +243,7 @@
       </q-tab-panel>
       <q-tab-panel name="albums">
         <div class="text-h6 q-mb-xl">Albums</div>
-        <div class="q-gutter-md row items-start">
+        <div class="q-gutter-md row items-start" v-if="artistData.topAlbums">
           <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
             :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
           </AnimatedAlbumCover>
@@ -443,12 +444,16 @@ function nl2br(str, replaceMode, isXhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
 }
 
-function onPlayTrack(track) {
-  // TODO: change icon if current index equals to this track, do not reload again
+function playTrack(track) {
   player.stop();
   currentPlaylist.saveElements([{ track: track }]);
   player.interact();
   player.play(false);
+}
+
+function enqueueTrack(track) {
+  currentPlaylist.appendElements([{ track: track }]);
+  player.interact();
 }
 
 function onToggleFavorite(track) {
