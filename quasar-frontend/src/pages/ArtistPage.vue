@@ -51,12 +51,16 @@
           </div>
         </div>
         <q-tabs v-model="tab" class="tex-white q-mt-md">
-          <q-tab name="overview" label="Overview" />
-          <q-tab name="biography" label="Biography" />
-          <q-tab name="similarArtists" label="Similar artists" />
-          <q-tab name="albums" label="Albums" />
-          <q-tab name="tracks" label="Tracks" />
-          <q-tab name="stats" label="Stats" />
+          <q-tab icon="summarize" name="overview" label="Overview" />
+          <q-tab icon="menu_book" name="biography" label="Biography" />
+          <q-tab icon="groups" name="similarArtists" label="Similar artists">
+            <q-badge color="pink" floating>{{ artistData.similar.length }}</q-badge>
+          </q-tab>
+          <q-tab icon="album" name="albums" label="Albums">
+            <q-badge color="pink" floating>{{ artistData.topAlbums.length }}</q-badge>
+          </q-tab>
+          <q-tab icon="audiotrack" name="tracks" label="Tracks" />
+          <q-tab icon="analytics" name="stats" label="Stats" />
         </q-tabs>
       </div>
     </div>
@@ -132,6 +136,7 @@
                     </AnimatedAlbumCover>
                   </div>
                 </div>
+                <q-btn size="sm" @click="tab = 'albums'" v-if="artistData.topAlbums.length > 6">view more</q-btn>
               </q-card-section>
             </q-card>
             <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
@@ -148,6 +153,7 @@
                       @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
                     </AnimatedAlbumCover>
                   </div>
+                  <q-btn size="sm" @click="tab = 'albums'" v-if="artistData.appearsOnAlbums.length > 6">view more</q-btn>
                 </div>
               </q-card-section>
             </q-card>
@@ -181,6 +187,7 @@
                         }}</router-link>
                     </p>
                   </div>
+                  <q-btn size="sm" @click="tab= 'similarArtists'">view more</q-btn>
                 </div>
               </q-card-section>
             </q-card>
@@ -273,7 +280,7 @@ div#artist-header-block {
   overflow: hidden;
   color: #fff;
   background: rgba(24, 24, 24, 1);
-  height: 400px;
+  height: 416px;
   position: relative;
 }
 
@@ -282,7 +289,7 @@ div#artist-header-block-background-image {
   background-repeat: no-repeat;
   background-position: 50% 25%;
   width: 50%;
-  height: 400px;
+  height: 416px;
   position: absolute;
   top: 0;
   right: 0;
@@ -294,7 +301,7 @@ div#artist-header-block-background-image {
 div#artist-header-block-background-overlay {
   background: linear-gradient(0.25turn, rgba(24, 24, 24, 1), rgba(92, 71, 59, 0));
   width: 51%;
-  height: 400px;
+  height: 416px;
   position: absolute;
   top: 0;
   right: 0;
@@ -357,6 +364,7 @@ const artistData = ref({
     year: null,
     image: null
   },
+  topAlbums: [],
   topTracks: [],
   similar: []
 });
