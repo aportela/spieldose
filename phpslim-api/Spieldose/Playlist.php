@@ -16,6 +16,7 @@ class Playlist
         $this->id = $id;
         $this->name = $name;
         $this->tracks = $tracks;
+        $this->public = $public;
     }
 
     public function __destruct()
