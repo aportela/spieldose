@@ -20,7 +20,7 @@
               </template>
             </q-input>
           </div>
-          <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
             <q-select outlined dense v-model="style" :options="styleValues" options-dense label="Style"
               :disable="loading">
               <template v-slot:selected-item="scope">
