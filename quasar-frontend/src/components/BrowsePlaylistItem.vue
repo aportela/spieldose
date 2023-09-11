@@ -80,7 +80,7 @@ const props = defineProps({
 
 const showMosaic = computed(() => { return (props.mode == 'mosaic') });
 
-const showVinylCollection = computed(() => { return (props.mode == 'vinylCollection') });
+const showVinylCollection = computed(() => { return (props.mode == 'vinyls') });
 
 function onPlay() {
   emit('play', props.playlist.id);

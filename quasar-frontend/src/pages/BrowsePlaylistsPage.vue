@@ -6,27 +6,35 @@
         <q-breadcrumbs-el icon="list" label="Browse playlists" />
       </q-breadcrumbs>
       <q-card-section v-if="playlists">
-        <q-input v-model="playlistName" clearable type="search" outlined dense placeholder="Text condition"
-          hint="Search playlists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
-          @clear="noPlaylistsFound = false; search(true)" :error="noPlaylistsFound"
-          :errorMessage="'No playlists found with specified condition'">
-          <template v-slot:prepend>
-            <q-icon name="filter_alt" />
-          </template>
-          <template v-slot:append>
-            <q-icon name="search" class="cursor-pointer" @click="search" />
-          </template>
-        </q-input>
-        <q-btn-toggle class="q-my-md" push toggle-color="pink" v-model="style" :options="[
-          { label: 'style: mosaic', value: 'mosaic' },
-          { label: 'style: vinyl collection', value: 'vinylCollection' }
-        ]" />
+        <div class="row q-gutter-xs">
+          <div class="col">
+            <q-input v-model="playlistName" clearable type="search" outlined dense placeholder="Text condition"
+              hint="Search playlists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
+              @clear="noPlaylistsFound = false; search(true)" :error="noPlaylistsFound"
+              :errorMessage="'No playlists found with specified condition'">
+              <template v-slot:prepend>
+                <q-icon name="filter_alt" />
+              </template>
+              <template v-slot:append>
+                <q-icon name="search" class="cursor-pointer" @click="search" />
+              </template>
+            </q-input>
+          </div>
+          <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+            <q-select outlined dense v-model="style" :options="styleValues" options-dense label="Style"
+              :disable="loading">
+              <template v-slot:selected-item="scope">
+                {{ scope.opt.label }}
+              </template>
+            </q-select>
+          </div>
+        </div>
         <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
           <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
-        <div class="q-gutter-md row items-start">
-          <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style"
+        <div class="q-gutter-sm row items-start">
+          <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style.value"
             @play="onPlay(playlist.id)" @delete="onDelete(playlist.id)">
           </BrowsePlaylistItem>
         </div>
@@ -71,8 +79,19 @@ const playlists = ref([]);
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-const style = ref('mosaic');
 
+const styleValues = [
+  {
+    label: 'Mosaic',
+    value: 'mosaic'
+  },
+  {
+    label: 'Vinyl collection',
+    value: 'vinyls'
+  }
+];
+
+const style = ref(styleValues[0]);
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
