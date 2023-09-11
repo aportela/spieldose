@@ -1,7 +1,8 @@
 <template>
   <q-card class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 shadow-box shadow-10 q-mt-lg" bordered>
     <q-card-section>
-      {{ playlist.name }} ({{ playlist.trackCount }} track/s)
+      {{ playlist.name }}
+      <p class="text-center">({{ playlist.trackCount }} track/s)</p>
     </q-card-section>
     <q-separator />
     <q-card-section v-if="showMosaic">
