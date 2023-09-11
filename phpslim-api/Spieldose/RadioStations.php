@@ -28,8 +28,8 @@ $radioStations = [
         "directStream" => "https://25453.live.streamtheworld.com/CADENASER.mp3",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/e6xdJAvSZu.png")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/e6xdJAvSZu.png"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://img.huffingtonpost.es/files/image_720_480/uploads/2023/05/29/angels-barcelo-en-la-cadena-ser-2551.jpeg")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://img.huffingtonpost.es/files/image_720_480/uploads/2023/05/29/angels-barcelo-en-la-cadena-ser-2551.jpeg"))
         ],
         "language" => "es",
         "country" => "spain",
@@ -43,8 +43,8 @@ $radioStations = [
         "directStream" => "https://libertaddigital-radio-live1.flumotion.com/libertaddigital/ld-live1-low.mp3",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://media.vozpopuli.com/2021/02/imagen-discurso-Federico-Jimenez-Losantos_1409569095_16036296_1200x675.jpg")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://media.vozpopuli.com/2021/02/imagen-discurso-Federico-Jimenez-Losantos_1409569095_16036296_1200x675.jpg"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://i.imgur.com/E9qFOUi.png")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://i.imgur.com/E9qFOUi.png"))
         ],
         "language" => "es",
         "country" => "spain",
