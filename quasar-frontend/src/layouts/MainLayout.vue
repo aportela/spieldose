@@ -6,10 +6,10 @@
         <q-avatar square size="42px" class="q-mr-sm">
           <img src="icons/favicon-96x96.png" />
         </q-avatar>
-        <q-toolbar-title>Spieldose</q-toolbar-title>
+        Spieldose
         <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink"
           :stack-label="false" :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter"
-          style="width: 40%;">
+          style="min-width: 32%;">
           <template v-slot:no-option v-if="searching">
             <q-item>
               <q-item-section>
@@ -52,15 +52,10 @@
         notice shrink property since we are placing it
         as child of QToolbar
         -->
-        <q-tabs shrink
->
-          <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.xl ? t(link.text): ''" :title="t(link.text)" no-caps inline-label exact />
-        </q-tabs>
-        <q-btn flat no-caps stack icon="language">
-          {{ selectedLocale.shortLabel }}
-          <q-icon name="arrow_drop_down" size="16px" />
-          <q-menu auto-close>
+        <q-space></q-space>
+        <q-tabs shrink>
+          <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name" :icon="link.icon" :label="$q.screen.xl ? t(link.text): ''" :title="t(link.text)" no-caps inline-label exact />
+          <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack>
             <q-list dense style="min-width: 200px">
               <q-item class="GL__menu-link-signed-in">
                 <q-item-section>
@@ -76,9 +71,9 @@
                 </q-item-section>
               </q-item>
             </q-list>
-          </q-menu>
-        </q-btn>
-        <q-btn icon="logout" :label="$q.screen.xl ? t('Signout'): ''" :title="t('Signout')" flat no-caps stack @click="signOut" />
+        </q-btn-dropdown>
+        <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout'): ''" :title="t('Signout')" flat no-caps stack @click="signOut" />
+        </q-tabs>
       </q-toolbar>
     </q-header>
     <!--
