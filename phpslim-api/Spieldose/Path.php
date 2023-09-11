@@ -45,6 +45,8 @@ class Path
                     if (array_key_exists($completePath, $fullPaths)) {
                         $totalFiles = $fullPaths[$completePath]->totalFiles;
                         $id = $fullPaths[$completePath]->id;
+                    } else {
+                        $id = \Spieldose\Utils::uuidv4();
                     }
                     /*
                     if ($i) {

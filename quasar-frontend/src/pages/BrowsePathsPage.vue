@@ -10,9 +10,9 @@
           <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name"
             children-key="children" no-transition @update:selected="onTreeNodeSelected">
             <template v-slot:default-header="prop">
-              <div v-if="prop.node.totalFiles > 0">
-                <q-icon name="playlist_play" /> <q-icon name="playlist_add" /> {{ prop.node.name }} ({{
-                  prop.node.totalFiles }} total tracks)
+              <div v-if="prop.node.totalFiles > 0 || prop.node.children">
+                <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
+                  prop.node.totalFiles }} total tracks)</span>
               </div>
               <span v-else>{{ prop.node.name }}</span>
             </template>
@@ -29,10 +29,12 @@ import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+import { usePlayer } from 'stores/player';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 const $q = useQuasar();
 
+const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const noPathsFound = ref(false);
@@ -88,13 +90,15 @@ function findNode(hash, currentNode) {
 }
 
 function onTreeNodeSelected(nodeHash) {
+  player.interact();
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id) {
     loading.value = true;
     api.track.search({ path: node.id }, 1, 0, false, 'title', 'ASC').then((success) => {
-      currentPlaylist.saveElements(success.data.tracks);
+      currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
       loading.value = false;
     }).catch((error) => {
+      // TODO
       loading.value = false;
     });
   }
