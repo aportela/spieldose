@@ -40,7 +40,7 @@ $radioStations = [
         "name" => "esRadio",
         "url" => "https://esradio.libertaddigital.com/",
         "playlist" => null,
-        "directStream" => "https://streaming.intereconomia.com/siliconorg",
+        "directStream" => "https://libertaddigital-radio-live1.flumotion.com/libertaddigital/ld-live1-low.mp3",
         "images" =>
         [
             "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://media.vozpopuli.com/2021/02/imagen-discurso-Federico-Jimenez-Losantos_1409569095_16036296_1200x675.jpg")),
