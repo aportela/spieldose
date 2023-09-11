@@ -31,9 +31,9 @@
     <q-separator />
     <q-card-section>
       <q-btn-group spread outline>
-        <q-btn label="play" stack icon="play_arrow" disabled />
+        <q-btn label="play" stack icon="play_arrow" @click.prevent="onPlay" />
         <q-btn label="edit" stack icon="edit" disabled/>
-        <q-btn label="delete" stack icon="delete" disabled />
+        <q-btn label="delete" stack icon="delete" @click.prevent="onDelete" />
       </q-btn-group>
     </q-card-section>
 
@@ -70,7 +70,7 @@ import { ref, computed } from "vue";
 
 const defaultImage = 'images/vinyl.png';
 
-const emit = defineEmits(['play']);
+const emit = defineEmits(['play', 'delete']);
 
 const props = defineProps({
   playlist: Object,
@@ -82,7 +82,11 @@ const showMosaic = computed(() => { return (props.mode == 'mosaic') });
 const showVinylCollection = computed(() => { return (props.mode == 'vinylCollection') });
 
 function onPlay() {
-  emit('play');
+  emit('play', props.playlist.id);
+}
+
+function onDelete() {
+  emit('delete', props.playlist.id);
 }
 
 // https://stackoverflow.com/a/1484514

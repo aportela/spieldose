@@ -413,6 +413,18 @@ const api = {
           });
       });
     },
+    delete: function (id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(baseAPIPath + "/playlist/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {

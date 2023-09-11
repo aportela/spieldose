@@ -75,6 +75,7 @@ return function (App $app) {
                 $filter = array(
                     "text" => $params["filter"]["text"] ?? "",
                     "path" => $params["filter"]["path"] ?? "",
+                    "playlistId" => $params["filter"]["playlistId"] ?? "",
                     "albumMbId" => $params["filter"]["albumMbId"] ?? ""
                 );
                 $sortItems = [];
@@ -555,6 +556,24 @@ return function (App $app) {
                 $payload = json_encode(["playlist" => $params["playlist"]]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
+            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) {
+                if (!empty($args['id'])) {
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $playlist = new \Spieldose\Playlist(
+                        $args['id'] ?? "",
+                        "",
+                        [],
+                        false
+                    );
+                    $playlist->remove($db);
+                    $payload = json_encode([]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
             });
 
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {

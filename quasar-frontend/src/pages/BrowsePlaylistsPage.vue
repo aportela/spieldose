@@ -26,9 +26,26 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-gutter-md row items-start">
-          <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style">
+          <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style"
+            @play="onPlay(playlist.id)" @delete="onDelete(playlist.id)">
           </BrowsePlaylistItem>
         </div>
+        <q-dialog v-model="showDeleteConfirmationDialog" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar icon="info" />
+              <span class="q-ml-sm">Delete playlist</span>
+            </q-card-section>
+            <q-card-section>
+              <p>Are you sure ?</p>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn flat label="YES" color="primary" @click="onDeletePlaylist" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </q-card-section>
     </q-card>
   </q-page>
@@ -41,6 +58,8 @@ import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
+import { usePlayer } from 'stores/player';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 const $q = useQuasar();
 
@@ -54,6 +73,12 @@ const currentPageIndex = ref(1);
 
 const style = ref('mosaic');
 
+
+const player = usePlayer();
+const currentPlaylist = useCurrentPlaylistStore();
+
+const showDeleteConfirmationDialog = ref(false);
+const selectedPlaylistId = ref(null);
 
 // https://stackoverflow.com/a/1484514
 function getRandomColor() {
@@ -91,6 +116,42 @@ function search(resetPager) {
 function onPaginationChanged(pageIndex) {
   currentPageIndex.value = pageIndex;
   search(false);
+}
+
+function onPlay(playlistId) {
+  player.interact();
+  loading.value = true;
+  api.track.search({ playlistId: playlistId }, 1, 0, false, 'playListTrackIndex', 'ASC').then((success) => {
+    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    loading.value = false;
+  }).catch((error) => {
+    // TODO
+    loading.value = false;
+  });
+}
+
+function onDelete(playlistId) {
+  showDeleteConfirmationDialog.value = true;
+  selectedPlaylistId.value = playlistId;
+}
+
+function onDeletePlaylist() {
+  loading.value = true;
+  api.playlist.delete(selectedPlaylistId.value).then((success) => {
+    loading.value = false;
+    showDeleteConfirmationDialog.value = false;
+    selectedPlaylistId.value = null;
+    $q.notify({
+      type: "positive",
+      message: "Playlist deleted",
+    });
+    loading.value = false;
+    search(true);
+  }).catch((error) => {
+    // TODO
+    loading.value = false;
+  });
+
 }
 
 search(true);

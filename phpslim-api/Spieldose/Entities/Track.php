@@ -63,6 +63,7 @@ class Track extends \Spieldose\Entities\Entity
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
         );
         $filterConditions = array();
+        $leftJoins = array();
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $words = explode(" ", trim($filter["title"]));
             foreach ($words as $word) {
@@ -83,13 +84,18 @@ class Track extends \Spieldose\Entities\Entity
             $words = explode(" ", trim($filter["text"]));
             foreach ($words as $word) {
                 $paramName = ":text_" . uniqid();
-                $filterConditions[] = sprintf(" (FIT.title LIKE %s OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s)", $paramName, $paramName, $paramName);
+                $filterConditions[] = sprintf(" (FIT.title LIKE %s OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s) ", $paramName, $paramName, $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
         if (isset($filter["path"]) && !empty($filter["path"])) {
-            $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path)";
+            $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
+        }
+        if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
+            $filterConditions[] = " EXISTS (SELECT PT.playlist_id FROM PLAYLIST_TRACK PT WHERE PT.playlist_id = :playlist_id AND PT.track_id = F.id) ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $filter["playlistId"]);
+            $leftJoins[] = " LEFT JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
         }
         if (isset($filter["albumMbId"]) && !empty($filter["albumMbId"])) {
             $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
@@ -110,6 +116,10 @@ class Track extends \Spieldose\Entities\Entity
             "coverPathId" => "D.id",
             "favorited" => "FF.favorited"
         ];
+
+        if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
+            $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";
+        }
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"
         ];
@@ -157,8 +167,10 @@ class Track extends \Spieldose\Entities\Entity
                 %s
                 %s
                 %s
+                %s
             ",
             $browser->getQueryFields(),
+            count($leftJoins) > 0 ? implode(PHP_EOL, $leftJoins) : null,
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
             $browser->getQuerySort(),
             $pager->getQueryLimit()

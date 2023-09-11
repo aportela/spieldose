@@ -54,11 +54,11 @@
 <script setup>
 
 import { ref, nextTick } from "vue";
-import { api } from 'boot/axios'
+import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
-import { usePlayer } from 'stores/player'
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+import { usePlayer } from 'stores/player';
+import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 
 const $q = useQuasar();
