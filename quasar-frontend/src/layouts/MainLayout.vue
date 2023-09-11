@@ -48,14 +48,14 @@
             </q-list>
           </template>
         </q-select>
-        <q-space />
         <!--
         notice shrink property since we are placing it
         as child of QToolbar
         -->
-        <q-tabs shrink>
+        <q-tabs shrink
+>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="t(link.text)" no-caps inline-label exact />
+            :icon="link.icon" :label="$q.screen.xl ? t(link.text): ''" :title="t(link.text)" no-caps inline-label exact />
         </q-tabs>
         <q-btn flat no-caps stack icon="language">
           {{ selectedLocale.shortLabel }}
@@ -78,7 +78,7 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-btn icon="logout" :label="t('Signout')" flat no-caps stack @click="signOut" />
+        <q-btn icon="logout" :label="$q.screen.xl ? t('Signout'): ''" :title="t('Signout')" flat no-caps stack @click="signOut" />
       </q-toolbar>
     </q-header>
     <!--
