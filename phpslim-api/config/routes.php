@@ -69,6 +69,33 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->post('/global_search', function (Request $request, Response $response, array $args) {
+                $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $sortItems = [];
+                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                    true
+                );
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 5);
+                $data = array();
+                $filter = array(
+                    "text" => $params["filter"]["text"] ?? "",
+                );
+                $result = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
+                $data["tracks"] = $result->items;
+                $filter = array(
+                    "name" => $params["filter"]["text"] ?? "",
+                );
+                $result = \Spieldose\Entities\Artist::search($db, $filter, $sort, $pager);
+                $data["artists"] = $result->items;
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            });
+
             $group->post('/track/search', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();

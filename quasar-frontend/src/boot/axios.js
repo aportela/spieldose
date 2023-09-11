@@ -113,6 +113,39 @@ const api = {
       });
     },
   },
+  globalSearch: {
+    search: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      randomSort,
+      sortField,
+      sortOrder
+    ) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          sort: {
+            random: randomSort,
+            field: sortField,
+            order: sortOrder,
+          },
+          filter: filter || {},
+        };
+        axios
+          .post(baseAPIPath + "/global_search", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
   artist: {
     search: function (
       name,

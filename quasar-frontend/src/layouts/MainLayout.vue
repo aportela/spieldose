@@ -23,7 +23,7 @@
             <q-list class="bg-grey-2 text-dark">
               <q-item>
                 <q-item-section avatar top>
-                  <q-icon name="music_note" color="black" size="34px" />
+                  <q-icon name="music_note" color="black" size="34px" v-if="scope.opt.entity == 'track'"/>
                 </q-item-section>
                 <q-item-section top class="col-1 gt-sm">
                   <q-item-label class="q-mt-sm">Track</q-item-label>
@@ -172,11 +172,11 @@ function onFilter(val, update) {
       filteredOptions.value = [];
       searching.value = true;
       update(() => {
-        api.track.search({ text: val }, 1, 5, false, 'title', 'ASC')
+        api.globalSearch.search({ text: val }, 1, 5, false, 'title', 'ASC')
           .then((success) => {
-            searchResults.value = success.data.data.items;
+            searchResults.value = success.data.data.tracks;
             filteredOptions.value = searchResults.value.map((item) => {
-              return ({ id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+              return ({ entity: 'track', id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
             });
             searching.value = false;
             return;
