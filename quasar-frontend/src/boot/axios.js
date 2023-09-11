@@ -148,9 +148,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -164,7 +164,7 @@ const api = {
   },
   album: {
     search: function (
-      title,
+      filter,
       currentPageIndex,
       resultsPage,
       sortField,
@@ -172,7 +172,7 @@ const api = {
     ) {
       return new Promise((resolve, reject) => {
         const params = {
-          filter: { title: title },
+          filter: filter || {},
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,

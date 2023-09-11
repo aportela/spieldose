@@ -28,7 +28,9 @@ class Album extends \Spieldose\Entities\Entity
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager, bool $useLocalCovers): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();
-        $filterConditions = array();
+        $filterConditions = array(
+            " COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL "
+        );
         if (isset($filter["title"]) && !empty($filter["title"])) {
             $words = explode(" ", trim($filter["title"]));
             foreach ($words as $word) {
@@ -36,8 +38,22 @@ class Album extends \Spieldose\Entities\Entity
                 $filterConditions[] = sprintf(" COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
-        } else {
-            $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) IS NOT NULL ";
+        }
+        if (isset($filter["albumArtistName"]) && !empty($filter["albumArtistName"])) {
+            $words = explode(" ", trim($filter["albumArtistName"]));
+            foreach ($words as $word) {
+                $paramName = ":albumArtistName_" . uniqid();
+                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist) LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
+        }
+        if (isset($filter["text"]) && !empty($filter["text"])) {
+            $words = explode(" ", trim($filter["text"]));
+            foreach ($words as $word) {
+                $paramName = ":text_" . uniqid();
+                $filterConditions[] = sprintf(" ( COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s )", $paramName, $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
         }
         $fieldDefinitions = [
             "mbId" => "FIT.mb_album_id",

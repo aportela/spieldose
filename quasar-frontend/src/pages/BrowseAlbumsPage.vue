@@ -7,11 +7,19 @@
       </q-breadcrumbs>
       <q-card-section v-if="albums">
         <div class="row q-gutter-xs">
+          <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+            <q-select outlined dense v-model="searchOn" :options="searchOnValues" options-dense label="Search on"
+              @update:model-value="search(true)" :disable="loading">
+              <template v-slot:selected-item="scope">
+                {{ scope.opt.label }}
+              </template>
+            </q-select>
+          </div>
           <div class="col">
-            <q-input v-model="albumTitle" clearable type="search" outlined dense placeholder="Text condition"
+            <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
               hint="Search albums with title" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
               @clear="noAlbumsFound = false; search(true)" :error="noAlbumsFound"
-              :errorMessage="'No albums found with specified condition'" ref="albumTitleRef">
+              :errorMessage="'No albums found with specified condition'" ref="searchTextRef">
               <template v-slot:prepend>
                 <q-icon name="filter_alt" />
               </template>
@@ -43,7 +51,8 @@
         </div>
         <div class="q-gutter-md row items-start">
           <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
-            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
+            :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
+            @enqueue="onEnqueueAlbum(album)">
           </AnimatedAlbumCover>
         </div>
       </q-card-section>
@@ -65,7 +74,25 @@ const $q = useQuasar();
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
-const albumTitle = ref(null);
+const searchText = ref(null);
+
+const searchOnValues = [
+  {
+    label: 'Title',
+    value: 'title'
+  },
+  {
+    label: 'Artist',
+    value: 'albumArtistName'
+  },
+  {
+    label: 'Title & Artist',
+    value: 'all'
+  }
+];
+
+const searchOn = ref(searchOnValues[2]);
+
 const sortFieldValues = [
   {
     label: 'Title',
@@ -74,6 +101,10 @@ const sortFieldValues = [
   {
     label: 'Artist',
     value: 'albumArtistName'
+  },
+  {
+    label: 'Year',
+    value: 'year'
   }
 ];
 
@@ -99,7 +130,7 @@ const albums = ref([]);
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-const albumTitleRef= ref(null);
+const searchTextRef = ref(null);
 
 function search(resetPager) {
   if (resetPager) {
@@ -107,17 +138,22 @@ function search(resetPager) {
   }
   noAlbumsFound.value = false;
   loading.value = true;
-  api.album.search(albumTitle.value, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  let filter = {
+    title: searchOn.value.value == 'title' ? searchText.value: null,
+    albumArtistName: searchOn.value.value == 'albumArtistName' ? searchText.value: null,
+    text: searchOn.value.value == 'all' ? searchText.value: null,
+  };
+  api.album.search(filter, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     albums.value = success.data.data.items.map((item) => {
       item.image = item.covers.small;
       return (item);
     });
     totalPages.value = success.data.data.pager.totalPages;
-    if (albumTitle.value && success.data.data.pager.totalResults < 1) {
+    if (searchText.value && success.data.data.pager.totalResults < 1) {
       noAlbumsFound.value = true;
     }
     nextTick(() => {
-      albumTitleRef.value.$el.focus();
+      searchTextRef.value.$el.focus();
     });
     loading.value = false;
   }).catch((error) => {

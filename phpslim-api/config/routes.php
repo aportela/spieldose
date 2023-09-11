@@ -341,7 +341,11 @@ return function (App $app) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "title" => $params["filter"]["title"] ?? null
+                    "title" => $params["filter"]["title"] ?? null,
+                    "albumArtistName" => $params["filter"]["albumArtistName"] ?? null,
+                    "text" => $params["filter"]["text"] ?? null,
+                    "year" => $params["filter"]["year"] ?? null
+
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
