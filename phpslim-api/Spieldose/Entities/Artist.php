@@ -333,7 +333,7 @@ class Artist extends \Spieldose\Entities\Entity
                     FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                     LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                     WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL
-                    ORDER BY RANDOM()
+                    ORDER BY FIT.year DESC
                     LIMIT 1
                 ";
                 $params = array(
@@ -510,11 +510,11 @@ class Artist extends \Spieldose\Entities\Entity
                 }
             }
             $query = "
-                SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year
+                SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year, D.id AS coverPathId
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                 WHERE FIT.artist = :name AND FIT.album IS NOT NULL
-                ORDER BY RANDOM()
+                ORDER BY FIT.year DESC
                 LIMIT 1";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
