@@ -8,7 +8,7 @@
         <q-toolbar-title>Spieldose</q-toolbar-title>
         <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink"
           :stack-label="false" :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter"
-          style="width: 40%;">
+          style="width: 30%;">
           <template v-slot:no-option v-if="searching">
             <q-item>
               <q-item-section>
