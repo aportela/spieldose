@@ -12,7 +12,7 @@ const trackActions = {
       Array.isArray(data) ? data : [{ track: data }]
     );
     player.interact();
-    player.play(false);
+    player.play(true);
   },
   enqueue: function (data) {
     currentPlaylist.appendElements(
