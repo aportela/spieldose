@@ -6,13 +6,13 @@
           <img src="icons/favicon-96x96.png" />
         </q-avatar>
         <q-toolbar-title>Spieldose</q-toolbar-title>
-        <ToolbarSearch></ToolbarSearch>
         <q-space />
+        <ToolbarSearch></ToolbarSearch>
+
         <!--
         notice shrink property since we are placing it
         as child of QToolbar
         -->
-        <q-space></q-space>
         <q-tabs shrink>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="$q.screen.xl ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
