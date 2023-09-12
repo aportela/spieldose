@@ -131,7 +131,9 @@ import { api } from 'boot/axios';
 import { usePlayer } from 'stores/player';
 import { usePlayerStatusStore } from 'stores/playerStatus';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
+//import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
+
+import { trackActions } from '../boot/spieldose';
 
 const $q = useQuasar();
 
@@ -333,7 +335,8 @@ function search() {
   api.track.search({}, 1, 32, true, null, null).then((success) => {
     elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
     rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-    currentPlaylist.saveElements(elements.value);
+    trackActions.play(elements.value);
+    //currentPlaylist.saveElements(elements.value);
     loading.value = false;
   }).catch((error) => {
     $q.notify({
