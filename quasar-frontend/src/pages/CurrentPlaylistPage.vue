@@ -5,26 +5,26 @@
       <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
     </q-breadcrumbs>
     <q-btn-group spread class="q-mb-md">
-      <q-btn outline color="dark" :label="t('Clear')" icon="clear" @click="onClear"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear'): ''" icon="clear" @click="onClear"
         :disable="loading || !(elements && elements.length > 0)">
       </q-btn>
-      <q-btn outline color="dark" :label="t('Randomize')" icon="bolt" @click="onRandom" :disable="loading">
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize'): ''" icon="bolt" @click="onRandom" :disable="loading">
       </q-btn>
-      <q-btn outline color="dark" :label="t('Previous')" icon="skip_previous" @click="onPreviusPlaylist"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous'): ''" icon="skip_previous" @click="onPreviusPlaylist"
         :disable="loading || !currentPlaylist.allowSkipPrevious" />
-      <q-btn outline color="dark" :label="t('Play')" icon="play_arrow" @click="onPlay"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play'): ''" icon="play_arrow" @click="onPlay"
         :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-      <q-btn outline color="dark" :label="t('Pause')" icon="pause" @click="onPause"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause'): ''" icon="pause" @click="onPause"
         :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
-      <q-btn outline color="dark" :label="t('Resume')" icon="play_arrow" @click="onResume"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume'): ''" icon="play_arrow" @click="onResume"
         :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
-      <q-btn outline color="dark" :label="t('Stop')" icon="stop" @click="onStop"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop'): ''" icon="stop" @click="onStop"
         :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
-      <q-btn outline color="dark" :label="t('Next')" icon="skip_next" @click="onNextPlaylist"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next'): ''" icon="skip_next" @click="onNextPlaylist"
         :disable="loading || !currentPlaylist.allowSkipNext" />
-      <q-btn outline color="dark" :label="t('Download')" icon="save_alt"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download'): ''" icon="save_alt"
         :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
-      <q-btn outline color="dark" :label="t('Save as')" icon="save_alt"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as'): ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
     <q-table class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
