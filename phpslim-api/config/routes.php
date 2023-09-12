@@ -82,7 +82,7 @@ return function (App $app) {
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 5);
                 $data = array();
                 $filter = array(
-                    "text" => $params["filter"]["text"] ?? "",
+                    "title" => $params["filter"]["text"] ?? "",
                 );
                 $result = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
                 $data["tracks"] = $result->items;
