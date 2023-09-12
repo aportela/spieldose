@@ -261,7 +261,7 @@ function onClear() {
   player.stop();
   elements.value = [];
   rows.value = [];
-  currentPlaylist.saveElements([]);
+  currentPlaylist.clear();
 }
 
 function setCurrentTrackIndex(index) {
