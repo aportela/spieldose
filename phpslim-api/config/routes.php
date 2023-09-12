@@ -327,7 +327,8 @@ return function (App $app) {
                 $artist = new \Spieldose\Entities\Artist($db);
                 $artist->mbId = $queryParams["mbId"] ?? null;
                 $artist->name = $queryParams["name"] ?? null;
-                $artist->get();
+                $settings = $this->get('settings')['thumbnails']['albums'];
+                $artist->get($settings['useLocalCovers']);
                 $payload = json_encode(
                     [
                         'artist' => $artist

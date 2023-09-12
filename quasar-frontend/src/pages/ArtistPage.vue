@@ -54,10 +54,10 @@
           <q-tab icon="summarize" name="overview" label="Overview" />
           <q-tab icon="menu_book" name="biography" label="Biography" />
           <q-tab icon="groups" name="similarArtists" label="Similar artists">
-            <q-badge color="pink" floating v-if="artistData.similar">{{ artistData.similar.length }}</q-badge>
+            <q-badge color="pink" floating v-if="artistData.similar && artistData.similar.length > 0">{{ artistData.similar.length }}</q-badge>
           </q-tab>
           <q-tab icon="album" name="albums" label="Albums">
-            <q-badge color="pink" floating v-if="artistData.topAlbums">{{ artistData.topAlbums.length }}</q-badge>
+            <q-badge color="pink" floating v-if="artistData.topAlbums && artistData.topAlbums.length > 0">{{ artistData.topAlbums.length }}</q-badge>
           </q-tab>
           <q-tab icon="audiotrack" name="tracks" label="Tracks" />
           <q-tab icon="analytics" name="stats" label="Stats" />
@@ -160,7 +160,7 @@
             </q-card>
           </div>
           <div class="col-2">
-            <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations">
+            <q-card class="my-card shadow-box shadow-10" bordered v-if="artistData.relations && artistData.relations.length >0">
               <q-card-section>
                 Relations
               </q-card-section>
@@ -172,7 +172,7 @@
                 </p>
               </q-card-section>
             </q-card>
-            <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered>
+            <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered v-if="artistData.similar && artistData.similar.length > 0">
               <q-card-section>
                 Similar
               </q-card-section>
@@ -224,16 +224,29 @@
       <q-tab-panel name="similarArtists">
         <div class="text-h6">Similar artists</div>
         <div class="q-gutter-md row items-start">
-          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar"
-            :key="artist">
-            <q-img :src="artist.image || '#'" width="250px" height="250px" fit="cover">
+          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar" :key="artist.name">
+            <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
                 {{ artist.name }}
+                <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                  'track') }}</p>
               </div>
+              <template v-slot:loading>
+                <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                  <q-spinner color="pink" size="xl" />
+                  <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                    {{ artist.name }}
+                    <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                      'track') }}</p>
+                  </div>
+                </div>
+              </template>
               <template v-slot:error>
                 <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                   <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
                     {{ artist.name }}
+                    <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                      'track') }}</p>
                   </div>
                 </div>
               </template>
@@ -320,6 +333,24 @@ p.header-mini-album-title {
   text-overflow: ellipsis;
   width: 16em;
 }
+
+img.artist_image {
+  opacity: 0.5;
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%) blur(2px);
+  transition: filter 0.2s ease-in;
+}
+
+img.artist_image:hover {
+  opacity: 1;
+  -webkit-filter: none;
+  /* Safari 6.0 - 9.0 */
+  filter: none;
+  transition: filter 0.2s ease-out;
+
+}
+
 </style>
 
 <style lang="scss">
@@ -395,6 +426,7 @@ watch(currentArtist, (newValue, oldValue) => {
       similar: []
     }
     artistImage.value = null;
+    tab.value = 'overview';
     get(artistName.value);
   }
 });
@@ -501,14 +533,13 @@ function get(name) {
       track.percentPlay = Math.round(track.playCount * 100 / totalPlays) / 100;
       return (track);
     });
+
     artistData.value.topAlbums.value = artistData.value.topAlbums.map((item) => {
-      if (item.coverPathId) {
-        item.image = "api/2/thumbnail/normal/local/album/?path=" + encodeURIComponent(item.coverPathId);
-      } else if (item.covertArtArchiveURL) {
-        item.image = "api/2/thumbnail/normal/remote/album/?url=" + encodeURIComponent(item.covertArtArchiveURL);
-      } else {
-        item.image = null;
-      }
+      item.image = item.covers.small;
+      return (item);
+    });
+    artistData.value.appearsOnAlbums.value = artistData.value.appearsOnAlbums.map((item) => {
+      item.image = item.covers.small;
       return (item);
     });
     loading.value = false;
