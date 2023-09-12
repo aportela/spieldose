@@ -29,12 +29,14 @@
     </q-btn-group>
     <q-table class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
       :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
-      @row-click="onRowClick">
+      @row-click="onRowClick" :hide-bottom="true">
+      <!--
       <template v-slot:top>
         <q-space></q-space>
         <q-select v-model="visibleColumns" multiple outlined dense options-dense :display-value="$q.lang.table.columns"
           emit-value map-options :options="columns" option-value="name" options-cover style="min-width: 150px" />
       </template>
+      -->
       <template v-slot:body-cell-index="props">
         <q-td :props="props">
           <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm" v-if="currentTrackIndex + 1 == props.value"></q-icon>
