@@ -99,7 +99,7 @@ const coverImage = computed(() => {
   if (currentElement) {
     if (currentElement.track && currentElement.track.covers) {
       return (currentElement.track.covers.normal || null);
-    } else if (currentElement.radioStation.images) {
+    } else if (currentElement.radioStation && currentElement.radioStation.images) {
       return (currentElement.radioStation.images.normal || null);
     } else {
       return (null);
@@ -114,7 +114,7 @@ const smallVinylImage = computed(() => {
   if (currentElement) {
     if (currentElement.track && currentElement.track.covers) {
       return (currentElement.track.covers.small || null);
-    } else if (currentElement.radioStation.images) {
+    } else if (currentElement.radioStation && currentElement.radioStation.images) {
       return (currentElement.radioStation.images.small || null);
     } else {
       return (null);
