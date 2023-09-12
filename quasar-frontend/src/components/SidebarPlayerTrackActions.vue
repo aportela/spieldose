@@ -18,6 +18,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" @click="singleLayoutMode = !singleLayoutMode"><q-icon
           name="screenshot_monitor" title="Toggle section details"
           :color="singleLayoutMode ? 'pink' : ''"></q-icon></q-btn>
+          <!-- TODO enable only for tracks-->
       <q-btn dense unelevated size="md" :disable="disabled" @click="onShowTrackDetailsModal"><q-icon name="tag"
           title="Track tags details "></q-icon></q-btn>
     </q-btn-group>
