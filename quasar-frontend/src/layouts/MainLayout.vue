@@ -15,7 +15,7 @@
         -->
         <q-tabs shrink dense no-caps>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.xl ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
+            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
             exact />
           <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack>
             <q-list dense style="min-width: 200px">
