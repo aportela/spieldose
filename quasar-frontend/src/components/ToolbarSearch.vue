@@ -47,15 +47,9 @@ import { ref } from "vue";
 import { api } from 'boot/axios';
 import { useI18n } from 'vue-i18n';
 import { i18n } from "src/boot/i18n";
-import { usePlayer } from 'stores/player';
-import { usePlayerStatusStore } from 'stores/playerStatus';
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-
+import { trackActions } from '../boot/spieldose';
 
 const { t } = useI18n();
-const player = usePlayer();
-const currentPlaylist = useCurrentPlaylistStore();
-const playerStatus = usePlayerStatusStore();
 
 const searchText = ref(null);
 
@@ -100,24 +94,16 @@ function onFilter(val, update) {
 }
 
 function onPlayTrack(trackId) {
-  player.interact();
   const element = searchResults.value.find((element) => element.id == trackId);
   if (element) {
-    currentPlaylist.saveElements([{ track: element }]);
-    if (!playerStatus.isPlaying) {
-      player.play();
-    }
+    trackActions.play(element);
   }
 }
 
 function onAppendTrack(trackId) {
-  player.interact();
   const element = searchResults.value.find((element) => element.id == trackId);
   if (element) {
-    currentPlaylist.appendElements([{ track: element }]);
-    if (!playerStatus.isPlaying) {
-      player.play();
-    }
+    trackActions.enqueue(element);
   }
 }
 
