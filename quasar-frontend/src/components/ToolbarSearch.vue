@@ -12,7 +12,7 @@
     </template>
     <template v-slot:option="scope">
       <q-list class="bg-grey-2 text-dark">
-        <q-item>
+        <q-item v-if="scope.opt.isTrack">
           <q-item-section avatar top>
             <q-icon name="music_note" color="black" size="34px" />
           </q-item-section>
@@ -34,6 +34,22 @@
               <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue track')"
                 @click="onAppendTrack(scope.opt.id)" />
             </div>
+          </q-item-section>
+        </q-item>
+        <q-item v-else-if="scope.opt.isArtist" clickable :to="{ name: 'artist', params: { name: scope.opt.label } }">
+          <q-item-section avatar top>
+            <q-icon name="person" color="black" size="34px" />
+          </q-item-section>
+          <q-item-section top class="col-1 gt-sm">
+            <q-item-label class="q-mt-sm">Artist</q-item-label>
+          </q-item-section>
+          <q-item-section top>
+            <q-item-label lines="1">
+              <span class="text-weight-medium">{{ scope.opt.label }}</span>
+            </q-item-label>
+            <q-item-label caption lines="1">
+              {{ scope.opt.caption }}
+            </q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -65,12 +81,16 @@ function onFilter(val, update) {
       filteredOptions.value = [];
       searching.value = true;
       update(() => {
-        api.track.search({ title: val }, 1, 5, false, 'title', 'ASC')
+        api.globalSearch.search({ text: val }, 1, 5, false, 'title', 'ASC')
           .then((success) => {
-            searchResults.value = success.data.data.items;
-            filteredOptions.value = searchResults.value.map((item) => {
-              return ({ id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
-            });
+            searchResults.value = success.data.data;
+            filteredOptions.value = [];
+            filteredOptions.value = filteredOptions.value.concat(searchResults.value.tracks.map((item) => {
+              return ({ isTrack: true, id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+            }));
+            filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
+              return ({ isArtist: true, id: item.id, label: item.name, caption: 'total tracks: ' + item.totalTracks });
+            }));
             searching.value = false;
             return;
           })
@@ -94,14 +114,14 @@ function onFilter(val, update) {
 }
 
 function onPlayTrack(trackId) {
-  const element = searchResults.value.find((element) => element.id == trackId);
+  const element = searchResults.value.tracks.find((element) => element.id == trackId);
   if (element) {
     trackActions.play(element);
   }
 }
 
 function onAppendTrack(trackId) {
-  const element = searchResults.value.find((element) => element.id == trackId);
+  const element = searchResults.value.tracks.find((element) => element.id == trackId);
   if (element) {
     trackActions.enqueue(element);
   }
