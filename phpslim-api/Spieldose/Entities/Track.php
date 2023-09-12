@@ -93,9 +93,13 @@ class Track extends \Spieldose\Entities\Entity
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
         }
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
-            $filterConditions[] = " EXISTS (SELECT PT.playlist_id FROM PLAYLIST_TRACK PT WHERE PT.playlist_id = :playlist_id AND PT.track_id = F.id) ";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $filter["playlistId"]);
-            $leftJoins[] = " LEFT JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
+            if ($filter["playlistId"] == "00000000-0000-0000-0000-000000000000") {
+                $filterConditions[] = " EXISTS ( SELECT * FROM FILE_FAVORITE WHERE FILE_FAVORITE.user_id = :user_id AND FILE_FAVORITE.file_id = F.id ) ";
+            } else {
+                $filterConditions[] = " EXISTS (SELECT PT.playlist_id FROM PLAYLIST_TRACK PT WHERE PT.playlist_id = :playlist_id AND PT.track_id = F.id) ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $filter["playlistId"]);
+                $leftJoins[] = " LEFT JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
+            }
         }
         if (isset($filter["albumMbId"]) && !empty($filter["albumMbId"])) {
             $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
@@ -118,7 +122,11 @@ class Track extends \Spieldose\Entities\Entity
         ];
 
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
-            $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";
+            if ($filter["playlistId"] == "00000000-0000-0000-0000-000000000000") {
+                $fieldDefinitions["playListTrackIndex"] = "FF.favorited";
+            } else {
+                $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";
+            }
         }
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"

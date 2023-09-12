@@ -26,21 +26,25 @@ class Playlist
     public function allowView(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->id)) {
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
-            );
-            $query = sprintf(
-                '
-                    SELECT P.user_id AS userId, P.public
-                    FROM PLAYLIST P
-                    WHERE P.id = :id
-                '
-            );
-            $data = $dbh->query($query, $params);
-            if (count($data) == 1) {
-                return ($data[0]->userId == \Spieldose\UserSession::getUserId() || $data[0]->public == "S");
+            // special playlists, user allowed
+            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == "00000000-0000-0000-0000-000000000000") {
             } else {
-                throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
+                );
+                $query = sprintf(
+                    '
+                        SELECT P.user_id AS userId, P.public
+                        FROM PLAYLIST P
+                        WHERE P.id = :id
+                    '
+                );
+                $data = $dbh->query($query, $params);
+                if (count($data) == 1) {
+                    return ($data[0]->userId == \Spieldose\UserSession::getUserId() || $data[0]->public == "S");
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                }
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
@@ -50,21 +54,25 @@ class Playlist
     public function allowUpdate(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->id)) {
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
-            );
-            $query = sprintf(
-                '
+            // special playlists, user allowed
+            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == "00000000-0000-0000-0000-000000000000") {
+            } else {
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
+                );
+                $query = sprintf(
+                    '
                     SELECT P.user_id AS userId
                     FROM PLAYLIST P
                     WHERE P.id = :id
                 '
-            );
-            $data = $dbh->query($query, $params);
-            if (count($data) == 1) {
-                return ($data[0]->userId == \Spieldose\UserSession::getUserId());
-            } else {
-                throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                );
+                $data = $dbh->query($query, $params);
+                if (count($data) == 1) {
+                    return ($data[0]->userId == \Spieldose\UserSession::getUserId());
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                }
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
@@ -161,23 +169,44 @@ class Playlist
     private static function getPlaylistCovers(\aportela\DatabaseWrapper\DB $dbh, string $playlistId)
     {
         $covers = [];
-        foreach ($dbh->query(
-            "
-                SELECT
-                    DISTINCT DIRECTORY.id
-                FROM DIRECTORY
-                INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id
-                WHERE DIRECTORY.cover_filename IS NOT NULL
-                AND EXISTS ( SELECT * FROM PLAYLIST_TRACK WHERE PLAYLIST_TRACK.playlist_id = :playlist_id AND FILE.id = PLAYLIST_TRACK.track_id )
-                ORDER BY RANDOM()
-                LIMIT 16
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
-            ]
-        ) as $cover) {
-            $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+        if ($playlistId == "00000000-0000-0000-0000-000000000000") {
+            foreach ($dbh->query(
+                "
+                   SELECT
+                        DISTINCT DIRECTORY.id
+                    FROM DIRECTORY
+                    INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id
+                    WHERE DIRECTORY.cover_filename IS NOT NULL
+                    AND EXISTS ( SELECT * FROM FILE_FAVORITE WHERE FILE_FAVORITE.user_id = :user_id AND FILE_FAVORITE.file_id = FILE.id )
+                    ORDER BY RANDOM()
+                    LIMIT 16
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+                ]
+            ) as $cover) {
+                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+            }
+        } else {
+            foreach ($dbh->query(
+                "
+                   SELECT
+                        DISTINCT DIRECTORY.id
+                    FROM DIRECTORY
+                    INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id
+                    WHERE DIRECTORY.cover_filename IS NOT NULL
+                    AND EXISTS ( SELECT * FROM PLAYLIST_TRACK WHERE PLAYLIST_TRACK.playlist_id = :playlist_id AND FILE.id = PLAYLIST_TRACK.track_id )
+                    ORDER BY RANDOM()
+                    LIMIT 16
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
+                ]
+            ) as $cover) {
+                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+            }
         }
+
         return ($covers);
     }
 
@@ -196,6 +225,7 @@ class Playlist
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", "00000000-0000-0000-0000-000000000000"),
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
         );
         $filterConditions = array(
@@ -211,7 +241,7 @@ class Playlist
             "trackCount" => "COUNT(*)"
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(PLAYLIST.id)"
+            "totalResults" => " SUM(total)"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -232,11 +262,22 @@ class Playlist
 
         $query = sprintf(
             "
-                SELECT %s
-                FROM PLAYLIST
-                LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
-                %s
-                GROUP BY PLAYLIST.id
+                SELECT *
+                FROM (
+                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount
+                    FROM FILE_FAVORITE FF
+                    WHERE FF.user_id = :user_id
+                    GROUP BY FF.user_id
+                    HAVING COUNT(file_id) > 0
+
+                    UNION
+
+                    SELECT %s
+                    FROM PLAYLIST
+                    LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
+                    %s
+                    GROUP BY PLAYLIST.id
+                )
                 %s
                 %s
             ",
@@ -248,8 +289,16 @@ class Playlist
         $queryCount = sprintf(
             "
                 SELECT %s
-                FROM PLAYLIST
-                %s
+                FROM (
+                    SELECT COALESCE(COUNT (DISTINCT FF.user_id), 0) AS total
+                    FROM FILE_FAVORITE FF
+                    WHERE FF.user_id = :user_id
+                    AND :uuid_zero IS NOT NULL
+                    UNION
+                    SELECT COUNT(PLAYLIST.id) AS total
+                    FROM PLAYLIST
+                    %s
+                )
             ",
             $browser->getQueryCountFields(),
             count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null

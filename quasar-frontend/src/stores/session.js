@@ -13,6 +13,7 @@ export const useSessionStore = defineStore("session", {
     jwt: null,
     locale: null,
     volume: null,
+    singleLayoutMode: null,
   }),
 
   getters: {
@@ -20,6 +21,7 @@ export const useSessionStore = defineStore("session", {
     getJWT: (state) => state.jwt,
     getLocale: (state) => state.locale,
     getVolume: (state) => state.volume,
+    getSingleLayoutMode: (state) => state.singleLayoutMode,
   },
   actions: {
     load() {
@@ -36,6 +38,10 @@ export const useSessionStore = defineStore("session", {
       if (volume) {
         this.volume = volume;
       }
+      const singleLayoutMode = basil.get("singleLayoutMode");
+      if (singleLayoutMode) {
+        this.singleLayoutMode = singleLayoutMode;
+      }
     },
     saveLocale(locale) {
       this.locale = locale;
@@ -46,6 +52,11 @@ export const useSessionStore = defineStore("session", {
       this.volume = volume;
       const basil = useBasil(localStorageBasilOptions);
       basil.set("volume", volume);
+    },
+    saveSingleLayoutMode(singleLayoutMode) {
+      this.singleLayoutMode = singleLayoutMode;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set("singleLayoutMode", singleLayoutMode);
     },
     save(jwt) {
       const basil = useBasil(localStorageBasilOptions);

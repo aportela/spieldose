@@ -130,6 +130,7 @@ export default {
   "No enought data": "Non hai datos suficientes",
 
   // current playlist
+  "Save as": "Gardar como",
   Index: "Índice",
   Title: "Título",
   Artist: "Intérprete",

@@ -128,6 +128,7 @@ export default {
   "No enought data": "No enought data",
 
   // current playlist
+  "Save as": "Save as",
   Index: "Index",
   Title: "Title",
   Artist: "Artist",

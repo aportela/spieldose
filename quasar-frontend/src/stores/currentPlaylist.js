@@ -63,10 +63,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       this.currentIndex = newElements && newElements.length > 0 ? 0 : -1;
       const basil = useBasil(localStorageBasilOptions);
       basil.set("currentPlaylistElements", newElements);
-      basil.set(
-        "currentPlaylistElementIndex",
-        newElements && newElements.length > 0 ? 0 : -1
-      );
+      basil.set("currentPlaylistElementIndex", this.currentIndex);
       this.elementsLastChangeTimestamp = Date.now();
     },
     appendElements(newElements) {
@@ -91,6 +88,14 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     },
     skipNext() {
       this.currentIndex++;
+    },
+    clear() {
+      this.elements = [];
+      this.currentIndex = -1;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set("currentPlaylistElements", []);
+      basil.set(-1);
+      this.elementsLastChangeTimestamp = Date.now();
     },
   },
 });

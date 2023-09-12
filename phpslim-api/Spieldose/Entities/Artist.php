@@ -259,7 +259,7 @@ class Artist extends \Spieldose\Entities\Entity
         return ($similarArtists);
     }
 
-    public function get(): void
+    public function get(bool $useLocalCovers = true): void
     {
         if (empty($this->mbId) && !empty($this->name)) {
             $this->mbId = $this->getMBIdFromName(($this->name));
@@ -300,7 +300,14 @@ class Artist extends \Spieldose\Entities\Entity
                         "content" => $results[0]->bio_content
                     ];
                 }
-                $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+                $query = "
+                    SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
+                    FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                    LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                    WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL
+                    ORDER BY RANDOM()
+                    LIMIT 1
+                ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
@@ -313,10 +320,22 @@ class Artist extends \Spieldose\Entities\Entity
                 if (count($results) == 1) {
                     $this->popularAlbum->title = $results[0]->album;
                     $this->popularAlbum->year = $results[0]->year;
-                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
-                    $this->popularAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                    if ($useLocalCovers && !empty($results[0]->coverPathId)) {
+                        $this->popularAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
+                    } else if (!empty($results[0]->mbId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
+                    }
                 }
-                $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+                $query = "
+                    SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
+                    FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                    LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                    WHERE FIT.mb_artist_id = :mbid AND FIT.album IS NOT NULL
+                    ORDER BY FIT.year DESC
+                    LIMIT 1
+                ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
@@ -329,8 +348,13 @@ class Artist extends \Spieldose\Entities\Entity
                 if (count($results) == 1) {
                     $this->latestAlbum->title = $results[0]->album;
                     $this->latestAlbum->year = $results[0]->year;
-                    $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
-                    $this->latestAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                    if ($useLocalCovers && !empty($results[0]->coverPathId)) {
+                        $this->latestAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
+                    } else if (!empty($results[0]->mbId)) {
+                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
+                    }
                 }
                 $trackFields = [
                     "id " => "FIT.id",
@@ -375,14 +399,27 @@ class Artist extends \Spieldose\Entities\Entity
                     $album->artist = new \stdClass();
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
-                    if (!empty($album->mbId)) {
+                    if ($useLocalCovers && !empty($album->coverPathId)) {
+                        $album->covers = [
+                            "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
+                            "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+                        ];
+                    } else if (!empty($album->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $album->covers = [
+                            "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
+                            "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                        ];
                     } else {
-                        $album->covertArtArchiveURL = null;
+                        $album->covers = [
+                            "small" => null,
+                            "normal" => null
+                        ];
                     }
                     unset($album->artistMbId);
                     unset($album->artistName);
+                    unset($album->coverPathId);
                 }
                 $query = sprintf(
                     "
@@ -411,14 +448,27 @@ class Artist extends \Spieldose\Entities\Entity
                     $album->artist = new \stdClass();
                     $album->artist->mbId = $album->artistMBId;
                     $album->artist->name = $album->artistName;
-                    if (!empty($album->mbId)) {
+                    if ($useLocalCovers && !empty($album->coverPathId)) {
+                        $album->covers = [
+                            "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
+                            "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+                        ];
+                    } else if (!empty($album->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $album->covers = [
+                            "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
+                            "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                        ];
                     } else {
-                        $album->covertArtArchiveURL = null;
+                        $album->covers = [
+                            "small" => null,
+                            "normal" => null
+                        ];
                     }
                     unset($album->artistMbId);
                     unset($album->artistName);
+                    unset($album->coverPathId);
                 }
                 $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
             } else {
@@ -432,7 +482,13 @@ class Artist extends \Spieldose\Entities\Entity
                 "content" => null
             ];
 
-            $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.artist = :name AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+            $query = "
+                SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                WHERE FIT.artist = :name AND FIT.album IS NOT NULL
+                ORDER BY RANDOM()
+                LIMIT 1";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
             );
@@ -445,10 +501,21 @@ class Artist extends \Spieldose\Entities\Entity
             if (count($results) == 1) {
                 $this->popularAlbum->title = $results[0]->album;
                 $this->popularAlbum->year = $results[0]->year;
-                $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
-                $this->popularAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                if ($useLocalCovers && !empty($results[0]->coverPathId)) {
+                    $this->popularAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
+                } else if (!empty($results[0]->mbId)) {
+                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                    $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
+                }
             }
-            $query = " SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year FROM FILE_ID3_TAG FIT WHERE FIT.artist = :name AND FIT.album IS NOT NULL ORDER BY RANDOM() LIMIT 1";
+            $query = "
+                SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year, D.id AS coverPathId
+                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                WHERE FIT.artist = :name AND FIT.album IS NOT NULL
+                ORDER BY FIT.year DESC
+                LIMIT 1";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
             );
@@ -461,8 +528,13 @@ class Artist extends \Spieldose\Entities\Entity
             if (count($results) == 1) {
                 $this->latestAlbum->title = $results[0]->album;
                 $this->latestAlbum->year = $results[0]->year;
-                $coverArtURL = sprintf("https://coverartarchive.org/release/%s/front-250.jpg", $results[0]->mb_album_id);
-                $this->latestAlbum->image = sprintf("api/2/thumbnail/small/remote/album/?url=%s", urlencode($coverArtURL));
+                if ($useLocalCovers && !empty($results[0]->coverPathId)) {
+                    $this->latestAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
+                } else if (!empty($results[0]->mbId)) {
+                    $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                    $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
+                }
             }
             $trackFields = [
                 "id " => "FIT.id",
@@ -514,14 +586,27 @@ class Artist extends \Spieldose\Entities\Entity
                 $album->artist = new \stdClass();
                 $album->artist->mbId = $album->artistMBId;
                 $album->artist->name = $album->artistName;
-                if (!empty($album->mbId)) {
+                if ($useLocalCovers && !empty($album->coverPathId)) {
+                    $album->covers = [
+                        "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
+                        "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+                    ];
+                } else if (!empty($album->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                    $album->covertArtArchiveURL = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    $album->covers = [
+                        "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
+                        "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                    ];
                 } else {
-                    $album->covertArtArchiveURL = null;
+                    $album->covers = [
+                        "small" => null,
+                        "normal" => null
+                    ];
                 }
                 unset($album->artistMbId);
                 unset($album->artistName);
+                unset($album->coverPathId);
             }
             $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
         }
