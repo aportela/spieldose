@@ -1,8 +1,6 @@
 <template>
-  <q-page>
-  </q-page>
+  <p></p>
 </template>
-
 
 <script setup>
 </script>

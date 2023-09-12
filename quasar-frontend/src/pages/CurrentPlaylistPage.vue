@@ -1,85 +1,85 @@
 <template>
-  <q-page>
-    <q-card class="q-pa-lg">
-      <q-breadcrumbs class="q-mb-lg">
-        <q-breadcrumbs-el icon="home" label="Spieldose" />
-        <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
-      </q-breadcrumbs>
-      <q-btn-group spread class="q-mb-md">
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Clear'): ''" icon="clear" @click="onClear"
-          :disable="loading || !(elements && elements.length > 0)">
-        </q-btn>
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Randomize'): ''" icon="bolt" @click="onRandom" :disable="loading">
-        </q-btn>
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Previous'): ''" icon="skip_previous" @click="onPreviusPlaylist"
-          :disable="loading || !currentPlaylist.allowSkipPrevious" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Play'): ''" icon="play_arrow" @click="onPlay"
-          :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Pause'): ''" icon="pause" @click="onPause"
-          :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Resume'): ''" icon="play_arrow" @click="onResume"
-          :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Stop'): ''" icon="stop" @click="onStop"
-          :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Next'): ''" icon="skip_next" @click="onNextPlaylist"
-          :disable="loading || !currentPlaylist.allowSkipNext" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Download'): ''" icon="save_alt"
-          :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
-        <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Save as'): ''" icon="save"
-          :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
-      </q-btn-group>
-      <q-markup-table flat bordered>
-        <thead>
-          <tr class="bg-grey-2 text-grey-10">
-            <th class="text-right">{{ t('Index') }}</th>
-            <th class="text-left">{{ t('Title') }}</th>
-            <th class="text-left">{{ t('Artist') }}</th>
-            <th class="text-left gt-lg">{{ t('Album Artist') }}</th>
-            <th class="text-left">{{ t('Album') }}</th>
-            <th class="text-right gt-lg">{{ t('Album Track nº') }}</th>
-            <th class="text-right">{{ t('Year') }}</th>
-            <th class="text-center">{{ t('Actions') }}</th>
-          </tr>
-        </thead>
-        <tbody v-if="!loading">
-          <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
-            :lastIndex="elements.length" :selected="currentTrackIndex == index"
-            @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)"
-            @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)"
-            @remove="onRemoveElementAtIndex(index)" :disabled="loading" :isPlaying="playerStatus.isPlaying"
-            :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
-          </CurrentPlaylistTableRow>
-        </tbody>
-        <tbody v-else>
-          <tr>
-            <td colspan="8" class="text-center">
-              <q-spinner v-show="loading" color="pink" size="xl" class="q-ml-sm" :thickness="10" />
-            </td>
-          </tr>
-        </tbody>
-      </q-markup-table>
+  <q-card class="q-pa-lg">
+    <q-breadcrumbs class="q-mb-lg">
+      <q-breadcrumbs-el icon="home" label="Spieldose" />
+      <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
+    </q-breadcrumbs>
+    <q-btn-group spread class="q-mb-md">
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear"
+        @click="onClear" :disable="loading || !(elements && elements.length > 0)">
+      </q-btn>
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="bolt"
+        @click="onRandom" :disable="loading">
+      </q-btn>
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''"
+        icon="skip_previous" @click="onPreviusPlaylist" :disable="loading || !currentPlaylist.allowSkipPrevious" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow"
+        @click="onPlay" :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause"
+        @click="onPause" :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
+        @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop"
+        @click="onStop" :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
+        @click="onNextPlaylist" :disable="loading || !currentPlaylist.allowSkipNext" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
+        :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
+      <q-btn :stack="$q.screen.lt.sm" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save"
+        :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
+    </q-btn-group>
+    <q-markup-table flat bordered>
+      <thead>
+        <tr class="bg-grey-2 text-grey-10">
+          <th class="text-right">{{ t('Index') }}</th>
+          <th class="text-left">{{ t('Title') }}</th>
+          <th class="text-left">{{ t('Artist') }}</th>
+          <th class="text-left gt-lg">{{ t('Album Artist') }}</th>
+          <th class="text-left">{{ t('Album') }}</th>
+          <th class="text-right gt-lg">{{ t('Album Track nº') }}</th>
+          <th class="text-right">{{ t('Year') }}</th>
+          <th class="text-center">{{ t('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody v-if="!loading">
+        <CurrentPlaylistTableRow v-for="track, index in elements" :key="track.id" :element="track" :index="index"
+          :lastIndex="elements.length" :selected="currentTrackIndex == index"
+          @setcurrentIndex="setCurrentTrackIndex(index)" @up="onMoveUpTrackAtIndex(index)"
+          @down="onMoveDownTrackAtIndex(index)" @toggleFavorite="onToggleFavoriteAtIndex(index)"
+          @remove="onRemoveElementAtIndex(index)" :disabled="loading" :isPlaying="playerStatus.isPlaying"
+          :isPaused="playerStatus.isPaused" :isStopped="playerStatus.isStopped">
+        </CurrentPlaylistTableRow>
+      </tbody>
+      <tbody v-else>
+        <tr>
+          <td colspan="8" class="text-center">
+            <q-spinner v-show="loading" color="pink" size="xl" class="q-ml-sm" :thickness="10" />
+          </td>
+        </tr>
+      </tbody>
+    </q-markup-table>
+  </q-card>
+  <q-dialog v-model="showSavePlaylistDialog">
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-h6">Save current playlist</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false"
+          label="Playlist name" />
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
+      </q-card-section>
+
+      <q-card-actions align="right" class="">
+        <q-btn outline label="Cancel" v-close-popup />
+        <q-btn outline label="Save" :disable="!newPlaylistName" @click="onSavePlaylistElements" />
+      </q-card-actions>
     </q-card>
-    <q-dialog v-model="showSavePlaylistDialog">
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Save current playlist</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false" label="Playlist name"/>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
-        </q-card-section>
-
-        <q-card-actions align="right" class="">
-          <q-btn outline label="Cancel" v-close-popup />
-          <q-btn outline label="Save" :disable="! newPlaylistName" @click="onSavePlaylistElements"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </q-page>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -255,7 +255,7 @@ function onSavePlaylistElements() {
   player.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
-  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => {return(element.track.id); }), newPlaylistPublic.value).then((success) => {
+  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => { return (element.track.id); }), newPlaylistPublic.value).then((success) => {
     //elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
     //currentPlaylist.saveElements(elements.value);
     loading.value = false;
