@@ -18,7 +18,7 @@
       @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage"
-      :track="currentPlaylist.getCurrentElement" @hide="detailsModal = false">
+      :trackId="currentElementId" @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
   </div>
 </template>
