@@ -51,6 +51,11 @@
               {{ scope.opt.caption }}
             </q-item-label>
           </q-item-section>
+          <q-item-section top side>
+            <div class="text-grey-8 q-gutter-xs">
+              <q-icon class="gt-xs" size="sm" flat dense round name="link"></q-icon>
+            </div>
+          </q-item-section>
         </q-item>
       </q-list>
     </template>
