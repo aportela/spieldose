@@ -2,8 +2,10 @@
   <li class="is-size-6-5 dashboard_list_item" v-if="track">
     <slot name="prepend">
     </slot>
-    <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs" @click="playTrack(track)" />
-    <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs" @click="enqueueTrack(track)" />
+    <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs"
+      @click="trackActions.play(track)" />
+    <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs"
+      @click="trackActions.enqueue(track)" />
     <span>{{ track.title }}</span>
     <span v-if="track.artist.name"> / <router-link :to="{ name: 'artist', params: { name: track.artist.name } }">{{
       track.artist.name }}</router-link></span>
@@ -23,12 +25,9 @@ li.dashboard_list_item {
 <script setup>
 
 import { useI18n } from 'vue-i18n'
-import { usePlayer } from 'stores/player';
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
+import { trackActions } from '../boot/spieldose';
 
 const { t } = useI18n();
-const player = usePlayer();
-const currentPlaylist = useCurrentPlaylistStore();
 
 const props = defineProps({
   track: {
@@ -36,15 +35,4 @@ const props = defineProps({
   }
 })
 
-function playTrack(track) {
-  player.stop();
-  currentPlaylist.saveElements([{ track: track }]);
-  player.interact();
-  player.play(false);
-}
-
-function enqueueTrack(track) {
-  currentPlaylist.appendElements([{ track: track }]);
-  player.interact();
-}
 </script>
