@@ -178,7 +178,7 @@ const columns = [
   },
   {
     name: 'albumArtist',
-    required: true,
+    required: false,
     label: 'Album artist',
     align: 'left',
     field: row => row.album.artist.name,
@@ -186,7 +186,7 @@ const columns = [
   },
   {
     name: 'albumTitle',
-    required: true,
+    required: false,
     label: 'Album',
     align: 'left',
     field: row => row.album.title,
@@ -194,7 +194,7 @@ const columns = [
   },
   {
     name: 'albumTrackIndex',
-    required: true,
+    required: false,
     label: 'Album Track nº',
     align: 'right',
     field: row => row.trackNumber,
@@ -202,7 +202,7 @@ const columns = [
   },
   {
     name: 'year',
-    required: true,
+    required: false,
     label: 'Year',
     align: 'right',
     field: row => row.album.year,
@@ -210,12 +210,9 @@ const columns = [
   },
   {
     name: 'actions',
-    required: false,
+    required: true,
     label: 'Actions',
     align: 'center',
-    field: row => {
-      index: row.index
-    },
     favorited: row => row.favorited
   },
 ];
