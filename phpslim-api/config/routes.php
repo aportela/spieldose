@@ -123,7 +123,10 @@ return function (App $app) {
                     "title" => $params["filter"]["title"] ?? "",
                     "path" => $params["filter"]["path"] ?? "",
                     "playlistId" => $params["filter"]["playlistId"] ?? "",
-                    "albumMbId" => $params["filter"]["albumMbId"] ?? ""
+                    "albumMbId" => $params["filter"]["albumMbId"] ?? "",
+                    "albumTitle" => $params["filter"]["albumTitle"] ?? "",
+                    "artistName" => $params["filter"]["artistName"] ?? "",
+                    "year" => $params["filter"]["year"] ?? null,
                 );
                 $sortItems = [];
                 if ($params["sort"]["random"]) {

@@ -105,6 +105,14 @@ class Track extends \Spieldose\Entities\Entity
             $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_id", $filter["albumMbId"]);
         }
+        if (isset($filter["albumTitle"]) && !empty($filter["albumTitle"])) {
+            $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) = :album_title ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_title", $filter["albumTitle"]);
+        }
+        if (isset($filter["year"]) && !empty($filter["year"])) {
+            $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) = :year ";
+            $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $filter["year"]);
+        }
         $fieldDefinitions = [
             "id " => "FIT.id",
             "mbId" => "FIT.mb_release_track_id",

@@ -1,6 +1,6 @@
 <template>
   <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
-    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;" >
+    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;">
     <template v-slot:no-option v-if="searching">
       <q-item>
         <q-item-section>
@@ -53,12 +53,10 @@
           </q-item-section>
           <q-item-section top side>
             <div class="text-grey-8 q-gutter-xs">
-              <div class="text-grey-8 q-gutter-xs">
               <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" :title="t('play album')"
-                 />
+                @click="onPlayAlbum(scope.opt.id, scope.opt.label, scope.opt.albumArtist, scope.opt.year)" />
               <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue album')"
-                 />
-            </div>
+                @click="onAppendAlbum(scope.opt.id, scope.opt.label, scope.opt.albumArtist, scope.opt.year)" />
             </div>
           </q-item-section>
         </q-item>
@@ -90,11 +88,10 @@
 
 <script setup>
 import { ref } from "vue";
-
 import { api } from 'boot/axios';
 import { useI18n } from 'vue-i18n';
 import { i18n } from "src/boot/i18n";
-import { trackActions } from '../boot/spieldose';
+import { trackActions, albumActions } from '../boot/spieldose';
 
 const { t } = useI18n();
 
@@ -115,15 +112,16 @@ function onFilter(val, update) {
         api.globalSearch.search({ text: val }, 1, 3, false, '', 'ASC')
           .then((success) => {
             searchResults.value = success.data.data;
+            // TODO add internal id for searching
             filteredOptions.value = [];
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.tracks.map((item) => {
               return ({ isTrack: true, id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.albums.map((item) => {
-              return ({ isAlbum: true, id: item.id, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')'});
+              return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', albumArtist: item.artist.name, year: item.year });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
-              return ({ isArtist: true, id: item.id, label: item.name, caption: 'total tracks: ' + item.totalTracks });
+              return ({ isArtist: true, id: item.mbId, label: item.name, caption: 'total tracks: ' + item.totalTracks });
             }));
             searching.value = false;
             return;
@@ -159,6 +157,44 @@ function onAppendTrack(trackId) {
   if (element) {
     trackActions.enqueue(element);
   }
+}
+
+function onPlayAlbum(albumId, title, artistName, year) {
+  let filter = {};
+  if (albumId) {
+    filter = { albumMbId: albumId };
+  } else {
+    // TODO: check filter
+    filter = {
+      albumTitle: title || null,
+      artistName: artistName || null,
+      year: year || null
+    };
+  }
+  api.track.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    trackActions.play(success.data.data.items.map((item) => { return ({ track: item }); }));
+  }).catch((error) => {
+    // TODO: on error
+  });
+}
+
+function onAppendAlbum(albumId, title, artistName, year) {
+  let filter = {};
+  if (albumId) {
+    filter = { albumMbId: albumId };
+  } else {
+    // TODO: check filter
+    filter = {
+      albumTitle: title || null,
+      artistName: artistName || null,
+      year: year || null
+    };
+  }
+  api.track.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+    trackActions.enqueue(success.data.data.items.map((item) => { return ({ track: item }); }));
+  }).catch((error) => {
+    // TODO: on error
+  });
 }
 
 </script>

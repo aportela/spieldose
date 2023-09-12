@@ -241,8 +241,8 @@ const rowIcon = computed(() => {
 
 watch(currentPlayListElementsLastChanges, (newValue) => {
   elements.value = currentPlaylist.getElements;
+  rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
   currentTrackIndex.value = currentPlaylist.getCurrentIndex;
-
 });
 
 const playerStatus = usePlayerStatusStore();

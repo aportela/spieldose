@@ -22,10 +22,27 @@ const trackActions = {
   },
 };
 
+const albumActions = {
+  play: function (data) {
+    player.stop();
+    currentPlaylist.saveElements(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
+    player.interact();
+    player.play(true);
+  },
+  enqueue: function (data) {
+    currentPlaylist.appendElements(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
+    player.interact();
+  },
+};
+
 const playListActions = {
   clear: function () {
     currentPlaylist.clear();
   },
 };
 
-export { trackActions, playListActions };
+export { trackActions, albumActions, playListActions };
