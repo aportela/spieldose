@@ -101,6 +101,7 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $filter = array(
                     "text" => $params["filter"]["text"] ?? "",
+                    "title" => $params["filter"]["title"] ?? "",
                     "path" => $params["filter"]["path"] ?? "",
                     "playlistId" => $params["filter"]["playlistId"] ?? "",
                     "albumMbId" => $params["filter"]["albumMbId"] ?? ""
