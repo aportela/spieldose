@@ -68,8 +68,8 @@
               @click="onMoveDownTrackAtIndex" />
             <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
               :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
-            <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')" disable
-              @click.stop.prevent="onRemoveElementAtIndex" />
+            <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
+              @click.stop.prevent="onRemoveElementAtIndex(props.row.index - 1)" />
           </q-btn-group>
         </q-td>
       </template>
@@ -155,7 +155,7 @@ const columns = [
   {
     name: 'index',
     required: true,
-    label: 'Índice',
+    label: 'Index',
     align: 'right',
     field: row => row.index,
     sortable: false
@@ -310,9 +310,9 @@ function onToggleFavorite(trackId, favorited) {
     });
 }
 
-
 function onRemoveElementAtIndex(index) {
   elements.value.splice(index, 1);
+  rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
   currentPlaylist.saveElements(elements.value);
 }
 
