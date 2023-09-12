@@ -13,7 +13,7 @@
         notice shrink property since we are placing it
         as child of QToolbar
         -->
-        <q-tabs shrink>
+        <q-tabs shrink dense no-caps>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="$q.screen.xl ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
             exact />
@@ -139,12 +139,14 @@ const links = [
     icon: 'list_alt',
     linkRouteName: 'currentPlaylist'
   },
+  /*
   {
     name: 'search',
     text: 'Search',
     icon: 'search',
     linkRouteName: 'search'
   },
+  */
   {
     name: 'browse_artists',
     text: 'Browse artists',
