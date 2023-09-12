@@ -239,6 +239,18 @@ const api = {
     },
   },
   track: {
+    get: function (id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/track/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     search: function (
       filter,
       currentPageIndex,
@@ -270,7 +282,7 @@ const api = {
           });
       });
     },
-    increasePlayCount(id) {
+    increasePlayCount: function (id) {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/track/increase_play_count/" + id)
@@ -282,7 +294,7 @@ const api = {
           });
       });
     },
-    setFavorite(id) {
+    setFavorite: function (id) {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/track/set_favorite/" + id)
@@ -294,7 +306,7 @@ const api = {
           });
       });
     },
-    unSetFavorite(id) {
+    unSetFavorite: function (id) {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/track/unset_favorite/" + id)

@@ -115,6 +115,18 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
+            $group->get('/track/{id}', function (Request $request, Response $response, array $args) {
+                if (!empty($args['id'])) {
+                    $db = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $track = new \Spieldose\Entities\Track($args['id']);
+                    $track->get($db);
+                    $payload = json_encode(["track" => $track]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            });
             $group->post('/track/search', function (Request $request, Response $response, array $args) {
                 $db = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();

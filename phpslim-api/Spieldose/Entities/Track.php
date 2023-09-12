@@ -57,6 +57,84 @@ class Track extends \Spieldose\Entities\Entity
     {
     }
 
+    public function get(\aportela\DatabaseWrapper\DB $dbh): void
+    {
+        $fieldDefinitions = [
+            "id " => "FIT.id",
+            "mbId" => "FIT.mb_release_track_id",
+            "title" => "FIT.title",
+            "artistMBId" => "FIT.mb_artist_id",
+            "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "releaseMBId" => "FIT.mb_album_id",
+            "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+            "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
+            "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
+            "trackNumber" => "FIT.track_number",
+            "coverPathId" => "D.id",
+            "favorited" => "FF.favorited"
+        ];
+        $fields = [];
+        foreach ($fieldDefinitions as $alias => $field) {
+            $fields[] = sprintf("%s as %s", $field, $alias);
+        }
+        $query = sprintf(
+            "
+                SELECT
+                %s
+                FROM FILE_ID3_TAG FIT
+                INNER JOIN FILE F ON F.id = FIT.id
+                LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
+                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
+                WHERE F.id = :id
+            ",
+            count($fields) > 0 ? implode(", ", $fields) : null
+        );
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+        );
+        $results = $dbh->query($query, $params);
+        if (count($results) == 1) {
+            $this->id = $results[0]->id;
+            $this->url = sprintf(\Spieldose\API::FILE_URL, $this->id);
+            $this->mbId = $results[0]->mbId;
+            $this->title = $results[0]->title;
+            $this->artist = new \stdClass();
+            $this->artist->mbId = $results[0]->artistMBId;
+            $this->artist->name = $results[0]->artistName;
+            $this->album = new \stdClass();
+            $this->album->mbId = $results[0]->releaseMBId;
+            $this->album->title = $results[0]->releaseTitle;
+            $this->album->year = $results[0]->year;
+            $this->album->artist = new \stdClass();
+            $this->album->artist->mbId = $results[0]->albumArtistMBId;
+            $this->album->artist->name = $results[0]->albumArtistName;
+            $this->trackNumber = $results[0]->trackNumber;
+            if (!empty($coverPathId)) {
+                $this->covers = [
+                    "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId),
+                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $results[0]->coverPathId)
+                ];
+            } else if (!empty($this->album->mbId)) {
+                $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                $this->covers = [
+                    "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                ];
+            } else {
+                $this->covers = [
+                    "small" => null,
+                    "normal" => null
+                ];
+            }
+            $this->favorited = $results[0]->favorited;
+        } else {
+            throw new \Spieldose\Exception\NotFoundException("id");
+        }
+    }
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
