@@ -39,7 +39,8 @@
       -->
       <template v-slot:body-cell-index="props">
         <q-td :props="props">
-          <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm" v-if="currentTrackIndex + 1 == props.value"></q-icon>
+          <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
+            v-if="currentTrackIndex + 1 == props.value"></q-icon>
           {{ props.value }} / {{ rows.length }}
         </q-td>
       </template>
@@ -65,9 +66,10 @@
               @click="onMoveUpTrackAtIndex" />
             <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" disable
               @click="onMoveDownTrackAtIndex" />
-            <q-btn size="sm" color="white" text-color="grey-5" icon="favorite" :title="t('Toggle favorite')" disable />
+            <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
+              :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
             <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')" disable
-              @click="onRemoveElementAtIndex" />
+              @click.stop.prevent="onRemoveElementAtIndex" />
           </q-btn-group>
         </q-td>
       </template>
@@ -213,7 +215,8 @@ const columns = [
     align: 'center',
     field: row => {
       index: row.index
-    }
+    },
+    favorited: row => row.favorited
   },
 ];
 
@@ -289,31 +292,22 @@ function onMoveDownTrackAtIndex(index) {
   elements.value.splice(index + 1, 0, element);
 }
 
-function onToggleFavoriteAtIndex(index) {
-  const currentElement = elements.value[index];
-  if (currentElement) {
-    //loading.value = true;
-    const funct = currentElement.favorited ? api.track.unSetFavorite : api.track.setFavorite;
-    funct(currentElement.id).then((success) => {
-      currentElement.favorited = success.data.favorited;
-      currentPlaylist.saveElements(elements.value);
-      // TODO use store
-      //loading.value = false;
-    })
-      .catch((error) => {
-        //loading.value = false;
-        switch (error.response.status) {
-          default:
-            // TODO: custom error
-            $q.notify({
-              type: "negative",
-              message: t("API Error: fatal error"),
-              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-            });
-            break;
-        }
-      });
-  }
+function onToggleFavorite(trackId, favorited) {
+  const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+  funct(trackId).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error when toggling favorite flag"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 
@@ -323,10 +317,12 @@ function onRemoveElementAtIndex(index) {
 }
 
 function onRowClick(evt, row, index) {
-  player.interact();
-  currentPlaylist.saveCurrentTrackIndex(index);
-  if (!playerStatus.isPlaying) {
-    player.play();
+  if (evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
+    player.interact();
+    currentPlaylist.saveCurrentTrackIndex(index);
+    if (!playerStatus.isPlaying) {
+      player.play();
+    }
   }
 }
 

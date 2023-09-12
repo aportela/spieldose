@@ -13,9 +13,9 @@
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || ! isCurrentElementTrack" :currentElementTimeData="currentElementTimeData"
       @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :downloadURL="currentPlaylist.getCurrentElementURL"
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId" :downloadURL="currentPlaylist.getCurrentElementURL"
       :favorited="currentElementFavorited" @toggleAnalyzer="showAnalyzer = !showAnalyzer"
-      @toggleTrackDetailsModal="detailsModal = true" @toggleFavorite="onToggleFavorite">
+      @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage"
       :track="currentPlaylist.getCurrentElement" @hide="detailsModal = false">
@@ -196,33 +196,6 @@ function increasePlayCount(trackId) {
       }
     });
 }
-
-function onToggleFavorite() {
-  const currentElement = currentPlaylist.getCurrentElement;
-  if (currentElement && currentElement.track) {
-    loading.value = true;
-    const funct = currentElement.track.favorited ? api.track.unSetFavorite : api.track.setFavorite;
-    funct(currentElement.track.id).then((success) => {
-      currentElement.track.favorited = success.data.favorited;
-      // TODO use store
-      loading.value = false;
-    })
-      .catch((error) => {
-        loading.value = false;
-        switch (error.response.status) {
-          default:
-            // TODO: custom message
-            $q.notify({
-              type: "negative",
-              message: t("API Error: fatal error"),
-              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-            });
-            break;
-        }
-      });
-  }
-}
-
 
 function skipPrevious() {
   player.interact();
