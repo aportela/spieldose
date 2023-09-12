@@ -11,7 +11,7 @@
       </q-item>
     </template>
     <template v-slot:option="scope">
-      <q-list class="bg-grey-2 text-dark" dense bordered>
+      <q-list class="bg-grey-2 text-dark" >
         <q-item v-if="scope.opt.isTrack">
           <q-item-section avatar top>
             <q-icon name="music_note" color="black" size="34px" />
@@ -35,10 +35,16 @@
                 @click="onAppendTrack(scope.opt.id)" />
             </div>
           </q-item-section>
+          <q-separator></q-separator>
         </q-item>
         <q-item v-else-if="scope.opt.isAlbum">
           <q-item-section avatar top>
-            <q-icon name="album" color="black" size="34px" />
+            <q-img :src="scope.opt.image" v-if="scope.opt.image" style="width: 34px; height: 34px;">
+              <template v-slot:error>
+                <q-icon name="album" color="black" size="34px"></q-icon>
+              </template>
+            </q-img>
+            <q-icon name="album" color="black" size="34px" v-else />
           </q-item-section>
           <q-item-section top class="col-1 gt-sm">
             <q-item-label class="q-mt-sm">Album</q-item-label>
@@ -118,7 +124,7 @@ function onFilter(val, update) {
               return ({ isTrack: true, id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.albums.map((item) => {
-              return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', albumArtist: item.artist.name, year: item.year });
+              return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', albumArtist: item.artist.name, year: item.year, image: item.covers.small });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
               return ({ isArtist: true, id: item.mbId, label: item.name, caption: 'total tracks: ' + item.totalTracks });
