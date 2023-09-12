@@ -68,7 +68,7 @@ class Track extends \Spieldose\Entities\Entity
             $words = explode(" ", trim($filter["title"]));
             foreach ($words as $word) {
                 $paramName = ":title_" . uniqid();
-                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $filterConditions[] = sprintf(" FIT.title LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
