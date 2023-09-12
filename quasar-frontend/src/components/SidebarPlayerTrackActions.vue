@@ -15,8 +15,8 @@
         :href="downloadURL"><q-icon name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable title="Download track" v-else><q-icon
           name="file_download"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled"><q-icon name="screenshot_monitor"
-          title="Toggle section details"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" @click="singleLayoutMode = ! singleLayoutMode"><q-icon name="screenshot_monitor"
+          title="Toggle section details" :color="singleLayoutMode ? 'pink': ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" @click="onShowTrackDetailsModal"><q-icon name="tag"
           title="Track tags details "></q-icon></q-btn>
     </q-btn-group>
@@ -30,6 +30,18 @@ div#current_track_actions {
 </style>
 
 <script setup>
+import { ref, watch } from 'vue';
+import { useSessionStore } from "stores/session";
+
+const session = useSessionStore();
+
+session.load();
+
+const singleLayoutMode = ref(session.getSingleLayoutMode || false);
+
+watch(singleLayoutMode, (newValue) => {
+  session.saveSingleLayoutMode(newValue);
+});
 
 const props = defineProps({
   disabled: Boolean,

@@ -14,7 +14,8 @@
         <q-space></q-space>
         <q-tabs shrink>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.xl ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label exact />
+            :icon="link.icon" :label="$q.screen.xl ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
+            exact />
           <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack>
             <q-list dense style="min-width: 200px">
               <q-item class="GL__menu-link-signed-in">
@@ -38,38 +39,6 @@
       </q-toolbar>
     </q-header>
     <!--
-      <q-header elevated>
-        <q-toolbar class="bg-pink text-white">
-          <q-btn flat round dense icon="menu" class="q-mr-sm" />
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
-          </q-avatar>
-          <q-toolbar-title>Spieldose</q-toolbar-title>
-          <q-btn flat round dense icon="whatshot" />
-        </q-toolbar>
-        <q-toolbar class="bg-grey-10 text-white">
-          <q-img src="images/vinyl.png" width="90px" height="90px" />
-          <q-toolbar-title>
-            <div class="row">
-              <div class="col">
-                <h5>Title<br>Artist</h5>
-              </div>
-              <div class="col"></div>
-              <div class="q-pa-md q-gutter-sm text-center">
-                <q-btn round dense size="md" :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon
-                    name="skip_previous" title="Toggle navigation menu"></q-icon></q-btn>
-                <q-btn round dense size="lg" :disable="disabled || !allowPlay" @click="onPlay" class="q-mx-md"><q-icon
-                    :name="isPlaying ? 'pause' : 'play_arrow'" title="Toggle navigation menu"
-                    :class="{ 'text-pink-6': isPlaying }"></q-icon></q-btn>
-                <q-btn round dense size="md" :disable="disabled || !allowSkipNext" @click="onSkipNext"><q-icon
-                    name="skip_next" title="Toggle navigation menu"></q-icon></q-btn>
-              </div>
-            </div>
-          </q-toolbar-title>
-        </q-toolbar>
-      </q-header>
-      -->
-    <!--
     <q-drawer side="left" persistent show-if-above :width="450" class="bg-grey-3 overflow-hidden">
       <leftSidebar></leftSidebar>
     </q-drawer>
@@ -89,7 +58,8 @@
           <div class="items-center q-px-md q-mb-none q-mx-auto" style="width: 431px; max-width: 431px;">
             <leftSidebar></leftSidebar>
           </div>
-          <div class="q-pr-md col-xl col-lg col-md col-sm-12 col-xs-12 q-mb-none q-mx-auto">
+          <div class="q-pr-md col-xl col-lg col-md col-sm-12 col-xs-12 q-mb-none q-mx-auto"
+            v-if="!session.getSingleLayoutMode">
             <router-view />
           </div>
         </div>
@@ -112,6 +82,7 @@ import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
 
+
 const { t } = useI18n();
 const $q = useQuasar();
 const router = useRouter();
@@ -120,6 +91,8 @@ const currentPlaylist = useCurrentPlaylistStore();
 const audioElement = ref(null);
 
 const session = useSessionStore();
+
+session.load();
 
 const availableLocales = ref([
   {
@@ -256,5 +229,4 @@ function signOut() {
       });
     });
 }
-
 </script>
