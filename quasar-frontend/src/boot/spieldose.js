@@ -6,14 +6,18 @@ const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const trackActions = {
-  play: function (track) {
+  play: function (data) {
     player.stop();
-    currentPlaylist.saveElements([{ track: track }]);
+    currentPlaylist.saveElements(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
     player.interact();
     player.play(false);
   },
-  enqueue: function (track) {
-    currentPlaylist.appendElements([{ track: track }]);
+  enqueue: function (data) {
+    currentPlaylist.appendElements(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
     player.interact();
   },
 };
