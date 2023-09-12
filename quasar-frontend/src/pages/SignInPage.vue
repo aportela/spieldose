@@ -1,58 +1,47 @@
 <template>
-  <q-page>
-    <div class="row items-center">
-      <div
-        class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-0 col-xl-3 offset-xl-0 desktop-only justify-center q-pa-xl">
-        <CSSAnimatedAudioEqualizer></CSSAnimatedAudioEqualizer>
-        <q-card class="q-pa-md my_card">
-          <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
-            spellcheck="false" style="padding: 1.25rem;">
-            <q-card-section class="text-center">
-              <h3>{{ $t('Spieldose') }}</h3>
-              <div class="text-grey-8">{{ $t('Sign in below to access your account') }}</div>
-            </q-card-section>
-            <q-card-section>
-              <q-input dense outlined ref="emailRef" v-model="email" type="email" name="email" :label="t('Email')"
-                :disable="loading" :autofocus="true" :rules="requiredFieldRules" lazy-rules
-                :error="remoteValidation.email.hasErrors" :errorMessage="remoteValidation.email.message">
-                <template v-slot:prepend>
-                  <q-icon name="alternate_email" />
-                </template>
-              </q-input>
-              <q-input dense outlined class="q-mt-md" ref="passwordRef" v-model="password" name="password"
-                type="password" :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
-                :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
-                <template v-slot:prepend>
-                  <q-icon name="key" />
-                </template>
-              </q-input>
-            </q-card-section>
-            <q-card-section>
-              <q-btn color="dark" size="md" :label="$t('Sign in')" no-caps class="full-width" icon="account_circle"
-                :disable="loading || (!(email && password))" :loading="loading" type="submit">
-                <template v-slot:loading>
-                  <q-spinner-hourglass class="on-left" />
-                  {{ t("Loading...") }}
-                </template>
-              </q-btn>
-            </q-card-section>
-            <q-card-section class="text-center q-pt-none">
-              <div class="text-grey-8">
-                {{ t("Don't have an account yet ?") }}
-                <router-link :to="{ name: 'signUp' }">
-                  <span class="text-dark text-weight-bold" style="text-decoration: none">{{
-                    t("Click here to sign up") }}</span>
-                </router-link>
-              </div>
-            </q-card-section>
-          </form>
-        </q-card>
-      </div>
-      <div class="gt-md col-lg-8 col-xl-9 container_tiles">
-        <TileAlbumImages></TileAlbumImages>
-      </div>
-    </div>
-  </q-page>
+  <q-card class="q-pa-md my_card">
+    <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
+      spellcheck="false" style="padding: 1.25rem;">
+      <q-card-section class="text-center">
+        <h3>{{ $t('Spieldose') }}</h3>
+        <div class="text-grey-8">{{ $t('Sign in below to access your account') }}</div>
+      </q-card-section>
+      <q-card-section>
+        <q-input dense outlined ref="emailRef" v-model="email" type="email" name="email" :label="t('Email')"
+          :disable="loading" :autofocus="true" :rules="requiredFieldRules" lazy-rules
+          :error="remoteValidation.email.hasErrors" :errorMessage="remoteValidation.email.message">
+          <template v-slot:prepend>
+            <q-icon name="alternate_email" />
+          </template>
+        </q-input>
+        <q-input dense outlined class="q-mt-md" ref="passwordRef" v-model="password" name="password" type="password"
+          :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
+          :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
+          <template v-slot:prepend>
+            <q-icon name="key" />
+          </template>
+        </q-input>
+      </q-card-section>
+      <q-card-section>
+        <q-btn color="dark" size="md" :label="$t('Sign in')" no-caps class="full-width" icon="account_circle"
+          :disable="loading || (!(email && password))" :loading="loading" type="submit">
+          <template v-slot:loading>
+            <q-spinner-hourglass class="on-left" />
+            {{ t("Loading...") }}
+          </template>
+        </q-btn>
+      </q-card-section>
+      <q-card-section class="text-center q-pt-none">
+        <div class="text-grey-8">
+          {{ t("Don't have an account yet ?") }}
+          <router-link :to="{ name: 'signUp' }">
+            <span class="text-dark text-weight-bold" style="text-decoration: none">{{
+              t("Click here to sign up") }}</span>
+          </router-link>
+        </div>
+      </q-card-section>
+    </form>
+  </q-card>
 </template>
 
 <script setup>
@@ -62,8 +51,7 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
-import { default as CSSAnimatedAudioEqualizer } from "components/CSSAnimatedAudioEqualizer.vue";
-import { default as TileAlbumImages } from "components/TileAlbumImages.vue";
+
 import { usePlayer } from 'stores/player';
 
 const player = usePlayer();
