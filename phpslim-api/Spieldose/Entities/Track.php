@@ -93,7 +93,7 @@ class Track extends \Spieldose\Entities\Entity
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
         }
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
-            if ($filter["playlistId"] == "00000000-0000-0000-0000-000000000000") {
+            if ($filter["playlistId"] == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
                 $filterConditions[] = " EXISTS ( SELECT * FROM FILE_FAVORITE WHERE FILE_FAVORITE.user_id = :user_id AND FILE_FAVORITE.file_id = F.id ) ";
             } else {
                 $filterConditions[] = " EXISTS (SELECT PT.playlist_id FROM PLAYLIST_TRACK PT WHERE PT.playlist_id = :playlist_id AND PT.track_id = F.id) ";
@@ -130,7 +130,7 @@ class Track extends \Spieldose\Entities\Entity
         ];
 
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
-            if ($filter["playlistId"] == "00000000-0000-0000-0000-000000000000") {
+            if ($filter["playlistId"] == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
                 $fieldDefinitions["playListTrackIndex"] = "FF.favorited";
             } else {
                 $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";

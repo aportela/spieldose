@@ -6,6 +6,8 @@ namespace Spieldose;
 
 class Playlist
 {
+
+    const FAVORITE_TRACKS_PLAYLIST_ID = "00000000-0000-0000-0000-000000000000";
     public string $id;
     public string $name;
     public array $tracks = [];
@@ -27,7 +29,7 @@ class Playlist
     {
         if (!empty($this->id)) {
             // special playlists, user allowed
-            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == "00000000-0000-0000-0000-000000000000") {
+            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
             } else {
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
@@ -55,7 +57,7 @@ class Playlist
     {
         if (!empty($this->id)) {
             // special playlists, user allowed
-            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == "00000000-0000-0000-0000-000000000000") {
+            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
             } else {
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
@@ -169,7 +171,7 @@ class Playlist
     private static function getPlaylistCovers(\aportela\DatabaseWrapper\DB $dbh, string $playlistId)
     {
         $covers = [];
-        if ($playlistId == "00000000-0000-0000-0000-000000000000") {
+        if ($playlistId == self::FAVORITE_TRACKS_PLAYLIST_ID) {
             foreach ($dbh->query(
                 "
                    SELECT
@@ -225,7 +227,7 @@ class Playlist
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", "00000000-0000-0000-0000-000000000000"),
+            new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID),
             new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
         );
         $filterConditions = array(
