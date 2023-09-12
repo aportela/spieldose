@@ -22,4 +22,10 @@ const trackActions = {
   },
 };
 
-export { trackActions };
+const playListActions = {
+  clear: function () {
+    currentPlaylist.clear();
+  },
+};
+
+export { trackActions, playListActions };
