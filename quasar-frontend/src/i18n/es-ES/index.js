@@ -67,6 +67,8 @@ export default {
   reload: "recargar",
   "play track": "reproducir canción",
   "enqueue track": "encolar canción",
+  "play album": "reproducir album",
+  "enqueue album": "encolar album",
   Clear: "Vaciar",
   Randomize: "Aleatoria",
   Previous: "Anterior",

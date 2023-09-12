@@ -67,6 +67,8 @@ export default {
   reload: "reload",
   "play track": "play track",
   "enqueue track": "enqueue track",
+  "play album": "play album",
+  "enqueue album": "enqueue album",
   Clear: "Clear",
   Randomize: "Randomize",
   Previous: "Previous",
