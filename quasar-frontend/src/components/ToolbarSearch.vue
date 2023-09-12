@@ -11,7 +11,7 @@
       </q-item>
     </template>
     <template v-slot:option="scope">
-      <q-list class="bg-grey-2 text-dark">
+      <q-list class="bg-grey-2 text-dark" dense bordered>
         <q-item v-if="scope.opt.isTrack">
           <q-item-section avatar top>
             <q-icon name="music_note" color="black" size="34px" />
@@ -33,6 +33,32 @@
                 @click="onPlayTrack(scope.opt.id)" />
               <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue track')"
                 @click="onAppendTrack(scope.opt.id)" />
+            </div>
+          </q-item-section>
+        </q-item>
+        <q-item v-else-if="scope.opt.isAlbum">
+          <q-item-section avatar top>
+            <q-icon name="album" color="black" size="34px" />
+          </q-item-section>
+          <q-item-section top class="col-1 gt-sm">
+            <q-item-label class="q-mt-sm">Album</q-item-label>
+          </q-item-section>
+          <q-item-section top>
+            <q-item-label lines="1">
+              <span class="text-weight-medium">{{ scope.opt.label }}</span>
+            </q-item-label>
+            <q-item-label caption lines="1">
+              {{ scope.opt.caption }}
+            </q-item-label>
+          </q-item-section>
+          <q-item-section top side>
+            <div class="text-grey-8 q-gutter-xs">
+              <div class="text-grey-8 q-gutter-xs">
+              <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" :title="t('play album')"
+                 />
+              <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue album')"
+                 />
+            </div>
             </div>
           </q-item-section>
         </q-item>
@@ -86,12 +112,15 @@ function onFilter(val, update) {
       filteredOptions.value = [];
       searching.value = true;
       update(() => {
-        api.globalSearch.search({ text: val }, 1, 5, false, 'title', 'ASC')
+        api.globalSearch.search({ text: val }, 1, 3, false, '', 'ASC')
           .then((success) => {
             searchResults.value = success.data.data;
             filteredOptions.value = [];
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.tracks.map((item) => {
               return ({ isTrack: true, id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
+            }));
+            filteredOptions.value = filteredOptions.value.concat(searchResults.value.albums.map((item) => {
+              return ({ isAlbum: true, id: item.id, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')'});
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
               return ({ isArtist: true, id: item.id, label: item.name, caption: 'total tracks: ' + item.totalTracks });

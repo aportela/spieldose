@@ -74,23 +74,42 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $sortItems = [];
                 $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
-                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
                     (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
                     true
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
-                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 5);
+                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"] ?? 3);
                 $data = array();
                 $filter = array(
                     "title" => $params["filter"]["text"] ?? "",
                 );
                 $result = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
                 $data["tracks"] = $result->items;
+                $sortItems = [];
+                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                    true
+                );
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $filter = array(
                     "name" => $params["filter"]["text"] ?? "",
                 );
                 $result = \Spieldose\Entities\Artist::search($db, $filter, $sort, $pager);
                 $data["artists"] = $result->items;
+                $sortItems = [];
+                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
+                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                    true
+                );
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
+                $filter = array(
+                    "title" => $params["filter"]["text"] ?? "",
+                );
+                $result = \Spieldose\Entities\Album::search($db, $filter, $sort, $pager, true);
+                $data["albums"] = $result->items;
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
