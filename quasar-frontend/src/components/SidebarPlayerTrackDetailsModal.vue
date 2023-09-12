@@ -5,8 +5,8 @@
       <q-card-section>
         <div>
             <p>Title: {{ track.title  }}</p>
-            <p>Artist: {{ track.artist.name }} <q-btn size="sm" outline dense v-if="track.artist.mbId" icon="link" label="musicbrainz" :href="'https://musicbrainz.org/artist/' + track.artist.mbId" target="blank"></q-btn></p>
-            <p>Album: {{ track.album.title }} <q-btn size="sm" outline dense v-if="track.album.mbId" icon="link" label="musicbrainz" :href="'https://musicbrainz.org/release/' + track.album.mbId" target="blank"></q-btn></p>
+            <p>Artist: {{ track.artist.name }}<br><q-btn size="sm" outline dense v-if="track.artist.mbId" icon="link" label="musicbrainz" :href="'https://musicbrainz.org/artist/' + track.artist.mbId" target="blank"></q-btn></p>
+            <p>Album: {{ track.album.title }}<br><q-btn size="sm" outline dense v-if="track.album.mbId" icon="link" label="musicbrainz" :href="'https://musicbrainz.org/release/' + track.album.mbId" target="blank"></q-btn></p>
             <p>Album track index: {{ track.trackNumber }}</p>
             <p>Year: {{ track.album.year }}</p>
             <p v-if="track.favorited">Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ss Z") }}</p>
