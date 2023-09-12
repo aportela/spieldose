@@ -1,6 +1,6 @@
 <template>
   <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
-    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 32%;">
+    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;" >
     <template v-slot:no-option v-if="searching">
       <q-item>
         <q-item-section>
@@ -65,7 +65,7 @@ function onFilter(val, update) {
       filteredOptions.value = [];
       searching.value = true;
       update(() => {
-        api.track.search({ text: val }, 1, 5, false, 'title', 'ASC')
+        api.track.search({ title: val }, 1, 5, false, 'title', 'ASC')
           .then((success) => {
             searchResults.value = success.data.data.items;
             filteredOptions.value = searchResults.value.map((item) => {
