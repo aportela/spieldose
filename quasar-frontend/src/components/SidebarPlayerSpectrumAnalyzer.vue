@@ -21,7 +21,9 @@ function createAnalyzer() {
         source: audioElement.value,
         mode: mode.value,
         height: 40,
-        ledBars: false,
+        ledBars: true,
+        trueLeds : true,
+        peakLine: true,
         showScaleX: false,
         showScaleY: false,
         stereo: false,
@@ -29,7 +31,8 @@ function createAnalyzer() {
         start: false,
         bgAlpha: 1,
         overlay: true,
-        showBgColor: true
+        showBgColor: true,
+        maxFPS: 30,
       }
     );
     const options = {
