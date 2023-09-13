@@ -16,7 +16,19 @@ class Artist extends \Spieldose\Entities\Entity
     public $topAlbums = null;
     public $appearsOnAlbums = null;
     public $similar = null;
+    public $genres = null;
 
+    /*
+    public function __construct()
+    {
+        $this->relations = [];
+        $this->topTracks = [];
+        $this->topAlbums = [];
+        $this->appearsOnAlbums = [];
+        $this->similar = [];
+        $this->genres = [];
+    }
+    */
 
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
@@ -32,6 +44,10 @@ class Artist extends \Spieldose\Entities\Entity
             }
         } else {
             $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ";
+        }
+        if (isset($filter["genre"]) && !empty($filter["genre"])) {
+            $filterConditions[] = " EXISTS (SELECT MB_CACHE_ARTIST_GENRE.genre FROM MB_CACHE_ARTIST_GENRE WHERE MB_CACHE_ARTIST_GENRE.artist_mbid = FIT.mb_artist_id AND MB_CACHE_ARTIST_GENRE.genre = :genre) ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
         }
         $fieldDefinitions = [
             "mbId" => "FIT.mb_artist_id",
@@ -275,6 +291,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $this->name = $results[0]->name;
                 $this->image = $results[0]->image;
                 if (!empty($this->image)) {
+                    // TODO: use API URL
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
                 $query = " SELECT url_relationship_typeid, url_relationship_value FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
@@ -288,6 +305,18 @@ class Artist extends \Spieldose\Entities\Entity
                     }
                 } else {
                     $this->relations = [];
+                }
+                $query = " SELECT DISTINCT genre FROM MB_CACHE_ARTIST_GENRE WHERE artist_mbid = :mbid ORDER BY genre";
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
+                );
+                $results = $this->dbh->query($query, $params);
+                if (count($results) > 0) {
+                    foreach ($results as $result) {
+                        $this->genres[] = $result->genre;
+                    }
+                } else {
+                    $this->genres = [];
                 }
                 $query = " SELECT bio_summary, bio_content FROM MB_LASTFM_CACHE_ARTIST WHERE artist_mbid = :mbid ";
                 $params = array(

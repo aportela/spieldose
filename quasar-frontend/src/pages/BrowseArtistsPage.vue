@@ -19,6 +19,32 @@
             </template>
           </q-input>
         </div>
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense label="Genre"
+            :disable="loading || route.params.genre != null" emit-value filled clearable=""
+            :hint="! genre ? 'Minimum 3 characters to trigger filtering': 'Filtering by genre'" use-input hide-selected input-debounce="0" @filter="onFilterGenres" @update:model-value="search(true)">
+            <template v-slot:selected>
+          <q-chip
+            v-if="genre"
+            dense
+            square
+            color="white"
+            text-color="primary"
+            class="q-my-none q-ml-xs q-mr-none"
+          >
+            {{ genre.name }}
+          </q-chip>
+          <q-badge v-else>*none*</q-badge>
+        </template>
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No results
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
             @update:model-value="search(true)" :disable="loading">
@@ -36,6 +62,7 @@
           </q-select>
         </div>
       </div>
+      <!-- TODO margins when no pager -->
       <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
         <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
           direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
@@ -96,7 +123,8 @@ img.artist_image:hover {
 <script setup>
 
 import { ref, nextTick } from "vue";
-import { api } from 'boot/axios'
+import { useRoute } from 'vue-router';
+import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
@@ -104,6 +132,8 @@ const artistName = ref(null);
 const noArtistsFound = ref(false);
 const loading = ref(false);
 const artists = ref([]);
+
+const route = useRoute();
 
 const sortFieldValues = [
   {
@@ -131,6 +161,12 @@ const sortOrderValues = [
 
 const sortOrder = ref(sortOrderValues[0]);
 
+let genresValues = [];
+
+let filteredGenres = ref([]);
+
+const genre = ref(route.params.genre || null);
+
 const totalPages = ref(0);
 
 const currentPageIndex = ref(1);
@@ -143,7 +179,7 @@ function search(resetPager) {
   }
   noArtistsFound.value = false;
   loading.value = true;
-  api.artist.search(artistName.value, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  api.artist.search( { genre: genre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (artistName.value && success.data.data.pager.totalResults < 1) {
@@ -168,6 +204,39 @@ function onPaginationChanged(pageIndex) {
   search(false);
 }
 
+// TODO: split component
+function refreshGenres() {
+  loading.value = true;
+  api.artistGenres.get().then((success) => {
+    genresValues = success.data.genres;
+    if (route.params.genre) {
+      genre.value = route.params.genre;
+    }
+    filteredGenres.value = genresValues;
+    loading.value = false;
+  }).catch((error) => {
+    // TODO: custom menssage
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading genres ",
+      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+    });
+    loading.value = false;
+  });
+}
+
+function onFilterGenres(val, update, abort) {
+  if (val.length < 3) {
+    abort();
+    return;
+  }
+  update(() => {
+    const needle = val.toLowerCase();
+    filteredGenres.value = genresValues.filter(genre => genre.toLowerCase().indexOf(needle) > -1);
+  });
+}
+
+refreshGenres();
 search(true);
 
 </script>

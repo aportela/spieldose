@@ -79,10 +79,20 @@
               <div v-else>
                 <div v-html="artistData.bio ? nl2br(artistData.bio.summary || '') : ''">
                 </div>
-                <p class="q-mt-md" v-if="artistData.relations">
-                  <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
-                    :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
-                </p>
+                <div v-if="artistData.genres">
+                  <q-separator class="q-mt-lg"></q-separator>
+                  <p class="q-mt-md" >
+                    <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
+                  </p>
+                </div>
+                <div v-if="artistData.relations">
+                  <q-separator class="q-mt-lg"></q-separator>
+                  <p class="q-mt-md" >
+
+                    <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
+                      :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
+                  </p>
+                </div>
               </div>
             </q-card-section>
           </q-card>
@@ -372,6 +382,7 @@ import { api } from 'boot/axios';
 import { LineChart, FixedScaleAxis } from 'chartist';
 
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
+import { default as ArtistGenreChip } from 'components/ArtistGenreChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';

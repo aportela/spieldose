@@ -148,7 +148,7 @@ const api = {
   },
   artist: {
     search: function (
-      name,
+      filter,
       currentPageIndex,
       resultsPage,
       sortField,
@@ -156,7 +156,7 @@ const api = {
     ) {
       return new Promise((resolve, reject) => {
         const params = {
-          filter: { name: name },
+          filter: filter || {},
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
@@ -186,6 +186,20 @@ const api = {
               encodeURIComponent(name || ""),
             {}
           )
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
+  artistGenres: {
+    get: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/artists_genres")
           .then((response) => {
             resolve(response);
           })
