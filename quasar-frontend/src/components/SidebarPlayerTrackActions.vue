@@ -3,10 +3,10 @@
     <q-btn-group spread>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle navigation menu"><q-icon
           name="reorder"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer"><q-icon name="bar_chart"
-          @click="onToggleAnalyzer"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track"><q-icon name="favorite"
-          :color="favorited ? 'pink' : ''" @click="onToggleFavorite"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon name="bar_chart"
+          ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track" @click="onToggleFavorite"><q-icon name="favorite"
+          :color="favorited ? 'pink' : ''" ></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle random sort"><q-icon
           name="shuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle repeat mode"><q-icon
