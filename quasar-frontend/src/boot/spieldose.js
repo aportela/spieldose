@@ -1,6 +1,7 @@
 import { usePlayer } from "stores/player";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { api } from "boot/axios";
+import { bus } from "boot/bus";
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
@@ -11,6 +12,7 @@ const trackActions = {
       api.track
         .setFavorite(id)
         .then((success) => {
+          bus.emit('setFavoriteTrack', { trackId: id, timestamp: success.data.favorited });
           currentPlaylist.setFavoriteTrack(id, success.data.favorited);
           resolve(success);
         })
@@ -24,6 +26,7 @@ const trackActions = {
       api.track
         .unSetFavorite(id)
         .then((success) => {
+          bus.emit('unSetFavoriteTrack', { trackId: id });
           currentPlaylist.unSetFavoriteTrack(id);
           resolve(success);
         })

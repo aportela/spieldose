@@ -81,13 +81,13 @@
                 </div>
                 <div v-if="artistData.genres">
                   <q-separator class="q-mt-lg"></q-separator>
-                  <p class="q-mt-md" >
+                  <p class="q-mt-md">
                     <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
                   </p>
                 </div>
                 <div v-if="artistData.relations">
                   <q-separator class="q-mt-lg"></q-separator>
-                  <p class="q-mt-md" >
+                  <p class="q-mt-md">
 
                     <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
                       :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
@@ -374,7 +374,7 @@ img.artist_image:hover {
 </style>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, inject } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useQuasar, date } from "quasar";
@@ -387,6 +387,32 @@ import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { trackActions } from 'boot/spieldose';
+
+
+const bus = inject('bus');
+
+bus.on('setFavoriteTrack', (event) => {
+  if (artistData.value && artistData.value.topTracks) {
+    const index = artistData.value.topTracks.findIndex(
+      (element) => element && element.id == event.trackId
+    );
+    if (index !== -1) {
+      artistData.value.topTracks[index].favorited = event.timestamp;
+    }
+  }
+});
+
+bus.on('unSetFavoriteTrack', (event) => {
+  if (artistData.value && artistData.value.topTracks) {
+    const index = artistData.value.topTracks.findIndex(
+      (element) => element && element.id == event.trackId
+    );
+    console.log(index);
+    if (index !== -1) {
+      artistData.value.topTracks[index].favorited = null;
+    }
+  }
+});
 
 
 const player = usePlayer();
@@ -532,32 +558,34 @@ function onToggleFavorite(track) {
 function get(name) {
   loading.value = true;
   api.artist.get(null, name).then((success) => {
-    artistData.value = success.data.artist;
-    artistImage.value = artistData.value.image;
-    let totalPlays = 0;
-    artistData.value.topTracks.forEach((track) => {
-      totalPlays += track.playCount;
-    });
-    artistData.value.topTracks = artistData.value.topTracks.map((track) => {
-      if (track.coverPathId) {
-        track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
-      } else if (track.covertArtArchiveURL) {
-        track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
-      } else {
-        track.image = null;
-      }
-      track.percentPlay = Math.round(track.playCount * 100 / totalPlays) / 100;
-      return (track);
-    });
+    try {
+      artistData.value = success.data.artist;
+      artistImage.value = artistData.value.image;
+      let totalPlays = 0;
+      artistData.value.topTracks.forEach((track) => {
+        totalPlays += track.playCount;
+      });
+      artistData.value.topTracks = artistData.value.topTracks.map((track) => {
+        if (track.coverPathId) {
+          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+        } else if (track.covertArtArchiveURL) {
+          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+        } else {
+          track.image = null;
+        }
+        track.percentPlay = Math.round(track.playCount * 100 / totalPlays) / 100;
+        return (track);
+      });
 
-    artistData.value.topAlbums.value = artistData.value.topAlbums.map((item) => {
-      item.image = item.covers.small;
-      return (item);
-    });
-    artistData.value.appearsOnAlbums.value = artistData.value.appearsOnAlbums.map((item) => {
-      item.image = item.covers.small;
-      return (item);
-    });
+      artistData.value.topAlbums.value = artistData.value.topAlbums.map((item) => {
+        item.image = item.covers.small;
+        return (item);
+      });
+      artistData.value.appearsOnAlbums.value = artistData.value.appearsOnAlbums.map((item) => {
+        item.image = item.covers.small;
+        return (item);
+      });
+    } catch (e) { console.log(e); }
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
