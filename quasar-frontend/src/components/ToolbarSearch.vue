@@ -53,8 +53,10 @@
             <q-item-label lines="1">
               <span class="text-weight-medium">{{ scope.opt.label }}</span>
             </q-item-label>
-            <q-item-label caption lines="1">
+            <q-item-label caption lines="2">
               {{ scope.opt.caption }}
+              <br>
+              total tracks: 13
             </q-item-label>
           </q-item-section>
           <q-item-section top side>
