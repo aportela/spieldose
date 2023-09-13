@@ -12,11 +12,11 @@ class Artist extends \Spieldose\Entities\Entity
     public $bio = null;
     public $popularAlbum = null;
     public $latestAlbum = null;
-    public $topTracks = null;
-    public $topAlbums = null;
-    public $appearsOnAlbums = null;
-    public $similar = null;
-    public $genres = null;
+    public $topTracks = [];
+    public $topAlbums = [];
+    public $appearsOnAlbums = [];
+    public $similar = [];
+    public $genres = [];
 
     /*
     public function __construct()
