@@ -26,7 +26,7 @@ function createAnalyzer() {
         peakLine: true,
         showScaleX: false,
         showScaleY: false,
-        stereo: false,
+        channelLayout: 'single',
         splitGradient: false,
         start: false,
         bgAlpha: 1,
