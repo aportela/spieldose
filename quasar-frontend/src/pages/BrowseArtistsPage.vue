@@ -19,7 +19,7 @@
             </template>
           </q-input>
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4" v-if="genresValues && genresValues.length > 0">
           <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense label="Genre"
             :disable="loading || route.params.genre != null" emit-value filled clearable=""
             :hint="! genre ? 'Minimum 3 characters to trigger filtering': 'Filtering by genre'" use-input hide-selected input-debounce="0" @filter="onFilterGenres" @update:model-value="search(true)">
