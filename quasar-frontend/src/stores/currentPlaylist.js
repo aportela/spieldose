@@ -21,6 +21,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   getters: {
     hasElements: (state) => state.elements && state.elements.length > 0,
     getElements: (state) => state.elements,
+    elementCount: (state) => (state.elements ? state.elements.length : 0),
     getElementsLastChangeTimestamp: (state) =>
       state.elementsLastChangeTimestamp,
     getCurrentIndex: (state) => state.currentIndex,
