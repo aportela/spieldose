@@ -170,7 +170,12 @@
             <div class="col-6">
               <div style="margin: 64px;">
                 <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
-                  height="400px" spinner-color="pink" />
+                  height="400px" spinner-color="pink">
+                  <template v-slot:error>
+                    <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
+                        </template>
+                  </q-img>
+                  <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
               </div>
               <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
                 <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
@@ -201,7 +206,7 @@
             </div>
             <div class="col-3 self-center">
               <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
-                <q-item>
+                <q-item >
                   <q-item-section>
                     <q-item-label>Currently playing</q-item-label>
                   </q-item-section>
@@ -209,7 +214,7 @@
                     <q-item-label caption>{{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item>
+                <q-item v-if="currentElement && currentElement.track">
                   <q-item-section avatar>
                     <q-avatar>
                       <q-img :src="currentElement.track.covers.small" v-if="currentElement.track.covers.small">
@@ -295,7 +300,7 @@ const props = defineProps({
 // TODO: reuse currentPlaylist.getElements
 
 const currentElement = computed(() => {
-  return (currentPlaylist.getElements[props.currentTrackIndex]);
+  return (currentPlaylist.getElements[props.currentTrackIndex - 1]);
 });
 
 // TODO: not working
