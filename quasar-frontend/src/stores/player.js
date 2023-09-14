@@ -5,10 +5,14 @@ const playerStatus = usePlayerStatusStore();
 
 export const usePlayer = defineStore("player", {
   state: () => ({
+    repeatMode: null,
+    shuffle: false,
     element: null,
     hasPreviousUserInteractions: false,
   }),
   getters: {
+    getRepeatMode: (state) => state.repeatMode,
+    getShuffle: (state) => state.shuffle,
     getElement: (state) => state.element,
     getDuration: (state) => state.element.duration,
   },
@@ -52,6 +56,12 @@ export const usePlayer = defineStore("player", {
           playerStatus.setStatusPlaying();
         }
       }
+    },
+    setRepeatMode(mode) {
+      this.repeatMode = mode;
+    },
+    toggleShuffle() {
+      this.shuffle = !this.shuffle;
     },
   },
 });

@@ -14,8 +14,10 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
-      :downloadURL="currentPlaylist.getCurrentElementURL" :favorited="currentElementFavorited" :visibleAnalyzer="showAnalyzer"
+      :downloadURL="currentPlaylist.getCurrentElementURL" :isTrackFavorited="currentElementFavorited"
+      :visibleAnalyzer="showAnalyzer" :shuffle="player.getShuffle" :repeatMode="player.getRepeatMode"
       @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleVisualization="showVisualizationModal = true"
+      @toggleShuffle="onToggleShuffle" @toggleRepeatMode="onToggleRepeatMode"
       @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
@@ -24,8 +26,10 @@
     <SidebarPlayerVisualizationModal v-if="showVisualizationModal" @hide="showVisualizationModal = false"
       :coverImage="coverImage" :currentElement="currentPlaylist.getCurrentElement" :disabled="disablePlayerControls"
       :allowSkipPrevious="currentPlaylist.allowSkipPrevious" :allowPlay="true"
-      :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying" :currentTrackIndex="currentPlaylist.getCurrentIndex + 1" :totalTracks="currentPlaylist.elementCount" :currentElementTimeData="currentElementTimeData" @skipPrevious="skipPrevious"
-      @play="play" @skipNext="skipNext"></SidebarPlayerVisualizationModal>
+      :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying"
+      :currentTrackIndex="currentPlaylist.getCurrentIndex + 1" :totalTracks="currentPlaylist.elementCount"
+      :currentElementTimeData="currentElementTimeData" @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext">
+    </SidebarPlayerVisualizationModal>
   </div>
 </template>
 
@@ -164,10 +168,23 @@ onMounted(() => {
     if (isCurrentElementTrack.value) {
       increasePlayCount(currentElementId.value);
     }
-    if (currentPlaylist.allowSkipNext) {
-      skipNext();
+    if (player.getRepeatMode == 'playlist') {
+      if (currentPlaylist.allowSkipNext) {
+        skipNext();
+      } else {
+        currentPlaylist.saveCurrentTrackIndex(0);
+        player.stop();
+        player.play();
+      }
+    } else if (player.getRepeatMode == 'track') {
+      player.stop();
+      player.play();
     } else {
-      playerStatus.setStatusStopped();
+      if (currentPlaylist.allowSkipNext) {
+        skipNext();
+      } else {
+        playerStatus.setStatusStopped();
+      }
     }
   });
   audioElement.value.addEventListener('error', (event) => {
@@ -213,6 +230,24 @@ function skipPrevious() {
 function play(ignoreStatus) {
   player.interact();
   player.play(ignoreStatus);
+}
+
+function onToggleRepeatMode() {
+  switch (player.getRepeatMode) {
+    case 'track':
+      player.setRepeatMode('playlist');
+      break;
+    case 'playlist':
+      player.setRepeatMode(null);
+      break;
+    default:
+      player.setRepeatMode('track');
+      break;
+  }
+}
+
+function onToggleShuffle() {
+  player.toggleShuffle();
 }
 
 function skipNext() {
