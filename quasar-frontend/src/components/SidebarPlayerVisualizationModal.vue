@@ -203,21 +203,44 @@
               <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
                 <q-item>
                   <q-item-section>
-                    <q-item-label overline>Spieldose</q-item-label>
-                    <q-item-label>Playlist</q-item-label>
-                    <q-item-label caption>Current playlist</q-item-label>
+                    <q-item-label>Currently playing</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-item-label caption>5 min ago</q-item-label>
+                    <q-item-label caption>{{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section avatar>
+                    <q-avatar>
+                      <q-img :src="currentElement.track.covers.small" v-if="currentElement.track.covers.small">
+                        <template v-slot:error>
+                          <q-icon name="album"></q-icon>
+                        </template>
+                      </q-img>
+                      <q-icon name="album" v-else></q-icon>
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ currentElement.track.title }}</q-item-label>
+                    <q-item-label caption>{{ currentElement.track.artist.name }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label overline>Playlist</q-item-label>
+                    <q-item-label label>Current playlist</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-item-label caption>{{ totalTracks }} total tracks</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-separator spaced />
-                <q-item-label header>Tracks</q-item-label>
-                <q-scroll-area style="height: 400px; max-width: 400px;" dark visible>
-                  <q-item clickable v-for="element in currentPlaylist.getElements" :key="element.id">
+                <q-virtual-scroll style="height: 400px; max-width: 400px;" dark visible separator
+                  :items="currentPlaylist.getElements" v-slot="{ item, index }">
+                  <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
                     <q-item-section avatar>
                       <q-avatar>
-                        <q-img :src="element.track.covers.small" v-if="element.track.covers.small">
+                        <q-img :src="item.track.covers.small" v-if="item.track.covers.small">
                           <template v-slot:error>
                             <q-icon name="album"></q-icon>
                           </template>
@@ -226,11 +249,11 @@
                       </q-avatar>
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>{{ element.track.title }}</q-item-label>
-                      <q-item-label caption>{{ element.track.artist.name }}</q-item-label>
+                      <q-item-label>{{ item.track.title }}</q-item-label>
+                      <q-item-label caption>{{ item.track.artist.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
-                </q-scroll-area>
+                </q-virtual-scroll>
               </q-list>
             </div>
           </div>
@@ -269,6 +292,11 @@ const props = defineProps({
   currentElementTimeData: Object
 });
 
+// TODO: reuse currentPlaylist.getElements
+
+const currentElement = computed(() => {
+  return (currentPlaylist.getElements[props.currentTrackIndex]);
+});
 
 // TODO: not working
 const showAlbumCover = computed(() => {
@@ -489,4 +517,7 @@ function createAnalyzer() {
   }
 }
 
+function onSetCurrentIndex(index) {
+  currentPlaylist.saveCurrentTrackIndex(index);
+}
 </script>
