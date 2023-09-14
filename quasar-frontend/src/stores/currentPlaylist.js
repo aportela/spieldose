@@ -73,7 +73,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     },
     saveElements(newElements) {
       this.elements = newElements;
-      this.shuffleIndexes = [...Array(5).keys()].sort(function () { return 0.5 - Math.random() });
+      this.shuffleIndexes = [...Array(newElements.length).keys()].sort(function () { return 0.5 - Math.random() });
       this.currentIndex = newElements && newElements.length > 0 ? 0 : -1;
       this.saveCurrentElements();
     },
