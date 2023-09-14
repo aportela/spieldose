@@ -164,7 +164,7 @@ class Artist extends \Spieldose\Entities\Entity
         if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
             $filterConditions[] = " FIT.mb_artist_id = :mbid ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
-        } else if (isset($filter["name"]) && !empty($filter["name"])) {
+        } elseif (isset($filter["name"]) && !empty($filter["name"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) = :name ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", $filter["name"]);
         }
@@ -250,7 +250,7 @@ class Artist extends \Spieldose\Entities\Entity
                 )
             ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
-        } else if (isset($filter["name"]) && !empty($filter["name"])) {
+        } elseif (isset($filter["name"]) && !empty($filter["name"])) {
         }
 
         $query = sprintf(
@@ -357,7 +357,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->popularAlbum->year = $results[0]->year;
                     if ($useLocalCovers && !empty($results[0]->coverPathId)) {
                         $this->popularAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
-                    } else if (!empty($results[0]->mbId)) {
+                    } elseif (!empty($results[0]->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                         $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
@@ -385,7 +385,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->latestAlbum->year = $results[0]->year;
                     if ($useLocalCovers && !empty($results[0]->coverPathId)) {
                         $this->latestAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
-                    } else if (!empty($results[0]->mbId)) {
+                    } elseif (!empty($results[0]->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                         $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
@@ -439,7 +439,7 @@ class Artist extends \Spieldose\Entities\Entity
                             "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
                             "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
                         ];
-                    } else if (!empty($album->mbId)) {
+                    } elseif (!empty($album->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                         $album->covers = [
@@ -488,7 +488,7 @@ class Artist extends \Spieldose\Entities\Entity
                             "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
                             "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
                         ];
-                    } else if (!empty($album->mbId)) {
+                    } elseif (!empty($album->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                         $album->covers = [
@@ -538,7 +538,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $this->popularAlbum->year = $results[0]->year;
                 if ($useLocalCovers && !empty($results[0]->coverPathId)) {
                     $this->popularAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
-                } else if (!empty($results[0]->mbId)) {
+                } elseif (!empty($results[0]->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
@@ -565,7 +565,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $this->latestAlbum->year = $results[0]->year;
                 if ($useLocalCovers && !empty($results[0]->coverPathId)) {
                     $this->latestAlbum->image = sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId);
-                } else if (!empty($results[0]->mbId)) {
+                } elseif (!empty($results[0]->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
@@ -626,7 +626,7 @@ class Artist extends \Spieldose\Entities\Entity
                         "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
                         "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
                     ];
-                } else if (!empty($album->mbId)) {
+                } elseif (!empty($album->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     $album->covers = [

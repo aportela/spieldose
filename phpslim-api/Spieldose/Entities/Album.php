@@ -83,7 +83,7 @@ class Album extends \Spieldose\Entities\Entity
                             "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $result->coverPathId),
                             "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $result->coverPathId)
                         ];
-                    } else if (!empty($result->mbId)) {
+                    } elseif (!empty($result->mbId)) {
                         $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                         $url = $cover->getReleaseImageURL($result->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                         $result->covers = [

@@ -144,7 +144,7 @@ return function (App $app) {
                 $sortItems = [];
                 if ($params["sort"]["random"]) {
                     $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItemRandom();
-                } else if (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
+                } elseif (isset($params["filter"]["albumMbId"]) && !empty($params["filter"]["albumMbId"])) {
                     $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem("trackNumber", \aportela\DatabaseBrowserWrapper\Order::ASC, true);
                 } else {
                     $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
