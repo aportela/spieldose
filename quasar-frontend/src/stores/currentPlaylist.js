@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
-//import { usePlayer } from "stores/player";
+import { usePlayer } from "stores/player";
 
-//const player = usePlayer();
+const player = usePlayer();
 
 const localStorageBasilOptions = {
   namespace: "spieldose",
@@ -14,6 +14,7 @@ const localStorageBasilOptions = {
 export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
   state: () => ({
     elements: [],
+    shuffleIndexes: [],
     currentIndex: -1,
     elementsLastChangeTimestamp: null,
   }),
@@ -24,7 +25,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     elementCount: (state) => (state.elements ? state.elements.length : 0),
     getElementsLastChangeTimestamp: (state) =>
       state.elementsLastChangeTimestamp,
-    getCurrentIndex: (state) => state.currentIndex,
+    getCurrentIndex: (state) => player.getShuffle ? state.shuffleIndexes[state.currentIndex] : state.currentIndex,
     getCurrentElement: (state) =>
       state.currentIndex >= 0 && state.elements.length > 0
         ? state.elements[state.currentIndex]
@@ -52,6 +53,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       if (currentPlaylistElements) {
         this.elements = currentPlaylistElements;
       }
+      const shuffleIndexes = basil.get("shuffleIndexes");
+      if (shuffleIndexes) {
+        this.shuffleIndexes = shuffleIndexes;
+      }
       const currentPlaylistElementIndex = basil.get(
         "currentPlaylistElementIndex"
       );
@@ -63,15 +68,18 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set("currentPlaylistElements", this.elements);
       basil.set("currentPlaylistElementIndex", this.currentIndex);
+      basil.set("shuffleIndexes", this.shuffleIndexes);
       this.elementsLastChangeTimestamp = Date.now();
     },
     saveElements(newElements) {
       this.elements = newElements;
+      this.shuffleIndexes = [...Array(5).keys()].sort(function () { return 0.5 - Math.random() });
       this.currentIndex = newElements && newElements.length > 0 ? 0 : -1;
       this.saveCurrentElements();
     },
     appendElements(newElements) {
       this.elements = this.elements.concat(newElements);
+      // TODO: rebuild/append shuffle index
       this.saveCurrentElements();
     },
     saveCurrentTrackIndex(newIndex) {
