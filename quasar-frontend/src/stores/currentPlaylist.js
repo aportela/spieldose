@@ -85,10 +85,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       */
     },
     skipPrevious() {
-      this.currentIndex--;
+      this.saveCurrentTrackIndex(--this.currentIndex);
     },
     skipNext() {
-      this.currentIndex++;
+      this.saveCurrentTrackIndex(++this.currentIndex);
     },
     clear() {
       this.elements = [];
