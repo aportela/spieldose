@@ -11,7 +11,7 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-section class="bg-white text-black">
+    <q-card-section class="bg-white text-black" style="min-height: 17em;">
       <slot name="body">
         <q-skeleton type="text" square animation="blink" height="198px" v-if="loading" />
         <div v-else>
@@ -27,7 +27,7 @@
 
 <script setup>
 
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
