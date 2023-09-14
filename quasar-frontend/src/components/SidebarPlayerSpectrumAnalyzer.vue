@@ -25,7 +25,7 @@ const props = defineProps({
 const player = usePlayer();
 const audioElement = ref(player.getElement);
 const analyzer = ref(null);
-const currentMode = ref(5);
+const currentMode = ref(7);
 
 function createAnalyzer() {
   const defaultOptions = {
@@ -36,7 +36,7 @@ function createAnalyzer() {
     mode: currentMode.value,
     ledBars: true,
     trueLeds: true,
-    barSpace: 0.4,
+    barSpace: 0.2,
     peakLine: true,
     showScaleX: false,
     showScaleY: false,
