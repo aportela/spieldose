@@ -86,13 +86,26 @@
 
           <q-item-label header>Octave bar settings</q-item-label>
 
-          <q-item-label header>Bar space</q-item-label>
-          <q-item dense>
-            <q-item-section>
-              <q-slider dense v-model="barSpace" :min="0" :max="1" :step="0.1" label label-always color="grey"
-                @change="onSetBarSpace" />
-            </q-item-section>
-          </q-item>
+          <div class="row">
+            <div class="col-6">
+              <q-item-label header>Bar space</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider dense v-model="barSpace" :min="0" :max="1" :step="0.1" label label-always color="grey"
+                    @change="onSetBarSpace" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <div class="col-6">
+              <q-item-label header>Analyzer canvas height</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider dense v-model="canvasHeight" :min="100" :max="600" :step="25" label label-always color="grey"
+                    @change="onSetCanvasHeight" />
+                </q-item-section>
+              </q-item>
+            </div>
+          </div>
 
           <div class="row">
             <div class="col-2">
@@ -165,7 +178,8 @@
         <!-- TODO separated component -->
         <div id="analyzer-container-overlay"
           style="width: 100%; background-color: #000; background-image: url('images/overlay.jpg'); background-repeat: no-repeat; background-position: 50%; background-size: auto 150%;">
-          <div id="analyzer-container-settings" style="width: 100%; height: 400px"></div>
+          <!-- fit content on change -->
+          <div id="analyzer-container-settings" style="width: 100%; height: 400px;"></div>
           <div class="row">
             <div class="col-6">
               <div style="margin: 64px;">
@@ -173,9 +187,9 @@
                   height="400px" spinner-color="pink">
                   <template v-slot:error>
                     <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
-                        </template>
-                  </q-img>
-                  <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
+                  </template>
+                </q-img>
+                <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
               </div>
               <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
                 <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
@@ -206,7 +220,7 @@
             </div>
             <div class="col-3 self-center">
               <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
-                <q-item >
+                <q-item>
                   <q-item-section>
                     <q-item-label>Currently playing</q-item-label>
                   </q-item-section>
@@ -397,6 +411,12 @@ function onSetHorizontalMirror(v) {
   analyzer.value.setOptions({ mirror: v });
 }
 
+const canvasHeight = 400;
+
+function onSetCanvasHeight(v) {
+  analyzer.value.setOptions({ height : v });
+}
+
 const barSpace = ref(0.2);
 
 function onSetBarSpace(v) {
@@ -486,11 +506,12 @@ function createAnalyzer() {
         source: audioElement.value,
         connectSpeakers: false,
         fsElement: document.getElementById('analyzer-container-overlay'),
+        //height: 400,
         overlay: true,
         showBgColor: true,
         bgAlpha: 0.5,
         mode: mode.value,
-        //height: 600,
+        height: canvasHeight.value,
         ledBars: ledBars.value,
         trueLeds: trueLeds.value,
         peakLine: true,
