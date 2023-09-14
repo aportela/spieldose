@@ -27,7 +27,7 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as'): ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
-    <q-table class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
+    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
       :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
       @row-click="onRowClick" :hide-bottom="true">
       <!--
@@ -149,6 +149,8 @@ const currentPlaylist = useCurrentPlaylistStore();
 const currentPlayListElementsLastChanges = computed(() => {
   return (currentPlaylist.getElementsLastChangeTimestamp);
 });
+
+const tableRef = ref(null);
 
 const rows = ref([]);
 const columns = [
@@ -274,7 +276,6 @@ function setCurrentTrackIndex(index) {
   }
 }
 
-
 function onMoveUpTrackAtIndex(index) {
   // https://stackoverflow.com/a/6470794
   const element = elements.value[index];
@@ -349,6 +350,7 @@ const currentPlaylistTrackIndex = computed(() => {
 
 watch(currentPlaylistTrackIndex, (newValue) => {
   currentTrackIndex.value = newValue;
+  tableRef.value.scrollTo(newValue, 'center-force');
 });
 
 function onRandom() {
