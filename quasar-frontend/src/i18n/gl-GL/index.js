@@ -115,6 +115,9 @@ export default {
   "API Error: missing email param": "Error de API: falta o correo electrónico",
   "API Error: missing password param": "Error de API: falta o contrasinal",
 
+  // player spectrum analyzer
+  "Toggle analyzer octave bands number": "Alternar número de bandas por octava",
+
   // dashboard
   "My stats": "As miñas estadísticas",
   "Global stats": "Estadísticas globais",

@@ -114,6 +114,9 @@ export default {
   "API Error: missing email param": "API Error: missing email param",
   "API Error: missing password param": "API Error: missing password param",
 
+  // player spectrum analyzer
+  "Toggle analyzer octave bands number": "Toggle analyzer octave bands number",
+
   // dashboard
   "My stats": "My stats",
   "Global stats": "Global stats",
