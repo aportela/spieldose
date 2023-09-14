@@ -69,7 +69,7 @@ import { ref, computed } from "vue";
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
 */
 
-const defaultImage = 'images/vinyl.png';
+const defaultImage = 'images/vinyl-small.png';
 
 const emit = defineEmits(['play', 'delete']);
 
