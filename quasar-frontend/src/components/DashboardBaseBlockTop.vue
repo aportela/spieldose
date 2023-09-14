@@ -9,28 +9,28 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="entity == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track" v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'artists'">
-        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
+        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item" v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'albums'">
-        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
+        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item" v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'genres'">
-        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item">
+        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item" v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
@@ -180,11 +180,14 @@ switch (props.entity) {
     break;
 }
 
+const lastChangeTimestamp = ref(Date.now());
+
 function refresh() {
   if (tab.value) {
     loading.value = true;
     apiFunction(filter, 'playCount', count).then((success) => {
       items.value = success.data.data;
+      lastChangeTimestamp.value = Date.now();
       loading.value = false;
     }).catch((error) => {
       loading.value = false;

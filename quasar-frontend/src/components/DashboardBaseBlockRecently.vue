@@ -9,7 +9,7 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="tab == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track" v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -25,7 +25,7 @@
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'artists'">
-        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item">
+        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item" v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -41,7 +41,7 @@
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'albums'">
-        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item">
+        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item" v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -57,7 +57,7 @@
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'genres'">
-        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item">
+        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item" v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -171,6 +171,8 @@ let filter = {
   global: useGlobalStats.value
 };
 
+const lastChangeTimestamp = ref(Date.now());
+
 function refresh() {
   if (tab.value) {
     items.value = [];
@@ -184,6 +186,7 @@ function refresh() {
     }
     funct(filter, sortField, count).then((success) => {
       items.value = success.data.data;
+      lastChangeTimestamp.value = Date.now();
       loading.value = false;
     }).catch((error) => {
       loading.value = false;
