@@ -451,6 +451,7 @@ function createAnalyzer() {
       document.getElementById('analyzer-container-settings'),
       {
         source: audioElement.value,
+        connectSpeakers: false,
         fsElement: document.getElementById('analyzer-container-overlay'),
         overlay: true,
         showBgColor: true,
