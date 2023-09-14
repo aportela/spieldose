@@ -11,15 +11,21 @@
     <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
       :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying"
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :disabled="disablePlayerControls || ! isCurrentElementTrack" :currentElementTimeData="currentElementTimeData"
-      @seek="onSeek"></SidebarPlayerSeekControl>
-    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId" :downloadURL="currentPlaylist.getCurrentElementURL"
-      :favorited="currentElementFavorited" @toggleAnalyzer="showAnalyzer = !showAnalyzer"
+    <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
+      :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
+    <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
+      :downloadURL="currentPlaylist.getCurrentElementURL" :favorited="currentElementFavorited"
+      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleVisualization="showVisualizationModal = true"
       @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
-    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage"
-      :trackId="currentElementId" @hide="detailsModal = false">
+    <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
+      @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
+    <SidebarPlayerVisualizationModal v-if="showVisualizationModal" @hide="showVisualizationModal = false"
+      :coverImage="coverImage" :currentElement="currentPlaylist.getCurrentElement" :disabled="disablePlayerControls"
+      :allowSkipPrevious="currentPlaylist.allowSkipPrevious" :allowPlay="true"
+      :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="playerStatus.isPlaying" :currentTrackIndex="currentPlaylist.getCurrentIndex + 1" :totalTracks="currentPlaylist.elementCount" :currentElementTimeData="currentElementTimeData" @skipPrevious="skipPrevious"
+      @play="play" @skipNext="skipNext"></SidebarPlayerVisualizationModal>
   </div>
 </template>
 
@@ -39,6 +45,7 @@ import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMa
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
+import { default as SidebarPlayerVisualizationModal } from "components/SidebarPlayerVisualizationModal.vue";
 import { useSessionStore } from 'stores/session'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { usePlayerStatusStore } from 'stores/playerStatus'
@@ -62,6 +69,7 @@ const audioElement = ref(null);
 const detailsModal = ref(false);
 
 const showAnalyzer = ref(true);
+const showVisualizationModal = ref(false);
 
 const currentPlaylist = useCurrentPlaylistStore();
 
@@ -120,7 +128,7 @@ const smallVinylImage = computed(() => {
       return (null);
     }
   } else {
-    return(null);
+    return (null);
   }
 });
 

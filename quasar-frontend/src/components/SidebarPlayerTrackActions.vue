@@ -3,10 +3,10 @@
     <q-btn-group spread>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle navigation menu"><q-icon
           name="reorder"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon name="bar_chart"
-          ></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track" @click="onToggleFavorite"><q-icon name="favorite"
-          :color="favorited ? 'pink' : ''" ></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon
+          name="bar_chart"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track" @click="onToggleFavorite"><q-icon
+          name="favorite" :color="favorited ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle random sort"><q-icon
           name="shuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle repeat mode"><q-icon
@@ -15,12 +15,11 @@
         :href="downloadURL"><q-icon name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable title="Download track" v-else><q-icon
           name="file_download"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" @click="singleLayoutMode = !singleLayoutMode"><q-icon
-          name="screenshot_monitor" title="Toggle section details"
-          :color="singleLayoutMode ? 'pink' : ''"></q-icon></q-btn>
-          <!-- TODO enable only for tracks-->
-      <q-btn dense unelevated size="md" :disable="disabled" @click="onShowTrackDetailsModal"><q-icon name="tag"
-          title="Track tags details "></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle visualization"
+        @click="onToggleVisualization"><q-icon name="screenshot_monitor"></q-icon></q-btn>
+      <!-- TODO enable only for tracks-->
+      <q-btn dense unelevated size="md" :disable="disabled" title="Track tags details"
+        @click="onShowTrackDetailsModal"><q-icon name="tag"></q-icon></q-btn>
     </q-btn-group>
   </div>
 </template>
@@ -58,15 +57,19 @@ const props = defineProps({
   downloadURL: String
 });
 
-const emit = defineEmits(['toggleAnalyzer']);
+const emit = defineEmits(['toggleAnalyzer', 'toggleVisualization']);
 
 function onToggleAnalyzer() {
   emit('toggleAnalyzer');
 }
 
+function onToggleVisualization() {
+  emit('toggleVisualization');
+}
+
 function onToggleFavorite() {
   if (props.id) {
-    const funct = ! props.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+    const funct = !props.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
     funct(props.id).then((success) => {
     })
       .catch((error) => {
