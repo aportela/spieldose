@@ -36,7 +36,7 @@ function createAnalyzer() {
     mode: currentMode.value,
     ledBars: true,
     trueLeds: true,
-    barSpace: 2,
+    barSpace: 0.4,
     peakLine: true,
     showScaleX: false,
     showScaleY: false,
@@ -73,7 +73,7 @@ function togglecurrentMode() {
   if (++currentMode.value > 8) {
     currentMode.value = 1;
   }
-  analyzer.value.setOptions({ mode: currentMode.value });
+  analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10  });
 }
 
 const active = computed(() => { return (props.active || false) });
