@@ -31,7 +31,7 @@ const $q = useQuasar();
 const { t } = useI18n();
 
 const loading = ref(false);
-const items = ref([]);
+let items = [];
 
 const tab = ref(null);
 
@@ -84,12 +84,12 @@ function drawChart() {
   // TODO: labels are not reactive on i18n changes
   let labels = [];
   let values = [];
-  //  items.value.map((item) => { return (item.total); });
+  //  items.map((item) => { return (item.total); });
   switch (tab.value) {
     case 'hour':
       labels = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20','21','22', '23'];
       values = new Array(24).fill(0);
-      items.value.forEach((item) => {
+      items.forEach((item) => {
         values[new Number(item.hour) ] = item.total;
       });
       break;
@@ -97,20 +97,20 @@ function drawChart() {
       labels = [t('Sunday'), t('Monday'), t('Tuesday'), t('Wednesday'), t('Thursday'), t('Friday'), t('Saturday')];
       values = new Array(7).fill(0);
       // TODO: check correct index starting on sunday
-      items.value.forEach((item) => {
+      items.forEach((item) => {
         values[new Number(item.weekday) ] = item.total;
       });
       break;
     case 'month':
       labels = [t('January'), t('February'), t('March'), t('April'), t('May'), t('June'), t('July'), t('August'), t('September'), t('October'), t('November'), t('December')]
       values = new Array(12).fill(0);
-      items.value.forEach((item) => {
+      items.forEach((item) => {
         values[new Number(item.month) ] = item.total;
       });
       break;
     case 'year':
-      labels = items.value.map((item) => { return (item.year); });
-      values = items.value.map((item) => { return (item.total); });
+      labels = items.map((item) => { return (item.year); });
+      values = items.map((item) => { return (item.total); });
       break;
   }
   if (labels.length > 1) {
@@ -130,7 +130,7 @@ function refresh() {
   if (tab.value) {
     loading.value = true;
     api.metrics.getDataRanges({ dateRange: tab.value, global: useGlobalStats.value }).then((success) => {
-      items.value = success.data.data;
+      items = success.data.data;
       loading.value = false;
       nextTick(() => {
         drawChart();
