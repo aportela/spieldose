@@ -59,7 +59,7 @@ div.album-actions {
   display: block;
   width: 174px;
   height: 80px;
-  z-index: 12000;
+  z-index: 2;
   top: 44px;
   position: absolute;
 
