@@ -4,7 +4,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle navigation menu"><q-icon
           name="reorder"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon
-          name="bar_chart"></q-icon></q-btn>
+          name="bar_chart" :color="visibleAnalyzer ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track" @click="onToggleFavorite"><q-icon
           name="favorite" :color="favorited ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle random sort"><q-icon
@@ -53,6 +53,7 @@ watch(singleLayoutMode, (newValue) => {
 const props = defineProps({
   id: String,
   disabled: Boolean,
+  visibleAnalyzer: Boolean,
   favorited: Number,
   downloadURL: String
 });

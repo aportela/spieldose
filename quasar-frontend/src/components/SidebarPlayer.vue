@@ -3,7 +3,7 @@
     <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
       :rotateVinyl="playerStatus.isPlaying"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
-    <SidebarPlayerSpectrumAnalyzer v-show="showAnalyzer"></SidebarPlayerSpectrumAnalyzer>
+    <SidebarPlayerSpectrumAnalyzer v-show="showAnalyzer" :active="showAnalyzer"></SidebarPlayerSpectrumAnalyzer>
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" :defaultValue="defaultVolume"
       @volumeChange="onVolumeChange">
     </SidebarPlayerVolumeControl>
@@ -14,7 +14,7 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
-      :downloadURL="currentPlaylist.getCurrentElementURL" :favorited="currentElementFavorited"
+      :downloadURL="currentPlaylist.getCurrentElementURL" :favorited="currentElementFavorited" :visibleAnalyzer="showAnalyzer"
       @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleVisualization="showVisualizationModal = true"
       @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
