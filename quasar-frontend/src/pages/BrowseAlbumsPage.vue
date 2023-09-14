@@ -51,7 +51,7 @@
       <div class="q-gutter-md row items-start">
         <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
           :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
-          @enqueue="onEnqueueAlbum(album)">
+          @enqueue="onEnqueueAlbum(album)" >
         </AnimatedAlbumCover>
       </div>
     </q-card-section>
@@ -122,7 +122,7 @@ const sortOrder = ref(sortOrderValues[0]);
 
 const noAlbumsFound = ref(false);
 const loading = ref(false);
-const albums = ref([]);
+let albums = [];
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
@@ -141,7 +141,7 @@ function search(resetPager) {
     text: searchOn.value.value == 'all' ? searchText.value : null,
   };
   api.album.search(filter, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
-    albums.value = success.data.data.items.map((item) => {
+    albums = success.data.data.items.map((item) => {
       item.image = item.covers.small;
       return (item);
     });

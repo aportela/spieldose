@@ -67,7 +67,7 @@
         <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
           direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
       </div>
-      <div class="q-gutter-md row items-start">
+      <div class="q-gutter-md row items-start" v-memo="artists">
         <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artists" :key="artist">
           <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
             <div class="absolute-bottom text-subtitle1 text-center">
@@ -131,7 +131,7 @@ const $q = useQuasar();
 const artistName = ref(null);
 const noArtistsFound = ref(false);
 const loading = ref(false);
-const artists = ref([]);
+let artists = [];
 
 const route = useRoute();
 
@@ -180,7 +180,7 @@ function search(resetPager) {
   noArtistsFound.value = false;
   loading.value = true;
   api.artist.search( { genre: genre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
-    artists.value = success.data.data.items;
+    artists = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (artistName.value && success.data.data.pager.totalResults < 1) {
       noArtistsFound.value = true;

@@ -91,7 +91,6 @@ img.radiostation_image:hover {
 }
 </style>
 
-
 <script setup>
 
 import { ref } from "vue";
@@ -115,11 +114,10 @@ const tags = ref([]);
 const personalRadioStationName = ref(null);
 const noRadioStationsFound = ref(false);
 const loading = ref(false);
-const radioStations = ref([]);
+let radioStations = [];
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
-
 
 function search(resetPager) {
   if (resetPager) {
@@ -128,7 +126,7 @@ function search(resetPager) {
   //noRadioStationsFound.value = false;
   loading.value = true;
   api.radioStation.search(currentPageIndex.value, 32, { name: personalRadioStationName.value }).then((success) => {
-    radioStations.value = success.data.data.items;
+    radioStations = success.data.data.items;
     /*
     totalPages.value = success.data.data.pager.totalPages;
     if (personalRadioStationName.value && success.data.data.pager.totalResults < 1) {

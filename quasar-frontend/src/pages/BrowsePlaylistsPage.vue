@@ -56,7 +56,6 @@
   </q-card>
 </template>
 
-
 <script setup>
 
 import { ref } from "vue";
@@ -71,11 +70,10 @@ const $q = useQuasar();
 const playlistName = ref(null);
 const noPlaylistsFound = ref(false);
 const loading = ref(false);
-const playlists = ref([]);
+let playlists = [];
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
-
 
 const styleValues = [
   {
@@ -113,7 +111,7 @@ function search(resetPager) {
   noPlaylistsFound.value = false;
   loading.value = true;
   api.playlist.search(currentPageIndex.value, 32, { name: playlistName.value }).then((success) => {
-    playlists.value = success.data.data.items;
+    playlists = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (playlistName.value && success.data.data.pager.totalResults < 1) {
       noPlaylistsFound.value = true;
