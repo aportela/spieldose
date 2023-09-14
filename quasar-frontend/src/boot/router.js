@@ -1,6 +1,5 @@
 import { boot } from "quasar/wrappers";
 import { useSessionStore } from "stores/session";
-import { isShallow } from "vue";
 
 export default boot(({ app, router, store }) => {
   router.beforeEach((to, from, next) => {
@@ -17,8 +16,14 @@ export default boot(({ app, router, store }) => {
           name: "dashboard",
         });
       } else {
-        // go to specified route
-        next();
+        if (to.name !== "signIn" && to.name != "signUp") {
+          // go to specified route
+          next();
+        } else {
+          next({
+            name: "index",
+          });
+        }
       }
     } else {
       if (!to.name) {
