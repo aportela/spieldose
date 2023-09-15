@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, inject } from "vue";
 
 import { useRouter } from "vue-router";
 import { api } from 'boot/axios';
@@ -87,6 +87,8 @@ import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
 import { default as FullScreenVisualization } from "components/FullScreenVisualizationSettings.vue";
 import { bus } from "boot/bus";
+
+const myPlayer = inject('spieldosePlayer');
 
 const { t } = useI18n();
 const $q = useQuasar();
