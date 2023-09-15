@@ -240,6 +240,7 @@ i#showVisualizationSettingsIcon {
   opacity: 0.2;
   transition: 0.3s;
 }
+
 i#showVisualizationSettingsIcon:hover {
   opacity: 1;
 }
@@ -247,27 +248,22 @@ i#showVisualizationSettingsIcon:hover {
 
 <script setup>
 
+import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
+import AudioMotionAnalyzer from "audiomotion-analyzer";
+import { usePlayer } from "stores/player";
 import { useSessionStore } from "stores/session";
 
 const $q = useQuasar();
-
 const session = useSessionStore();
 if (!session.isLoaded) {
   session.load();
 }
-
 const maxCanvasHeight = Math.round($q.screen.height / 2);
-
-import { ref, computed, onMounted } from "vue";
-import AudioMotionAnalyzer from 'audiomotion-analyzer';
-import { usePlayer } from "stores/player";
-
 const showSettings = ref(false);
 const player = usePlayer();
 const audioElement = ref(player.getElement);
-
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {
   apple: {
@@ -371,7 +367,6 @@ const staticGradients = {
     ], disabled: false
   }
 };
-
 const gradientValues = ref([
   {
     label: 'classic',
@@ -394,11 +389,9 @@ const gradientValues = ref([
     value: 'steelblue',
   }
 ]);
-
 for (const [key] of Object.entries(staticGradients)) {
   gradientValues.value.push({ label: key, value: key });
 }
-
 const modes = {
   0: 'Discrete frequencies',
   1: '1/24th octave bands',
@@ -411,11 +404,9 @@ const modes = {
   8: 'Full octave bands',
   9: 'Line / Area graph'
 };
-
 const selectedModeLabel = computed(() => {
   return (modes[settings.value.mode]);
 });
-
 const selectedmaxFPSLabel = computed(() => {
   if (settings.value.maxFPS != 0) {
     return (settings.value.maxFPS);
@@ -423,7 +414,6 @@ const selectedmaxFPSLabel = computed(() => {
     return ('unlimited');
   }
 });
-
 const selectedReflexRatioLabel = computed(() => {
   if (settings.value.reflexRatio != 0) {
     return (settings.value.reflexRatio);
@@ -435,10 +425,21 @@ const selectedReflexRatioLabel = computed(() => {
 
 const analyzer = ref(null);
 
+function onAnalyzerCanvasResize(reason, instance) {
+  if (reason == 'fschange') {
+    if (!instance.isFullscreen) {
+      if (analyzer.value) {
+        analyzer.value.destroy();
+      }
+      bus.emit('hideFullScreenVisualization');
+    }
+  }
+};
+
 const defaultSettings = {
-  source: audioElement.value,
-  connectSpeakers: false,
+  source: null,
   fsElement: null,
+  connectSpeakers: false,
   gradient: 'classic',
   fullScreen: false,
   mode: 2,
@@ -465,17 +466,7 @@ const defaultSettings = {
   splitGradient: false,
   start: false,
   reflexFit: true,
-  onCanvasResize: (reason, instance) => {
-    if (reason == 'fschange') {
-      settings.value.fullScreen = instance.isFullscreen;
-      if (!instance.isFullscreen) {
-        if (analyzer.value) {
-          analyzer.value.destroy();
-        }
-        bus.emit('hideFullScreenVisualization');
-      }
-    }
-  }
+  onCanvasResize: null
 };
 
 const settings = ref(session.getFullScreenVisualizationSettings || defaultSettings);
@@ -489,6 +480,9 @@ function onSet(optionName, optionValue) {
 
 function createAnalyzer() {
   if (!analyzer.value) {
+    settings.value.source = audioElement.value;
+    settings.value.fsElement = document.getElementById('visualization-container');
+    settings.value.onCanvasResize = onAnalyzerCanvasResize;
     analyzer.value = new AudioMotionAnalyzer(
       document.getElementById('analyzer-canvas-container'),
       settings.value
@@ -504,7 +498,7 @@ function createAnalyzer() {
 }
 
 onMounted(() => {
-  settings.value.fsElement = document.getElementById('visualization-container');
   createAnalyzer();
 });
+
 </script>
