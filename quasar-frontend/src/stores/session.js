@@ -45,9 +45,13 @@ export const useSessionStore = defineStore("session", {
         "fullScreenVisualizationSettings"
       );
       if (fullScreenVisualizationSettings) {
-        this.fullScreenVisualizationSettings = JSON.parse(
-          fullScreenVisualizationSettings
-        );
+        try {
+          this.fullScreenVisualizationSettings = JSON.parse(
+            fullScreenVisualizationSettings
+          );
+        } catch (e) {
+          // console.error("error");
+        }
       }
       this.loaded = true;
     },
