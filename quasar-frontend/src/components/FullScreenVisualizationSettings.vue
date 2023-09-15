@@ -12,7 +12,7 @@
         <q-card-section>
           <div class="row">
             <div class="col-12">
-              <q-item-label header>Gradient</q-item-label>
+              <q-item-label header class="text-dark text-weight-bolder">Gradient</q-item-label>
               <q-item dense>
                 <q-item-section>
                   <q-btn-toggle dense v-model="settings.gradient" unelevated toggle-color="pink" :options="gradientValues"
@@ -93,47 +93,66 @@
               </q-item>
             </div>
           </div>
-          <q-item-label header>Horizontal mirror</q-item-label>
-          <q-item dense>
-            <q-item-section>
-              <q-btn-toggle dense v-model="settings.mirror" unelevated toggle-color="pink" spread :options="[
-                { label: 'Left', value: -1 },
-                { label: 'None', value: 0 },
-                { label: 'Right', value: 1 }
-              ]" @update:model-value="(v) => onSet('mirror', v)" />
-            </q-item-section>
-          </q-item>
+          <q-item-label header class="q-pb-none text-dark text-weight-bolder">Mirror & reflex settings</q-item-label>
+          <div class="row q-pb-lg">
+            <div class="col-3">
+              <q-item-label header>Horizontal mirror</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-btn-toggle size="sm" v-model="settings.mirror" unelevated no-caps toggle-color="pink" spread :options="[
+                    { label: 'Left', value: -1 },
+                    { label: 'None', value: 0 },
+                    { label: 'Right', value: 1 }
+                  ]" @update:model-value="(v) => onSet('mirror', v)" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <div class="col-3">
+              <q-item-label header>Vertical reflex ratio</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider v-model="settings.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
+                    switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
+                    @change="onSet('reflexRatio', settings.reflexRatio)" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <div class="col-3">
+              <q-item-label header>Vertical reflex alpha</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider v-model="settings.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.reflexAlpha)" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <div class="col-3">
+              <q-item-label header>Vertical reflex bright</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider v-model="settings.reflexBright" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexBright', settings.reflexBright)" />
+                </q-item-section>
+              </q-item>
+            </div>
+          </div>
           <div v-if="settings.mode > 0 && settings.mode < 9">
-
-            <q-item-label header>Octave bar settings</q-item-label>
-
+            <q-item-label header class="text-dark text-weight-bolder">Octave bar settings</q-item-label>
             <div class="row">
-              <div class="col-6">
+              <div class="col-4">
                 <q-item-label header>Bar space</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-slider dense v-model="settings.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
+                    <q-slider v-model="settings.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
                       switch-label-side color="grey" @change="onSet('barSpace', settings.barSpace)" />
                   </q-item-section>
                 </q-item>
               </div>
-              <div class="col-6">
-                <q-item-label header>Analyzer canvas height</q-item-label>
-                <q-item dense>
-                  <q-item-section>
-                    <q-slider dense v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label
-                      label-always switch-label-side color="grey" @change="onSet('height', settings.height)" />
-                  </q-item-section>
-                </q-item>
-              </div>
-            </div>
-
-            <div class="row">
               <div class="col-2">
                 <q-item-label header>Led bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.ledBars" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.ledBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('ledBars', v)" />
@@ -144,7 +163,7 @@
                 <q-item-label header>True leds</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.trueLeds" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.trueLeds" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('trueLeds', v)" />
@@ -155,44 +174,35 @@
                 <q-item-label header>Lumi bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.lumiBars" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.lumiBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('lumiBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-3">
-              <q-item-label header>Reflex ratio</q-item-label>
+              <div class="col-2">
+              <q-item-label header>Alpha bars</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
-                    switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
-                    @change="onSet('reflexRatio', settings.reflexRatio)" />
+                  <q-btn-toggle dense size="sm" v-model="settings.alphaBars " unelevated toggle-color="pink" spread
+                    :options="[
+                      { label: 'ON', value: true },
+                      { label: 'OFF', value: false }
+                    ]" @update:model-value="(v) => onSet('alphaBars', v)" />
                 </q-item-section>
               </q-item>
             </div>
-            <div class="col-3">
-              <q-item-label header>Reflex alpha</q-item-label>
-              <q-item dense>
-                <q-item-section>
-                  <q-slider v-model="settings.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.reflexAlpha)" />
-                </q-item-section>
-              </q-item>
             </div>
-            <div class="col-3">
-              <q-item-label header>Reflex bright</q-item-label>
-              <q-item dense>
-                <q-item-section>
-                  <q-slider v-model="settings.reflexBright" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexBright', settings.reflexBright)" />
-                </q-item-section>
-              </q-item>
-            </div>
+            <div>
+                <q-item-label header class="text-dark text-weight-bolder">Analyzer canvas height</q-item-label>
+                <q-item dense>
+                  <q-item-section>
+                    <q-slider v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label
+                      label-always switch-label-side color="grey" @change="onSet('height', settings.height)" />
+                  </q-item-section>
+                </q-item>
+              </div>
           </div>
         </q-card-section>
       </q-card>
@@ -400,7 +410,7 @@ const selectedmaxFPSLabel = computed(() => {
 });
 
 const selectedReflexRatioLabel = computed(() => {
-  if (settings.value.reflexRatio.value != 0) {
+  if (settings.value.reflexRatio != 0) {
     return (settings.value.reflexRatio);
 
   } else {
@@ -426,6 +436,7 @@ const settings = ref({
   ledBars: true,
   trueLeds: false,
   lumiBars: false,
+  alphaBars: false,
   showPeaks: true,
   channelLayout: 'single',
   reflexRatio: 0.3,
