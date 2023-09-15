@@ -96,6 +96,9 @@ const currentPlaylist = useCurrentPlaylistStore();
 const audioElement = ref(null);
 
 const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
 
 const fullScreenVisualization = ref(false);
 

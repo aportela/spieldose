@@ -34,6 +34,9 @@ const { t } = useI18n();
 const $q = useQuasar();
 
 const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
 
 const router = useRouter();
 

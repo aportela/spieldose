@@ -59,8 +59,9 @@ const $q = useQuasar();
 const { t } = useI18n();
 
 const session = useSessionStore();
-
-session.load();
+if (!session.isLoaded) {
+  session.load();
+}
 
 const loading = ref(false);
 
