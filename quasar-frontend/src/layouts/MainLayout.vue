@@ -34,9 +34,11 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps href="http://github.com/aportela/spieldose" target="_blank" />
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps stack
             @click="signOut" />
         </q-tabs>
+
       </q-toolbar>
     </q-header>
     <!--
@@ -87,6 +89,7 @@ import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
 import { default as FullScreenVisualization } from "components/FullScreenVisualizationSettings.vue";
 import { bus } from "boot/bus";
+import { fabGithub } from "@quasar/extras/fontawesome-v6";
 
 const myPlayer = inject('spieldosePlayer');
 
