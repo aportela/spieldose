@@ -235,7 +235,7 @@ const $q = useQuasar();
 
 const maxCanvasHeight = Math.round($q.screen.height / 2);
 
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import { usePlayer } from "stores/player";
 
@@ -370,7 +370,7 @@ const gradientValues = ref([
   }
 ]);
 
-for (const [key, value] of Object.entries(staticGradients)) {
+for (const [key] of Object.entries(staticGradients)) {
   gradientValues.value.push({ label: key, value: key });
 }
 
@@ -404,20 +404,11 @@ const selectedReflexRatioLabel = computed(() => {
     return (settings.value.reflexRatio);
 
   } else {
-    return ('no relection');
+    return ('no reflection');
   }
 });
 
 const analyzer = ref(null);
-
-// TODO: not working
-/*
-const isFullScreen = computed(() => { return(analyzer.value && analyzer.value.isFullScreen); } );
-
-watch (isFullScreen, (newValue) => {
-  settings.value.fullScreen = newValue;
-});
-*/
 
 const settings = ref({
   source: audioElement.value,
