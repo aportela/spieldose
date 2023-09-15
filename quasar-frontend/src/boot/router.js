@@ -4,7 +4,9 @@ import { useSessionStore } from "stores/session";
 export default boot(({ app, router, store }) => {
   router.beforeEach((to, from, next) => {
     const session = useSessionStore(store);
-    session.load();
+    if (!session.isLoaded) {
+      session.load();
+    }
 
     const isLogged = session.isLogged;
 

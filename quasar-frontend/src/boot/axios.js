@@ -1,9 +1,11 @@
 import { boot } from "quasar/wrappers";
-
-import axios from "axios";
 import { useSessionStore } from "stores/session";
+import axios from "axios";
 
 const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
 const jwt = session.getJWT;
 
 axios.interceptors.request.use(
