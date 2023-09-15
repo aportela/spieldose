@@ -75,7 +75,11 @@ export const useSessionStore = defineStore("session", {
     },
     save(jwt) {
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("jwt", jwt);
+      if (jwt !== null) {
+        basil.set("jwt", jwt);
+      } else {
+        basil.remove("jwt");
+      }
     },
     signIn(jwt) {
       this.jwt = jwt;
