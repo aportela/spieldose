@@ -2,8 +2,7 @@
   <div>
     <div id="visualization-container" style="background-image: url('images/overlay.jpg');">
       <div id="analyzer-canvas-container"></div>
-      <q-card id="settings-container" class="bg-grey-4 q-pb-lg"
-        :class="{ 'fixed-center': settings.fullScreen, 'q-mx-auto q-mt-lg': !settings.fullScreen }" v-if="showSettings">
+      <q-card id="settings-container" class="bg-grey-4 q-pb-lg fixed-center" v-if="showSettings">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Spieldose analyzer settings </div>
           <q-space />
@@ -15,24 +14,25 @@
               <q-item-label header class="text-dark text-weight-bolder">Gradient</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense v-model="settings.gradient" unelevated toggle-color="pink" :options="gradientValues"
+                  <q-btn-toggle dense v-model="settings.audioMotionAnalyzer.gradient" unelevated toggle-color="pink" :options="gradientValues"
                     @update:model-value="(v) => onSet('gradient', v)" no-caps />
                   <!--
                   <div>
-                    <q-btn class="q-ma-xs" unelevated dense size="md" :color="settings.gradient == gg.value ? 'pink': 'dark'" v-for="gg in gradientValues" :key="gg.value" :label="gg.label"  @click="onSet('gradient', gg.value)" no-caps></q-btn>
+                    <q-btn class="q-ma-xs" unelevated dense size="md" :color="settings.audioMotionAnalyzer.gradient == gg.value ? 'pink': 'dark'" v-for="gg in gradientValues" :key="gg.value" :label="gg.label"  @click="onSet('gradient', gg.value)" no-caps></q-btn>
                   </div>
                   -->
                 </q-item-section>
               </q-item>
             </div>
           </div>
+          <q-item-label header class="text-dark text-weight-bolder">General</q-item-label>
           <div class="row q-pb-lg">
             <div class="col-2">
               <q-item-label header>Max FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.maxFPS" :min="0" :max="120" :step="30" label label-always switch-label-side
-                    :label-value="selectedmaxFPSLabel" color="grey" @change="onSet('maxFPS', settings.maxFPS)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.maxFPS" :min="0" :max="120" :step="30" label label-always switch-label-side
+                    :label-value="selectedmaxFPSLabel" color="grey" @change="onSet('maxFPS', settings.audioMotionAnalyzer.maxFPS)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -40,7 +40,7 @@
               <q-item-label header>Show FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.showFPS" unelevated toggle-color="pink" spread :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showFPS" unelevated toggle-color="pink" spread :options="[
                     { label: 'ON', value: true },
                     { label: 'OFF', value: false }
                   ]" @update:model-value="(v) => onSet('showFPS', v)" />
@@ -51,9 +51,9 @@
               <q-item-label header>Analyzer mode</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider dense v-model="settings.mode" :min="0" :max="10" :step="1" label label-always
+                  <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="10" :step="1" label label-always
                     switch-label-side :label-value="selectedModeLabel" color="grey"
-                    @change="onSet('mode', settings.mode)" />
+                    @change="onSet('mode', settings.audioMotionAnalyzer.mode)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -61,7 +61,7 @@
               <q-item-label header>Channel Layout</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.channelLayout" unelevated toggle-color="pink" spread
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.channelLayout" unelevated toggle-color="pink" spread
                     :options="[
                       { label: 'mono', value: 'single' },
                       { label: 'stereo', value: 'dual-vertical' }
@@ -73,7 +73,7 @@
               <q-item-label header>Radial</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.radial" unelevated toggle-color="pink" spread :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.radial" unelevated toggle-color="pink" spread :options="[
                     { label: 'ON', value: true },
                     { label: 'OFF', value: false }
                   ]" @update:model-value="(v) => onSet('radial', v)" />
@@ -84,11 +84,11 @@
               <q-item-label header>Peaks</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.showPeaks" unelevated toggle-color="pink" spread
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showPeaks" unelevated toggle-color="pink" spread
                     :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('showPeaks', v)" :disable="settings.lumiBars" />
+                    ]" @update:model-value="(v) => onSet('showPeaks', v)" :disable="settings.audioMotionAnalyzer.lumiBars" />
                 </q-item-section>
               </q-item>
             </div>
@@ -99,7 +99,7 @@
               <q-item-label header>Horizontal mirror</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle size="sm" v-model="settings.mirror" unelevated no-caps toggle-color="pink" spread
+                  <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.mirror" unelevated no-caps toggle-color="pink" spread
                     :options="[
                       { label: 'Left', value: -1 },
                       { label: 'None', value: 0 },
@@ -112,9 +112,9 @@
               <q-item-label header>Vertical reflex ratio</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
                     switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
-                    @change="onSet('reflexRatio', settings.reflexRatio)" />
+                    @change="onSet('reflexRatio', settings.audioMotionAnalyzer.reflexRatio)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -122,8 +122,8 @@
               <q-item-label header>Vertical reflex alpha</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.reflexAlpha)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.audioMotionAnalyzer.reflexAlpha)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -131,21 +131,21 @@
               <q-item-label header>Vertical reflex bright</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexBright" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexBright', settings.reflexBright)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexBright" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexBright', settings.audioMotionAnalyzer.reflexBright)" />
                 </q-item-section>
               </q-item>
             </div>
           </div>
-          <div v-if="settings.mode > 0 && settings.mode < 9">
+          <div v-if="settings.audioMotionAnalyzer.mode > 0 && settings.audioMotionAnalyzer.mode < 9">
             <q-item-label header class="text-dark text-weight-bolder">Octave bar settings</q-item-label>
             <div class="row">
               <div class="col-4">
                 <q-item-label header>Bar space</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-slider v-model="settings.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
-                      switch-label-side color="grey" @change="onSet('barSpace', settings.barSpace)" />
+                    <q-slider v-model="settings.audioMotionAnalyzer.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
+                      switch-label-side color="grey" @change="onSet('barSpace', settings.audioMotionAnalyzer.barSpace)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -153,7 +153,7 @@
                 <q-item-label header>Led bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.ledBars" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.ledBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('ledBars', v)" />
@@ -164,7 +164,7 @@
                 <q-item-label header>True leds</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.trueLeds" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.trueLeds" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('trueLeds', v)" />
@@ -175,7 +175,7 @@
                 <q-item-label header>Lumi bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.lumiBars" unelevated toggle-color="pink" spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.lumiBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
                     ]" @update:model-value="(v) => onSet('lumiBars', v)" />
@@ -186,7 +186,7 @@
                 <q-item-label header>Alpha bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense size="sm" v-model="settings.alphaBars" unelevated toggle-color="pink" spread
+                    <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.alphaBars" unelevated toggle-color="pink" spread
                       :options="[
                         { label: 'ON', value: true },
                         { label: 'OFF', value: false }
@@ -199,8 +199,8 @@
               <q-item-label header class="text-dark text-weight-bolder">Analyzer canvas height</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label label-always
-                    switch-label-side color="grey" @change="onSet('height', settings.height)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.height" :min="100" :max="maxCanvasHeight" :step="25" label label-always
+                    switch-label-side color="grey" @change="onSet('height', settings.audioMotionAnalyzer.height)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -233,12 +233,12 @@
         </div>
         <div class="col-3 self-end">
           <div>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipPrevious"
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled"
               @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
             <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8"
-              :disable="disabled || !allowPlay" @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
+              :disable="disabled" @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
                 :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track"></q-icon></q-btn>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled"
               @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
           </div>
           <!--
@@ -334,9 +334,10 @@ div#analyzer-canvas-container {
 }
 
 #settings-container {
-  width: 50%;
-  max-width: 1024px;
-  opacity: 0.9;
+  width: 80em;
+  max-width: 1280px;
+  opacity: 0.8;
+  z-index: 1;
 }
 
 i.visualization-bottom-icons {
@@ -351,7 +352,7 @@ i.visualization-bottom-icons {
 
 <script setup>
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, inject, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
@@ -360,7 +361,9 @@ import { usePlayerStatusStore } from "stores/playerStatus";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { useSessionStore } from "stores/session";
 
-const disabled = ref(true);
+const disabled = ref(false);
+
+const spieldoseEvents = inject('spieldoseEvents');
 
 const $q = useQuasar();
 const session = useSessionStore();
@@ -374,7 +377,6 @@ const playerStatus = usePlayerStatusStore();
 const currentPlaylist = useCurrentPlaylistStore();
 const totalTracks = currentPlaylist.elementCount;
 const currentTrackIndex = ref(currentPlaylist.getCurrentIndex);
-
 
 const audioElement = ref(player.getElement);
 
@@ -395,7 +397,6 @@ const coverImage = computed(() => {
     return (null);
   }
 });
-
 
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {
@@ -538,18 +539,18 @@ const modes = {
   9: 'Line / Area graph'
 };
 const selectedModeLabel = computed(() => {
-  return (modes[settings.value.mode]);
+  return (modes[settings.value.audioMotionAnalyzer.mode]);
 });
 const selectedmaxFPSLabel = computed(() => {
-  if (settings.value.maxFPS != 0) {
-    return (settings.value.maxFPS);
+  if (settings.value.audioMotionAnalyzer.maxFPS != 0) {
+    return (settings.value.audioMotionAnalyzer.maxFPS);
   } else {
     return ('unlimited');
   }
 });
 const selectedReflexRatioLabel = computed(() => {
-  if (settings.value.reflexRatio != 0) {
-    return (settings.value.reflexRatio);
+  if (settings.value.audioMotionAnalyzer.reflexRatio != 0) {
+    return (settings.value.audioMotionAnalyzer.reflexRatio);
 
   } else {
     return ('no reflection');
@@ -569,7 +570,7 @@ function onAnalyzerCanvasResize(reason, instance) {
   }
 };
 
-const defaultSettings = {
+const defaultAudioMotionAnalyzerSettings = {
   source: null,
   fsElement: null,
   connectSpeakers: false,
@@ -579,7 +580,7 @@ const defaultSettings = {
   mirror: 0,
   height: 625,
   barSpace: 0.6,
-  maxFPS: 90,
+  maxFPS: 60,
   showFPS: false,
   radial: false,
   ledBars: true,
@@ -602,8 +603,9 @@ const defaultSettings = {
   onCanvasResize: null
 };
 
-const settings = ref(session.getFullScreenVisualizationSettings || defaultSettings);
+const settings = ref(session.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
 
+settings.value.anazly
 function onSet(optionName, optionValue) {
   const option = {};
   option[optionName] = optionValue;
@@ -613,16 +615,21 @@ function onSet(optionName, optionValue) {
 
 function createAnalyzer() {
   if (!analyzer.value) {
-    settings.value.source = audioElement.value;
-    settings.value.fsElement = document.getElementById('visualization-container');
-    settings.value.onCanvasResize = onAnalyzerCanvasResize;
+    // custom saved gradients not found on init, set value after register custom gradients
+    const savedGradient = settings.value.audioMotionAnalyzer.gradient || 'classic';
+    settings.value.audioMotionAnalyzer.gradient = 'classic';
+    settings.value.audioMotionAnalyzer.source = audioElement.value;
+    settings.value.audioMotionAnalyzer.fsElement = document.getElementById('visualization-container');
+    settings.value.audioMotionAnalyzer.onCanvasResize = onAnalyzerCanvasResize;
     analyzer.value = new AudioMotionAnalyzer(
       document.getElementById('analyzer-canvas-container'),
-      settings.value
+      settings.value.audioMotionAnalyzer
     );
     for (const [key, value] of Object.entries(staticGradients)) {
       analyzer.value.registerGradient(key, { bgColor: value.bgColor || '#111', colorStops: value.colorStops || [] });
     }
+    settings.value.audioMotionAnalyzer.gradient = savedGradient;
+    analyzer.value.setOptions({ gradient: savedGradient });
   }
   if (!analyzer.value.isOn) {
     analyzer.value.toggleAnalyzer();
@@ -652,14 +659,17 @@ function formatSecondsAsTime(secs, format) {
 const emit = defineEmits(['hide', 'skipPrevious', 'play', 'skipNext']);
 
 function onPlay() {
+  spieldoseEvents.emit.currentPlaylist.play();
   emit('play');
 }
 
 function onSkipPrevious() {
+  spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
   emit('skipPrevious');
 }
 
-function onSkipNext() {
+function skipToNextTrack() {
+  spieldoseEvents.emit.currentPlaylist.nextTrack();
   emit('skipNext');
 }
 
