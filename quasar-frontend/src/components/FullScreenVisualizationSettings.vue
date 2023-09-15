@@ -210,107 +210,109 @@
 
 
       <div class="row">
-            <div class="col-6">
-              <div style="margin: 64px;">
-                <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
-                  height="400px" spinner-color="pink">
-                  <template v-slot:error>
-                    <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
-                  </template>
-                </q-img>
-                <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
-              </div>
-              <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
-                <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
-                  currentElement.track.title || null }}</h2>
-                <h4 class="text-grey-5 q-mt-md q-mb-sm" v-if="currentElement.track.artist.name">by {{
-                  currentElement.track.artist.name }}
-                </h4>
-                <h4 class="text-grey-6 q-mt-xs"><q-icon name="album" size="xl" class="q-mr-sm"></q-icon>{{
-                  currentElement.track.album.title }} <span v-if="currentElement.track.album.year">({{
+        <div class="col-6">
+          <div style="margin: 64px;">
+            <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
+              height="400px" spinner-color="pink">
+              <template v-slot:error>
+                <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
+              </template>
+            </q-img>
+            <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
+          </div>
+          <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
+            <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
+              currentElement.track.title || null }}</h2>
+            <h4 class="text-grey-5 q-mt-md q-mb-sm" v-if="currentElement.track.artist.name">by {{
+              currentElement.track.artist.name }}
+            </h4>
+            <h4 class="text-grey-6 q-mt-xs"><q-icon name="album" size="xl" class="q-mr-sm"></q-icon>{{
+              currentElement.track.album.title }} <span v-if="currentElement.track.album.year">({{
     currentElement.track.album.year }})</span></h4>
-              </div>
-            </div>
-            <div class="col-3 self-end">
-              <div>
-                <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipPrevious"
-                  @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
-                <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8"
-                  :disable="disabled || !allowPlay" @click="onPlay"><q-icon :name="isPlaying ? 'pause' : 'play_arrow'"
-                    :class="{ 'text-pink-6': isPlaying }" title="Play/Pause/Resume track"></q-icon></q-btn>
-                <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
-                  @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
-              </div>
-              <!--
+          </div>
+        </div>
+        <div class="col-3 self-end">
+          <div>
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipPrevious"
+              @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
+            <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8"
+              :disable="disabled || !allowPlay" @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
+                :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track"></q-icon></q-btn>
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
+              @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
+          </div>
+          <!--
               <h3 class="text-grey-5 q-ml-lg q-mb-sm">{{ formatSecondsAsTime(currentElementTimeData.currentTime) }} / {{
                 formatSecondsAsTime(currentElementTimeData.duration) }} </h3>
                 -->
-              <h4 class="text-grey-6 q-ml-lg q-mt-sm">Track {{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</h4>
-            </div>
-            <div class="col-3 self-center">
-              <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
-                <q-item>
-                  <q-item-section>
-                    <q-item-label>Currently playing</q-item-label>
-                  </q-item-section>
-                  <q-item-section side top>
-                    <q-item-label caption>{{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-item v-if="currentElement && currentElement.track">
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <q-img :src="currentElement.track.covers.small" v-if="currentElement.track.covers.small">
-                        <template v-slot:error>
-                          <q-icon name="album"></q-icon>
-                        </template>
-                      </q-img>
-                      <q-icon name="album" v-else></q-icon>
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>{{ currentElement.track.title }}</q-item-label>
-                    <q-item-label caption>{{ currentElement.track.artist.name }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Playlist</q-item-label>
-                    <q-item-label label>Current playlist</q-item-label>
-                  </q-item-section>
-                  <q-item-section side top>
-                    <q-item-label caption>{{ totalTracks }} total tracks</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-separator spaced />
-                <q-virtual-scroll style="height: 400px; max-width: 400px;" dark visible separator
-                  :items="currentPlaylist.getElements" v-slot="{ item, index }">
-                  <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
-                    <q-item-section avatar>
-                      <q-avatar>
-                        <q-img :src="item.track.covers.small" v-if="item.track.covers.small">
-                          <template v-slot:error>
-                            <q-icon name="album"></q-icon>
-                          </template>
-                        </q-img>
-                        <q-icon name="album" v-else></q-icon>
-                      </q-avatar>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ item.track.title }}</q-item-label>
-                      <q-item-label caption>{{ item.track.artist.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-virtual-scroll>
-              </q-list>
-            </div>
-          </div>
+          <h4 class="text-grey-6 q-ml-lg q-mt-sm">Track {{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</h4>
+        </div>
+        <div class="col-3 self-center">
+          <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
+            <q-item>
+              <q-item-section>
+                <q-item-label>Currently playing</q-item-label>
+              </q-item-section>
+              <q-item-section side top>
+                <q-item-label caption>{{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-if="currentElement && currentElement.track">
+              <q-item-section avatar>
+                <q-avatar>
+                  <q-img :src="currentElement.track.covers.small" v-if="currentElement.track.covers.small">
+                    <template v-slot:error>
+                      <q-icon name="album"></q-icon>
+                    </template>
+                  </q-img>
+                  <q-icon name="album" v-else></q-icon>
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ currentElement.track.title }}</q-item-label>
+                <q-item-label caption>{{ currentElement.track.artist.name }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label overline>Playlist</q-item-label>
+                <q-item-label label>Current playlist</q-item-label>
+              </q-item-section>
+              <q-item-section side top>
+                <q-item-label caption>{{ totalTracks }} total tracks</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator spaced />
+            <q-virtual-scroll style="height: 400px; max-width: 400px;" dark visible separator
+              :items="currentPlaylist.getElements" v-slot="{ item, index }">
+              <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
+                <q-item-section avatar>
+                  <q-avatar>
+                    <q-img :src="item.track.covers.small" v-if="item.track.covers.small">
+                      <template v-slot:error>
+                        <q-icon name="album"></q-icon>
+                      </template>
+                    </q-img>
+                    <q-icon name="album" v-else></q-icon>
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ item.track.title }}</q-item-label>
+                  <q-item-label caption>{{ item.track.artist.name }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-virtual-scroll>
+          </q-list>
+        </div>
+      </div>
 
 
 
       <div class="fixed-bottom-right">
-        <q-icon id="showVisualizationSettingsIcon" name="settings" color="white" size="xs" class="cursor-pointer q-ma-xs"
+        <q-icon name="settings" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
           @click="showSettings = true"></q-icon>
+        <q-icon name="close" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
+          @click="onClose"></q-icon>
       </div>
     </div>
   </div>
@@ -337,12 +339,12 @@ div#analyzer-canvas-container {
   opacity: 0.9;
 }
 
-i#showVisualizationSettingsIcon {
+i.visualization-bottom-icons {
   opacity: 0.2;
   transition: 0.3s;
 }
 
-i#showVisualizationSettingsIcon:hover {
+i.visualization-bottom-icons {
   opacity: 1;
 }
 </style>
@@ -354,8 +356,11 @@ import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { usePlayer } from "stores/player";
+import { usePlayerStatusStore } from "stores/playerStatus";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { useSessionStore } from "stores/session";
+
+const disabled = ref(true);
 
 const $q = useQuasar();
 const session = useSessionStore();
@@ -365,7 +370,12 @@ if (!session.isLoaded) {
 const maxCanvasHeight = Math.round($q.screen.height / 2);
 const showSettings = ref(false);
 const player = usePlayer();
+const playerStatus = usePlayerStatusStore();
 const currentPlaylist = useCurrentPlaylistStore();
+const totalTracks = currentPlaylist.elementCount;
+const currentTrackIndex = ref(currentPlaylist.getCurrentIndex);
+
+
 const audioElement = ref(player.getElement);
 
 const currentElement = computed(() => {
@@ -652,6 +662,11 @@ function onSkipPrevious() {
 function onSkipNext() {
   emit('skipNext');
 }
+
+function onClose() {
+  analyzer.value.toggleAnalyzer();
+}
+
 onMounted(() => {
   createAnalyzer();
 });
