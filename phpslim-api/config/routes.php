@@ -113,7 +113,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/track/{id}', function (Request $request, Response $response, array $args) {
                 if (!empty($args['id'])) {
@@ -126,7 +126,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('id');
                 }
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/track/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -159,7 +159,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/track/increase_play_count/{id}', function (Request $request, Response $response, array $args) {
                 $track = new \Spieldose\Entities\Track($args["id"]);
@@ -167,7 +167,7 @@ return function (App $app) {
                 $payload = json_encode([]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/track/set_favorite/{id}', function (Request $request, Response $response, array $args) {
                 $track = new \Spieldose\Entities\Track($args["id"]);
@@ -175,7 +175,7 @@ return function (App $app) {
                 $payload = json_encode(["favorited" => $track->favorited]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/track/unset_favorite/{id}', function (Request $request, Response $response, array $args) {
                 $track = new \Spieldose\Entities\Track($args["id"]);
@@ -183,7 +183,7 @@ return function (App $app) {
                 $payload = json_encode(["favorited" => null]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/thumbnail/{size}/remote/{entity}/', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
@@ -230,7 +230,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty url param');
                 }
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/thumbnail/{size}/local/{entity}/', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
@@ -276,7 +276,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty path param');
                 }
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/track/thumbnail/{size}/{id}', function (Request $request, Response $response, array $args) {
                 if (!in_array($args['size'], ['small', 'normal'])) {
@@ -383,7 +383,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/artist', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
@@ -400,7 +400,7 @@ return function (App $app) {
                 );
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/artists_genres', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -429,7 +429,7 @@ return function (App $app) {
                 );
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/album/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -456,7 +456,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
                 $settings = $this->get('settings')['thumbnails']['albums'];
@@ -488,7 +488,7 @@ return function (App $app) {
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/file/{id}', function (Request $request, Response $response, array $args) {
                 if (!empty($args['id'])) {
@@ -531,7 +531,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('id');
                 }
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/path/tree', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -539,7 +539,7 @@ return function (App $app) {
                 $payload = json_encode(["items" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/metrics/tracks', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
@@ -557,7 +557,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/metrics/artists', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
@@ -575,7 +575,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/metrics/albums', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
@@ -593,7 +593,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/metrics/genres', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
@@ -611,7 +611,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/metrics/date_range', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
@@ -621,7 +621,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/playlist/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -639,7 +639,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/playlist/add', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -654,7 +654,7 @@ return function (App $app) {
                 $payload = json_encode(["playlist" => $params["playlist"]]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) {
                 if (!empty($args['id'])) {
@@ -672,7 +672,7 @@ return function (App $app) {
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException('id');
                 }
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
@@ -692,7 +692,7 @@ return function (App $app) {
                 $payload = json_encode(["data" => $data]);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
