@@ -1,29 +1,53 @@
 import { boot } from "quasar/wrappers";
 import { bus } from "boot/bus";
 
+const spieldoseEventNames = {
+  player: {
+    setVolume: "player.setVolume",
+    toggleMute: "player.toggleMute",
+    setCurrentTime: "player.setCurrentTime",
+    play: "player.play",
+    pause: "player.pause",
+    resume: "player.resume",
+    stop: "player.stop",
+    toggleRepeatMode: "player.toggleRepeatMode",
+    toggleShuffeMode: "player.toggleShuffeMode",
+  },
+};
 const spieldoseEvents = {
   emit: {
     player: {
-
-    },
-    currentPlaylist: {
-      play: function () {
-        bus.emit('currentPlayList.play');
+      setVolume: function (volume) {
+        bus.emit(spieldoseEventNames.player.setVolume, { volume: volume });
+      },
+      toggleMute: function () {
+        bus.emit(spieldoseEventNames.player.toggleMute, {});
+      },
+      setCurrentTime: function (second) {
+        bus.emit(spieldoseEventNames.player.setCurrentTime, { second: second });
+      },
+      play: function (ignoreStatus) {
+        bus.emit(spieldoseEventNames.player.play, {
+          ignoreStatus: ignoreStatus || false,
+        });
       },
       pause: function () {
-        bus.emit('currentPlayList.pause');
+        bus.emit(spieldoseEventNames.player.pause, {});
+      },
+      resume: function () {
+        bus.emit(spieldoseEventNames.player.resume, {});
       },
       stop: function () {
-        bus.emit('currentPlayList.stop');
+        bus.emit(spieldoseEventNames.player.stop, {});
       },
-      skipToPreviousTrack: function () {
-        bus.emit("currentPlaylist.skipToPreviousTrack", { oldIndex: 0, currentIndex: 0 });
+      toggleRepeatMode: function () {
+        bus.emit(spieldoseEventNames.player.toggleRepeatMode, {});
       },
-      skipToNextTrack: function () {
-        bus.emit("currentPlaylist.skipToNextTrack", { oldIndex: 0, currentIndex: 0 });
-      }
-    }
-  }
+      toggleShuffeMode: function () {
+        bus.emit(spieldoseEventNames.player.toggleShuffeMode, {});
+      },
+    },
+  },
 };
 
 export default boot(({ app }) => {
@@ -32,6 +56,6 @@ export default boot(({ app }) => {
 
   // for Composition API
   app.provide("spieldoseEvents", spieldoseEvents);
-})
+});
 
-export { spieldoseEvents };
+export { spieldoseEvents, spieldoseEventNames };
