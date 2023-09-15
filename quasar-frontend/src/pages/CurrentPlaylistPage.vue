@@ -5,31 +5,31 @@
       <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
     </q-breadcrumbs>
     <q-btn-group spread class="q-mb-md">
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear'): ''" icon="clear" @click="onClear"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
         :disable="loading || !(elements && elements.length > 0)">
       </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize'): ''" icon="bolt" @click="onRandom" :disable="loading">
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="bolt" @click="onRandom"
+        :disable="loading">
       </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous'): ''" icon="skip_previous" @click="onPreviusPlaylist"
-        :disable="loading || !currentPlaylist.allowSkipPrevious" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play'): ''" icon="play_arrow" @click="onPlay"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
+        @click="onPreviusPlaylist" :disable="loading || !currentPlaylist.allowSkipPrevious" />
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
         :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause'): ''" icon="pause" @click="onPause"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
         :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume'): ''" icon="play_arrow" @click="onResume"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow" @click="onResume"
         :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop'): ''" icon="stop" @click="onStop"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
         :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next'): ''" icon="skip_next" @click="onNextPlaylist"
-        :disable="loading || !currentPlaylist.allowSkipNext" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download'): ''" icon="save_alt"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
+        @click="onNextPlaylist" :disable="loading || !currentPlaylist.allowSkipNext" />
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
         :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as'): ''" icon="save_alt"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
     <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
-      :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
-      @row-click="onRowClick" :hide-bottom="true">
+      :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns" :hide-bottom="true">
       <!--
       <template v-slot:top>
         <q-space></q-space>
@@ -37,41 +37,47 @@
           emit-value map-options :options="columns" option-value="name" options-cover style="min-width: 150px" />
       </template>
       -->
-      <template v-slot:body-cell-index="props">
-        <q-td :props="props">
-          <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
-            v-if="currentTrackIndex + 1 == props.value"></q-icon>
-          {{ props.value }} / {{ rows.length }}
-        </q-td>
-      </template>
-      <template v-slot:body-cell-artist="props">
-        <q-td :props="props">
-          <router-link v-if="props.value" :class="{ 'text-white text-bold': false }"
-            :to="{ name: 'artist', params: { name: props.value } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
-              props.value }}</router-link>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-albumArtist="props">
-        <q-td :props="props">
-          <router-link v-if="props.value" :class="{ 'text-white text-bold': false }"
-            :to="{ name: 'artist', params: { name: props.value } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{
-              props.value }}</router-link>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          {{ props.value }}
-          <q-btn-group outline>
-            <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" disable
-              @click="onMoveUpTrackAtIndex" />
-            <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" disable
-              @click="onMoveDownTrackAtIndex" />
-            <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
-              :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
-            <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
-              @click.stop.prevent="onRemoveElementAtIndex(props.row.index - 1)" />
-          </q-btn-group>
-        </q-td>
+      <template v-slot:body="props">
+        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt,props.row, props.row.index - 1)" :class="{ 'selected-row': currentTrackIndex + 1 == props.row.index }">
+          <q-td key="index" :props="props">
+            <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
+              v-if="currentTrackIndex + 1 == props.row.index"></q-icon>
+            {{ props.row.index }} / {{ rows.length }}
+          </q-td>
+          <q-td key="title" :props="props">
+          {{ props.row.title }}
+          </q-td>
+          <q-td key="artist" :props="props">
+            <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
+              :to="{ name: 'artist', params: { name: props.row.artist.name } }"><q-icon name="link"
+                class="q-mr-sm"></q-icon>{{
+                  props.row.artist.name }}</router-link>
+          </q-td>
+          <q-td key="albumArtist" :props="props">
+            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }" :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{props.row.album.artist.name }}</router-link>
+          </q-td>
+          <q-td key="albumTitle" :props="props">
+          {{ props.row.album.title }}
+          </q-td>
+          <q-td key="albumTrackIndex" :props="props">
+            {{ props.row.trackNumber }}
+          </q-td>
+          <q-td key="year" :props="props">
+            {{ props.row.album.year }}
+          </q-td>
+          <q-td key="actions" :props="props">
+            <q-btn-group outline>
+              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" disable
+                @click="onMoveUpTrackAtIndex" />
+              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" disable
+                @click="onMoveDownTrackAtIndex" />
+              <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
+                :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
+              <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
+                @click.stop.prevent="onRemoveElementAtIndex(props.row.index - 1)" />
+            </q-btn-group>
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
 
@@ -125,6 +131,16 @@
   tbody
     /* height of all previous header rows */
     scroll-margin-top: 48px
+
+    tr.selected-row
+      background: #f0cbd1 !important
+      color: #222
+    tr
+      td
+        a
+          text-decoration: none
+
+
 </style>
 
 <script setup>
