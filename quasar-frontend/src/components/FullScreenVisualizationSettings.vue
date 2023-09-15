@@ -2,7 +2,7 @@
   <div>
     <div id="visualization-container" style="background-image: url('images/overlay.jpg');">
       <div id="analyzer-canvas-container"></div>
-      <q-card id="settings-container" class="bg-grey-4"
+      <q-card id="settings-container" class="bg-grey-4 q-pb-lg"
         :class="{ 'fixed-center': settings.fullScreen, 'q-mx-auto q-mt-lg': !settings.fullScreen }" v-if="showSettings">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Spieldose analyzer settings </div>
@@ -15,35 +15,35 @@
               <q-item-label header>Gradient</q-item-label>
               <q-item dense>
                 <q-item-section>
+                  <q-btn-toggle dense v-model="settings.gradient" unelevated toggle-color="pink" :options="gradientValues"
+                    @update:model-value="(v) => onSet('gradient', v)" no-caps />
                   <!--
-                  <q-btn-toggle dense v-model="settings.gradient" outline toggle-color="pink" :options="gradientValues"
-                    @update:model-value="onSetGradient" no-caps />
-                    -->
                   <div>
-                    <q-btn dense size="md" v-for="gg in gradientValues" :key="gg.value" :label="gg.label" @click="onSetGradient(gg.value)" no-caps></q-btn>
+                    <q-btn class="q-ma-xs" unelevated dense size="md" :color="settings.gradient == gg.value ? 'pink': 'dark'" v-for="gg in gradientValues" :key="gg.value" :label="gg.label"  @click="onSet('gradient', gg.value)" no-caps></q-btn>
                   </div>
+                  -->
                 </q-item-section>
               </q-item>
             </div>
           </div>
-          <div class="row">
+          <div class="row q-pb-lg">
             <div class="col-2">
               <q-item-label header>Max FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.maxFPS" :min="0" :max="120" :step="30" label label-always color="grey"
-                    @change="onSetMAXFPS" :label-value="selectedmaxFPSLabel" />
+                  <q-slider v-model="settings.maxFPS" :min="0" :max="120" :step="30" label label-always switch-label-side
+                    :label-value="selectedmaxFPSLabel" color="grey" @change="onSet('maxFPS', settings.maxFPS)" />
                 </q-item-section>
               </q-item>
             </div>
             <div class="col-2">
-              <q-item-label header>Peaks</q-item-label>
+              <q-item-label header>Show FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.showPeaks" outline toggle-color="pink" spread :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.showFPS" unelevated toggle-color="pink" spread :options="[
                     { label: 'ON', value: true },
                     { label: 'OFF', value: false }
-                  ]" @update:model-value="onSetShowPeaks" :disable="settings.lumiBars" />
+                  ]" @update:model-value="(v) => onSet('showFPS', v)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -51,8 +51,9 @@
               <q-item-label header>Analyzer mode</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider dense v-model="settings.mode" :min="0" :max="10" :step="1" label
-                    :label-value="selectedModeLabel" label-always switch-label-side color="grey" @change="onSetMode" />
+                  <q-slider dense v-model="settings.mode" :min="0" :max="10" :step="1" label label-always
+                    switch-label-side :label-value="selectedModeLabel" color="grey"
+                    @change="onSet('mode', settings.mode)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -60,11 +61,11 @@
               <q-item-label header>Channel Layout</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.channelLayout" outline toggle-color="pink" spread
+                  <q-btn-toggle dense size="sm" v-model="settings.channelLayout" unelevated toggle-color="pink" spread
                     :options="[
                       { label: 'mono', value: 'single' },
                       { label: 'stereo', value: 'dual-vertical' }
-                    ]" @update:model-value="onSetChannelLayout" />
+                    ]" @update:model-value="(v) => onSet('channelLayout', v)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -72,10 +73,22 @@
               <q-item-label header>Radial</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.radial" outline toggle-color="pink" spread :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.radial" unelevated toggle-color="pink" spread :options="[
                     { label: 'ON', value: true },
                     { label: 'OFF', value: false }
-                  ]" @update:model-value="onSetRadial" />
+                  ]" @update:model-value="(v) => onSet('radial', v)" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <div class="col-2">
+              <q-item-label header>Peaks</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-btn-toggle dense size="sm" v-model="settings.showPeaks" unelevated toggle-color="pink" spread
+                    :options="[
+                      { label: 'ON', value: true },
+                      { label: 'OFF', value: false }
+                    ]" @update:model-value="(v) => onSet('showPeaks', v)" :disable="settings.lumiBars" />
                 </q-item-section>
               </q-item>
             </div>
@@ -83,11 +96,11 @@
           <q-item-label header>Horizontal mirror</q-item-label>
           <q-item dense>
             <q-item-section>
-              <q-btn-toggle dense v-model="settings.horizontalMirror" outline toggle-color="pink" spread :options="[
+              <q-btn-toggle dense v-model="settings.mirror" unelevated toggle-color="pink" spread :options="[
                 { label: 'Left', value: -1 },
                 { label: 'None', value: 0 },
                 { label: 'Right', value: 1 }
-              ]" @update:model-value="onSetHorizontalMirror" />
+              ]" @update:model-value="(v) => onSet('mirror', v)" />
             </q-item-section>
           </q-item>
           <div v-if="settings.mode > 0 && settings.mode < 9">
@@ -100,7 +113,7 @@
                 <q-item dense>
                   <q-item-section>
                     <q-slider dense v-model="settings.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
-                      color="grey" @change="onSetBarSpace" />
+                      switch-label-side color="grey" @change="onSet('barSpace', settings.barSpace)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -109,7 +122,7 @@
                 <q-item dense>
                   <q-item-section>
                     <q-slider dense v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label
-                      label-always color="grey" @change="onSetCanvasHeight" />
+                      label-always switch-label-side color="grey" @change="onSet('height', settings.height)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -120,10 +133,10 @@
                 <q-item-label header>Led bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.ledBars" outline toggle-color="pink" spread :options="[
+                    <q-btn-toggle dense v-model="settings.ledBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
-                    ]" @update:model-value="onSetLedBars" />
+                    ]" @update:model-value="(v) => onSet('ledBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -131,10 +144,10 @@
                 <q-item-label header>True leds</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.trueLeds" outline toggle-color="pink" spread :options="[
+                    <q-btn-toggle dense v-model="settings.trueLeds" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
-                    ]" @update:model-value="onSetTrueLeds" />
+                    ]" @update:model-value="(v) => onSet('trueLeds', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -142,10 +155,10 @@
                 <q-item-label header>Lumi bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense v-model="settings.lumiBars" outline toggle-color="pink" spread :options="[
+                    <q-btn-toggle dense v-model="settings.lumiBars" unelevated toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
-                    ]" @update:model-value="onSetLumiBars" />
+                    ]" @update:model-value="(v) => onSet('lumiBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -156,8 +169,9 @@
               <q-item-label header>Reflex ratio</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always color="grey"
-                    @change="onSetReflexRatio" :label-value="selectedReflexRatioLabel" />
+                  <q-slider v-model="settings.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
+                    switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
+                    @change="onSet('reflexRatio', settings.reflexRatio)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -165,8 +179,8 @@
               <q-item-label header>Reflex alpha</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always color="grey"
-                    @change="onSetReflexAlpha" />
+                  <q-slider v-model="settings.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.reflexAlpha)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -174,8 +188,8 @@
               <q-item-label header>Reflex bright</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.reflexBright" :min="0" :max="1" :step="0.1" label label-always color="grey"
-                    @change="onSetReflexBright" />
+                  <q-slider v-model="settings.reflexBright" :min="0" :max="1" :step="0.1" label label-always
+                    switch-label-side color="grey" @change="onSet('reflexBright', settings.reflexBright)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -378,7 +392,7 @@ const selectedModeLabel = computed(() => {
 });
 
 const selectedmaxFPSLabel = computed(() => {
-  if (settings.value.maxFPS.value != 0) {
+  if (settings.value.maxFPS != 0) {
     return (settings.value.maxFPS);
   } else {
     return ('unlimited');
@@ -412,10 +426,11 @@ const settings = ref({
   gradient: 'classic',
   fullScreen: false,
   mode: 2,
-  horizontalMirror: 0,
+  mirror: 0,
   height: 625,
   barSpace: 0.6,
   maxFPS: 90,
+  showFPS: false,
   radial: false,
   ledBars: true,
   trueLeds: false,
@@ -446,65 +461,13 @@ const settings = ref({
   }
 });
 
-function onSetGradient(v) {
-  analyzer.value.setOptions({ gradient: v });
+function onSet(optionName, optionValue) {
+  const option = {};
+  option[optionName] = optionValue;
+  analyzer.value.setOptions(option);
 }
 
-function onSetMode(v) {
-  analyzer.value.setOptions({ mode: v != 9 ? v : 10 });
-}
 
-function onSetHorizontalMirror(v) {
-  analyzer.value.setOptions({ mirror: v });
-}
-
-function onSetCanvasHeight(v) {
-  analyzer.value.setOptions({ height: v });
-}
-
-function onSetBarSpace(v) {
-  analyzer.value.setOptions({ barSpace: v });
-}
-
-function onSetMAXFPS(v) {
-  analyzer.value.setOptions({ maxFPS: v });
-}
-
-function onSetRadial(v) {
-  analyzer.value.setOptions({ radial: v });
-}
-
-function onSetLedBars(v) {
-  analyzer.value.setOptions({ ledBars: v });
-}
-
-function onSetTrueLeds(v) {
-  analyzer.value.setOptions({ trueLeds: v });
-}
-
-function onSetLumiBars(v) {
-  analyzer.value.setOptions({ lumiBars: v });
-}
-
-function onSetShowPeaks(v) {
-  analyzer.value.setOptions({ showPeaks: v });
-}
-
-function onSetChannelLayout(v) {
-  analyzer.value.setOptions({ channelLayout: v });
-}
-
-function onSetReflexRatio(v) {
-  analyzer.value.setOptions({ reflexRatio: v });
-}
-
-function onSetReflexAlpha(v) {
-  analyzer.value.setOptions({ reflexAlpha: v });
-}
-
-function onSetReflexBright(v) {
-  analyzer.value.setOptions({ reflexBright: v });
-}
 
 function createAnalyzer() {
   if (!analyzer.value) {
