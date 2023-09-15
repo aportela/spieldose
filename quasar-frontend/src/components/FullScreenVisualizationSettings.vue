@@ -345,7 +345,7 @@ i.visualization-bottom-icons {
   transition: 0.3s;
 }
 
-i.visualization-bottom-icons {
+i.visualization-bottom-icons:hover {
   opacity: 1;
 }
 </style>
