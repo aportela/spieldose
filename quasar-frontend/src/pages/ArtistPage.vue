@@ -407,7 +407,6 @@ bus.on('unSetFavoriteTrack', (event) => {
     const index = artistData.value.topTracks.findIndex(
       (element) => element && element.id == event.trackId
     );
-    console.log(index);
     if (index !== -1) {
       artistData.value.topTracks[index].favorited = null;
     }
