@@ -9,6 +9,7 @@ export const usePlayer = defineStore("player", {
     shuffle: false,
     element: null,
     hasPreviousUserInteractions: false,
+    originalAudioMotionAnalyzerSource: null,
   }),
   getters: {
     getRepeatMode: (state) => state.repeatMode,
@@ -62,6 +63,12 @@ export const usePlayer = defineStore("player", {
     },
     toggleShuffle() {
       this.shuffle = !this.shuffle;
+    },
+    setAudioMotionAnalyzerSource: function (source) {
+      this.originalAudioMotionAnalyzerSource = source;
+    },
+    getAudioMotionAnalyzerSource: function () {
+      return this.originalAudioMotionAnalyzerSource;
     },
   },
 });

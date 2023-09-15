@@ -64,6 +64,7 @@ function createAnalyzer() {
   }
   analyzer.value.registerGradient('default-spieldose', gradientOptions);
   analyzer.value.gradient = 'default-spieldose';
+  player.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
   if (props.active) {
     analyzer.value.toggleAnalyzer();
   }

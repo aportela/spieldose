@@ -233,13 +233,11 @@
         </div>
         <div class="col-3 self-end">
           <div>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled"
-              @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || ! allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
             <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8"
               :disable="disabled" @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
-                :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track"></q-icon></q-btn>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled"
-              @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
+                :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track" :disable="disabled || ! allowPlay"></q-icon></q-btn>
+            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || ! allowSkipNext" @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
           </div>
           <!--
               <h3 class="text-grey-5 q-ml-lg q-mb-sm">{{ formatSecondsAsTime(currentElementTimeData.currentTime) }} / {{
@@ -311,8 +309,10 @@
       <div class="fixed-bottom-right">
         <q-icon name="settings" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
           @click="showSettings = true"></q-icon>
+          <!--
         <q-icon name="close" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
           @click="onClose"></q-icon>
+          -->
       </div>
     </div>
   </div>
@@ -397,6 +397,10 @@ const coverImage = computed(() => {
     return (null);
   }
 });
+
+const allowSkipPrevious = computed(() => { return(currentPlaylist.allowSkipPrevious); });
+const allowSkipNext = computed(() => { return(currentPlaylist.allowSkipNext); });
+const allowPlay = computed(() => { return(currentPlaylist.allowPlay); });
 
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {
@@ -618,7 +622,7 @@ function createAnalyzer() {
     // custom saved gradients not found on init, set value after register custom gradients
     const savedGradient = settings.value.audioMotionAnalyzer.gradient || 'classic';
     settings.value.audioMotionAnalyzer.gradient = 'classic';
-    settings.value.audioMotionAnalyzer.source = audioElement.value;
+    settings.value.audioMotionAnalyzer.source = player.getAudioMotionAnalyzerSource();
     settings.value.audioMotionAnalyzer.fsElement = document.getElementById('visualization-container');
     settings.value.audioMotionAnalyzer.onCanvasResize = onAnalyzerCanvasResize;
     analyzer.value = new AudioMotionAnalyzer(
@@ -636,7 +640,6 @@ function createAnalyzer() {
     analyzer.value.toggleFullscreen();
   }
 }
-
 
 function formatSecondsAsTime(secs, format) {
   if (secs && Number.isInteger(secs) && secs > 0) {
@@ -659,18 +662,27 @@ function formatSecondsAsTime(secs, format) {
 const emit = defineEmits(['hide', 'skipPrevious', 'play', 'skipNext']);
 
 function onPlay() {
-  spieldoseEvents.emit.currentPlaylist.play();
-  emit('play');
+  player.interact();
+  player.play(false);
 }
 
 function onSkipPrevious() {
-  spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
-  emit('skipPrevious');
+  //spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
+  //emit('skipPrevious');
+  player.interact();
+  currentPlaylist.skipPrevious();
 }
 
-function skipToNextTrack() {
-  spieldoseEvents.emit.currentPlaylist.nextTrack();
-  emit('skipNext');
+function onSkipNext() {
+  //spieldoseEvents.emit.currentPlaylist.nextTrack();
+  //emit('skipNext');
+  player.interact();
+  currentPlaylist.skipNext();
+}
+
+function onSetCurrentIndex(index) {
+  player.interact();
+  currentPlaylist.saveCurrentTrackIndex(index);
 }
 
 function onClose() {
