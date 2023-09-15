@@ -99,11 +99,12 @@
               <q-item-label header>Horizontal mirror</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle size="sm" v-model="settings.mirror" unelevated no-caps toggle-color="pink" spread :options="[
-                    { label: 'Left', value: -1 },
-                    { label: 'None', value: 0 },
-                    { label: 'Right', value: 1 }
-                  ]" @update:model-value="(v) => onSet('mirror', v)" />
+                  <q-btn-toggle size="sm" v-model="settings.mirror" unelevated no-caps toggle-color="pink" spread
+                    :options="[
+                      { label: 'Left', value: -1 },
+                      { label: 'None', value: 0 },
+                      { label: 'Right', value: 1 }
+                    ]" @update:model-value="(v) => onSet('mirror', v)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -182,32 +183,32 @@
                 </q-item>
               </div>
               <div class="col-2">
-              <q-item-label header>Alpha bars</q-item-label>
-              <q-item dense>
-                <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.alphaBars " unelevated toggle-color="pink" spread
-                    :options="[
-                      { label: 'ON', value: true },
-                      { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('alphaBars', v)" />
-                </q-item-section>
-              </q-item>
-            </div>
-            </div>
-            <div>
-                <q-item-label header class="text-dark text-weight-bolder">Analyzer canvas height</q-item-label>
+                <q-item-label header>Alpha bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-slider v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label
-                      label-always switch-label-side color="grey" @change="onSet('height', settings.height)" />
+                    <q-btn-toggle dense size="sm" v-model="settings.alphaBars" unelevated toggle-color="pink" spread
+                      :options="[
+                        { label: 'ON', value: true },
+                        { label: 'OFF', value: false }
+                      ]" @update:model-value="(v) => onSet('alphaBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
+            </div>
+            <div>
+              <q-item-label header class="text-dark text-weight-bolder">Analyzer canvas height</q-item-label>
+              <q-item dense>
+                <q-item-section>
+                  <q-slider v-model="settings.height" :min="100" :max="maxCanvasHeight" :step="25" label label-always
+                    switch-label-side color="grey" @change="onSet('height', settings.height)" />
+                </q-item-section>
+              </q-item>
+            </div>
           </div>
         </q-card-section>
       </q-card>
       <div class="fixed-bottom-right">
-        <q-icon name="settings" color="white" size="sm" class="cursor-pointer q-ma-xs"
+        <q-icon id="showVisualizationSettingsIcon" name="settings" color="white" size="xs" class="cursor-pointer q-ma-xs"
           @click="showSettings = true"></q-icon>
       </div>
     </div>
@@ -234,6 +235,14 @@ div#analyzer-canvas-container {
   max-width: 1024px;
   opacity: 0.9;
 }
+
+i#showVisualizationSettingsIcon {
+  opacity: 0.2;
+  transition: 0.3s;
+}
+i#showVisualizationSettingsIcon:hover {
+  opacity: 1;
+}
 </style>
 
 <script setup>
@@ -249,7 +258,7 @@ import { ref, computed, onMounted } from "vue";
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import { usePlayer } from "stores/player";
 
-const showSettings = ref(true);
+const showSettings = ref(false);
 const player = usePlayer();
 const audioElement = ref(player.getElement);
 
