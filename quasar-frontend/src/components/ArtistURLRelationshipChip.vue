@@ -6,7 +6,8 @@
 
 <script setup>
 
-import { ref, computed, } from "vue";
+import { computed, } from "vue";
+import { fabSoundcloud, fabYoutube, fabImdb, fabWikipediaW, fabLastfm, fasBlog, fasUserPen } from "@quasar/extras/fontawesome-v6";
 
 const props = defineProps({
   id: String,
@@ -36,16 +37,16 @@ const icon = computed(() => {
       labelValue = 'link';
       break;
     case "89e4a949-0976-440d-bda1-5f772c1e5710":
-      labelValue = 'link';
+      labelValue = fabSoundcloud;
       break;
     case "6a540e5b-58c6-4192-b6ba-dbc71ec8fcf0":
-      labelValue = 'link';
+      labelValue = fabYoutube;
       break;
     case "35b3a50f-bf0e-4309-a3b4-58eeed8cee6a":
       labelValue = 'forum';
       break;
     case "eb535226-f8ca-499d-9b18-6a144df4ae6f":
-      labelValue = 'event_note';
+      labelValue = fasBlog;
       break;
     case "6b3e3c85-0002-4f34-aca6-80ace0d7e846":
       labelValue = 'link';
@@ -54,16 +55,16 @@ const icon = computed(() => {
       labelValue = 'link';
       break;
     case "94c8b0cc-4477-4106-932c-da60e63de61c":
-      labelValue = 'link';
+      labelValue = fabImdb;
       break;
     case "08db8098-c0df-4b78-82c3-c8697b4bba7f":
-      labelValue = 'link';
+      labelValue = fabLastfm;
       break;
     case "689870a4-a1e4-4912-b17f-7b2664215698":
-      labelValue = 'link';
+      labelValue = fabWikipediaW;
       break;
     case "29651736-fa6d-48e4-aadc-a557c6add1cb":
-      labelValue = 'link';
+      labelValue = fabWikipediaW;
       break;
     case "221132e9-e30e-43f2-a741-15afc4c5fa7c":
       labelValue = 'photo_camera';
