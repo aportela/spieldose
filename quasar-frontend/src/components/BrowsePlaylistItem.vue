@@ -37,7 +37,11 @@
         <q-btn label="delete" stack icon="delete" @click.prevent="onDelete" />
       </q-btn-group>
     </q-card-section>
-
+    <q-separator />
+    <q-card-section class="text-right">
+      <!-- todo route -->
+      by {{  playlist.owner.name }}
+    </q-card-section>
   </q-card>
 </template>
 

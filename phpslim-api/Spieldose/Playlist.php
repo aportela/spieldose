@@ -11,13 +11,17 @@ class Playlist
     public string $name;
     public array $tracks = [];
     public $public = false;
+    public $owner = null;
 
-    public function __construct(string $id, string $name, array $tracks = [], bool $public = false)
+    public function __construct(string $id, string $name, array $tracks = [], bool $public = false, ?string $ownerId = null, string $ownerName = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->tracks = $tracks;
         $this->public = $public;
+        $this->owner = new \stdClass();
+        $this->owner->id = $ownerId;
+        $this->owner->name = $ownerName;
     }
 
     public function __destruct()
@@ -211,18 +215,6 @@ class Playlist
         return ($covers);
     }
 
-    /*
-        DELETE FROM PLAYLIST_TRACK;
-        DELETE FROM PLAYLIST;
-        INSERT INTO PLAYLIST VALUES ('9c30f484-8992-4750-9631-fcb14639812a', 'my loved tracks', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
-        INSERT INTO PLAYLIST_TRACK SELECT '9c30f484-8992-4750-9631-fcb14639812a', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 32;
-        INSERT INTO PLAYLIST VALUES ('c383f465-3bf6-48c2-b29a-049eb3cf5fb7', 'oldies', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
-        INSERT INTO PLAYLIST_TRACK SELECT 'c383f465-3bf6-48c2-b29a-049eb3cf5fb7', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 64;
-        INSERT INTO PLAYLIST VALUES ('c0f9c3bd-f101-4097-9ff4-c4b417cd7e40', 'rock', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
-        INSERT INTO PLAYLIST_TRACK SELECT 'c0f9c3bd-f101-4097-9ff4-c4b417cd7e40', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 128;
-        INSERT INTO PLAYLIST VALUES ('b6ecf269-6a80-4453-847b-5abe594f3daf', 'dance/disco', (SELECT id FROM USER LIMIT 1), strftime('%s', 'now'), strftime('%s', 'now'));
-        INSERT INTO PLAYLIST_TRACK SELECT 'b6ecf269-6a80-4453-847b-5abe594f3daf', FILE.id, ROW_NUMBER() OVER (ORDER BY RANDOM()) FROM FILE ORDER BY RANDOM() LIMIT 18;
-    */
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
@@ -239,7 +231,9 @@ class Playlist
         $fieldDefinitions = [
             "id" => "PLAYLIST.id",
             "name" => "PLAYLIST.name",
-            "trackCount" => "COUNT(*)"
+            "trackCount" => "COUNT(*)",
+            "ownerId" => "PLAYLIST.user_id",
+            "ownerName" => "USER.email"
         ];
         $fieldCountDefinition = [
             "totalResults" => " SUM(total)"
@@ -250,6 +244,11 @@ class Playlist
             $data->items = array_map(
                 function ($result) use ($dbh) {
                     $result->covers = self::getPlaylistCovers($dbh, $result->id);
+                    $result->owner = new \stdClass();
+                    $result->owner->id = $result->ownerId;
+                    $result->owner->name = $result->ownerName;
+                    unset($result->ownerId);
+                    unset($result->ownerName);
                     return ($result);
                 },
                 $data->items
@@ -265,8 +264,9 @@ class Playlist
             "
                 SELECT *
                 FROM (
-                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount
+                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount, :user_id AS ownerId, USER.email AS ownerName
                     FROM FILE_FAVORITE FF
+                    LEFT JOIN USER ON USER.id = :user_id
                     WHERE FF.user_id = :user_id
                     GROUP BY FF.user_id
                     HAVING COUNT(file_id) > 0
@@ -276,6 +276,7 @@ class Playlist
                     SELECT %s
                     FROM PLAYLIST
                     LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
+                    LEFT JOIN USER ON USER.id = PLAYLIST.user_id
                     %s
                     GROUP BY PLAYLIST.id
                 )
