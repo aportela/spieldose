@@ -333,6 +333,7 @@ function search() {
     rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
     trackActions.play(elements.value);
     //currentPlaylist.saveElements(elements.value);
+    tableRef.value.scrollTo(0, 'center-force');
     loading.value = false;
   }).catch((error) => {
     $q.notify({
