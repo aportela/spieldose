@@ -23,7 +23,7 @@ export default boot(({ app, router, store }) => {
           next();
         } else {
           next({
-            name: "index",
+            name: "dashboard",
           });
         }
       }
