@@ -249,8 +249,14 @@ i#showVisualizationSettingsIcon:hover {
 
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
+import { useSessionStore } from "stores/session";
 
 const $q = useQuasar();
+
+const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
 
 const maxCanvasHeight = Math.round($q.screen.height / 2);
 
@@ -429,7 +435,7 @@ const selectedReflexRatioLabel = computed(() => {
 
 const analyzer = ref(null);
 
-const settings = ref({
+const defaultSettings = {
   source: audioElement.value,
   connectSpeakers: false,
   fsElement: null,
@@ -470,15 +476,16 @@ const settings = ref({
       }
     }
   }
-});
+};
+
+const settings = ref(session.getFullScreenVisualizationSettings || defaultSettings);
 
 function onSet(optionName, optionValue) {
   const option = {};
   option[optionName] = optionValue;
   analyzer.value.setOptions(option);
+  session.saveFullScreenVisualizationSettings(settings.value);
 }
-
-
 
 function createAnalyzer() {
   if (!analyzer.value) {

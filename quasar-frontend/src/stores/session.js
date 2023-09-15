@@ -14,7 +14,7 @@ export const useSessionStore = defineStore("session", {
     jwt: null,
     locale: null,
     volume: null,
-    singleLayoutMode: null,
+    fullScreenVisualizationSettings: null,
   }),
 
   getters: {
@@ -23,7 +23,8 @@ export const useSessionStore = defineStore("session", {
     getJWT: (state) => state.jwt,
     getLocale: (state) => state.locale,
     getVolume: (state) => state.volume,
-    getSingleLayoutMode: (state) => state.singleLayoutMode,
+    getFullScreenVisualizationSettings: (state) =>
+      state.fullScreenVisualizationSettings,
   },
   actions: {
     load() {
@@ -40,9 +41,13 @@ export const useSessionStore = defineStore("session", {
       if (volume) {
         this.volume = volume;
       }
-      const singleLayoutMode = basil.get("singleLayoutMode");
-      if (singleLayoutMode) {
-        this.singleLayoutMode = singleLayoutMode;
+      const fullScreenVisualizationSettings = basil.get(
+        "fullScreenVisualizationSettings"
+      );
+      if (fullScreenVisualizationSettings) {
+        this.fullScreenVisualizationSettings = JSON.parse(
+          fullScreenVisualizationSettings
+        );
       }
       this.loaded = true;
     },
@@ -56,10 +61,13 @@ export const useSessionStore = defineStore("session", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set("volume", volume);
     },
-    saveSingleLayoutMode(singleLayoutMode) {
-      this.singleLayoutMode = singleLayoutMode;
+    saveFullScreenVisualizationSettings(settings) {
+      this.fullScreenVisualizationSettings = settings;
       const basil = useBasil(localStorageBasilOptions);
-      basil.set("singleLayoutMode", singleLayoutMode);
+      basil.set(
+        "fullScreenVisualizationSettings",
+        JSON.stringify(this.fullScreenVisualizationSettings)
+      );
     },
     save(jwt) {
       const basil = useBasil(localStorageBasilOptions);
