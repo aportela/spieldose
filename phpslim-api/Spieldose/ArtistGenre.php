@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class ArtistGenre
 {
-
     public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array();

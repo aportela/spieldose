@@ -117,7 +117,7 @@
                     <td class="text-bold col-4">{{ track.title }}</td>
                     <td class="text-left col-4">
                       <q-avatar square>
-                        <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl.png'" width="48px"
+                        <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl-small.png'" width="48px"
                           height="48px" spinner-color="pink" />
                       </q-avatar>
                       {{ track.album.title }}
@@ -407,7 +407,6 @@ bus.on('unSetFavoriteTrack', (event) => {
     const index = artistData.value.topTracks.findIndex(
       (element) => element && element.id == event.trackId
     );
-    console.log(index);
     if (index !== -1) {
       artistData.value.topTracks[index].favorited = null;
     }

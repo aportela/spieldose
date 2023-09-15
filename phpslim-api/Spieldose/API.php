@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class API
 {
-
     public const FILE_URL = "/api/2/file/%s";
 
     public const REMOTE_ARTIST_URL_SMALL_THUMBNAIL = "/api/2/thumbnail/small/remote/artist/?url=%s";

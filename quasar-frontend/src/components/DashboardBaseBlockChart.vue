@@ -9,8 +9,10 @@
     </template>
     <template #chart>
       <div class="ct-chart" v-show="items && items.length > 0"></div>
-      <h5 class="text-h5 text-center" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
-          size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      <div v-if="! loading">
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error" size="xl"></q-icon> {{ t('Error loading data') }}</h5>
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if=" !(items && items.length > 0)"><q-icon name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      </div>
     </template>
   </component>
 </template>
@@ -125,8 +127,10 @@ function drawChart() {
     }, chartOptions);
   }
 }
+const loadingErrors = ref(false);
 
 function refresh() {
+  loadingErrors.value = false;
   if (tab.value) {
     loading.value = true;
     api.metrics.getDataRanges({ dateRange: tab.value, global: useGlobalStats.value }).then((success) => {
@@ -136,6 +140,7 @@ function refresh() {
         drawChart();
       });
     }).catch((error) => {
+      loadingErrors.value = true;
       loading.value = false;
       $q.notify({
         type: "negative",

@@ -35,6 +35,7 @@ import { computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { trackActions } from 'boot/spieldose';
+import { bus } from "boot/bus";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -88,7 +89,7 @@ function onToggleAnalyzer() {
 }
 
 function onToggleVisualization() {
-  emit('toggleVisualization');
+  bus.emit('showFullScreenVisualization');
 }
 
 function onToggleShuffle() {

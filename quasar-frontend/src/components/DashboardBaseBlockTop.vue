@@ -1,6 +1,6 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading"
-    @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title"
+    :loading="loading" @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in dateRanges" :key="tabElement.value" :name="tabElement.value"
@@ -9,35 +9,41 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="entity == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track"
+          v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'artists'">
-        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item"
+          v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'albums'">
-        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item"
+          v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="q-px-sm" v-else-if="entity == 'genres'">
-        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.id" :genre="item"
+          v-memo="lastChangeTimestamp">
           <template #append>
             <span class="q-ml-sm">{{ item.playCount }} {{ t(item.playCount > 1 ? 'nPlayCounts' : 'onePlayCount') }}</span>
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
-      <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
-          size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      <div v-if="! loading">
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error" size="xl"></q-icon> {{ t('Error loading data') }}</h5>
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if=" !(items && items.length > 0)"><q-icon name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      </div>
     </template>
   </component>
 </template>
@@ -51,7 +57,6 @@ import { default as DashboardBaseBlockListElementTrack } from 'components/Dashbo
 import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';
 import { default as DashboardBaseBlockListElementAlbum } from 'components/DashboardBaseBlockListElementAlbum.vue';
 import { default as DashboardBaseBlockListElementGenre } from 'components/DashboardBaseBlockListElementGenre.vue';
-import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
 import { api } from 'boot/axios';
 
 const $q = useQuasar();
@@ -72,7 +77,7 @@ const props = defineProps({
 })
 
 const useGlobalStats = computed(() => {
-  return(props.globalStats || false);
+  return (props.globalStats || false);
 });
 
 watch(useGlobalStats, (newValue) => {
@@ -139,8 +144,6 @@ const dateRanges = [
   },
 ];
 
-
-
 const title = computed(() => {
   switch (props.entity) {
     case 'tracks':
@@ -182,7 +185,10 @@ switch (props.entity) {
 
 const lastChangeTimestamp = ref(Date.now());
 
+const loadingErrors = ref(false);
+
 function refresh() {
+  loadingErrors.value = false;
   if (tab.value) {
     loading.value = true;
     apiFunction(filter, 'playCount', count).then((success) => {
@@ -190,6 +196,7 @@ function refresh() {
       lastChangeTimestamp.value = Date.now();
       loading.value = false;
     }).catch((error) => {
+      loadingErrors.value = true;
       loading.value = false;
       $q.notify({
         type: "negative",

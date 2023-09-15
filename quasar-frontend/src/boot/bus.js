@@ -1,5 +1,5 @@
-import { boot } from 'quasar/wrappers';
-import { EventBus } from 'quasar';
+import { boot } from "quasar/wrappers";
+import { EventBus } from "quasar";
 
 const bus = new EventBus();
 
@@ -10,7 +10,7 @@ export default boot(({ app }) => {
   app.config.globalProperties.$bus = bus;
 
   // for Composition API
-  app.provide('bus', bus);
-})
+  app.provide("bus", bus);
+});
 
 export { bus };

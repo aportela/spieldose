@@ -6,7 +6,6 @@ namespace Spieldose\Entities;
 
 class Track extends \Spieldose\Entities\Entity
 {
-
     public string $id;
     public ?string $url;
     public ?string $title;
@@ -38,7 +37,7 @@ class Track extends \Spieldose\Entities\Entity
                 "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $coverPathId),
                 "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $coverPathId)
             ];
-        } else if (!empty($this->album->mbId)) {
+        } elseif (!empty($this->album->mbId)) {
             $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
             $this->covers = [
                 "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
@@ -118,7 +117,7 @@ class Track extends \Spieldose\Entities\Entity
                     "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId),
                     "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $results[0]->coverPathId)
                 ];
-            } else if (!empty($this->album->mbId)) {
+            } elseif (!empty($this->album->mbId)) {
                 $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                 $this->covers = [
                     "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),

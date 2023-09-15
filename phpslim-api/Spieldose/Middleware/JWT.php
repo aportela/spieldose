@@ -44,8 +44,8 @@ class JWT
                 return ($response);
             }
         } else {
+            $response = $handler->handle($request);
             if (empty($clientHeaderJWT)) {
-                $response = $handler->handle($request);
                 if (\Spieldose\UserSession::isLogged()) {
                     $payload = array(
                         "userId" => isset($_SESSION["userId"]) ? $_SESSION["userId"] : null,
@@ -55,7 +55,6 @@ class JWT
                     $clientHeaderJWT = $jwt->encode($payload);
                 }
             }
-
             if ($clientHeaderJWT && \Spieldose\UserSession::isLogged()) {
                 return $response->withHeader("SPIELDOSE-JWT", $clientHeaderJWT);
             } else {

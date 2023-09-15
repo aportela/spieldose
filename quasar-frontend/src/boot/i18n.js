@@ -1,12 +1,11 @@
 import { createI18n } from "vue-i18n";
+import { useSessionStore } from "stores/session";
 import messages from "src/i18n";
 
-import { useSessionStore } from "stores/session";
-
 const session = useSessionStore();
-
-session.load();
-
+if (!session.isLoaded) {
+  session.load();
+}
 let defaultLocale = "en-US";
 
 if (session.getLocale) {

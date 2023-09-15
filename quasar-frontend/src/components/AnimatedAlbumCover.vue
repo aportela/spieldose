@@ -9,7 +9,7 @@
         <q-icon class="cursor-pointer" name="play_arrow" size="80px" color="pink" title="Play album" style="left: 80px;" @click="onPlay"></q-icon>
         <span class="clear: both;"></span>
       </div>
-      <img class="vinyl no-cover" src="images/vinyl.png" v-if="loaded || errors" />
+      <img class="vinyl no-cover" src="images/vinyl-medium.png" v-if="loaded || errors" />
     </div>
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">{{ title }}</p>

@@ -6,8 +6,7 @@ namespace Spieldose;
 
 class Playlist
 {
-
-    const FAVORITE_TRACKS_PLAYLIST_ID = "00000000-0000-0000-0000-000000000000";
+    public const FAVORITE_TRACKS_PLAYLIST_ID = "00000000-0000-0000-0000-000000000000";
     public string $id;
     public string $name;
     public array $tracks = [];

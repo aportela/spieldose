@@ -1,6 +1,6 @@
 <template>
-  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title" :loading="loading"
-    @refresh="refresh">
+  <component :is="dashboardBaseBlock" :icon="icon || 'format_list_numbered'" :title="title"
+    :loading="loading" @refresh="refresh">
     <template #tabs>
       <q-tabs v-model="tab" no-caps class="text-pink-7 q-mb-md">
         <q-tab v-for="tabElement in entities" :key="tabElement.value" :name="tabElement.value"
@@ -9,7 +9,8 @@
     </template>
     <template #list>
       <ol class="q-px-sm" v-if="tab == 'tracks'">
-        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementTrack v-for="item in items" :key="item.id" :track="item.track"
+          v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -25,7 +26,8 @@
         </DashboardBaseBlockListElementTrack>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'artists'">
-        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementArtist v-for="item in items" :key="item.id" :artist="item"
+          v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -41,7 +43,8 @@
         </DashboardBaseBlockListElementArtist>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'albums'">
-        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementAlbum v-for="item in items" :key="item.id" :album="item"
+          v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -57,7 +60,8 @@
         </DashboardBaseBlockListElementAlbum>
       </ol>
       <ol class="q-px-sm" v-else-if="tab == 'genres'">
-        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item" v-memo="lastChangeTimestamp">
+        <DashboardBaseBlockListElementGenre v-for="item in items" :key="item.name" :genre="item"
+          v-memo="lastChangeTimestamp">
           <template #append v-if="played">
             <LabelTimestampAgo className="q-ml-sm" :timestamp="item.lastPlayTimestamp * 1000">
               <template #prepend>(</template>
@@ -72,8 +76,10 @@
           </template>
         </DashboardBaseBlockListElementGenre>
       </ol>
-      <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="!loading && !(items && items.length > 0)"><q-icon name="warning"
-          size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      <div v-if="! loading">
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error" size="xl"></q-icon> {{ t('Error loading data') }}</h5>
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if=" !(items && items.length > 0)"><q-icon name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      </div>
     </template>
   </component>
 </template>
@@ -110,8 +116,8 @@ const tab = ref(null);
 
 watch(tab, () => {
   filter = {
-  global: useGlobalStats.value
-};
+    global: useGlobalStats.value
+  };
   refresh();
 });
 
@@ -153,9 +159,8 @@ const props = defineProps({
   globalStats: Boolean
 })
 
-
 const useGlobalStats = computed(() => {
-  return(props.globalStats || false);
+  return (props.globalStats || false);
 });
 
 watch(useGlobalStats, (newValue) => {
@@ -173,7 +178,10 @@ let filter = {
 
 const lastChangeTimestamp = ref(Date.now());
 
+const loadingErrors = ref(false);
+
 function refresh() {
+  loadingErrors.value = false;
   if (tab.value) {
     items.value = [];
     const funct = entities.filter((entity) => entity.value == tab.value)[0].function;
@@ -189,6 +197,7 @@ function refresh() {
       lastChangeTimestamp.value = Date.now();
       loading.value = false;
     }).catch((error) => {
+      loadingErrors.value = true;
       loading.value = false;
       $q.notify({
         type: "negative",

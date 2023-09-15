@@ -51,7 +51,7 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
-
+//import { useSessionStore } from "stores/session";
 import { usePlayer } from 'stores/player';
 
 const player = usePlayer();
@@ -62,7 +62,12 @@ const $q = useQuasar();
 
 const router = useRouter();
 
-//const session = useSessionStore();
+/*
+const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
+*/
 
 const loading = ref(false);
 

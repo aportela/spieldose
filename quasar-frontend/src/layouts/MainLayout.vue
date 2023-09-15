@@ -66,6 +66,8 @@
         </div>
       </q-page>
     </q-page-container>
+    <FullScreenVisualization v-if="showFullScreenVisualization">
+    </FullScreenVisualization>
   </q-layout>
 </template>
 
@@ -83,7 +85,8 @@ import { usePlayerStatusStore } from 'stores/playerStatus';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
-
+import { default as FullScreenVisualization } from "components/FullScreenVisualizationSettings.vue";
+import { bus } from "boot/bus";
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -94,7 +97,19 @@ const currentPlaylist = useCurrentPlaylistStore();
 const audioElement = ref(null);
 
 const session = useSessionStore();
+if (!session.isLoaded) {
+  session.load();
+}
 
+const showFullScreenVisualization = ref(false);
+
+bus.on('showFullScreenVisualization', () => {
+  showFullScreenVisualization.value = true;
+});
+
+bus.on('hideFullScreenVisualization', () => {
+  showFullScreenVisualization.value = false;
+});
 
 const availableLocales = ref([
   {

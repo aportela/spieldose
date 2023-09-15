@@ -40,7 +40,7 @@ import { api } from 'boot/axios'
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
 */
 
-const defaultImage = 'images/vinyl.png';
+const defaultImage = 'images/vinyl-medium.png';
 
 const images = ref([]);
 
