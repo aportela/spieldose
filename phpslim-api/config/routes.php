@@ -488,7 +488,7 @@ return function (App $app) {
                 );
                 $response->getBody()->write(json_encode($payload));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            })->add(\Spieldose\Middleware\CheckAuth::class);
+            });
 
             $group->get('/file/{id}', function (Request $request, Response $response, array $args) {
                 if (!empty($args['id'])) {
