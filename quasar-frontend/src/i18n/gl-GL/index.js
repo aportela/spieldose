@@ -133,6 +133,7 @@ export default {
   onePlayCount: " vez",
   nPlayCounts: " {count} veces",
   "No enought data": "Non hai datos suficientes",
+  "Error loading data": "Error cargando os datos",
 
   // current playlist
   "Save as": "Gardar como",

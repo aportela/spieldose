@@ -131,6 +131,7 @@ export default {
   onePlayCount: " time",
   nPlayCounts: " {count} times",
   "No enought data": "No enought data",
+  "Error loading data": "Error loading data",
 
   // current playlist
   "Save as": "Save as",
