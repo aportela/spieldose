@@ -211,7 +211,8 @@
 
       <div class="row">
         <div class="col-6">
-          <div style="margin: 64px;">
+          <div style="margin-left: 64px;">
+            <!--
             <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
               height="400px" spinner-color="pink">
               <template v-slot:error>
@@ -219,6 +220,11 @@
               </template>
             </q-img>
             <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
+              -->
+            <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="coverImageSmall"
+      rotateVinyl="true"></SidebarPlayerAlbumCover>
+
+
           </div>
           <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
             <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
@@ -360,6 +366,7 @@ import { usePlayer } from "stores/player";
 import { usePlayerStatusStore } from "stores/playerStatus";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { useSessionStore } from "stores/session";
+import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 
 const disabled = ref(false);
 
@@ -371,6 +378,8 @@ if (!session.isLoaded) {
   session.load();
 }
 const maxCanvasHeight = Math.round($q.screen.height / 2);
+console.log($q.screen.height);
+console.log(maxCanvasHeight);
 const showSettings = ref(false);
 const player = usePlayer();
 const playerStatus = usePlayerStatusStore();
@@ -390,6 +399,20 @@ const coverImage = computed(() => {
       return (currentElement.value.track.covers.normal || null);
     } else if (currentElement.value.radioStation && currentElement.value.radioStation.images) {
       return (currentElement.value.radioStation.images.normal || null);
+    } else {
+      return (null);
+    }
+  } else {
+    return (null);
+  }
+});
+
+const coverImageSmall = computed(() => {
+  if (currentElement.value) {
+    if (currentElement.value.track && currentElement.value.track.covers) {
+      return (currentElement.value.track.covers.small || null);
+    } else if (currentElement.value.radioStation && currentElement.value.radioStation.images) {
+      return (currentElement.value.radioStation.images.small || null);
     } else {
       return (null);
     }
@@ -582,7 +605,7 @@ const defaultAudioMotionAnalyzerSettings = {
   fullScreen: false,
   mode: 2,
   mirror: 0,
-  height: 625,
+  height: maxCanvasHeight,
   barSpace: 0.6,
   maxFPS: 60,
   showFPS: false,
@@ -609,7 +632,6 @@ const defaultAudioMotionAnalyzerSettings = {
 
 const settings = ref(session.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
 
-settings.value.anazly
 function onSet(optionName, optionValue) {
   const option = {};
   option[optionName] = optionValue;
