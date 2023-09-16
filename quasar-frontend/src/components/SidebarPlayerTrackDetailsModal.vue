@@ -1,24 +1,35 @@
 <template>
   <q-dialog v-model="visible" @hide="onHide">
-    <q-card class="my-card" v-if="track">
-      <q-img :src="track.covers.normal" width="400px" height="400px" spinner-color="pink" />
-      <q-card-section>
-        <div>
-          <p>Title: {{ track.title }}</p>
-          <p>Artist: {{ track.artist.name }}<br><q-btn size="sm" outline dense v-if="track.artist.mbId" icon="link"
-              label="musicbrainz" :href="'https://musicbrainz.org/artist/' + track.artist.mbId" target="blank"></q-btn>
-          </p>
-          <p>Album: {{ track.album.title }}<br><q-btn size="sm" outline dense v-if="track.album.mbId" icon="link"
-              label="musicbrainz" :href="'https://musicbrainz.org/release/' + track.album.mbId" target="blank"></q-btn>
-          </p>
-          <p>Album track index: {{ track.trackNumber }}</p>
-          <p>Year: {{ track.album.year }}</p>
-          <p v-if="track.favorited">Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ss Z") }}
-          </p>
-        </div>
-      </q-card-section>
-      <q-separator />
-    </q-card>
+    <div v-if="track" style="width: 1024px; max-width: 80vw; background: #fff;">
+      <q-splitter v-model="splitterModel" unit="px" style="height: 768px" after-class="q-pa-none">
+        <template v-slot:before>
+            <q-img :src="track.covers.normal" width="400px" height="400px" spinner-color="pink" />
+            <div class="q-pa-md">
+            <p class="q-ma-none text-h5 text-grey-9"><q-icon name="music_note" class="q-mr-sm"></q-icon> {{ track.title }}</p>
+            <p class="q-my-sm text-h5 text-grey-9 q-pl-lg q-ml-md" v-if="track.artist.name">
+              by
+              <a class="text-grey-9" v-if="track.artist.mbId" :href="'https://musicbrainz.org/artist/' + track.artist.mbId"
+                target="blank">{{ track.artist.name }}</a>
+              <span v-else>{{ track.artist.name }}</span>
+            </p>
+            <p class="q-ma-none q-pt-md text-h6 text-grey-8" v-if="track.album.title">
+              <q-icon name="album" class="q-mr-md"></q-icon>
+              <a class="q-ml-xs text-grey-8" v-if="track.album.mbId" :href="'https://musicbrainz.org/release/' + track.album.mbId" target="_blank">{{ track.album.title}}</a>
+              <span v-else>{{ track.album.title}}</span>
+            </p>
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">track number: {{ track.trackNumber }}</p>
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">on year {{ track.album.year }}</p>
+            <p class="q-mt-md text-subtitle2 text-grey-9" v-if="track.favorited"><q-icon name="favorite" class="q-mr-sm"></q-icon> Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ss Z") }}</p>
+          </div>
+        </template>
+        <template v-slot:after>
+          <div class="q-pa-md">
+            <h4 class="bg-white q-mt-none q-pt-none" style="width: 100%">Lyrics</h4>
+            <pre class="q-mt-xl">{{ track.lyrics }}</pre>
+          </div>
+        </template>
+      </q-splitter>
+    </div>
   </q-dialog>
 </template>
 
@@ -31,6 +42,7 @@ import { api } from "src/boot/axios";
 const $q = useQuasar();
 const { t } = useI18n();
 
+const splitterModel = ref('500px');
 const props = defineProps({
   trackId: String,
   coverImage: String
