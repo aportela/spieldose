@@ -508,6 +508,26 @@ const api = {
       });
     },
   },
+  lyrics: {
+    get: function (title, artist) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(
+            "api/2/lyrics?title=" +
+              encodeURIComponent(title || "") +
+              "&artist=" +
+              encodeURIComponent(artist || ""),
+            {}
+          )
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
 };
 
 export default boot(({ app }) => {

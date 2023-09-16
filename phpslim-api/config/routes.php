@@ -693,6 +693,28 @@ return function (App $app) {
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->get('/lyrics', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $title = $queryParams["title"] ?? "";
+                $artist = $queryParams["artist"] ?? "";
+                $lyrics = new \Spieldose\Lyrics($title, $artist);
+                try {
+                    $lyrics = $lyrics->get($dbh) ? $lyrics->data : null;
+                } catch (\Throwable $e) {
+                    print_r($e);
+                    exit;
+                    // TODO: register error
+                }
+                $payload = json_encode(
+                    [
+                        'lyrics' => $lyrics
+                    ]
+                );
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
