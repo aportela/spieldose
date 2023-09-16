@@ -14,8 +14,8 @@
               <q-item-label header class="text-dark text-weight-bolder">Gradient</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense v-model="settings.audioMotionAnalyzer.gradient" unelevated toggle-color="pink" :options="gradientValues"
-                    @update:model-value="(v) => onSet('gradient', v)" no-caps />
+                  <q-btn-toggle dense v-model="settings.audioMotionAnalyzer.gradient" unelevated toggle-color="pink"
+                    :options="gradientValues" @update:model-value="(v) => onSet('gradient', v)" no-caps />
                   <!--
                   <div>
                     <q-btn class="q-ma-xs" unelevated dense size="md" :color="settings.audioMotionAnalyzer.gradient == gg.value ? 'pink': 'dark'" v-for="gg in gradientValues" :key="gg.value" :label="gg.label"  @click="onSet('gradient', gg.value)" no-caps></q-btn>
@@ -31,8 +31,9 @@
               <q-item-label header>Max FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.audioMotionAnalyzer.maxFPS" :min="0" :max="120" :step="30" label label-always switch-label-side
-                    :label-value="selectedmaxFPSLabel" color="grey" @change="onSet('maxFPS', settings.audioMotionAnalyzer.maxFPS)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.maxFPS" :min="0" :max="120" :step="30" label
+                    label-always switch-label-side :label-value="selectedmaxFPSLabel" color="grey"
+                    @change="onSet('maxFPS', settings.audioMotionAnalyzer.maxFPS)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -40,10 +41,11 @@
               <q-item-label header>Show FPS</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showFPS" unelevated toggle-color="pink" spread :options="[
-                    { label: 'ON', value: true },
-                    { label: 'OFF', value: false }
-                  ]" @update:model-value="(v) => onSet('showFPS', v)" />
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showFPS" unelevated
+                    toggle-color="pink" spread :options="[
+                      { label: 'ON', value: true },
+                      { label: 'OFF', value: false }
+                    ]" @update:model-value="(v) => onSet('showFPS', v)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -51,8 +53,8 @@
               <q-item-label header>Analyzer mode</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="10" :step="1" label label-always
-                    switch-label-side :label-value="selectedModeLabel" color="grey"
+                  <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="10" :step="1" label
+                    label-always switch-label-side :label-value="selectedModeLabel" color="grey"
                     @change="onSet('mode', settings.audioMotionAnalyzer.mode)" />
                 </q-item-section>
               </q-item>
@@ -61,8 +63,8 @@
               <q-item-label header>Channel Layout</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.channelLayout" unelevated toggle-color="pink" spread
-                    :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.channelLayout" unelevated
+                    toggle-color="pink" spread :options="[
                       { label: 'mono', value: 'single' },
                       { label: 'stereo', value: 'dual-vertical' }
                     ]" @update:model-value="(v) => onSet('channelLayout', v)" />
@@ -73,10 +75,11 @@
               <q-item-label header>Radial</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.radial" unelevated toggle-color="pink" spread :options="[
-                    { label: 'ON', value: true },
-                    { label: 'OFF', value: false }
-                  ]" @update:model-value="(v) => onSet('radial', v)" />
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.radial" unelevated
+                    toggle-color="pink" spread :options="[
+                      { label: 'ON', value: true },
+                      { label: 'OFF', value: false }
+                    ]" @update:model-value="(v) => onSet('radial', v)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -84,11 +87,12 @@
               <q-item-label header>Peaks</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showPeaks" unelevated toggle-color="pink" spread
-                    :options="[
+                  <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.showPeaks" unelevated
+                    toggle-color="pink" spread :options="[
                       { label: 'ON', value: true },
                       { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('showPeaks', v)" :disable="settings.audioMotionAnalyzer.lumiBars" />
+                    ]" @update:model-value="(v) => onSet('showPeaks', v)"
+                    :disable="settings.audioMotionAnalyzer.lumiBars" />
                 </q-item-section>
               </q-item>
             </div>
@@ -99,8 +103,8 @@
               <q-item-label header>Horizontal mirror</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.mirror" unelevated no-caps toggle-color="pink" spread
-                    :options="[
+                  <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.mirror" unelevated no-caps
+                    toggle-color="pink" spread :options="[
                       { label: 'Left', value: -1 },
                       { label: 'None', value: 0 },
                       { label: 'Right', value: 1 }
@@ -112,8 +116,8 @@
               <q-item-label header>Vertical reflex ratio</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.audioMotionAnalyzer.reflexRatio" :min="0" :max="0.9" :step="0.1" label label-always
-                    switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexRatio" :min="0" :max="0.9" :step="0.1" label
+                    label-always switch-label-side :label-value="selectedReflexRatioLabel" color="grey"
                     @change="onSet('reflexRatio', settings.audioMotionAnalyzer.reflexRatio)" />
                 </q-item-section>
               </q-item>
@@ -122,8 +126,9 @@
               <q-item-label header>Vertical reflex alpha</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.audioMotionAnalyzer.reflexAlpha" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexAlpha', settings.audioMotionAnalyzer.reflexAlpha)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexAlpha" :min="0" :max="1" :step="0.1" label
+                    label-always switch-label-side color="grey"
+                    @change="onSet('reflexAlpha', settings.audioMotionAnalyzer.reflexAlpha)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -131,8 +136,9 @@
               <q-item-label header>Vertical reflex bright</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.audioMotionAnalyzer.reflexBright" :min="0" :max="1" :step="0.1" label label-always
-                    switch-label-side color="grey" @change="onSet('reflexBright', settings.audioMotionAnalyzer.reflexBright)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.reflexBright" :min="0" :max="1" :step="0.1" label
+                    label-always switch-label-side color="grey"
+                    @change="onSet('reflexBright', settings.audioMotionAnalyzer.reflexBright)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -144,8 +150,9 @@
                 <q-item-label header>Bar space</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-slider v-model="settings.audioMotionAnalyzer.barSpace" :min="0" :max="0.9" :step="0.1" label label-always
-                      switch-label-side color="grey" @change="onSet('barSpace', settings.audioMotionAnalyzer.barSpace)" />
+                    <q-slider v-model="settings.audioMotionAnalyzer.barSpace" :min="0" :max="0.9" :step="0.1" label
+                      label-always switch-label-side color="grey"
+                      @change="onSet('barSpace', settings.audioMotionAnalyzer.barSpace)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -153,10 +160,11 @@
                 <q-item-label header>Led bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.ledBars" unelevated toggle-color="pink" spread :options="[
-                      { label: 'ON', value: true },
-                      { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('ledBars', v)" />
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.ledBars" unelevated toggle-color="pink"
+                      spread :options="[
+                        { label: 'ON', value: true },
+                        { label: 'OFF', value: false }
+                      ]" @update:model-value="(v) => onSet('ledBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -164,10 +172,11 @@
                 <q-item-label header>True leds</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.trueLeds" unelevated toggle-color="pink" spread :options="[
-                      { label: 'ON', value: true },
-                      { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('trueLeds', v)" />
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.trueLeds" unelevated toggle-color="pink"
+                      spread :options="[
+                        { label: 'ON', value: true },
+                        { label: 'OFF', value: false }
+                      ]" @update:model-value="(v) => onSet('trueLeds', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -175,10 +184,11 @@
                 <q-item-label header>Lumi bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.lumiBars" unelevated toggle-color="pink" spread :options="[
-                      { label: 'ON', value: true },
-                      { label: 'OFF', value: false }
-                    ]" @update:model-value="(v) => onSet('lumiBars', v)" />
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.lumiBars" unelevated toggle-color="pink"
+                      spread :options="[
+                        { label: 'ON', value: true },
+                        { label: 'OFF', value: false }
+                      ]" @update:model-value="(v) => onSet('lumiBars', v)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -186,8 +196,8 @@
                 <q-item-label header>Alpha bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.alphaBars" unelevated toggle-color="pink" spread
-                      :options="[
+                    <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.alphaBars" unelevated
+                      toggle-color="pink" spread :options="[
                         { label: 'ON', value: true },
                         { label: 'OFF', value: false }
                       ]" @update:model-value="(v) => onSet('alphaBars', v)" />
@@ -199,34 +209,51 @@
               <q-item-label header class="text-dark text-weight-bolder">Analyzer canvas height</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider v-model="settings.audioMotionAnalyzer.height" :min="100" :max="maxCanvasHeight" :step="25" label label-always
-                    switch-label-side color="grey" @change="onSet('height', settings.audioMotionAnalyzer.height)" />
+                  <q-slider v-model="settings.audioMotionAnalyzer.height" :min="100" :max="maxCanvasHeight" :step="25"
+                    label label-always switch-label-side color="grey"
+                    @change="onSet('height', settings.audioMotionAnalyzer.height)" />
                 </q-item-section>
               </q-item>
             </div>
           </div>
         </q-card-section>
       </q-card>
-
-
       <div class="row">
-        <div class="col-6">
-          <div style="margin-left: 64px;">
-            <!--
-            <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
-              height="400px" spinner-color="pink">
-              <template v-slot:error>
-                <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
-              </template>
-            </q-img>
-            <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
-              -->
-            <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="coverImageSmall"
-      rotateVinyl="true"></SidebarPlayerAlbumCover>
-
-
+        <div class="col-6" style="padding-left: 64px;">
+          <div class="row">
+            <div class="col-6">
+              <!--
+              <q-img img-class="fullscreen_album_cover shadow-18" v-if="coverImage" :src="coverImage" width="400px"
+                height="400px" spinner-color="pink">
+                <template v-slot:error>
+                  <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
+                </template>
+              </q-img>
+              <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
+                -->
+              <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="coverImageSmall" rotateVinyl="true">
+              </SidebarPlayerAlbumCover>
+            </div>
+            <div class="col-6">
+              <div class="q-mt-lg">
+                <q-btn round dense size="30px" color="dark" style="opacity: 0.8"
+                  :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
+                    title="Skip to previous track"></q-icon></q-btn>
+                <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8" :disable="disabled"
+                  @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
+                    :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track"
+                    :disable="disabled || !allowPlay"></q-icon></q-btn>
+                <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
+                  @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
+              </div>
+              <!--
+            <h3 class="text-grey-5 q-ml-lg q-mb-sm">{{ formatSecondsAsTime(currentElementTimeData.currentTime) }} / {{
+            formatSecondsAsTime(currentElementTimeData.duration) }} </h3>
+            -->
+              <h4 class="text-grey-9 q-ml-lg q-mt-sm">Track {{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</h4>
+            </div>
           </div>
-          <div class="q-px-md" style="margin-left:64px;" v-if="currentElement && currentElement.track">
+          <div class="q-mt-xl" v-if="currentElement && currentElement.track">
             <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
               currentElement.track.title || null }}</h2>
             <h4 class="text-grey-5 q-mt-md q-mb-sm" v-if="currentElement.track.artist.name">by {{
@@ -237,22 +264,24 @@
     currentElement.track.album.year }})</span></h4>
           </div>
         </div>
-        <div class="col-3 self-end">
-          <div>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || ! allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
-            <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8"
-              :disable="disabled" @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
-                :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track" :disable="disabled || ! allowPlay"></q-icon></q-btn>
-            <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || ! allowSkipNext" @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
-          </div>
-          <!--
-              <h3 class="text-grey-5 q-ml-lg q-mb-sm">{{ formatSecondsAsTime(currentElementTimeData.currentTime) }} / {{
-                formatSecondsAsTime(currentElementTimeData.duration) }} </h3>
-                -->
-          <h4 class="text-grey-6 q-ml-lg q-mt-sm">Track {{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</h4>
+        <div class="col-3">
+          <q-card dark style="width: 96%; height: 574px; background: #000; opacity: 0.8">
+            <q-card-section class="text-center text-h6">
+              Song lyrics
+            </q-card-section>
+            <q-card-section>
+              <q-scroll-area style="height: 490px" class="relative-position" :visible="true" :bar-style="{ borderRadius: '5px', background: 'grey', opacity: 0.6 }" :thumb-style="{ borderRadius: '5px', background: 'pink', opacity: 0.6 }">
+                <q-inner-loading dark :showing="true" v-if="loadingLyrics">
+                  <q-spinner-gears size="50px" color="pink" />
+                  <p class="text-pink-3 q-mt-md">searching lyrics...</p>
+                </q-inner-loading>
+                <pre v-else-if="lyrics">{{ lyrics }}</pre>
+              </q-scroll-area>
+            </q-card-section>
+          </q-card>
         </div>
-        <div class="col-3 self-center">
-          <q-list dark bordered separator style="max-width: 400px; background: #000; opacity: 0.8">
+        <div class="col-3">
+          <q-list dark bordered separator style="width: 96%; background: #000; opacity: 0.8">
             <q-item>
               <q-item-section>
                 <q-item-label>Currently playing</q-item-label>
@@ -287,7 +316,7 @@
               </q-item-section>
             </q-item>
             <q-separator spaced />
-            <q-virtual-scroll style="height: 400px; max-width: 400px;" dark visible separator
+            <q-virtual-scroll style="height: 400px;" dark visible separator
               :items="currentPlaylist.getElements" v-slot="{ item, index }">
               <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
                 <q-item-section avatar>
@@ -309,13 +338,10 @@
           </q-list>
         </div>
       </div>
-
-
-
       <div class="fixed-bottom-right">
         <q-icon name="settings" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
           @click="showSettings = true"></q-icon>
-          <!--
+        <!--
         <q-icon name="close" color="white" size="xs" class="visualization-bottom-icons cursor-pointer q-ma-xs"
           @click="onClose"></q-icon>
           -->
@@ -358,7 +384,7 @@ i.visualization-bottom-icons:hover {
 
 <script setup>
 
-import { ref, computed, inject, onMounted } from "vue";
+import { ref, computed, inject, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
@@ -367,6 +393,7 @@ import { usePlayerStatusStore } from "stores/playerStatus";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { useSessionStore } from "stores/session";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
+import { api } from 'boot/axios';
 
 const disabled = ref(false);
 
@@ -378,8 +405,8 @@ if (!session.isLoaded) {
   session.load();
 }
 const maxCanvasHeight = Math.round($q.screen.height / 2);
-console.log($q.screen.height);
-console.log(maxCanvasHeight);
+//console.log($q.screen.height);
+//console.log(maxCanvasHeight);
 const showSettings = ref(false);
 const player = usePlayer();
 const playerStatus = usePlayerStatusStore();
@@ -387,10 +414,24 @@ const currentPlaylist = useCurrentPlaylistStore();
 const totalTracks = currentPlaylist.elementCount;
 const currentTrackIndex = ref(currentPlaylist.getCurrentIndex);
 
+
 const audioElement = ref(player.getElement);
+
+const lyrics = ref(null);
+const loadingLyrics = ref(false);
 
 const currentElement = computed(() => {
   return (currentPlaylist.getCurrentElement);
+});
+
+const currentElementId = computed(() => {
+  return (currentElement.value.track.id);
+});
+
+watch(currentElementId, (newValue) => {
+  if (newValue) {
+    getLyrics();
+  }
 });
 
 const coverImage = computed(() => {
@@ -421,9 +462,9 @@ const coverImageSmall = computed(() => {
   }
 });
 
-const allowSkipPrevious = computed(() => { return(currentPlaylist.allowSkipPrevious); });
-const allowSkipNext = computed(() => { return(currentPlaylist.allowSkipNext); });
-const allowPlay = computed(() => { return(currentPlaylist.allowPlay); });
+const allowSkipPrevious = computed(() => { return (currentPlaylist.allowSkipPrevious); });
+const allowSkipNext = computed(() => { return (currentPlaylist.allowSkipNext); });
+const allowPlay = computed(() => { return (currentPlaylist.allowPlay); });
 
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {
@@ -715,4 +756,19 @@ onMounted(() => {
   createAnalyzer();
 });
 
+function getLyrics() {
+  lyrics.value = null;
+  loadingLyrics.value = true;
+  if (currentElement.value.track.title && currentElement.value.track.artist.name) {
+    api.lyrics.get(currentElement.value.track.title, currentElement.value.track.artist.name).then((success) => {
+      lyrics.value = success.data.lyrics;
+      loadingLyrics.value = false;
+    }).catch((error) => {
+      loadingLyrics.value = false;
+      // TODO
+    });
+  }
+}
+
+getLyrics();
 </script>
