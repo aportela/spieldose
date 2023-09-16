@@ -55,23 +55,24 @@
         },
         {
             "name": "aportela/db-wrapper",
-            "version": "2.0.1",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "418f350e90fa0e8d7991713d25209d23b2ea5572"
+                "reference": "0d95c09c71d00bc4992902e4cba873814aaf616b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/418f350e90fa0e8d7991713d25209d23b2ea5572",
-                "reference": "418f350e90fa0e8d7991713d25209d23b2ea5572",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/0d95c09c71d00bc4992902e4cba873814aaf616b",
+                "reference": "0d95c09c71d00bc4992902e4cba873814aaf616b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0",
+                "php": ">=8.1",
                 "psr/log": "^3.0"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.22",
                 "phpunit/phpunit": "^10.2"
             },
             "type": "library",
@@ -82,7 +83,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0-only"
+                "AGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -94,9 +95,9 @@
             "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/2.0.1"
+                "source": "https://github.com/aportela/db-wrapper/tree/2.0.3"
             },
-            "time": "2023-08-04T09:27:37+00:00"
+            "time": "2023-09-16T20:13:56+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
