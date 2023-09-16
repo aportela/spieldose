@@ -14,6 +14,7 @@ class Track extends \Spieldose\Entities\Entity
     public ?int $trackNumber;
     public array $covers;
     public ?int $favorited;
+    public ?string $lyrics;
 
     public function __construct(string $id, ?string $mbId = null, ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, ?int $trackNumber = null, ?string $coverPathId = null, ?int $favorited = null)
     {
@@ -112,7 +113,7 @@ class Track extends \Spieldose\Entities\Entity
             $this->album->artist->mbId = $results[0]->albumArtistMBId;
             $this->album->artist->name = $results[0]->albumArtistName;
             $this->trackNumber = $results[0]->trackNumber;
-            if (!empty($coverPathId)) {
+            if (!empty($results[0]->coverPathId)) {
                 $this->covers = [
                     "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId),
                     "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $results[0]->coverPathId)
@@ -130,10 +131,23 @@ class Track extends \Spieldose\Entities\Entity
                 ];
             }
             $this->favorited = $results[0]->favorited;
+            if (!empty($this->title) && !empty($this->artist->name)) {
+                $lyrics = new \Spieldose\Lyrics($this->title, $this->artist->name);
+                try {
+                    $this->lyrics = $lyrics->get($dbh) ? $lyrics->data : null;
+                } catch (\Throwable $e) {
+                    print_r($e);
+                    exit;
+                    // TODO: register error
+                }
+            } else {
+                $this->lyrics = null;
+            }
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
         }
     }
+
     public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $params = array(
