@@ -240,4 +240,15 @@ return (array(
             ALTER TABLE `PLAYLIST` ADD "public"	VARCHAR(1) DEFAULT "N";
         '
     ),
+    16 => array(
+        '
+            CREATE TABLE `LYRICS` (
+                `sha256_hash` VARCHAR(64) NOT NULL,
+                `title` VARCHAR(512) NOT NULL,
+                `artist` VARCHAR(128) NOT NULL,
+                `data` TEXT NOT NULL,
+                PRIMARY KEY (`sha256_hash`)
+            );
+        ',
+    )
 ));
