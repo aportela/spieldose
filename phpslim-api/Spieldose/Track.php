@@ -34,7 +34,7 @@ class Track
                 $this->path = $results[0]->path;
                 $this->mime = $results[0]->mime;
             } else {
-                throw new \Spieldose\Exception\NotFoundException("id: " . $this->name);
+                throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
