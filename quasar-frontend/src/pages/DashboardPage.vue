@@ -9,22 +9,22 @@
         :label="t(tabElement.label)" />
     </q-tabs>
     <div class="row">
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockTop entity="tracks" :globalStats="tab == 'globalStats'"></DashboardBaseBlockTop>
       </div>
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockTop entity="artists" :globalStats="tab == 'globalStats'"></DashboardBaseBlockTop>
       </div>
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockTop entity="albums" :globalStats="tab == 'globalStats'"></DashboardBaseBlockTop>
       </div>
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockTop entity="genres" :globalStats="tab == 'globalStats'"></DashboardBaseBlockTop>
       </div>
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockRecently :played="true" :globalStats="tab == 'globalStats'"></DashboardBaseBlockRecently>
       </div>
-      <div class="col-xl-4 col-lg-6 col-12">
+      <div class="col-lg-6 col-12" :class="colXLClass">
         <DashboardBaseBlockRecently :added="true" :globalStats="tab == 'globalStats'"></DashboardBaseBlockRecently>
       </div>
     </div>
@@ -37,15 +37,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
 import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
 import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
 
+const $q = useQuasar();
 const { t } = useI18n();
 
 const tabs = ref([{ label: 'My stats', value: 'myStats', icon: 'person' }, { label: 'Global stats', value: 'globalStats', icon: 'public' }]);
 
 const tab = ref(tabs.value[0].value);
+
+const colXLClass = computed(() => {
+  return($q.screen.width >= 2560 ? 'col-xl-4': 'col-xl-6');
+});
 </script>
