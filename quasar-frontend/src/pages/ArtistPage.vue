@@ -340,7 +340,7 @@ div#artist-header-block-background-overlay {
 }
 
 div#artist-header-block-content {
-  width: 50%;
+  width: 51%;
   z-index: 2;
 }
 
