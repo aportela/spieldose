@@ -603,7 +603,7 @@ function get(name) {
 function onPlayAlbum(album) {
   player.interact();
   loading.value = true;
-  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+  api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
@@ -614,7 +614,7 @@ function onPlayAlbum(album) {
 function onEnqueueAlbum(album) {
   player.interact();
   loading.value = true;
-  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+  api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
