@@ -257,4 +257,15 @@ function onSeek(position) {
   }
 }
 
+const defaultSettings = {
+  audioMotionAnalyzer: {
+    visible: true,
+    mode: 7
+  }
+};
+
+const settings = session.getSidebarPlayerSettings || defaultSettings;
+console.log(settings);
+session.saveSidebarPlayerSettings();
+
 </script>
