@@ -16,7 +16,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle visualization"
         @click="onToggleVisualization"><q-icon name="screenshot_monitor"></q-icon></q-btn>
       <!-- TODO enable only for tracks-->
-      <q-btn dense unelevated size="md" :disable="disabled" title="Track tags details"
+      <q-btn dense unelevated size="md" :disable="disabled" title="View track details & lyrics"
         @click="onShowTrackDetailsModal"><q-icon name="tag"></q-icon></q-btn>
     </q-btn-group>
   </div>
@@ -50,7 +50,7 @@ const props = defineProps({
   downloadURL: String
 });
 
-const emit = defineEmits(['toggleAnalyzer', 'toggleVisualization', 'toggleShuffle', 'toggleRepeatMode']);
+const emit = defineEmits(['toggleAnalyzer', 'toggleVisualization', 'toggleShuffle', 'toggleRepeatMode', 'toggleTrackDetailsModal']);
 
 const repeatModeIcon = computed(() => {
   let icon = null;
