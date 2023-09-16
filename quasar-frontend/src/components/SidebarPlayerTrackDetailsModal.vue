@@ -24,8 +24,9 @@
         </template>
         <template v-slot:after>
           <div class="q-pa-md">
-            <h4 class="bg-white q-mt-none q-pt-none" style="width: 100%">Lyrics</h4>
-            <pre class="q-mt-xl">{{ track.lyrics }}</pre>
+            <h4 class="bg-white q-mt-none q-pt-none text-center">Lyrics</h4>
+            <pre class="q-mt-xl" v-if="track.lyrics">{{ track.lyrics }}</pre>
+            <p v-else class="text-h6 text-center text-grey-8"><q-icon name="warning"></q-icon> No lyrics found</p>
           </div>
         </template>
       </q-splitter>
