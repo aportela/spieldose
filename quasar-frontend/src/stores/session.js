@@ -15,6 +15,7 @@ export const useSessionStore = defineStore("session", {
     locale: null,
     volume: null,
     fullScreenVisualizationSettings: null,
+    sidebarPlayerSettings: null
   }),
 
   getters: {
@@ -25,6 +26,8 @@ export const useSessionStore = defineStore("session", {
     getVolume: (state) => state.volume,
     getFullScreenVisualizationSettings: (state) =>
       state.fullScreenVisualizationSettings,
+    getSidebarPlayerSettings: (state) =>
+      state.sidebarPlayerSettings,
   },
   actions: {
     load() {
@@ -53,6 +56,18 @@ export const useSessionStore = defineStore("session", {
           // console.error("error");
         }
       }
+      const sidebarPlayerSettings = basil.get(
+        "sidebarPlayerSettings"
+      );
+      if (sidebarPlayerSettings) {
+        try {
+          this.sidebarPlayerSettings = JSON.parse(
+            sidebarPlayerSettings
+          );
+        } catch (e) {
+          // console.error("error");
+        }
+      }
       this.loaded = true;
     },
     saveLocale(locale) {
@@ -71,6 +86,14 @@ export const useSessionStore = defineStore("session", {
       basil.set(
         "fullScreenVisualizationSettings",
         JSON.stringify(this.fullScreenVisualizationSettings)
+      );
+    },
+    saveSidebarPlayerSettings(settings) {
+      this.sidebarPlayerSettings = settings;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set(
+        "sidebarPlayerSettings",
+        JSON.stringify(this.sidebarPlayerSettings)
       );
     },
     save(jwt) {
