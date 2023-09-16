@@ -37,11 +37,15 @@ class Lyrics
                 // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
                 $nodes = $xpath->query('//div[@jsname="WbKHeb"]//span');
                 if ($nodes != false) {
-                    $data = null;
-                    foreach ($nodes as $key => $node) {
-                        $data .= trim($node->textContent) . PHP_EOL;
+                    if ($nodes->count() > 0) {
+                        $data = null;
+                        foreach ($nodes as $key => $node) {
+                            $data .= trim($node->textContent) . PHP_EOL;
+                        }
+                        return ($data);
+                    } else {
+                        throw new \Spieldose\Exception\NotFoundException('//div[@jsname="WbKHeb"]//span');
                     }
-                    return ($data);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException('//div[@jsname="WbKHeb"]//span');
                 }
@@ -57,7 +61,11 @@ class Lyrics
     {
         if (!empty($this->title)) {
             if (!empty($this->artist)) {
-                $this->data = $this->scrapFromGoogle();
+                try {
+                    $this->data = $this->scrapFromGoogle();
+                } catch (\Throwable $e) {
+                    // TODO
+                }
                 if (!empty($this->data)) {
                     $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data) VALUES (:sha256_hash, :title, :artist, :data) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data ";
                     $params = array(
