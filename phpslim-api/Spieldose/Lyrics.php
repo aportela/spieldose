@@ -15,8 +15,8 @@ class Lyrics
     public function __construct(string $title, string $artist)
     {
         $this->hash = hash("sha256", $title . $artist);
-        $this->title = $title;
-        $this->artist = $artist;
+        $this->title = trim($title);
+        $this->artist = trim($artist);
     }
 
     public function __destruct()
@@ -67,6 +67,7 @@ class Lyrics
                     // TODO
                 }
                 if (!empty($this->data)) {
+                    $this->data = trim($this->data);
                     $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data) VALUES (:sha256_hash, :title, :artist, :data) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $this->hash),
