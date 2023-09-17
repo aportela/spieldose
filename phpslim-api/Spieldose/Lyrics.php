@@ -60,7 +60,13 @@ class Lyrics
     private function scrap(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->title)) {
+            if (mb_strlen($this->title) > 512) {
+                throw new \Spieldose\Exception\InvalidParamsException("title length");
+            }
             if (!empty($this->artist)) {
+                if (mb_strlen($this->artist) > 128) {
+                    throw new \Spieldose\Exception\InvalidParamsException("artist length");
+                }
                 try {
                     $this->data = $this->scrapFromGoogle();
                 } catch (\Throwable $e) {
