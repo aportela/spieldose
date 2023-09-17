@@ -14,9 +14,9 @@ class Lyrics
 
     public function __construct(string $title, string $artist)
     {
-        $this->hash = hash("sha256", $title . $artist);
         $this->title = trim($title);
         $this->artist = trim($artist);
+        $this->hash = hash("sha256", $this->title . $this->artist);
     }
 
     public function __destruct()
