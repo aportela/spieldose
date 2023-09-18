@@ -60,15 +60,15 @@
 
 <script setup>
 
-import { ref, nextTick } from "vue";
+import { ref, nextTick, inject } from "vue";
 import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
-import { usePlayer } from 'stores/player';
+
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 const $q = useQuasar();
-const player = usePlayer();
+const spieldosePlayer = inject('spieldosePlayer');
 const currentPlaylist = useCurrentPlaylistStore();
 
 const searchText = ref(null);
@@ -169,7 +169,7 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
@@ -180,7 +180,7 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));

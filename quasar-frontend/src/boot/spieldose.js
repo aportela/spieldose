@@ -1,9 +1,8 @@
-import { usePlayer } from "stores/player";
+import { spieldosePlayer } from "boot/player";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { api } from "boot/axios";
 import { spieldoseEvents } from "boot/events";
 
-const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const trackActions = {
@@ -34,18 +33,23 @@ const trackActions = {
     });
   },
   play: function (data) {
-    player.stop();
+    spieldosePlayer.interact();
+    if (!spieldosePlayer.isStopped()) {
+      spieldosePlayer.actions.stop();
+    }
+    // save element on current playlist
     currentPlaylist.saveElements(
       Array.isArray(data) ? data : [{ track: data }]
     );
-    player.interact();
-    player.play(true);
+    // emit event to play ¿?
+    // TODO: required here or by events on current track change ?
+    spieldosePlayer.actions.play(true);
   },
   enqueue: function (data) {
+    player.interact();
     currentPlaylist.appendElements(
       Array.isArray(data) ? data : [{ track: data }]
     );
-    player.interact();
   },
 };
 

@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
-import { usePlayer } from "stores/player";
-
-const player = usePlayer();
+import { spieldosePlayer } from "src/boot/player";
 
 const localStorageBasilOptions = {
   namespace: "spieldose",
@@ -25,7 +23,10 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     elementCount: (state) => (state.elements ? state.elements.length : 0),
     getElementsLastChangeTimestamp: (state) =>
       state.elementsLastChangeTimestamp,
-    getCurrentIndex: (state) => player.getShuffle ? state.shuffleIndexes[state.currentIndex] : state.currentIndex,
+    getCurrentIndex: (state) =>
+      spieldosePlayer.getShuffle()
+        ? state.shuffleIndexes[state.currentIndex]
+        : state.currentIndex,
     getCurrentElement: (state) =>
       state.currentIndex >= 0 && state.elements.length > 0
         ? state.elements[state.currentIndex]
@@ -73,7 +74,11 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     },
     saveElements(newElements) {
       this.elements = newElements;
-      this.shuffleIndexes = [...Array(newElements.length).keys()].sort(function () { return 0.5 - Math.random() });
+      this.shuffleIndexes = [...Array(newElements.length).keys()].sort(
+        function () {
+          return 0.5 - Math.random();
+        }
+      );
       this.currentIndex = newElements && newElements.length > 0 ? 0 : -1;
       this.saveCurrentElements();
     },
@@ -88,7 +93,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       basil.set("currentPlaylistElementIndex", this.currentIndex);
       /*
       if (this.currentIndex >= 0) {
-        player.play(true);
+        spieldosePlayer.actions.play(true);
       }
       */
     },

@@ -40,11 +40,9 @@ const maxCanvasHeight = Math.round($q.screen.height / 2);
 
 import { ref, computed, watch, onMounted } from "vue";
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
-import { usePlayer } from "stores/player";
 
 const showSettings = ref(true);
-const player = usePlayer();
-const audioElement = ref(player.getElement);
+const audioElement = ref(spieldosePlayer.getAudioInstance());
 
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {

@@ -384,7 +384,7 @@ import { LineChart, FixedScaleAxis } from 'chartist';
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
 import { default as ArtistGenreChip } from 'components/ArtistGenreChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
-import { usePlayer } from 'stores/player';
+
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { trackActions } from 'boot/spieldose';
 import { spieldoseEventNames } from "boot/events";
@@ -414,11 +414,12 @@ bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
   }
 });
 
-const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const { t } = useI18n();
 const $q = useQuasar();
+
+const spieldosePlayer = inject('spieldosePlayer');
 
 const route = useRoute()
 const artistName = ref(route.params.name);
@@ -521,15 +522,15 @@ function nl2br(str, replaceMode, isXhtml) {
 }
 
 function playTrack(track) {
-  player.stop();
+  spieldosePlayer.interact();
+  spieldosePlayer.actions.stop();
   currentPlaylist.saveElements([{ track: track }]);
-  player.interact();
-  player.play(false);
+  spieldosePlayer.actions.play(false);
 }
 
 function enqueueTrack(track) {
   currentPlaylist.appendElements([{ track: track }]);
-  player.interact();
+  spieldosePlayer.interact();
 }
 
 function onToggleFavorite(track) {
@@ -600,7 +601,7 @@ function get(name) {
 }
 
 function onPlayAlbum(album) {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
@@ -611,7 +612,7 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));

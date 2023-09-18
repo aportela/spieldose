@@ -23,16 +23,17 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 
-import { usePlayer } from 'stores/player';
+
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 const $q = useQuasar();
+const spieldosePlayer = inject('spieldosePlayer');
 
-const player = usePlayer();
+
 const currentPlaylist = useCurrentPlaylistStore();
 
 const noPathsFound = ref(false);
@@ -88,7 +89,7 @@ function findNode(hash, currentNode) {
 }
 
 function onTreeNodeSelected(nodeHash) {
-  player.interact();
+  spieldosePlayer.interact();
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id) {
     loading.value = true;

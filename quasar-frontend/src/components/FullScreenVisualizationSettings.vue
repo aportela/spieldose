@@ -240,8 +240,8 @@
                   :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
                     title="Skip to previous track"></q-icon></q-btn>
                 <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8" :disable="disabled"
-                  @click="onPlay"><q-icon :name="playerStatus.isPlaying ? 'pause' : 'play_arrow'"
-                    :class="{ 'text-pink-6': playerStatus.isPlaying }" title="Play/Pause/Resume track"
+                  @click="onPlay"><q-icon :name="spieldosePlayer.isPlaying() ? 'pause' : 'play_arrow'"
+                    :class="{ 'text-pink-6': spieldosePlayer.isPlaying() }" title="Play/Pause/Resume track"
                     :disable="disabled || !allowPlay"></q-icon></q-btn>
                 <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
                   @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
@@ -388,8 +388,6 @@ import { ref, computed, inject, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
-import { usePlayer } from "stores/player";
-import { usePlayerStatusStore } from "stores/playerStatus";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { useSessionStore } from "stores/session";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
@@ -398,6 +396,8 @@ import { api } from 'boot/axios';
 const disabled = ref(false);
 
 const spieldoseEvents = inject('spieldoseEvents');
+const spieldosePlayer = inject('spieldosePlayer');
+
 
 const $q = useQuasar();
 const session = useSessionStore();
@@ -408,14 +408,10 @@ const maxCanvasHeight = Math.round($q.screen.height / 2);
 //console.log($q.screen.height);
 //console.log(maxCanvasHeight);
 const showSettings = ref(false);
-const player = usePlayer();
-const playerStatus = usePlayerStatusStore();
 const currentPlaylist = useCurrentPlaylistStore();
 const totalTracks = currentPlaylist.elementCount;
 const currentTrackIndex = ref(currentPlaylist.getCurrentIndex);
 
-
-const audioElement = ref(player.getElement);
 
 const lyrics = ref(null);
 const loadingLyrics = ref(false);
@@ -685,7 +681,7 @@ function createAnalyzer() {
     // custom saved gradients not found on init, set value after register custom gradients
     const savedGradient = settings.value.audioMotionAnalyzer.gradient || 'classic';
     settings.value.audioMotionAnalyzer.gradient = 'classic';
-    settings.value.audioMotionAnalyzer.source = player.getAudioMotionAnalyzerSource();
+    settings.value.audioMotionAnalyzer.source = spieldosePlayer.getAudioMotionAnalyzerSource();
     settings.value.audioMotionAnalyzer.fsElement = document.getElementById('visualization-container');
     settings.value.audioMotionAnalyzer.onCanvasResize = onAnalyzerCanvasResize;
     analyzer.value = new AudioMotionAnalyzer(
@@ -725,26 +721,26 @@ function formatSecondsAsTime(secs, format) {
 const emit = defineEmits(['hide', 'skipPrevious', 'play', 'skipNext']);
 
 function onPlay() {
-  player.interact();
-  player.play(false);
+  spieldosePlayer.interact();
+  spieldosePlayer.actions.play(false);
 }
 
 function onSkipPrevious() {
   //spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
   //emit('skipPrevious');
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.skipPrevious();
 }
 
 function onSkipNext() {
   //spieldoseEvents.emit.currentPlaylist.nextTrack();
   //emit('skipNext');
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.skipNext();
 }
 
 function onSetCurrentIndex(index) {
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.saveCurrentTrackIndex(index);
 }
 

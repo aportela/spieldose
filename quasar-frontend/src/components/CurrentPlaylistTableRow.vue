@@ -80,7 +80,7 @@ const icon = computed(() => {
     return ('play_arrow');
   } else if (props.isPaused) {
     return ('pause');
-  } else if (props.isStopped) {
+  } else if (props.isStopped()) {
     return ('stop');
   } else {
     return ('play_arrow');

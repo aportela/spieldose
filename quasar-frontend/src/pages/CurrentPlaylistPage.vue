@@ -14,13 +14,13 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
         @click="onPreviusPlaylist" :disable="loading || !currentPlaylist.allowSkipPrevious" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
-        :disable="loading || !currentPlaylist.hasElements" v-if="playerStatus.isStopped" />
+        :disable="loading || !currentPlaylist.hasElements" v-if="spieldosePlayer.isStopped()" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
-        :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPlaying" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow" @click="onResume"
-        :disable="loading || !(elements && elements.length > 0)" v-else-if="playerStatus.isPaused" />
+        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPlaying" />
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
+        @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPaused()" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
-        :disable="loading || playerStatus.isStopped || !(elements && elements.length > 0)" />
+        :disable="loading || spieldosePlayer.isStopped() || !(elements && elements.length > 0)" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
         @click="onNextPlaylist" :disable="loading || !currentPlaylist.allowSkipNext" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
@@ -29,7 +29,8 @@
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
     <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
-      :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns" :hide-bottom="true">
+      :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
+      :hide-bottom="true">
       <!--
       <template v-slot:top>
         <q-space></q-space>
@@ -38,14 +39,15 @@
       </template>
       -->
       <template v-slot:body="props">
-        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt,props.row, props.row.index - 1)" :class="{ 'selected-row': currentTrackIndex + 1 == props.row.index }">
+        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)"
+          :class="{ 'selected-row': currentTrackIndex + 1 == props.row.index }">
           <q-td key="index" :props="props">
             <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
               v-if="currentTrackIndex + 1 == props.row.index"></q-icon>
             {{ props.row.index }} / {{ rows.length }}
           </q-td>
           <q-td key="title" :props="props">
-          {{ props.row.title }}
+            {{ props.row.title }}
           </q-td>
           <q-td key="artist" :props="props">
             <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
@@ -54,10 +56,12 @@
                   props.row.artist.name }}</router-link>
           </q-td>
           <q-td key="albumArtist" :props="props">
-            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }" :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link" class="q-mr-sm"></q-icon>{{props.row.album.artist.name }}</router-link>
+            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
+              :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link"
+                class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
           </q-td>
           <q-td key="albumTitle" :props="props">
-          {{ props.row.album.title }}
+            {{ props.row.album.title }}
           </q-td>
           <q-td key="albumTrackIndex" :props="props">
             {{ props.row.trackNumber }}
@@ -144,12 +148,10 @@
 </style>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, inject } from "vue";
 import { useQuasar, uid } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from 'boot/axios';
-import { usePlayer } from 'stores/player';
-import { usePlayerStatusStore } from 'stores/playerStatus';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 //import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
 
@@ -159,7 +161,8 @@ const $q = useQuasar();
 
 const { t } = useI18n();
 
-const player = usePlayer();
+const spieldosePlayer = inject('spieldosePlayer');
+
 const currentPlaylist = useCurrentPlaylistStore();
 
 const currentPlayListElementsLastChanges = computed(() => {
@@ -246,11 +249,11 @@ const initialPagination = ref({
 });
 
 const rowIcon = computed(() => {
-  if (playerStatus.isPlaying) {
+  if (spieldosePlayer.isPlaying()) {
     return ('play_arrow');
-  } else if (playerStatus.isPaused) {
+  } else if (spieldosePlayer.isPaused()) {
     return ('pause');
-  } else if (playerStatus.isStopped) {
+  } else if (spieldosePlayer.isStopped()) {
     return ('stop');
   } else {
     return ('play_arrow');
@@ -262,8 +265,6 @@ watch(currentPlayListElementsLastChanges, (newValue) => {
   rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
   currentTrackIndex.value = currentPlaylist.getCurrentIndex;
 });
-
-const playerStatus = usePlayerStatusStore();
 
 const elements = ref([]);
 
@@ -278,17 +279,17 @@ const newPlaylistName = ref(null);
 const newPlaylistPublic = ref(false);
 
 function onClear() {
-  player.stop();
+  spieldosePlayer.actions.stop();
   elements.value = [];
   rows.value = [];
   currentPlaylist.clear();
 }
 
 function setCurrentTrackIndex(index) {
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.saveCurrentTrackIndex(index);
-  if (!playerStatus.isPlaying) {
-    player.play();
+  if (!spieldosePlayer.isPlaying()) {
+    spieldosePlayer.actions.play();
   }
 }
 
@@ -332,16 +333,16 @@ function onRemoveElementAtIndex(index) {
 
 function onRowClick(evt, row, index) {
   if (evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
-    player.interact();
+    spieldosePlayer.interact();
     currentPlaylist.saveCurrentTrackIndex(index);
-    if (!playerStatus.isPlaying) {
-      player.play();
+    if (!spieldosePlayer.isPlaying()) {
+      spieldosePlayer.actions.play();
     }
   }
 }
 
 function search() {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
   api.track.search({}, 1, 32, true, null, null).then((success) => {
@@ -371,38 +372,38 @@ watch(currentPlaylistTrackIndex, (newValue) => {
 });
 
 function onRandom() {
-  player.stop();
+  spieldosePlayer.actions.stop();
   search();
 }
 
 function onPreviusPlaylist() {
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.skipPrevious();
 }
 
 function onPlay() {
-  player.interact();
-  player.play();
+  spieldosePlayer.interact();
+  spieldosePlayer.actions.play();
 
 }
 
 function onPause() {
-  player.interact();
-  player.play();
+  spieldosePlayer.interact();
+  spieldosePlayer.actions.play();
 }
 
 function onResume() {
-  player.interact();
-  player.play();
+  spieldosePlayer.interact();
+  spieldosePlayer.actions.play();
 }
 
 function onStop() {
-  player.stop();
-  player.setCurrentTime(0);
+  spieldosePlayer.actions.stop();
+  spieldosePlayer.setCurrentTime(0);
 }
 
 function onNextPlaylist() {
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.skipNext();
 }
 
@@ -412,7 +413,7 @@ function onSavePlaylist() {
 }
 
 function onSavePlaylistElements() {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
   api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => { return (element.track.id); }), newPlaylistPublic.value).then((success) => {

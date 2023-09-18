@@ -46,15 +46,12 @@
 
 <script setup>
 
-import { ref, nextTick } from "vue";
+import { ref, nextTick, inject } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
 //import { useSessionStore } from "stores/session";
-import { usePlayer } from 'stores/player';
-
-const player = usePlayer();
 
 const { t } = useI18n();
 
@@ -117,7 +114,8 @@ function onSubmitForm() {
   api.user
     .signIn(email.value, password.value)
     .then((success) => {
-      player.interact();
+      const spieldosePlayer = inject('spieldosePlayer');
+      spieldosePlayer.interact();
       // TODO
       //session.signIn();
       router.push({

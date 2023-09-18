@@ -7,6 +7,7 @@ let playerStatus = "stopped";
 let muted = false;
 let repeatMode = "none";
 let shuffle = false;
+let audioMotionAnalyzerSource = null;
 
 const spieldosePlayer = {
   create: function (src) {
@@ -24,6 +25,12 @@ const spieldosePlayer = {
   },
   getAudioInstance: function () {
     return audio;
+  },
+  setAudioMotionAnalyzerSource: function (src) {
+    audioMotionAnalyzerSource = src;
+  },
+  getAudioMotionAnalyzerSource: function () {
+    return audioMotionAnalyzerSource;
   },
   setSource: function (src) {
     if (audio) {

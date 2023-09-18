@@ -82,8 +82,7 @@ import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { i18n, defaultLocale } from "src/boot/i18n";
-import { usePlayer } from 'stores/player';
-import { usePlayerStatusStore } from 'stores/playerStatus';
+
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
 import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
@@ -91,13 +90,14 @@ import { default as FullScreenVisualization } from "components/FullScreenVisuali
 import { bus } from "boot/bus";
 import { fabGithub } from "@quasar/extras/fontawesome-v6";
 
-const myPlayer = inject('spieldosePlayer');
+const spieldosePlayer = inject('spieldosePlayer');
+spieldosePlayer.create();
+
 
 const { t } = useI18n();
 const $q = useQuasar();
 const router = useRouter();
-const playerStatus = usePlayerStatusStore();
-const player = usePlayer();
+
 const currentPlaylist = useCurrentPlaylistStore();
 const audioElement = ref(null);
 
@@ -214,29 +214,24 @@ const currentElementURL = computed(() => {
   }
 });
 
+
 watch(currentElementURL, (newValue) => {
-  if (audioElement.value) {
-    audioElement.value.src = newValue;
-    if (player.hasPreviousUserInteractions) {
-      player.play(true);
-    }
+  spieldosePlayer.setSource(newValue);
+  if (spieldosePlayer.hasPreviousUserInteractions()) {
+    spieldosePlayer.actions.play(true);
   }
 });
 
-player.create();
-
-audioElement.value = player.getElement;
-
 currentPlaylist.load();
 
-if (player.hasPreviousUserInteractions) {
-  if (!playerStatus.isPlaying) {
-    player.play(true);
+if (spieldosePlayer.hasPreviousUserInteractions()) {
+  if (!spieldosePlayer.isPlaying()) {
+    spieldosePlayer.actions.play(true);
   }
 }
 
 function signOut() {
-  player.stop();
+  spieldosePlayer.actions.stop();
   api.user
     .signOut()
     .then((success) => {

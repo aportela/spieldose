@@ -58,15 +58,16 @@
 
 <script setup>
 
-import { ref, watch } from "vue";
+import { ref, watch, inject } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
-import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
 const $q = useQuasar();
+const spieldosePlayer = inject('spieldosePlayer');
+
 
 const playlistName = ref(null);
 const noPlaylistsFound = ref(false);
@@ -93,7 +94,6 @@ const styleValues = [
 
 const style = ref(styleValues[0]);
 
-const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const showDeleteConfirmationDialog = ref(false);
@@ -138,7 +138,7 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlay(playlistId) {
-  player.interact();
+  spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ playlistId: playlistId }, 1, 0, false, 'playListTrackIndex', 'ASC').then((success) => {
     currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));

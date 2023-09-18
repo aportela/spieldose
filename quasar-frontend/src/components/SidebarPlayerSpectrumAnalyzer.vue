@@ -11,10 +11,9 @@ div#analyzer-container {
 </style>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, inject } from 'vue';
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import { useI18n } from 'vue-i18n';
-import { usePlayer } from 'stores/player';
 
 const { t } = useI18n();
 
@@ -22,14 +21,15 @@ const props = defineProps({
   active: Boolean
 });
 
-const player = usePlayer();
-const audioElement = ref(player.getElement);
+const spieldosePlayer = inject('spieldosePlayer');
+const audioElement = spieldosePlayer.getAudioInstance();
+
 const analyzer = ref(null);
 const currentMode = ref(7);
 
 function createAnalyzer() {
   const defaultOptions = {
-    source: audioElement.value,
+    source: audioElement,
     start: false,
     height: 40,
     maxFPS: 30,
@@ -64,7 +64,7 @@ function createAnalyzer() {
   }
   analyzer.value.registerGradient('default-spieldose', gradientOptions);
   analyzer.value.gradient = 'default-spieldose';
-  player.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
+  spieldosePlayer.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
   if (props.active) {
     analyzer.value.toggleAnalyzer();
   }

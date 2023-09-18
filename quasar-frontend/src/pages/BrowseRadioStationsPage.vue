@@ -93,15 +93,13 @@ img.radiostation_image:hover {
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 
-import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 
-const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
 
 const $q = useQuasar();
@@ -118,6 +116,8 @@ let radioStations = [];
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
+
+const spieldosePlayer = inject('spieldosePlayer');
 
 function search(resetPager) {
   if (resetPager) {
@@ -149,8 +149,9 @@ function onPaginationChanged(pageIndex) {
   search(false);
 }
 
+
 function onPlayRadioStation(radioStation) {
-  player.interact();
+  spieldosePlayer.interact();
   currentPlaylist.saveElements([{ radioStation: radioStation }]);
 }
 
