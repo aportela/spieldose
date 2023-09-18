@@ -58,6 +58,7 @@ const { t } = useI18n();
 const $q = useQuasar();
 
 const router = useRouter();
+const spieldosePlayer = inject('spieldosePlayer');
 
 /*
 const session = useSessionStore();
@@ -114,7 +115,7 @@ function onSubmitForm() {
   api.user
     .signIn(email.value, password.value)
     .then((success) => {
-      const spieldosePlayer = inject('spieldosePlayer');
+
       spieldosePlayer.interact();
       // TODO
       //session.signIn();
