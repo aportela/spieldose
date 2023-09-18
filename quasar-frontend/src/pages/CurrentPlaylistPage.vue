@@ -399,7 +399,7 @@ function onResume() {
 
 function onStop() {
   spieldosePlayer.actions.stop();
-  spieldosePlayer.setCurrentTime(0);
+  spieldosePlayer.actions.setCurrentTime(0);
 }
 
 function onNextPlaylist() {
