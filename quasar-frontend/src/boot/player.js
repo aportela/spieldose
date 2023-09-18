@@ -1,100 +1,98 @@
 import { boot } from "quasar/wrappers";
+import { useSpieldosePlayerStore } from "src/stores/spieldosePlayer";
 
-let audio = null;
-let userInteracted = false;
-let playerStatus = "stopped";
-let muted = false;
-let repeatMode = "none";
-let shuffle = false;
-let audioMotionAnalyzerSource = null;
+const spieldosePlayerStore = useSpieldosePlayerStore();
 
 const spieldosePlayer = {
   create: function (src) {
-    if (audio === null) {
+    if (spieldosePlayerStore.data.audio === null) {
       if (src) {
-        audio = new Audio(src);
+        spieldosePlayerStore.data.audio = new Audio(src);
       } else {
-        audio = new Audio();
+        spieldosePlayerStore.data.audio = new Audio();
       }
     } else {
-      audio.src = null;
+      spieldosePlayerStore.data.audio.src = null;
     }
     // required for radio stations streams
-    audio.crossOrigin = "anonymous";
+    spieldosePlayerStore.data.audio.crossOrigin = "anonymous";
   },
   getAudioInstance: function () {
-    return audio;
+    return spieldosePlayerStore.data.audio;
   },
   setAudioMotionAnalyzerSource: function (src) {
-    audioMotionAnalyzerSource = src;
+    spieldosePlayerStore.data.audioMotionAnalyzerSource = src;
   },
   getAudioMotionAnalyzerSource: function () {
-    return audioMotionAnalyzerSource;
+    return spieldosePlayerStore.data.audioMotionAnalyzerSource;
   },
   setSource: function (src) {
-    if (audio) {
-      audio.src = src;
+    if (spieldosePlayerStore.data.audio) {
+      spieldosePlayerStore.data.audio.src = src;
     }
   },
   interact: function () {
-    userInteracted = true;
+    spieldosePlayerStore.data.userInteracted = true;
   },
   hasPreviousUserInteractions: function () {
-    return userInteracted;
+    return spieldosePlayerStore.data.userInteracted;
   },
   getStatus: function () {
-    return playerStatus;
+    return spieldosePlayerStore.data.playerStatus;
   },
   isMuted: function () {
-    return muted;
+    return spieldosePlayerStore.data.muted;
   },
   isPlaying: function () {
-    return playerStatus == "playing";
+    return spieldosePlayerStore.data.playerStatus == "playing";
   },
   isStopped: function () {
-    return playerStatus == "stopped";
+    return spieldosePlayerStore.data.playerStatus == "stopped";
   },
   isPaused: function () {
-    return playerStatus == "paused";
+    return spieldosePlayerStore.data.playerStatus == "paused";
   },
   getDuration: function () {
-    return audio ? audio.duration : 0;
+    return spieldosePlayerStore.data.audio
+      ? spieldosePlayerStore.data.audio.duration
+      : 0;
   },
   getRepeatMode: function () {
-    return repeatMode;
+    return spieldosePlayerStore.data.repeatMode;
   },
   getShuffle: function () {
-    return shuffle;
+    return spieldosePlayerStore.data.shuffle;
   },
   actions: {
     setVolume: function (volume) {
-      audio.volume = volume;
+      spieldosePlayerStore.data.audio.volume = volume;
     },
     toggleMute: function () {
-      muted = !muted;
-      audio.muted = muted;
+      spieldosePlayerStore.data.muted = !spieldosePlayerStore.data.muted;
+      spieldosePlayerStore.data.audio.spieldosePlayerStore.data.muted =
+        spieldosePlayerStore.data.muted;
       // TODO: launch event
     },
     setCurrentTime: function (time) {
-      audio.currentTime = time;
+      spieldosePlayerStore.data.audio.currentTime = time;
     },
     play: function (ignoreStatus) {
-      if (userInteracted) {
+      if (spieldosePlayerStore.data.userInteracted) {
         if (ignoreStatus) {
-          audio.play();
-          playerStatus = "playing";
+          spieldosePlayerStore.data.audio.play();
+          spieldosePlayerStore.data.playerStatus = "playing";
         } else {
-          if (playerStatus == "playing") {
-            audio.pause();
-            playerStatus = "paused";
-          } else if (playerStatus == "paused") {
-            audio.play();
-            playerStatus = "playing";
+          if (spieldosePlayerStore.data.playerStatus == "playing") {
+            spieldosePlayerStore.data.audio.pause();
+            spieldosePlayerStore.data.playerStatus = "paused";
+          } else if (spieldosePlayerStore.data.playerStatus == "paused") {
+            spieldosePlayerStore.data.audio.play();
+            spieldosePlayerStore.data.playerStatus = "playing";
           } else {
             // TODO: required ?
             //audio.load();
-            audio.play();
-            playerStatus = "playing";
+            spieldosePlayerStore.data.audio.play();
+            spieldosePlayerStore.data.playerStatus = "playing";
           }
         }
       } else {
@@ -102,43 +100,43 @@ const spieldosePlayer = {
       }
     },
     pause: function () {
-      if (playerStatus == "playing") {
-        audio.pause();
-        playerStatus = "paused";
+      if (spieldosePlayerStore.data.playerStatus == "playing") {
+        spieldosePlayerStore.data.audio.pause();
+        spieldosePlayerStore.data.playerStatus = "paused";
       }
     },
     resume: function () {
-      if (playerStatus == "paused") {
-        audio.play();
-        playerStatus = "playing";
+      if (spieldosePlayerStore.data.playerStatus == "paused") {
+        spieldosePlayerStore.data.audio.play();
+        spieldosePlayerStore.data.playerStatus = "playing";
       }
     },
     stop: function () {
-      if (playerStatus == "playing") {
-        audio.pause();
+      if (spieldosePlayerStore.data.playerStatus == "playing") {
+        spieldosePlayerStore.data.audio.pause();
         // TODO: check if works
-        audio.currentTime = 0;
-        playerStatus = "stopped";
+        spieldosePlayerStore.data.audio.currentTime = 0;
+        spieldosePlayerStore.data.playerStatus = "stopped";
       }
     },
     toggleRepeatMode() {
-      switch (repeatMode) {
+      switch (spieldosePlayerStore.data.repeatMode) {
         case "none":
-          repeatMode = "track";
+          spieldosePlayerStore.data.repeatMode = "track";
           // TODO: launch event
           break;
         case "track":
-          repeatMode = "playlist";
+          spieldosePlayerStore.data.repeatMode = "playlist";
           // TODO: launch event
           break;
         case "playlist":
-          repeatMode = "none";
+          spieldosePlayerStore.data.repeatMode = "none";
           // TODO: launch event
           break;
       }
     },
     toggleShuffeMode() {
-      shuffle = !shuffle;
+      spieldosePlayerStore.data.shuffle = !spieldosePlayerStore.data.shuffle;
       // TODO: launch event
     },
   },
