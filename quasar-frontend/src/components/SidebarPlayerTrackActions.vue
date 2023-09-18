@@ -7,8 +7,8 @@
           :color="shuffle ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
           :name="repeatModeIcon" :color="repeatMode ? 'pink' : ''"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Love/unlove track" @click="onToggleFavorite"><q-icon
-          name="favorite" :color="isTrackFavorited ? 'pink' : ''"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track" @click="onToggleFavorite"><q-icon
+          name="favorite" :color="favoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Download track" v-if="downloadURL"
         :href="downloadURL"><q-icon name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable title="Download track" v-else><q-icon
@@ -31,11 +31,12 @@ div#current_track_actions {
 
 <script setup>
 // TODO: translations
-import { computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { trackActions } from 'boot/spieldose';
-import { bus } from "boot/bus";
+import { spieldoseEventNames } from "boot/events";
+
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -48,6 +49,18 @@ const props = defineProps({
   repeatMode: String,
   isTrackFavorited: Number,
   downloadURL: String
+});
+
+const bus = inject('bus');
+
+const favoritedTimestamp = ref(props.isTrackFavorited);
+
+bus.on(spieldoseEventNames.track.setFavorite, (data) => {
+  favoritedTimestamp.value = data.timestamp;
+});
+
+bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
+  favoritedTimestamp.value = null;
 });
 
 const emit = defineEmits(['toggleAnalyzer', 'toggleVisualization', 'toggleShuffle', 'toggleRepeatMode', 'toggleTrackDetailsModal']);
@@ -101,8 +114,9 @@ function onToggleRepeatMode() {
 }
 
 function onToggleFavorite() {
+  trackActions.setFavorite
   if (props.id) {
-    const funct = !props.isTrackFavorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+    const funct = !favoritedTimestamp.value ? trackActions.setFavorite : trackActions.unSetFavorite;
     funct(props.id).then((success) => {
     })
       .catch((error) => {

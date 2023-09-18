@@ -1,7 +1,7 @@
 import { usePlayer } from "stores/player";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { api } from "boot/axios";
-import { bus } from "boot/bus";
+import { spieldoseEvents } from "boot/events";
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
@@ -12,8 +12,7 @@ const trackActions = {
       api.track
         .setFavorite(id)
         .then((success) => {
-          bus.emit('setFavoriteTrack', { trackId: id, timestamp: success.data.favorited });
-          currentPlaylist.setFavoriteTrack(id, success.data.favorited);
+          spieldoseEvents.emit.track.setFavorite(id, success.data.favorited);
           resolve(success);
         })
         .catch((error) => {
@@ -26,8 +25,7 @@ const trackActions = {
       api.track
         .unSetFavorite(id)
         .then((success) => {
-          bus.emit('unSetFavoriteTrack', { trackId: id });
-          currentPlaylist.unSetFavoriteTrack(id);
+          spieldoseEvents.emit.track.unSetFavorite(id);
           resolve(success);
         })
         .catch((error) => {

@@ -13,7 +13,12 @@ const spieldoseEventNames = {
     toggleRepeatMode: "player.toggleRepeatMode",
     toggleShuffeMode: "player.toggleShuffeMode",
   },
+  track: {
+    setFavorite: "track.setFavorite",
+    unSetFavorite: "track.unSetFavorite",
+  },
 };
+
 const spieldoseEvents = {
   emit: {
     player: {
@@ -45,6 +50,19 @@ const spieldoseEvents = {
       },
       toggleShuffeMode: function () {
         bus.emit(spieldoseEventNames.player.toggleShuffeMode, {});
+      },
+    },
+    track: {
+      setFavorite: function (id, timestamp) {
+        bus.emit(spieldoseEventNames.track.setFavorite, {
+          id: id,
+          timestamp: timestamp,
+        });
+      },
+      unSetFavorite: function (id) {
+        bus.emit(spieldoseEventNames.track.unSetFavorite, {
+          id: id,
+        });
       },
     },
   },

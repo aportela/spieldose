@@ -387,32 +387,32 @@ import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 import { trackActions } from 'boot/spieldose';
+import { spieldoseEventNames } from "boot/events";
 
 
 const bus = inject('bus');
 
-bus.on('setFavoriteTrack', (event) => {
+bus.on(spieldoseEventNames.track.setFavorite, (data) => {
   if (artistData.value && artistData.value.topTracks) {
     const index = artistData.value.topTracks.findIndex(
-      (element) => element && element.id == event.trackId
+      (element) => element && element.id == data.id
     );
     if (index !== -1) {
-      artistData.value.topTracks[index].favorited = event.timestamp;
+      artistData.value.topTracks[index].favorited = data.timestamp;
     }
   }
 });
 
-bus.on('unSetFavoriteTrack', (event) => {
+bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
   if (artistData.value && artistData.value.topTracks) {
     const index = artistData.value.topTracks.findIndex(
-      (element) => element && element.id == event.trackId
+      (element) => element && element.id == data.id
     );
     if (index !== -1) {
       artistData.value.topTracks[index].favorited = null;
     }
   }
 });
-
 
 const player = usePlayer();
 const currentPlaylist = useCurrentPlaylistStore();
@@ -536,7 +536,6 @@ function onToggleFavorite(track) {
   if (track && track.id) {
     const funct = !track.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
     funct(track.id).then((success) => {
-      track.favorited = success.data.favorited;
     })
       .catch((error) => {
         switch (error.response.status) {
