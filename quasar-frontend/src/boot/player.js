@@ -1,5 +1,4 @@
 import { boot } from "quasar/wrappers";
-import { bus } from "boot/bus";
 
 let audio = null;
 let userInteracted = false;
