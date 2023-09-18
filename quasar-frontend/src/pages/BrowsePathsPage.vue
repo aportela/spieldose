@@ -88,9 +88,9 @@ function findNode(hash, currentNode) {
 function onTreeNodeSelected(nodeHash) {
   spieldosePlayer.interact();
   let node = findNode(nodeHash, directories.value[0]);
-  if (node && node.id) {
+  if (node && node.id && node.totalFiles > 0) {
     loading.value = true;
-    api.track.search({ path: node.id }, 1, 0, false, 'title', 'ASC').then((success) => {
+    api.track.search({ path: node.id }, 1, 0, false, 'filename', 'ASC').then((success) => {
       playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
       loading.value = false;
     }).catch((error) => {

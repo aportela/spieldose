@@ -219,6 +219,9 @@ class Track extends \Spieldose\Entities\Entity
             "coverPathId" => "D.id",
             "favorited" => "FF.favorited"
         ];
+        if (count($sort->items) == 1 && $sort->items[0]->field == "filename") {
+            $fieldDefinitions["filename"] = "F.name";
+        }
 
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
             if ($filter["playlistId"] == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
