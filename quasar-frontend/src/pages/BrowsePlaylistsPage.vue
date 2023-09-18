@@ -19,6 +19,22 @@
             </template>
           </q-input>
         </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
+            @update:model-value="search(true)" :disable="loading">
+            <template v-slot:selected-item="scope">
+              {{ scope.opt.label }}
+            </template>
+          </q-select>
+        </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
+            @update:model-value="search(true)" :disable="loading">
+            <template v-slot:selected-item="scope">
+              {{ scope.opt.label }}
+            </template>
+          </q-select>
+        </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="style" :options="styleValues" options-dense label="Style" :disable="loading">
             <template v-slot:selected-item="scope">
@@ -81,6 +97,32 @@ const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
+const sortFieldValues = [
+  {
+    label: 'Name',
+    value: 'name'
+  },
+  {
+    label: 'Last update',
+    value: 'updated'
+  }
+];
+
+const sortField = ref(sortFieldValues[0]);
+
+const sortOrderValues = [
+  {
+    label: 'Ascending',
+    value: 'ASC'
+  },
+  {
+    label: 'Descending',
+    value: 'DESC'
+  }
+];
+
+const sortOrder = ref(sortOrderValues[0]);
+
 const styleValues = [
   {
     label: 'Mosaic',
@@ -114,7 +156,7 @@ function search(resetPager) {
   }
   noPlaylistsFound.value = false;
   loading.value = true;
-  api.playlist.search(currentPageIndex.value, 32, { name: playlistName.value }).then((success) => {
+  api.playlist.search({ name: playlistName.value }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     playlists = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (playlistName.value && success.data.data.pager.totalResults < 1) {

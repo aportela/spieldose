@@ -185,9 +185,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -437,14 +437,19 @@ const api = {
     },
   },
   playlist: {
-    search: function (currentPageIndex, resultsPage, filter) {
+    search: function (filter, currentPageIndex, resultsPage, sortField,
+      sortOrder) {
       return new Promise((resolve, reject) => {
         const params = {
+          filter: filter || {},
           pager: {
             currentPageIndex: currentPageIndex,
             resultsPage: resultsPage,
           },
-          filter: filter || {},
+          sort: {
+            field: sortField,
+            order: sortOrder,
+          },
         };
         axios
           .post(baseAPIPath + "/playlist/search", params)
@@ -516,9 +521,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-              encodeURIComponent(title || "") +
-              "&artist=" +
-              encodeURIComponent(artist || ""),
+            encodeURIComponent(title || "") +
+            "&artist=" +
+            encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {
