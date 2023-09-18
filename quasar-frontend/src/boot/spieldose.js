@@ -1,4 +1,4 @@
-import { spieldosePlayer } from "boot/player";
+import { spieldosePlayer } from "boot/spieldosePlayer";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
 import { api } from "boot/axios";
 import { spieldoseEvents } from "boot/events";

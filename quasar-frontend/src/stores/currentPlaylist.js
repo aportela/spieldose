@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
-import { spieldosePlayer } from "src/boot/player";
+import { spieldosePlayer } from "src/boot/spieldosePlayer";
 
 const localStorageBasilOptions = {
   namespace: "spieldose",
