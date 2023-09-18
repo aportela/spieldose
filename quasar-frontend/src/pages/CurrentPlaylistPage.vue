@@ -16,7 +16,7 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
         :disable="loading || !currentPlaylist.hasElements" v-if="spieldosePlayer.isStopped()" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
-        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPlaying" />
+        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPlaying()" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
         @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPaused()" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
