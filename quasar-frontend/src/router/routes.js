@@ -30,11 +30,6 @@ const routes = [
         component: () => import("pages/CurrentPlaylistPage.vue"),
       },
       {
-        name: "search",
-        path: "search",
-        component: () => import("pages/SearchPage.vue"),
-      },
-      {
         name: "artists",
         path: "artists",
         component: () => import("pages/BrowseArtistsPage.vue"),
