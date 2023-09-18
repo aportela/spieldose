@@ -39,7 +39,9 @@
     </q-card-section>
     <q-separator />
     <q-card-section class="text-right">
+
       <router-link :to="{ name: 'playlistsByUserId', params: { id: playlist.owner.id }}">by {{  playlist.owner.name }}</router-link>
+      <q-icon name="clock" size="xs" :title="'last update: ' + date.formatDate(playlist.updated * 1000, 'YYYY-MM-DD HH:mm:ss Z')"></q-icon>
     </q-card-section>
   </q-card>
 </template>
@@ -66,6 +68,7 @@ img.mosaic_cover_element {
 <script setup>
 
 import { ref, computed } from "vue";
+import { date } from "quasar";
 
 /**
   * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)

@@ -233,7 +233,8 @@ class Playlist
             "name" => "PLAYLIST.name",
             "trackCount" => "COUNT(*)",
             "ownerId" => "PLAYLIST.user_id",
-            "ownerName" => "USER.name"
+            "ownerName" => "USER.name",
+            "updated" =>  "PLAYLIST.mtime"
         ];
         $fieldCountDefinition = [
             "totalResults" => " SUM(total)"
@@ -264,7 +265,7 @@ class Playlist
             "
                 SELECT *
                 FROM (
-                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount, :user_id AS ownerId, USER.email AS ownerName
+                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount, :user_id AS ownerId, USER.email AS ownerName, MAX(FF.favorited) AS updated
                     FROM FILE_FAVORITE FF
                     LEFT JOIN USER ON USER.id = :user_id
                     WHERE FF.user_id = :user_id
