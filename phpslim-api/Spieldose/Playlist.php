@@ -233,7 +233,7 @@ class Playlist
             "name" => "PLAYLIST.name",
             "trackCount" => "COUNT(*)",
             "ownerId" => "PLAYLIST.user_id",
-            "ownerName" => "USER.email"
+            "ownerName" => "USER.name"
         ];
         $fieldCountDefinition = [
             "totalResults" => " SUM(total)"

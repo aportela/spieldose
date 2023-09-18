@@ -58,9 +58,10 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
+import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
 import { usePlayer } from 'stores/player';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
@@ -71,6 +72,10 @@ const playlistName = ref(null);
 const noPlaylistsFound = ref(false);
 const loading = ref(false);
 let playlists = [];
+
+const route = useRoute();
+
+const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id: null);
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);

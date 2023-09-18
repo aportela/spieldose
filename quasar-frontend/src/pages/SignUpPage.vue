@@ -1,6 +1,6 @@
 <template>
   <q-card class="q-pa-md my_card">
-    <form @submit.prevent.stop="onSubmitForm" autocorrect="off" autocapitalize="off" autocomplete="off"
+    <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
       spellcheck="false">
       <q-card-section class="text-center">
         <h3>{{ $t('Spieldose') }}</h3>
@@ -14,7 +14,14 @@
             <q-icon name="alternate_email" />
           </template>
         </q-input>
-        <q-input dense outlined class="q-mt-md" ref="passwordRef" v-model="password" name="password" type="password"
+        <q-input dense outlined ref="nameRef" v-model="name" type="text" name="name" :label="t('Name')" :disable="loading"
+          :rules="requiredFieldRules" lazy-rules :error="remoteValidation.name.hasErrors"
+          :errorMessage="remoteValidation.name.message">
+          <template v-slot:prepend>
+            <q-icon name="badge" />
+          </template>
+        </q-input>
+        <q-input dense outlined ref="passwordRef" v-model="password" name="password" type="password"
           :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
           :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
           <template v-slot:prepend>
@@ -46,7 +53,7 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { uid, useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n';
@@ -65,6 +72,10 @@ const remoteValidation = ref({
     hasErrors: false,
     message: null
   },
+  name: {
+    hasErrors: false,
+    message: null
+  },
   password: {
     hasErrors: false,
     message: null
@@ -78,24 +89,31 @@ const requiredFieldRules = [
 const email = ref(null);
 const emailRef = ref(null);
 
+const name = ref(null);
+const nameRef = ref(null);
+
 const password = ref(null);
 const passwordRef = ref(null);
 
 function onResetForm() {
   remoteValidation.value.email.hasErrors = false;
   remoteValidation.value.email.message = null;
+  remoteValidation.value.name.hasErrors = false;
+  remoteValidation.value.name.message = null;
   remoteValidation.value.password.hasErrors = false;
   remoteValidation.value.password.message = null;
   emailRef.value.resetValidation();
+  nameRef.value.resetValidation();
   passwordRef.value.resetValidation();
 }
 
 function onValidateForm() {
   onResetForm();
   emailRef.value.validate();
+  nameRef.value.validate();
   passwordRef.value.validate();
   nextTick(() => {
-    if (!(emailRef.value.hasError || passwordRef.value.hasError)) {
+    if (!(emailRef.value.hasError || passwordRef.value.hasError || nameRef.value.hasError)) {
       onSubmitForm();
     }
   });
@@ -104,7 +122,7 @@ function onValidateForm() {
 function onSubmitForm() {
   loading.value = true;
   api.user
-    .signUp(uid(), email.value, password.value)
+    .signUp(uid(), email.value, password.value, name.value)
     .then((success) => {
       $q.notify({
         type: "positive",
@@ -137,6 +155,16 @@ function onSubmitForm() {
             emailRef.value.focus();
           } else if (
             error.response.data.invalidOrMissingParams.find(function (e) {
+              return e === "name";
+            })
+          ) {
+            $q.notify({
+              type: "negative",
+              message: t("API Error: missing name param"),
+            });
+            nameRef.value.focus();
+          } else if (
+            error.response.data.invalidOrMissingParams.find(function (e) {
               return e === "password";
             })
           ) {
@@ -153,11 +181,33 @@ function onSubmitForm() {
           }
           break;
         case 409:
-          remoteValidation.value.email.hasErrors = true;
-          remoteValidation.value.email.message = t("Email already used");
-          nextTick(() => {
-            emailRef.value.focus();
+          if (
+            error.response.data.invalidOrMissingParams.find(function (e) {
+              return e === "email";
+            })
+          ) {
+            remoteValidation.value.email.hasErrors = true;
+            remoteValidation.value.email.message = t("Email already used");
+            nextTick(() => {
+              emailRef.value.focus();
+            });
+          } else if (
+            error.response.data.invalidOrMissingParams.find(function (e) {
+              return e === "name";
+            })
+          ) {
+            remoteValidation.value.name.hasErrors = true;
+            remoteValidation.value.name.message = t("Name already used");
+            nextTick(() => {
+              nameRef.value.focus();
+            });
+          } else {
+            $q.notify({
+            type: "negative",
+            message: t("API Error: fatal error"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
           });
+          }
           break;
         default:
           $q.notify({

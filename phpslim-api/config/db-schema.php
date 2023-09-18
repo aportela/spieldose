@@ -250,5 +250,10 @@ return (array(
                 PRIMARY KEY (`sha256_hash`)
             );
         ',
-    )
+    ),
+    17 => array(
+        '
+            ALTER TABLE `USER` ADD "name" VARCHAR(32)  NOT NULL UNIQUE;
+        '
+    ),
 ));

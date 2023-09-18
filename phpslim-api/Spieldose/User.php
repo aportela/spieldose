@@ -10,12 +10,14 @@ class User
     public ?string $email;
     public ?string $password;
     public ?string $passwordHash;
+    public ?string $name;
 
-    public function __construct(string $id = "", string $email = "", string $password = "")
+    public function __construct(string $id = "", string $email = "", string $password = "", string $name = "")
     {
         $this->id = $id;
         $this->email = $email;
         $this->password = $password;
+        $this->name = $name;
     }
 
     private function passwordHash(string $password = ""): string
@@ -27,15 +29,20 @@ class User
     {
         if (!empty($this->id) && mb_strlen($this->id) == 36) {
             if (!empty($this->email) && mb_strlen($this->email) <= 255 && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                if (!empty($this->password)) {
-                    $params = array(
-                        new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password))
-                    );
-                    $dbh->exec(" INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash) ", $params);
+                if (!empty($this->name) && mb_strlen($this->name) <= 32) {
+                    if (!empty($this->password)) {
+                        $params = array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
+                        );
+                        $dbh->exec(" INSERT INTO USER (id, email, password_hash, name) VALUES(:id, :email, :password_hash, :name) ", $params);
+                    } else {
+                        throw new \Spieldose\Exception\InvalidParamsException("password");
+                    }
                 } else {
-                    throw new \Spieldose\Exception\InvalidParamsException("password");
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("email");
@@ -49,15 +56,20 @@ class User
     {
         if (!empty($this->id) && mb_strlen($this->id) == 36) {
             if (!empty($this->email) && mb_strlen($this->email) <= 255 && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                if (!empty($this->password)) {
-                    $params = array(
-                        new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password))
-                    );
-                    $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params);
+                if (!empty($this->name) && mb_strlen($this->name) <= 32) {
+                    if (!empty($this->password)) {
+                        $params = array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
+                        );
+                        $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash, name = :name WHERE id = :id ", $params);
+                    } else {
+                        throw new \Spieldose\Exception\InvalidParamsException("password");
+                    }
                 } else {
-                    throw new \Spieldose\Exception\InvalidParamsException("password");
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("email");
@@ -74,7 +86,7 @@ class User
             $results = $dbh->query(
                 "
                         SELECT
-                            USER.id, USER.email, USER.password_hash AS passwordHash
+                            USER.id, USER.email, USER.password_hash AS passwordHash, USER.name
                         FROM USER
                         WHERE USER.id = :id
                     ",
@@ -86,7 +98,7 @@ class User
             $results = $dbh->query(
                 "
                     SELECT
-                        USER.id, USER.email, USER.password_hash AS passwordHash
+                        USER.id, USER.email, USER.password_hash AS passwordHash, USER.name
                     FROM USER
                         WHERE USER.email = :email
                     ",
@@ -101,6 +113,7 @@ class User
             $this->id = $results[0]->id;
             $this->email = $results[0]->email;
             $this->passwordHash = $results[0]->passwordHash;
+            $this->name = $results[0]->name;
         } else {
             throw new \Spieldose\Exception\NotFoundException("");
         }
@@ -122,7 +135,28 @@ class User
                 )
             );
         } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id,email");
+            throw new \Spieldose\Exception\InvalidParamsException("email");
+        }
+        return (count($results) == 1);
+    }
+
+    public static function isNameUsed(\aportela\DatabaseWrapper\DB $dbh, string $name): bool
+    {
+        $results = null;
+        if (!empty($name) && mb_strlen($name) <= 36) {
+            $results = $dbh->query(
+                "
+                    SELECT
+                        USER.id
+                    FROM USER
+                        WHERE USER.name = :name
+                    ",
+                array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $name)
+                )
+            );
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("name");
         }
         return (count($results) == 1);
     }
@@ -132,7 +166,7 @@ class User
         if (!empty($this->password)) {
             $this->get($dbh);
             if (password_verify($this->password, $this->passwordHash)) {
-                \Spieldose\UserSession::set($this->id, $this->email);
+                \Spieldose\UserSession::set($this->id, $this->email, $this->name);
                 return (true);
             } else {
                 throw new \Spieldose\Exception\UnauthorizedException("password");

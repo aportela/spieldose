@@ -39,8 +39,7 @@
     </q-card-section>
     <q-separator />
     <q-card-section class="text-right">
-      <!-- todo route -->
-      by {{  playlist.owner.name }}
+      <router-link :to="{ name: 'playlistsByUserId', params: { id: playlist.owner.id }}">by {{  playlist.owner.name }}</router-link>
     </q-card-section>
   </q-card>
 </template>

@@ -6,10 +6,11 @@ namespace Spieldose;
 
 class UserSession
 {
-    public static function set($userId = "", string $email = ""): void
+    public static function set($userId = "", string $email = "", string $name = ""): void
     {
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
+        $_SESSION["name"] = $name;
     }
 
     public static function clear(): void
@@ -39,5 +40,10 @@ class UserSession
     public static function getEmail(): string
     {
         return ($_SESSION["email"] ??  "");
+    }
+
+    public static function getName(): string
+    {
+        return ($_SESSION["name"] ??  "");
     }
 }

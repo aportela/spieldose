@@ -97,6 +97,7 @@ export default {
   "Sign in below to access your account":
     "Introduzca los datos para acceder a su cuenta",
   Email: "Correo electrónico",
+  Name: "Nombre",
   Password: "Contraseña",
   "Loading...": "Cargando...",
   "Don't have an account yet ?": "¿ Aún no dispone de una cuenta ?",
@@ -110,6 +111,7 @@ export default {
   "New sign ups are not allowed on this system":
     "No se permiten nuevos registros en este sistema",
   "Email already used": "El correo electrónico ya está en uso",
+  "Name already used": "El nombre ya está en uso",
   "Already have an account ?": "¿ Ya dispone de una cuenta ?",
   "Click here to sign in": "Haga click aquí para iniciar sesión",
   "Your account has been created": "Su cuenta ha sido creada",

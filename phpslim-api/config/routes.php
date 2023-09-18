@@ -30,11 +30,14 @@ return function (App $app) {
                     $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                     if (\Spieldose\User::isEmailUsed($dbh, $params["email"] ?? "")) {
                         throw new \Spieldose\Exception\AlreadyExistsException("email");
+                    } else if (\Spieldose\User::isNameUsed($dbh, $params["name"] ?? "")) {
+                        throw new \Spieldose\Exception\AlreadyExistsException("name");
                     } else {
                         $user = new \Spieldose\User(
                             $params["id"] ?? "",
                             $params["email"] ?? "",
-                            $params["password"] ?? ""
+                            $params["password"] ?? "",
+                            $params["name"] ?? ""
                         );
                         $user->add($dbh);
                         $payload = json_encode([]);
@@ -47,13 +50,13 @@ return function (App $app) {
             });
 
             $group->post('/user/sign-in', function (Request $request, Response $response, array $args) {
-                $settings = $this->get('settings');
                 $params = $request->getParsedBody();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $user = new \Spieldose\User(
                     "",
                     $params["email"] ?? "",
-                    $params["password"] ?? ""
+                    $params["password"] ?? "",
+                    $params["name"] ?? ""
                 );
                 $user->signIn($dbh);
                 $payload = json_encode([]);

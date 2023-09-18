@@ -95,6 +95,7 @@ export default {
   "Sign in below to access your account":
     "Sign in below to access your account",
   Email: "Email",
+  Name: "Name",
   Password: "Password",
   "Loading...": "Loading...",
   "Don't have an account yet ?": "Don't have an account yet ?",
@@ -108,6 +109,7 @@ export default {
   "New sign ups are not allowed on this system":
     "New sign ups are not allowed on this system",
   "Email already used": "Email already used",
+  "Name already used": "Name already used",
   "Already have an account ?": "Already have an account ?",
   "Click here to sign in": "Click here to sign in",
   "Your account has been created": "Your account has been created",

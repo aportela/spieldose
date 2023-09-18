@@ -69,11 +69,12 @@ const api = {
     },
   },
   user: {
-    signIn: function (email, password) {
+    signIn: function (email, password, name) {
       return new Promise((resolve, reject) => {
         const params = {
           email: email,
           password: password,
+          name: name,
         };
         axios
           .post(baseAPIPath + "/user/sign-in", params)
@@ -97,12 +98,13 @@ const api = {
           });
       });
     },
-    signUp: function (id, email, password) {
+    signUp: function (id, email, password, name) {
       return new Promise((resolve, reject) => {
         const params = {
           id: id,
           email: email,
           password: password,
+          name: name,
         };
         axios
           .post(baseAPIPath + "/user/sign-up", params)
