@@ -1,8 +1,24 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
 
+// https://stackoverflow.com/a/8831937
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0, len = str.length; i < len; i++) {
+    let chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
+const hashedSite = Array.from(window.location.host).reduce(
+  (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
+  0
+);
+
 const localStorageBasilOptions = {
-  namespace: "spieldose",
+  namespace: "spieldose#" + hashedSite,
   storages: ["local", "cookie", "session", "memory"],
   storage: "local",
   expireDays: 3650,
@@ -15,7 +31,7 @@ export const useSessionStore = defineStore("session", {
     locale: null,
     volume: null,
     fullScreenVisualizationSettings: null,
-    sidebarPlayerSettings: null
+    sidebarPlayerSettings: null,
   }),
 
   getters: {
@@ -26,8 +42,7 @@ export const useSessionStore = defineStore("session", {
     getVolume: (state) => state.volume,
     getFullScreenVisualizationSettings: (state) =>
       state.fullScreenVisualizationSettings,
-    getSidebarPlayerSettings: (state) =>
-      state.sidebarPlayerSettings,
+    getSidebarPlayerSettings: (state) => state.sidebarPlayerSettings,
   },
   actions: {
     load() {
@@ -56,14 +71,10 @@ export const useSessionStore = defineStore("session", {
           // console.error("error");
         }
       }
-      const sidebarPlayerSettings = basil.get(
-        "sidebarPlayerSettings"
-      );
+      const sidebarPlayerSettings = basil.get("sidebarPlayerSettings");
       if (sidebarPlayerSettings) {
         try {
-          this.sidebarPlayerSettings = JSON.parse(
-            sidebarPlayerSettings
-          );
+          this.sidebarPlayerSettings = JSON.parse(sidebarPlayerSettings);
         } catch (e) {
           // console.error("error");
         }
@@ -85,7 +96,9 @@ export const useSessionStore = defineStore("session", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set(
         "fullScreenVisualizationSettings",
-        JSON.stringify(this.fullScreenVisualizationSettings)
+        this.fullScreenVisualizationSettings
+          ? JSON.stringify(this.fullScreenVisualizationSettings)
+          : null
       );
     },
     saveSidebarPlayerSettings(settings) {
@@ -93,7 +106,9 @@ export const useSessionStore = defineStore("session", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set(
         "sidebarPlayerSettings",
-        JSON.stringify(this.sidebarPlayerSettings)
+        this.sidebarPlayerSettings
+          ? JSON.stringify(this.sidebarPlayerSettings)
+          : null
       );
     },
     save(jwt) {
