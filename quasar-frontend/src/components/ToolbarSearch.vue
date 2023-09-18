@@ -179,7 +179,7 @@ function onPlayAlbum(albumId, title, artistName, year) {
       year: year || null
     };
   }
-  api.track.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+  api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     trackActions.play(success.data.data.items.map((item) => { return ({ track: item }); }));
   }).catch((error) => {
     // TODO: on error
@@ -198,7 +198,7 @@ function onAppendAlbum(albumId, title, artistName, year) {
       year: year || null
     };
   }
-  api.track.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
+  api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     trackActions.enqueue(success.data.data.items.map((item) => { return ({ track: item }); }));
   }).catch((error) => {
     // TODO: on error
