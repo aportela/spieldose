@@ -57,6 +57,38 @@ class Lyrics
         }
     }
 
+    private function scrapFromBing(): string
+    {
+        $request = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger());
+        $response = $request->GET(sprintf("https://www.bing.com/search?%s", http_build_query(["q" => sprintf("lyrics \"%s\" from \"%s\"", $this->title, $this->artist)])));
+        if ($response->code == 200 && !empty($response->body)) {
+            libxml_use_internal_errors(true);
+            $doc = new \DomDocument();
+            if ($doc->loadHTML(str_ireplace(array("<br>", "<br/>", "<br />"), PHP_EOL, $response->body))) {
+                $xpath = new \DOMXPath($doc);
+                // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
+                $nodes = $xpath->query('//div[@class="lyrics"]//div');
+                if ($nodes != false) {
+                    if ($nodes->count() > 0) {
+                        $data = null;
+                        foreach ($nodes as $key => $node) {
+                            $data .= trim($node->textContent) . PHP_EOL;
+                        }
+                        return ($data);
+                    } else {
+                        throw new \Spieldose\Exception\NotFoundException('//div[@jsname="lyrics"]//div');
+                    }
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException('//div[@jsname="lyrics"]//div');
+                }
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("body");
+            }
+        } else {
+            throw new \Exception("Invalid HTTP response code: " . $response->code);
+        }
+    }
+
     private function scrap(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->title)) {
@@ -69,6 +101,9 @@ class Lyrics
                 }
                 try {
                     $this->data = $this->scrapFromGoogle();
+                    if (empty($this->data)) {
+                        $this->data = $this->scrapFromBing();
+                    }
                 } catch (\Throwable $e) {
                     // TODO
                 }
