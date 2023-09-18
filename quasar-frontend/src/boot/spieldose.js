@@ -41,8 +41,6 @@ const trackActions = {
     currentPlaylist.saveElements(
       Array.isArray(data) ? data : [{ track: data }]
     );
-    // emit event to play ¿?
-    // TODO: required here or by events on current track change ?
     spieldosePlayer.actions.play(true);
   },
   enqueue: function (data) {
