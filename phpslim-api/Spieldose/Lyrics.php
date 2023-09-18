@@ -10,13 +10,14 @@ class Lyrics
     public string $hash;
     public string $title;
     public string $artist;
-    public string $data;
+    public ?string $data;
 
     public function __construct(string $title, string $artist)
     {
         $this->title = trim($title);
         $this->artist = trim($artist);
         $this->hash = hash("sha256", $this->title . $this->artist);
+        $this->data = null;
     }
 
     public function __destruct()
@@ -66,7 +67,7 @@ class Lyrics
             $doc = new \DomDocument();
             if ($doc->loadHTML(str_ireplace(array("<br>", "<br/>", "<br />"), PHP_EOL, $response->body))) {
                 $xpath = new \DOMXPath($doc);
-                // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
+                // lyric paragraphs are contained on a <div class="lyrics"> with <span> childs
                 $nodes = $xpath->query('//div[@class="lyrics"]//div');
                 if ($nodes != false) {
                     if ($nodes->count() > 0) {
@@ -89,6 +90,29 @@ class Lyrics
         }
     }
 
+    private function scrapFromDuckDuckGo(): string
+    {
+        $request = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger(), "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0");
+        $response = $request->GET(sprintf("https://duckduckgo.com/a.js?s=lyrics&from=lyrics&%s", http_build_query(["ta" => $this->artist, "tl" => $this->title])));
+        if ($response->code == 200 && !empty($response->body)) {
+            $pattern = '/DDG.duckbar.add_array\(\[\{"data":\[\{"Abstract":"(.*)","AbstractSource":"Musixmatch"/';
+            if (preg_match($pattern, $response->body, $match)) {
+                if (count($match) == 2) {
+                    foreach (explode(PHP_EOL, str_ireplace(array("<br>", "<br/>", "<br />"), PHP_EOL, $match[1])) as $line) {
+                        $this->data .= trim($line) . PHP_EOL;
+                    };
+                    return (!empty($this->data));
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException('DDG.duckbar.add_array');
+                }
+            } else {
+                throw new \Spieldose\Exception\NotFoundException('DDG.duckbar.add_array');
+            }
+        } else {
+            throw new \Exception("Invalid HTTP response code: " . $response->code);
+        }
+    }
+
     private function scrap(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->title)) {
@@ -101,6 +125,9 @@ class Lyrics
                 }
                 try {
                     $this->data = $this->scrapFromGoogle();
+                    if (empty($this->data)) {
+                        $this->data = $this->scrapFromDuckDuckGo();
+                    }
                     if (empty($this->data)) {
                         $this->data = $this->scrapFromBing();
                     }
