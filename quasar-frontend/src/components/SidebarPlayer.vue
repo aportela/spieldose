@@ -44,6 +44,8 @@ import { useSessionStore } from 'stores/session'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 import { api } from "src/boot/axios";
 
+import { playListActions } from "src/boot/spieldose";
+
 const $q = useQuasar();
 const { t } = useI18n();
 
@@ -211,7 +213,7 @@ function increasePlayCount(trackId) {
 
 function skipPrevious() {
   spieldosePlayer.interact();
-  currentPlaylist.skipPrevious();
+  playListActions.skipPrevious();
 }
 
 function play(ignoreStatus) {

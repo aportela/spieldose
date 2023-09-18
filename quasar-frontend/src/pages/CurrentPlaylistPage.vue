@@ -155,7 +155,7 @@ import { api } from 'boot/axios';
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 //import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
 
-import { trackActions } from '../boot/spieldose';
+import { trackActions, playListActions } from '../boot/spieldose';
 
 const $q = useQuasar();
 
@@ -378,7 +378,7 @@ function onRandom() {
 
 function onPreviusPlaylist() {
   spieldosePlayer.interact();
-  currentPlaylist.skipPrevious();
+  playListActions.skipPrevious();
 }
 
 function onPlay() {

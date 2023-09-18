@@ -97,6 +97,8 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       }
       */
     },
+
+    // TODO: move to boot / spieldose
     skipPrevious() {
       this.saveCurrentTrackIndex(--this.currentIndex);
     },

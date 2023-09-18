@@ -74,6 +74,12 @@ const playListActions = {
   clear: function () {
     currentPlaylist.clear();
   },
+  skipPrevious: function () {
+    currentPlaylist.skipPrevious();
+  },
+  skipNext: function () {
+    currentPlaylist.skipNext();
+  },
 };
 
 export { trackActions, albumActions, playListActions };
