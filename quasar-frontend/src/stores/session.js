@@ -18,7 +18,8 @@ const hashedSite = Array.from(window.location.host).reduce(
 );
 
 const localStorageBasilOptions = {
-  namespace: "spieldose#" + hashedSite,
+  //namespace: "spieldose#" + hashedSite,
+  namespace: "spieldose",
   storages: ["local", "cookie", "session", "memory"],
   storage: "local",
   expireDays: 3650,
