@@ -105,11 +105,7 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
     },
     clear() {
       this.elements = [];
-      this.currentIndex = -1;
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentPlaylistElements", []);
-      basil.set(-1);
-      this.elementsLastChangeTimestamp = Date.now();
+      this.saveCurrentElements();
     },
     setFavoriteTrack(trackId, favorited) {
       const index = this.elements.findIndex(
