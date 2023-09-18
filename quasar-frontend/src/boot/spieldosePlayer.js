@@ -115,9 +115,9 @@ const spieldosePlayer = {
       if (spieldosePlayerStore.data.playerStatus == "playing") {
         spieldosePlayerStore.data.audio.pause();
         // TODO: check if works
-        spieldosePlayerStore.data.audio.currentTime = 0;
-        spieldosePlayerStore.data.playerStatus = "stopped";
       }
+      spieldosePlayerStore.data.audio.currentTime = 0;
+      spieldosePlayerStore.data.playerStatus = "stopped";
     },
     toggleRepeatMode() {
       switch (spieldosePlayerStore.data.repeatMode) {
