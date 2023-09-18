@@ -107,23 +107,5 @@ export const useCurrentPlaylistStore = defineStore("currentPlaylist", {
       this.elements = [];
       this.saveCurrentElements();
     },
-    setFavoriteTrack(trackId, favorited) {
-      const index = this.elements.findIndex(
-        (element) => element.track && element.track.id == trackId
-      );
-      if (index !== -1) {
-        this.elements[index].track.favorited = favorited;
-        this.saveCurrentElements();
-      }
-    },
-    unSetFavoriteTrack(trackId) {
-      const index = this.elements.findIndex(
-        (element) => element.track && element.track.id == trackId
-      );
-      if (index !== -1) {
-        this.elements[index].track.favorited = null;
-        this.saveCurrentElements();
-      }
-    },
   },
 });
