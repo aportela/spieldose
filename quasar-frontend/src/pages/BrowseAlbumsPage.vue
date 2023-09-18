@@ -65,11 +65,10 @@ import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-
+import { playListActions } from "src/boot/spieldose";
 const $q = useQuasar();
 const spieldosePlayer = inject('spieldosePlayer');
-const currentPlaylist = useCurrentPlaylistStore();
+
 
 const searchText = ref(null);
 
@@ -172,7 +171,7 @@ function onPlayAlbum(album) {
   spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
@@ -183,7 +182,7 @@ function onEnqueueAlbum(album) {
   spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    playListActions.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

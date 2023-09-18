@@ -71,6 +71,12 @@ const albumActions = {
 };
 
 const playListActions = {
+  saveElements: function (newElements) {
+    currentPlaylist.saveElements(newElements);
+  },
+  appendElements: function (newElements) {
+    currentPlaylist.appendElements(newElements);
+  },
   clear: function () {
     currentPlaylist.clear();
   },

@@ -98,9 +98,7 @@ import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-
-const currentPlaylist = useCurrentPlaylistStore();
+import { playListActions } from "src/boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -152,7 +150,7 @@ function onPaginationChanged(pageIndex) {
 
 function onPlayRadioStation(radioStation) {
   spieldosePlayer.interact();
-  currentPlaylist.saveElements([{ radioStation: radioStation }]);
+  playListActions.saveElements([{ radioStation: radioStation }]);
 }
 
 search(true);

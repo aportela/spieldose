@@ -385,7 +385,8 @@ import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelati
 import { default as ArtistGenreChip } from 'components/ArtistGenreChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
+import { playListActions} from "boot/spieldose";
+
 import { trackActions } from 'boot/spieldose';
 import { spieldoseEventNames } from "boot/events";
 
@@ -414,7 +415,6 @@ bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
   }
 });
 
-const currentPlaylist = useCurrentPlaylistStore();
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -524,12 +524,12 @@ function nl2br(str, replaceMode, isXhtml) {
 function playTrack(track) {
   spieldosePlayer.interact();
   spieldosePlayer.actions.stop();
-  currentPlaylist.saveElements([{ track: track }]);
+  playListActions.saveElements([{ track: track }]);
   spieldosePlayer.actions.play(false);
 }
 
 function enqueueTrack(track) {
-  currentPlaylist.appendElements([{ track: track }]);
+  playListActions.appendElements([{ track: track }]);
   spieldosePlayer.interact();
 }
 
@@ -604,7 +604,7 @@ function onPlayAlbum(album) {
   spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;
@@ -615,7 +615,7 @@ function onEnqueueAlbum(album) {
   spieldosePlayer.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId, albumTitle: album.title, artist: album.artist.name }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    currentPlaylist.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+    playListActions.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
     loading.value = false;
   }).catch((error) => {
     loading.value = false;

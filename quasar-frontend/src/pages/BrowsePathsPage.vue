@@ -28,13 +28,10 @@ import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-
+import { playListActions } from "src/boot/spieldose";
 const $q = useQuasar();
 const spieldosePlayer = inject('spieldosePlayer');
 
-
-const currentPlaylist = useCurrentPlaylistStore();
 
 const noPathsFound = ref(false);
 const loading = ref(false);
@@ -94,7 +91,7 @@ function onTreeNodeSelected(nodeHash) {
   if (node && node.id) {
     loading.value = true;
     api.track.search({ path: node.id }, 1, 0, false, 'title', 'ASC').then((success) => {
-      currentPlaylist.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
+      playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
       loading.value = false;
     }).catch((error) => {
       // TODO
