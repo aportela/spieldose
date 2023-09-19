@@ -74,32 +74,28 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from "vue";
+import { ref, computed, watch } from "vue";
 
 import { useRouter } from "vue-router";
-import { api } from 'boot/axios';
+import { api } from "boot/axios";
 import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 import { i18n, defaultLocale } from "src/boot/i18n";
 
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
-import { default as leftSidebar } from 'components/AppLeftSidebar.vue';
-import { default as ToolbarSearch } from 'components/ToolbarSearch.vue';
+import { default as leftSidebar } from "components/AppLeftSidebar.vue";
+import { default as ToolbarSearch } from "components/ToolbarSearch.vue";
 import { default as FullScreenVisualization } from "components/FullScreenVisualizationSettings.vue";
 import { bus } from "boot/bus";
 import { fabGithub } from "@quasar/extras/fontawesome-v6";
+import { useSpieldoseStore } from "stores/spieldose";
 
-const spieldosePlayer = inject('spieldosePlayer');
-spieldosePlayer.create();
-
+const spieldoseStore = useSpieldoseStore();
+spieldoseStore.create();
 
 const { t } = useI18n();
 const $q = useQuasar();
 const router = useRouter();
-
-const currentPlaylist = useCurrentPlaylistStore();
-const audioElement = ref(null);
 
 const session = useSessionStore();
 if (!session.isLoaded) {
@@ -200,7 +196,7 @@ const links = [
 ];
 
 const currentElementURL = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
+  const currentElement = spieldoseStore.getCurrentPlaylistElement;
   if (currentElement) {
     if (currentElement.track && currentElement.track.url) {
       return (currentElement.track.url);
@@ -214,24 +210,22 @@ const currentElementURL = computed(() => {
   }
 });
 
-
 watch(currentElementURL, (newValue) => {
-  spieldosePlayer.setSource(newValue);
-  if (spieldosePlayer.hasPreviousUserInteractions()) {
-    spieldosePlayer.actions.play(true);
+  // TODO: stop before ?
+  spieldoseStore.setAudioSource(newValue);
+  if (spieldoseStore.hasPreviousUserInteractions) {
+    spieldoseStore.play(true);
   }
 });
 
-currentPlaylist.load();
-
-if (spieldosePlayer.hasPreviousUserInteractions()) {
-  if (!spieldosePlayer.isPlaying()) {
-    spieldosePlayer.actions.play(true);
+if (spieldoseStore.hasPreviousUserInteractions) {
+  if (!spieldoseStore.isPlaying) {
+    spieldoseStore.play(true);
   }
 }
 
 function signOut() {
-  spieldosePlayer.actions.stop();
+  spieldoseStore.stop();
   api.user
     .signOut()
     .then((success) => {
@@ -248,4 +242,5 @@ function signOut() {
       });
     });
 }
+
 </script>

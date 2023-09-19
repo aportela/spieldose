@@ -52,13 +52,15 @@ import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
 //import { useSessionStore } from "stores/session";
+import { useSpieldoseStore } from "stores/spieldose";
 
 const { t } = useI18n();
 
 const $q = useQuasar();
 
 const router = useRouter();
-const spieldosePlayer = inject('spieldosePlayer');
+
+const spieldoseStore = useSpieldoseStore();
 
 /*
 const session = useSessionStore();
@@ -116,7 +118,7 @@ function onSubmitForm() {
     .signIn(email.value, password.value)
     .then((success) => {
 
-      spieldosePlayer.interact();
+      spieldoseStore.interact();
       // TODO
       //session.signIn();
       router.push({

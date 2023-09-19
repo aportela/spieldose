@@ -66,8 +66,12 @@ import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 
 import { playListActions } from "src/boot/spieldose";
+import { useSpieldoseStore } from "stores/spieldose";
+
+
 const $q = useQuasar();
-const spieldosePlayer = inject('spieldosePlayer');
+
+const spieldoseStore = useSpieldoseStore();
 
 
 const searchText = ref(null);
@@ -168,7 +172,7 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
@@ -179,7 +183,7 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
     playListActions.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));

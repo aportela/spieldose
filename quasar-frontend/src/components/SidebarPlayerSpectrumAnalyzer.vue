@@ -11,25 +11,26 @@ div#analyzer-container {
 </style>
 
 <script setup>
-import { ref, computed, watch, onMounted, inject } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import { useI18n } from 'vue-i18n';
+import { useSpieldoseStore } from "stores/spieldose";
 
 const { t } = useI18n();
 
 const props = defineProps({
-  active: Boolean
+  active: Boolean,
+  mode: Number
 });
 
-const spieldosePlayer = inject('spieldosePlayer');
-const audioElement = spieldosePlayer.getAudioInstance();
-
+const spieldoseStore = useSpieldoseStore();
+//const audioElement = spieldoseStore.getAudioInstance;
 const analyzer = ref(null);
-const currentMode = ref(7);
+const currentMode = ref(props.mode || 7);
 
 function createAnalyzer() {
   const defaultOptions = {
-    source: audioElement,
+    source: spieldoseStore.getAudioInstance,
     start: false,
     height: 40,
     maxFPS: 30,
@@ -64,9 +65,9 @@ function createAnalyzer() {
   }
   analyzer.value.registerGradient('default-spieldose', gradientOptions);
   analyzer.value.gradient = 'default-spieldose';
-  spieldosePlayer.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
+  spieldoseStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
   if (props.active) {
-    analyzer.value.toggleAnalyzer();
+    analyzer.value.start();
   }
 }
 
@@ -74,15 +75,20 @@ function togglecurrentMode() {
   if (++currentMode.value > 8) {
     currentMode.value = 1;
   }
-  analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10  });
+  if (analyzer.value) {
+    analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10 });
+  }
 }
 
 const active = computed(() => { return (props.active || false) });
+
 watch(active, (newValue) => {
-  if (newValue) {
-    analyzer.value.start();
-  } else {
-    analyzer.value.stop();
+  if (analyzer.value) {
+    if (newValue) {
+      analyzer.value.start();
+    } else {
+      analyzer.value.stop();
+    }
   }
 });
 

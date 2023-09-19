@@ -2,11 +2,12 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        <q-icon class="cursor-pointer" :name="volumeIcon" @click.prevent="onToggleMute" :class="{ 'text-pink': muted }" />
+        <q-icon class="cursor-pointer" :name="volumeIcon" @click.stop="onToggleMute"
+          :class="{ 'text-pink': isMuted }" />
       </q-item-section>
       <q-item-section>
-        <q-slider :disable="disabled" v-model="volume" :min="0" :max="1" :step="0.05" label
-          :label-value="volumePercentValue + '%'" @change="setVolume(volume)" />
+        <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'"
+          @change="setVolume(volume)" />
       </q-item-section>
       <q-item-section side>
         {{ volumePercentValue }}%
@@ -20,24 +21,16 @@
 import { ref, watch, computed } from "vue";
 
 const props = defineProps({
-  disabled: Boolean,
-  defaultValue: Number
+  defaultValue: Number,
+  isMuted: Boolean
 });
 
-const emit = defineEmits(['volumeChange']);
+const emit = defineEmits(['volumeChange', 'toggleMute']);
 
-const oldVolume = ref(0);
 const volume = ref(props.defaultValue || 1);
-const muted = ref(false);
-
-watch(volume, (newValue, oldValue) => {
-  if (newValue > 0 && muted.value) {
-    muted.value = false;
-  }
-});
 
 const volumeIcon = computed(() => {
-  if (volume.value == 0) {
+  if (volume.value == 0 || props.isMuted) {
     return ('volume_off');
   } else if (volume.value < 0.4) {
     return ('volume_mute');
@@ -53,14 +46,7 @@ const volumePercentValue = computed(() => {
 });
 
 function onToggleMute() {
-  if (muted.value) {
-    volume.value = oldVolume.value;
-  } else {
-    oldVolume.value = volume.value;
-    volume.value = 0;
-  }
-  muted.value = !muted.value;
-  emit('volumeChange', volume.value);
+  emit('toggleMute');
 }
 
 function setVolume(volume) {

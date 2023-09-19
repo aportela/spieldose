@@ -27,8 +27,9 @@ import { useQuasar } from "quasar";
 import { useSessionStore } from "stores/session";
 import { api } from 'boot/axios';
 import { useI18n } from 'vue-i18n';
+import { useSpieldoseStore } from "stores/spieldose";
 
-const spieldosePlayer = inject('spieldosePlayer');
+const spieldoseStore = useSpieldoseStore();
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -84,7 +85,7 @@ const links = [
 ];
 
 function signOut() {
-  spieldosePlayer.actions.stop();
+  spieldoseStore.stop();
   api.user
     .signOut()
     .then((success) => {

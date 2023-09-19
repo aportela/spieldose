@@ -1,11 +1,8 @@
-import { spieldosePlayer } from "boot/spieldosePlayer";
-import { useCurrentPlaylistStore } from "stores/currentPlaylist";
-import { useSpieldosePlayerStore } from "stores/spieldose";
+import { useSpieldoseStore } from "stores/spieldose";
 import { api } from "boot/axios";
 import { spieldoseEvents } from "boot/events";
 
-const currentPlaylist = useCurrentPlaylistStore();
-const spieldosePlayerStore = useSpieldosePlayerStore();
+const spieldoseStore = useSpieldoseStore();
 
 const trackActions = {
   setFavorite: function (id) {
@@ -48,49 +45,65 @@ const trackActions = {
     });
   },
   play: function (data) {
-    spieldosePlayer.interact();
-    if (!spieldosePlayer.isStopped()) {
-      spieldosePlayer.actions.stop();
+    spieldoseStore.interact();
+    if (!spieldoseStore.isStopped) {
+      spieldoseStore.stop();
     }
-    // save element on current playlist
-    currentPlaylist.saveElements(
+    spieldoseStore.sendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
-    spieldosePlayer.actions.play(true);
   },
   enqueue: function (data) {
-    player.interact();
-    currentPlaylist.appendElements(
+    spieldoseStore.interact();
+    spieldoseStore.appendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
   },
 };
 
 const albumActions = {
-  play: function (data) {
-    player.stop();
-    currentPlaylist.saveElements(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    player.interact();
-    player.play(true);
+  play: function (album) {
+    api.track
+      // TODO: add another filters
+      .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+      .then((success) => {
+        spieldoseStore.interact();
+        spieldoseStore.sendElementsToCurrentPlaylist(
+          success.data.data.items.map((item) => {
+            return { track: item };
+          })
+        );
+      })
+      .catch((error) => {
+        // TODO
+      });
   },
   enqueue: function (data) {
-    currentPlaylist.appendElements(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    player.interact();
+    api.track
+      // TODO: add another filters
+      .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+      .then((success) => {
+        spieldoseStore.interact();
+        spieldoseStore.appendElementsToCurrentPlaylist(
+          success.data.data.items.map((item) => {
+            return { track: item };
+          })
+        );
+      })
+      .catch((error) => {
+        // TODO
+      });
   },
 };
 
 const playListActions = {
   loadPlaylist: function (id) {
     return new Promise((resolve, reject) => {
-      spieldosePlayer.interact();
+      spieldoseStore.interact();
       api.playlist
         .get(id)
         .then((success) => {
-          spieldosePlayer.actions.setPlaylist(success.data.playlist);
+          spieldoseStore.setPlaylist(success.data.playlist);
           resolve();
         })
         .catch((error) => {
@@ -98,25 +111,18 @@ const playListActions = {
         });
     });
   },
-  saveElements: function (newElements) {
-    currentPlaylist.saveElements(newElements);
+  saveElements: function (data) {
+    player.interact();
+    spieldoseStore.sendElementsToCurrentPlaylist(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
   },
-  appendElements: function (newElements) {
-    currentPlaylist.appendElements(newElements);
-  },
-  clear: function () {
-    currentPlaylist.clear();
-  },
-  skipPrevious: function () {
-    currentPlaylist.skipPrevious();
-  },
-  skipNext: function () {
-    currentPlaylist.skipNext();
+  appendElements: function (data) {
+    spieldoseStore.interact();
+    spieldoseStore.appendElementsToCurrentPlaylist(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
   },
 };
 
-const playerActions = {
-  setVolume: function (volume) {},
-};
-
-export { playerActions, trackActions, albumActions, playListActions };
+export { trackActions, albumActions, playListActions };

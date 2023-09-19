@@ -26,7 +26,7 @@
 <script setup>
 
 const props = defineProps({
-  currentElement: Object
+  currentElement: Object,
 });
 
 </script>

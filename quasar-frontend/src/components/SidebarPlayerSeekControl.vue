@@ -6,7 +6,7 @@
       </q-item-section>
       <q-item-section>
         <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="1" :step="0.01" label
-          :label-value="formatSecondsAsTime(currentElementTimeData.currentTime)" @change="onSeek"/>
+          :label-value="formatSecondsAsTime(currentElementTimeData.currentTime)" @change="onSeek" />
       </q-item-section>
       <q-item-section side>
         {{ formatSecondsAsTime(currentElementTimeData.duration) }}
@@ -48,14 +48,14 @@ function formatSecondsAsTime(secs, format) {
     var sec = Math.floor(secs - (hr * 3600) - (min * 60));
 
     if (min < 10) {
-      min = "0" + min;
+      min = '0' + min;
     }
     if (sec < 10) {
-      sec = "0" + sec;
+      sec = '0' + sec;
     }
-    return min + ':' + sec;
-  }else {
-    return '00:00';
+    return (min + ':' + sec);
+  } else {
+    return ('00:00');
   }
 }
 

@@ -18,13 +18,10 @@
 
 <script setup>
 
-import { ref, watch, computed } from "vue";
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
-
-const currentPlaylist = useCurrentPlaylistStore();
+import { ref } from "vue";
 
 const elements = ref([]);
 
-elements.value = currentPlaylist.getElements;
+elements.value = [];
 
 </script>

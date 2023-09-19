@@ -1,32 +1,35 @@
 <template>
-  <div v-if="currentElement">
+  <div>
     <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
-      :rotateVinyl="spieldosePlayer.isPlaying()"></SidebarPlayerAlbumCover>
-    <audio id="audio" class="is-hidden"></audio>
-    <SidebarPlayerSpectrumAnalyzer v-show="showAnalyzer" :active="showAnalyzer"></SidebarPlayerSpectrumAnalyzer>
-    <SidebarPlayerVolumeControl :disabled="disablePlayerControls" :defaultValue="defaultVolume"
-      @volumeChange="onVolumeChange">
+      :rotateVinyl="spieldoseStore.isPlaying"></SidebarPlayerAlbumCover>
+    <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"></SidebarPlayerSpectrumAnalyzer>
+    <SidebarPlayerVolumeControl :isMuted="spieldoseStore.isMuted" :defaultValue="spieldoseStore.getVolume"
+      @volumeChange="(volume) => spieldoseStore.setVolume(volume)" @toggleMute="spieldoseStore.toggleMute()">
     </SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentElement="currentElement"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="spieldosePlayer.allowSkipPrevious()"
-      :allowPlay="true" :allowSkipNext="spieldosePlayer.allowSkipNext()" :isPlaying="spieldosePlayer.isPlaying()"
-      @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
+    <SidebarPlayerMainControls :disabled="false" :allowSkipPrevious="spieldoseStore.allowSkipPrevious"
+      :allowPlay="spieldoseStore.hasElements" :allowSkipNext="spieldoseStore.allowSkipNext"
+      :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="spieldoseStore.skipPrevious()" @play="play()"
+      @skipNext="spieldoseStore.skipNext()"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
-      :downloadURL="currentElement.track.url" :isTrackFavorited="currentElementFavorited"
-      :visibleAnalyzer="showAnalyzer" :shuffle="spieldosePlayer.getShuffle()" :repeatMode="spieldosePlayer.getRepeatMode()"
-      @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleShuffle="onToggleShuffle"
-      @toggleRepeatMode="onToggleRepeatMode" @toggleTrackDetailsModal="detailsModal = true">
+      :downloadURL="spieldoseStore.getCurrentPlaylistElementURL || '#'"
+      :trackFavoritedTimestamp="isCurrentElementTrack ? currentElement.track.favorited : null"
+      :visibleAnalyzer="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :shuffle="spieldoseStore.getShuffle" :repeatMode="spieldoseStore.getRepeatMode"
+      @toggleAnalyzer="spieldoseStore.toggleSidebarAudioMotionAnalyzer()" @toggleShuffle="spieldoseStore.toggleShuffeMode()"
+      @toggleRepeatMode="spieldoseStore.toggleRepeatMode()" @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
+    <!--
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
       @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
+    -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, inject } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 
@@ -38,61 +41,52 @@ import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMa
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
 
 import { spieldoseEvents } from "boot/events";
-import { playListActions } from "src/boot/spieldose";
+
+import { useSpieldoseStore } from "stores/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
 
+const spieldoseStore = useSpieldoseStore();
 
-const spieldosePlayer = inject('spieldosePlayer');
-
-const defaultVolume = spieldosePlayer.getVolume || 1;
-
-const currentElement = spieldosePlayer.getCurrentPlaylistElement();
-console.log(currentElement);
-
-const audioElement = ref(null);
+const currentElement = computed(() => { return (spieldoseStore.getCurrentPlaylistElement); });
 
 const detailsModal = ref(false);
 
 const showAnalyzer = ref(true);
 
-const currentPlaylist = useCurrentPlaylistStore();
-
 const isCurrentElementTrack = computed(() => {
-  const currentElement = spieldosePlayer.getCurrentPlaylistElement();
-  return (currentElement.track != null);
+  return (currentElement.value && currentElement.value.track != null);
 });
 
 // TODO: use currentElement globally
 
 const currentElementId = computed(() => {
-  if (currentElement && currentElement.track) {
-    return (currentElement.track.id || null);
-  } else if (currentElement && currentElement.radioStation) {
-    return (currentElement.radioStation.id || null);
+  if (currentElement.value && currentElement.value.track) {
+    return (currentElement.value.track.id || null);
+  } else if (currentElement.value && currentElement.value.radioStation) {
+    return (currentElement.value.radioStation.id || null);
   } else {
     return (null);
   }
 });
 
 const currentElementFavorited = computed(() => {
-  if (currentElement && currentElement.track) {
-    return (currentElement.track.favorited || null);
+  if (currentElement.value && currentElement.value.track) {
+    return (currentElement.value.track.favorited || null);
   } else {
     return (null);
   }
 });
 
 const coverImage = computed(() => {
-  if (currentElement) {
-    if (currentElement.track && currentElement.track.covers) {
-      return (currentElement.track.covers.normal || null);
-    } else if (currentElement.radioStation && currentElement.radioStation.images) {
-      return (currentElement.radioStation.images.normal || null);
+  if (currentElement.value) {
+    if (currentElement.value.track && currentElement.value.track.covers) {
+      return (currentElement.value.track.covers.normal || null);
+    } else if (currentElement.value.radioStation && currentElement.value.radioStation.images) {
+      return (currentElement.value.radioStation.images.normal || null);
     } else {
       return (null);
     }
@@ -102,11 +96,11 @@ const coverImage = computed(() => {
 });
 
 const smallVinylImage = computed(() => {
-  if (currentElement) {
-    if (currentElement.track && currentElement.track.covers) {
-      return (currentElement.track.covers.small || null);
-    } else if (currentElement.radioStation && currentElement.radioStation.images) {
-      return (currentElement.radioStation.images.small || null);
+  if (currentElement.value) {
+    if (currentElement.value.track && currentElement.value.track.covers) {
+      return (currentElement.value.track.covers.small || null);
+    } else if (currentElement.value.radioStation && currentElement.value.radioStation.images) {
+      return (currentElement.value.radioStation.images.small || null);
     } else {
       return (null);
     }
@@ -127,8 +121,7 @@ const currentElementTimeData = ref({
 });
 
 onMounted(() => {
-  audioElement.value = spieldosePlayer.getAudioInstance();
-  spieldosePlayer.actions.setVolume(defaultVolume);
+  const audioElement = ref(spieldoseStore.getAudioInstance);
 
   /*
   audioElement.value.addEventListener('canplay', (event) => {
@@ -147,22 +140,22 @@ onMounted(() => {
     if (isCurrentElementTrack.value) {
       spieldoseEvents.increasePlayCount(currentElementId.value);
     }
-    if (spieldosePlayer.getRepeatMode() == 'playlist') {
-      if (spieldosePlayer.allowSkipNext()) {
-        skipNext();
+    if (spieldoseStore.getRepeatMode() == 'playlist') {
+      if (spieldoseStore.allowSkipNext()) {
+        spieldoseStore.skipNext();
       } else {
         //currentPlaylist.saveCurrentTrackIndex(0);
-        spieldosePlayer.actions.stop();
-        spieldosePlayer.actions.play();
+        spieldoseStore.stop();
+        spieldoseStore.play();
       }
-    } else if (spieldosePlayer.getRepeatMode() == 'track') {
-      spieldosePlayer.actions.stop();
-      spieldosePlayer.actions.play();
+    } else if (spieldoseStore.getRepeatMode() == 'track') {
+      spieldoseStore.stop();
+      spieldoseStore.play();
     } else {
-      if (spieldosePlayer.allowSkipNext()) {
-        skipNext();
+      if (spieldoseStore.allowSkipNext()) {
+        spieldoseStore.skipNext();
       } else {
-        spieldosePlayer.actions.stop();
+        spieldoseStore.stop();
       }
     }
   });
@@ -183,37 +176,19 @@ onMounted(() => {
   });
 });
 
-function skipPrevious() {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.skipPrevious();
-}
+
+// TODO: update currentTime to 0  clear playlist (bug?)
 
 function play(ignoreStatus) {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.play(ignoreStatus);
+  spieldoseStore.interact();
+  spieldoseStore.play(ignoreStatus);
 }
 
-function onToggleRepeatMode() {
-  spieldosePlayer.actions.toggleRepeatMode();
-}
 
-function onToggleShuffle() {
-  spieldosePlayer.actions.toggleShuffeMode();
-}
-
-function skipNext() {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.skipNext();
-}
-
-function onVolumeChange(volume) {
-  spieldosePlayer.actions.setVolume(volume);
-  //session.saveVolume(volume);
-}
 
 function onSeek(position) {
   if (position >= 0 && position < 1) {
-    spieldosePlayer.actions.setCurrentTime(spieldosePlayer.getDuration() * position);
+    spieldoseStore.setCurrentTime(spieldoseStore.getDuration * position);
   }
 }
 
@@ -224,7 +199,7 @@ const defaultSettings = {
   }
 };
 
-const settings =  defaultSettings;
+const settings = defaultSettings;
 //const settings = session.getSidebarPlayerSettings || defaultSettings;
 //console.log(settings);
 //session.saveSidebarPlayerSettings();

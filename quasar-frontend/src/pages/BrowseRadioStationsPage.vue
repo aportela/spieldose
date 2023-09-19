@@ -97,6 +97,7 @@ import { ref, inject } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
+import { useSpieldoseStore } from "stores/spieldose";
 
 import { playListActions } from "src/boot/spieldose";
 
@@ -115,7 +116,8 @@ let radioStations = [];
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
-const spieldosePlayer = inject('spieldosePlayer');
+const spieldoseStore = useSpieldoseStore();
+
 
 function search(resetPager) {
   if (resetPager) {
@@ -149,7 +151,7 @@ function onPaginationChanged(pageIndex) {
 
 
 function onPlayRadioStation(radioStation) {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   playListActions.saveElements([{ radioStation: radioStation }]);
 }
 

@@ -12,19 +12,19 @@
         :disable="loading">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
-        @click="onPreviusPlaylist" :disable="loading || !currentPlaylist.allowSkipPrevious" />
+        @click="onPreviusPlaylist" :disable="loading || !spieldoseStore.allowSkipPrevious" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
-        :disable="loading || !currentPlaylist.hasElements" v-if="spieldosePlayer.isStopped()" />
+        :disable="loading || !spieldoseStore.hasElements" v-if="spieldoseStore.isStopped" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
-        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPlaying()" />
+        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldoseStore.isPlaying" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
-        @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldosePlayer.isPaused()" />
+        @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldoseStore.isPaused" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
-        :disable="loading || spieldosePlayer.isStopped() || !(elements && elements.length > 0)" />
+        :disable="loading || spieldoseStore.isStopped || !(elements && elements.length > 0)" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
-        @click="onNextPlaylist" :disable="loading || !currentPlaylist.allowSkipNext" />
+        @click="onNextPlaylist" :disable="loading || !spieldoseStore.allowSkipNext" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
-        :disable="loading || !currentPlaylist.getCurrentElementURL" :href="currentPlaylist.getCurrentElementURL" />
+        :disable="loading || !spieldoseStore.getCurrentElementURL" :href="spieldoseStore.getCurrentElementURL" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
@@ -148,12 +148,12 @@
 </style>
 
 <script setup>
-import { ref, watch, computed, inject } from "vue";
+import { ref, watch, computed } from "vue";
 import { useQuasar, uid } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from 'boot/axios';
-import { useCurrentPlaylistStore } from 'stores/currentPlaylist';
 //import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
+import { useSpieldoseStore } from "stores/spieldose";
 
 import { trackActions, playListActions } from '../boot/spieldose';
 
@@ -161,12 +161,12 @@ const $q = useQuasar();
 
 const { t } = useI18n();
 
-const spieldosePlayer = inject('spieldosePlayer');
+const spieldoseStore = useSpieldoseStore();
 
-const currentPlaylist = useCurrentPlaylistStore();
+
 
 const currentPlayListElementsLastChanges = computed(() => {
-  return (currentPlaylist.getElementsLastChangeTimestamp);
+  return (spieldoseStore.getCurrentPlaylistLastChangedTimestamp);
 });
 
 const tableRef = ref(null);
@@ -249,11 +249,11 @@ const initialPagination = ref({
 });
 
 const rowIcon = computed(() => {
-  if (spieldosePlayer.isPlaying()) {
+  if (spieldoseStore.isPlaying) {
     return ('play_arrow');
-  } else if (spieldosePlayer.isPaused()) {
+  } else if (spieldoseStore.isPaused) {
     return ('pause');
-  } else if (spieldosePlayer.isStopped()) {
+  } else if (spieldoseStore.isStopped) {
     return ('stop');
   } else {
     return ('play_arrow');
@@ -261,9 +261,9 @@ const rowIcon = computed(() => {
 });
 
 watch(currentPlayListElementsLastChanges, (newValue) => {
-  elements.value = currentPlaylist.getElements;
+  elements.value = spieldoseStore.getCurrentPlaylist.elements;
   rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-  currentTrackIndex.value = currentPlaylist.getCurrentIndex;
+  currentTrackIndex.value = spieldoseStore.getCurrentPlaylistIndex;
 });
 
 const elements = ref([]);
@@ -279,18 +279,15 @@ const newPlaylistName = ref(null);
 const newPlaylistPublic = ref(false);
 
 function onClear() {
-  spieldosePlayer.actions.stop();
-  elements.value = [];
-  rows.value = [];
-  currentPlaylist.clear();
+  spieldoseStore.clearCurrentPlaylist();
+  // TODO: required ? not sure
+  //elements.value = [];
+  //rows.value = [];
 }
 
 function setCurrentTrackIndex(index) {
-  spieldosePlayer.interact();
-  currentPlaylist.saveCurrentTrackIndex(index);
-  if (!spieldosePlayer.isPlaying()) {
-    spieldosePlayer.actions.play();
-  }
+  spieldoseStore.interact();
+  spieldoseStore.skipToIndex(index);
 }
 
 function onMoveUpTrackAtIndex(index) {
@@ -326,29 +323,28 @@ function onToggleFavorite(trackId, favorited) {
 }
 
 function onRemoveElementAtIndex(index) {
-  elements.value.splice(index, 1);
-  rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-  currentPlaylist.saveElements(elements.value);
+  // TODO
+  //elements.value.splice(index, 1);
+  //rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+  //spieldoseStore.saveCurrentPlaylistElements(elements.value);
 }
 
 function onRowClick(evt, row, index) {
   if (evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
-    spieldosePlayer.interact();
-    currentPlaylist.saveCurrentTrackIndex(index);
-    if (!spieldosePlayer.isPlaying()) {
-      spieldosePlayer.actions.play();
-    }
+    spieldoseStore.interact();
+    spieldoseStore.skipToIndex(index);
   }
 }
 
 function search() {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
   api.track.search({}, 1, 32, true, null, null).then((success) => {
     elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
     rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-    trackActions.play(elements.value);
+    //trackActions.play(elements.value);
+    spieldoseStore.sendElementsToCurrentPlaylist(elements.value);
     //currentPlaylist.saveElements(elements.value);
     tableRef.value.scrollTo(0, 'center-force');
     loading.value = false;
@@ -363,7 +359,7 @@ function search() {
 }
 
 const currentPlaylistTrackIndex = computed(() => {
-  return (currentPlaylist.getCurrentIndex);
+  return (spieldoseStore.getCurrentPlaylistIndex);
 });
 
 watch(currentPlaylistTrackIndex, (newValue) => {
@@ -372,39 +368,39 @@ watch(currentPlaylistTrackIndex, (newValue) => {
 });
 
 function onRandom() {
-  spieldosePlayer.actions.stop();
+  spieldoseStore.stop();
   search();
 }
 
 function onPreviusPlaylist() {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   playListActions.skipPrevious();
 }
 
 function onPlay() {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.play();
+  spieldoseStore.interact();
+  spieldoseStore.play();
 
 }
 
 function onPause() {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.play();
+  spieldoseStore.interact();
+  spieldoseStore.play();
 }
 
 function onResume() {
-  spieldosePlayer.interact();
-  spieldosePlayer.actions.play();
+  spieldoseStore.interact();
+  spieldoseStore.play();
 }
 
 function onStop() {
-  spieldosePlayer.actions.stop();
-  spieldosePlayer.actions.setCurrentTime(0);
+  spieldoseStore.stop();
+  spieldoseStore.setCurrentTime(0);
 }
 
 function onNextPlaylist() {
-  spieldosePlayer.interact();
-  currentPlaylist.skipNext();
+  spieldoseStore.interact();
+  spieldoseStore.skipNext();
 }
 
 function onSavePlaylist() {
@@ -413,7 +409,7 @@ function onSavePlaylist() {
 }
 
 function onSavePlaylistElements() {
-  spieldosePlayer.interact();
+  spieldoseStore.interact();
   loading.value = true;
   currentTrackIndex.value = 0;
   api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => { return (element.track.id); }), newPlaylistPublic.value).then((success) => {
@@ -431,8 +427,8 @@ function onSavePlaylistElements() {
   });
 }
 
-elements.value = currentPlaylist.getElements;
+elements.value = spieldoseStore.getCurrentPlaylist.elements;
 rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-currentTrackIndex.value = currentPlaylist.getCurrentIndex;
+currentTrackIndex.value = spieldoseStore.getCurrentPlaylistIndex;
 
 </script>

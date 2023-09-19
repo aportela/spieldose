@@ -37,7 +37,6 @@ import { useI18n } from 'vue-i18n';
 import { trackActions } from 'boot/spieldose';
 import { spieldoseEventNames } from "boot/events";
 
-
 const $q = useQuasar();
 const { t } = useI18n();
 
@@ -47,13 +46,14 @@ const props = defineProps({
   visibleAnalyzer: Boolean,
   shuffle: Boolean,
   repeatMode: String,
-  isTrackFavorited: Number,
+  trackFavoritedTimestamp: Number,
   downloadURL: String
 });
 
+
 const bus = inject('bus');
 
-const favoritedTimestamp = ref(props.isTrackFavorited);
+const favoritedTimestamp = ref(props.trackFavoritedTimestamp);
 
 bus.on(spieldoseEventNames.track.setFavorite, (data) => {
   favoritedTimestamp.value = data.timestamp;
@@ -114,7 +114,6 @@ function onToggleRepeatMode() {
 }
 
 function onToggleFavorite() {
-  trackActions.setFavorite
   if (props.id) {
     const funct = !favoritedTimestamp.value ? trackActions.setFavorite : trackActions.unSetFavorite;
     funct(props.id).then((success) => {
