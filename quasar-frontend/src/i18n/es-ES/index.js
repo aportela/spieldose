@@ -154,4 +154,8 @@ export default {
   // radio stations
   "My radio stations": "Mis estaciones de radio",
   "Public radio stations": "Estaciones de radio públicas",
+
+  // generic
+  "API Error: error loading playlist":
+    "API Error: error cargando la lista de reproducción",
 };
