@@ -1,5 +1,8 @@
 import { boot } from "quasar/wrappers";
+import { date, useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { useSpieldosePlayerStore } from "src/stores/spieldosePlayer";
+import { api } from "src/boot/axios";
 
 const spieldosePlayerStore = useSpieldosePlayerStore();
 
@@ -62,6 +65,22 @@ const spieldosePlayer = {
   },
   getShuffle: function () {
     return spieldosePlayerStore.data.shuffle;
+  },
+  getPlaylists: function () {
+    return spieldosePlayerStore.data.playlists.map((playlist) => {
+      return {
+        id: playlist.id,
+        name: playlist.name,
+        totalTracks: playlist.elements.length,
+        public: playlist.public,
+        owner: playlist.owner,
+      };
+    });
+  },
+  getCurrentPlaylist: function () {
+    return spieldosePlayerStore.data.playlists[
+      spieldosePlayerStore.data.currentPlaylistIndex
+    ];
   },
   actions: {
     setVolume: function (volume) {
@@ -139,15 +158,45 @@ const spieldosePlayer = {
       spieldosePlayerStore.data.shuffle = !spieldosePlayerStore.data.shuffle;
       // TODO: launch event
     },
+    loadPlaylist: function (id) {
+      const $q = useQuasar();
+      const { t } = useI18n();
+      if (!this.data.isStopped) {
+        this.stop();
+      }
+      api.playlist
+        .get(id)
+        .then((success) => {
+          spieldosePlayerStore.setPlaylistAsCurrent(success.data.playlist);
+          this.play();
+          // TODO: play here?
+        })
+        .catch((error) => {
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error loading playlist"),
+            caption: t("API Error: fatal error details", {
+              status: error.response.status,
+              statusText: error.response.statusText,
+            }),
+          });
+        });
+    },
+    sendToPlayList(newElements) {
+      if (!this.data.isStopped) {
+        this.stop();
+      }
+      spieldosePlayerStore.sendElementsToCurrentPlaylist(newElements);
+      this.play();
+    },
+    appendToPlayList(newElements) {
+      spieldosePlayerStore.appendElementsToCurrentPlaylist(newElements);
+      if (!this.data.isPlaying) {
+        this.play();
+      }
+    },
   },
 };
-
-/*
-bus.on("currentPlayList.play", () => {
-  spieldosePlayer.actions.play();
-});
-
-*/
 
 export default boot(({ app }) => {
   // something to do
