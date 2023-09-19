@@ -6,8 +6,9 @@
 
 <script setup>
 
-import { date } from 'quasar';
-import { useI18n } from 'vue-i18n'
+import { computed } from "vue";
+import { date } from "quasar";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
@@ -20,33 +21,36 @@ const props = defineProps({
   }
 });
 
-let label = "";
-let diff = date.getDateDiff(Date.now(), props.timestamp, 'years');
-if (diff < 1) {
-  diff = date.getDateDiff(Date.now(), props.timestamp, 'months');
+const label = computed(() => {
+  let str = "";
+  let diff = date.getDateDiff(Date.now(), props.timestamp, 'years');
   if (diff < 1) {
-    diff = date.getDateDiff(Date.now(), props.timestamp, 'days');
+    diff = date.getDateDiff(Date.now(), props.timestamp, 'months');
     if (diff < 1) {
-      diff = date.getDateDiff(Date.now(), props.timestamp, 'hours');
+      diff = date.getDateDiff(Date.now(), props.timestamp, 'days');
       if (diff < 1) {
-        diff = date.getDateDiff(Date.now(), props.timestamp, 'minutes');
+        diff = date.getDateDiff(Date.now(), props.timestamp, 'hours');
         if (diff < 1) {
-          diff = date.getDateDiff(Date.now(), props.timestamp, 'seconds');
-          label = t(diff > 1 ? 'nSecondsAgo': 'oneSecondAgo', { count: diff });
+          diff = date.getDateDiff(Date.now(), props.timestamp, 'minutes');
+          if (diff < 1) {
+            diff = date.getDateDiff(Date.now(), props.timestamp, 'seconds');
+            str = t(diff > 1 ? 'nSecondsAgo' : 'oneSecondAgo', { count: diff });
+          } else {
+            str = t(diff > 1 ? 'nMinutesAgo' : 'oneMinuteAgo', { count: diff });
+          }
         } else {
-          label = t(diff > 1 ? 'nMinutesAgo': 'oneMinuteAgo', { count: diff });
+          str = t(diff > 1 ? 'nHoursAgo' : 'oneHourAgo', { count: diff });
         }
       } else {
-        label = t(diff > 1 ? 'nHoursAgo': 'oneHourAgo', { count: diff });
+        str = t(diff > 1 ? 'nDaysAgo' : 'oneDayAgo', { count: diff });
       }
     } else {
-      label = t(diff > 1 ? 'nDaysAgo': 'oneDayAgo', { count: diff });
+      str = t(diff > 1 ? 'nMonthsAgo' : 'oneMonthAgo', { count: diff });
     }
   } else {
-    label = t(diff > 1 ? 'nMonthsAgo': 'oneMonthAgo', { count: diff });
+    str = t(diff > 1 ? 'nYearsAgo' : 'oneYearAgo', { count: diff });
   }
-} else {
-  label = t(diff > 1 ? 'nYearsAgo': 'oneYearAgo', { count: diff });
-}
+  return (str)
+});
 
 </script>
