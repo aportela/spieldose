@@ -1,9 +1,11 @@
 import { spieldosePlayer } from "boot/spieldosePlayer";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
+import { useSpieldosePlayerStore } from "stores/spieldosePlayer";
 import { api } from "boot/axios";
 import { spieldoseEvents } from "boot/events";
 
 const currentPlaylist = useCurrentPlaylistStore();
+const spieldosePlayerStore = useSpieldosePlayerStore();
 
 const trackActions = {
   setFavorite: function (id) {
@@ -25,6 +27,19 @@ const trackActions = {
         .unSetFavorite(id)
         .then((success) => {
           spieldoseEvents.emit.track.unSetFavorite(id);
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  increasePlayCount: function (id) {
+    return new Promise((resolve, reject) => {
+      api.track
+        .increasePlayCount(id)
+        .then((success) => {
+          spieldoseEvents.emit.track.increasePlayCount(id);
           resolve(success);
         })
         .catch((error) => {
@@ -100,4 +115,10 @@ const playListActions = {
   },
 };
 
-export { trackActions, albumActions, playListActions };
+const playerActions = {
+  setVolume: function (volume) {
+
+  }
+};
+
+export { playerActions, trackActions, albumActions, playListActions };

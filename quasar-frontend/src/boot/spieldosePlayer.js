@@ -16,6 +16,8 @@ const spieldosePlayer = {
     }
     // required for radio stations streams
     spieldosePlayerStore.data.audio.crossOrigin = "anonymous";
+    spieldosePlayerStore.restorePlayerSettings();
+    spieldosePlayerStore.restoreCurrentPlaylist();
   },
   getAudioInstance: function () {
     return spieldosePlayerStore.data.audio;
@@ -33,25 +35,28 @@ const spieldosePlayer = {
   },
   // TODO: move to actions ?
   interact: function () {
-    spieldosePlayerStore.data.userInteracted = true;
+    spieldosePlayerStore.data.player.userInteracted = true;
   },
   hasPreviousUserInteractions: function () {
-    return spieldosePlayerStore.data.userInteracted;
+    return (spieldosePlayerStore.data.player.userInteracted == true);
   },
   getStatus: function () {
-    return spieldosePlayerStore.data.playerStatus;
+    return (spieldosePlayerStore.data.player.status);
   },
   isMuted: function () {
-    return spieldosePlayerStore.data.muted;
+    return (spieldosePlayerStore.data.player.muted);
   },
   isPlaying: function () {
-    return spieldosePlayerStore.data.playerStatus == "playing";
+    return (spieldosePlayerStore.data.player.status == "playing");
   },
   isStopped: function () {
-    return spieldosePlayerStore.data.playerStatus == "stopped";
+    return (spieldosePlayerStore.data.player.status == "stopped");
   },
   isPaused: function () {
-    return spieldosePlayerStore.data.playerStatus == "paused";
+    return spieldosePlayerStore.data.player.status == "paused";
+  },
+  getVolume: function () {
+    return (spieldosePlayerStore.data.player.volume);
   },
   getDuration: function () {
     return spieldosePlayerStore.data.audio
@@ -59,10 +64,10 @@ const spieldosePlayer = {
       : 0;
   },
   getRepeatMode: function () {
-    return spieldosePlayerStore.data.repeatMode;
+    return (spieldosePlayerStore.data.player.repeatMode);
   },
   getShuffle: function () {
-    return spieldosePlayerStore.data.shuffle;
+    return (spieldosePlayerStore.data.player.shuffle == true);
   },
   getPlaylists: function () {
     return spieldosePlayerStore.data.playlists.map((playlist) => {
@@ -76,40 +81,44 @@ const spieldosePlayer = {
     });
   },
   getCurrentPlaylist: function () {
-    return spieldosePlayerStore.data.playlists[
-      spieldosePlayerStore.data.currentPlaylistIndex
-    ];
+    return (spieldosePlayerStore.getCurrentPlaylist());
+  },
+  getCurrentPlaylistElement: function () {
+    return (spieldosePlayerStore.getCurrentPlaylistElement());
+  },
+  allowSkipPrevious: function () {
+    return (spieldosePlayerStore.allowSkipPrevious);
+  },
+  allowSkipNext: function () {
+    return (spieldosePlayerStore.allowSkipNext);
   },
   actions: {
     setVolume: function (volume) {
-      spieldosePlayerStore.data.audio.volume = volume;
+      spieldosePlayerStore.setVolume(volume);
     },
     toggleMute: function () {
-      spieldosePlayerStore.data.muted = !spieldosePlayerStore.data.muted;
-      spieldosePlayerStore.data.audio.spieldosePlayerStore.data.muted =
-        spieldosePlayerStore.data.muted;
-      // TODO: launch event
+      spieldosePlayerStore.toggleMute();
     },
     setCurrentTime: function (time) {
       spieldosePlayerStore.data.audio.currentTime = time;
     },
     play: function (ignoreStatus) {
-      if (spieldosePlayerStore.data.userInteracted) {
+      if (spieldosePlayerStore.data.player.userInteracted) {
         if (ignoreStatus) {
           spieldosePlayerStore.data.audio.play();
-          spieldosePlayerStore.data.playerStatus = "playing";
+          spieldosePlayerStore.data.player.status = "playing";
         } else {
-          if (spieldosePlayerStore.data.playerStatus == "playing") {
+          if (spieldosePlayerStore.data.player.status == "playing") {
             spieldosePlayerStore.data.audio.pause();
-            spieldosePlayerStore.data.playerStatus = "paused";
-          } else if (spieldosePlayerStore.data.playerStatus == "paused") {
+            spieldosePlayerStore.data.player.status = "paused";
+          } else if (spieldosePlayerStore.data.player.status == "paused") {
             spieldosePlayerStore.data.audio.play();
-            spieldosePlayerStore.data.playerStatus = "playing";
+            spieldosePlayerStore.data.player.status = "playing";
           } else {
             // TODO: required ?
             //audio.load();
             spieldosePlayerStore.data.audio.play();
-            spieldosePlayerStore.data.playerStatus = "playing";
+            spieldosePlayerStore.data.player.status = "playing";
           }
         }
       } else {
@@ -117,54 +126,60 @@ const spieldosePlayer = {
       }
     },
     pause: function () {
-      if (spieldosePlayerStore.data.playerStatus == "playing") {
+      if (spieldosePlayerStore.data.player.status == "playing") {
         spieldosePlayerStore.data.audio.pause();
-        spieldosePlayerStore.data.playerStatus = "paused";
+        spieldosePlayerStore.data.player.status = "paused";
       }
     },
     resume: function () {
-      if (spieldosePlayerStore.data.playerStatus == "paused") {
+      if (spieldosePlayerStore.data.player.status == "paused") {
         spieldosePlayerStore.data.audio.play();
-        spieldosePlayerStore.data.playerStatus = "playing";
+        spieldosePlayerStore.data.player.status = "playing";
       }
     },
     stop: function () {
-      if (spieldosePlayerStore.data.playerStatus == "playing") {
+      if (spieldosePlayerStore.data.player.status == "playing") {
         spieldosePlayerStore.data.audio.pause();
         // TODO: check if works
       }
       spieldosePlayerStore.data.audio.currentTime = 0;
-      spieldosePlayerStore.data.playerStatus = "stopped";
+      spieldosePlayerStore.data.player.status = "stopped";
+    },
+    skipPrevious: function () {
+      spieldosePlayerStore.skipPrevious();
+    },
+    skipNext: function () {
+      spieldosePlayerStore.skipNext();
     },
     toggleRepeatMode() {
-      switch (spieldosePlayerStore.data.repeatMode) {
+      switch (spieldosePlayerStore.data.player.repeatMode) {
         case "none":
-          spieldosePlayerStore.data.repeatMode = "track";
+          spieldosePlayerStore.data.player.repeatMode = "track";
           // TODO: launch event
           break;
         case "track":
-          spieldosePlayerStore.data.repeatMode = "playlist";
+          spieldosePlayerStore.data.player.repeatMode = "playlist";
           // TODO: launch event
           break;
         case "playlist":
-          spieldosePlayerStore.data.repeatMode = "none";
+          spieldosePlayerStore.data.player.repeatMode = "none";
           // TODO: launch event
           break;
       }
     },
     toggleShuffeMode() {
-      spieldosePlayerStore.data.shuffle = !spieldosePlayerStore.data.shuffle;
+      spieldosePlayerStore.data.player.shuffle = !spieldosePlayerStore.data.player.shuffle;
       // TODO: launch event
     },
     setPlaylist: function (playlist) {
-      if (!spieldosePlayerStore.data.playerStatus == "stopped") {
+      if (!spieldosePlayerStore.data.player.status == "stopped") {
         this.stop();
       }
       spieldosePlayerStore.setPlaylistAsCurrent(playlist);
       this.play();
     },
     sendToPlayList(newElements) {
-      if (!spieldosePlayerStore.data.playerStatus == "stopped") {
+      if (!spieldosePlayerStore.data.player.status == "stopped") {
         this.stop();
       }
       spieldosePlayerStore.sendElementsToCurrentPlaylist(newElements);
@@ -172,7 +187,7 @@ const spieldosePlayer = {
     },
     appendToPlayList(newElements) {
       spieldosePlayerStore.appendElementsToCurrentPlaylist(newElements);
-      if (!spieldosePlayerStore.data.playerStatus == "playing") {
+      if (!spieldosePlayerStore.data.player.status == "playing") {
         this.play();
       }
     },

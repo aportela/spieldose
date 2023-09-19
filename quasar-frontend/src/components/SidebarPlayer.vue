@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="currentElement">
     <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
       :rotateVinyl="spieldosePlayer.isPlaying()"></SidebarPlayerAlbumCover>
     <audio id="audio" class="is-hidden"></audio>
@@ -7,14 +7,14 @@
     <SidebarPlayerVolumeControl :disabled="disablePlayerControls" :defaultValue="defaultVolume"
       @volumeChange="onVolumeChange">
     </SidebarPlayerVolumeControl>
-    <SidebarPlayerTrackInfo :currentElement="currentPlaylist.getCurrentElement"></SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="currentPlaylist.allowSkipPrevious"
-      :allowPlay="true" :allowSkipNext="currentPlaylist.allowSkipNext" :isPlaying="spieldosePlayer.isPlaying()"
+    <SidebarPlayerTrackInfo :currentElement="currentElement"></SidebarPlayerTrackInfo>
+    <SidebarPlayerMainControls :disabled="disablePlayerControls" :allowSkipPrevious="spieldosePlayer.allowSkipPrevious()"
+      :allowPlay="true" :allowSkipNext="spieldosePlayer.allowSkipNext()" :isPlaying="spieldosePlayer.isPlaying()"
       @skipPrevious="skipPrevious" @play="play" @skipNext="skipNext"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
-      :downloadURL="currentPlaylist.getCurrentElementURL" :isTrackFavorited="currentElementFavorited"
+      :downloadURL="currentElement.track.url" :isTrackFavorited="currentElementFavorited"
       :visibleAnalyzer="showAnalyzer" :shuffle="spieldosePlayer.getShuffle()" :repeatMode="spieldosePlayer.getRepeatMode()"
       @toggleAnalyzer="showAnalyzer = !showAnalyzer" @toggleShuffle="onToggleShuffle"
       @toggleRepeatMode="onToggleRepeatMode" @toggleTrackDetailsModal="detailsModal = true">
@@ -27,8 +27,6 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, inject } from "vue";
-
-
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 
@@ -40,25 +38,21 @@ import { default as SidebarPlayerMainControls } from "components/SidebarPlayerMa
 import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSeekControl.vue";
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
-import { useSessionStore } from 'stores/session'
 import { useCurrentPlaylistStore } from 'stores/currentPlaylist'
-import { api } from "src/boot/axios";
 
+import { spieldoseEvents } from "boot/events";
 import { playListActions } from "src/boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
 
-const session = useSessionStore();
-if (!session.isLoaded) {
-  session.load();
-}
-
-const loading = ref(false);
-
-const defaultVolume = session.getVolume || 1;
 
 const spieldosePlayer = inject('spieldosePlayer');
+
+const defaultVolume = spieldosePlayer.getVolume || 1;
+
+const currentElement = spieldosePlayer.getCurrentPlaylistElement();
+console.log(currentElement);
 
 const audioElement = ref(null);
 
@@ -69,14 +63,13 @@ const showAnalyzer = ref(true);
 const currentPlaylist = useCurrentPlaylistStore();
 
 const isCurrentElementTrack = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
+  const currentElement = spieldosePlayer.getCurrentPlaylistElement();
   return (currentElement.track != null);
 });
 
 // TODO: use currentElement globally
 
 const currentElementId = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement && currentElement.track) {
     return (currentElement.track.id || null);
   } else if (currentElement && currentElement.radioStation) {
@@ -87,7 +80,6 @@ const currentElementId = computed(() => {
 });
 
 const currentElementFavorited = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement && currentElement.track) {
     return (currentElement.track.favorited || null);
   } else {
@@ -96,7 +88,6 @@ const currentElementFavorited = computed(() => {
 });
 
 const coverImage = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement) {
     if (currentElement.track && currentElement.track.covers) {
       return (currentElement.track.covers.normal || null);
@@ -111,7 +102,6 @@ const coverImage = computed(() => {
 });
 
 const smallVinylImage = computed(() => {
-  const currentElement = currentPlaylist.getCurrentElement;
   if (currentElement) {
     if (currentElement.track && currentElement.track.covers) {
       return (currentElement.track.covers.small || null);
@@ -155,13 +145,13 @@ onMounted(() => {
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
     if (isCurrentElementTrack.value) {
-      increasePlayCount(currentElementId.value);
+      spieldoseEvents.increasePlayCount(currentElementId.value);
     }
     if (spieldosePlayer.getRepeatMode() == 'playlist') {
-      if (currentPlaylist.allowSkipNext) {
+      if (spieldosePlayer.allowSkipNext()) {
         skipNext();
       } else {
-        currentPlaylist.saveCurrentTrackIndex(0);
+        //currentPlaylist.saveCurrentTrackIndex(0);
         spieldosePlayer.actions.stop();
         spieldosePlayer.actions.play();
       }
@@ -169,7 +159,7 @@ onMounted(() => {
       spieldosePlayer.actions.stop();
       spieldosePlayer.actions.play();
     } else {
-      if (currentPlaylist.allowSkipNext) {
+      if (spieldosePlayer.allowSkipNext()) {
         skipNext();
       } else {
         spieldosePlayer.actions.stop();
@@ -193,27 +183,9 @@ onMounted(() => {
   });
 });
 
-function increasePlayCount(trackId) {
-  // WARNING: TODO CALL MULTIPLE TIMES ?
-  api.track.increasePlayCount(trackId).then((success) => {
-  })
-    .catch((error) => {
-      loading.value = false;
-      switch (error.response.status) {
-        default:
-          $q.notify({
-            type: "negative",
-            message: t("API Error: fatal error"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-    });
-}
-
 function skipPrevious() {
   spieldosePlayer.interact();
-  playListActions.skipPrevious();
+  spieldosePlayer.actions.skipPrevious();
 }
 
 function play(ignoreStatus) {
@@ -231,12 +203,12 @@ function onToggleShuffle() {
 
 function skipNext() {
   spieldosePlayer.interact();
-  currentPlaylist.skipNext();
+  spieldosePlayer.actions.skipNext();
 }
 
 function onVolumeChange(volume) {
   spieldosePlayer.actions.setVolume(volume);
-  session.saveVolume(volume);
+  //session.saveVolume(volume);
 }
 
 function onSeek(position) {
@@ -252,8 +224,9 @@ const defaultSettings = {
   }
 };
 
-const settings = session.getSidebarPlayerSettings || defaultSettings;
-console.log(settings);
-session.saveSidebarPlayerSettings();
+const settings =  defaultSettings;
+//const settings = session.getSidebarPlayerSettings || defaultSettings;
+//console.log(settings);
+//session.saveSidebarPlayerSettings();
 
 </script>

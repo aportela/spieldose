@@ -16,6 +16,7 @@ const spieldoseEventNames = {
   track: {
     setFavorite: "track.setFavorite",
     unSetFavorite: "track.unSetFavorite",
+    increasePlayCount: "track.increasePlayCount",
   },
 };
 
@@ -64,6 +65,11 @@ const spieldoseEvents = {
           id: id,
         });
       },
+      increasePlayCount: function (id) {
+        bus.emit(spieldoseEventNames.track.increasePlayCount, {
+          id: id,
+        });
+      }
     },
   },
 };
