@@ -131,7 +131,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       if (playerSettings) {
         this.data.player = playerSettings;
         if (this.data.audio) {
-          this.data.audio.volume = 0.1; // this.data.player.volume;
+          this.data.audio.volume = this.data.player.volume;
           this.data.audio.muted = this.data.player.muted;
         }
       }
