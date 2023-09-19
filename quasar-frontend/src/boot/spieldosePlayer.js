@@ -1,5 +1,5 @@
 import { boot } from "quasar/wrappers";
-import { useSpieldosePlayerStore } from "stores/spieldosePlayer";
+import { useSpieldosePlayerStore } from "stores/spieldose";
 
 const spieldosePlayerStore = useSpieldosePlayerStore();
 
@@ -38,25 +38,25 @@ const spieldosePlayer = {
     spieldosePlayerStore.data.player.userInteracted = true;
   },
   hasPreviousUserInteractions: function () {
-    return (spieldosePlayerStore.data.player.userInteracted == true);
+    return spieldosePlayerStore.data.player.userInteracted == true;
   },
   getStatus: function () {
-    return (spieldosePlayerStore.data.player.status);
+    return spieldosePlayerStore.data.player.status;
   },
   isMuted: function () {
-    return (spieldosePlayerStore.data.player.muted);
+    return spieldosePlayerStore.data.player.muted;
   },
   isPlaying: function () {
-    return (spieldosePlayerStore.data.player.status == "playing");
+    return spieldosePlayerStore.data.player.status == "playing";
   },
   isStopped: function () {
-    return (spieldosePlayerStore.data.player.status == "stopped");
+    return spieldosePlayerStore.data.player.status == "stopped";
   },
   isPaused: function () {
     return spieldosePlayerStore.data.player.status == "paused";
   },
   getVolume: function () {
-    return (spieldosePlayerStore.data.player.volume);
+    return spieldosePlayerStore.data.player.volume;
   },
   getDuration: function () {
     return spieldosePlayerStore.data.audio
@@ -64,10 +64,10 @@ const spieldosePlayer = {
       : 0;
   },
   getRepeatMode: function () {
-    return (spieldosePlayerStore.data.player.repeatMode);
+    return spieldosePlayerStore.data.player.repeatMode;
   },
   getShuffle: function () {
-    return (spieldosePlayerStore.data.player.shuffle == true);
+    return spieldosePlayerStore.data.player.shuffle == true;
   },
   getPlaylists: function () {
     return spieldosePlayerStore.data.playlists.map((playlist) => {
@@ -81,16 +81,16 @@ const spieldosePlayer = {
     });
   },
   getCurrentPlaylist: function () {
-    return (spieldosePlayerStore.getCurrentPlaylist());
+    return spieldosePlayerStore.getCurrentPlaylist();
   },
   getCurrentPlaylistElement: function () {
-    return (spieldosePlayerStore.getCurrentPlaylistElement());
+    return spieldosePlayerStore.getCurrentPlaylistElement();
   },
   allowSkipPrevious: function () {
-    return (spieldosePlayerStore.allowSkipPrevious);
+    return spieldosePlayerStore.allowSkipPrevious;
   },
   allowSkipNext: function () {
-    return (spieldosePlayerStore.allowSkipNext);
+    return spieldosePlayerStore.allowSkipNext;
   },
   actions: {
     setVolume: function (volume) {
@@ -168,7 +168,8 @@ const spieldosePlayer = {
       }
     },
     toggleShuffeMode() {
-      spieldosePlayerStore.data.player.shuffle = !spieldosePlayerStore.data.player.shuffle;
+      spieldosePlayerStore.data.player.shuffle =
+        !spieldosePlayerStore.data.player.shuffle;
       // TODO: launch event
     },
     setPlaylist: function (playlist) {

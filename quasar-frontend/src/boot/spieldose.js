@@ -1,6 +1,6 @@
 import { spieldosePlayer } from "boot/spieldosePlayer";
 import { useCurrentPlaylistStore } from "stores/currentPlaylist";
-import { useSpieldosePlayerStore } from "stores/spieldosePlayer";
+import { useSpieldosePlayerStore } from "stores/spieldose";
 import { api } from "boot/axios";
 import { spieldoseEvents } from "boot/events";
 
@@ -116,9 +116,7 @@ const playListActions = {
 };
 
 const playerActions = {
-  setVolume: function (volume) {
-
-  }
+  setVolume: function (volume) {},
 };
 
 export { playerActions, trackActions, albumActions, playListActions };
