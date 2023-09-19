@@ -69,6 +69,20 @@ const albumActions = {
 };
 
 const playListActions = {
+  loadPlaylist: function (id) {
+    return new Promise((resolve, reject) => {
+      spieldosePlayer.interact();
+      api.playlist
+        .get(id)
+        .then((success) => {
+          spieldosePlayer.actions.setPlaylist(success.data.playlist);
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
   saveElements: function (newElements) {
     currentPlaylist.saveElements(newElements);
   },

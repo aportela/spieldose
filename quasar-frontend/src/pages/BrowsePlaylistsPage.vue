@@ -77,13 +77,14 @@
 import { ref, watch, inject } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
+import { useI18n } from 'vue-i18n';
+
 import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
+import { playListActions }from "boot/spieldose";
 
-import { playListActions } from "src/boot/spieldose";
 const $q = useQuasar();
-const spieldosePlayer = inject('spieldosePlayer');
-
+const { t } = useI18n();
 
 const playlistName = ref(null);
 const noPlaylistsFound = ref(false);
@@ -179,7 +180,18 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlay(playlistId) {
-  spieldosePlayer.interact();
+  playListActions.loadPlaylist(playlistId).then((success) => {}).catch((error) => {
+    console.log(error);
+    $q.notify({
+          type: "negative",
+          message: t("API Error: error loading playlist"),
+          caption: t("API Error: fatal error details", {
+            status: error.response.status,
+            statusText: error.response.statusText,
+          }),
+        });
+  });
+
   loading.value = true;
   api.track.search({ playlistId: playlistId }, 1, 0, false, 'playListTrackIndex', 'ASC').then((success) => {
     playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));

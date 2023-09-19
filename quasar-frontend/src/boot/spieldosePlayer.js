@@ -1,8 +1,5 @@
 import { boot } from "quasar/wrappers";
-import { date, useQuasar } from "quasar";
-import { useI18n } from "vue-i18n";
-import { useSpieldosePlayerStore } from "src/stores/spieldosePlayer";
-import { api } from "src/boot/axios";
+import { useSpieldosePlayerStore } from "stores/spieldosePlayer";
 
 const spieldosePlayerStore = useSpieldosePlayerStore();
 
@@ -34,6 +31,7 @@ const spieldosePlayer = {
       spieldosePlayerStore.data.audio.src = src;
     }
   },
+  // TODO: move to actions ?
   interact: function () {
     spieldosePlayerStore.data.userInteracted = true;
   },
@@ -158,32 +156,15 @@ const spieldosePlayer = {
       spieldosePlayerStore.data.shuffle = !spieldosePlayerStore.data.shuffle;
       // TODO: launch event
     },
-    loadPlaylist: function (id) {
-      const $q = useQuasar();
-      const { t } = useI18n();
-      if (!this.data.isStopped) {
+    setPlaylist: function (playlist) {
+      if (!spieldosePlayerStore.data.playerStatus == "stopped") {
         this.stop();
       }
-      api.playlist
-        .get(id)
-        .then((success) => {
-          spieldosePlayerStore.setPlaylistAsCurrent(success.data.playlist);
-          this.play();
-          // TODO: play here?
-        })
-        .catch((error) => {
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error loading playlist"),
-            caption: t("API Error: fatal error details", {
-              status: error.response.status,
-              statusText: error.response.statusText,
-            }),
-          });
-        });
+      spieldosePlayerStore.setPlaylistAsCurrent(playlist);
+      this.play();
     },
     sendToPlayList(newElements) {
-      if (!this.data.isStopped) {
+      if (!spieldosePlayerStore.data.playerStatus == "stopped") {
         this.stop();
       }
       spieldosePlayerStore.sendElementsToCurrentPlaylist(newElements);
@@ -191,7 +172,7 @@ const spieldosePlayer = {
     },
     appendToPlayList(newElements) {
       spieldosePlayerStore.appendElementsToCurrentPlaylist(newElements);
-      if (!this.data.isPlaying) {
+      if (!spieldosePlayerStore.data.playerStatus == "playing") {
         this.play();
       }
     },
