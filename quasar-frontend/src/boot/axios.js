@@ -185,9 +185,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-            encodeURIComponent(mbId || "") +
-            "&name=" +
-            encodeURIComponent(name || ""),
+              encodeURIComponent(mbId || "") +
+              "&name=" +
+              encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -437,8 +437,13 @@ const api = {
     },
   },
   playlist: {
-    search: function (filter, currentPageIndex, resultsPage, sortField,
-      sortOrder) {
+    search: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      sortField,
+      sortOrder
+    ) {
       return new Promise((resolve, reject) => {
         const params = {
           filter: filter || {},
@@ -493,6 +498,18 @@ const api = {
           });
       });
     },
+    get: function (id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/playlist/" + id)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {
@@ -521,9 +538,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-            encodeURIComponent(title || "") +
-            "&artist=" +
-            encodeURIComponent(artist || ""),
+              encodeURIComponent(title || "") +
+              "&artist=" +
+              encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {
