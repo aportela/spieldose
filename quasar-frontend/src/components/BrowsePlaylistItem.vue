@@ -1,9 +1,6 @@
 <template>
   <q-card class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 shadow-box shadow-10 q-mt-lg" bordered>
-    <q-card-section>
-      {{ playlist.name }}
-      <p class="text-center">({{ playlist.trackCount }} track/s)</p>
-    </q-card-section>
+    <q-card-section>{{ playlist.name }}</q-card-section>
     <q-separator />
     <q-card-section v-if="showMosaic">
       <div class="row">
@@ -39,9 +36,9 @@
     </q-card-section>
     <q-separator />
     <q-card-section class="text-right">
-
+      <span class="q-mr-sm">{{ playlist.trackCount }} track/s</span>
       <router-link :to="{ name: 'playlistsByUserId', params: { id: playlist.owner.id }}">by {{  playlist.owner.name }}</router-link>
-      <q-icon name="clock" size="xs" :title="'last update: ' + date.formatDate(playlist.updated * 1000, 'YYYY-MM-DD HH:mm:ss Z')"></q-icon>
+      <LabelTimestampAgo className="q-ml-sm" :timestamp="playlist.updated * 1000"></LabelTimestampAgo>
     </q-card-section>
   </q-card>
 </template>
@@ -67,9 +64,9 @@ img.mosaic_cover_element {
 
 <script setup>
 
-import { ref, computed } from "vue";
-import { date } from "quasar";
+import { computed } from "vue";
 
+import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
 /**
   * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
