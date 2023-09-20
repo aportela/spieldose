@@ -214,9 +214,4 @@ const defaultSettings = {
   }
 };
 
-const settings = defaultSettings;
-//const settings = session.getSidebarPlayerSettings || defaultSettings;
-//console.log(settings);
-//session.saveSidebarPlayerSettings();
-
 </script>
