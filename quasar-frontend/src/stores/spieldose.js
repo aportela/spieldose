@@ -384,7 +384,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.saveCurrentPlaylist();
       if (this.hasCurrentPlaylistElements) {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play();
+        this.play(true);
       }
     },
     sendElementsToCurrentPlaylist: function (elements) {

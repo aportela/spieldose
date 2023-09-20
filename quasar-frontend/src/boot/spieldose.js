@@ -103,7 +103,7 @@ const playListActions = {
       api.playlist
         .get(id)
         .then((success) => {
-          spieldoseStore.setPlaylist(success.data.playlist);
+          spieldoseStore.setPlaylistAsCurrent(success.data.playlist);
           resolve();
         })
         .catch((error) => {
