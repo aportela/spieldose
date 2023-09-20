@@ -172,12 +172,20 @@ onMounted(() => {
   });
 
   audioElement.value.addEventListener('timeupdate', (event) => {
-    currentElementTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
-    currentElementTimeData.value.duration = Math.floor(audioElement.value.duration);
-    currentElementTimeData.value.currentTime = Math.floor(audioElement.value.currentTime);
-    if (!isNaN(currentElementTimeData.value.currentProgress)) {
-      currentElementTimeData.value.position = Number(currentElementTimeData.value.currentProgress.toFixed(2));
+    if (isCurrentElementTrack.value) {
+      currentElementTimeData.value.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
+      currentElementTimeData.value.duration = Math.floor(audioElement.value.duration);
+      currentElementTimeData.value.currentTime = Math.floor(audioElement.value.currentTime);
+      if (!isNaN(currentElementTimeData.value.currentProgress)) {
+        currentElementTimeData.value.position = Number(currentElementTimeData.value.currentProgress.toFixed(2));
+      } else {
+        currentElementTimeData.value.position = 0;
+      }
     } else {
+      // TODO: remove listener if no track (radiostations)
+      currentElementTimeData.value.currentProgress = 0;
+      currentElementTimeData.value.duration = 0;
+      currentElementTimeData.value.currentTime = 0;
       currentElementTimeData.value.position = 0;
     }
   });
