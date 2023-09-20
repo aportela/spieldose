@@ -181,7 +181,6 @@ function onPaginationChanged(pageIndex) {
 
 function onPlay(playlistId) {
   playListActions.loadPlaylist(playlistId).then((success) => {}).catch((error) => {
-    console.log(error);
     $q.notify({
           type: "negative",
           message: t("API Error: error loading playlist"),
