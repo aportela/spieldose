@@ -21,7 +21,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
-        volume: 0.1,
+        volume: 1,
         status: "stopped",
         muted: false,
         repeatMode: "none",
@@ -302,6 +302,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.player.status = "stopped";
         this.data.player.userInteracted =
           userInteracted !== undefined ? userInteracted == true : false;
+        if (this.data.audio) {
+          this.data.audio.volume = this.data.player.volume;
+          this.data.audio.muted = this.data.player.muted;
+        }
+      } else {
         if (this.data.audio) {
           this.data.audio.volume = this.data.player.volume;
           this.data.audio.muted = this.data.player.muted;
