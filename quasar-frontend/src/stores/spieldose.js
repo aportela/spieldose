@@ -13,7 +13,7 @@ const localStorageBasilOptions = {
   expireDays: 3650,
 };
 
-export const useSpieldoseStore = defineStore("spieldoseStore", {
+export const useSpieldoseStore = defineStore("spieldose", {
   state: () => ({
     data: {
       audio: null,
@@ -25,6 +25,9 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
         muted: false,
         repeatMode: "none",
         shuffle: false,
+        sideBarTopArt: {
+          mode: "animation",
+        },
         sidebarAudioMotionAnalyzer: {
           visible: true,
           mode: 7,
@@ -44,6 +47,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
           currentElementIndex: -1,
           elements: [],
           shuffleIndexes: [], // stores a random elements shuffle indexes (for using when shuffle mode is on rather than sequential indexes like 1,2,3,4....n)
+          currentRadioStation: null,
         },
       ],
     },
@@ -57,6 +61,8 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       state.data.player.sidebarAudioMotionAnalyzer.visible,
     getSidebarAudioMotionAnalyzerMode: (state) =>
       state.data.player.sidebarAudioMotionAnalyzer.mode,
+    hasSidebarTopArtAnimationMode: (state) =>
+      state.data.player.sideBarTopArt.mode == "animation",
     getPlayerStatus: (state) => state.data.player.status,
     isMuted: (state) => state.data.player.muted,
     isPlaying: (state) => state.data.player.status == "playing",
@@ -66,28 +72,106 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
     getRepeatMode: (state) => state.data.player.repeatMode,
     getShuffle: (state) => state.data.player.shuffle,
+    hasCurrentPlaylistElements: (state) =>
+      state.data.playlists[0].elements &&
+      state.data.playlists[0].elements.length > 0,
     getCurrentPlaylist: (state) => state.data.playlists[0],
     getCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].currentElementIndex,
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
-    getCurrentPlaylistElement: (state) =>
-      state.data.playlists[0].elements.length > 0 &&
-      state.data.playlists[0].currentElementIndex >= 0
-        ? state.data.playlists[0].elements[
+    isCurrentPlaylistElementATrack: (state) =>
+      this.hasCurrentPlaylistElements &&
+      state.data.playlists[0].elements[
+        state.data.playlists[0].currentElementIndex
+      ].track,
+    hasCurrentPlaylistARadioStation: (state) =>
+      state.data.playlists[0].currentRadioStation != null,
+    getCurrentPlaylistElement(state) {
+      if (!this.hasCurrentPlaylistARadioStation) {
+        if (
+          this.hasCurrentPlaylistElements &&
+          state.data.playlists[0].currentElementIndex >= 0
+        ) {
+          return state.data.playlists[0].elements[
             state.data.playlists[0].currentElementIndex
-          ]
-        : null,
-    getCurrentPlaylistElementURL: (state) =>
-      state.data.playlists[0].elements.length > 0 &&
-      state.data.playlists[0].currentElementIndex >= 0
-        ? state.data.playlists[0].elements[
+          ];
+        } else {
+          return null;
+        }
+      } else {
+        return state.data.playlists[0].currentRadioStation;
+      }
+    },
+    getCurrentPlaylistElementURL(state) {
+      if (!this.hasCurrentPlaylistARadioStation) {
+        if (
+          this.hasCurrentPlaylistElements &&
+          state.data.playlists[0].currentElementIndex >= 0
+        ) {
+          return state.data.playlists[0].elements[
             state.data.playlists[0].currentElementIndex
-          ].url
-        : null,
-    hasElements: (state) =>
-      state.data.playlists[0].elements &&
-      state.data.playlists[0].elements.length > 0,
+          ].url;
+        } else {
+          return null;
+        }
+      } else {
+        // TODO
+        return state.data.playlists[0].currentRadioStation.url;
+      }
+    },
+    getCurrentPlaylistElementNormalImage(state) {
+      if (!this.hasCurrentPlaylistARadioStation) {
+        if (
+          this.hasCurrentPlaylistElements &&
+          state.data.playlists[0].currentElementIndex >= 0 &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers.normal
+        ) {
+          return state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers.normal;
+        } else {
+          return null;
+        }
+      } else {
+        // TODO
+        return state.data.playlists[0].currentRadioStation.url;
+      }
+    },
+    getCurrentPlaylistElementSmallImage(state) {
+      if (!this.hasCurrentPlaylistARadioStation) {
+        if (
+          this.hasCurrentPlaylistElements &&
+          state.data.playlists[0].currentElementIndex >= 0 &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers &&
+          state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers.small
+        ) {
+          return state.data.playlists[0].elements[
+            state.data.playlists[0].currentElementIndex
+          ].track.covers.small;
+        } else {
+          return null;
+        }
+      } else {
+        // TODO
+        return state.data.playlists[0].currentRadioStation.url;
+      }
+    },
     allowSkipPrevious: (state) =>
       state.data.playlists[0].currentElementIndex > 0,
     allowSkipNext: (state) =>
@@ -127,6 +211,14 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       this.data.player.sidebarAudioMotionAnalyzer.mode = mode;
       this.savePlayerSettings();
     },
+    toggleSidebarTopArtAnimationMode: function () {
+      if (this.data.player.sideBarTopArt.mode == "animation") {
+        this.data.player.sideBarTopArt.mode = "normal";
+      } else {
+        this.data.player.sideBarTopArt.mode = "animation";
+      }
+      this.savePlayerSettings();
+    },
     interact: function () {
       this.data.player.userInteracted = true;
     },
@@ -139,6 +231,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       const playerSettings = basil.get("playerSettings");
       if (playerSettings) {
         this.data.player = playerSettings;
+        this.data.player.userInteracted = false;
         if (this.data.audio) {
           this.data.audio.volume = this.data.player.volume;
           this.data.audio.muted = this.data.player.muted;
@@ -167,7 +260,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       }
     },
     play: function (ignoreStatus) {
-      if (this.data.player.userInteracted) {
+      if (this.hasPreviousUserInteractions) {
         if (ignoreStatus) {
           if (this.data.audio) {
             this.data.audio.play();
@@ -255,6 +348,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
         currentIndex: -1,
         elements: [],
         shuffleIndexes: [],
+        currentRadioStation: null,
       };
       this.data.currentPlaylistIndex = 0;
       if (!ignoreSave) {
@@ -278,6 +372,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
             return 0.5 - Math.random();
           }
         ),
+        currentRadioStation: null,
       };
       this.data.currentPlaylistIndex = 0;
       this.saveCurrentPlaylist();
@@ -304,6 +399,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
                 return 0.5 - Math.random();
               })
             : [],
+          currentRadioStation: null,
         };
         this.data.currentPlaylistIndex = 0;
         this.saveCurrentPlaylist();
@@ -321,6 +417,7 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
         ].sort(function () {
           return 0.5 - Math.random();
         });
+        this.data.playlists[0].currentRadioStation = null;
         if (!hasPreviousElements) {
           this.data.playlists[0].currentElementIndex = hasValues ? 0 : -1;
         }
@@ -347,7 +444,12 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
     skipPrevious: function () {
       if (this.allowSkipPrevious) {
         this.interact();
-        this.data.playlists[0].currentElementIndex--;
+        if (this.data.playlists[0].currentRadioStation) {
+          this.data.playlists[0].currentRadioStation = null;
+        }
+        {
+          this.data.playlists[0].currentElementIndex--;
+        }
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
@@ -360,7 +462,11 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
     skipNext: function () {
       if (this.allowSkipNext) {
         this.interact();
-        this.data.playlists[0].currentElementIndex++;
+        if (this.data.playlists[0].currentRadioStation) {
+          this.data.playlists[0].currentRadioStation = null;
+        } else {
+          this.data.playlists[0].currentElementIndex++;
+        }
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
@@ -373,7 +479,11 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
     skipToIndex: function (index) {
       if (index >= 0 && index < this.data.playlists[0].elements.length) {
         this.interact();
-        this.data.playlists[0].currentElementIndex = index;
+        if (this.data.playlists[0].currentRadioStation) {
+          this.data.playlists[0].currentRadioStation = null;
+        } else {
+          this.data.playlists[0].currentElementIndex = index;
+        }
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();

@@ -14,7 +14,7 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
         @click="onPreviusPlaylist" :disable="loading || !spieldoseStore.allowSkipPrevious" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
-        :disable="loading || !spieldoseStore.hasElements" v-if="spieldoseStore.isStopped" />
+        :disable="loading || !spieldoseStore.hasCurrentPlaylistElements" v-if="spieldoseStore.isStopped" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
         :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldoseStore.isPlaying" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"

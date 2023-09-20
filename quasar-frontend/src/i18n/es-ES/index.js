@@ -118,6 +118,8 @@ export default {
   "API Error: missing email param": "Error de API: falta el correo electrónico",
   "API Error: missing password param": "Error de API: falta la contraseña",
 
+  // player art
+  "Toggle art animation": "Alternar animación",
   // player spectrum analyzer
   "Toggle analyzer octave bands number": "Alternar número de bandas por octava",
 

@@ -1,24 +1,26 @@
 <template>
-  <div id="vinyl_container" :class="{ 'rotation_enabled': rotateVinyl }" :style="style" v-if="showVinyl"
-    @click="toggleMode">
-    <q-img v-if="coverURLSmall" :src="coverURLSmall" @error="coverURLSmall = null" img-class="vinyl_mini_cover"
+  <div id="spieldose-sidebar-vinyl-container" class="cursor-pointer"
+    :class="{ 'spieldose-sidebar-animation-rotation-infinite': animated }" :style="style" v-if="animation"
+    @click="toggleMode" :title="t('Toggle art animation')">
+    <q-img v-if="images.small" :src="images.small" @error="images.small = null" img-class="vinyl_mini_cover"
       no-spinner></q-img>
   </div>
-  <div id="cover_container" v-else @click="toggleMode">
-    <q-img v-if="coverURL" :src="coverURL" @error="coverURL = null" alt="Album cover" width="400px" height="400px"
-      spinner-color="pink" />
-    <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" />
+  <div id="spieldose-sidebar-fullcover-container" class="cursor-pointer" v-else @click="toggleMode"
+    :title="t('Toggle art animation')">
+    <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" width="400px"
+      height="400px" spinner-color="pink" />
+    <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" spinner-color="pink" />
   </div>
 </template>
 
 <style>
-div#vinyl_container {
+div#spieldose-sidebar-vinyl-container {
   width: 400px;
   height: 400px;
   overflow: hidden;
 }
 
-div#vinyl_container img.vinyl_mini_cover {
+div#spieldose-sidebar-vinyl-container img {
   width: 130px;
   height: 130px;
   top: 136px;
@@ -27,11 +29,11 @@ div#vinyl_container img.vinyl_mini_cover {
   border-radius: 100%;
 }
 
-div#cover_container {
+div#spieldose-sidebar-fullcover-container {
   overflow: hidden;
 }
 
-div.rotation_enabled {
+div.spieldose-sidebar-animation-rotation-infinite {
   animation: rotation 8s linear infinite;
   z-index: 1;
 }
@@ -59,41 +61,38 @@ div.rotation_enabled {
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+
+const props = defineProps({
+  animation: Boolean,
+  animated: Boolean,
+  normalImage: String,
+  smallImage: String
+});
+
+const emit = defineEmits(['change']);
+
+const { t } = useI18n();
 
 // custom style for avoiding "images/vinyl.png" asset loading error if we put this on the <style> block
 const style = "background: url(images/vinyl.png) no-repeat; background-size: cover;";
+const images = ref({
+  normal: props.normalImage,
+  small: props.smallImage
+});
+const normalImage = computed(() => props.normalImage || null);
+const smallImage = computed(() => props.smallImage || null);
 
-const props = defineProps({
-  rotateVinyl: Boolean,
-  smallVinylImage: String,
-  coverImage: String
+watch(smallImage, (newValue) => {
+  images.value.small = newValue;
 });
 
-const coverURLSmall = ref(null);
-const coverURL = ref(null);
-
-const smallVinylImage = computed(() => {
-  return (props.smallVinylImage);
+watch(normalImage, (newValue) => {
+  images.value.normal = newValue;
 });
-
-const coverImage = computed(() => {
-  return (props.coverImage);
-});
-
-watch(smallVinylImage, (newValue) => {
-  coverURLSmall.value = newValue;
-});
-
-watch(coverImage, (newValue) => {
-  coverURL.value = newValue;
-});
-
-coverURLSmall.value = smallVinylImage.value;
-coverURL.value = coverImage.value;
-
-const showVinyl = ref(false);
 
 function toggleMode() {
-  showVinyl.value = !showVinyl.value;
+  emit('change');
 }
 </script>

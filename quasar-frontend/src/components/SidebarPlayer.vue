@@ -1,7 +1,7 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
-      :rotateVinyl="spieldoseStore.isPlaying"></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :normalImage="spieldoseStore.getCurrentPlaylistElementNormalImage" :smallImage="spieldoseStore.getCurrentPlaylistElementSmallImage"
+      :animation="spieldoseStore.hasSidebarTopArtAnimationMode" :animated="spieldoseStore.isPlaying" @change="spieldoseStore.toggleSidebarTopArtAnimationMode()"></SidebarPlayerAlbumCover>
     <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
       :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
       :mode="spieldoseStore.getSidebarAudioMotionAnalyzerMode"
@@ -11,7 +11,7 @@
     </SidebarPlayerVolumeControl>
     <SidebarPlayerTrackInfo :currentElement="currentElement"></SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="false" :allowSkipPrevious="spieldoseStore.allowSkipPrevious"
-      :allowPlay="spieldoseStore.hasElements" :allowSkipNext="spieldoseStore.allowSkipNext"
+      :allowPlay="spieldoseStore.hasCurrentPlaylistElements" :allowSkipNext="spieldoseStore.allowSkipNext"
       :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="spieldoseStore.skipPrevious()" @play="play()"
       @skipNext="spieldoseStore.skipNext()"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
@@ -61,6 +61,7 @@ const detailsModal = ref(false);
 
 const showAnalyzer = ref(true);
 
+// TODO: use store getter
 const isCurrentElementTrack = computed(() => {
   return (currentElement.value && currentElement.value.track != null);
 });
