@@ -423,7 +423,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
       const hasValues =
         elements && Array.isArray(elements) && elements.length > 0;
       if (hasValues) {
-        this.data.playlists[0].elements.concat(elements);
+        this.data.playlists[0].elements =
+          this.data.playlists[0].elements.concat(elements);
         this.data.playlists[0].shuffleIndexes = [
           ...Array(this.data.playlists[0].elements.length).keys(),
         ].sort(function () {
