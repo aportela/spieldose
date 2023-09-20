@@ -363,6 +363,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     },
     toggleShuffeMode: function () {
       this.data.player.shuffle = !this.data.player.shuffle;
+      this.savePlayerSettings();
     },
     clearCurrentPlaylist: function (ignoreSave) {
       this.stop();
