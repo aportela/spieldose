@@ -388,6 +388,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
     },
     sendElementsToCurrentPlaylist: function (elements) {
+      this.interact();
       this.stop();
       const hasValues =
         elements && Array.isArray(elements) && elements.length > 0;
@@ -413,10 +414,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.currentPlaylistIndex = 0;
         this.saveCurrentPlaylist();
         this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play();
+        this.play(true);
       }
     },
     appendElementsToCurrentPlaylist: function (elements) {
+      this.interact();
       const hasPreviousElements = this.data.playlists[0].elements.length > 0;
       const hasValues =
         elements && Array.isArray(elements) && elements.length > 0;
@@ -436,7 +438,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.saveCurrentPlaylist();
         if (!this.isPlaying) {
           this.setAudioSource(this.getCurrentPlaylistElementURL);
-          this.play();
+          this.play(true);
         }
       }
     },

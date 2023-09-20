@@ -45,7 +45,6 @@ const trackActions = {
     });
   },
   play: function (data) {
-    spieldoseStore.interact();
     if (!spieldoseStore.isStopped) {
       spieldoseStore.stop();
     }
@@ -67,7 +66,6 @@ const albumActions = {
       // TODO: add another filters
       .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
       .then((success) => {
-        spieldoseStore.interact();
         spieldoseStore.sendElementsToCurrentPlaylist(
           success.data.data.items.map((item) => {
             return { track: item };
@@ -112,13 +110,11 @@ const playListActions = {
     });
   },
   saveElements: function (data) {
-    player.interact();
     spieldoseStore.sendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
   },
   appendElements: function (data) {
-    spieldoseStore.interact();
     spieldoseStore.appendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
