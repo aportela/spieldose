@@ -145,7 +145,6 @@ onMounted(() => {
   });
   */
   audioElement.value.addEventListener('ended', (event) => {
-    console.debug('Audio is ended');
     if (isCurrentElementTrack.value) {
       // TODO, launch error
       trackActions.increasePlayCount(currentElementId.value).then((success) => { }).catch((error) => {
