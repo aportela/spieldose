@@ -25,7 +25,10 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
         muted: false,
         repeatMode: "none",
         shuffle: false,
-        showSidebarAudioMotionAnalyzer: true,
+        sidebarAudioMotionAnalyzer: {
+          visible: true,
+          mode: 7,
+        },
       },
       currentPlaylistIndex: 0,
       playlists: [
@@ -51,7 +54,9 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
     getAudioMotionAnalyzerSource: (state) =>
       state.data.audioMotionAnalyzerSource,
     isSidebarAudioMotionAnalyzerVisible: (state) =>
-      state.data.player.showSidebarAudioMotionAnalyzer,
+      state.data.player.sidebarAudioMotionAnalyzer.visible,
+    getSidebarAudioMotionAnalyzerMode: (state) =>
+      state.data.player.sidebarAudioMotionAnalyzer.mode,
     getPlayerStatus: (state) => state.data.player.status,
     isMuted: (state) => state.data.player.muted,
     isPlaying: (state) => state.data.player.status == "playing",
@@ -114,8 +119,12 @@ export const useSpieldoseStore = defineStore("spieldoseStore", {
       this.data.audioMotionAnalyzerSource = source;
     },
     toggleSidebarAudioMotionAnalyzer: function () {
-      this.data.player.showSidebarAudioMotionAnalyzer =
-        !this.data.player.showSidebarAudioMotionAnalyzer;
+      this.data.player.sidebarAudioMotionAnalyzer.visible =
+        !this.data.player.sidebarAudioMotionAnalyzer.visible;
+      this.savePlayerSettings();
+    },
+    setSidebarAudioMotionAnalyzerMode: function (mode) {
+      this.data.player.sidebarAudioMotionAnalyzer.mode = mode;
       this.savePlayerSettings();
     },
     interact: function () {

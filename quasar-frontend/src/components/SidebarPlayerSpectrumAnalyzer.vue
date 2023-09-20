@@ -1,37 +1,50 @@
 <template>
-  <div id="analyzer-container" class="cursor-pointer" :title="t('Toggle analyzer octave bands number')"
+  <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer" :title="t('Toggle analyzer octave bands number')"
     @click="togglecurrentMode"></div>
 </template>
 
-<style scoped>
-div#analyzer-container {
-  width: 100%;
-  height: 50px;
+<style>
+div#spieldose-sidebar-analyzer-container {
+  width: 400px;
+  height: 40px;
 }
 </style>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import AudioMotionAnalyzer from 'audiomotion-analyzer';
-import { useI18n } from 'vue-i18n';
+import { ref, computed, watch, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { useSpieldoseStore } from "stores/spieldose";
-
-const { t } = useI18n();
 
 const props = defineProps({
   active: Boolean,
   mode: Number
 });
 
+const emit = defineEmits(['change']);
+
+const { t } = useI18n();
 const spieldoseStore = useSpieldoseStore();
-//const audioElement = spieldoseStore.getAudioInstance;
-const analyzer = ref(null);
 const currentMode = ref(props.mode || 7);
+const analyzer = ref(null);
+
+const active = computed(() => { return (props.active || false) });
+
+watch(active, (newValue) => {
+  if (analyzer.value) {
+    if (newValue) {
+      analyzer.value.start();
+    } else {
+      analyzer.value.stop();
+    }
+  }
+});
 
 function createAnalyzer() {
   const defaultOptions = {
     source: spieldoseStore.getAudioInstance,
     start: false,
+    width: 400,
     height: 40,
     maxFPS: 30,
     mode: currentMode.value,
@@ -49,7 +62,7 @@ function createAnalyzer() {
     showBgColor: true
   };
   analyzer.value = new AudioMotionAnalyzer(
-    document.getElementById('analyzer-container'),
+    document.getElementById('spieldose-sidebar-analyzer-container'),
     defaultOptions
   );
   const gradientOptions = {
@@ -78,19 +91,8 @@ function togglecurrentMode() {
   if (analyzer.value) {
     analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10 });
   }
+  emit('change', { mode: currentMode.value });
 }
-
-const active = computed(() => { return (props.active || false) });
-
-watch(active, (newValue) => {
-  if (analyzer.value) {
-    if (newValue) {
-      analyzer.value.start();
-    } else {
-      analyzer.value.stop();
-    }
-  }
-});
 
 onMounted(() => {
   createAnalyzer();

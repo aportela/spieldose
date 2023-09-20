@@ -2,7 +2,10 @@
   <div>
     <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="smallVinylImage"
       :rotateVinyl="spieldoseStore.isPlaying"></SidebarPlayerAlbumCover>
-    <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"></SidebarPlayerSpectrumAnalyzer>
+    <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
+      :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
+      :mode="spieldoseStore.getSidebarAudioMotionAnalyzerMode"
+      @change="(data) => spieldoseStore.setSidebarAudioMotionAnalyzerMode(data.mode)"></SidebarPlayerSpectrumAnalyzer>
     <SidebarPlayerVolumeControl :isMuted="spieldoseStore.isMuted" :defaultValue="spieldoseStore.getVolume"
       @volumeChange="(volume) => spieldoseStore.setVolume(volume)" @toggleMute="spieldoseStore.toggleMute()">
     </SidebarPlayerVolumeControl>
@@ -16,9 +19,10 @@
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
       :downloadURL="spieldoseStore.getCurrentPlaylistElementURL || '#'"
       :trackFavoritedTimestamp="isCurrentElementTrack ? currentElement.track.favorited : null"
-      :visibleAnalyzer="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :shuffle="spieldoseStore.getShuffle" :repeatMode="spieldoseStore.getRepeatMode"
-      @toggleAnalyzer="spieldoseStore.toggleSidebarAudioMotionAnalyzer()" @toggleShuffle="spieldoseStore.toggleShuffeMode()"
-      @toggleRepeatMode="spieldoseStore.toggleRepeatMode()" @toggleTrackDetailsModal="detailsModal = true">
+      :visibleAnalyzer="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :shuffle="spieldoseStore.getShuffle"
+      :repeatMode="spieldoseStore.getRepeatMode" @toggleAnalyzer="spieldoseStore.toggleSidebarAudioMotionAnalyzer()"
+      @toggleShuffle="spieldoseStore.toggleShuffeMode()" @toggleRepeatMode="spieldoseStore.toggleRepeatMode()"
+      @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
     <!--
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
