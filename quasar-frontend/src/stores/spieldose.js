@@ -100,7 +100,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           return null;
         }
       } else {
-        return state.data.playlists[0].currentRadioStation;
+        return { radioStation: state.data.playlists[0].currentRadioStation };
       }
     },
     getCurrentPlaylistElementURL(state) {
@@ -403,6 +403,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     },
     setCurrentRadioStation: function (radioStation) {
       this.data.playlists[0].currentRadioStation = radioStation;
+      this.saveCurrentPlaylist();
       this.setAudioSource(this.getCurrentPlaylistElementURL);
       this.play(true);
     },
