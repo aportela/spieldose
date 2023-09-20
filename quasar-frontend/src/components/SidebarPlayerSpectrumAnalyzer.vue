@@ -33,7 +33,6 @@ const create = computed(() => { return(props.create); });
 const active = computed(() => { return (props.active || false) });
 
 watch(create, (newValue, oldValue) => {
-  console.log(newValue);
   if (! oldValue && newValue && ! analyzer.value) {
     createAnalyzer(props.active);
   }
