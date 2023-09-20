@@ -111,13 +111,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
         ) {
           return state.data.playlists[0].elements[
             state.data.playlists[0].currentElementIndex
-          ].url;
+          ].track.url;
         } else {
           return null;
         }
       } else {
         // TODO
-        return state.data.playlists[0].currentRadioStation.url;
+        return state.data.playlists[0].currentRadioStation.directStream;
       }
     },
     getCurrentPlaylistElementNormalImage(state) {
@@ -194,9 +194,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.restorePlayerSettings();
       this.restoreCurrentPlaylist();
     },
-    setAudioSource: function (src) {
+    setAudioSource(src) {
       if (this.data.audio) {
         this.data.audio.src = src;
+      }
+      if (src && this.hasPreviousUserInteractions && !this.isPlaying) {
+        this.play(true);
       }
     },
     setAudioMotionAnalyzerSource: function (source) {
@@ -330,6 +333,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           // TODO: launch event
           break;
       }
+      this.savePlayerSettings();
     },
     toggleShuffeMode: function () {
       this.data.player.shuffle = !this.data.player.shuffle;
@@ -364,19 +368,24 @@ export const useSpieldoseStore = defineStore("spieldose", {
         public: playlist.public || false,
         lastChangeTimestamp: Date.now(),
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
-        elements: playlist.tracks.map((track) => {
-          return { track: track };
+        elements: playlist.tracks
+          ? playlist.tracks.map((track) => {
+              return { track: track };
+            })
+          : [],
+        shuffleIndexes: [
+          ...Array(playlist.tracks ? playlist.tracks.length : 0).keys(),
+        ].sort(function () {
+          return 0.5 - Math.random();
         }),
-        shuffleIndexes: [...Array(playlist.tracks.length).keys()].sort(
-          function () {
-            return 0.5 - Math.random();
-          }
-        ),
         currentRadioStation: null,
       };
       this.data.currentPlaylistIndex = 0;
       this.saveCurrentPlaylist();
-      this.play();
+      if (this.hasCurrentPlaylistElements) {
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        this.play();
+      }
     },
     sendElementsToCurrentPlaylist: function (elements) {
       this.stop();
@@ -403,6 +412,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         };
         this.data.currentPlaylistIndex = 0;
         this.saveCurrentPlaylist();
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play();
       }
     },
@@ -425,6 +435,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         this.saveCurrentPlaylist();
         if (!this.isPlaying) {
+          this.setAudioSource(this.getCurrentPlaylistElementURL);
           this.play();
         }
       }
@@ -435,6 +446,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       const currentPlaylist = basil.get("currentPlaylist");
       if (currentPlaylist) {
         this.data.playlists[0] = currentPlaylist;
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
       }
     },
     saveCurrentPlaylist: function () {
@@ -453,10 +465,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
         // TODO: required ?
-        if (!this.isPlaying) {
-          this.play(true);
-        }
+        this.play(true);
       }
     },
     skipNext: function () {
@@ -470,10 +481,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
         // TODO: required ?
-        if (!this.isPlaying) {
-          this.play(true);
-        }
+        this.play(true);
       }
     },
     skipToIndex: function (index) {
@@ -488,9 +498,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
         // TODO: required ?
-        if (!this.isPlaying) {
-          this.play(true);
-        }
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        this.play(true);
       }
     },
     /*

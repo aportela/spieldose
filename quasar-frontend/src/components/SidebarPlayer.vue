@@ -1,7 +1,9 @@
 <template>
   <div>
-    <SidebarPlayerAlbumCover :normalImage="spieldoseStore.getCurrentPlaylistElementNormalImage" :smallImage="spieldoseStore.getCurrentPlaylistElementSmallImage"
-      :animation="spieldoseStore.hasSidebarTopArtAnimationMode" :animated="spieldoseStore.isPlaying" @change="spieldoseStore.toggleSidebarTopArtAnimationMode()"></SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover :normalImage="spieldoseStore.getCurrentPlaylistElementNormalImage"
+      :smallImage="spieldoseStore.getCurrentPlaylistElementSmallImage"
+      :animation="spieldoseStore.hasSidebarTopArtAnimationMode" :animated="spieldoseStore.isPlaying"
+      @change="spieldoseStore.toggleSidebarTopArtAnimationMode()"></SidebarPlayerAlbumCover>
     <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
       :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
       :mode="spieldoseStore.getSidebarAudioMotionAnalyzerMode"

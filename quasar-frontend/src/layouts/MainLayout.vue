@@ -34,7 +34,8 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps href="http://github.com/aportela/spieldose" target="_blank" />
+          <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
+            href="http://github.com/aportela/spieldose" target="_blank" />
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps stack
             @click="signOut" />
         </q-tabs>
@@ -195,33 +196,8 @@ const links = [
   }
 ];
 
-const currentElementURL = computed(() => {
-  const currentElement = spieldoseStore.getCurrentPlaylistElement;
-  if (currentElement) {
-    if (currentElement.track && currentElement.track.url) {
-      return (currentElement.track.url);
-    } else if (currentElement.radioStation && currentElement.radioStation.directStream) {
-      return (currentElement.radioStation.directStream);
-    } else {
-      return (null);
-    }
-  } else {
-    return (null);
-  }
-});
-
-watch(currentElementURL, (newValue) => {
-  // TODO: stop before ?
-  spieldoseStore.setAudioSource(newValue);
-  if (spieldoseStore.hasPreviousUserInteractions) {
-    spieldoseStore.play(true);
-  }
-});
-
 if (spieldoseStore.hasPreviousUserInteractions) {
-  if (!spieldoseStore.isPlaying) {
-    spieldoseStore.play(true);
-  }
+  spieldoseStore.play(true);
 }
 
 function signOut() {
