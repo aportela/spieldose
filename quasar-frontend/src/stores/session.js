@@ -18,7 +18,6 @@ export const useSessionStore = defineStore("session", {
     loaded: false,
     jwt: null,
     locale: null,
-    volume: null,
     fullScreenVisualizationSettings: null,
   }),
 
@@ -27,7 +26,6 @@ export const useSessionStore = defineStore("session", {
     isLogged: (state) => state.jwt != null,
     getJWT: (state) => state.jwt,
     getLocale: (state) => state.locale,
-    getVolume: (state) => state.volume,
     getFullScreenVisualizationSettings: (state) =>
       state.fullScreenVisualizationSettings,
   },
@@ -41,10 +39,6 @@ export const useSessionStore = defineStore("session", {
       const locale = basil.get("locale");
       if (locale) {
         this.locale = locale;
-      }
-      const volume = basil.get("volume");
-      if (volume) {
-        this.volume = volume;
       }
       const fullScreenVisualizationSettings = basil.get(
         "fullScreenVisualizationSettings"
@@ -64,11 +58,6 @@ export const useSessionStore = defineStore("session", {
       this.locale = locale;
       const basil = useBasil(localStorageBasilOptions);
       basil.set("locale", locale);
-    },
-    saveVolume(volume) {
-      this.volume = volume;
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set("volume", volume);
     },
     saveFullScreenVisualizationSettings(settings) {
       this.fullScreenVisualizationSettings = settings;
