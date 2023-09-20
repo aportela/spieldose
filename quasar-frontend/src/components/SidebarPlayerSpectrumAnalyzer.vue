@@ -17,6 +17,7 @@ import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { useSpieldoseStore } from "stores/spieldose";
 
 const props = defineProps({
+  create: Boolean,
   active: Boolean,
   mode: Number
 });
@@ -28,7 +29,15 @@ const spieldoseStore = useSpieldoseStore();
 const currentMode = ref(props.mode || 7);
 const analyzer = ref(null);
 
+const create = computed(() => { return(props.create); });
 const active = computed(() => { return (props.active || false) });
+
+watch(create, (newValue, oldValue) => {
+  console.log(newValue);
+  if (! oldValue && newValue && ! analyzer.value) {
+    createAnalyzer(props.active);
+  }
+});
 
 watch(active, (newValue) => {
   if (analyzer.value) {
@@ -40,7 +49,7 @@ watch(active, (newValue) => {
   }
 });
 
-function createAnalyzer() {
+function createAnalyzer(start) {
   const defaultOptions = {
     source: spieldoseStore.getAudioInstance,
     start: false,
@@ -79,7 +88,7 @@ function createAnalyzer() {
   analyzer.value.registerGradient('default-spieldose', gradientOptions);
   analyzer.value.gradient = 'default-spieldose';
   spieldoseStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
-  if (props.active) {
+  if (start) {
     analyzer.value.start();
   }
 }
@@ -96,7 +105,9 @@ function togglecurrentMode() {
 
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  createAnalyzer();
+  if (props.create) {
+    createAnalyzer(props.active);
+  }
 });
 
 </script>

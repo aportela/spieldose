@@ -5,6 +5,7 @@
       :animation="spieldoseStore.hasSidebarTopArtAnimationMode" :animated="spieldoseStore.isPlaying"
       @change="spieldoseStore.toggleSidebarTopArtAnimationMode()"></SidebarPlayerAlbumCover>
     <SidebarPlayerSpectrumAnalyzer v-show="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
+      :create="spieldoseStore.hasCurrentPlaylistElements || spieldoseStore.hasCurrentPlaylistARadioStation"
       :active="spieldoseStore.isSidebarAudioMotionAnalyzerVisible"
       :mode="spieldoseStore.getSidebarAudioMotionAnalyzerMode"
       @change="(data) => spieldoseStore.setSidebarAudioMotionAnalyzerMode(data.mode)"></SidebarPlayerSpectrumAnalyzer>
