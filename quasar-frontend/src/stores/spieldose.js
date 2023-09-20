@@ -126,9 +126,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
           this.hasCurrentPlaylistElements &&
           state.data.playlists[0].currentElementIndex >= 0
         ) {
-          return state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.url;
+          if (!this.getShuffle) {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].currentElementIndex
+            ].track.url;
+          } else {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+            ].track.url;
+          }
         } else {
           return null;
         }
