@@ -231,14 +231,14 @@
               </q-img>
               <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
                 -->
-              <SidebarPlayerAlbumCover :normalImage="coverImage" :smallImage="coverImageSmall" :animation="animatedCover" :animated="spieldoseStore.isPlaying" @change="animatedCover = ! animatedCover">
+              <SidebarPlayerAlbumCover :normalImage="coverImage" :smallImage="coverImageSmall" :animation="animatedCover"
+                :animated="spieldoseStore.isPlaying" @change="animatedCover = !animatedCover">
               </SidebarPlayerAlbumCover>
             </div>
             <div class="col-6">
               <div class="q-mt-lg">
-                <q-btn round dense size="30px" color="dark" style="opacity: 0.8"
-                  :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
-                    title="Skip to previous track"></q-icon></q-btn>
+                <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipPrevious"
+                  @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
                 <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8" :disable="disabled"
                   @click="onPlay"><q-icon :name="spieldoseStore.isPlaying ? 'pause' : 'play_arrow'"
                     :class="{ 'text-pink-6': spieldoseStore.isPlaying }" title="Play/Pause/Resume track"
@@ -266,12 +266,15 @@
         </div>
         <div class="col-3">
           <!-- TODO: show radio station info for radiostations -->
-          <q-card dark style="width: 96%; height: 574px; background: #000; opacity: 0.8" v-show="spieldoseStore.isCurrentPlaylistElementATrack">
+          <q-card dark style="width: 96%; height: 574px; background: #000; opacity: 0.8"
+            v-show="spieldoseStore.isCurrentPlaylistElementATrack">
             <q-card-section class="text-center text-h6">
               Song lyrics
             </q-card-section>
             <q-card-section>
-              <q-scroll-area style="height: 490px" class="relative-position" :visible="true" :bar-style="{ borderRadius: '5px', background: 'grey', opacity: 0.6 }" :thumb-style="{ borderRadius: '5px', background: 'pink', opacity: 0.6 }">
+              <q-scroll-area style="height: 490px" class="relative-position" :visible="true"
+                :bar-style="{ borderRadius: '5px', background: 'grey', opacity: 0.6 }"
+                :thumb-style="{ borderRadius: '5px', background: 'pink', opacity: 0.6 }">
                 <q-inner-loading dark :showing="true" v-if="loadingLyrics">
                   <q-spinner-gears size="50px" color="pink" />
                   <p class="text-pink-3 q-mt-md">searching lyrics...</p>
@@ -421,8 +424,8 @@ const currentElement = computed(() => {
 const currentElementId = computed(() => {
   if (currentElement.value.track) {
     return (currentElement.value.track.id);
-  }else {
-    return(null);
+  } else {
+    return (null);
   }
 });
 
