@@ -172,6 +172,7 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
+  // TODO: use albumActions
   spieldoseStore.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
@@ -183,6 +184,7 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
+  // TODO: use albumActions
   spieldoseStore.interact();
   loading.value = true;
   api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
