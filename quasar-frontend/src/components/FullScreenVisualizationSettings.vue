@@ -231,7 +231,7 @@
               </q-img>
               <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
                 -->
-              <SidebarPlayerAlbumCover :coverImage="coverImage" :smallVinylImage="coverImageSmall" rotateVinyl="true">
+              <SidebarPlayerAlbumCover :normalImage="coverImage" :smallImage="coverImageSmall" :animation="animatedCover" :animated="spieldoseStore.isPlaying" @change="animatedCover = ! animatedCover">
               </SidebarPlayerAlbumCover>
             </div>
             <div class="col-6">
@@ -240,8 +240,8 @@
                   :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
                     title="Skip to previous track"></q-icon></q-btn>
                 <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8" :disable="disabled"
-                  @click="onPlay"><q-icon :name="spieldosePlayer.isPlaying ? 'pause' : 'play_arrow'"
-                    :class="{ 'text-pink-6': spieldosePlayer.isPlaying }" title="Play/Pause/Resume track"
+                  @click="onPlay"><q-icon :name="spieldoseStore.isPlaying ? 'pause' : 'play_arrow'"
+                    :class="{ 'text-pink-6': spieldoseStore.isPlaying }" title="Play/Pause/Resume track"
                     :disable="disabled || !allowPlay"></q-icon></q-btn>
                 <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipNext"
                   @click="onSkipNext"><q-icon name="skip_next" title="Skip to next track"></q-icon></q-btn>
@@ -250,10 +250,10 @@
             <h3 class="text-grey-5 q-ml-lg q-mb-sm">{{ formatSecondsAsTime(currentElementTimeData.currentTime) }} / {{
             formatSecondsAsTime(currentElementTimeData.duration) }} </h3>
             -->
-              <h4 class="text-grey-9 q-ml-lg q-mt-sm">Track {{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</h4>
+              <h4 class="text-grey-9 q-ml-lg q-mt-sm">Track {{ currentTrackIndex + 1 }} of {{ totalTracks || 0 }}</h4>
             </div>
           </div>
-          <div class="q-mt-xl" v-if="currentElement && currentElement.track">
+          <div class="q-mt-xl" v-if="spieldoseStore.isCurrentPlaylistElementATrack">
             <h2 class="text-grey-2 q-mt-none q-mb-sm"><q-icon name="music_note" size="xl" class="q-mr-sm"></q-icon>{{
               currentElement.track.title || null }}</h2>
             <h4 class="text-grey-5 q-mt-md q-mb-sm" v-if="currentElement.track.artist.name">by {{
@@ -265,7 +265,8 @@
           </div>
         </div>
         <div class="col-3">
-          <q-card dark style="width: 96%; height: 574px; background: #000; opacity: 0.8">
+          <!-- TODO: show radio station info for radiostations -->
+          <q-card dark style="width: 96%; height: 574px; background: #000; opacity: 0.8" v-show="spieldoseStore.isCurrentPlaylistElementATrack">
             <q-card-section class="text-center text-h6">
               Song lyrics
             </q-card-section>
@@ -287,7 +288,7 @@
                 <q-item-label>Currently playing</q-item-label>
               </q-item-section>
               <q-item-section side top>
-                <q-item-label caption>{{ currentTrackIndex || 0 }} of {{ totalTracks || 0 }}</q-item-label>
+                <q-item-label caption>{{ currentTrackIndex + 1 }} of {{ totalTracks || 0 }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item v-if="currentElement && currentElement.track">
@@ -317,7 +318,7 @@
             </q-item>
             <q-separator spaced />
             <q-virtual-scroll style="height: 400px;" dark visible separator
-              :items="currentPlaylist.getElements" v-slot="{ item, index }">
+              :items="spieldoseStore.getCurrentPlaylist.elements" v-slot="{ item, index }">
               <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
                 <q-item-section avatar>
                   <q-avatar>
@@ -407,24 +408,29 @@ const maxCanvasHeight = Math.round($q.screen.height / 2);
 //console.log(maxCanvasHeight);
 const showSettings = ref(false);
 
-const totalTracks = currentPlaylist.elementCount;
-const currentTrackIndex = ref(currentPlaylist.getCurrentIndex);
-
+const totalTracks = spieldoseStore.currentPlaylistElementCount;
+const currentTrackIndex = computed(() => spieldoseStore.getCurrentPlaylistIndex);
 
 const lyrics = ref(null);
 const loadingLyrics = ref(false);
 
 const currentElement = computed(() => {
-  return (currentPlaylist.getCurrentElement);
+  return (spieldoseStore.getCurrentPlaylistElement);
 });
 
 const currentElementId = computed(() => {
-  return (currentElement.value.track.id);
+  if (currentElement.value.track) {
+    return (currentElement.value.track.id);
+  }else {
+    return(null);
+  }
 });
 
 watch(currentElementId, (newValue) => {
   if (newValue) {
     getLyrics();
+  } else {
+    lyrics.value = null;
   }
 });
 
@@ -456,9 +462,11 @@ const coverImageSmall = computed(() => {
   }
 });
 
-const allowSkipPrevious = computed(() => { return (currentPlaylist.allowSkipPrevious); });
-const allowSkipNext = computed(() => { return (currentPlaylist.allowSkipNext); });
-const allowPlay = computed(() => { return (currentPlaylist.allowPlay); });
+const animatedCover = ref(false);
+
+const allowSkipPrevious = computed(() => { return (spieldoseStore.allowSkipPrevious); });
+const allowSkipNext = computed(() => { return (spieldoseStore.allowSkipNext); });
+const allowPlay = computed(() => { return (spieldoseStore.allowPlay); });
 
 // taken from https://github.com/hvianna/audioMotion.js/blob/master/src/index.js
 const staticGradients = {
@@ -679,7 +687,7 @@ function createAnalyzer() {
     // custom saved gradients not found on init, set value after register custom gradients
     const savedGradient = settings.value.audioMotionAnalyzer.gradient || 'classic';
     settings.value.audioMotionAnalyzer.gradient = 'classic';
-    settings.value.audioMotionAnalyzer.source = spieldosePlayer.getAudioMotionAnalyzerSource();
+    settings.value.audioMotionAnalyzer.source = spieldoseStore.getAudioMotionAnalyzerSource;
     settings.value.audioMotionAnalyzer.fsElement = document.getElementById('visualization-container');
     settings.value.audioMotionAnalyzer.onCanvasResize = onAnalyzerCanvasResize;
     analyzer.value = new AudioMotionAnalyzer(
@@ -764,5 +772,7 @@ function getLyrics() {
   }
 }
 
-getLyrics();
+if (spieldoseStore.isCurrentPlaylistElementATrack) {
+  getLyrics();
+}
 </script>

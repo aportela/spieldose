@@ -72,9 +72,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
     getRepeatMode: (state) => state.data.player.repeatMode,
     getShuffle: (state) => state.data.player.shuffle,
-    hasCurrentPlaylistElements: (state) =>
-      state.data.playlists[0].elements &&
-      state.data.playlists[0].elements.length > 0,
+    currentPlaylistElementCount: (state) =>
+      state.data.playlists[0].elements
+        ? state.data.playlists[0].elements.length
+        : 0,
+    hasCurrentPlaylistElements(state) {
+      return this.currentPlaylistElementCount > 0;
+    },
     getCurrentPlaylist: (state) => state.data.playlists[0],
     getCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].currentElementIndex,
