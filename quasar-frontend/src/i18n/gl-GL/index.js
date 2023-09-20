@@ -157,6 +157,7 @@ export default {
   "Public radio stations": "Estacións de radio públicas",
 
   // generic
+  "API Error: error increasing track play count": "API Error: error incrementando las reproducciones de la canción",
   "API Error: error loading playlist":
     "API Error: error cargando a lista de reproducción",
 };

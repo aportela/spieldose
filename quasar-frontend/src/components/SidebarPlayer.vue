@@ -52,6 +52,7 @@ import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPla
 import { spieldoseEvents } from "boot/events";
 
 import { useSpieldoseStore } from "stores/spieldose";
+import { trackActions } from "../boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -146,21 +147,32 @@ onMounted(() => {
   audioElement.value.addEventListener('ended', (event) => {
     console.debug('Audio is ended');
     if (isCurrentElementTrack.value) {
-      spieldoseEvents.increasePlayCount(currentElementId.value);
+      // TODO, launch error
+      trackActions.increasePlayCount(currentElementId.value).then((success) => {}).catch((error) => {
+        switch (error.response.status) {
+          default:
+            // TODO: custom message
+            $q.notify({
+              type: "negative",
+              message: t("API Error: error increasing track play count"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
     }
-    if (spieldoseStore.getRepeatMode() == 'playlist') {
+    if (spieldoseStore.getRepeatMode == 'playlist') {
       if (spieldoseStore.allowSkipNext()) {
         spieldoseStore.skipNext();
       } else {
-        //currentPlaylist.saveCurrentTrackIndex(0);
         spieldoseStore.stop();
         spieldoseStore.play();
       }
-    } else if (spieldoseStore.getRepeatMode() == 'track') {
+    } else if (spieldoseStore.getRepeatMode == 'track') {
       spieldoseStore.stop();
       spieldoseStore.play();
     } else {
-      if (spieldoseStore.allowSkipNext()) {
+      if (spieldoseStore.allowSkipNext) {
         spieldoseStore.skipNext();
       } else {
         spieldoseStore.stop();
