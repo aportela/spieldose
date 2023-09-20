@@ -176,7 +176,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex > 0,
     allowSkipNext: (state) =>
       state.data.playlists[0].currentElementIndex <
-      state.data.playlists[0].elements.length,
+      state.data.playlists[0].elements.length - 1,
   },
   actions: {
     create: function (src) {
