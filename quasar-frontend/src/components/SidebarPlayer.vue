@@ -161,10 +161,11 @@ onMounted(() => {
       });
     }
     if (spieldoseStore.getRepeatMode == 'playlist') {
-      if (spieldoseStore.allowSkipNext()) {
-        spieldoseStore.skipNext();
+      if (spieldoseStore.allowSkipNext) {
       } else {
         spieldoseStore.stop();
+        spieldoseStore.skipToIndex(0);
+        // TODO: not working, skip is fine, but playing has a bug
         spieldoseStore.play();
       }
     } else if (spieldoseStore.getRepeatMode == 'track') {
