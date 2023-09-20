@@ -201,7 +201,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
   actions: {
     create: function (src) {
       if (this.data.audio == null) {
-        if (src) {
+        if (src !== undefined) {
           this.data.audio = new Audio(src);
         } else {
           this.data.audio = new Audio();
@@ -213,15 +213,17 @@ export const useSpieldoseStore = defineStore("spieldose", {
         // required for radio stations streams
         this.data.audio.crossOrigin = "anonymous";
       }
-      this.restorePlayerSettings();
+      this.restorePlayerSettings(this.hasPreviousUserInteractions);
       this.restoreCurrentPlaylist();
     },
     setAudioSource(src) {
-      if (this.data.audio) {
-        this.data.audio.src = src;
-      }
-      if (src && this.hasPreviousUserInteractions && !this.isPlaying) {
-        this.play(true);
+      if (src !== undefined && src) {
+        if (this.data.audio) {
+          this.data.audio.src = src;
+        }
+        if (this.hasPreviousUserInteractions && !this.isPlaying) {
+          this.play(true);
+        }
       }
     },
     setAudioMotionAnalyzerSource: function (source) {
@@ -251,12 +253,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
       const basil = useBasil(localStorageBasilOptions);
       basil.set("playerSettings", this.data.player);
     },
-    restorePlayerSettings: function () {
+    restorePlayerSettings: function (userInteracted) {
       const basil = useBasil(localStorageBasilOptions);
       const playerSettings = basil.get("playerSettings");
       if (playerSettings) {
         this.data.player = playerSettings;
-        this.data.player.userInteracted = false;
+        this.data.player.userInteracted = userInteracted !== undefined ? userInteracted == true : false;
         if (this.data.audio) {
           this.data.audio.volume = this.data.player.volume;
           this.data.audio.muted = this.data.player.muted;
@@ -392,8 +394,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-              return { track: track };
-            })
+            return { track: track };
+          })
           : [],
         shuffleIndexes: [
           ...Array(playlist.tracks ? playlist.tracks.length : 0).keys(),
@@ -434,8 +436,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
           elements: hasValues ? elements : [],
           shuffleIndexes: hasValues
             ? [...Array(elements.length).keys()].sort(function () {
-                return 0.5 - Math.random();
-              })
+              return 0.5 - Math.random();
+            })
             : [],
           currentRadioStation: null,
         };
