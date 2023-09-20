@@ -158,9 +158,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
             state.data.playlists[0].currentElementIndex
           ].track.covers.normal
         ) {
-          return state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers.normal;
+          if (!this.getShuffle) {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].currentElementIndex
+            ].track.covers.normal;
+          } else {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+            ].track.covers.normal;
+          }
         } else {
           return null;
         }
@@ -190,9 +196,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
             state.data.playlists[0].currentElementIndex
           ].track.covers.small
         ) {
-          return state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers.small;
+          if (!this.getShuffle) {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].currentElementIndex
+            ].track.covers.small;
+          } else {
+            return state.data.playlists[0].elements[
+              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+            ].track.covers.small;
+          }
         } else {
           return null;
         }
