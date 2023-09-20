@@ -58,8 +58,8 @@ $radioStations = [
         "directStream" => "http://livestreaming3.esradio.fm/stream64.mp3",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/WAsBY8S326.jpg")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/WAsBY8S326.jpg"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://intereconomia.com/wp-content/uploads/2016/06/toro_de_osborne.jpg")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://intereconomia.com/wp-content/uploads/2016/06/toro_de_osborne.jpg"))
         ],
         "language" => "es",
         "country" => "spain",
