@@ -119,6 +119,10 @@ const playListActions = {
       Array.isArray(data) ? data : [{ track: data }]
     );
   },
+  setRadioStation: function (radioStation) {
+    spieldoseStore.interact();
+    spieldoseStore.setCurrentRadioStation(radioStation);
+  },
 };
 
 export { trackActions, albumActions, playListActions };

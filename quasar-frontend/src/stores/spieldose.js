@@ -142,8 +142,14 @@ export const useSpieldoseStore = defineStore("spieldose", {
           return null;
         }
       } else {
-        // TODO
-        return state.data.playlists[0].currentRadioStation.url;
+        if (
+          state.data.playlists[0].currentRadioStation.images &&
+          state.data.playlists[0].currentRadioStation.images.normal
+        ) {
+          return state.data.playlists[0].currentRadioStation.images.normal;
+        } else {
+          return null;
+        }
       }
     },
     getCurrentPlaylistElementSmallImage(state) {
@@ -168,8 +174,14 @@ export const useSpieldoseStore = defineStore("spieldose", {
           return null;
         }
       } else {
-        // TODO
-        return state.data.playlists[0].currentRadioStation.url;
+        if (
+          state.data.playlists[0].currentRadioStation.images &&
+          state.data.playlists[0].currentRadioStation.images.small
+        ) {
+          return state.data.playlists[0].currentRadioStation.images.small;
+        } else {
+          return null;
+        }
       }
     },
     allowSkipPrevious: (state) =>
@@ -186,6 +198,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         } else {
           this.data.audio = new Audio();
         }
+        // required for radio stations streams
+        this.data.audio.crossOrigin = "anonymous";
       } else {
         this.data.audio.src = null;
         // required for radio stations streams
@@ -386,6 +400,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play(true);
       }
+    },
+    setCurrentRadioStation: function (radioStation) {
+      this.data.playlists[0].currentRadioStation = radioStation;
+      this.setAudioSource(this.getCurrentPlaylistElementURL);
+      this.play(true);
     },
     sendElementsToCurrentPlaylist: function (elements) {
       this.interact();

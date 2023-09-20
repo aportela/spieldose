@@ -151,8 +151,7 @@ function onPaginationChanged(pageIndex) {
 
 
 function onPlayRadioStation(radioStation) {
-  spieldoseStore.interact();
-  playListActions.saveElements([{ radioStation: radioStation }]);
+  playListActions.setRadioStation(radioStation);
 }
 
 search(true);
