@@ -51,7 +51,6 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/axios'
-//import { useSessionStore } from "stores/session";
 import { useSpieldoseStore } from "stores/spieldose";
 
 const { t } = useI18n();
@@ -61,13 +60,6 @@ const $q = useQuasar();
 const router = useRouter();
 
 const spieldoseStore = useSpieldoseStore();
-
-/*
-const session = useSessionStore();
-if (!session.isLoaded) {
-  session.load();
-}
-*/
 
 const loading = ref(false);
 
@@ -117,10 +109,7 @@ function onSubmitForm() {
   api.user
     .signIn(email.value, password.value)
     .then((success) => {
-
       spieldoseStore.interact();
-      // TODO
-      //session.signIn();
       router.push({
         name: "dashboard",
       });
