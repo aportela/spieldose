@@ -1,25 +1,13 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
 
-// https://stackoverflow.com/a/8831937
-function hashCode(str) {
-  let hash = 0;
-  for (let i = 0, len = str.length; i < len; i++) {
-    let chr = str.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-}
-
 const hashedSite = Array.from(window.location.host).reduce(
   (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
   0
 );
 
 const localStorageBasilOptions = {
-  //namespace: "spieldose#" + hashedSite,
-  namespace: "spieldose",
+  namespace: "spieldose#" + hashedSite,
   storages: ["local", "cookie", "session", "memory"],
   storage: "local",
   expireDays: 3650,
