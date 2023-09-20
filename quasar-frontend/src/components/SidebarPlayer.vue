@@ -19,7 +19,7 @@
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
-      :downloadURL="spieldoseStore.isCurrentPlaylistElementATrack ? (spieldoseStore.getCurrentPlaylistElementURL || '#'): null"
+      :downloadURL="spieldoseStore.isCurrentPlaylistElementATrack ? (spieldoseStore.getCurrentPlaylistElementURL || '#') : null"
       :trackFavoritedTimestamp="isCurrentElementTrack ? currentElement.track.favorited : null"
       :visibleAnalyzer="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :shuffle="spieldoseStore.getShuffle"
       :repeatMode="spieldoseStore.getRepeatMode" @toggleAnalyzer="spieldoseStore.toggleSidebarAudioMotionAnalyzer()"
