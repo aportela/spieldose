@@ -196,7 +196,7 @@ const links = [
   }
 ];
 
-if (spieldoseStore.hasPreviousUserInteractions) {
+if (spieldoseStore.hasPreviousUserInteractions && (spieldoseStore.hasCurrentPlaylistElements || spieldoseStore.hasCurrentPlaylistARadioStation)) {
   spieldoseStore.play(true);
 }
 

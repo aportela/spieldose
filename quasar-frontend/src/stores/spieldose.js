@@ -84,7 +84,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].shuffleIndexes[
-      state.data.playlists[0].currentElementIndex],
+        state.data.playlists[0].currentElementIndex
+      ],
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
     isCurrentPlaylistElementATrack(state) {
@@ -110,7 +111,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
             ];
           } else {
             return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+              state.data.playlists[0].shuffleIndexes[
+                state.data.playlists[0].currentElementIndex
+              ]
             ];
           }
         } else {
@@ -132,7 +135,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
             ].track.url;
           } else {
             return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+              state.data.playlists[0].shuffleIndexes[
+                state.data.playlists[0].currentElementIndex
+              ]
             ].track.url;
           }
         } else {
@@ -164,7 +169,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
             ].track.covers.normal;
           } else {
             return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+              state.data.playlists[0].shuffleIndexes[
+                state.data.playlists[0].currentElementIndex
+              ]
             ].track.covers.normal;
           }
         } else {
@@ -202,7 +209,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
             ].track.covers.small;
           } else {
             return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[state.data.playlists[0].currentElementIndex]
+              state.data.playlists[0].shuffleIndexes[
+                state.data.playlists[0].currentElementIndex
+              ]
             ].track.covers.small;
           }
         } else {
@@ -287,7 +296,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
       if (playerSettings) {
         this.data.player = playerSettings;
         this.data.player.status = "stopped";
-        this.data.player.userInteracted = userInteracted !== undefined ? userInteracted == true : false;
+        this.data.player.userInteracted =
+          userInteracted !== undefined ? userInteracted == true : false;
         if (this.data.audio) {
           this.data.audio.volume = this.data.player.volume;
           this.data.audio.muted = this.data.player.muted;
@@ -424,8 +434,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-            return { track: track };
-          })
+              return { track: track };
+            })
           : [],
         shuffleIndexes: [
           ...Array(playlist.tracks ? playlist.tracks.length : 0).keys(),
@@ -466,8 +476,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
           elements: hasValues ? elements : [],
           shuffleIndexes: hasValues
             ? [...Array(elements.length).keys()].sort(function () {
-              return 0.5 - Math.random();
-            })
+                return 0.5 - Math.random();
+              })
             : [],
           currentRadioStation: null,
         };
