@@ -95,6 +95,7 @@ function togglecurrentMode() {
 }
 
 onMounted(() => {
+  // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
   createAnalyzer();
 });
 
