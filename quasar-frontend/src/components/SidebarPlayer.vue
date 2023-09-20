@@ -148,7 +148,7 @@ onMounted(() => {
     console.debug('Audio is ended');
     if (isCurrentElementTrack.value) {
       // TODO, launch error
-      trackActions.increasePlayCount(currentElementId.value).then((success) => {}).catch((error) => {
+      trackActions.increasePlayCount(currentElementId.value).then((success) => { }).catch((error) => {
         switch (error.response.status) {
           default:
             // TODO: custom message
