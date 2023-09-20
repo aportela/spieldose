@@ -27,7 +27,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         repeatMode: "none",
         shuffle: false,
         sideBarTopArt: {
-          mode: "animation",
+          mode: "normal",
         },
         sidebarAudioMotionAnalyzer: {
           visible: true,
