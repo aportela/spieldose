@@ -148,7 +148,7 @@
 </style>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useQuasar, uid } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from 'boot/axios';
@@ -359,7 +359,11 @@ function search() {
 }
 
 const currentPlaylistTrackIndex = computed(() => {
-  return (spieldoseStore.getCurrentPlaylistIndex);
+  if (! spieldoseStore.getShuffle) {
+    return (spieldoseStore.getShuffledCurrentPlaylistIndex);
+  }else {
+    return (spieldoseStore.getShuffleCurrentPlaylistIndex);
+  }
 });
 
 watch(currentPlaylistTrackIndex, (newValue) => {
@@ -429,6 +433,13 @@ function onSavePlaylistElements() {
 
 elements.value = spieldoseStore.getCurrentPlaylist.elements;
 rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-currentTrackIndex.value = spieldoseStore.getCurrentPlaylistIndex;
+currentTrackIndex.value = currentPlaylistTrackIndex.value;
+
+onMounted(() => {
+  if (currentTrackIndex.value > 0) {
+    tableRef.value.scrollTo(currentTrackIndex.value, 'center-force');
+  }
+});
+
 
 </script>

@@ -82,6 +82,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
     getCurrentPlaylist: (state) => state.data.playlists[0],
     getCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].currentElementIndex,
+    getShuffleCurrentPlaylistIndex: (state) =>
+      state.data.playlists[0].shuffleIndexes[
+      state.data.playlists[0].currentElementIndex],
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
     isCurrentPlaylistElementATrack(state) {
