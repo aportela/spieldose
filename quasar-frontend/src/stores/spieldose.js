@@ -80,11 +80,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex,
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
-    isCurrentPlaylistElementATrack: (state) =>
-      this.hasCurrentPlaylistElements &&
-      state.data.playlists[0].elements[
-        state.data.playlists[0].currentElementIndex
-      ].track,
+    isCurrentPlaylistElementATrack(state) {
+      return (
+        !this.hasCurrentPlaylistARadioStation &&
+        this.hasCurrentPlaylistElements &&
+        state.data.playlists[0].elements[
+          state.data.playlists[0].currentElementIndex
+        ].track
+      );
+    },
     hasCurrentPlaylistARadioStation: (state) =>
       state.data.playlists[0].currentRadioStation != null,
     getCurrentPlaylistElement(state) {
