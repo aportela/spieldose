@@ -206,6 +206,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         } else {
           this.data.audio = new Audio();
         }
+        this.data.audio.autoplay = false;
         // required for radio stations streams
         this.data.audio.crossOrigin = "anonymous";
       } else {
@@ -258,6 +259,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       const playerSettings = basil.get("playerSettings");
       if (playerSettings) {
         this.data.player = playerSettings;
+        this.data.player.status = "stopped";
         this.data.player.userInteracted = userInteracted !== undefined ? userInteracted == true : false;
         if (this.data.audio) {
           this.data.audio.volume = this.data.player.volume;
