@@ -481,9 +481,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         if (this.data.playlists[0].currentRadioStation) {
           this.data.playlists[0].currentRadioStation = null;
         }
-        {
-          this.data.playlists[0].currentElementIndex--;
-        }
+        this.data.playlists[0].currentElementIndex--;
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
@@ -497,9 +495,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.interact();
         if (this.data.playlists[0].currentRadioStation) {
           this.data.playlists[0].currentRadioStation = null;
-        } else {
-          this.data.playlists[0].currentElementIndex++;
         }
+        this.data.playlists[0].currentElementIndex++;
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
@@ -513,9 +510,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.interact();
         if (this.data.playlists[0].currentRadioStation) {
           this.data.playlists[0].currentRadioStation = null;
-        } else {
-          this.data.playlists[0].currentElementIndex = index;
         }
+        this.data.playlists[0].currentElementIndex = index;
         this.data.playlists[0].lastChangeTimestamp = Date.now();
         // TODO evaluate cost of this for big playlists (elements do not change)
         this.saveCurrentPlaylist();
