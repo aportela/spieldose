@@ -79,13 +79,13 @@
               <div v-else>
                 <div v-html="artistData.bio ? nl2br(artistData.bio.summary || '') : ''">
                 </div>
-                <div v-if="artistData.genres">
+                <div v-if="artistData.genres && artistData.genres.length > 0">
                   <q-separator class="q-mt-lg"></q-separator>
                   <p class="q-mt-md">
                     <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
                   </p>
                 </div>
-                <div v-if="artistData.relations">
+                <div v-if="artistData.relations && artistData.relations.length > 0">
                   <q-separator class="q-mt-lg"></q-separator>
                   <p class="q-mt-md">
 
