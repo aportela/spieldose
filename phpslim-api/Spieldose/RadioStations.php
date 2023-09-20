@@ -73,8 +73,8 @@ $radioStations = [
         "directStream" => "https://22333.live.streamtheworld.com/RADIOMARCA_NACIONAL.mp3",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/RadioMARCA.svg/1200px-RadioMARCA.svg.png")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/RadioMARCA.svg/1200px-RadioMARCA.svg.png"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2017/03/16145151/ronaldo-messi.jpg")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2017/03/16145151/ronaldo-messi.jpg"))
         ],
         "language" => "es",
         "country" => "spain",
