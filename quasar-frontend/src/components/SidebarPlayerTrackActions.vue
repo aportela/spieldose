@@ -6,7 +6,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle shuffle"><q-icon name="shuffle"
           :color="shuffle ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
-          :name="repeatModeIcon" :color="repeatMode ? 'pink' : ''"></q-icon></q-btn>
+          :name="repeatModeIcon" :color="repeatMode && repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track" @click="onToggleFavorite"><q-icon
           name="favorite" :color="favoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Download track" v-if="downloadURL"
