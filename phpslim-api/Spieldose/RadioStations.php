@@ -13,8 +13,8 @@ $radioStations = [
         "directStream" => "http://necta.burn.net:8000/nectarine",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://media.radiodeck.com/stations/5f74f4b0664ee8400841cb48/profile/5fb615cd6732e6232fc7de83/xl.jpg"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://i.ytimg.com/vi/ugPZnsRHUkc/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBm2rflbavdyUpFa950j_xVyTGhrw")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://i.ytimg.com/vi/ugPZnsRHUkc/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBm2rflbavdyUpFa950j_xVyTGhrw"))
         ],
         "language" => "en",
         "country" => "world",
@@ -128,13 +128,13 @@ $radioStations = [
     [
         "id" => "90000000-0000-0000-0000-000000000000",
         "name" => "Radio Galega",
-        "url" => "https://los40.com/",
+        "url" => "https://www.crtvg.es/rg/rg-en-directo",
         "playlist" => null,
         "directStream" => "https://wecast-b02-03.flumotion.com/radiogalega/live.mp3",
         "images" =>
         [
-            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/3bx3TZaBKr.png")),
-            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://static.mytuner.mobi/media/tvos_radios/3bx3TZaBKr.png"))
+            "small" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_SMALL_THUMBNAIL, urlencode("https://www.lavozdegalicia.es/default/2019/03/22/00121553256361911188806/Foto/M22M9005.jpg")),
+            "normal" => sprintf(\Spieldose\API::REMOTE_RADIOSTATION_URL_NORMAL_THUMBNAIL, urlencode("https://www.lavozdegalicia.es/default/2019/03/22/00121553256361911188806/Foto/M22M9005.jpg"))
         ],
         "language" => "gl",
         "country" => "spain",
