@@ -1,6 +1,6 @@
 <template>
   <div class="q-px-md" style="max-width: 400px;" v-if="isTrack">
-    <p class="text-center text-weight-bolder ellipsis" style="color: #d30320;"
+    <p class="text-center text-weight-bolder ellipsis text-pink"
       :title="currentElement.track.title || '&nbsp;'">{{ currentElement.track.title || null }}</p>
     <p class="text-center ellipsis" :title="currentElement.track.album.title || null">{{
       currentElement.track.album.title || "&nbsp;" }}</p>
@@ -12,8 +12,8 @@
     </p>
   </div>
   <div class="q-px-md" style="max-width: 400px;" v-else-if="isRadioStation">
-    <p class="text-center text-weight-bolder ellipsis" style="color: #d30320;"
-      :title="currentElement.radioStation.name">{{ currentElement.radioStation.name || "&nbsp;" }}</p>
+    <p class="text-center text-weight-bolder ellipsis text-pink" :title="currentElement.radioStation.name">
+      {{ currentElement.radioStation.name || "&nbsp;" }}</p>
     <p class="text-center">
       <q-btn-group outline>
         <q-btn outline size="sm" icon="playlist_play" label="playlist" :disable="!currentElement.radioStation.playlist"
@@ -46,4 +46,5 @@ const props = defineProps({
 
 const isTrack = computed(() => props.currentElement && props.currentElement.track);
 const isRadioStation = computed(() => props.currentElement && props.currentElement.radioStation);
+
 </script>
