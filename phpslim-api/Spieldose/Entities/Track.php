@@ -219,7 +219,7 @@ class Track extends \Spieldose\Entities\Entity
             "coverPathId" => "D.id",
             "favorited" => "FF.favorited"
         ];
-        if ((isset($filter["path"]) && !empty($filter["path"])) || (count($sort->items) == 1 && get_class($sort->items[0]) == "\aportela\DatabaseBrowserWrapper\SortItem" && $sort->items[0]->field == "filename")) {
+        if ((isset($filter["path"]) && !empty($filter["path"])) || (count($sort->items) == 1 && get_class($sort->items[0]) == "aportela\DatabaseBrowserWrapper\SortItem" && $sort->items[0]->field == "filename")) {
             $fieldDefinitions["filename"] = "F.name";
         }
 
