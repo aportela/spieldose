@@ -18,6 +18,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     data: {
       audio: null,
       audioMotionAnalyzerSource: null,
+      fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
         volume: 0.1,
@@ -57,6 +58,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
     hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
     getAudioMotionAnalyzerSource: (state) =>
       state.data.audioMotionAnalyzerSource,
+    getFullScreenVisualizationSettings: (state) =>
+      state.data.fullScreenVisualizationSettings,
     isSidebarAudioMotionAnalyzerVisible: (state) =>
       state.data.player.sidebarAudioMotionAnalyzer.visible,
     getSidebarAudioMotionAnalyzerMode: (state) =>
@@ -250,6 +253,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         // required for radio stations streams
         this.data.audio.crossOrigin = "anonymous";
       }
+      this.restoreFullScreenVisualizationSettings();
       this.restorePlayerSettings(this.hasPreviousUserInteractions);
       this.restoreCurrentPlaylist();
     },
@@ -607,5 +611,30 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
     },
     */
+    restoreFullScreenVisualizationSettings: function () {
+      const basil = useBasil(localStorageBasilOptions);
+      const fullScreenVisualizationSettings = basil.get(
+        "fullScreenVisualizationSettings"
+      );
+      if (fullScreenVisualizationSettings) {
+        try {
+          this.data.fullScreenVisualizationSettings = JSON.parse(
+            fullScreenVisualizationSettings
+          );
+        } catch (e) {
+          // console.error("error");
+        }
+      }
+    },
+    saveFullScreenVisualizationSettings(settings) {
+      this.data.fullScreenVisualizationSettings = settings;
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set(
+        "fullScreenVisualizationSettings",
+        this.data.fullScreenVisualizationSettings
+          ? JSON.stringify(this.data.fullScreenVisualizationSettings)
+          : null
+      );
+    },
   },
 });

@@ -392,7 +392,6 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
 import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
-import { useSessionStore } from "stores/session";
 import { useSpieldoseStore } from "stores/spieldose";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { api } from 'boot/axios';
@@ -402,10 +401,7 @@ const disabled = ref(false);
 const spieldoseStore = useSpieldoseStore();
 
 const $q = useQuasar();
-const session = useSessionStore();
-if (!session.isLoaded) {
-  session.load();
-}
+
 const maxCanvasHeight = Math.round($q.screen.height / 2);
 //console.log($q.screen.height);
 //console.log(maxCanvasHeight);
@@ -676,13 +672,13 @@ const defaultAudioMotionAnalyzerSettings = {
   onCanvasResize: null
 };
 
-const settings = ref(session.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
+const settings = ref(spieldoseStore.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
 
 function onSet(optionName, optionValue) {
   const option = {};
   option[optionName] = optionValue;
   analyzer.value.setOptions(option);
-  session.saveFullScreenVisualizationSettings(settings.value);
+  spieldoseStore.saveFullScreenVisualizationSettings(settings.value);
 }
 
 function createAnalyzer() {
