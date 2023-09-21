@@ -28,9 +28,8 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
-    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :title="tableTitle" :rows="rows"
-      :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
-      :hide-bottom="true">
+    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :rows="rows" :columns="columns"
+      row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns" :hide-bottom="true">
       <!--
       <template v-slot:top>
         <q-space></q-space>
@@ -38,6 +37,14 @@
           emit-value map-options :options="columns" option-value="name" options-cover style="min-width: 150px" />
       </template>
       -->
+      <template v-slot:top>
+        <p class="title-4" v-if="spieldoseStore.getCurrentPlaylist.id">
+          Playlist: “<span class="text-weight-bold">{{ spieldoseStore.getCurrentPlaylist.name }}</span>” by <router-link
+            :to="{ name: 'playlistsByUserId', params: { id: spieldoseStore.getCurrentPlaylist.owner.id } }">{{
+              spieldoseStore.getCurrentPlaylist.owner.name }}</router-link>
+        </p>
+        <p v-else>Current playlist</p>
+      </template>
       <template v-slot:body="props">
         <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)"
           :class="{ 'selected-row': currentTrackIndex + 1 == props.row.index }">
@@ -163,22 +170,11 @@ const { t } = useI18n();
 
 const spieldoseStore = useSpieldoseStore();
 
-
-
 const currentPlayListElementsLastChanges = computed(() => {
   return (spieldoseStore.getCurrentPlaylistLastChangedTimestamp);
 });
 
 const tableRef = ref(null);
-
-const tableTitle = computed(() => {
-  const playlist = spieldoseStore.getCurrentPlaylist;
-  if (playlist.id) {
-    return("Playlist: “" + playlist.name + "” by " + playlist.owner.name);
-  } else {
-    return('Current playlist');
-  }
-});
 
 const rows = ref([]);
 const columns = [
@@ -368,9 +364,9 @@ function search() {
 }
 
 const currentPlaylistTrackIndex = computed(() => {
-  if (! spieldoseStore.getShuffle) {
+  if (!spieldoseStore.getShuffle) {
     return (spieldoseStore.getShuffledCurrentPlaylistIndex);
-  }else {
+  } else {
     return (spieldoseStore.getShuffleCurrentPlaylistIndex);
   }
 });
