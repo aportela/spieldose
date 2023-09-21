@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="visible" @hide="onHide">
     <div v-if="track" style="width: 1024px; max-width: 80vw; background: #fff;">
-      <q-splitter v-model="splitterModel" unit="px" style="height: 768px" after-class="q-pa-none">
+      <q-splitter v-model="splitterModel" unit="px" style="height: 768px" disable after-class="q-pa-none">
         <template v-slot:before>
             <q-img :src="track.covers.normal" width="400px" height="400px" spinner-color="pink" />
             <div class="q-pa-md">
@@ -46,7 +46,7 @@ import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBloc
 const $q = useQuasar();
 const { t } = useI18n();
 
-const splitterModel = ref('500px');
+const splitterModel = ref(400);
 const props = defineProps({
   trackId: String,
   coverImage: String
