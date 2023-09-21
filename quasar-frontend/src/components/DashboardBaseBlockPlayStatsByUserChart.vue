@@ -117,8 +117,6 @@ function drawChart() {
     labels.push(item.name);
     values.push(item.total);
   });
-  console.log(labels);
-  console.log(values);
   new BarChart('#ct-chart-play-stats-by-user', {
     labels: labels,
     series: [values],
