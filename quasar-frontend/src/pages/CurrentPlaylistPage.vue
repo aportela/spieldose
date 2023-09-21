@@ -334,7 +334,7 @@ function onRemoveElementAtIndex(index) {
 }
 
 function onRowClick(evt, row, index) {
-  if (evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
+  if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
     spieldoseStore.interact();
     spieldoseStore.skipToIndex(index);
   }
