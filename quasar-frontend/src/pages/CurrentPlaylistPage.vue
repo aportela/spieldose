@@ -364,7 +364,7 @@ function search() {
 
 const currentPlaylistTrackIndex = computed(() => {
   if (!spieldoseStore.getShuffle) {
-    return (spieldoseStore.getShuffledCurrentPlaylistIndex);
+    return (spieldoseStore.getCurrentPlaylistIndex);
   } else {
     return (spieldoseStore.getShuffleCurrentPlaylistIndex);
   }
