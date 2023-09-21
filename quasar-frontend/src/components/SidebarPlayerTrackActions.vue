@@ -16,7 +16,7 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle visualization"
         @click="onToggleVisualization"><q-icon name="screenshot_monitor"></q-icon></q-btn>
       <!-- TODO enable only for tracks-->
-      <q-btn dense unelevated size="md" :disable="disabled" title="View track details & lyrics"
+      <q-btn dense unelevated size="md" title="View track details & lyrics"
         @click="onShowTrackDetailsModal"><q-icon name="tag"></q-icon></q-btn>
     </q-btn-group>
   </div>

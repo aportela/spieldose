@@ -27,11 +27,9 @@
       @toggleShuffle="spieldoseStore.toggleShuffeMode()" @toggleRepeatMode="spieldoseStore.toggleRepeatMode()"
       @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
-    <!--
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
       @hide="detailsModal = false">
     </SidebarPlayerTrackDetailsModal>
-    -->
   </div>
 </template>
 
