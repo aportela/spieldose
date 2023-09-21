@@ -33,6 +33,11 @@
         <DashboardBaseBlockChart :globalStats="tab == 'globalStats'"></DashboardBaseBlockChart>
       </div>
     </div>
+    <div class="row" v-if="tab == 'globalStats'">
+      <div class="col-12">
+        <DashboardBaseBlockPlayStatsByUserChart :globalStats="true"></DashboardBaseBlockPlayStatsByUserChart>
+      </div>
+    </div>
   </q-card>
 </template>
 
@@ -43,6 +48,7 @@ import { useI18n } from 'vue-i18n';
 import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
 import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
 import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
+import { default as DashboardBaseBlockPlayStatsByUserChart } from 'components/DashboardBaseBlockPlayStatsByUserChart.vue';
 
 const $q = useQuasar();
 const { t } = useI18n();

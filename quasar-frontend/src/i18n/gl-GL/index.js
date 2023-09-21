@@ -132,6 +132,7 @@ export default {
   "Recently added": "Engadido recentemente",
   "Recently played": "Escoitado recentemente",
   "Play stats": "Estadísticas de escoita",
+  "User play stats": "Estadísticas de escoita por usuario",
   "API Error: error loading metrics":
     "API Error: error cargando métricas/estadísticas",
   onePlayCount: " vez",

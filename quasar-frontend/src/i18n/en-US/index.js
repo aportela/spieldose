@@ -131,6 +131,7 @@ export default {
   "Recently added": "Recently added",
   "Recently played": "Recently played",
   "Play stats": "Play stats",
+  "User play stats": "User play stats",
   "API Error: error loading metrics": "API Error: error loading metrics",
   onePlayCount: " time",
   nPlayCounts: " {count} times",

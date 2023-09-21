@@ -529,4 +529,26 @@ class Metrics
         ', $format, $filter["dateRange"], $whereCondition);
         return ($dbh->query($query, $params));
     }
+
+    public static function searchPlaysByUser(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    {
+        $params = [];
+        $whereCondition = null;
+        if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
+            $whereCondition = " WHERE strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]),
+                new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"])
+            );
+        }
+        $query = sprintf('
+            SELECT U.name, COUNT(*) AS total
+            FROM FILE_PLAYCOUNT_STATS FPS
+            INNER JOIN USER U ON U.id = FPS.user_id
+            %s
+            GROUP BY FPS.user_id
+            ORDER BY 1
+        ', $whereCondition);
+        return ($dbh->query($query, $params));
+    }
 }

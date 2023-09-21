@@ -648,6 +648,16 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->post('/metrics/by_user', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $filter = $params["filter"] ?? [];
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $data = \Spieldose\Metrics::searchPlaysByUser($dbh, $filter);
+                $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->post('/playlist/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();

@@ -433,6 +433,21 @@ const api = {
           });
       });
     },
+    getMetricsByUser: function (filter) {
+      const params = {
+        filter: filter || {},
+      };
+      return new Promise((resolve, reject) => {
+        axios
+          .post(baseAPIPath + "/metrics/by_user", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   playlist: {
     search: function (
