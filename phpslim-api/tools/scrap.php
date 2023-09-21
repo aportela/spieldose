@@ -69,6 +69,8 @@ if (count($missingExtensions) > 0) {
                         try {
                             $mbArtist = $scraper->getArtistMusicBrainzMetadata($artistMBIds[$i]);
                             if (!empty($mbArtist->mbId) && !empty($mbArtist->name)) {
+                                $savedImage = false;
+                                $hasLastFMRelation = false;
                                 $scraper->saveArtistMusicBrainzCachedMetadata($mbArtist);
                                 $artistImageURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::IMAGE);
                                 if (count($artistImageURLs) > 0) {
@@ -81,14 +83,17 @@ if (count($missingExtensions) > 0) {
                                             $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
                                             if (!empty($url)) {
                                                 $scraper->saveArtistImage($mbArtist->mbId, $url);
+                                                $savedImage = true;
                                             }
                                         }
                                     } else {
                                         $scraper->saveArtistImage($mbArtist->mbId, $artistImageURLs[0]);
+                                        $savedImage = true;
                                     }
                                 } else {
                                     $artistLastFMURLs = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
                                     if (count($artistLastFMURLs) > 0) {
+                                        $hasLastFMRelation = true;
                                         $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings["lastFMAPIKey"]);
                                         $url = $lastFMArtist->getImageFromArtistPageURL($artistLastFMURLs[0]);
                                         if (!empty($url)) {
@@ -117,12 +122,24 @@ if (count($missingExtensions) > 0) {
                                         }
                                     }
                                 }
+
+
                                 if (!empty($settings["lastFMAPIKey"])) {
                                     // TODO: check not found exceptions
                                     $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings["lastFMAPIKey"]);
                                     $lastFMArtist->get($mbArtist->name);
                                     if (isset($lastFMArtist->bio) && isset($lastFMArtist->bio->summary) && isset($lastFMArtist->bio->content)) {
                                         $scraper->saveArtistLastFMCachedMetadata($artistMBIds[$i], $lastFMArtist->bio->summary, $lastFMArtist->bio->content);
+                                        if (!$hasLastFMRelation) {
+                                            // TODO: add lastfm relation & save
+                                        }
+                                    }
+                                    if (!$savedImage) {
+                                        $url = $lastFMArtist->getImageFromArtistPageURL($lastFMArtist->url);
+                                        if (!empty($url)) {
+                                            $scraper->saveArtistImage($mbArtist->mbId, $url);
+                                            $savedImage = true;
+                                        }
                                     }
                                 }
                             }
