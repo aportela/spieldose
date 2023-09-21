@@ -467,15 +467,13 @@ return function (App $app) {
 
             $group->get('/album', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
-                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
-                /*
-                $album = new \Spieldose\Entities\Album($dbh);
-                $album->mbId = $queryParams["mbId"] ?? null;
-                $album->title = $queryParams["title"] ?? null;
+                $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
+                $album = new \Spieldose\Entities\Album(
+                    $queryParams["mbId"] ?? null,
+                    $queryParams["title"] ?? null
+                );
                 $settings = $this->get('settings')['thumbnails']['albums'];
-                $album->get($settings['useLocalCovers']);
-                */
-                $album = [];
+                $album->get($dbh, $settings['useLocalCovers']);
                 $payload = json_encode(
                     [
                         'album' => $album

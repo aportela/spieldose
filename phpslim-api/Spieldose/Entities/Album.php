@@ -12,6 +12,16 @@ class Album extends \Spieldose\Entities\Entity
     public ?int $year;
     public ?string $pathId;
 
+    public function __construct(?string $mbId = null, ?string $title = null)
+    {
+        $this->mbId = $mbId;
+        $this->title = $title;
+    }
+
+    public function get(\aportela\DatabaseWrapper\DB $dbh, bool $useLocalCovers = true)
+    {
+    }
+
     public static function getAlbumLocalPathCoverFromPathId(\aportela\DatabaseWrapper\DB $dbh, string $pathId): ?string
     {
         $params = [new \aportela\DatabaseWrapper\Param\StringParam(":pathId", $pathId)];
