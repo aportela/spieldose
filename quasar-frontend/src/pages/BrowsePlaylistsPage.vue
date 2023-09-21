@@ -20,6 +20,14 @@
           </q-input>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <q-select outlined dense v-model="playlistType" :options="playlistTypeValues" options-dense label="Type"
+            @update:model-value="search(true)" :disable="loading || filterByOwnerId != null">
+            <template v-slot:selected-item="scope">
+              {{ scope.opt.label }}
+            </template>
+          </q-select>
+        </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
             @update:model-value="search(true)" :disable="loading">
             <template v-slot:selected-item="scope">
@@ -97,6 +105,26 @@ const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
+
+const playlistTypeValues = [
+{
+    label: 'All playlists',
+    value: 'all',
+    disable: false
+  },
+  {
+    label: 'My playlists',
+    value: 'mine',
+    disable: false
+  },
+  {
+    label: 'User playlists',
+    value: 'userPlaylists',
+    disable: true
+  },
+];
+
+const playlistType = ref(! filterByOwnerId.value ? playlistTypeValues[0]: playlistTypeValues[2]);
 
 const sortFieldValues = [
   {
