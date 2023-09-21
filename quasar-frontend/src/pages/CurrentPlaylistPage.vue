@@ -37,13 +37,12 @@
           emit-value map-options :options="columns" option-value="name" options-cover style="min-width: 150px" />
       </template>
       -->
-      <template v-slot:top>
-        <p class="title-4" v-if="spieldoseStore.getCurrentPlaylist.id">
+      <template v-slot:top v-if="spieldoseStore.getCurrentPlaylist.id">
+        <p class="title-4">
           Playlist: “<span class="text-weight-bold">{{ spieldoseStore.getCurrentPlaylist.name }}</span>” by <router-link
             :to="{ name: 'playlistsByUserId', params: { id: spieldoseStore.getCurrentPlaylist.owner.id } }">{{
               spieldoseStore.getCurrentPlaylist.owner.name }}</router-link>
         </p>
-        <p v-else>Current playlist</p>
       </template>
       <template v-slot:body="props">
         <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)"
