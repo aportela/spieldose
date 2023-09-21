@@ -28,7 +28,7 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
         :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
-    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" title="Current playlist" :rows="rows"
+    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :title="tableTitle" :rows="rows"
       :columns="columns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns"
       :hide-bottom="true">
       <!--
@@ -170,6 +170,15 @@ const currentPlayListElementsLastChanges = computed(() => {
 });
 
 const tableRef = ref(null);
+
+const tableTitle = computed(() => {
+  const playlist = spieldoseStore.getCurrentPlaylist;
+  if (playlist.id) {
+    return("Playlist: “" + playlist.name + "” by " + playlist.owner.name);
+  } else {
+    return('Current playlist');
+  }
+});
 
 const rows = ref([]);
 const columns = [
