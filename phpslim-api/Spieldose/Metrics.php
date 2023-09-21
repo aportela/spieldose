@@ -507,6 +507,9 @@ class Metrics
                 case "year":
                     $format = "%Y";
                     break;
+                case "fullDate":
+                    $format = "%Y%m%d";
+                    break;
                 default:
                     throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
                     break;
@@ -515,10 +518,14 @@ class Metrics
             throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
         }
         $params = [];
-        $whereCondition = null;
+        $whereConditions = [];
         if (!(isset($filter["global"]) && $filter["global"])) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-            $whereCondition = " WHERE FPS.user_id = :user_id ";
+            $whereConditions[] = " FPS.user_id = :user_id ";
+        }
+        if (isset($filter["trackId"]) && !empty($filter["trackId"])) {
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $filter["trackId"]);
+            $whereConditions[] = " FPS.file_id = :file_id ";
         }
         $query = sprintf('
             SELECT strftime("%s", datetime(FPS.play_timestamp, "unixepoch"), "localtime") AS %s, COUNT(*) AS total
@@ -526,7 +533,7 @@ class Metrics
             %s
             GROUP BY 1
             ORDER BY 1
-        ', $format, $filter["dateRange"], $whereCondition);
+        ', $format, $filter["dateRange"], count($whereConditions) > 0 ? " WHERE " . implode(" AND ", $whereConditions) : null);
         return ($dbh->query($query, $params));
     }
 
