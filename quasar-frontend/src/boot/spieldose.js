@@ -62,35 +62,41 @@ const trackActions = {
 
 const albumActions = {
   play: function (album) {
-    api.track
-      // TODO: add another filters
-      .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
-      .then((success) => {
-        spieldoseStore.sendElementsToCurrentPlaylist(
-          success.data.data.items.map((item) => {
-            return { track: item };
-          })
-        );
-      })
-      .catch((error) => {
-        // TODO
-      });
+    return new Promise((resolve, reject) => {
+      api.track
+        // TODO: add another filters
+        .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+        .then((success) => {
+          spieldoseStore.sendElementsToCurrentPlaylist(
+            success.data.data.items.map((item) => {
+              return { track: item };
+            })
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
   enqueue: function (data) {
-    api.track
-      // TODO: add another filters
-      .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
-      .then((success) => {
-        spieldoseStore.interact();
-        spieldoseStore.appendElementsToCurrentPlaylist(
-          success.data.data.items.map((item) => {
-            return { track: item };
-          })
-        );
-      })
-      .catch((error) => {
-        // TODO
-      });
+    return new Promise((resolve, reject) => {
+      api.track
+        // TODO: add another filters
+        .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+        .then((success) => {
+          spieldoseStore.interact();
+          spieldoseStore.appendElementsToCurrentPlaylist(
+            success.data.data.items.map((item) => {
+              return { track: item };
+            })
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
 };
 
