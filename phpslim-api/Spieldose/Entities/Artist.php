@@ -543,6 +543,8 @@ class Artist extends \Spieldose\Entities\Entity
                     $url = $cover->getReleaseImageURL($results[0]->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
                 }
+            } else {
+                throw new \Spieldose\Exception\NotFoundException("artistName");
             }
             $query = "
                 SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year, D.id AS coverPathId
