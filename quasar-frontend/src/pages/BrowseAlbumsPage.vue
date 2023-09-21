@@ -51,7 +51,7 @@
       <div class="q-gutter-md row items-start">
         <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
           :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
-          @enqueue="onEnqueueAlbum(album)" >
+          @enqueue="onEnqueueAlbum(album)">
         </AnimatedAlbumCover>
       </div>
     </q-card-section>
@@ -61,18 +61,14 @@
 <script setup>
 
 import { ref, nextTick, inject } from "vue";
-import { api } from 'boot/axios';
+import { api } from "boot/axios";
+import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+import { albumActions } from "src/boot/spieldose";
 
-import { playListActions } from "src/boot/spieldose";
-import { useSpieldoseStore } from "stores/spieldose";
-
-
+const { t } = useI18n();
 const $q = useQuasar();
-
-const spieldoseStore = useSpieldoseStore();
-
 
 const searchText = ref(null);
 
@@ -172,27 +168,37 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
-  // TODO: use albumActions
-  spieldoseStore.interact();
-  loading.value = true;
-  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
+  albumActions.play(album).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 function onEnqueueAlbum(album) {
-  // TODO: use albumActions
-  spieldoseStore.interact();
-  loading.value = true;
-  api.track.search({ albumMbId: album.mbId }, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    playListActions.appendElements(success.data.data.items.map((item) => { return ({ track: item }); }));
-    loading.value = false;
-  }).catch((error) => {
-    loading.value = false;
-  });
+  albumActions.enqueue(album).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 search(true);

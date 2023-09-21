@@ -63,6 +63,7 @@ const trackActions = {
 const albumActions = {
   play: function (album) {
     return new Promise((resolve, reject) => {
+      // TODO: use get album api
       api.track
         // TODO: add another filters
         .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
@@ -81,6 +82,7 @@ const albumActions = {
   },
   enqueue: function (data) {
     return new Promise((resolve, reject) => {
+      // TODO: use get album api
       api.track
         // TODO: add another filters
         .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")

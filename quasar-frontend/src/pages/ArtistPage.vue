@@ -117,8 +117,8 @@
                     <td class="text-bold col-4">{{ track.title }}</td>
                     <td class="text-left col-4">
                       <q-avatar square>
-                        <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl-small.png'" width="48px"
-                          height="48px" spinner-color="pink" />
+                        <q-img :src="track.covers.small" @error="track.covers.small = 'images/vinyl-small.png'"
+                          width="48px" height="48px" spinner-color="pink" />
                       </q-avatar>
                       {{ track.album.title }}
                     </td>
@@ -374,9 +374,9 @@ img.artist_image:hover {
 </style>
 
 <script setup>
-import { ref, onMounted, computed, watch, inject } from 'vue';
-import { useRoute } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { ref, onMounted, computed, watch, inject } from "vue";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { api } from 'boot/axios';
 import { LineChart, FixedScaleAxis } from 'chartist';
@@ -415,7 +415,6 @@ bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
     }
   }
 });
-
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -598,11 +597,37 @@ function get(name) {
 }
 
 function onPlayAlbum(album) {
-  albumActions.play(album);
+  albumActions.play(album).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 function onEnqueueAlbum(album) {
-  albumActions.enqueue(album);
+  albumActions.enqueue(album).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 get(artistName.value);
