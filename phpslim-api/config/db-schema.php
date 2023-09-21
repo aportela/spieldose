@@ -10,6 +10,10 @@ return (array(
                 `id` CHAR(36) NOT NULL,
                 `email` VARCHAR(255) NOT NULL UNIQUE,
                 `password_hash` CHAR(60) NOT NULL,
+                `name` VARCHAR(32) NOT NULL UNIQUE,
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                `dtime` INTEGER,
                 PRIMARY KEY (`id`)
             );
         ',
@@ -250,18 +254,5 @@ return (array(
                 PRIMARY KEY (`sha256_hash`)
             );
         ',
-    ),
-    17 => array(
-        '
-            ALTER TABLE `USER` ADD "name" VARCHAR(32) NOT NULL UNIQUE;
-        '
-    ),
-    18 => array(
-        '
-            ALTER TABLE `USER` ADD "ctime" INTEGER NOT NULL;
-        ',
-        '
-            ALTER TABLE `USER` ADD "mtime" INTEGER NOT NULL;
-        '
-    ),
+    )
 ));

@@ -1,0 +1,81 @@
+<html data-theme="dark">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+        <title>Spieldose installer</title>
+    </head>
+    <body>
+        <main class="container">
+
+        <hgroup>
+            <h2>Spieldose</h2>
+            <h3>Installer</h3>
+        </hgroup>
+
+        {% set hasErrors = false %}
+        {% if missingExtensions %}
+            {% set hasErrors = true %}
+            <details>
+                <summary role="button" class="secondary">Error: missing ({{ missingExtensions|length }}) php extensions</summary>
+                <ul>
+            {% for extension in missingExtensions  %}
+                    <li>{{ extension }}</li>
+            {% endfor %}
+                </ul>
+            </details>
+        {% endif %}
+        {% if pathErrors %}
+            {% set hasErrors = true %}
+            <details>
+                <summary role="button" class="secondary">Error: can not create ({{ pathErrors|length }}) paths</summary>
+                <ul>
+            {% for path in pathErrors  %}
+                    <li>{{ path }}</li>
+            {% endfor %}
+                </ul>
+            </details>
+        {% endif %}
+        {% if installerException %}
+            {% set hasErrors = true %}
+            <details open>
+                <summary role="button" class="secondary">Error: install exception</summary>
+                <ul>
+                    <li>Type: {{ installerException.type }}</li>
+                    <li>Message: {{ installerException.message }}</li>
+                    <li>Line: {{ installerException.line }}</li>
+                    <li>File: {{ installerException.file }}</li>
+            {% if installerException.parent %}
+                    <li>Parent exception:
+                        <ul>
+                            <li>Type: {{ installerException.parent.type }}</li>
+                            <li>Message: {{ installerException.parent.message }}</li>
+                            <li>Line: {{ installerException.parent.line }}</li>
+                            <li>File: {{ installerException.parent.file }}</li>
+                        </ul>
+                    </li>
+            {% endif %}
+                </ul>
+            </details>
+        {% endif %}
+        {% if not launched or hasErrors %}
+            <form method="get">
+                <input type="hidden" name="launch" value="true">
+                <input type="submit" class="contrast"  value="Launch installer{% if hasErrors %} again{% endif %}">
+            </form>
+        {% else %}
+            <dialog open>
+            <article>
+                <h3>Spieldose has been installed correctly!</h3>
+                <p>Click next button to start...</p>
+                <footer>
+                    <form>
+                    <input type="submit" value="OK" role="button">
+                    </form>
+                </footer>
+            </article>
+            </dialog>
+        {% endif %}
+        </main>
+    </body>
+</html>

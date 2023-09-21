@@ -7,7 +7,74 @@ use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app) {
     $app->get('/', function (Request $request, Response $response, array $args) {
-        return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);
+        $settings = $this->get('settings');
+        if (!file_exists($settings['paths']['database'])) {
+            $queryParams = $request->getQueryParams();
+            $launched = isset($queryParams["launch"]);
+            $installerException = null;
+            $installOK = false;
+            if ($launched) {
+                $logger = $this->get(\Spieldose\Logger\InstallerLogger::class);
+                $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
+                if (count($missingExtensions) < 1) {
+                    $pathErrors = [];
+                    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
+                        if (!@mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+                            $pathErrors[] = $settings['thumbnails']['artists']['basePath'];
+                            $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
+                        }
+                    }
+                    if (!file_exists($settings['thumbnails']['albums']['basePath'])) {
+                        if (!@mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
+                            $pathErrors[] = $settings['thumbnails']['albums']['basePath'];
+                            $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
+                        }
+                    }
+                    if (!file_exists($settings['thumbnails']['radioStations']['basePath'])) {
+                        if (!@mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
+                            $pathErrors[] = $settings['thumbnails']['radioStations']['basePath'];
+                            $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
+                        }
+                    }
+                    if (count($pathErrors) == 0) {
+                        $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
+                        try {
+                            if (!$dbh->isSchemaInstalled()) {
+                                if ($dbh->installSchema()) {
+                                    $currentVersion = $dbh->upgradeSchema();
+                                    if ($currentVersion !== -1) {
+                                        $installOK = true;
+                                    } else {
+                                        unlink($settings['paths']['database']);
+                                    }
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                            $installerException = [
+                                'type' => get_class($e),
+                                'message' => $e->getMessage(),
+                                'file' => $e->getLine(),
+                                'line' => $e->getFile()
+                            ];
+                            $parent = $e->getPrevious();
+                            if ($parent) {
+                                $installerException['parent'] = ['type' => get_class($parent), 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
+                            }
+                        } finally {
+                            $dbh->close();
+                        }
+                    }
+                } else {
+                    $logger->critical("Error: missing php extension/s: ", implode(", ", $missingExtensions));
+                }
+            }
+            if (!$installOK && file_exists($settings['paths']['database'])) {
+                unlink($settings['paths']['database']);
+            }
+            return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
+        } else {
+            return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);
+        }
     })->add(\Spieldose\Middleware\JWT::class);
 
     $app->group(
