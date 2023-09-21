@@ -65,7 +65,7 @@ class Playlist
             $query = null;
             if ($this->id != self::FAVORITE_TRACKS_PLAYLIST_ID) {
                 $query = "
-                    SELECT P.ctime, P.mtime, P.name, P.public, P.user_id AS ownerId, U.name AS ownerName
+                    SELECT P.id, P.name, P.ctime, P.mtime, P.name, P.public, P.user_id AS ownerId, U.name AS ownerName
                     FROM PLAYLIST P
                     LEFT JOIN USER U ON U.id = P.user_id
                     WHERE P.id = :id
@@ -73,16 +73,19 @@ class Playlist
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id);
             } else {
                 $query = "
-                    SELECT MIN(FF.favorited) AS ctime, MAX(FF.favorited) AS mtime, '#' AS name, NULL AS public, :user_id AS ownerId, U.name AS ownerName
+                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, MIN(FF.favorited) AS ctime, MAX(FF.favorited) AS mtime, '#' AS name, NULL AS public, :user_id AS ownerId, U.name AS ownerName
                     FROM USER U
                     LEFT JOIN FILE_FAVORITE FF ON FF.user_id = U.id
                     WHERE U.id = :user_id
                     GROUP BY (U.id)
                 ";
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
             }
             $data = $dbh->query($query, $params);
             if (count($data) == 1) {
+                $this->id = $data[0]->id;
+                $this->name = $data[0]->name;
                 $this->ctime = $data[0]->ctime;
                 $this->mtime = $data[0]->mtime;
                 $this->name = $data[0]->name;
