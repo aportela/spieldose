@@ -394,15 +394,19 @@ return function (App $app) {
                 $artist = new \Spieldose\Entities\Artist($dbh);
                 $artist->mbId = $queryParams["mbId"] ?? null;
                 $artist->name = $queryParams["name"] ?? null;
-                $settings = $this->get('settings')['thumbnails']['albums'];
-                $artist->get($settings['useLocalCovers']);
-                $payload = json_encode(
-                    [
-                        'artist' => $artist
-                    ]
-                );
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                if (!(empty($artist->mbId) && empty($artist->name))) {
+                    $settings = $this->get('settings')['thumbnails']['albums'];
+                    $artist->get($settings['useLocalCovers']);
+                    $payload = json_encode(
+                        [
+                            'artist' => $artist
+                        ]
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
+                }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/artists_genres', function (Request $request, Response $response, array $args) {
@@ -457,6 +461,26 @@ return function (App $app) {
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
                 $data = \Spieldose\Entities\Album::search($dbh, $filter, $sort, $pager, $settings['useLocalCovers']);
                 $payload = json_encode(["data" => $data]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->get('/album', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                /*
+                $album = new \Spieldose\Entities\Album($dbh);
+                $album->mbId = $queryParams["mbId"] ?? null;
+                $album->title = $queryParams["title"] ?? null;
+                $settings = $this->get('settings')['thumbnails']['albums'];
+                $album->get($settings['useLocalCovers']);
+                */
+                $album = [];
+                $payload = json_encode(
+                    [
+                        'album' => $album
+                    ]
+                );
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
