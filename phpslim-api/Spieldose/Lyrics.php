@@ -15,6 +15,8 @@ class Lyrics
     public function __construct(string $title, string $artist)
     {
         $this->title = trim($title);
+        // ugly hack to scrap "live versions"
+        $this->title = preg_replace("/ \(live\)$/i", "", $this->title);
         $this->artist = trim($artist);
         $this->hash = hash("sha256", $this->title . $this->artist);
         $this->data = null;
