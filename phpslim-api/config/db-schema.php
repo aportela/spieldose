@@ -253,7 +253,15 @@ return (array(
     ),
     17 => array(
         '
-            ALTER TABLE `USER` ADD "name" VARCHAR(32)  NOT NULL UNIQUE;
+            ALTER TABLE `USER` ADD "name" VARCHAR(32) NOT NULL UNIQUE;
+        '
+    ),
+    18 => array(
+        '
+            ALTER TABLE `USER` ADD "ctime" INTEGER NOT NULL;
+        ',
+        '
+            ALTER TABLE `USER` ADD "mtime" INTEGER NOT NULL;
         '
     ),
 ));

@@ -37,7 +37,7 @@ class User
                             new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
                         );
-                        $dbh->exec(" INSERT INTO USER (id, email, password_hash, name) VALUES(:id, :email, :password_hash, :name) ", $params);
+                        $dbh->exec(" INSERT INTO USER (id, email, password_hash, name, ctime, mtime) VALUES(:id, :email, :password_hash, :name, strftime('%s', 'now'), strftime('%s', 'now')) ", $params);
                     } else {
                         throw new \Spieldose\Exception\InvalidParamsException("password");
                     }
@@ -64,7 +64,7 @@ class User
                             new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
                         );
-                        $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash, name = :name WHERE id = :id ", $params);
+                        $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash, name = :name, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
                     } else {
                         throw new \Spieldose\Exception\InvalidParamsException("password");
                     }
