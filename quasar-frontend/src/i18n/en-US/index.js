@@ -103,6 +103,7 @@ export default {
   "Field is required": "Field is required",
   "Email not registered": "Email not registered",
   "Invalid password": "Invalid password",
+  "Account has been deleted": "Account has been deleted",
   "Sign up": "Sign up",
   "Sign up below to create your account":
     "Sign up below to create your account",

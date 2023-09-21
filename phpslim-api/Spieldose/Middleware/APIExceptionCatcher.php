@@ -58,6 +58,12 @@ class APIExceptionCatcher
             $payload = json_encode(['keyNotFound' => $e->getMessage()]);
             $response->getBody()->write($payload);
             return ($response)->withStatus(404);
+        } catch (\Spieldose\Exception\DeletedException $e) {
+            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
+            $response = new \Slim\Psr7\Response();
+            $payload = json_encode([]);
+            $response->getBody()->write($payload);
+            return ($response)->withStatus(410);
         } catch (\Throwable $e) {
             $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
             $response = new \Slim\Psr7\Response();

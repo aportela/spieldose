@@ -104,6 +104,7 @@ export default {
   "Field is required": "Este campo e requerido",
   "Email not registered": "O correo electrónico non está asociado",
   "Invalid password": "Contrasinal incorrecta",
+  "Account has been deleted": "A conta foi eliminada",
   "Sign up": "Crear conta",
   "Sign up below to create your account":
     "Introduzca os datos pra crear a súa conta",

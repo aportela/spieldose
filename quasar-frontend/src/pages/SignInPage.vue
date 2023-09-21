@@ -160,6 +160,13 @@ function onSubmitForm() {
             passwordRef.value.focus();
           });
           break;
+          case 410:
+          remoteValidation.value.email.hasErrors = true;
+          remoteValidation.value.email.message = t("Account has been deleted");
+          nextTick(() => {
+            emailRef.value.focus();
+          });
+          break;
         default:
           $q.notify({
             type: "negative",

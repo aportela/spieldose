@@ -11,6 +11,7 @@ class User
     public ?string $password;
     public ?string $passwordHash;
     public ?string $name;
+    public ?int $deletedTimestamp;
 
     public function __construct(string $id = "", string $email = "", string $password = "", string $name = "")
     {
@@ -37,7 +38,7 @@ class User
                             new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
                         );
-                        $dbh->exec(" INSERT INTO USER (id, email, password_hash, name, ctime, mtime) VALUES(:id, :email, :password_hash, :name, strftime('%s', 'now'), strftime('%s', 'now')) ", $params);
+                        $dbh->exec(" INSERT INTO USER (id, email, password_hash, name, ctime, mtime, dtime) VALUES(:id, :email, :password_hash, :name, strftime('%s', 'now'), strftime('%s', 'now'), NULL) ", $params);
                     } else {
                         throw new \Spieldose\Exception\InvalidParamsException("password");
                     }
@@ -86,7 +87,7 @@ class User
             $results = $dbh->query(
                 "
                         SELECT
-                            USER.id, USER.email, USER.password_hash AS passwordHash, USER.name
+                            USER.id, USER.email, USER.password_hash AS passwordHash, USER.name, USER.dtime
                         FROM USER
                         WHERE USER.id = :id
                     ",
@@ -98,7 +99,7 @@ class User
             $results = $dbh->query(
                 "
                     SELECT
-                        USER.id, USER.email, USER.password_hash AS passwordHash, USER.name
+                        USER.id, USER.email, USER.password_hash AS passwordHash, USER.name, USER.dtime
                     FROM USER
                         WHERE USER.email = :email
                     ",
@@ -114,6 +115,7 @@ class User
             $this->email = $results[0]->email;
             $this->passwordHash = $results[0]->passwordHash;
             $this->name = $results[0]->name;
+            $this->deletedTimestamp = $results[0]->dtime;
         } else {
             throw new \Spieldose\Exception\NotFoundException("");
         }
@@ -165,11 +167,15 @@ class User
     {
         if (!empty($this->password)) {
             $this->get($dbh);
-            if (password_verify($this->password, $this->passwordHash)) {
-                \Spieldose\UserSession::set($this->id, $this->email, $this->name);
-                return (true);
+            if (!$this->deletedTimestamp) {
+                if (password_verify($this->password, $this->passwordHash)) {
+                    \Spieldose\UserSession::set($this->id, $this->email, $this->name);
+                    return (true);
+                } else {
+                    throw new \Spieldose\Exception\UnauthorizedException("password");
+                }
             } else {
-                throw new \Spieldose\Exception\UnauthorizedException("password");
+                throw new \Spieldose\Exception\DeletedException("");
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("password");
