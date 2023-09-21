@@ -528,7 +528,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
       const currentPlaylist = basil.get("currentPlaylist");
       if (currentPlaylist) {
         this.data.playlists[0] = currentPlaylist;
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        if (
+          this.hasCurrentPlaylistElements ||
+          hasCurrentPlaylistARadioStation
+        ) {
+          this.setAudioSource(this.getCurrentPlaylistElementURL);
+        }
       }
     },
     saveCurrentPlaylist: function () {
