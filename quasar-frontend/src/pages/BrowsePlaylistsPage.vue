@@ -190,15 +190,6 @@ function onPlay(playlistId) {
           }),
         });
   });
-
-  loading.value = true;
-  api.track.search({ playlistId: playlistId }, 1, 0, false, 'playListTrackIndex', 'ASC').then((success) => {
-    playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
-    loading.value = false;
-  }).catch((error) => {
-    // TODO
-    loading.value = false;
-  });
 }
 
 function onDelete(playlistId) {
