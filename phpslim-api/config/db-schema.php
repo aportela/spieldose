@@ -254,5 +254,16 @@ return (array(
                 PRIMARY KEY (`sha256_hash`)
             );
         ',
+    ),
+    17 => array(
+        '
+            ALTER TABLE `LYRICS` ADD "source" VARCHAR(32) NOT NULL
+        ',
+        '
+            ALTER TABLE `LYRICS` ADD "ctime" INTEGER NOT NULL;
+        ',
+        '
+            ALTER TABLE `LYRICS` ADD "mtime" INTEGER NOT NULL;
+        '
     )
 ));

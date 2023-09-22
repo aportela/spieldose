@@ -11,6 +11,7 @@ class Lyrics
     public string $title;
     public string $artist;
     public ?string $data;
+    public string $source;
 
     public function __construct(string $title, string $artist)
     {
@@ -26,7 +27,7 @@ class Lyrics
     {
     }
 
-    private function scrapFromGoogle(): string
+    private function scrapFromGoogle(): bool
     {
         // (AT THIS TIME) this is REQUIRED/IMPORTANT, with another user agents the search response is not the same (do not include lyrics!)
         $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/116.0.1938.81";
@@ -45,7 +46,13 @@ class Lyrics
                         foreach ($nodes as $key => $node) {
                             $data .= trim($node->textContent) . PHP_EOL;
                         }
-                        return ($data);
+                        if (!empty($data)) {
+                            $this->source = !empty($data) ? "google" : null;
+                            $this->data = $data;
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     } else {
                         throw new \Spieldose\Exception\NotFoundException('//div[@jsname="WbKHeb"]//span');
                     }
@@ -60,7 +67,7 @@ class Lyrics
         }
     }
 
-    private function scrapFromBing(): string
+    private function scrapFromBing(): bool
     {
         $request = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger());
         $response = $request->GET(sprintf("https://www.bing.com/search?%s", http_build_query(["q" => sprintf("lyrics \"%s\" from \"%s\"", $this->title, $this->artist)])));
@@ -77,7 +84,13 @@ class Lyrics
                         foreach ($nodes as $key => $node) {
                             $data .= trim($node->textContent) . PHP_EOL;
                         }
-                        return ($data);
+                        if (!empty($data)) {
+                            $this->source = !empty($data) ? "bing" : null;
+                            $this->data = $data;
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     } else {
                         throw new \Spieldose\Exception\NotFoundException('//div[@jsname="lyrics"]//div');
                     }
@@ -92,7 +105,7 @@ class Lyrics
         }
     }
 
-    private function scrapFromDuckDuckGo(): string
+    private function scrapFromDuckDuckGo(): bool
     {
         $request = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger(), "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0");
         $response = $request->GET(sprintf("https://duckduckgo.com/a.js?s=lyrics&from=lyrics&%s", http_build_query(["ta" => $this->artist, "tl" => $this->title])));
@@ -100,10 +113,17 @@ class Lyrics
             $pattern = '/DDG.duckbar.add_array\(\[\{"data":\[\{"Abstract":"(.*)","AbstractSource":"Musixmatch"/';
             if (preg_match($pattern, $response->body, $match)) {
                 if (count($match) == 2) {
+                    $data = null;
                     foreach (explode(PHP_EOL, str_ireplace(array("<br>", "<br/>", "<br />"), PHP_EOL, $match[1])) as $line) {
-                        $this->data .= trim($line) . PHP_EOL;
+                        $data .= trim($line) . PHP_EOL;
                     };
-                    return (!empty($this->data));
+                    if (!empty($data)) {
+                        $this->source = !empty($data) ? "bing" : null;
+                        $this->data = $data;
+                        return (true);
+                    } else {
+                        return (false);
+                    }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException('DDG.duckbar.add_array');
                 }
@@ -126,24 +146,23 @@ class Lyrics
                     throw new \Spieldose\Exception\InvalidParamsException("artist length");
                 }
                 try {
-                    $this->data = $this->scrapFromGoogle();
-                    if (empty($this->data)) {
-                        $this->data = $this->scrapFromDuckDuckGo();
-                    }
-                    if (empty($this->data)) {
-                        $this->data = $this->scrapFromBing();
+                    if (!$this->scrapFromGoogle()) {
+                        if (!$this->scrapFromDuckDuckGo()) {
+                            $this->scrapFromBing();
+                        }
                     }
                 } catch (\Throwable $e) {
                     // TODO
                 }
                 if (!empty($this->data)) {
                     $this->data = trim($this->data);
-                    $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data) VALUES (:sha256_hash, :title, :artist, :data) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data ";
+                    $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data, source, ctime, mtime) VALUES (:sha256_hash, :title, :artist, :data, source, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data, source = :source, mtime = strftime('%s', 'now') ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $this->hash),
                         new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->artist),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":data", $this->data)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":data", $this->data),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":source", $this->source)
                     );
                     $dbh->exec($query, $params);
                     return (true);
