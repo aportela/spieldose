@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b186283c79a1851d037757190c0d5a09",
+    "content-hash": "671db83d0c4e0f593ba77dfbc5a5a0c4",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-browser-wrapper.git",
-                "reference": "530a1a1e004019922e64e022713e45abee5a81c2"
+                "reference": "f885aba5c1a1cb19540d64424d088d525067e9de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/530a1a1e004019922e64e022713e45abee5a81c2",
-                "reference": "530a1a1e004019922e64e022713e45abee5a81c2",
+                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/f885aba5c1a1cb19540d64424d088d525067e9de",
+                "reference": "f885aba5c1a1cb19540d64424d088d525067e9de",
                 "shasum": ""
             },
             "require": {
@@ -26,8 +26,8 @@
                 "psr/log": "^3.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.22",
-                "phpunit/phpunit": "^10.2"
+                "friendsofphp/php-cs-fixer": "^3.28",
+                "phpunit/phpunit": "^10.3"
             },
             "type": "library",
             "autoload": {
@@ -49,22 +49,22 @@
             "homepage": "https://github.com/aportela/db-browser-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-browser-wrapper/issues",
-                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.5"
+                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.6"
             },
-            "time": "2023-08-26T23:03:11+00:00"
+            "time": "2023-09-22T21:33:02+00:00"
         },
         {
             "name": "aportela/db-wrapper",
-            "version": "2.0.4",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "3eda3fb5a10763e8cabcf32379cae053cf72dceb"
+                "reference": "3eae2cb005d44f29a8f1a343ad5634b09d42aac0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/3eda3fb5a10763e8cabcf32379cae053cf72dceb",
-                "reference": "3eda3fb5a10763e8cabcf32379cae053cf72dceb",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/3eae2cb005d44f29a8f1a343ad5634b09d42aac0",
+                "reference": "3eae2cb005d44f29a8f1a343ad5634b09d42aac0",
                 "shasum": ""
             },
             "require": {
@@ -72,8 +72,8 @@
                 "psr/log": "^3.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.22",
-                "phpunit/phpunit": "^10.2"
+                "friendsofphp/php-cs-fixer": "^3.28",
+                "phpunit/phpunit": "^10.3"
             },
             "type": "library",
             "autoload": {
@@ -95,22 +95,22 @@
             "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/2.0.4"
+                "source": "https://github.com/aportela/db-wrapper/tree/2.0.5"
             },
-            "time": "2023-09-21T22:26:24+00:00"
+            "time": "2023-09-22T21:22:37+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
-            "version": "2.0.2",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/httprequest-wrapper.git",
-                "reference": "c945f2eb7d3b6a007c8ff7afc4de8efeb3081792"
+                "reference": "7aaa7b6ba011ebcdeade29cf26cec9322f0becc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/c945f2eb7d3b6a007c8ff7afc4de8efeb3081792",
-                "reference": "c945f2eb7d3b6a007c8ff7afc4de8efeb3081792",
+                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/7aaa7b6ba011ebcdeade29cf26cec9322f0becc2",
+                "reference": "7aaa7b6ba011ebcdeade29cf26cec9322f0becc2",
                 "shasum": ""
             },
             "require": {
@@ -118,6 +118,7 @@
                 "psr/log": "^3.0"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.28",
                 "phpunit/phpunit": "^10.3"
             },
             "type": "library",
@@ -128,7 +129,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0-only"
+                "AGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -140,9 +141,9 @@
             "homepage": "https://github.com/aportela/httprequest-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/httprequest-wrapper/issues",
-                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.2"
+                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.3"
             },
-            "time": "2023-08-09T07:25:58+00:00"
+            "time": "2023-09-22T21:15:44+00:00"
         },
         {
             "name": "aportela/lastfm-wrapper",
@@ -286,16 +287,16 @@
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/remote-thumbnail-cache-wrapper.git",
-                "reference": "a646461c2c82a6ce96aed22c6dd8923d9fc90726"
+                "reference": "f5c876449bbeee20e452e231623618b3a6b8c271"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/a646461c2c82a6ce96aed22c6dd8923d9fc90726",
-                "reference": "a646461c2c82a6ce96aed22c6dd8923d9fc90726",
+                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/f5c876449bbeee20e452e231623618b3a6b8c271",
+                "reference": "f5c876449bbeee20e452e231623618b3a6b8c271",
                 "shasum": ""
             },
             "require": {
@@ -305,7 +306,7 @@
                 "sybio/image-workshop": "^2.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.22",
+                "friendsofphp/php-cs-fixer": "^3.28",
                 "phpunit/phpunit": "^10.3"
             },
             "type": "library",
@@ -328,9 +329,9 @@
             "homepage": "https://github.com/aportela/remote-thumbnail-cache-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/remote-thumbnail-cache-wrapper/issues",
-                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.3"
+                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.4"
             },
-            "time": "2023-08-25T09:41:51+00:00"
+            "time": "2023-09-22T21:19:23+00:00"
         },
         {
             "name": "brick/math",
@@ -2410,16 +2411,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.27.0",
+            "version": "v3.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "e73ccaae1208f017bb7860986eebb3da48bd25d6"
+                "reference": "113e09fea3d2306319ffaa2423fe3de768b28cff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/e73ccaae1208f017bb7860986eebb3da48bd25d6",
-                "reference": "e73ccaae1208f017bb7860986eebb3da48bd25d6",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/113e09fea3d2306319ffaa2423fe3de768b28cff",
+                "reference": "113e09fea3d2306319ffaa2423fe3de768b28cff",
                 "shasum": ""
             },
             "require": {
@@ -2493,7 +2494,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.27.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.28.0"
             },
             "funding": [
                 {
@@ -2501,7 +2502,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-17T14:37:54+00:00"
+            "time": "2023-09-22T20:43:40+00:00"
         },
         {
             "name": "myclabs/deep-copy",
