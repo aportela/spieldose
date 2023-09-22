@@ -7,8 +7,10 @@ use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app) {
     $app->get('/', function (Request $request, Response $response, array $args) {
-        $settings = $this->get('settings');
-        if (!file_exists($settings['paths']['database'])) {
+        $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
+        if (!$dbh->isSchemaInstalled()) {
+            // TODO: check upgrades
+            $settings = $this->get('settings');
             $queryParams = $request->getQueryParams();
             $launched = isset($queryParams["launch"]);
             $installerException = null;
@@ -39,14 +41,12 @@ return function (App $app) {
                     if (count($pathErrors) == 0) {
                         $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
                         try {
-                            if (!$dbh->isSchemaInstalled()) {
-                                if ($dbh->installSchema()) {
-                                    $currentVersion = $dbh->upgradeSchema();
-                                    if ($currentVersion !== -1) {
-                                        $installOK = true;
-                                    } else {
-                                        unlink($settings['paths']['database']);
-                                    }
+                            if ($dbh->installSchema()) {
+                                $currentVersion = $dbh->upgradeSchema();
+                                if ($currentVersion !== -1) {
+                                    $installOK = true;
+                                } else {
+                                    unlink($settings['paths']['database']);
                                 }
                             }
                         } catch (\Throwable $e) {
@@ -61,18 +61,19 @@ return function (App $app) {
                                 $installerException['parent'] = ['type' => get_class($parent), 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
                             }
                         } finally {
-                            $dbh->close();
                         }
                     }
                 } else {
                     $logger->critical("Error: missing php extension/s: ", implode(", ", $missingExtensions));
                 }
             }
+            $dbh->close();
             if (!$installOK && file_exists($settings['paths']['database'])) {
                 unlink($settings['paths']['database']);
             }
             return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
         } else {
+            $dbh->close();
             return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);
         }
     })->add(\Spieldose\Middleware\JWT::class);
