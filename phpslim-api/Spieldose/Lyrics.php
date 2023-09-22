@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class Lyrics
 {
-
     public string $hash;
     public string $title;
     public string $artist;
