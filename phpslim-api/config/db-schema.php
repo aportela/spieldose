@@ -383,5 +383,10 @@ return (array(
                 PRIMARY KEY (`mbid`, `media`, `position`)
             );
         '
+    ),
+    21 => array(
+        '
+            DROP TABLE `FILE_SCRAP`;
+        '
     )
 ));
