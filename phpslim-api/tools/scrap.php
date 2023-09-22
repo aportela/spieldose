@@ -36,6 +36,49 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
+
+
+        echo "Checking artist names without musicbrainz id... ";
+        $artistNamesWithoutMusicBrainzId = \Spieldose\Scraper\Artist\Scraper::getArtistNamesWithoutMusicBrainzId($db, true);
+        $total = count($artistNamesWithoutMusicBrainzId);
+        if ($total > 0) {
+            echo "total artist names without mbid: " . $total . PHP_EOL;
+            for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Scraper\Artist\Scraper::scrap($db, $settings["lastFMAPIKey"], null, $artistNamesWithoutMusicBrainzId[$i]);
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[$i]);
+            }
+        } else {
+            echo "none found" . PHP_EOL;
+        }
+
+        echo "Checking artists without musicbrainz cached data... ";
+        $artistMBIdsWithoutCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistIdsWithoutCache($db, true);
+        $total = count($artistMBIdsWithoutCache);
+        if ($total > 0) {
+            echo "total artists without musicbrainz cached data: " . $total . PHP_EOL;
+            for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Scraper\Artist\Scraper::scrap($db, $settings["lastFMAPIKey"], $artistMBIdsWithoutCache[$i], null);
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $artistMBIdsWithoutCache[$i]);
+            }
+        } else {
+            echo "none found" . PHP_EOL;
+        }
+
+        echo "Checking releases without musicbrainz cached data... ";
+        $releaseMBIdsWithoutCache = \Spieldose\Scraper\Release\Scraper::getMusicBrainzReleaseIdsWithoutCache($db, true);
+        $total = count($releaseMBIdsWithoutCache);
+        if ($total > 0) {
+            echo "total releases without musicbrainz cached data: " . $total . PHP_EOL;
+            for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Scraper\Release\Scraper::scrap($db, $releaseMBIdsWithoutCache[$i]);
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[$i]);
+            }
+        } else {
+            echo "none found" . PHP_EOL;
+        }
+
+        exit;
+
         $cmdLine = new \Spieldose\CmdLine("", array("all", "artists", "albums", "force", "artiststhumbnails"));
         $scrapArtists = $cmdLine->hasParam("artists") || $cmdLine->hasParam("all");
         $scrapAlbums = $cmdLine->hasParam("albums") || $cmdLine->hasParam("all");
