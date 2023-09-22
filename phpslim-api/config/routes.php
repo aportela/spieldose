@@ -72,6 +72,8 @@ return function (App $app) {
                 unlink($settings['paths']['database']);
             }
             return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
+        } else if ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
+            return $this->get('Twig')->render($response, 'index-upgrade.html.twig', ["launched" => false, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => null, "pathErrors" => $pathErrors ?? []]);
         } else {
             $dbh->close();
             return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);

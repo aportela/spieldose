@@ -10,7 +10,7 @@
 
         <hgroup>
             <h1>Spieldose</h1>
-            <h2>Installer</h2>
+            <h2>Upgrade version</h2>
         </hgroup>
 
         {% set hasErrors = false %}
@@ -61,12 +61,12 @@
         {% if not launched or hasErrors %}
             <form method="get">
                 <input type="hidden" name="launch" value="true">
-                <input type="submit" class="contrast"  value="Launch installer{% if hasErrors %} again{% endif %}">
+                <input type="submit" class="contrast"  value="Launch upgrade{% if hasErrors %} again{% endif %}">
             </form>
         {% else %}
             <dialog open>
             <article>
-                <h3>Spieldose has been installed correctly!</h3>
+                <h3>Spieldose has been upgraded correctly!</h3>
                 <p>Click next button to start...</p>
                 <footer>
                     <form>
