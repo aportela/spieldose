@@ -278,4 +278,76 @@ return (array(
         '
     ),
 
+    19 => array(
+        '
+            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ` (
+                `mbid` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                `image` VARCHAR(8192),
+                `country` VARCHAR(2),
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                PRIMARY KEY (`mbid`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ_GENRE` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `genre` VARCHAR(64) NOT NULL,
+                FOREIGN KEY(`artist_mbid`) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`),
+                PRIMARY KEY (`artist_mbid`, `genre`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP` (
+                `artist_mbid` VARCHAR(36) NOT NULL,
+                `relation_type_id` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                `url` VARCHAR(2048) NOT NULL,
+                FOREIGN KEY(`artist_mbid`) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`),
+                PRIMARY KEY (`artist_mbid`, `relation_type_id`, `url`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_LASTFM` (
+                `sha256_hash` VARCHAR(64) NOT NULL,
+                `mbid` VARCHAR(36),
+                `name` VARCHAR(128) NOT NULL,
+                `url` VARCHAR(2048) NOT NULL,
+                `image` VARCHAR(8192),
+                `bio_summary` TEXT,
+                `bio_content` TEXT,
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                PRIMARY KEY (`sha256_hash`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_LASTFM_TAG` (
+                `artist_hash` VARCHAR(36) NOT NULL,
+                `tag` VARCHAR(64) NOT NULL,
+                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
+                PRIMARY KEY (`artist_hash`, `tag`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_LASTFM_SIMILAR` (
+                `artist_hash` VARCHAR(36) NOT NULL,
+                `name` VARCHAR(128) NOT NULL,
+                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
+                PRIMARY KEY (`artist_hash`, `name`)
+            );
+        ',
+        '
+            CREATE TABLE `CACHE_ARTIST_WIKIPEDIA` (
+                `name` VARCHAR(128) NOT NULL,
+                `url` VARCHAR(8192) NOT NULL,
+                `language` VARCHAR(2) NOT NULL,
+                `html` TEXT NOT NULL,
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                PRIMARY KEY (`name`, `url`, `language`)
+            );
+        '
+    )
 ));
