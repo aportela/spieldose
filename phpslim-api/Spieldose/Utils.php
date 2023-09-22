@@ -64,11 +64,14 @@ class Utils
 
         $rate = ($now - $start_time) / $done;
         $left = $total - $done;
+
         $eta = round($rate * $left, 2);
 
         $elapsed = $now - $start_time;
 
-        $status_bar .= " remaining: " . number_format($eta) . " sec. elapsed: " . number_format($elapsed) . " sec.";
+
+
+        $status_bar .= " remaining: " . sprintf("%d %s", ($eta > 3600 ? $eta / 3600 : ($eta > 60 ? $eta / 60 : $eta)), ($eta > 3600 ? "hours" : ($eta > 60 ? "minutes" : "seconds")))  . " elapsed: " . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds")));
 
         if (!empty($extraMessage)) {
             echo "$status_bar " . sprintf(" [%s]", $extraMessage);
