@@ -6,7 +6,6 @@ namespace Spieldose\Scraper\Artist;
 
 class MusicBrainz
 {
-
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
     private bool $scraped;
