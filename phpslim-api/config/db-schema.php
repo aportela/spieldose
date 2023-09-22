@@ -265,5 +265,17 @@ return (array(
         '
             ALTER TABLE `LYRICS` ADD "mtime" INTEGER NOT NULL;
         '
-    )
+    ),
+
+    18 => array(
+        '
+            CREATE TABLE `FILE_SCRAP` (
+                `file_id` CHAR(36) NOT NULL,
+                `scraped` INTEGER NOT NULL,
+                FOREIGN KEY(`file_id`) REFERENCES FILE(`id`)
+                PRIMARY KEY (`file_id`, `scraped`)
+            );
+        '
+    ),
+
 ));
