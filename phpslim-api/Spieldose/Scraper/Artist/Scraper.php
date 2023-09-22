@@ -6,7 +6,6 @@ namespace Spieldose\Scraper\Artist;
 
 class Scraper
 {
-
     public static function getArtistNamesWithoutMusicBrainzId(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
         $names = [];
@@ -36,7 +35,7 @@ class Scraper
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_artist_id IS NOT NULL
             AND NOT EXISTS
-                (SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
+                (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
 
             UNION
 
@@ -45,7 +44,7 @@ class Scraper
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_album_artist_id IS NOT NULL
             AND NOT EXISTS
-                (SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
+                (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
         " : "
             SELECT
                 mbid
@@ -55,7 +54,7 @@ class Scraper
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_artist_id IS NOT NULL
                 AND NOT EXISTS
-                    (SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
+                    (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
 
                 UNION
 
@@ -64,7 +63,7 @@ class Scraper
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_album_artist_id IS NOT NULL
                 AND NOT EXISTS
-                    (SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
+                    (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
             ) TMP
             ORDER BY RANDOM()
         ";
@@ -77,20 +76,32 @@ class Scraper
 
     public static function scrap(\aportela\DatabaseWrapper\DB $dbh, string $lastFMAPIKey, ?string $mbId, ?string $name): void
     {
-        // musicbrainz block
-        $musicBrainzArtist = new \Spieldose\Scraper\Artist\MusicBrainz(new \Psr\Log\NullLogger(), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-        $musicBrainzArtist->mbId = $mbId;
-        $musicBrainzArtist->name = $name;
-        if ($musicBrainzArtist->scrap()) {
-            $musicBrainzArtist->fixTags($dbh);
-            $musicBrainzArtist->saveCache($dbh);
+        $success = false;
+        $dbh->beginTransaction();
+        try {
+            // musicbrainz block
+            $musicBrainzArtist = new \Spieldose\Scraper\Artist\MusicBrainz(new \Psr\Log\NullLogger(), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+            $musicBrainzArtist->mbId = $mbId;
+            $musicBrainzArtist->name = $name;
+            if ($musicBrainzArtist->scrap()) {
+                $musicBrainzArtist->fixTags($dbh);
+                $musicBrainzArtist->saveCache($dbh);
+            }
+            // last.fm block
+            $lastFMArtist = new \Spieldose\Scraper\Artist\LastFM(new \Psr\Log\NullLogger(), \aportela\LastFMWrapper\APIFormat::JSON, $lastFMAPIKey);
+            $lastFMArtist->name = $musicBrainzArtist->name ?? $name;
+            if ($lastFMArtist->scrap()) {
+                $lastFMArtist->saveCache($dbh);
+            }
+            // TODO wikipedia block
+            $success = true;
+        } catch (\Throwable $e) {
+        } finally {
+            if ($success) {
+                $dbh->commit();
+            } else {
+                $dbh->rollBack();
+            }
         }
-        // last.fm block
-        $lastFMArtist = new \Spieldose\Scraper\Artist\LastFM(new \Psr\Log\NullLogger(), \aportela\LastFMWrapper\APIFormat::JSON, $lastFMAPIKey);
-        $lastFMArtist->name = $musicBrainzArtist->name ?? $name;
-        if ($lastFMArtist->scrap()) {
-            $lastFMArtist->saveCache($dbh);
-        }
-        // TODO wikipedia block
     }
 }
