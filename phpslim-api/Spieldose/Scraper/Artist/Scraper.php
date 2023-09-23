@@ -74,7 +74,7 @@ class Scraper
         return ($mbIds);
     }
 
-    public static function scrap(\aportela\DatabaseWrapper\DB $dbh, string $lastFMAPIKey, ?string $mbId, ?string $name): void
+    public static function scrap(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, string $lastFMAPIKey, ?string $mbId, ?string $name): void
     {
         $success = false;
         $dbh->beginTransaction();
@@ -85,17 +85,24 @@ class Scraper
             $musicBrainzArtist->name = $name;
             if ($musicBrainzArtist->scrap()) {
                 $musicBrainzArtist->fixTags($dbh);
+                $logger->warning(sprintf("Saving Musicbrainz cache of %s (%s)", $musicBrainzArtist->name, $mbId));
                 $musicBrainzArtist->saveCache($dbh);
+            } else {
+                $logger->warning(sprintf("Musicbrainz artist (%s) not scraped", $mbId));
             }
             // last.fm block
             $lastFMArtist = new \Spieldose\Scraper\Artist\LastFM(new \Psr\Log\NullLogger(), \aportela\LastFMWrapper\APIFormat::JSON, $lastFMAPIKey);
             $lastFMArtist->name = $musicBrainzArtist->name ?? $name;
             if ($lastFMArtist->scrap()) {
+                $logger->warning(sprintf("Saving LastFM cache of %s (%s)", $musicBrainzArtist->name, $mbId));
                 $lastFMArtist->saveCache($dbh);
+            } else {
+                $logger->warning(sprintf("LastFM artist (%s) not scraped", $mbId));
             }
             // TODO wikipedia block
             $success = true;
         } catch (\Throwable $e) {
+            $logger->error(sprintf("Artist scrap error: %s", $e->getMessage()));
         } finally {
             if ($success) {
                 $dbh->commit();
