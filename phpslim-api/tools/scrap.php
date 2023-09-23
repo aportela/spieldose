@@ -41,11 +41,12 @@ if (count($missingExtensions) > 0) {
         echo "Checking artist names without musicbrainz id... ";
         $artistNamesWithoutMusicBrainzId = \Spieldose\Scraper\Artist\Scraper::getArtistNamesWithoutMusicBrainzId($db, true);
         $total = count($artistNamesWithoutMusicBrainzId);
-        if ($total > 0) {
+        if (false && $total > 0) {
             echo "total artist names without mbid: " . $total . PHP_EOL;
             for ($i = 0; $i < $total; $i++) {
-                \Spieldose\Scraper\Artist\Scraper::scrap($db, $settings["lastFMAPIKey"], null, $artistNamesWithoutMusicBrainzId[$i]);
+                \Spieldose\Scraper\Artist\Scraper::scrap($logger, $db, $settings["lastFMAPIKey"], null, $artistNamesWithoutMusicBrainzId[$i]);
                 \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[$i]);
+                sleep(3); // wait 3 second between queries for prevent too much remote api requests in small amount of time and get banned
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -57,8 +58,9 @@ if (count($missingExtensions) > 0) {
         if ($total > 0) {
             echo "total artists without musicbrainz cached data: " . $total . PHP_EOL;
             for ($i = 0; $i < $total; $i++) {
-                \Spieldose\Scraper\Artist\Scraper::scrap($db, $settings["lastFMAPIKey"], $artistMBIdsWithoutCache[$i], null);
+                \Spieldose\Scraper\Artist\Scraper::scrap($logger, $db, $settings["lastFMAPIKey"], $artistMBIdsWithoutCache[$i], null);
                 \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $artistMBIdsWithoutCache[$i]);
+                sleep(3); // wait 3 second between queries for prevent too much remote api requests in small amount of time and get banned
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -70,8 +72,9 @@ if (count($missingExtensions) > 0) {
         if ($total > 0) {
             echo "total releases without musicbrainz cached data: " . $total . PHP_EOL;
             for ($i = 0; $i < $total; $i++) {
-                \Spieldose\Scraper\Release\Scraper::scrap($db, $releaseMBIdsWithoutCache[$i]);
+                \Spieldose\Scraper\Release\Scraper::scrap($logger, $db, $releaseMBIdsWithoutCache[$i]);
                 \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[$i]);
+                sleep(3); // wait 3 second between queries for prevent too much remote api requests in small amount of time and get banned
             }
         } else {
             echo "none found" . PHP_EOL;
