@@ -124,6 +124,9 @@ function onSubmitForm() {
   api.user
     .signUp(uid(), email.value, password.value, name.value)
     .then((success) => {
+      email.value = null;
+      password.value = null;
+      name.value = null;
       $q.notify({
         type: "positive",
         message: t("Your account has been created"),
