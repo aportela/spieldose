@@ -12,7 +12,7 @@ class MusicBrainz
 
     public string $mbId;
     public string $title;
-    public int $year;
+    public ?int $year;
     public array $media;
     public object $artist;
 
@@ -40,7 +40,9 @@ class MusicBrainz
                 $this->artist = $mbRelease->artist;
                 $this->media = $mbRelease->media;
                 $this->scraped = true;
+                echo "scrapped";
             } catch (\Throwable $e) {
+                echo "not scraped";
                 $this->logger->warning(sprintf("[MusicBrainz] error scraping mbid %s: %s", $this->mbId, $e->getMessage()));
             }
         }
@@ -57,19 +59,23 @@ class MusicBrainz
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
             new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $this->year),
             new \aportela\DatabaseWrapper\Param\IntegerParam(":media_count", count($this->media))
         );
+        if ($this->year != null) {
+            $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", (int) $this->year);
+        } else {
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
+        }
         $dbh->exec($query, $params);
         $query = "
-            DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA WHERE mbid = :release_mbid
+            DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA WHERE release_mbid = :release_mbid
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId)
         );
         $dbh->exec($query, $params);
         $query = "
-            DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK WHERE mbid = :release_mbid
+            DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK WHERE release_mbid = :release_mbid
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId)
@@ -79,21 +85,22 @@ class MusicBrainz
         if (is_array($this->media) && count($this->media) > 0) {
             foreach ($this->media as $media) {
                 $query = "
-                    INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA (mbid, position, track_count) VALUES (:mbid, :position, :track_count)
+                    INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA (release_mbid, position, track_count) VALUES (:release_mbid, :position, :track_count)
                 ";
                 $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $media->position),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":track_count", count($media->tracks))
                 );
                 $dbh->exec($query, $params);
                 foreach ($media->tracks as $track) {
                     $query = "
-                        INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK (mbid, media, position, title, artist_mbid, artist_name) VALUES (:mbid, :media, :position, :title, :artist_mbid, :artist_name)
+                        INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK (mbid, release_mbid, release_media, position, title, artist_mbid, artist_name) VALUES (:mbid, :release_mbid, :release_media, :position, :title, :artist_mbid, :artist_name)
                     ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $track->mbId),
-                        new \aportela\DatabaseWrapper\Param\IntegerParam(":media", $media->position),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":release_media", $media->position),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $track->position),
                         new \aportela\DatabaseWrapper\Param\StringParam(":title", $track->title),
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $track->artist->mbId),
