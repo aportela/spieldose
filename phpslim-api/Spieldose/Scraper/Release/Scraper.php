@@ -28,7 +28,7 @@ class Scraper
         return ($mbIds);
     }
 
-    public static function scrap(\aportela\DatabaseWrapper\DB $dbh, ?string $mbId): void
+    public static function scrap(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, ?string $mbId): void
     {
         $success = false;
         $dbh->beginTransaction();
@@ -37,11 +37,14 @@ class Scraper
             $musicBrainzRelease = new \Spieldose\Scraper\Release\MusicBrainz(new \Psr\Log\NullLogger(), \aportela\MusicBrainzWrapper\APIFormat::JSON);
             $musicBrainzRelease->mbId = $mbId;
             if ($musicBrainzRelease->scrap()) {
+                $logger->warning(sprintf("Saving cache of %s by %s (%s)", $musicBrainzRelease->title, $musicBrainzRelease->artist->name, $mbId));
                 $musicBrainzRelease->saveCache($dbh);
+            } else {
+                $logger->warning(sprintf("Release %s not scraped", $mbId));
             }
             $success = true;
         } catch (\Throwable $e) {
-            print_r($e->getMessage());
+            $logger->error(sprintf("Release scrap error: %s", $e->getMessage()));
         } finally {
             if ($success) {
                 $dbh->commit();
