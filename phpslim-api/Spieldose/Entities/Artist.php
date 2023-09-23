@@ -39,24 +39,24 @@ class Artist extends \Spieldose\Entities\Entity
             $words = explode(" ", trim($filter["name"]));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
-                $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
+                $filterConditions[] = sprintf(" COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         } else {
-            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL ";
+            $filterConditions[] = " COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) IS NOT NULL ";
         }
         if (isset($filter["genre"]) && !empty($filter["genre"])) {
-            $filterConditions[] = " EXISTS (SELECT MB_CACHE_ARTIST_GENRE.genre FROM MB_CACHE_ARTIST_GENRE WHERE MB_CACHE_ARTIST_GENRE.artist_mbid = FIT.mb_artist_id AND MB_CACHE_ARTIST_GENRE.genre = :genre) ";
+            $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = FIT.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
         }
         $fieldDefinitions = [
             "mbId" => "FIT.mb_artist_id",
-            "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
-            "image" => "MB_CACHE_ARTIST.image",
+            "name" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
+            "image" => "CACHE_ARTIST_MUSICBRAINZ.image",
             "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(DISTINCT FIT.mb_artist_id || COALESCE(MB_CACHE_ARTIST.name, FIT.artist))"
+            "totalResults" => " COUNT(DISTINCT FIT.mb_artist_id || COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist))"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -80,7 +80,7 @@ class Artist extends \Spieldose\Entities\Entity
             "
                 SELECT DISTINCT %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
@@ -107,7 +107,7 @@ class Artist extends \Spieldose\Entities\Entity
                 SELECT
                 %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                 %s
             ",
             $browser->getQueryCountFields(),
@@ -119,7 +119,7 @@ class Artist extends \Spieldose\Entities\Entity
 
     private function getMBIdFromName(string $name)
     {
-        $query = " SELECT mbid FROM MB_CACHE_ARTIST WHERE name = :name ";
+        $query = " SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ WHERE name = :name ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":name", $name)
         );
@@ -138,7 +138,7 @@ class Artist extends \Spieldose\Entities\Entity
             "mbId" => "FIT.mb_release_track_id",
             "title" => "FIT.title",
             "artistMBId" => "FIT.mb_artist_id",
-            "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+            "artistName" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
             "releaseMBId" => "FIT.mb_album_id",
             "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
@@ -165,7 +165,7 @@ class Artist extends \Spieldose\Entities\Entity
             $filterConditions[] = " FIT.mb_artist_id = :mbid ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
         } elseif (isset($filter["name"]) && !empty($filter["name"])) {
-            $filterConditions[] = " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) = :name ";
+            $filterConditions[] = " COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) = :name ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", $filter["name"]);
         }
 
@@ -183,7 +183,7 @@ class Artist extends \Spieldose\Entities\Entity
                     HAVING COUNT(*) > 0
                 ) TMP_COUNT ON TMP_COUNT.file_id = FIT.id
                 LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                 LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                 LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
                 %s
@@ -221,8 +221,8 @@ class Artist extends \Spieldose\Entities\Entity
     {
         $artistFields = [
             "mbId" => "FIT.mb_artist_id",
-            "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
-            "image" => "MB_CACHE_ARTIST.image",
+            "name" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
+            "image" => "CACHE_ARTIST_MUSICBRAINZ.image",
             "totalTracks" => " COALESCE(TOTAL_TRACKS.total, 0) "
         ];
 
@@ -234,17 +234,17 @@ class Artist extends \Spieldose\Entities\Entity
         $params = [];
 
         $filterConditions = [
-            " COALESCE(MB_CACHE_ARTIST.name, FIT.artist) IS NOT NULL "
+            " COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) IS NOT NULL "
         ];
 
         if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
             $filterConditions[] = "
                 EXISTS (
-                    SELECT * FROM MB_CACHE_ARTIST_GENRE MB1
+                    SELECT * FROM CACHE_ARTIST_MUSICBRAINZ_GENRE MB1
                     WHERE MB1.artist_mbid <> :mbid
                     AND MB1.artist_mbid = FIT.mb_artist_id
                     AND MB1.genre IN (
-                        SELECT MB2.genre FROM MB_CACHE_ARTIST_GENRE MB2
+                        SELECT MB2.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE MB2
                         WHERE MB2.artist_mbid = :mbid
                     )
                 )
@@ -257,7 +257,7 @@ class Artist extends \Spieldose\Entities\Entity
             "
                 SELECT DISTINCT %s
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
-                LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
@@ -288,7 +288,7 @@ class Artist extends \Spieldose\Entities\Entity
         }
         // TODO: get if no mbId
         if (!empty($this->mbId)) {
-            $query = " SELECT name, image FROM MB_CACHE_ARTIST WHERE mbid = :mbid ";
+            $query = " SELECT name, image FROM CACHE_ARTIST_MUSICBRAINZ WHERE mbid = :mbid ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
             );
@@ -300,7 +300,7 @@ class Artist extends \Spieldose\Entities\Entity
                     // TODO: use API URL
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
-                $query = " SELECT url_relationship_typeid, url_relationship_value FROM MB_CACHE_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
+                $query = " SELECT url_relationship_typeid, url_relationship_value FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
@@ -312,7 +312,7 @@ class Artist extends \Spieldose\Entities\Entity
                 } else {
                     $this->relations = [];
                 }
-                $query = " SELECT DISTINCT genre FROM MB_CACHE_ARTIST_GENRE WHERE artist_mbid = :mbid ORDER BY genre";
+                $query = " SELECT DISTINCT genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE artist_mbid = :mbid ORDER BY genre";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
@@ -324,7 +324,7 @@ class Artist extends \Spieldose\Entities\Entity
                 } else {
                     $this->genres = [];
                 }
-                $query = " SELECT bio_summary, bio_content FROM MB_LASTFM_CACHE_ARTIST WHERE artist_mbid = :mbid ";
+                $query = " SELECT bio_summary, bio_content FROM CACHE_ARTIST_LASTFM WHERE artist_mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
@@ -396,7 +396,7 @@ class Artist extends \Spieldose\Entities\Entity
                     "mbId" => "FIT.mb_release_track_id",
                     "title" => "FIT.title",
                     "artistMBId" => "FIT.mb_artist_id",
-                    "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+                    "artistName" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
                     "releaseMBId" => "FIT.mb_album_id",
                     "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
                     "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
@@ -420,7 +420,7 @@ class Artist extends \Spieldose\Entities\Entity
                         FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                         WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) = :mbid
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
@@ -468,7 +468,7 @@ class Artist extends \Spieldose\Entities\Entity
                         FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                         WHERE FIT.mb_artist_id = :mbid
                         AND COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) <> :mbid
                         GROUP BY FIT.mb_album_id
@@ -578,7 +578,7 @@ class Artist extends \Spieldose\Entities\Entity
                 "mbId" => "FIT.mb_release_track_id",
                 "title" => "FIT.title",
                 "artistMBId" => "FIT.mb_artist_id",
-                "artistName" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
+                "artistName" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
                 "releaseMBId" => "FIT.mb_album_id",
                 "releaseTitle" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
                 "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
@@ -602,14 +602,14 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
-                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, MB_CACHE_ARTIST.name, FIT.artist) AS artistName,
+                            COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist, CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artistName,
                             COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_artist_id, FIT.mb_artist_id) AS artistMBId,
                             COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) AS year,
                             D.id AS coverPathId
                         FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
                         LEFT JOIN DIRECTORY D ON D.ID = F.directory_id AND D.cover_filename IS NOT NULL
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
-                        LEFT JOIN MB_CACHE_ARTIST ON MB_CACHE_ARTIST.mbid = FIT.mb_artist_id
+                        LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                         WHERE FIT.artist = :name
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
