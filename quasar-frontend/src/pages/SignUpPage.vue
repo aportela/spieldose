@@ -129,6 +129,7 @@ function onSubmitForm() {
       name.value = null;
       $q.notify({
         type: "positive",
+        position: "center",
         message: t("Your account has been created"),
         actions: [
           {
