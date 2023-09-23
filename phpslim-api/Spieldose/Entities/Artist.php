@@ -66,6 +66,8 @@ class Artist extends \Spieldose\Entities\Entity
                     if (!empty($result->image)) {
                         $result->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($result->image));
                     }
+                    // create a unique hash for this element, this is done because artist name && artist musicbrainz are not both mandatory and can not be used as key on vue v-for
+                    $result->hash = md5($result->mbId . $result->name);
                     return ($result);
                 },
                 $data->items
@@ -310,14 +312,14 @@ class Artist extends \Spieldose\Entities\Entity
                     // TODO: use API URL
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
-                $query = " SELECT url_relationship_typeid, url_relationship_value FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
+                $query = " SELECT relation_type_id, url FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
                 $results = $this->dbh->query($query, $params);
                 if (count($results) > 0) {
                     foreach ($results as $result) {
-                        $this->relations[] = (object) ["type-id" => $result->url_relationship_typeid, "url" => $result->url_relationship_value];
+                        $this->relations[] = (object) ["type-id" => $result->relation_type_id, "url" => $result->url];
                     }
                 } else {
                     $this->relations = [];
@@ -334,7 +336,7 @@ class Artist extends \Spieldose\Entities\Entity
                 } else {
                     $this->genres = [];
                 }
-                $query = " SELECT bio_summary, bio_content FROM CACHE_ARTIST_LASTFM WHERE artist_mbid = :mbid ";
+                $query = " SELECT bio_summary, bio_content FROM CACHE_ARTIST_LASTFM WHERE mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
