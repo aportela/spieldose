@@ -56,7 +56,7 @@ class Artist extends \Spieldose\Entities\Entity
             "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(DISTINCT FIT.mb_artist_id || COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist))"
+            "totalResults" => " COUNT(DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)) "
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
