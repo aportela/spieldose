@@ -355,7 +355,7 @@ return (array(
             CREATE TABLE `CACHE_RELEASE_MUSICBRAINZ` (
                 `mbid` VARCHAR(36) NOT NULL,
                 `title` VARCHAR(128) NOT NULL,
-                `year` INTEGER NOT NULL,
+                `year` INTEGER,
                 `media_count` INTEGER NOT NULL,
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
@@ -364,23 +364,24 @@ return (array(
         ',
         '
             CREATE TABLE `CACHE_RELEASE_MUSICBRAINZ_MEDIA` (
-                `mbid` VARCHAR(36) NOT NULL,
+                `release_mbid` VARCHAR(36) NOT NULL,
                 `position` INTEGER NOT NULL,
                 `track_count` INTEGER NOT NULL,
-                FOREIGN KEY(`mbid`) REFERENCES CACHE_RELEASE_MUSICBRAINZ (`mbid`),
-                PRIMARY KEY (`mbid`, `position`)
+                FOREIGN KEY(`release_mbid`) REFERENCES CACHE_RELEASE_MUSICBRAINZ (`mbid`),
+                PRIMARY KEY (`release_mbid`, `position`)
             );
         ',
         '
             CREATE TABLE `CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK` (
                 `mbid` VARCHAR(36) NOT NULL,
-                `media` INTEGER NOT NULL,
+                `release_mbid` VARCHAR(36) NOT NULL,
+                `release_media` INTEGER NOT NULL,
                 `position` INTEGER NOT NULL,
                 `title` VARCHAR(128) NOT NULL,
                 `artist_mbid` VARCHAR(36) NOT NULL,
                 `artist_name` VARCHAR(128) NOT NULL,
                 FOREIGN KEY(`mbid`) REFERENCES CACHE_RELEASE_MUSICBRAINZ (`mbid`),
-                PRIMARY KEY (`mbid`, `media`, `position`)
+                PRIMARY KEY (`mbid`, `release_mbid`, `release_media`, `position`)
             );
         '
     ),
