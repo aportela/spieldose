@@ -39,24 +39,24 @@ class Artist extends \Spieldose\Entities\Entity
             $words = explode(" ", trim($filter["name"]));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
-                $filterConditions[] = sprintf(" COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, TMP_ARTISTS.artist) LIKE %s", $paramName);
+                $filterConditions[] = sprintf(" TMP_ARTISTS.artist LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         } else {
-            $filterConditions[] = " COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, TMP_ARTISTS.artist) IS NOT NULL ";
+            $filterConditions[] = " TMP_ARTISTS.artist IS NOT NULL ";
         }
         if (isset($filter["genre"]) && !empty($filter["genre"])) {
-            $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = FIT.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
+            $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = TMP_ARTISTS.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
         }
         $fieldDefinitions = [
             "mbId" => "TMP_ARTISTS.mb_artist_id",
-            "name" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, TMP_ARTISTS.artist)",
+            "name" => "TMP_ARTISTS.artist",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image)",
             "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, TMP_ARTISTS.artist)) "
+            "totalResults" => " COUNT(TMP_ARTISTS.artist) "
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -80,8 +80,9 @@ class Artist extends \Spieldose\Entities\Entity
             "
                 SELECT %s
                 FROM (
-                    SELECT DISTINCT FIT.artist, FIT.mb_artist_id
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
                     FROM FILE_ID3_TAG FIT
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                     WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
                 ) TMP_ARTISTS
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
@@ -112,11 +113,11 @@ class Artist extends \Spieldose\Entities\Entity
                 SELECT
                 %s
                 FROM (
-                    SELECT DISTINCT FIT.artist, FIT.mb_artist_id
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
                     FROM FILE_ID3_TAG FIT
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
                     WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
                 ) TMP_ARTISTS
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
                 %s
             ",
             $browser->getQueryCountFields(),
