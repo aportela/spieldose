@@ -14,19 +14,19 @@ class ArtistGenre
             $words = explode(" ", trim($filter["name"]));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
-                $filterConditions[] = sprintf(" MB_CACHE_ARTIST_GENRE.genre LIKE %s", $paramName);
+                $filterConditions[] = sprintf(" CACHE_ARTIST_MUSICBRAINZ_GENRE.genre LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
         if (isset($filter["artistMbId"]) && !empty($filter["artistMbId"])) {
-            $filterConditions[] = " MB_CACHE_ARTIST_GENRE.artist_mbid = :artist_mbid ";
+            $filterConditions[] = " CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = :artist_mbid ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $filter["artistMbId"]);
         }
         $fieldDefinitions = [
-            "name" => "MB_CACHE_ARTIST_GENRE.genre"
+            "name" => "CACHE_ARTIST_MUSICBRAINZ_GENRE.genre"
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(DISTINCT MB_CACHE_ARTIST_GENRE.genre)"
+            "totalResults" => " COUNT(DISTINCT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre)"
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -39,7 +39,7 @@ class ArtistGenre
             "
                 SELECT
                     DISTINCT %s
-                FROM MB_CACHE_ARTIST_GENRE
+                FROM CACHE_ARTIST_MUSICBRAINZ_GENRE
                 %s
                 %s
                 %s
@@ -53,7 +53,7 @@ class ArtistGenre
             "
                 SELECT
                     %s
-                FROM MB_CACHE_ARTIST_GENRE
+                FROM CACHE_ARTIST_MUSICBRAINZ_GENRE
                 %s
             ",
             $browser->getQueryCountFields(),
