@@ -6,6 +6,29 @@ namespace Spieldose\Scraper\Artist;
 
 class Scraper
 {
+    /**
+     * this "hack" is done for skipping some unnecesary musicbrainzscraps, on cases like this example:
+     *  1.- You have one or more files with artist name tag FILLED and artist mbId FILLED
+     *  2.- You have one or more files with artist name tag FILLED and artist mbId NOT FILLED
+     *
+     *  Without this, you run normally scraper and files of 2 will be searched from name/s and if we found a mbId will be saved
+     *  With this, we update database to match all files of 2 with the mbId of 1 (skip unnecesary scraps)
+     */
+    public static function fixMissingArtistMBIdsWithExistent(\aportela\DatabaseWrapper\DB $dbh): int
+    {
+        $query = "
+            UPDATE FILE_ID3_TAG SET mb_artist_id = (
+                SELECT FIT.mb_artist_id
+                FROM FILE_ID3_TAG FIT
+                WHERE FIT.artist = FILE_ID3_TAG.artist
+                AND FIT.mb_artist_id IS NOT NULL
+                LIMIT 1
+            )
+            WHERE mb_artist_id IS NULL AND artist IS NOT NULL
+        ";
+        return ($dbh->exec($query));
+    }
+
     public static function getArtistNamesWithoutMusicBrainzId(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
         $names = [];
@@ -26,7 +49,7 @@ class Scraper
         return ($names);
     }
 
-    public static function getMusicBrainzArtistIdsWithoutCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false)
+    public static function getMusicBrainzArtistIdsWithoutCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
         $mbIds = array();
         $query = !$randomize ? "

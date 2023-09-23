@@ -37,11 +37,18 @@ if (count($missingExtensions) > 0) {
             exit;
         }
 
+        echo "Fixing missing artist mbIds with existent data before scrap...";
+        $total = \Spieldose\Scraper\Artist\Scraper::fixMissingArtistMBIdsWithExistent($db);
+        if ($total > 0) {
+            echo "total files fixed: " . $total . PHP_EOL;
+        } else {
+            echo "no files fixed" . PHP_EOL;
+        }
 
         echo "Checking artist names without musicbrainz id... ";
         $artistNamesWithoutMusicBrainzId = \Spieldose\Scraper\Artist\Scraper::getArtistNamesWithoutMusicBrainzId($db, true);
         $total = count($artistNamesWithoutMusicBrainzId);
-        if (false && $total > 0) {
+        if ($total > 0) {
             echo "total artist names without mbid: " . $total . PHP_EOL;
             for ($i = 0; $i < $total; $i++) {
                 \Spieldose\Scraper\Artist\Scraper::scrap($logger, $db, $settings["lastFMAPIKey"], null, $artistNamesWithoutMusicBrainzId[$i]);
