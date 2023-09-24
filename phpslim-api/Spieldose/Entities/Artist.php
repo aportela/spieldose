@@ -232,10 +232,10 @@ class Artist extends \Spieldose\Entities\Entity
     private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
     {
         $artistFields = [
-            "mbId" => "FIT.mb_artist_id",
-            "name" => "COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist)",
-            "image" => "CACHE_ARTIST_MUSICBRAINZ.image",
-            "totalTracks" => " COALESCE(TOTAL_TRACKS.total, 0) "
+            "mbId" => "TMP_ARTISTS.mb_artist_id",
+            "name" => "TMP_ARTISTS.artist",
+            "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image)",
+            "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
 
         $fields = [];
@@ -243,39 +243,44 @@ class Artist extends \Spieldose\Entities\Entity
             $fields[] = $value . " AS " . $key;
         }
 
-        $params = [];
-
-        $filterConditions = [
-            " COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) IS NOT NULL "
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $filter["mbId"] . $filter["name"]))
         ];
 
-        if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
-            $filterConditions[] = "
+        $filterConditions = [
+            "
                 EXISTS (
-                    SELECT * FROM CACHE_ARTIST_MUSICBRAINZ_GENRE MB1
-                    WHERE MB1.artist_mbid <> :mbid
-                    AND MB1.artist_mbid = FIT.mb_artist_id
-                    AND MB1.genre IN (
-                        SELECT MB2.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE MB2
-                        WHERE MB2.artist_mbid = :mbid
-                    )
+                    SELECT CALS.name
+                    FROM CACHE_ARTIST_LASTFM_SIMILAR CALS
+                    WHERE CALS.artist_hash = :sha256_hash
+                    AND CALS.name = TMP_ARTISTS.artist
                 )
-            ";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
-        } elseif (isset($filter["name"]) && !empty($filter["name"])) {
-        }
+            "
+        ];
 
         $query = sprintf(
             "
-                SELECT DISTINCT %s
-                FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
+                SELECT %s
+                FROM (
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                    FROM FILE_ID3_TAG FIT
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
+                    WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                ) TMP_ARTISTS
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
+                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.mb_artist_id IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.mb_artist_id) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist))
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.mb_artist_id
                     HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
-                ) AS TOTAL_TRACKS ON TOTAL_TRACKS.artistMBId = FIT.mb_artist_id
+                ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.mb_artist_id
+                LEFT JOIN (
+                    SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
+                    FROM FILE_ID3_TAG
+                    GROUP BY FILE_ID3_TAG.artist
+                    HAVING FILE_ID3_TAG.artist NOT NULL
+                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
                 %s
                 ORDER BY RANDOM()
                 LIMIT 64
@@ -289,6 +294,8 @@ class Artist extends \Spieldose\Entities\Entity
             if (!empty($artist->image)) {
                 $artist->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($artist->image));
             }
+            // create a unique hash for this element, this is done because artist name && artist musicbrainz are not both mandatory and can not be used as key on vue v-for
+            $artist->hash = md5($artist->mbId . $artist->name);
         }
         return ($similarArtists);
     }
@@ -522,7 +529,7 @@ class Artist extends \Spieldose\Entities\Entity
                     unset($album->artistName);
                     unset($album->coverPathId);
                 }
-                $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
+                $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => $this->name]);
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbId");
             }
@@ -660,7 +667,7 @@ class Artist extends \Spieldose\Entities\Entity
                 unset($album->artistName);
                 unset($album->coverPathId);
             }
-            $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => null]);
+            $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => $this->name]);
         }
     }
 }
