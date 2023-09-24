@@ -99,7 +99,33 @@ class Scraper
             } else {
                 $logger->warning(sprintf("LastFM artist (%s) not scraped", $mbId));
             }
-            // TODO wikipedia block
+            $wikipediaUrl = null;
+            // wikipedia block
+            foreach ($musicBrainzArtist->relations as $relation) {
+                if ($relation->typeId == \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA->value) {
+                    $wikipediaArtist = new \Spieldose\Scraper\Artist\Wikipedia(new \Psr\Log\NullLogger());
+                    $wikipediaArtist->url = $relation->url;
+                    if ($wikipediaArtist->scrapWikipedia()) {
+                        $wikipediaArtist->saveCache($dbh);
+                        $success = true;
+                        break;
+                    }
+                }
+            }
+            // wikidata block (wikipedia failover)
+            if (!$success) {
+                foreach ($musicBrainzArtist->relations as $relation) {
+                    if ($relation->typeId == \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value) {
+                        $wikipediaArtist = new \Spieldose\Scraper\Artist\Wikipedia(new \Psr\Log\NullLogger());
+                        $wikipediaArtist->url = $relation->url;
+                        if ($wikipediaArtist->scrapWikidata()) {
+                            $wikipediaArtist->saveCache($dbh);
+                            $success = true;
+                            break;
+                        }
+                    }
+                }
+            }
             $success = true;
         } catch (\Throwable $e) {
             $logger->error(sprintf("Artist scrap error: %s", $e->getMessage()));
