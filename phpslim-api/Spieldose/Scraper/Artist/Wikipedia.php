@@ -54,6 +54,7 @@ class Wikipedia
                 if (!empty($title)) {
                     $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
                     $wikiPage->setTitle($title);
+                    $this->url = sprintf(\aportela\MediaWikiWrapper\Wikipedia\Page::REST_API_PAGE_HTML, $title);
                     $this->html = $wikiPage->getHTML();
                     $this->scraped = !empty($this->html);
                 } else {
