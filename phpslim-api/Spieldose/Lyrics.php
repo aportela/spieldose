@@ -155,7 +155,7 @@ class Lyrics
                 }
                 if (!empty($this->data)) {
                     $this->data = trim($this->data);
-                    $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data, source, ctime, mtime) VALUES (:sha256_hash, :title, :artist, :data, source, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data, source = :source, mtime = strftime('%s', 'now') ";
+                    $query = " INSERT INTO LYRICS (sha256_hash, title, artist, data, source, ctime, mtime) VALUES (:sha256_hash, :title, :artist, :data, :source, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (sha256_hash) DO UPDATE SET data = :data, source = :source, mtime = strftime('%s', 'now') ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $this->hash),
                         new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
