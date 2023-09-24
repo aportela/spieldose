@@ -26,6 +26,24 @@ axios.interceptors.response.use((response) => {
     if (apiResponseJWT && apiResponseJWT != session.getJWT) {
       session.signIn(apiResponseJWT);
     }
+  },
+  (error) => {
+    if (!error) {
+      return Promise.reject({
+        response: {
+          status: 0,
+          statusText: "undefined",
+        },
+      });
+    } else {
+      if (!error.response) {
+        error.response = {
+          status: 0,
+          statusText: "undefined",
+        };
+      }
+      return Promise.reject(error);
+    }
   }
   return response;
 });
