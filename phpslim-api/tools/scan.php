@@ -51,6 +51,14 @@ if (count($missingExtensions) > 0) {
                         \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $files[$i]);
                     }
                 }
+                echo "Fixing missing artist mbIds with existent data before scrap...";
+                $total = $scanner->fixMissingArtistMBIdsWithExistent();
+                if ($total > 0) {
+                    // TODO: bug -> always return 1 ???
+                    echo "total files fixed: " . $total . PHP_EOL;
+                } else {
+                    echo "no files fixed" . PHP_EOL;
+                }
             } else {
                 echo "Invalid music path / path not found" . PHP_EOL;
                 $logger->warning("Invalid music path / path not found");
