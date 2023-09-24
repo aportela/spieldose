@@ -199,12 +199,13 @@ function refresh() {
       lastChangeTimestamp.value = Date.now();
       loading.value = false;
     }).catch((error) => {
+      items.value = [];
       loadingErrors.value = true;
       loading.value = false;
       $q.notify({
         type: "negative",
         message: "API Error: error loading metrics",
-        caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
       });
     });
   }
