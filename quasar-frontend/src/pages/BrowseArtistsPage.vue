@@ -195,7 +195,7 @@ function search(resetPager) {
     $q.notify({
       type: "negative",
       message: "API Error: error loading artists",
-      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+      caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
     });
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
@@ -222,7 +222,7 @@ function refreshGenres() {
     $q.notify({
       type: "negative",
       message: "API Error: error loading genres ",
-      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+      caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
     });
     loading.value = false;
   });

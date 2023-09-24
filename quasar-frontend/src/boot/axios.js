@@ -19,35 +19,16 @@ axios.interceptors.request.use(
   }
 );
 
-axios.interceptors.response.use(
-  (response) => {
-    // warning: axios lowercase received header names
-    const apiResponseJWT = response.headers["spieldose-jwt"] || null;
-    if (apiResponseJWT) {
-      if (apiResponseJWT && apiResponseJWT != session.getJWT) {
-        session.signIn(apiResponseJWT);
-      }
+axios.interceptors.response.use((response) => {
+  // warning: axios lowercase received header names
+  const apiResponseJWT = response.headers["spieldose-jwt"] || null;
+  if (apiResponseJWT) {
+    if (apiResponseJWT && apiResponseJWT != session.getJWT) {
+      session.signIn(apiResponseJWT);
     }
-    return response;
-  },
-  (error) => {
-    // helper for checking invalid fields on api response
-    error.isFieldInvalid = function (fieldName) {
-      return error.response.data.invalidOrMissingParams.indexOf(fieldName) > -1;
-    };
-    error.response.getApiErrorData = function () {
-      return JSON.stringify(
-        {
-          url: error.request.responseURL,
-          response: error.response,
-        },
-        null,
-        "\t"
-      );
-    };
-    return Promise.reject(error);
   }
-);
+  return response;
+});
 
 const baseAPIPath = "api/2";
 

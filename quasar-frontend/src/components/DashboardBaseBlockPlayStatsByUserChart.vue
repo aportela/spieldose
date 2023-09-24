@@ -9,9 +9,11 @@
     </template>
     <template #chart>
       <div id="ct-chart-play-stats-by-user" v-show="items && items.length > 0"></div>
-      <div v-if="! loading">
-        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error" size="xl"></q-icon> {{ t('Error loading data') }}</h5>
-        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if=" !(items && items.length > 0)"><q-icon name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
+      <div v-if="!loading">
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error"
+            size="xl"></q-icon> {{ t('Error loading data') }}</h5>
+        <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if="!(items && items.length > 0)"><q-icon
+            name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
       </div>
     </template>
   </component>
@@ -141,7 +143,7 @@ function refresh() {
       $q.notify({
         type: "negative",
         message: "API Error: error loading metrics",
-        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
       });
     });
   }

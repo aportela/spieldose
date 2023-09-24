@@ -319,7 +319,7 @@ function onToggleFavorite(trackId, favorited) {
           $q.notify({
             type: "negative",
             message: t("API Error: error when toggling favorite flag"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
           });
           break;
       }
@@ -356,7 +356,10 @@ function search() {
     $q.notify({
       type: "negative",
       message: t("API Error: error loading random tracks"),
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      caption: t("API Error: fatal error details", {
+        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+          ? error.response.statusText : 'undefined'
+      })
     });
     loading.value = false;
   });
@@ -429,7 +432,10 @@ function onSavePlaylistElements() {
     $q.notify({
       type: "negative",
       message: t("API Error: error loading random tracks"),
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      caption: t("API Error: fatal error details", {
+        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+          ? error.response.statusText : 'undefined'
+      })
     });
     loading.value = false;
   });

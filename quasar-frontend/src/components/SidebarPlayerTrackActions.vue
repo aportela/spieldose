@@ -7,8 +7,8 @@
           :color="shuffle ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
           :name="repeatModeIcon" :color="repeatMode && repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track" @click="onToggleFavorite"><q-icon
-          name="favorite" :color="favoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track"
+        @click="onToggleFavorite"><q-icon name="favorite" :color="favoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Download track" v-if="downloadURL"
         :href="downloadURL"><q-icon name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable title="Download track" v-else><q-icon
@@ -16,8 +16,8 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle visualization"
         @click="onToggleVisualization"><q-icon name="screenshot_monitor"></q-icon></q-btn>
       <!-- TODO enable only for tracks-->
-      <q-btn dense unelevated size="md" title="View track details & lyrics"
-        @click="onShowTrackDetailsModal"><q-icon name="tag"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" title="View track details & lyrics" @click="onShowTrackDetailsModal"><q-icon
+          name="tag"></q-icon></q-btn>
     </q-btn-group>
   </div>
 </template>
@@ -125,7 +125,7 @@ function onToggleFavorite() {
             $q.notify({
               type: "negative",
               message: t("API Error: error when toggling favorite flag"),
-              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+              caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
             });
             break;
         }

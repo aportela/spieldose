@@ -153,7 +153,7 @@ function drawChart() {
     chart.value = new LineChart('#' + divId, {
       labels: labels,
       series: [values],
-   }, tab.value != 'fullDate' ? defaultChartOptions : defaultChartOptionsWithoutLabels);
+    }, tab.value != 'fullDate' ? defaultChartOptions : defaultChartOptionsWithoutLabels);
 
   } else {
     chart.value = new BarChart('#' + divId, {
@@ -181,7 +181,7 @@ function refresh() {
       $q.notify({
         type: "negative",
         message: "API Error: error loading metrics",
-        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
       });
     });
   }

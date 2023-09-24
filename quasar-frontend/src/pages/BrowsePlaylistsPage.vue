@@ -89,7 +89,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
-import { playListActions }from "boot/spieldose";
+import { playListActions } from "boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -101,13 +101,13 @@ let playlists = [];
 
 const route = useRoute();
 
-const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id: null);
+const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
 
 const totalPages = ref(0);
 const currentPageIndex = ref(1);
 
 const playlistTypeValues = [
-{
+  {
     label: 'All playlists',
     value: 'all',
     disable: false
@@ -124,7 +124,7 @@ const playlistTypeValues = [
   },
 ];
 
-const playlistType = ref(! filterByOwnerId.value ? playlistTypeValues[0]: playlistTypeValues[2]);
+const playlistType = ref(!filterByOwnerId.value ? playlistTypeValues[0] : playlistTypeValues[2]);
 
 const sortFieldValues = [
   {
@@ -196,7 +196,7 @@ function search(resetPager) {
     $q.notify({
       type: "negative",
       message: "API Error: error loading playlists",
-      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+      caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
     });
     loading.value = false;
   });
@@ -208,15 +208,15 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlay(playlistId) {
-  playListActions.loadPlaylist(playlistId).then((success) => {}).catch((error) => {
+  playListActions.loadPlaylist(playlistId).then((success) => { }).catch((error) => {
     $q.notify({
-          type: "negative",
-          message: t("API Error: error loading playlist"),
-          caption: t("API Error: fatal error details", {
-            status: error.response.status,
-            statusText: error.response.statusText,
-          }),
-        });
+      type: "negative",
+      message: t("API Error: error loading playlist"),
+      caption: t("API Error: fatal error details", {
+        status: error.response.status,
+        statusText: error.response.statusText,
+      }),
+    });
   });
 }
 

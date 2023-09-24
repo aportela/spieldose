@@ -23,7 +23,7 @@
 
 <script setup>
 
-import { ref} from "vue";
+import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useSpieldoseStore } from "stores/spieldose";
@@ -51,7 +51,7 @@ function getTree() {
     $q.notify({
       type: "negative",
       message: "API Error: error loading paths",
-      caption: "API Error: fatal error details: HTTP {" + error.response.status + "} ({" + error.response.statusText + "})"
+      caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
     });
     loading.value = false;
   });

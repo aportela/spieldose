@@ -11,7 +11,7 @@
       </q-item>
     </template>
     <template v-slot:option="scope">
-      <q-list class="bg-grey-2 text-dark" >
+      <q-list class="bg-grey-2 text-dark">
         <q-item v-if="scope.opt.isTrack">
           <q-item-section avatar top>
             <q-icon name="music_note" color="black" size="34px" />
@@ -139,7 +139,7 @@ function onFilter(val, update) {
             $q.notify({
               type: "negative",
               message: t("API Error: fatal error"),
-              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+              caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
             });
             return;
           });

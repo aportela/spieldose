@@ -541,7 +541,10 @@ function onToggleFavorite(track) {
             $q.notify({
               type: "negative",
               message: t("API Error: error when toggling favorite flag"),
-              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+              caption: t("API Error: fatal error details", {
+                status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+                  ? error.response.statusText : 'undefined'
+              })
             });
             break;
         }
@@ -589,7 +592,7 @@ function get(name) {
         $q.notify({
           type: "negative",
           message: t("API Error: fatal error"),
-          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
         });
         break;
     }
@@ -606,7 +609,7 @@ function onPlayAlbum(album) {
           $q.notify({
             type: "negative",
             message: t("API Error: error playing album"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
           });
           break;
       }
@@ -623,7 +626,7 @@ function onEnqueueAlbum(album) {
           $q.notify({
             type: "negative",
             message: t("API Error: error enqueueing album"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
           });
           break;
       }
