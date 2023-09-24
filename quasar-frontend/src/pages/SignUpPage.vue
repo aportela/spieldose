@@ -209,7 +209,7 @@ function onSubmitForm() {
             $q.notify({
               type: "negative",
               message: t("API Error: fatal error"),
-              caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
             });
           }
           break;
@@ -217,7 +217,7 @@ function onSubmitForm() {
           $q.notify({
             type: "negative",
             message: t("API Error: fatal error"),
-            caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
           });
           break;
       }

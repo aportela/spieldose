@@ -138,7 +138,7 @@ function search(resetPager) {
     $q.notify({
       type: "negative",
       message: "API Error: error loading radio stations",
-      caption: t("API Error: fatal error details", { status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response ? error.response.statusText : 'undefined' })
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
   });
