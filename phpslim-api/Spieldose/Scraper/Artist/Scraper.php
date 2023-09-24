@@ -92,6 +92,7 @@ class Scraper
             }
             // last.fm block
             $lastFMArtist = new \Spieldose\Scraper\Artist\LastFM(new \Psr\Log\NullLogger(), \aportela\LastFMWrapper\APIFormat::JSON, $lastFMAPIKey);
+            $lastFMArtist->mbId = $musicBrainzArtist->mbId ?? $mbId;
             $lastFMArtist->name = $musicBrainzArtist->name ?? $name;
             if ($lastFMArtist->scrap()) {
                 $logger->warning(sprintf("Saving LastFM cache of %s (%s)", $musicBrainzArtist->name, $mbId));
