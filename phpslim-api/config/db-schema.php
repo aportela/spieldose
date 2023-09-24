@@ -324,7 +324,7 @@ return (array(
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM_TAG` (
-                `artist_hash` VARCHAR(36) NOT NULL,
+                `artist_hash` VARCHAR(64) NOT NULL,
                 `tag` VARCHAR(64) NOT NULL,
                 FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
                 PRIMARY KEY (`artist_hash`, `tag`)
@@ -332,7 +332,7 @@ return (array(
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM_SIMILAR` (
-                `artist_hash` VARCHAR(36) NOT NULL,
+                `artist_hash` VARCHAR(64) NOT NULL,
                 `name` VARCHAR(128) NOT NULL,
                 FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
                 PRIMARY KEY (`artist_hash`, `name`)
