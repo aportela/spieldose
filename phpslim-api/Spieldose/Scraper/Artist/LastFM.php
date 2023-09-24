@@ -108,7 +108,7 @@ class LastFM
             DELETE FROM CACHE_ARTIST_LASTFM_TAG WHERE artist_hash = :sha256_hash
         ";
         $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $artistHash))
+            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $artistHash)
         );
         $dbh->exec($query, $params);
         if (is_array($this->tags) && count($this->tags) > 0) {
@@ -117,7 +117,7 @@ class LastFM
                     INSERT INTO CACHE_ARTIST_LASTFM_TAG (artist_hash, tag) VALUES (:sha256_hash, :tag)
                 ";
                 $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $artistHash)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $artistHash),
                     new \aportela\DatabaseWrapper\Param\StringParam(":tag", mb_strtolower($tag))
                 );
                 $dbh->exec($query, $params);
@@ -127,7 +127,7 @@ class LastFM
             DELETE FROM CACHE_ARTIST_LASTFM_SIMILAR WHERE artist_hash = :sha256_hash
         ";
         $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $artistHash))
+            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $artistHash)
         );
         $dbh->exec($query, $params);
         if (is_array($this->similar) && count($this->similar) > 0) {
@@ -136,7 +136,7 @@ class LastFM
                     INSERT INTO CACHE_ARTIST_LASTFM_SIMILAR (artist_hash, name) VALUES (:sha256_hash, :name)
                 ";
                 $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $artistHash)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", $artistHash),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name)
                 );
                 $dbh->exec($query, $params);
