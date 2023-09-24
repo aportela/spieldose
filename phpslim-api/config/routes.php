@@ -830,8 +830,6 @@ return function (App $app) {
                 try {
                     $lyrics = $lyrics->get($dbh) ? $lyrics->data : null;
                 } catch (\Throwable $e) {
-                    print_r($e);
-                    exit;
                     // TODO: register error
                 }
                 $payload = json_encode(
