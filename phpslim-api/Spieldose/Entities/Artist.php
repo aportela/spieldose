@@ -300,7 +300,12 @@ class Artist extends \Spieldose\Entities\Entity
         }
         // TODO: get if no mbId
         if (!empty($this->mbId)) {
-            $query = " SELECT name, image FROM CACHE_ARTIST_MUSICBRAINZ WHERE mbid = :mbid ";
+            $query = "
+                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image
+                FROM CACHE_ARTIST_MUSICBRAINZ
+                LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_ARTIST_MUSICBRAINZ.name
+                WHERE CACHE_ARTIST_MUSICBRAINZ.mbid = :mbid
+            ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
             );
@@ -522,13 +527,11 @@ class Artist extends \Spieldose\Entities\Entity
                 throw new \Spieldose\Exception\NotFoundException("mbId");
             }
         } else {
-
             $this->relations = [];
             $this->bio = (object) [
                 "summary" => null,
                 "content" => null
             ];
-
             $query = "
                 SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
