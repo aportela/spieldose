@@ -6,26 +6,24 @@ const session = useSessionStore();
 if (!session.isLoaded) {
   session.load();
 }
-axios.interceptors.request.use(
-  (config) => {
-    if (session.getJWT) {
-      config.headers["SPIELDOSE-JWT"] = session.getJWT;
-      config.withCredentials = true;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+axios.interceptors.request.use((config) => {
+  if (session.getJWT) {
+    config.headers["SPIELDOSE-JWT"] = session.getJWT;
+    config.withCredentials = true;
   }
-);
+  return config;
+});
 
-axios.interceptors.response.use((response) => {
-  // warning: axios lowercase received header names
-  const apiResponseJWT = response.headers["spieldose-jwt"] || null;
-  if (apiResponseJWT) {
-    if (apiResponseJWT && apiResponseJWT != session.getJWT) {
-      session.signIn(apiResponseJWT);
+axios.interceptors.response.use(
+  (response) => {
+    // warning: axios lowercase received header names
+    const apiResponseJWT = response.headers["spieldose-jwt"] || null;
+    if (apiResponseJWT) {
+      if (apiResponseJWT && apiResponseJWT != session.getJWT) {
+        session.signIn(apiResponseJWT);
+      }
     }
+    return response;
   },
   (error) => {
     if (!error) {
@@ -45,8 +43,7 @@ axios.interceptors.response.use((response) => {
       return Promise.reject(error);
     }
   }
-  return response;
-});
+);
 
 const baseAPIPath = "api/2";
 
