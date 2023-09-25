@@ -38,6 +38,7 @@ if (count($missingExtensions) > 0) {
             $musicPath = realpath($cmdLine->getParamValue("path"));
             if (file_exists($musicPath)) {
                 echo "Scanning base path: " . $musicPath . PHP_EOL;
+                $scanner->addPath($musicPath);
                 $logger->info("Scanning base path: " . $musicPath);
                 $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
                 $totalFiles = count($files);

@@ -23,7 +23,7 @@ class Scanner
     {
     }
 
-    private function getDirectoryCoverFilename(string $path): ?string
+    private function getDirectoryCoverFilename(string $path): string
     {
         $coverFilename = null;
         foreach (glob($path . DIRECTORY_SEPARATOR . self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
@@ -33,7 +33,25 @@ class Scanner
         return ($coverFilename);
     }
 
-    private function saveDirectory(string $path): ?string
+    public function addPath(string $path): string
+    {
+        $this->dbh->exec(
+            " INSERT INTO SCANNER_DIRECTORY (id, path, ctime, atime) VALUES (:id, :path, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (path) DO UPDATE SET atime = strftime('%s', 'now') ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path)
+            )
+        );
+        $directoryId = $this->dbh->query(
+            "SELECT id FROM SCANNER_DIRECTORY WHERE path = :path",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+            )
+        )[0]->id;
+        return ($directoryId);
+    }
+
+    private function saveDirectory(string $path): string
     {
         $coverFilename = $this->getDirectoryCoverFilename($path);
         $stat = stat($path);
@@ -55,7 +73,7 @@ class Scanner
         return ($directoryId);
     }
 
-    private function saveFile(string $directoryId, string $fileName, int $mtime): ?string
+    private function saveFile(string $directoryId, string $fileName, int $mtime): string
     {
         $this->dbh->exec(
             " INSERT INTO FILE (id, directory_id, name, mtime, added_timestamp) VALUES (:id, :directory_id, :name, :mtime, strftime('%s', 'now')) ON CONFLICT (`directory_id`, `name`) DO UPDATE SET MTIME = :mtime ",

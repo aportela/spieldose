@@ -389,5 +389,16 @@ return (array(
         '
             DROP TABLE `FILE_SCRAP`;
         '
+    ),
+    22 => array(
+        '
+            CREATE TABLE `SCANNER_DIRECTORY` (
+                `id` CHAR(36) NOT NULL,
+                `path` VARCHAR(4096) NOT NULL UNIQUE,
+                `ctime` INTEGER NOT NULL,
+                `atime` INTEGER NOT NULL,
+                PRIMARY KEY (`id`)
+            );
+        ',
     )
 ));
