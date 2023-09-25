@@ -240,16 +240,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "2.0.8",
+            "version": "2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "b0ec1b82adbdef47292f8142a58e6a48f1711812"
+                "reference": "04ea9d04f5e4a57f6c1af8bd169dad3aaa25d6e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/b0ec1b82adbdef47292f8142a58e6a48f1711812",
-                "reference": "b0ec1b82adbdef47292f8142a58e6a48f1711812",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/04ea9d04f5e4a57f6c1af8bd169dad3aaa25d6e0",
+                "reference": "04ea9d04f5e4a57f6c1af8bd169dad3aaa25d6e0",
                 "shasum": ""
             },
             "require": {
@@ -281,9 +281,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.0.8"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.0.9"
             },
-            "time": "2023-09-22T22:09:41+00:00"
+            "time": "2023-09-25T11:04:17+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
@@ -3637,16 +3637,16 @@
         },
         {
             "name": "sebastian/exporter",
-            "version": "5.1.0",
+            "version": "5.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/exporter.git",
-                "reference": "c3fa8483f9539b190f7cd4bfc4a07631dd1df344"
+                "reference": "64f51654862e0f5e318db7e9dcc2292c63cdbddc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/c3fa8483f9539b190f7cd4bfc4a07631dd1df344",
-                "reference": "c3fa8483f9539b190f7cd4bfc4a07631dd1df344",
+                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/64f51654862e0f5e318db7e9dcc2292c63cdbddc",
+                "reference": "64f51654862e0f5e318db7e9dcc2292c63cdbddc",
                 "shasum": ""
             },
             "require": {
@@ -3660,7 +3660,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "5.0-dev"
+                    "dev-main": "5.1-dev"
                 }
             },
             "autoload": {
@@ -3703,7 +3703,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/exporter/issues",
                 "security": "https://github.com/sebastianbergmann/exporter/security/policy",
-                "source": "https://github.com/sebastianbergmann/exporter/tree/5.1.0"
+                "source": "https://github.com/sebastianbergmann/exporter/tree/5.1.1"
             },
             "funding": [
                 {
@@ -3711,7 +3711,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-18T07:15:37+00:00"
+            "time": "2023-09-24T13:22:09+00:00"
         },
         {
             "name": "sebastian/global-state",
