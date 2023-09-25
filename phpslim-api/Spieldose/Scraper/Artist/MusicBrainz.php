@@ -14,7 +14,6 @@ class MusicBrainz
     public ?string $name;
     public ?string $image;
     public ?string $country;
-
     public array $genres;
     public array $relations;
 

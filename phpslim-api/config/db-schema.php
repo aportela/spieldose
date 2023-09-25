@@ -247,11 +247,11 @@ return (array(
     16 => array(
         '
             CREATE TABLE `LYRICS` (
-                `sha256_hash` VARCHAR(64) NOT NULL,
+                `md5_hash` VARCHAR(32) NOT NULL,
                 `title` VARCHAR(512) NOT NULL,
                 `artist` VARCHAR(128) NOT NULL,
                 `data` TEXT NOT NULL,
-                PRIMARY KEY (`sha256_hash`)
+                PRIMARY KEY (`md5_hash`)
             );
         ',
     ),
@@ -310,7 +310,7 @@ return (array(
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM` (
-                `sha256_hash` VARCHAR(64) NOT NULL,
+                `md5_hash` VARCHAR(32) NOT NULL,
                 `mbid` VARCHAR(36),
                 `name` VARCHAR(128) NOT NULL,
                 `url` VARCHAR(2048) NOT NULL,
@@ -319,22 +319,22 @@ return (array(
                 `bio_content` TEXT,
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
-                PRIMARY KEY (`sha256_hash`)
+                PRIMARY KEY (`md5_hash`)
             );
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM_TAG` (
-                `artist_hash` VARCHAR(64) NOT NULL,
+                `artist_hash` VARCHAR(32) NOT NULL,
                 `tag` VARCHAR(64) NOT NULL,
-                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
+                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`md5_hash`),
                 PRIMARY KEY (`artist_hash`, `tag`)
             );
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM_SIMILAR` (
-                `artist_hash` VARCHAR(64) NOT NULL,
+                `artist_hash` VARCHAR(32) NOT NULL,
                 `name` VARCHAR(128) NOT NULL,
-                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`sha256_hash`),
+                FOREIGN KEY(`artist_hash`) REFERENCES CACHE_ARTIST_LASTFM (`md5_hash`),
                 PRIMARY KEY (`artist_hash`, `name`)
             );
         ',

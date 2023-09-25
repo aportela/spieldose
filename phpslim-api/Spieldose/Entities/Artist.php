@@ -244,7 +244,7 @@ class Artist extends \Spieldose\Entities\Entity
         }
 
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":sha256_hash", hash("sha256", $filter["mbId"] . $filter["name"]))
+            new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", hash("sha256", $filter["mbId"] . $filter["name"]))
         ];
 
         $filterConditions = [
@@ -252,7 +252,7 @@ class Artist extends \Spieldose\Entities\Entity
                 EXISTS (
                     SELECT CALS.name
                     FROM CACHE_ARTIST_LASTFM_SIMILAR CALS
-                    WHERE CALS.artist_hash = :sha256_hash
+                    WHERE CALS.artist_hash = :md5_hash
                     AND CALS.name = TMP_ARTISTS.artist
                 )
             "
@@ -308,7 +308,7 @@ class Artist extends \Spieldose\Entities\Entity
         // TODO: get if no mbId
         if (!empty($this->mbId)) {
             $query = "
-                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image
+                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image, CACHE_ARTIST_LASTFM.bio_summary, CACHE_ARTIST_LASTFM.bio_content
                 FROM CACHE_ARTIST_MUSICBRAINZ
                 LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_ARTIST_MUSICBRAINZ.name
                 WHERE CACHE_ARTIST_MUSICBRAINZ.mbid = :mbid
@@ -324,6 +324,10 @@ class Artist extends \Spieldose\Entities\Entity
                     // TODO: use API URL
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
+                $this->bio = (object) [
+                    "summary" => $results[0]->bio_summary,
+                    "content" => $results[0]->bio_content
+                ];
                 $query = " SELECT relation_type_id, url FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
@@ -347,17 +351,6 @@ class Artist extends \Spieldose\Entities\Entity
                     }
                 } else {
                     $this->genres = [];
-                }
-                $query = " SELECT bio_summary, bio_content FROM CACHE_ARTIST_LASTFM WHERE mbid = :mbid ";
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-                );
-                $results = $this->dbh->query($query, $params);
-                if (count($results) == 1) {
-                    $this->bio = (object) [
-                        "summary" => $results[0]->bio_summary,
-                        "content" => $results[0]->bio_content
-                    ];
                 }
                 $query = "
                     SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
