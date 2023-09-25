@@ -28,6 +28,7 @@ class LastFM
         $this->apiKey = $apiKey;
         $this->scraped = false;
         $this->mbId = null;
+        $this->image = null;
         $this->bioSummary = null;
         $this->bioContent = null;
         $this->similar = [];
@@ -44,10 +45,17 @@ class LastFM
         $this->scraped = false;
         $lastFMArtist = new \aportela\LastFMWrapper\Artist($this->logger, $this->apiFormat, $this->apiKey);
         try {
-            $this->logger->debug(sprintf("[LastFM] scraping artist %s", $this->name));
+            $this->logger->debug(sprintf("[LastFM] scraping artist %s", $name));
             $lastFMArtist->get($name);
-            $this->name = $lastFMArtist->name ?? $name;
-            $this->mbId = $lastFMArtist->mbId ?? $mbId;
+            // sometimes lastfm name <> musicbrainz name (ex: Him <> HIM)
+            if (!empty($mbId)) {
+                // if mbId is set we assume that this scrap comes from existent musicbrainz data, so use musicbrainz name
+                $this->name = $name;
+                $this->mbId = $mbId;
+            } else {
+                $this->name = $lastFMArtist->name ?? $name;
+                $this->mbId = null;
+            }
             $this->url = $lastFMArtist->url;
             $this->image = $lastFMArtist->getImageFromArtistPageURL($lastFMArtist->url);
             $this->tags = $lastFMArtist->tags ?? [];
@@ -67,12 +75,12 @@ class LastFM
             $this->scraped = true;
             return ($this->scraped);
         } catch (\Throwable $e) {
-            $this->logger->error(sprintf("[LastFM] error scraping artist %s: %s", $this->name, $e->getMessage()));
-            return ($this->scraped);
+            $this->logger->error(sprintf("[LastFM] error scraping artist %s: %s", $this->name ?? $name, $e->getMessage()));
+            return (false);
         }
     }
 
-    public function saveCache(\aportela\DatabaseWrapper\DB $dbh)
+    public function saveCache(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (empty($this->name)) {
             throw new \Spieldose\Exception\InvalidParamsException("name");
@@ -163,6 +171,7 @@ class LastFM
                     $dbh->exec($query, $params);
                 }
             }
+            return (true);
         }
     }
 }

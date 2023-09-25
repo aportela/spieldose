@@ -18,7 +18,6 @@ class Wikipedia
     {
         $this->logger = $logger;
         $this->scraped = false;
-        $this->url = "";
         $this->language =  \aportela\MediaWikiWrapper\Language::ENGLISH->value;
     }
 
@@ -27,59 +26,69 @@ class Wikipedia
         return ($this->scraped);
     }
 
-    public function scrapWikipedia(): bool
+    public function scrapWikipedia(string $url): bool
     {
         $this->scraped = false;
-        if (!empty($this->url)) {
-            try {
+        try {
+            $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
+            $wikiPage->setURL($url);
+            $this->html = $wikiPage->getHTML();
+            $this->url = $url;
+            $this->scraped = true;
+            return ($this->scraped);
+        } catch (\Throwable $e) {
+            $this->logger->error(sprintf("[Wikipedia] error scraping from url %s: %s", $url, $e->getMessage()));
+            return (false);
+        }
+    }
+
+    public function scrapWikidata(string $url): bool
+    {
+        $this->scraped = false;
+        try {
+            $item = new \aportela\MediaWikiWrapper\Wikidata\Item($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
+            $item->setURL($url);
+            $title = $item->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
+            if (!empty($title)) {
                 $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
-                $wikiPage->setURL($this->url);
+                $wikiPage->setTitle($title);
+                $this->url = sprintf(\aportela\MediaWikiWrapper\Wikipedia\Page::REST_API_PAGE_HTML, $title);
                 $this->html = $wikiPage->getHTML();
-                $this->scraped = true;
-            } catch (\Throwable $e) {
-                $this->logger->warning(sprintf("[Wikipedia] error scraping url %s: %s", $this->url, $e->getMessage()));
+                $this->scraped = !empty($this->html);
+                return ($this->scraped);
+            } else {
+                $this->logger->warning(sprintf("[Wikidata] error getting wikipedia page title from url %s", $url));
             }
+        } catch (\Throwable $e) {
+            $this->logger->error(sprintf("[Wikidata] error scraping from url %s: %s", $url, $e->getMessage()));
+            return (false);
         }
-        return ($this->scraped);
     }
 
-    public function scrapWikidata(): bool
+    public function saveCache(\aportela\DatabaseWrapper\DB $dbh): bool
     {
-        $this->scraped = false;
-        if (!empty($this->url)) {
-            try {
-                $item = new \aportela\MediaWikiWrapper\Wikidata\Item($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
-                $item->setURL($this->url);
-                $title = $item->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
-                if (!empty($title)) {
-                    $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
-                    $wikiPage->setTitle($title);
-                    $this->url = sprintf(\aportela\MediaWikiWrapper\Wikipedia\Page::REST_API_PAGE_HTML, $title);
-                    $this->html = $wikiPage->getHTML();
-                    $this->scraped = !empty($this->html);
-                } else {
-                    $this->logger->warning(sprintf("[Wikidata] error getting title from url %s", $this->url));
-                }
-            } catch (\Throwable $e) {
-                $this->logger->warning(sprintf("[Wikidata] error scraping url %s: %s", $this->url, $e->getMessage()));
-            }
+        if (empty($this->name)) {
+            throw new \Spieldose\Exception\InvalidParamsException("name");
+        } else if (empty($this->url)) {
+            throw new \Spieldose\Exception\InvalidParamsException("url");
+        } else if (empty($this->language)) {
+            throw new \Spieldose\Exception\InvalidParamsException("language");
+        } else if (empty($this->html)) {
+            throw new \Spieldose\Exception\InvalidParamsException("html");
+        } else {
+            $query = "
+                INSERT INTO CACHE_ARTIST_WIKIPEDIA (name, url, language, html, ctime, mtime) VALUES (:name, :url, :language, :html, strftime('%s', 'now'), strftime('%s', 'now'))
+                    ON CONFLICT(name, url, language) DO
+                UPDATE SET html = :html, mtime = strftime('%s', 'now')
+            ";
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":url", $this->url),
+                new \aportela\DatabaseWrapper\Param\StringParam(":language", $this->language),
+                new \aportela\DatabaseWrapper\Param\StringParam(":html", $this->html),
+            );
+            $dbh->exec($query, $params);
+            return (true);
         }
-        return ($this->scraped);
-    }
-
-    public function saveCache(\aportela\DatabaseWrapper\DB $dbh)
-    {
-        $query = "
-            INSERT INTO CACHE_ARTIST_WIKIPEDIA (name, url, language, html, ctime, mtime) VALUES (:name, :url, :language, :html, strftime('%s', 'now'), strftime('%s', 'now'))
-                ON CONFLICT(name, url, language) DO
-            UPDATE SET html = :html, mtime = strftime('%s', 'now')
-        ";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name ?? ""),
-            new \aportela\DatabaseWrapper\Param\StringParam(":url", $this->url ?? ""),
-            new \aportela\DatabaseWrapper\Param\StringParam(":language", $this->language),
-            new \aportela\DatabaseWrapper\Param\StringParam(":html", $this->html),
-        );
-        $dbh->exec($query, $params);
     }
 }
