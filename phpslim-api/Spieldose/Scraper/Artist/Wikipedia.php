@@ -9,6 +9,7 @@ class Wikipedia
     private \Psr\Log\LoggerInterface $logger;
     private bool $scraped;
 
+    public ?string $mbId;
     public string $name;
     public string $url;
     public string $language;
@@ -18,6 +19,7 @@ class Wikipedia
     {
         $this->logger = $logger;
         $this->scraped = false;
+        $this->mbId = null;
         $this->language =  \aportela\MediaWikiWrapper\Language::ENGLISH->value;
     }
 
@@ -77,9 +79,9 @@ class Wikipedia
             throw new \Spieldose\Exception\InvalidParamsException("html");
         } else {
             $query = "
-                INSERT INTO CACHE_ARTIST_WIKIPEDIA (name, url, language, html, ctime, mtime) VALUES (:name, :url, :language, :html, strftime('%s', 'now'), strftime('%s', 'now'))
+                INSERT INTO CACHE_ARTIST_WIKIPEDIA (mbid, name, url, language, extract, html_page, ctime, mtime) VALUES (:mbid, :name, :url, :language, :html, :html, strftime('%s', 'now'), strftime('%s', 'now'))
                     ON CONFLICT(name, url, language) DO
-                UPDATE SET html = :html, mtime = strftime('%s', 'now')
+                UPDATE SET extract = :html, html_page = :html, mtime = strftime('%s', 'now')
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
@@ -87,6 +89,11 @@ class Wikipedia
                 new \aportela\DatabaseWrapper\Param\StringParam(":language", $this->language),
                 new \aportela\DatabaseWrapper\Param\StringParam(":html", $this->html),
             );
+            if (!empty($this->mbId)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mbid");
+            }
             $dbh->exec($query, $params);
             return (true);
         }
