@@ -94,7 +94,7 @@ class MusicBrainz
                 $this->scraped = true;
                 return ($this->scraped);
             } catch (\Throwable $e) {
-                $this->logger->error(sprintf("[MusicBrainz] error scraping artist %s: %s", $this->name ?? $name, $this->mbId ?? $mbId, $e->getMessage()));
+                $this->logger->error(sprintf("[MusicBrainz] error scraping artist %s (%s): %s", $this->name ?? $name, $this->mbId ?? $mbId, $e->getMessage()));
                 return (false);
             }
         } else {
