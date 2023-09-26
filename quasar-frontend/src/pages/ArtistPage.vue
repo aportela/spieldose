@@ -234,55 +234,88 @@
     </q-tab-panel>
 
     <q-tab-panel name="similarArtists">
-      <div class="text-h6">Similar artists</div>
-      <div class="q-gutter-md row items-start">
-        <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar"
-          :key="artist.name">
-          <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
-            <div class="absolute-bottom text-subtitle1 text-center">
-              {{ artist.name }}
-              <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
-                'track') }}</p>
-            </div>
-            <template v-slot:loading>
-              <div class="absolute-full flex flex-center bg-grey-3 text-dark">
-                <q-spinner color="pink" size="xl" />
-                <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+      <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
+        <q-card-section>
+          <div class="text-h6">Similar artists</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section v-if="artistData.similar && artistData.similar.length > 0">
+          <div class="q-gutter-md row items-start">
+            <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar"
+              :key="artist.name">
+              <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
+                <div class="absolute-bottom text-subtitle1 text-center">
                   {{ artist.name }}
                   <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
                     'track') }}</p>
                 </div>
-              </div>
-            </template>
-            <template v-slot:error>
-              <div class="absolute-full flex flex-center bg-grey-3 text-dark">
-                <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
-                  {{ artist.name }}
-                  <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
-                    'track') }}</p>
-                </div>
-              </div>
-            </template>
-          </q-img>
-        </router-link>
-      </div>
+                <template v-slot:loading>
+                  <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                    <q-spinner color="pink" size="xl" />
+                    <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                      {{ artist.name }}
+                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                        'track') }}</p>
+                    </div>
+                  </div>
+                </template>
+                <template v-slot:error>
+                  <div class="absolute-full flex flex-center bg-grey-3 text-dark">
+                    <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
+                      {{ artist.name }}
+                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                        'track') }}</p>
+                    </div>
+                  </div>
+                </template>
+              </q-img>
+            </router-link>
+          </div>
+        </q-card-section>
+        <q-card-section v-else>
+          No similar artists found
+        </q-card-section>
+
+      </q-card>
+
     </q-tab-panel>
     <q-tab-panel name="albums">
-      <div class="text-h6 q-mb-xl">Albums</div>
-      <div class="q-gutter-md row items-start" v-if="artistData.topAlbums">
-        <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
-          :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
-          @enqueue="onEnqueueAlbum(album)">
-        </AnimatedAlbumCover>
-      </div>
+      <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
+        <q-card-section>
+          <div class="text-h6">Albums</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
+          <div class="q-gutter-md row items-start q-mt-sm">
+            <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
+        :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
+        @enqueue="onEnqueueAlbum(album)">
+            </AnimatedAlbumCover>
+          </div>
+        </q-card-section>
+      </q-card>
     </q-tab-panel>
     <q-tab-panel name="tracks">
-      <div class="text-h6">Tracks</div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
+        <q-card-section>
+          <div class="text-h6">Tracks</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        </q-card-section>
+      </q-card>
     </q-tab-panel>
     <q-tab-panel name="stats">
-      <div class="text-h6">Stats</div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
+        <q-card-section>
+          <div class="text-h6">Stats</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        </q-card-section>
+      </q-card>
     </q-tab-panel>
   </q-tab-panels>
 </template>
@@ -399,10 +432,12 @@ figure[typeof~="mw:File/Thumb"]>.mw-file-magnify {
   float: right;
 }
 
-#artist_bio_content figure[typeof~="mw:File/Thumb"] > :not(figcaption) .mw-file-element, #artist_bio_content figure[typeof~="mw:File/Frame"] > :not(figcaption) .mw-file-element {
-    border: 1px solid #c8ccd1;
-    background: #ffffff;
-  }
+#artist_bio_content figure[typeof~="mw:File/Thumb"]> :not(figcaption) .mw-file-element,
+#artist_bio_content figure[typeof~="mw:File/Frame"]> :not(figcaption) .mw-file-element {
+  border: 1px solid #c8ccd1;
+  background: #ffffff;
+}
+
 p.header-mini-album-title {
   white-space: nowrap;
   overflow: hidden;
