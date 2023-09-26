@@ -108,14 +108,14 @@ class Wikipedia
             throw new \Spieldose\Exception\InvalidParamsException("html");
         } else {
             $query = "
-                INSERT INTO CACHE_ARTIST_WIKIPEDIA (mbid, intro, html_page, ctime, mtime) VALUES (:mbid, :intro, :html_page, strftime('%s', 'now'), strftime('%s', 'now'))
+                INSERT INTO CACHE_ARTIST_WIKIPEDIA (mbid, intro, page, ctime, mtime) VALUES (:mbid, :intro, :page, strftime('%s', 'now'), strftime('%s', 'now'))
                     ON CONFLICT(mbid) DO
-                UPDATE SET intro = :intro, html_page = :html_page, mtime = strftime('%s', 'now')
+                UPDATE SET intro = :intro, page = :page, mtime = strftime('%s', 'now')
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":intro", $this->intro),
-                new \aportela\DatabaseWrapper\Param\StringParam(":html_page", $this->html),
+                new \aportela\DatabaseWrapper\Param\StringParam(":page", $this->html),
             );
             $dbh->exec($query, $params);
             return (true);

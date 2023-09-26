@@ -342,7 +342,7 @@ return (array(
             CREATE TABLE `CACHE_ARTIST_WIKIPEDIA` (
                 `mbid` VARCHAR(36) NOT NULL,
                 `intro` TEXT NOT NULL,
-                `html_page` TEXT NOT NULL,
+                `page` TEXT NOT NULL,
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
                 PRIMARY KEY (`mbid`)

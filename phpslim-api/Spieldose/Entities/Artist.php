@@ -312,8 +312,8 @@ class Artist extends \Spieldose\Entities\Entity
                     CACHE_ARTIST_MUSICBRAINZ.name,
                     COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image,
                     COALESCE(CACHE_ARTIST_WIKIPEDIA.intro, CACHE_ARTIST_LASTFM.bio_summary) AS bio_summary,
-                    COALESCE(CACHE_ARTIST_WIKIPEDIA.html_page, CACHE_ARTIST_LASTFM.bio_content) AS bio_content,
-                    IIF(CACHE_ARTIST_WIKIPEDIA.html_page IS NOT NULL, 'wikipedia', IIF(CACHE_ARTIST_LASTFM.bio_content IS NOT NULL, 'lastfm', NULL)) AS bio_source
+                    COALESCE(CACHE_ARTIST_WIKIPEDIA.page, CACHE_ARTIST_LASTFM.bio_content) AS bio_content,
+                    IIF(CACHE_ARTIST_WIKIPEDIA.page IS NOT NULL, 'wikipedia', IIF(CACHE_ARTIST_LASTFM.bio_content IS NOT NULL, 'lastfm', NULL)) AS bio_source
                 FROM CACHE_ARTIST_MUSICBRAINZ
                 LEFT JOIN CACHE_ARTIST_WIKIPEDIA ON CACHE_ARTIST_WIKIPEDIA.mbid = CACHE_ARTIST_MUSICBRAINZ.mbid
                 LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_ARTIST_MUSICBRAINZ.name
