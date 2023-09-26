@@ -23,7 +23,7 @@ class Scanner
     {
     }
 
-    private function getDirectoryCoverFilename(string $path): string
+    private function getDirectoryCoverFilename(string $path): ?string
     {
         $coverFilename = null;
         foreach (glob($path . DIRECTORY_SEPARATOR . self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
