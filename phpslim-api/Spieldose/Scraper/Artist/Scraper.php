@@ -249,7 +249,7 @@ class Scraper
                     $dbh->rollBack();
                 }
             }
-        } else if (!empty($artist->wikidataURL)) {
+        } elseif (!empty($artist->wikidataURL)) {
             $success = false;
             // wikidata block (wikipedia failover)
             try {
