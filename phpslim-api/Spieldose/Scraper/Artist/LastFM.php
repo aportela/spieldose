@@ -84,7 +84,7 @@ class LastFM
     {
         if (empty($this->name)) {
             throw new \Spieldose\Exception\InvalidParamsException("name");
-        } else if (empty($this->url)) {
+        } elseif (empty($this->url)) {
             throw new \Spieldose\Exception\InvalidParamsException("url");
         } else {
             if (empty($this->mbId)) {
