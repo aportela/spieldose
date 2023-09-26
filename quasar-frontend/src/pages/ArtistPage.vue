@@ -51,7 +51,10 @@
       </div>
       <q-tabs v-model="tab" class="tex-white q-mt-md">
         <q-tab icon="summarize" name="overview" label="Overview" />
-        <q-tab icon="menu_book" name="biography" label="Biography" />
+        <q-tab icon="menu_book" name="biography" label="Biography">
+          <q-badge color="pink" floating v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
+          <q-badge color="pink" floating v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
+        </q-tab>
         <q-tab icon="groups" name="similarArtists" label="Similar artists">
           <q-badge color="pink" floating v-if="artistData.similar && artistData.similar.length > 0">{{
             artistData.similar.length }}</q-badge>
@@ -390,8 +393,6 @@ import { trackActions, albumActions } from "boot/spieldose";
 import { spieldoseEventNames } from "boot/events";
 import { useSpieldoseStore } from "stores/spieldose";
 
-
-
 const bus = inject('bus');
 
 bus.on(spieldoseEventNames.track.setFavorite, (data) => {
@@ -551,7 +552,6 @@ function onToggleFavorite(track) {
       });
   }
 }
-
 
 function get(name) {
   loading.value = true;

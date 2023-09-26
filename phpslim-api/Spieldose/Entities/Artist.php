@@ -308,7 +308,12 @@ class Artist extends \Spieldose\Entities\Entity
         // TODO: get if no mbId
         if (!empty($this->mbId)) {
             $query = "
-                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image, COALESCE(CACHE_ARTIST_WIKIPEDIA.intro, CACHE_ARTIST_LASTFM.bio_summary) AS bio_summary, COALESCE(CACHE_ARTIST_WIKIPEDIA.html_page, CACHE_ARTIST_LASTFM.bio_content) AS bio_content
+                SELECT
+                    CACHE_ARTIST_MUSICBRAINZ.name,
+                    COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image,
+                    COALESCE(CACHE_ARTIST_WIKIPEDIA.intro, CACHE_ARTIST_LASTFM.bio_summary) AS bio_summary,
+                    COALESCE(CACHE_ARTIST_WIKIPEDIA.html_page, CACHE_ARTIST_LASTFM.bio_content) AS bio_content,
+                    IIF(CACHE_ARTIST_WIKIPEDIA.html_page IS NOT NULL, 'wikipedia', IIF(CACHE_ARTIST_LASTFM.bio_content IS NOT NULL, 'lastfm', NULL)) AS bio_source
                 FROM CACHE_ARTIST_MUSICBRAINZ
                 LEFT JOIN CACHE_ARTIST_WIKIPEDIA ON CACHE_ARTIST_WIKIPEDIA.mbid = CACHE_ARTIST_MUSICBRAINZ.mbid
                 LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_ARTIST_MUSICBRAINZ.name
@@ -326,6 +331,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
                 $this->bio = (object) [
+                    "source" => $results[0]->bio_source,
                     "summary" => $results[0]->bio_summary,
                     "content" => $results[0]->bio_content
                 ];
@@ -530,6 +536,7 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $this->relations = [];
             $this->bio = (object) [
+                "source" => null,
                 "summary" => null,
                 "content" => null
             ];
