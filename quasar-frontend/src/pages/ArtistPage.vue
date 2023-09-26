@@ -232,7 +232,7 @@
               <div class="text-h6">Biography</div>
             </q-card-section>
             <q-separator />
-            <q-card-section>
+            <q-card-section id="artist_bio_content">
               <div v-html="artistData.bio ? nl2br(artistData.bio.content || '') : ''"></div>
             </q-card-section>
           </q-card>
@@ -345,6 +345,22 @@ div#artist-header-block-background-overlay {
 div#artist-header-block-content {
   width: 51%;
   z-index: 2;
+}
+
+/* wikipedia (html bio page) styles are stripped, put here some required classes */
+
+#artist_bio_content .infobox {
+  border: 1px solid #a2a9b1;
+  border-spacing: 3px;
+  background-color: #f8f9fa;
+  color: black;
+  margin: 0.5em 0 0.5em 1em;
+  padding: 0.2em;
+  float: right;
+  clear: right;
+  font-size: 88%;
+  line-height: 1.5em;
+  width: 22em;
 }
 
 p.header-mini-album-title {
