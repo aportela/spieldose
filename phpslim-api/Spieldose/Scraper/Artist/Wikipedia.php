@@ -65,7 +65,7 @@ class Wikipedia
         try {
             $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
             $wikiPage->setURL($url);
-            $this->intro = $wikiPage->getIntroPlainText();
+            $this->intro = \Spieldose\Utils::nl2P($wikiPage->getIntroPlainText(), true);
             $this->html = $this->stripWikipediaHTMLPage($wikiPage->getHTML());
             $this->scraped = true;
             return ($this->scraped);
@@ -85,7 +85,7 @@ class Wikipedia
             if (!empty($title)) {
                 $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
                 $wikiPage->setTitle($title);
-                $this->intro = $wikiPage->getIntroPlainText();
+                $this->intro = \Spieldose\Utils::nl2P($wikiPage->getIntroPlainText(), true);
                 $this->html = $this->stripWikipediaHTMLPage($wikiPage->getHTML());
                 $this->scraped = !empty($this->html);
                 return ($this->scraped);
