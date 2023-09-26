@@ -330,6 +330,11 @@ class Artist extends \Spieldose\Entities\Entity
                     // TODO: use API URL
                     $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
                 }
+                $paragraphs = [];
+                foreach (explode("\n", $results[0]->bio_summary) as $paragraph) {
+                    $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
+                }
+                $results[0]->bio_summary = implode("", $paragraphs);
                 $this->bio = (object) [
                     "source" => $results[0]->bio_source,
                     "summary" => $results[0]->bio_summary,
