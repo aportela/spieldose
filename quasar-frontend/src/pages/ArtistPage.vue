@@ -88,14 +88,6 @@
                     <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
                   </p>
                 </div>
-                <div v-if="artistData.relations && artistData.relations.length > 0">
-                  <q-separator class="q-mt-lg"></q-separator>
-                  <p class="q-mt-md">
-
-                    <ArtistURLRelationshipChip v-for="relation in artistData.relations" :key="relation.url"
-                      :id="relation['type-id']" :url="relation.url"></ArtistURLRelationshipChip>
-                  </p>
-                </div>
               </div>
             </q-card-section>
           </q-card>
