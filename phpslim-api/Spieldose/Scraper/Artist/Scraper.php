@@ -183,7 +183,7 @@ class Scraper
                 $logger->warning(sprintf("[LastFM] artist %s (%s) not scraped", $artist->name, $artist->mbId));
             }
         } catch (\Throwable $e) {
-            $logger->error(sprintf("[LastFM] error scrapping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
+            $logger->error(sprintf("[LastFM] error scraping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
         } finally {
             if ($dbh->inTransaction()) {
                 if ($success) {
@@ -260,7 +260,6 @@ class Scraper
                 }
                 return (true);
             } catch (\Throwable $e) {
-                print_r($e);
                 $logger->error(sprintf("[Wikidata] error scrapping artist %s (%s) url %s: %s", $results[0]->name, $results[0]->mbid, $results[0]->url, $e->getMessage()));
                 return (false);
             } finally {
