@@ -64,13 +64,13 @@ class LastFM
             if (!empty($this->bioSummary)) {
                 // trim "read more on last fm"
                 $pattern = '/<a href="https:\/\/www\.last\.fm\/.*">Read more on Last.fm<\/a>$/i';
-                $this->bioSummary = preg_replace($pattern, "", $this->bioSummary);
+                $this->bioSummary = \Spieldose\Utils::nl2P(preg_replace($pattern, "", $this->bioSummary), true);
             }
             $this->bioContent = $lastFMArtist->bio->content;
             if (!empty($this->bioContent)) {
                 // trim "read more on last fm"
                 $pattern = '/<a href="https:\/\/www\.last\.fm\/.*">Read more on Last.fm<\/a>. /i';
-                $this->bioContent = preg_replace($pattern, PHP_EOL . PHP_EOL, $this->bioContent);
+                $this->bioContent = \Spieldose\Utils::nl2P(preg_replace($pattern, PHP_EOL . PHP_EOL, $this->bioContent), true);
             }
             $this->scraped = true;
             return ($this->scraped);
