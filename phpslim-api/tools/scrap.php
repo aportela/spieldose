@@ -40,13 +40,12 @@ if (count($missingExtensions) > 0) {
         $total = count($artistNamesWithoutMusicBrainzId);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[0]);
             for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[$i]);
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
                 \Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, null, $artistNamesWithoutMusicBrainzId[$i]);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[$i]);
             }
         } else {
             echo " none found" . PHP_EOL;
@@ -57,13 +56,12 @@ if (count($missingExtensions) > 0) {
         $total = count($artistsWithoutCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutCache[0]->name, $artistsWithoutCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutCache[$i]->name, $artistsWithoutCache[$i]->mbId));
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
                 \Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, $artistsWithoutCache[$i]->mbId, null);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutCache[$i]->name, $artistsWithoutCache[$i]->mbId));
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -74,13 +72,12 @@ if (count($missingExtensions) > 0) {
         $total = count($artistsWithoutLastFMCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutLastFMCache[0]->name, $artistsWithoutLastFMCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutLastFMCache[$i]->name, $artistsWithoutLastFMCache[$i]->mbId));
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
                 \Spieldose\Scraper\Artist\Scraper::scrapLastFM($logger, $dbh, $settings["lastFMAPIKey"], $artistsWithoutLastFMCache[$i]->mbId, $artistsWithoutLastFMCache[$i]->name);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutLastFMCache[$i]->name, $artistsWithoutLastFMCache[$i]->mbId));
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -91,13 +88,12 @@ if (count($missingExtensions) > 0) {
         $total = count($musicBrainzArtistsWithoutWikipediaCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $musicBrainzArtistsWithoutWikipediaCache[0]->name, $musicBrainzArtistsWithoutWikipediaCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $musicBrainzArtistsWithoutWikipediaCache[$i]->name, $musicBrainzArtistsWithoutWikipediaCache[$i]->mbId));
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
                 \Spieldose\Scraper\Artist\Scraper::scrapWiki($logger, $dbh, $musicBrainzArtistsWithoutWikipediaCache[$i]->mbId, null);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $musicBrainzArtistsWithoutWikipediaCache[$i]->name, $musicBrainzArtistsWithoutWikipediaCache[$i]->mbId));
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -108,13 +104,12 @@ if (count($missingExtensions) > 0) {
         $total = count($releaseMBIdsWithoutCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[0]);
             for ($i = 0; $i < $total; $i++) {
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[$i]);
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
                 \Spieldose\Scraper\Release\Scraper::scrap($logger, $dbh, $releaseMBIdsWithoutCache[$i]);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[$i]);
             }
         } else {
             echo "none found" . PHP_EOL;
