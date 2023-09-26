@@ -102,7 +102,6 @@ class Scraper
         return ($artists);
     }
 
-
     public static function getMusicBrainzArtistsWithoutWikipediaCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
         $params = array(
@@ -157,10 +156,12 @@ class Scraper
         } catch (\Throwable $e) {
             $logger->error(sprintf("[MusicBrainz] error scrapping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
         } finally {
-            if ($success) {
-                $dbh->commit();
-            } else {
-                $dbh->rollBack();
+            if ($dbh->inTransaction()) {
+                if ($success) {
+                    $dbh->commit();
+                } else {
+                    $dbh->rollBack();
+                }
             }
         }
     }
@@ -172,45 +173,6 @@ class Scraper
             "mbId" => $mbId ?? null,
             "name" => $name ?? null
         ];
-        // musicbrainz block
-        try {
-            $musicBrainzArtist = new \Spieldose\Scraper\Artist\MusicBrainz($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
-            // TODO: ignore if we have cache
-            if ($musicBrainzArtist->scrap($artist->name, $artist->mbId)) {
-                $dbh->beginTransaction();
-                $musicBrainzArtist->fixTags($dbh);
-                $musicBrainzArtist->saveCache($dbh);
-                $artist->mbId = $musicBrainzArtist->mbId;
-                $artist->name = $musicBrainzArtist->name;
-                // parse wikipedia url from relations
-                foreach ($musicBrainzArtist->relations as $relation) {
-                    if ($relation->typeId == \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA->value) {
-                        $artist->wikipediaURL = $relation->url;
-                    }
-                }
-                // parse wikidata url from relations
-                if (empty($artist->wikipediaURL)) {
-                    foreach ($musicBrainzArtist->relations as $relation) {
-                        if ($relation->typeId == \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value) {
-                            $artist->wikidataURL = $relation->url;
-                        }
-                    }
-                }
-                $success = true;
-            } else {
-                $logger->warning(sprintf("[MusicBrainz] artist %s (%s) not scraped", $artist->name, $artist->mbId));
-            }
-        } catch (\Throwable $e) {
-            $logger->error(sprintf("[MusicBrainz] error scrapping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
-        } finally {
-            if ($success) {
-                $dbh->commit();
-            } else {
-                $dbh->rollBack();
-            }
-        }
-        $success = false;
-        // last.fm block
         try {
             $lastFMArtist = new \Spieldose\Scraper\Artist\LastFM($logger, \aportela\LastFMWrapper\APIFormat::JSON, $lastFMAPIKey);
             if ($lastFMArtist->scrap($artist->name, $artist->mbId)) {
@@ -223,45 +185,7 @@ class Scraper
         } catch (\Throwable $e) {
             $logger->error(sprintf("[LastFM] error scrapping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
         } finally {
-            if ($success) {
-                $dbh->commit();
-            } else {
-                $dbh->rollBack();
-            }
-        }
-        if (!empty($artist->wikipediaURL)) {
-            $success = false;
-            // wikipedia block
-            try {
-                $wikipediaArtist = new \Spieldose\Scraper\Artist\Wikipedia($logger);
-                if ($wikipediaArtist->scrapWikipedia($artist->wikipediaURL)) {
-                    $dbh->beginTransaction();
-                    $wikipediaArtist->saveCache($dbh);
-                    $success = true;
-                }
-            } catch (\Throwable $e) {
-                $logger->error(sprintf("[Wikipedia] error scrapping url %s: %s", $artist->wikipediaURL, $e->getMessage()));
-            } finally {
-                if ($success) {
-                    $dbh->commit();
-                } else {
-                    die("ROLLBACXK1");
-                    $dbh->rollBack();
-                }
-            }
-        } elseif (!empty($artist->wikidataURL)) {
-            $success = false;
-            // wikidata block (wikipedia failover)
-            try {
-                $wikipediaArtist = new \Spieldose\Scraper\Artist\Wikipedia($logger);
-                if ($wikipediaArtist->scrapWikidata($artist->wikidataURL)) {
-                    $dbh->beginTransaction();
-                    $wikipediaArtist->saveCache($dbh);
-                    $success = true;
-                }
-            } catch (\Throwable $e) {
-                $logger->error(sprintf("[Wikidata] error scrapping url %s: %s", $artist->wikidataURL, $e->getMessage()));
-            } finally {
+            if ($dbh->inTransaction()) {
                 if ($success) {
                     $dbh->commit();
                 } else {
@@ -297,10 +221,12 @@ class Scraper
             } catch (\Throwable $e) {
                 $logger->error(sprintf("[Wikipedia] error scrapping artist %s (%s) url %s: %s", $results[0]->name, $results[0]->mbid, $results[0]->url, $e->getMessage()));
             } finally {
-                if ($success) {
-                    $dbh->commit();
-                } else {
-                    $dbh->rollBack();
+                if ($dbh->inTransaction()) {
+                    if ($success) {
+                        $dbh->commit();
+                    } else {
+                        $dbh->rollBack();
+                    }
                 }
             }
         } else {
@@ -338,10 +264,12 @@ class Scraper
                 $logger->error(sprintf("[Wikidata] error scrapping artist %s (%s) url %s: %s", $results[0]->name, $results[0]->mbid, $results[0]->url, $e->getMessage()));
                 return (false);
             } finally {
-                if ($success) {
-                    $dbh->commit();
-                } else {
-                    $dbh->rollBack();
+                if ($dbh->inTransaction()) {
+                    if ($success) {
+                        $dbh->commit();
+                    } else {
+                        $dbh->rollBack();
+                    }
                 }
             }
         } else {
