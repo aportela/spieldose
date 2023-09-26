@@ -128,7 +128,7 @@ class MusicBrainz
     {
         if (empty($this->mbId)) {
             throw new \Spieldose\Exception\InvalidParamsException("mbid");
-        } else if (empty($this->name)) {
+        } elseif (empty($this->name)) {
             throw new \Spieldose\Exception\InvalidParamsException("name");
         } else {
             $this->logger->debug(sprintf("[MusicBrainz] saving main cache for artist %s (mbId: %s)", $this->name, $this->mbId));
