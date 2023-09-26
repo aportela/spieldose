@@ -197,7 +197,7 @@ class Scraper
 
     private static function scrapWikipedia(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, string $mbId): bool
     {
-
+        $success = false;
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbId),
             new \aportela\DatabaseWrapper\Param\StringParam(":wikipedia_relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA->value)
