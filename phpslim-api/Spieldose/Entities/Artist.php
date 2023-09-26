@@ -340,7 +340,7 @@ class Artist extends \Spieldose\Entities\Entity
                     "summary" => $results[0]->bio_summary,
                     "content" => $results[0]->bio_content
                 ];
-                $query = " SELECT relation_type_id, url FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ";
+                $query = " SELECT relation_type_id, url FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :mbid ORDER BY name COLLATE NOCASE";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
                 );
