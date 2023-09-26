@@ -53,17 +53,17 @@ if (count($missingExtensions) > 0) {
         }
 
         echo "Checking artists without musicbrainz cached data... ";
-        $artistMBIdsWithoutCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistMbIdsWithoutCache($dbh, true);
-        $total = count($artistMBIdsWithoutCache);
+        $artistsWithoutCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistsWithoutCache($dbh, true);
+        $total = count($artistsWithoutCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, "MBId: " . $artistMBIdsWithoutCache[0]);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutCache[0]->name, $artistsWithoutCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
-                \Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, $artistMBIdsWithoutCache[$i], null);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, "MBId: " . $artistMBIdsWithoutCache[$i]);
+                \Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, $artistsWithoutCache[$i]->mbId, null);
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutCache[$i]->name, $artistsWithoutCache[$i]->mbId));
             }
         } else {
             echo "none found" . PHP_EOL;
@@ -87,17 +87,17 @@ if (count($missingExtensions) > 0) {
         }
 
         echo "Checking artists without wikipedia cached data... ";
-        $musicBrainzArtistsMBIdsWithoutWikipediaCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistsWithoutWikipediaCache($dbh, true);
-        $total = count($musicBrainzArtistsMBIdsWithoutWikipediaCache);
+        $musicBrainzArtistsWithoutWikipediaCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistsWithoutWikipediaCache($dbh, true);
+        $total = count($musicBrainzArtistsWithoutWikipediaCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
-            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("MBId: %s", $musicBrainzArtistsMBIdsWithoutWikipediaCache[0]));
+            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $musicBrainzArtistsWithoutWikipediaCache[0]->name, $musicBrainzArtistsWithoutWikipediaCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
-                \Spieldose\Scraper\Artist\Scraper::scrapWiki($logger, $dbh, $musicBrainzArtistsMBIdsWithoutWikipediaCache[$i], null);
-                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("MBId: %s", $musicBrainzArtistsMBIdsWithoutWikipediaCache[$i]));
+                \Spieldose\Scraper\Artist\Scraper::scrapWiki($logger, $dbh, $musicBrainzArtistsWithoutWikipediaCache[$i]->mbId, null);
+                \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $musicBrainzArtistsWithoutWikipediaCache[$i]->name, $musicBrainzArtistsWithoutWikipediaCache[$i]->mbId));
             }
         } else {
             echo "none found" . PHP_EOL;

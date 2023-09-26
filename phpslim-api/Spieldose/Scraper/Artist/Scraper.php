@@ -26,12 +26,12 @@ class Scraper
         return ($names);
     }
 
-    public static function getMusicBrainzArtistMbIdsWithoutCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
+    public static function getMusicBrainzArtistsWithoutCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
-        $mbIds = array();
+        $artists = array();
         $query = !$randomize ? "
             SELECT
-                FIT.mb_artist_id AS mbid
+                FIT.mb_artist_id AS mbid, FIT.artist AS name
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_artist_id IS NOT NULL
             AND NOT EXISTS
@@ -40,17 +40,17 @@ class Scraper
             UNION
 
             SELECT
-                FIT.mb_album_artist_id AS mbid
+                FIT.mb_album_artist_id AS mbid, FIT.album_artist AS name
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_album_artist_id IS NOT NULL
             AND NOT EXISTS
                 (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
         " : "
             SELECT
-                mbid
+                mbid, name
             FROM (
                 SELECT
-                    FIT.mb_artist_id AS mbid
+                    FIT.mb_artist_id AS mbid, FIT.artist AS name
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_artist_id IS NOT NULL
                 AND NOT EXISTS
@@ -59,7 +59,7 @@ class Scraper
                 UNION
 
                 SELECT
-                    FIT.mb_album_artist_id AS mbid
+                    FIT.mb_album_artist_id AS mbid, FIT.album_artist AS name
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_album_artist_id IS NOT NULL
                 AND NOT EXISTS
@@ -69,9 +69,12 @@ class Scraper
         ";
         $results = $dbh->query($query);
         foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
+            $artists[] = (object) [
+                "mbId" => $result->mbid,
+                "name" => $result->name
+            ];
         }
-        return ($mbIds);
+        return ($artists);
     }
 
     public static function getArtistsWithoutLastFMCache(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
@@ -108,10 +111,10 @@ class Scraper
             new \aportela\DatabaseWrapper\Param\StringParam(":wikipedia_relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA->value),
             new \aportela\DatabaseWrapper\Param\StringParam(":wikidata_relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value)
         );
-        $mbIds = array();
+        $artists = array();
         $query = sprintf(
             "
-                SELECT DISTINCT CAM.mbid
+                SELECT DISTINCT CAM.mbid, CAM.name
                 FROM CACHE_ARTIST_MUSICBRAINZ CAM
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR1 ON CAMUR1.artist_mbid = CAM.mbid AND CAMUR1.relation_type_id = :wikipedia_relation_type_id
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR2 ON CAMUR2.artist_mbid = CAM.mbid AND CAMUR2.relation_type_id = :wikidata_relation_type_id
@@ -128,9 +131,12 @@ class Scraper
         );
         $results = $dbh->query($query, $params);
         foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
+            $artists[] = (object) [
+                "mbId" => $result->mbid,
+                "name" => $result->name
+            ];
         }
-        return ($mbIds);
+        return ($artists);
     }
 
     public static function scrapMusicBrainz(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, ?string $mbId, ?string $name): void
@@ -217,9 +223,13 @@ class Scraper
                     $dbh->beginTransaction();
                     $wikipediaArtist->saveCache($dbh);
                     $success = true;
+                    return (true);
+                } else {
+                    return (false);
                 }
             } catch (\Throwable $e) {
                 $logger->error(sprintf("[Wikipedia] error scrapping artist %s (%s) url %s: %s", $results[0]->name, $results[0]->mbid, $results[0]->url, $e->getMessage()));
+                return (false);
             } finally {
                 if ($dbh->inTransaction()) {
                     if ($success) {
@@ -257,8 +267,10 @@ class Scraper
                     $wikipediaArtist->mbId = $results[0]->mbid;
                     $wikipediaArtist->saveCache($dbh);
                     $success = true;
+                    return (true);
+                } else {
+                    return (false);
                 }
-                return (true);
             } catch (\Throwable $e) {
                 $logger->error(sprintf("[Wikidata] error scrapping artist %s (%s) url %s: %s", $results[0]->name, $results[0]->mbid, $results[0]->url, $e->getMessage()));
                 return (false);
