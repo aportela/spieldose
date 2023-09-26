@@ -69,7 +69,11 @@ class Utils
 
         $elapsed = $now - $start_time;
 
-        $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . " / " . sprintf("%d %s", ($eta > 3600 ? $eta / 3600 : ($eta > 60 ? $eta / 60 : $eta)), ($eta > 3600 ? "hours" : ($eta > 60 ? "minutes" : "seconds"))) . ")";
+        if ($done != $total) {
+            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . " / " . sprintf("%d %s", ($eta > 3600 ? $eta / 3600 : ($eta > 60 ? $eta / 60 : $eta)), ($eta > 3600 ? "hours" : ($eta > 60 ? "minutes" : "seconds"))) . ")";
+        } else {
+            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . ")";;
+        }
 
         if (!empty($extraMessage)) {
             echo sprintf("%s [%s]", $status_bar, $extraMessage);
