@@ -24,6 +24,41 @@ class Wikipedia
         return ($this->scraped);
     }
 
+    private function stripWikipediaHTMLPage(string $html): string
+    {
+        // strip styles
+        //$pattern = '/\<(\w+)\s[^>]*?style=([\"|\']).*?\2\s?[^>]*?(\/?)>/';
+        //$html = preg_replace($pattern, "", $html);
+        libxml_use_internal_errors(true);
+        $doc = new \DomDocument();
+        if ($doc->loadHTML($html)) {
+            $xpath = new \DOMXPath($doc);
+            // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
+            $nodes = $xpath->query('//section');
+            if ($nodes != false) {
+                if ($nodes->count() > 0) {
+                    $html = null;
+                    foreach ($nodes as $node) {
+                        $html .= sprintf(
+                            "<section>%s</section>",
+                            implode(array_map(
+                                [$node->ownerDocument, "saveHTML"],
+                                iterator_to_array($node->childNodes)
+                            ))
+                        );
+                    }
+                    return ($html);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("section");
+                }
+            } else {
+                throw new \Spieldose\Exception\NotFoundException("section");
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("html");
+        }
+    }
+
     public function scrapWikipedia(string $url): bool
     {
         $this->scraped = false;
@@ -31,7 +66,7 @@ class Wikipedia
             $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
             $wikiPage->setURL($url);
             $this->intro = $wikiPage->getIntroPlainText();
-            $this->html = $wikiPage->getHTML();
+            $this->html = $this->stripWikipediaHTMLPage($wikiPage->getHTML());
             $this->scraped = true;
             return ($this->scraped);
         } catch (\Throwable $e) {
@@ -51,7 +86,7 @@ class Wikipedia
                 $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
                 $wikiPage->setTitle($title);
                 $this->intro = $wikiPage->getIntroPlainText();
-                $this->html = $wikiPage->getHTML();
+                $this->html = $this->stripWikipediaHTMLPage($wikiPage->getHTML());
                 $this->scraped = !empty($this->html);
                 return ($this->scraped);
             } else {
@@ -67,9 +102,9 @@ class Wikipedia
     {
         if (empty($this->mbId)) {
             throw new \Spieldose\Exception\InvalidParamsException("mbId");
-        } else if (empty($this->intro)) {
+        } elseif (empty($this->intro)) {
             throw new \Spieldose\Exception\InvalidParamsException("intro");
-        } else if (empty($this->html)) {
+        } elseif (empty($this->html)) {
             throw new \Spieldose\Exception\InvalidParamsException("html");
         } else {
             $query = "
