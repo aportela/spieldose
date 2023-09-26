@@ -308,8 +308,9 @@ class Artist extends \Spieldose\Entities\Entity
         // TODO: get if no mbId
         if (!empty($this->mbId)) {
             $query = "
-                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image, CACHE_ARTIST_LASTFM.bio_summary, CACHE_ARTIST_LASTFM.bio_content
+                SELECT CACHE_ARTIST_MUSICBRAINZ.name, COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image) AS image, COALESCE(CACHE_ARTIST_WIKIPEDIA.intro, CACHE_ARTIST_LASTFM.bio_summary) AS bio_summary, COALESCE(CACHE_ARTIST_WIKIPEDIA.html_page, CACHE_ARTIST_LASTFM.bio_content) AS bio_content
                 FROM CACHE_ARTIST_MUSICBRAINZ
+                LEFT JOIN CACHE_ARTIST_WIKIPEDIA ON CACHE_ARTIST_WIKIPEDIA.mbid = CACHE_ARTIST_MUSICBRAINZ.mbid
                 LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_ARTIST_MUSICBRAINZ.name
                 WHERE CACHE_ARTIST_MUSICBRAINZ.mbid = :mbid
             ";
