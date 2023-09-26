@@ -40,6 +40,7 @@ if (count($missingExtensions) > 0) {
         $total = count($artistNamesWithoutMusicBrainzId);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, "Name: " . $artistNamesWithoutMusicBrainzId[0]);
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
@@ -56,6 +57,7 @@ if (count($missingExtensions) > 0) {
         $total = count($artistMBIdsWithoutCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, "MBId: " . $artistMBIdsWithoutCache[0]);
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
@@ -72,6 +74,7 @@ if (count($missingExtensions) > 0) {
         $total = count($artistsWithoutLastFMCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutLastFMCache[0]->name, $artistsWithoutLastFMCache[0]->mbId));
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
@@ -88,6 +91,7 @@ if (count($missingExtensions) > 0) {
         $total = count($musicBrainzArtistsMBIdsWithoutWikipediaCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, sprintf("MBId: %s", $musicBrainzArtistsMBIdsWithoutWikipediaCache[0]));
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
@@ -104,6 +108,7 @@ if (count($missingExtensions) > 0) {
         $total = count($releaseMBIdsWithoutCache);
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
+            \Spieldose\Utils::showProgressBar(1, $total, 20, "MBId: " . $releaseMBIdsWithoutCache[0]);
             for ($i = 0; $i < $total; $i++) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
