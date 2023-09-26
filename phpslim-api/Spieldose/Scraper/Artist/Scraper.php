@@ -112,12 +112,12 @@ class Scraper
         $mbIds = array();
         $query = sprintf(
             "
-                SELECT CAM.mbid
+                SELECT DISTINCT CAM.mbid
                 FROM CACHE_ARTIST_MUSICBRAINZ CAM
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR1 ON CAMUR1.artist_mbid = CAM.mbid AND CAMUR1.relation_type_id = :wikipedia_relation_type_id
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR2 ON CAMUR2.artist_mbid = CAM.mbid AND CAMUR2.relation_type_id = :wikidata_relation_type_id
                 WHERE NOT EXISTS
-                    (SELECT CAW.name FROM CACHE_ARTIST_WIKIPEDIA CAW WHERE CAW.name = CAM.name OR (CAW.mbid IS NOT NULL AND CAW.mbid = CAM.mbid))
+                    (SELECT CAW.mbid FROM CACHE_ARTIST_WIKIPEDIA CAW WHERE CAW.mbid = CAM.mbid)
                 AND (
                     CAMUR1.url IS NOT NULL
                     OR
@@ -291,7 +291,7 @@ class Scraper
                 $wikipediaArtist = new \Spieldose\Scraper\Artist\Wikipedia($logger);
                 if ($wikipediaArtist->scrapWikipedia($results[0]->url)) {
                     $dbh->beginTransaction();
-                    //$wikipediaArtist->saveCache($dbh);
+                    $wikipediaArtist->saveCache($dbh);
                     $success = true;
                 }
             } catch (\Throwable $e) {
@@ -329,7 +329,6 @@ class Scraper
                 if ($wikipediaArtist->scrapWikidata($results[0]->url)) {
                     $dbh->beginTransaction();
                     $wikipediaArtist->mbId = $results[0]->mbid;
-                    $wikipediaArtist->name = $results[0]->name;
                     $wikipediaArtist->saveCache($dbh);
                     $success = true;
                 }

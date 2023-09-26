@@ -341,14 +341,11 @@ return (array(
         '
             CREATE TABLE `CACHE_ARTIST_WIKIPEDIA` (
                 `mbid` VARCHAR(36) NOT NULL,
-                `name` VARCHAR(128) NOT NULL,
-                `url` VARCHAR(8192) NOT NULL,
-                `language` VARCHAR(2) NOT NULL,
-                `extract` TEXT NOT NULL,
+                `intro` TEXT NOT NULL,
                 `html_page` TEXT NOT NULL,
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
-                PRIMARY KEY (`name`, `url`, `language`)
+                PRIMARY KEY (`mbid`)
             );
         '
     ),

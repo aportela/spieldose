@@ -9,18 +9,14 @@ class Wikipedia
     private \Psr\Log\LoggerInterface $logger;
     private bool $scraped;
 
-    public ?string $mbId;
-    public string $name;
-    public string $url;
-    public string $language;
+    public string $mbId;
+    public string $intro;
     public string $html;
 
     public function __construct(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
         $this->scraped = false;
-        $this->mbId = null;
-        $this->language =  \aportela\MediaWikiWrapper\Language::ENGLISH->value;
     }
 
     public function isScraped(): bool
@@ -34,8 +30,8 @@ class Wikipedia
         try {
             $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
             $wikiPage->setURL($url);
+            $this->intro = $wikiPage->getIntroPlainText();
             $this->html = $wikiPage->getHTML();
-            $this->url = $url;
             $this->scraped = true;
             return ($this->scraped);
         } catch (\Throwable $e) {
@@ -54,7 +50,7 @@ class Wikipedia
             if (!empty($title)) {
                 $wikiPage = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\APIType::REST);
                 $wikiPage->setTitle($title);
-                $this->url = sprintf(\aportela\MediaWikiWrapper\Wikipedia\Page::REST_API_PAGE_HTML, $title);
+                $this->intro = $wikiPage->getIntroPlainText();
                 $this->html = $wikiPage->getHTML();
                 $this->scraped = !empty($this->html);
                 return ($this->scraped);
@@ -69,31 +65,23 @@ class Wikipedia
 
     public function saveCache(\aportela\DatabaseWrapper\DB $dbh): bool
     {
-        if (empty($this->name)) {
-            throw new \Spieldose\Exception\InvalidParamsException("name");
-        } else if (empty($this->url)) {
-            throw new \Spieldose\Exception\InvalidParamsException("url");
-        } else if (empty($this->language)) {
-            throw new \Spieldose\Exception\InvalidParamsException("language");
+        if (empty($this->mbId)) {
+            throw new \Spieldose\Exception\InvalidParamsException("mbId");
+        } else if (empty($this->intro)) {
+            throw new \Spieldose\Exception\InvalidParamsException("intro");
         } else if (empty($this->html)) {
             throw new \Spieldose\Exception\InvalidParamsException("html");
         } else {
             $query = "
-                INSERT INTO CACHE_ARTIST_WIKIPEDIA (mbid, name, url, language, extract, html_page, ctime, mtime) VALUES (:mbid, :name, :url, :language, :html, :html, strftime('%s', 'now'), strftime('%s', 'now'))
-                    ON CONFLICT(name, url, language) DO
-                UPDATE SET extract = :html, html_page = :html, mtime = strftime('%s', 'now')
+                INSERT INTO CACHE_ARTIST_WIKIPEDIA (mbid, intro, html_page, ctime, mtime) VALUES (:mbid, :intro, :html_page, strftime('%s', 'now'), strftime('%s', 'now'))
+                    ON CONFLICT(mbid) DO
+                UPDATE SET intro = :intro, html_page = :html_page, mtime = strftime('%s', 'now')
             ";
             $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":url", $this->url),
-                new \aportela\DatabaseWrapper\Param\StringParam(":language", $this->language),
-                new \aportela\DatabaseWrapper\Param\StringParam(":html", $this->html),
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":intro", $this->intro),
+                new \aportela\DatabaseWrapper\Param\StringParam(":html_page", $this->html),
             );
-            if (!empty($this->mbId)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId);
-            } else {
-                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mbid");
-            }
             $dbh->exec($query, $params);
             return (true);
         }
