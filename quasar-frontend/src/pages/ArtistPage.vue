@@ -82,6 +82,7 @@
               <div v-else>
                 <div v-html="artistData.bio ? artistData.bio.summary || '' : ''">
                 </div>
+                <q-btn size="sm" @click="tab = 'biography'" v-if="artistData.bio">... read more</q-btn>
                 <div v-if="artistData.genres && artistData.genres.length > 0">
                   <q-separator class="q-mt-lg"></q-separator>
                   <p class="q-mt-md">
