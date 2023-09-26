@@ -51,7 +51,6 @@ if (count($missingExtensions) > 0) {
             echo " none found" . PHP_EOL;
         }
 
-
         echo "Checking artists without musicbrainz cached data... ";
         $artistMBIdsWithoutCache = \Spieldose\Scraper\Artist\Scraper::getMusicBrainzArtistMbIdsWithoutCache($dbh, true);
         $total = count($artistMBIdsWithoutCache);
@@ -77,7 +76,7 @@ if (count($missingExtensions) > 0) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
-                \Spieldose\Scraper\Artist\Scraper::scrapLastFM($logger, $dbh, $settings["lastFMAPIKey"], $artistsWithoutLastFMCache[$i]->mbId, null);
+                \Spieldose\Scraper\Artist\Scraper::scrapLastFM($logger, $dbh, $settings["lastFMAPIKey"], $artistsWithoutLastFMCache[$i]->mbId, $artistsWithoutLastFMCache[$i]->name);
                 \Spieldose\Utils::showProgressBar($i + 1, $total, 20, sprintf("Name: %s (%s)", $artistsWithoutLastFMCache[$i]->name, $artistsWithoutLastFMCache[$i]->mbId));
             }
         } else {
