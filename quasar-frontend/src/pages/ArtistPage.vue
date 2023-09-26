@@ -80,7 +80,7 @@
             <q-card-section>
               <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
               <div v-else>
-                <div v-html="artistData.bio ? nl2br(artistData.bio.summary || '') : ''">
+                <div v-html="artistData.bio ? artistData.bio.summary || '' : ''">
                 </div>
                 <div v-if="artistData.genres && artistData.genres.length > 0">
                   <q-separator class="q-mt-lg"></q-separator>
@@ -225,7 +225,7 @@
             </q-card-section>
             <q-separator />
             <q-card-section id="artist_bio_content">
-              <div v-html="artistData.bio ? nl2br(artistData.bio.content || '') : ''"></div>
+              <div v-html="artistData.bio ? artistData.bio.content || '' : ''"></div>
             </q-card-section>
           </q-card>
         </div>
@@ -355,6 +355,53 @@ div#artist-header-block-content {
   width: 22em;
 }
 
+#artist_bio_content figure[typeof~="mw:File/Thumb"]>.mw-file-description,
+figure[typeof~="mw:File/Thumb"]>.mw-file-magnify {
+  display: block;
+  position: relative;
+}
+
+#artist_bio_content figure[typeof~="mw:File/Thumb"].mw-halign-left,
+#artist_bio_content figure[typeof~="mw:File/Frame"].mw-halign-left {
+  margin: 0.5em 1.4em 1.3em 0;
+  clear: left;
+  float: left;
+}
+
+#artist_bio_content figure[typeof~="mw:File/Thumb"].mw-halign-right,
+#artist_bio_content figure[typeof~="mw:File/Frame"].mw-halign-right {
+  margin: 0.5em 0 1.3em 1.4em;
+  clear: right;
+  float: right;
+}
+
+
+#artist_bio_content figure[typeof~="mw:File/Thumb"],
+#artist_bio_content figure[typeof~="mw:File/Frame"] {
+  border: 1px solid #c8ccd1;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(200, 204, 209);
+  border-bottom: 0;
+  background-color: #f8f9fa;
+}
+
+
+#artist_bio_content figure[typeof~="mw:File/Thumb"],
+#artist_bio_content figure[typeof~="mw:File/Frame"] {
+  display: table;
+  text-align: center;
+  border-collapse: collapse;
+  line-height: 0;
+  margin: 0.5em 0 1.3em 1.4em;
+  clear: right;
+  float: right;
+}
+
+#artist_bio_content figure[typeof~="mw:File/Thumb"] > :not(figcaption) .mw-file-element, #artist_bio_content figure[typeof~="mw:File/Frame"] > :not(figcaption) .mw-file-element {
+    border: 1px solid #c8ccd1;
+    background: #ffffff;
+  }
 p.header-mini-album-title {
   white-space: nowrap;
   overflow: hidden;
