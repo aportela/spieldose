@@ -91,4 +91,19 @@ class Utils
     {
         return ((\Ramsey\Uuid\Uuid::uuid4())->toString());
     }
+
+    public static function nl2P(string $text, bool $removeDuplicated = true): string
+    {
+        $paragraphs = [];
+        foreach (explode("\n", $text) as $paragraph) {
+            if ($removeDuplicated) {
+                if (!empty($paragraph)) {
+                    $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
+                }
+            } else {
+                $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
+            }
+        }
+        return (implode(PHP_EOL, $paragraphs));
+    }
 }
