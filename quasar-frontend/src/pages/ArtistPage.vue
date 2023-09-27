@@ -451,6 +451,12 @@ const artistName = ref(route.params.name);
 
 const tab = ref('overview');
 
+watch (tab, (newValue) => {
+  if (newValue) {
+    window.scrollTo(0, 0);
+  }
+});
+
 const loading = ref(false);
 
 const artistData = ref({
