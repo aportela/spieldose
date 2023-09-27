@@ -55,16 +55,16 @@
         },
         {
             "name": "aportela/db-wrapper",
-            "version": "2.0.7",
+            "version": "2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "d0320ac2c4a7ae0e3e9f44158a6e68fc98aaca2e"
+                "reference": "1d440ecf2c7143459715bed6c02d8b0047c5df88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/d0320ac2c4a7ae0e3e9f44158a6e68fc98aaca2e",
-                "reference": "d0320ac2c4a7ae0e3e9f44158a6e68fc98aaca2e",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/1d440ecf2c7143459715bed6c02d8b0047c5df88",
+                "reference": "1d440ecf2c7143459715bed6c02d8b0047c5df88",
                 "shasum": ""
             },
             "require": {
@@ -95,9 +95,9 @@
             "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/2.0.7"
+                "source": "https://github.com/aportela/db-wrapper/tree/2.0.8"
             },
-            "time": "2023-09-26T20:55:12+00:00"
+            "time": "2023-09-26T21:15:27+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
@@ -2411,16 +2411,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.29.0",
+            "version": "v3.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "a55c488e8bfdd9b315880095cd02fa0e49e884d8"
+                "reference": "95c64693b2f149966a2bc05a7a4981b0343ea52f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/a55c488e8bfdd9b315880095cd02fa0e49e884d8",
-                "reference": "a55c488e8bfdd9b315880095cd02fa0e49e884d8",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/95c64693b2f149966a2bc05a7a4981b0343ea52f",
+                "reference": "95c64693b2f149966a2bc05a7a4981b0343ea52f",
                 "shasum": ""
             },
             "require": {
@@ -2494,7 +2494,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.29.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.30.0"
             },
             "funding": [
                 {
@@ -2502,7 +2502,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-26T13:02:53+00:00"
+            "time": "2023-09-26T22:10:43+00:00"
         },
         {
             "name": "myclabs/deep-copy",
