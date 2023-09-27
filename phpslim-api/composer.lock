@@ -55,16 +55,16 @@
         },
         {
             "name": "aportela/db-wrapper",
-            "version": "2.0.8",
+            "version": "2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "1d440ecf2c7143459715bed6c02d8b0047c5df88"
+                "reference": "163722e3b3bb33f294a96feec2ad0d719c1e31bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/1d440ecf2c7143459715bed6c02d8b0047c5df88",
-                "reference": "1d440ecf2c7143459715bed6c02d8b0047c5df88",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/163722e3b3bb33f294a96feec2ad0d719c1e31bf",
+                "reference": "163722e3b3bb33f294a96feec2ad0d719c1e31bf",
                 "shasum": ""
             },
             "require": {
@@ -95,9 +95,9 @@
             "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/2.0.8"
+                "source": "https://github.com/aportela/db-wrapper/tree/2.0.9"
             },
-            "time": "2023-09-26T21:15:27+00:00"
+            "time": "2023-09-27T14:06:48+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
