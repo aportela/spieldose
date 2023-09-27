@@ -62,7 +62,7 @@
             direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
         </div>
         <div class="q-mt-md q-gutter-md row items-start">
-          <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artists"
+          <router-link :to="{ name: artist.mbId && artist.name ? 'mbArtist': 'artist', params: { mbid: artist.mbId, name: artist.name } }" v-for="artist in artists"
             :key="artist.hash" v-memo="[lastChangesTimestamp]">
             <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">

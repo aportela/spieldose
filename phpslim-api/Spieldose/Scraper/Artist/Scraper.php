@@ -139,7 +139,7 @@ class Scraper
         return ($artists);
     }
 
-    public static function scrapMusicBrainz(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, ?string $mbId, ?string $name): void
+    public static function scrapMusicBrainz(\Psr\Log\LoggerInterface $logger, \aportela\DatabaseWrapper\DB $dbh, ?string $mbId, ?string $name): bool
     {
         $success = false;
         $artist = (object) [
@@ -156,11 +156,14 @@ class Scraper
                 $artist->mbId = $musicBrainzArtist->mbId;
                 $artist->name = $musicBrainzArtist->name;
                 $success = true;
+                return (true);
             } else {
                 $logger->warning(sprintf("[MusicBrainz] artist %s (%s) not scraped", $artist->name, $artist->mbId));
+                return (false);
             }
         } catch (\Throwable $e) {
             $logger->error(sprintf("[MusicBrainz] error scrapping artist %s (%s): %s", $artist->name, $artist->mbId, $e->getMessage()));
+            return (false);
         } finally {
             if ($dbh->inTransaction()) {
                 if ($success) {

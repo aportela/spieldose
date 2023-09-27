@@ -38,6 +38,7 @@ if (count($missingExtensions) > 0) {
         echo "Checking artist names without musicbrainz id set...";
         $artistNamesWithoutMusicBrainzId = \Spieldose\Scraper\Artist\Scraper::getArtistNamesWithoutMusicBrainzId($dbh, true);
         $total = count($artistNamesWithoutMusicBrainzId);
+        $totalSuccess = 0;
         if ($total > 0) {
             echo sprintf(" %d found%s", $total, PHP_EOL);
             for ($i = 0; $i < $total; $i++) {
@@ -45,8 +46,11 @@ if (count($missingExtensions) > 0) {
                 if ($i != 0) {
                     sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                 }
-                \Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, null, $artistNamesWithoutMusicBrainzId[$i]);
+                if (\Spieldose\Scraper\Artist\Scraper::scrapMusicBrainz($logger, $dbh, null, $artistNamesWithoutMusicBrainzId[$i])) {
+                    $totalSuccess++;
+                }
             }
+            echo sprintf("%sAdded musicbrainz id to %d artists%s", PHP_EOL, $totalSuccess, PHP_EOL);
         } else {
             echo " none found" . PHP_EOL;
         }
