@@ -530,7 +530,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.playlists[0] = currentPlaylist;
         if (
           this.hasCurrentPlaylistElements ||
-          hasCurrentPlaylistARadioStation
+          this.hasCurrentPlaylistARadioStation
         ) {
           this.setAudioSource(this.getCurrentPlaylistElementURL);
         }
