@@ -233,7 +233,7 @@ class Artist extends \Spieldose\Entities\Entity
         return ($topTracks);
     }
 
-    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter, int $limitCount = 16): array
     {
         $artistFields = [
             "mbId" => "TMP_ARTISTS.mb_artist_id",
@@ -248,7 +248,7 @@ class Artist extends \Spieldose\Entities\Entity
         }
 
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", hash("sha256", $filter["mbId"] . $filter["name"]))
+            new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($filter["mbId"] . $filter["name"]))
         ];
 
         $filterConditions = [
@@ -287,13 +287,19 @@ class Artist extends \Spieldose\Entities\Entity
                 ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
                 %s
                 ORDER BY RANDOM()
-                LIMIT 64
+                LIMIT %d
             ",
             implode(", ", $fields),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $limitCount
         );
 
         $similarArtists = $dbh->query($query, $params);
+
+        // no similar by last.fm
+        if (count($similarArtists) < 1) {
+        }
+
         foreach ($similarArtists as $artist) {
             if (!empty($artist->image)) {
                 $artist->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($artist->image));
