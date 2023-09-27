@@ -447,6 +447,7 @@ const $q = useQuasar();
 const spieldoseStore = useSpieldoseStore();
 
 const route = useRoute()
+const artistMBId = ref(route.params.mbid);
 const artistName = ref(route.params.name);
 
 const tab = ref('overview');
@@ -583,9 +584,9 @@ function onToggleFavorite(track) {
   }
 }
 
-function get(name) {
+function get(mbId, name) {
   loading.value = true;
-  api.artist.get(null, name).then((success) => {
+  api.artist.get(mbId, name).then((success) => {
     try {
       artistData.value = success.data.artist;
       artistImage.value = artistData.value.image;
@@ -663,5 +664,5 @@ function onEnqueueAlbum(album) {
     });
 }
 
-get(artistName.value);
+get(artistMBId.value, artistName.value);
 </script>
