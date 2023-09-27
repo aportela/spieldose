@@ -39,24 +39,24 @@ class Artist extends \Spieldose\Entities\Entity
             $words = explode(" ", trim($filter["name"]));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
-                $filterConditions[] = sprintf(" TMP_ARTISTS.artist LIKE %s", $paramName);
+                $filterConditions[] = sprintf(" artist_name LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         } else {
-            $filterConditions[] = " TMP_ARTISTS.artist IS NOT NULL ";
+            $filterConditions[] = " artist_name IS NOT NULL ";
         }
         if (isset($filter["genre"]) && !empty($filter["genre"])) {
             $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = TMP_ARTISTS.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
         }
         $fieldDefinitions = [
-            "mbId" => "TMP_ARTISTS.mb_artist_id",
-            "name" => "TMP_ARTISTS.artist",
+            "mbId" => "artist_mbid",
+            "name" => "artist_name",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image)",
             "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(TMP_ARTISTS.artist) "
+            "totalResults" => " COUNT(artist_name) "
         ];
         $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
@@ -82,48 +82,50 @@ class Artist extends \Spieldose\Entities\Entity
             "
                 SELECT %s
                 FROM (
-                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                     FROM FILE_ID3_TAG FIT
                     LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
-                    WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                    WHERE (FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL)
+                    %s
+                    %s
+                    %s
                 ) TMP_ARTISTS
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
-                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.mb_artist_id IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.mb_artist_id) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist))
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
+                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.mb_artist_id
                     HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
-                ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.mb_artist_id
+                ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.artist_mbid
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.artist
                     HAVING FILE_ID3_TAG.artist NOT NULL
-                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
-                %s
-                %s
+                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
                 %s
             ",
             $browser->getQueryFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
-            $browser->getQuerySort(),
-            $pager->getQueryLimit()
+            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
+            $browser->isSortedBy("name") ? " ORDER BY 1 " . $browser->getSortOrder("name") : null,
+            $pager->getQueryLimit(),
+            !$browser->isSortedBy("name") ? $browser->getQuerySort() : null
         );
         $queryCount = sprintf(
             "
                 SELECT
                 %s
                 FROM (
-                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                     FROM FILE_ID3_TAG FIT
                     LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
-                    WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                    WHERE (FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL)
+                    %s
                 ) TMP_ARTISTS
-                %s
             ",
             $browser->getQueryCountFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null
         );
         $data = $browser->launch($query, $queryCount);
         return ($data);
