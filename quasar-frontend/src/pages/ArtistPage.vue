@@ -15,7 +15,7 @@
             Total
             plays: </span> <span class="text-white">0 times</span></p>
         <div class="row q-mt-xl">
-          <div class="col-6" v-if="artistData.latestAlbum.title">
+          <div class="col-6" v-if="artistData.latestAlbum && artistData.latestAlbum.title">
             <div class="float-left" style="width: 96px; height:96px;">
               <q-img :src="artistData.latestAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                 <template v-slot:error>
@@ -31,7 +31,7 @@
               <p class="q-mt-none text-white" v-if="artistData.latestAlbum.year">{{ artistData.latestAlbum.year }}</p>
             </div>
           </div>
-          <div class="col-6" v-if="artistData.popularAlbum.title">
+          <div class="col-6" v-if="artistData.popularAlbum && artistData.popularAlbum.title">
             <div class="float-left oneline-ellipsis" style="width: 96px; height:96px;">
               <q-img :src="artistData.popularAlbum.image" spinner-color="white" style="height: 96px; max-width: 96px">
                 <template v-slot:error>
@@ -483,7 +483,6 @@ const artistImage = ref(null);
 const currentArtist = computed(() => { return (route.params.name); });
 
 watch(currentArtist, (newValue, oldValue) => {
-
   artistName.value = newValue;
   if (artistName.value) {
     artistData.value = {
