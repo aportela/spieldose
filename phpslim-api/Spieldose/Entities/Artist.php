@@ -105,12 +105,14 @@ class Artist extends \Spieldose\Entities\Entity
                     HAVING FILE_ID3_TAG.artist NOT NULL
                 ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
                 %s
+                %s
             ",
             $browser->getQueryFields(),
             count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
             $browser->isSortedBy("name") ? " ORDER BY 1 " . $browser->getSortOrder("name") : null,
-            $pager->getQueryLimit(),
-            !$browser->isSortedBy("name") ? $browser->getQuerySort() : null
+            !$browser->isSortedBy("totalTracks") ? $pager->getQueryLimit() : null,
+            !$browser->isSortedBy("name") ? $browser->getQuerySort() : null,
+            $browser->isSortedBy("totalTracks") ? $pager->getQueryLimit() : null,
         );
         $queryCount = sprintf(
             "
