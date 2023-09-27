@@ -79,16 +79,14 @@
             <q-separator />
             <q-card-section>
               <q-skeleton type="text" square animation="blink" height="300px" v-if="loading" />
-              <div v-else>
-                <div v-html="artistData.bio ? artistData.bio.summary || '' : ''">
-                </div>
-                <q-btn size="sm" @click="tab = 'biography'" v-if="artistData.bio">... read more</q-btn>
-                <div v-if="artistData.genres && artistData.genres.length > 0">
-                  <q-separator class="q-mt-lg"></q-separator>
-                  <p class="q-mt-md">
-                    <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
-                  </p>
-                </div>
+              <div v-html="artistData.bio ? artistData.bio.summary || '' : ''">
+              </div>
+              <q-btn size="sm" @click="tab = 'biography'" v-if="artistData.bio">... read more</q-btn>
+              <div v-if="artistData.genres && artistData.genres.length > 0">
+                <q-separator class="q-mt-lg"></q-separator>
+                <p class="q-mt-md">
+                  <ArtistGenreChip v-for="genre in artistData.genres" :key="genre" :name="genre"></ArtistGenreChip>
+                </p>
               </div>
             </q-card-section>
           </q-card>
@@ -288,8 +286,8 @@
         <q-card-section v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
           <div class="q-gutter-md row items-start q-mt-sm">
             <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
-        :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
-        @enqueue="onEnqueueAlbum(album)">
+              :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
+              @enqueue="onEnqueueAlbum(album)">
             </AnimatedAlbumCover>
           </div>
         </q-card-section>
@@ -436,6 +434,77 @@ figure[typeof~="mw:File/Thumb"]>.mw-file-magnify {
 #artist_bio_content figure[typeof~="mw:File/Frame"]> :not(figcaption) .mw-file-element {
   border: 1px solid #c8ccd1;
   background: #ffffff;
+}
+
+#artist_bio_content .wikitable {
+    background-color: #f8f9fa;
+    color: #202122;
+    margin: 1em 0;
+    border: 1px solid #a2a9b1;
+    border-collapse: collapse;
+  }
+
+  #artist_bio_content  .wikitable > caption {
+    font-weight: bold;
+  }
+
+  #artist_bio_content .wikitable > tr > th, #artist_bio_content .wikitable > * > tr > th {
+    background-color: #eaecf0;
+    text-align: center;
+  }
+
+
+  #artist_bio_content .wikitable > tr > th, #artist_bio_content .wikitable > tr > td, #artist_bio_content .wikitable > * > tr > th, #artist_bio_content .wikitable > * > tr > td {
+    border: 1px solid #a2a9b1;
+    padding: 0.2em 0.4em;
+  }
+
+  #artist_bio_content .mw-parser-output .reflist {
+  font-size: 90%;
+  margin-bottom: 0.5em;
+  list-style-type: decimal;
+}
+
+#artist_bio_content   .mw-references-columns {
+  -webkit-column-width: 30em;
+  -moz-column-width: 30em;
+  column-width: 30em;
+  margin-top: 0.3em;
+}
+
+
+#artist_bio_content ol.references > li {
+  counter-increment: mw-ref-extends-parent mw-references;
+  counter-reset: mw-ref-extends-child;
+}
+#artist_bio_content .mw-references-columns li {
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid-column;
+}
+#artist_bio_content  li {
+    margin-bottom: 0.1em;
+  }
+
+
+
+  #artist_bio_content .mw-parser-output .navbox, #artist_bio_content .mw-parser-output .navbox-subgroup {
+  background-color: #fdfdfd;
+}
+#artist_bio_content .mw-parser-output .navbox {
+  box-sizing: border-box;
+  border: 1px solid #a2a9b1;
+  width: 100%;
+  clear: both;
+  font-size: 88%;
+  text-align: center;
+  padding: 1px;
+  margin: 1em auto 0;
+}
+
+#artist_bio_content .mw-parser-output .hlist dd, #artist_bio_content .mw-parser-output .hlist dt, #artist_bio_content .mw-parser-output .hlist li {
+  margin: 0;
+  display: inline;
 }
 
 p.header-mini-album-title {
