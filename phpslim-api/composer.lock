@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-browser-wrapper.git",
-                "reference": "f885aba5c1a1cb19540d64424d088d525067e9de"
+                "reference": "7497b802d9d0e2c2beee9290299b6b00895e3ad0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/f885aba5c1a1cb19540d64424d088d525067e9de",
-                "reference": "f885aba5c1a1cb19540d64424d088d525067e9de",
+                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/7497b802d9d0e2c2beee9290299b6b00895e3ad0",
+                "reference": "7497b802d9d0e2c2beee9290299b6b00895e3ad0",
                 "shasum": ""
             },
             "require": {
@@ -49,9 +49,9 @@
             "homepage": "https://github.com/aportela/db-browser-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-browser-wrapper/issues",
-                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.6"
+                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.0.7"
             },
-            "time": "2023-09-22T21:33:02+00:00"
+            "time": "2023-09-27T09:40:25+00:00"
         },
         {
             "name": "aportela/db-wrapper",
