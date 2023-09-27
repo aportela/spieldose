@@ -214,7 +214,6 @@
         </div>
       </div>
     </q-tab-panel>
-
     <q-tab-panel name="biography">
       <div class="row q-col-gutter-lg">
         <div class="col-12">
@@ -224,13 +223,12 @@
             </q-card-section>
             <q-separator />
             <q-card-section id="artist_bio_content">
-              <div v-html="artistData.bio ? artistData.bio.content || '' : ''"></div>
+              <WikipediaPage :htmlPage="artistData.bio ? artistData.bio.content || '' : ''"></WikipediaPage>
             </q-card-section>
           </q-card>
         </div>
       </div>
     </q-tab-panel>
-
     <q-tab-panel name="similarArtists">
       <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
         <q-card-section>
@@ -371,142 +369,6 @@ div#artist-header-block-content {
   z-index: 2;
 }
 
-/* wikipedia (html bio page) styles are stripped, put here some required classes */
-
-#artist_bio_content .infobox {
-  border: 1px solid #a2a9b1;
-  border-spacing: 3px;
-  background-color: #f8f9fa;
-  color: black;
-  margin: 0.5em 0 0.5em 1em;
-  padding: 0.2em;
-  float: right;
-  clear: right;
-  font-size: 88%;
-  line-height: 1.5em;
-  width: 22em;
-}
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"]>.mw-file-description,
-figure[typeof~="mw:File/Thumb"]>.mw-file-magnify {
-  display: block;
-  position: relative;
-}
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"].mw-halign-left,
-#artist_bio_content figure[typeof~="mw:File/Frame"].mw-halign-left {
-  margin: 0.5em 1.4em 1.3em 0;
-  clear: left;
-  float: left;
-}
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"].mw-halign-right,
-#artist_bio_content figure[typeof~="mw:File/Frame"].mw-halign-right {
-  margin: 0.5em 0 1.3em 1.4em;
-  clear: right;
-  float: right;
-}
-
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"],
-#artist_bio_content figure[typeof~="mw:File/Frame"] {
-  border: 1px solid #c8ccd1;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: rgb(200, 204, 209);
-  border-bottom: 0;
-  background-color: #f8f9fa;
-}
-
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"],
-#artist_bio_content figure[typeof~="mw:File/Frame"] {
-  display: table;
-  text-align: center;
-  border-collapse: collapse;
-  line-height: 0;
-  margin: 0.5em 0 1.3em 1.4em;
-  clear: right;
-  float: right;
-}
-
-#artist_bio_content figure[typeof~="mw:File/Thumb"]> :not(figcaption) .mw-file-element,
-#artist_bio_content figure[typeof~="mw:File/Frame"]> :not(figcaption) .mw-file-element {
-  border: 1px solid #c8ccd1;
-  background: #ffffff;
-}
-
-#artist_bio_content .wikitable {
-    background-color: #f8f9fa;
-    color: #202122;
-    margin: 1em 0;
-    border: 1px solid #a2a9b1;
-    border-collapse: collapse;
-  }
-
-  #artist_bio_content  .wikitable > caption {
-    font-weight: bold;
-  }
-
-  #artist_bio_content .wikitable > tr > th, #artist_bio_content .wikitable > * > tr > th {
-    background-color: #eaecf0;
-    text-align: center;
-  }
-
-
-  #artist_bio_content .wikitable > tr > th, #artist_bio_content .wikitable > tr > td, #artist_bio_content .wikitable > * > tr > th, #artist_bio_content .wikitable > * > tr > td {
-    border: 1px solid #a2a9b1;
-    padding: 0.2em 0.4em;
-  }
-
-  #artist_bio_content .mw-parser-output .reflist {
-  font-size: 90%;
-  margin-bottom: 0.5em;
-  list-style-type: decimal;
-}
-
-#artist_bio_content   .mw-references-columns {
-  -webkit-column-width: 30em;
-  -moz-column-width: 30em;
-  column-width: 30em;
-  margin-top: 0.3em;
-}
-
-
-#artist_bio_content ol.references > li {
-  counter-increment: mw-ref-extends-parent mw-references;
-  counter-reset: mw-ref-extends-child;
-}
-#artist_bio_content .mw-references-columns li {
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  break-inside: avoid-column;
-}
-#artist_bio_content  li {
-    margin-bottom: 0.1em;
-  }
-
-
-
-  #artist_bio_content .mw-parser-output .navbox, #artist_bio_content .mw-parser-output .navbox-subgroup {
-  background-color: #fdfdfd;
-}
-#artist_bio_content .mw-parser-output .navbox {
-  box-sizing: border-box;
-  border: 1px solid #a2a9b1;
-  width: 100%;
-  clear: both;
-  font-size: 88%;
-  text-align: center;
-  padding: 1px;
-  margin: 1em auto 0;
-}
-
-#artist_bio_content .mw-parser-output .hlist dd, #artist_bio_content .mw-parser-output .hlist dt, #artist_bio_content .mw-parser-output .hlist li {
-  margin: 0;
-  display: inline;
-}
-
 p.header-mini-album-title {
   white-space: nowrap;
   overflow: hidden;
@@ -537,6 +399,7 @@ img.artist_image:hover {
 </style>
 
 <script setup>
+
 import { ref, onMounted, computed, watch, inject } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -547,6 +410,7 @@ import { LineChart, FixedScaleAxis } from 'chartist';
 import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
 import { default as ArtistGenreChip } from 'components/ArtistGenreChip.vue';
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+import { default as WikipediaPage } from "components/WikipediaPage.vue";
 
 import { trackActions, albumActions } from "boot/spieldose";
 
