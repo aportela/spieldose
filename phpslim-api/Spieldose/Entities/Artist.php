@@ -233,7 +233,7 @@ class Artist extends \Spieldose\Entities\Entity
         return ($topTracks);
     }
 
-    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter, int $limitCount = 16): array
+    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter, int $limitCount = 32): array
     {
         $artistFields = [
             "mbId" => "TMP_ARTISTS.mb_artist_id",
@@ -252,6 +252,7 @@ class Artist extends \Spieldose\Entities\Entity
         ];
 
         $filterConditions = [
+            // direct relation -> artist has this relation
             "
                 EXISTS (
                     SELECT CALS.name
@@ -260,6 +261,7 @@ class Artist extends \Spieldose\Entities\Entity
                     AND CALS.name = TMP_ARTISTS.artist
                 )
             "
+
         ];
 
         $query = sprintf(
@@ -296,8 +298,56 @@ class Artist extends \Spieldose\Entities\Entity
 
         $similarArtists = $dbh->query($query, $params);
 
-        // no similar by last.fm
-        if (count($similarArtists) < 1) {
+        // no similar by last.fm, try by musicbrainz genres
+        if (count($similarArtists) < 1 && !empty($filter["mbId"])) {
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam("artist_mbid", $filter["mbId"])
+            ];
+            $filterConditions = [
+                "
+                    EXISTS (
+                        SELECT CAMG1.genre
+                        FROM CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG1
+                        INNER JOIN CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG2 ON CAMG2.genre = CAMG1.genre
+                        WHERE CAMG1.artist_mbid = TMP_ARTISTS.mb_artist_id
+                        AND CAMG2.artist_mbid = :artist_mbid
+                    )
+                "
+            ];
+
+            $query = sprintf(
+                "
+                    SELECT %s
+                    FROM (
+                        SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                        FROM FILE_ID3_TAG FIT
+                        LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
+                        WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                    ) TMP_ARTISTS
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
+                    LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.mb_artist_id IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.mb_artist_id) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist))
+                    LEFT JOIN (
+                        SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
+                        FROM FILE_ID3_TAG
+                        GROUP BY FILE_ID3_TAG.mb_artist_id
+                        HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
+                    ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.mb_artist_id
+                    LEFT JOIN (
+                        SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
+                        FROM FILE_ID3_TAG
+                        GROUP BY FILE_ID3_TAG.artist
+                        HAVING FILE_ID3_TAG.artist NOT NULL
+                    ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
+                    %s
+                    ORDER BY RANDOM()
+                    LIMIT %d
+                ",
+                implode(", ", $fields),
+                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                $limitCount
+            );
+
+            $similarArtists = $dbh->query($query, $params);
         }
 
         foreach ($similarArtists as $artist) {
