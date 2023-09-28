@@ -51,7 +51,7 @@
       </div>
       <q-tabs v-model="tab" class="tex-white q-mt-md">
         <q-tab icon="summarize" name="overview" label="Overview" />
-        <q-tab icon="menu_book" name="biography" label="Biography">
+        <q-tab icon="menu_book" name="biography" label="Biography" :disable="! (artistData.bio && artistData.bio.content)">
           <q-badge color="pink" floating v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
           <q-badge color="pink" floating v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
         </q-tab>
@@ -63,8 +63,8 @@
           <q-badge color="pink" floating v-if="artistData.topAlbums && artistData.topAlbums.length > 0">{{
             artistData.topAlbums.length }}</q-badge>
         </q-tab>
-        <q-tab icon="audiotrack" name="tracks" label="Tracks" />
-        <q-tab icon="analytics" name="stats" label="Stats" />
+        <q-tab icon="audiotrack" name="tracks" label="Tracks" disable />
+        <q-tab icon="analytics" name="stats" label="Stats" disable />
       </q-tabs>
     </div>
   </div>
@@ -72,7 +72,7 @@
     <q-tab-panel name="overview">
       <div class="row q-col-gutter-lg">
         <div class="col-10">
-          <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered>
+          <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered v-if="artistData.bio && artistData.bio.summary">
             <q-card-section>
               <div class="text-h6">Overview</div>
             </q-card-section>
