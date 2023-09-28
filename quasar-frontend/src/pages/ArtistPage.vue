@@ -495,7 +495,7 @@ const route = useRoute()
 const artistMBId = ref(route.params.mbid);
 const artistName = ref(route.params.name);
 
-const tab = ref('tracks');
+const tab = ref('overview');
 
 watch (tab, (newValue) => {
   if (newValue) {
