@@ -91,7 +91,7 @@ class Artist extends \Spieldose\Entities\Entity
                     %s
                 ) TMP_ARTISTS
                 LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
-                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
+                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
@@ -236,8 +236,8 @@ class Artist extends \Spieldose\Entities\Entity
     private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter, int $limitCount = 32): array
     {
         $artistFields = [
-            "mbId" => "TMP_ARTISTS.mb_artist_id",
-            "name" => "TMP_ARTISTS.artist",
+            "mbId" => "artist_mbid",
+            "name" => "artist_name",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image)",
             "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
         ];
@@ -258,41 +258,40 @@ class Artist extends \Spieldose\Entities\Entity
                     SELECT CALS.name
                     FROM CACHE_ARTIST_LASTFM_SIMILAR CALS
                     WHERE CALS.artist_hash = :md5_hash
-                    AND CALS.name = TMP_ARTISTS.artist
+                    AND CALS.name = artist_name
                 )
             "
-
         ];
 
         $query = sprintf(
             "
                 SELECT DISTINCT %s
                 FROM (
-                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                     FROM FILE_ID3_TAG FIT
                     LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
-                    WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                    WHERE (FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL)
+                    %s
+                    ORDER BY RANDOM()
+                    LIMIT %d
                 ) TMP_ARTISTS
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
-                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.mb_artist_id IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.mb_artist_id) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist))
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
+                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.mb_artist_id
                     HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
-                ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.mb_artist_id
+                ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.artist_mbid
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.artist
                     HAVING FILE_ID3_TAG.artist NOT NULL
-                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
-                %s
-                ORDER BY RANDOM()
-                LIMIT %d
+                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
             ",
             implode(", ", $fields),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
             $limitCount
         );
 
@@ -309,7 +308,7 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT CAMG1.genre
                         FROM CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG1
                         INNER JOIN CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG2 ON CAMG2.genre = CAMG1.genre
-                        WHERE CAMG1.artist_mbid = TMP_ARTISTS.mb_artist_id
+                        WHERE CAMG1.artist_mbid = artist_mbid
                         AND CAMG2.artist_mbid = :artist_mbid
                     )
                 "
@@ -319,31 +318,31 @@ class Artist extends \Spieldose\Entities\Entity
                 "
                     SELECT DISTINCT %s
                     FROM (
-                        SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist, FIT.mb_artist_id
+                        SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                         FROM FILE_ID3_TAG FIT
                         LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
-                        WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
+                        WHERE (FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL)
+                        %s
+                        ORDER BY RANDOM()
+                        LIMIT %d
                     ) TMP_ARTISTS
-                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.mb_artist_id
-                    LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.mb_artist_id IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.mb_artist_id) OR (CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist))
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
+                    LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
                     LEFT JOIN (
                         SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                         FROM FILE_ID3_TAG
                         GROUP BY FILE_ID3_TAG.mb_artist_id
                         HAVING FILE_ID3_TAG.mb_artist_id NOT NULL
-                    ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.mb_artist_id
+                    ) AS TOTAL_TRACKS_BY_ARTIST_MBID ON TOTAL_TRACKS_BY_ARTIST_MBID.artistMBId = TMP_ARTISTS.artist_mbid
                     LEFT JOIN (
                         SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
                         FROM FILE_ID3_TAG
                         GROUP BY FILE_ID3_TAG.artist
                         HAVING FILE_ID3_TAG.artist NOT NULL
-                    ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist
-                    %s
-                    ORDER BY RANDOM()
-                    LIMIT %d
+                    ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
                 ",
                 implode(", ", $fields),
-                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
                 $limitCount
             );
 
