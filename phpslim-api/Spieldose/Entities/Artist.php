@@ -734,10 +734,13 @@ class Artist extends \Spieldose\Entities\Entity
 
     public function get(bool $useLocalCovers = true): void
     {
-        if (empty($this->mbId) && !empty($this->name)) {
-            $this->mbId = $this->getMBIdFromName(($this->name));
+        if (empty($this->mbId)) {
+            if (!empty($this->name)) {
+                $this->mbId = $this->getMBIdFromName(($this->name));
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
+            }
         }
-        // TODO: get if no mbId
         if (!empty($this->mbId)) {
             if (!$this->getFromMusicBrainzCache($useLocalCovers)) {
                 $this->getFromNoCache($useLocalCovers);
