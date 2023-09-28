@@ -300,7 +300,7 @@ class Artist extends \Spieldose\Entities\Entity
         // no similar by last.fm, try by musicbrainz genres
         if (count($similarArtists) < 1 && !empty($filter["mbId"])) {
             $params = [
-                new \aportela\DatabaseWrapper\Param\StringParam("artist_mbid", $filter["mbId"])
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $filter["mbId"])
             ];
             $filterConditions = [
                 "
@@ -308,7 +308,7 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT CAMG1.genre
                         FROM CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG1
                         INNER JOIN CACHE_ARTIST_MUSICBRAINZ_GENRE CAMG2 ON CAMG2.genre = CAMG1.genre
-                        WHERE CAMG1.artist_mbid = artist_mbid
+                        WHERE CAMG1.artist_mbid = FIT.mb_artist_id
                         AND CAMG2.artist_mbid = :artist_mbid
                     )
                 "
@@ -345,7 +345,6 @@ class Artist extends \Spieldose\Entities\Entity
                 count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
                 $limitCount
             );
-
             $similarArtists = $dbh->query($query, $params);
         }
 
