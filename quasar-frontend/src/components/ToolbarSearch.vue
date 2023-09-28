@@ -68,7 +68,7 @@
             </div>
           </q-item-section>
         </q-item>
-        <q-item v-else-if="scope.opt.isArtist" clickable :to="{ name: 'artist', params: { name: scope.opt.label } }">
+        <q-item v-else-if="scope.opt.isArtist" clickable :to="{ name: scope.opt.isMBArtist ? 'mbArtist': 'artist', params: { mbid: scope.opt.id, name: scope.opt.label } }">
           <q-item-section avatar top>
             <q-icon name="person" color="black" size="34px" />
           </q-item-section>
@@ -129,7 +129,7 @@ function onFilter(val, update) {
               return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', albumArtist: item.artist.name, year: item.year, image: item.covers.small });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
-              return ({ isArtist: true, id: item.mbId, label: item.name, caption: 'total tracks: ' + item.totalTracks });
+              return ({ isMBArtist: false, isArtist: true, id: item.mbId, label: item.name, caption: 'total tracks: ' + item.totalTracks });
             }));
             searching.value = false;
             return;

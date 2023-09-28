@@ -490,6 +490,8 @@ const $q = useQuasar();
 const spieldoseStore = useSpieldoseStore();
 
 const route = useRoute()
+
+
 const artistMBId = ref(route.params.mbid);
 const artistName = ref(route.params.name);
 
@@ -547,7 +549,7 @@ watch(currentArtist, (newValue, oldValue) => {
     }
     artistImage.value = null;
     tab.value = 'overview';
-    get(artistName.value);
+    get(artistMBId.value, artistName.value);
   }
 });
 
