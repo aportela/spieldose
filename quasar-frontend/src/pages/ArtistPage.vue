@@ -108,7 +108,7 @@
                       <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs"
                         @click="enqueueTrack(track)" />
                       <q-icon name="favorite" size="md" class="cursor-pointer" :color="track.favorited ? 'pink' : ''"
-                        @click="onToggleFavorite(track)"></q-icon>
+                        @click="onToggleFavorite(track.id, track.favorited)"></q-icon>
                     </td>
                     <td class="text-bold col-4">{{ track.title }}</td>
                     <td class="text-left col-4">
@@ -334,6 +334,8 @@
           </q-td>
           <q-td key="actions" :props="props">
             <q-btn-group outline>
+              <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow"
+                :title="t('Play')" @click="trackActions.play(props.row)" />
               <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
                 :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
             </q-btn-group>
@@ -341,7 +343,6 @@
         </q-tr>
       </template>
           </q-table>
-
         </q-card-section>
       </q-card>
     </q-tab-panel>
@@ -471,6 +472,14 @@ bus.on(spieldoseEventNames.track.setFavorite, (data) => {
       artistData.value.topTracks[index].favorited = data.timestamp;
     }
   }
+  if (rows.value && rows.value.length > 0) {
+    const index = rows.value.findIndex(
+      (element) => element && element.id == data.id
+    );
+    if (index !== -1) {
+      rows.value[index].favorited = data.timestamp;
+    }
+  }
 });
 
 bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
@@ -480,6 +489,14 @@ bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
     );
     if (index !== -1) {
       artistData.value.topTracks[index].favorited = null;
+    }
+  }
+  if (rows.value && rows.value.length > 0) {
+    const index = rows.value.findIndex(
+      (element) => element && element.id == data.id
+    );
+    if (index !== -1) {
+      rows.value[index].favorited = null;
     }
   }
 });
@@ -674,29 +691,6 @@ function enqueueTrack(track) {
   trackActions.enqueue([{ track: track }]);
 }
 
-function onToggleFavorite(track) {
-  if (track && track.id) {
-    const funct = !track.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
-    funct(track.id).then((success) => {
-    })
-      .catch((error) => {
-        switch (error.response.status) {
-          default:
-            // TODO: custom message
-            $q.notify({
-              type: "negative",
-              message: t("API Error: error when toggling favorite flag"),
-              caption: t("API Error: fatal error details", {
-                status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-                  ? error.response.statusText : 'undefined'
-              })
-            });
-            break;
-        }
-      });
-  }
-}
-
 function get(mbId, name) {
   loading.value = true;
   api.artist.get(mbId, name).then((success) => {
@@ -771,6 +765,30 @@ function onEnqueueAlbum(album) {
           $q.notify({
             type: "negative",
             message: t("API Error: error enqueueing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
+function onRowClick(evt, row, index) {
+  if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
+    spieldoseStore.interact();
+  }
+}
+
+function onToggleFavorite(trackId, favorited) {
+  const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+  funct(trackId).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error when toggling favorite flag"),
             caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
           });
           break;
