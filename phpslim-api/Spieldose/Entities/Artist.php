@@ -17,6 +17,7 @@ class Artist extends \Spieldose\Entities\Entity
     public $appearsOnAlbums = [];
     public $similar = [];
     public $genres = [];
+    public $tracks = [];
 
     /*
     public function __construct()
@@ -746,5 +747,19 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $this->getFromNoCache($useLocalCovers);
         }
+        $sortItems = [];
+        $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
+            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
+            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+            true
+        );
+        $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
+        $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
+        $data = array();
+        $filter = array(
+            "artistMBId" => $this->mbId,
+            "artistName" => $this->name,
+        );
+        $this->tracks = \Spieldose\Entities\Track::search($this->dbh, $filter, $sort, $pager)->items;
     }
 }

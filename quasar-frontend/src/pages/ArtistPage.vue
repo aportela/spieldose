@@ -63,7 +63,9 @@
           <q-badge color="pink" floating v-if="artistData.topAlbums && artistData.topAlbums.length > 0">{{
             artistData.topAlbums.length }}</q-badge>
         </q-tab>
-        <q-tab icon="audiotrack" name="tracks" label="Tracks" disable />
+        <q-tab icon="audiotrack" name="tracks" label="Tracks">
+          <q-badge color="pink" floating v-if="rows && rows.length > 0">{{ rows.length }}</q-badge>
+        </q-tab>
         <q-tab icon="analytics" name="stats" label="Stats" disable />
       </q-tabs>
     </div>
@@ -298,7 +300,48 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :rows="rows" :columns="artistTracksColumns"
+      row-key="id" virtual-scroll :rows-per-page-options="[0]" :hide-bottom="true">
+      <template v-slot:body="props">
+        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)">
+          <q-td key="index" :props="props">
+            <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
+              v-if="false"></q-icon>
+            {{ props.row.index }} / {{ rows.length }}
+          </q-td>
+          <q-td key="title" :props="props">
+            {{ props.row.title }}
+          </q-td>
+          <q-td key="artist" :props="props">
+            <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
+              :to="{ name: 'artist', params: { name: props.row.artist.name } }"><q-icon name="link"
+                class="q-mr-sm"></q-icon>{{
+                  props.row.artist.name }}</router-link>
+          </q-td>
+          <q-td key="albumArtist" :props="props">
+            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
+              :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link"
+                class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
+          </q-td>
+          <q-td key="albumTitle" :props="props">
+            {{ props.row.album.title }}
+          </q-td>
+          <q-td key="albumTrackIndex" :props="props">
+            {{ props.row.trackNumber }}
+          </q-td>
+          <q-td key="year" :props="props">
+            {{ props.row.album.year }}
+          </q-td>
+          <q-td key="actions" :props="props">
+            <q-btn-group outline>
+              <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
+                :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
+            </q-btn-group>
+          </q-td>
+        </q-tr>
+      </template>
+          </q-table>
+
         </q-card-section>
       </q-card>
     </q-tab-panel>
@@ -450,7 +493,7 @@ const route = useRoute()
 const artistMBId = ref(route.params.mbid);
 const artistName = ref(route.params.name);
 
-const tab = ref('overview');
+const tab = ref('tracks');
 
 watch (tab, (newValue) => {
   if (newValue) {
@@ -475,7 +518,8 @@ const artistData = ref({
   },
   topAlbums: [],
   topTracks: [],
-  similar: []
+  similar: [],
+  tracks: []
 });
 
 const artistImage = ref(null);
@@ -506,6 +550,74 @@ watch(currentArtist, (newValue, oldValue) => {
     get(artistName.value);
   }
 });
+
+
+const rows = ref([]);
+const artistTracksColumns = [
+  {
+    name: 'index',
+    required: true,
+    label: 'Index',
+    align: 'right',
+    field: row => row.index,
+    sortable: false
+  },
+  {
+    name: 'title',
+    required: true,
+    label: 'Title',
+    align: 'left',
+    field: row => row.title,
+    sortable: true
+  },
+  {
+    name: 'artist',
+    required: true,
+    label: 'Artist',
+    align: 'left',
+    field: row => row.artist.name,
+    sortable: true
+  },
+  {
+    name: 'albumArtist',
+    required: false,
+    label: 'Album artist',
+    align: 'left',
+    field: row => row.album.artist.name,
+    sortable: true
+  },
+  {
+    name: 'albumTitle',
+    required: false,
+    label: 'Album',
+    align: 'left',
+    field: row => row.album.title,
+    sortable: true
+  },
+  {
+    name: 'albumTrackIndex',
+    required: false,
+    label: 'Album Track nº',
+    align: 'right',
+    field: row => row.trackNumber,
+    sortable: true
+  },
+  {
+    name: 'year',
+    required: false,
+    label: 'Year',
+    align: 'right',
+    field: row => row.album.year,
+    sortable: true
+  },
+  {
+    name: 'actions',
+    required: true,
+    label: 'Actions',
+    align: 'center',
+    favorited: row => row.favorited
+  },
+];
 
 onMounted(() => {
   /*
@@ -613,6 +725,7 @@ function get(mbId, name) {
         item.image = item.covers.small;
         return (item);
       });
+      rows.value = success.data.artist.tracks.map((element, index) => { element.index = index + 1; return (element) });
     } catch (e) { console.log(e); }
     loading.value = false;
   }).catch((error) => {
@@ -664,4 +777,5 @@ function onEnqueueAlbum(album) {
 }
 
 get(artistMBId.value, artistName.value);
+
 </script>
