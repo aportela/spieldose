@@ -133,7 +133,7 @@ class Artist extends \Spieldose\Entities\Entity
         return ($data);
     }
 
-    private function getMBIdFromName(string $name)
+    private function getMBIdFromName(string $name): ?string
     {
         $query = " SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ WHERE name = :name ";
         $params = array(
