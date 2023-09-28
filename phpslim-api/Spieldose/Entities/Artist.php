@@ -265,7 +265,7 @@ class Artist extends \Spieldose\Entities\Entity
 
         $query = sprintf(
             "
-                SELECT DISTINCT %s
+                SELECT %s
                 FROM (
                     SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                     FROM FILE_ID3_TAG FIT
@@ -316,7 +316,7 @@ class Artist extends \Spieldose\Entities\Entity
 
             $query = sprintf(
                 "
-                    SELECT DISTINCT %s
+                    SELECT %s
                     FROM (
                         SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS artist_name, FIT.mb_artist_id AS artist_mbid
                         FROM FILE_ID3_TAG FIT
