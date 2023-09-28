@@ -31,7 +31,7 @@ class Lyrics
         // (AT THIS TIME) this is REQUIRED/IMPORTANT, with another user agents the search response is not the same (do not include lyrics!)
         $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/116.0.1938.81";
         $request = new \aportela\HTTPRequestWrapper\HTTPRequest(new \Psr\Log\NullLogger(), $userAgent);
-        $response = $request->GET(sprintf("https://www.google.com/search?client=firefox-b-d&%s", http_build_query(["q" => sprintf("lyrics \"%s\" from \"%s\"", $this->title, $this->artist)])));
+        $response = $request->GET(sprintf("https://www.google.com/search?client=firefox-b-d&%s", http_build_query(["q" => sprintf("lyrics \"%s\" \"%s\"", $this->title, $this->artist)])));
         if ($response->code == 200 && !empty($response->body)) {
             libxml_use_internal_errors(true);
             $doc = new \DomDocument();
