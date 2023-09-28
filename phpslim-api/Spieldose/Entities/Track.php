@@ -163,6 +163,11 @@ class Track extends \Spieldose\Entities\Entity
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
+        if (isset($filter["artistMBId"]) && !empty($filter["artistMBId"])) {
+            $paramName = ":artistMBId";
+            $filterConditions[] = sprintf(" FIT.mb_artist_id = %s", $paramName);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, $filter["artistMBId"]);
+        }
         if (isset($filter["artistName"]) && !empty($filter["artistName"])) {
             $words = explode(" ", trim($filter["artistName"]));
             foreach ($words as $word) {
