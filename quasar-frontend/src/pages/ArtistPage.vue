@@ -49,24 +49,25 @@
           </div>
         </div>
       </div>
-      <q-tabs v-model="tab" class="tex-white q-mt-md">
-        <q-tab icon="summarize" name="overview" label="Overview" />
-        <q-tab icon="menu_book" name="biography" label="Biography" :disable="! (artistData.bio && artistData.bio.content)">
+      <q-tabs class="tex-white q-mt-md">
+        <q-route-tab icon="summarize" name="overview" label="Overview" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'overview'} }" />
+        <q-route-tab icon="menu_book" name="biography" label="Biography"
+          :disable="!(artistData.bio && artistData.bio.content)" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'biography'} }">
           <q-badge color="pink" floating v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
           <q-badge color="pink" floating v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
-        </q-tab>
-        <q-tab icon="groups" name="similarArtists" label="Similar artists">
+        </q-route-tab>
+        <q-route-tab icon="groups" name="similar" label="Similar artists" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'similar'} }">
           <q-badge color="pink" floating v-if="artistData.similar && artistData.similar.length > 0">{{
             artistData.similar.length }}</q-badge>
-        </q-tab>
-        <q-tab icon="album" name="albums" label="Albums">
+        </q-route-tab>
+        <q-route-tab icon="album" name="albums" label="Albums" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'albums'} }">
           <q-badge color="pink" floating v-if="artistData.topAlbums && artistData.topAlbums.length > 0">{{
             artistData.topAlbums.length }}</q-badge>
-        </q-tab>
-        <q-tab icon="audiotrack" name="tracks" label="Tracks">
+        </q-route-tab>
+        <q-route-tab icon="audiotrack" name="tracks" label="Tracks" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'tracks'} }">
           <q-badge color="pink" floating v-if="rows && rows.length > 0">{{ rows.length }}</q-badge>
-        </q-tab>
-        <q-tab icon="analytics" name="stats" label="Stats" disable />
+        </q-route-tab>
+        <q-route-tab icon="analytics" name="metrics" label="Stats" disable :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'metrics'} }"/>
       </q-tabs>
     </div>
   </div>
@@ -142,8 +143,9 @@
               <div class="q-pa-lg flex flex-center" v-else>
                 <div class="q-gutter-md row items-start">
                   <AnimatedAlbumCover v-for="album in artistData.topAlbums.slice(0, 6)" :key="album.title"
-                    :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year"
-                    @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
+                    :image="album.image" :title="album.title" :artistMbId="album.artist.mbId"
+                    :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
+                    @enqueue="onEnqueueAlbum(album)">
                   </AnimatedAlbumCover>
                 </div>
               </div>
@@ -160,8 +162,9 @@
               <div class="q-pa-lg flex flex-center" v-else>
                 <div class="q-gutter-md row items-start">
                   <AnimatedAlbumCover v-for="album in artistData.appearsOnAlbums.slice(0, 6)" :key="album.title"
-                    :image="album.image" :title="album.title" :artistName="album.artist.name" :year="album.year"
-                    @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
+                    :image="album.image" :title="album.title" :artistMbId="album.artist.mbId"
+                    :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
+                    @enqueue="onEnqueueAlbum(album)">
                   </AnimatedAlbumCover>
                 </div>
                 <q-btn size="sm" @click="tab = 'albums'" v-if="artistData.appearsOnAlbums.length > 6">view more</q-btn>
@@ -193,7 +196,9 @@
               <div class="row">
                 <div class="col-4" v-for="similar in artistData.similar.slice(0, 3)" :key="similar.name">
                   <p class="text-center">
-                    <router-link :to="{ name: 'artist', params: { name: similar.name } }" style="text-decoration: none">
+                    <router-link
+                      :to="{ name: similar.mbId ? 'mbArtist' : 'artist', params: { mbid: similar.mbId, name: similar.name, tab: 'overview' } }"
+                      style="text-decoration: none">
                       <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
                         fit="cover" width="96px" height="96px" spinner-color="pink" />
                       <br>{{ similar.name
@@ -231,7 +236,7 @@
         </div>
       </div>
     </q-tab-panel>
-    <q-tab-panel name="similarArtists">
+    <q-tab-panel name="similar">
       <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
         <q-card-section>
           <div class="text-h6">Similar artists</div>
@@ -239,8 +244,9 @@
         <q-separator />
         <q-card-section v-if="artistData.similar && artistData.similar.length > 0">
           <div class="q-gutter-md row items-start">
-            <router-link :to="{ name: 'artist', params: { name: artist.name } }" v-for="artist in artistData.similar"
-              :key="artist.name">
+            <router-link
+              :to="{ name: artist.mbId ? 'mbArtist' : 'artist', params: { mbid: artist.mbId, name: artist.name, tab: 'overview' } }"
+              v-for="artist in artistData.similar" :key="artist.name">
               <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
                 <div class="absolute-bottom text-subtitle1 text-center">
                   {{ artist.name }}
@@ -286,8 +292,8 @@
         <q-card-section v-if="artistData.topAlbums && artistData.topAlbums.length > 0">
           <div class="q-gutter-md row items-start q-mt-sm">
             <AnimatedAlbumCover v-for="album in artistData.topAlbums" :key="album.title" :image="album.image"
-              :title="album.title" :artistName="album.artist.name" :year="album.year" @play="onPlayAlbum(album)"
-              @enqueue="onEnqueueAlbum(album)">
+              :title="album.title" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year"
+              @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
             </AnimatedAlbumCover>
           </div>
         </q-card-section>
@@ -300,53 +306,53 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :rows="rows" :columns="artistTracksColumns"
-      row-key="id" virtual-scroll :rows-per-page-options="[0]" :hide-bottom="true">
-      <template v-slot:body="props">
-        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)">
-          <q-td key="index" :props="props">
-            <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm"
-              v-if="false"></q-icon>
-            {{ props.row.index }} / {{ rows.length }}
-          </q-td>
-          <q-td key="title" :props="props">
-            {{ props.row.title }}
-          </q-td>
-          <q-td key="artist" :props="props">
-            <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.artist.name } }"><q-icon name="link"
-                class="q-mr-sm"></q-icon>{{
-                  props.row.artist.name }}</router-link>
-          </q-td>
-          <q-td key="albumArtist" :props="props">
-            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link"
-                class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
-          </q-td>
-          <q-td key="albumTitle" :props="props">
-            {{ props.row.album.title }}
-          </q-td>
-          <q-td key="albumTrackIndex" :props="props">
-            {{ props.row.trackNumber }}
-          </q-td>
-          <q-td key="year" :props="props">
-            {{ props.row.album.year }}
-          </q-td>
-          <q-td key="actions" :props="props">
-            <q-btn-group outline>
-              <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow"
-                :title="t('Play')" @click="trackActions.play(props.row)" />
-              <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
-                :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
-            </q-btn-group>
-          </q-td>
-        </q-tr>
-      </template>
+          <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :rows="rows"
+            :columns="artistTracksColumns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :hide-bottom="true">
+            <template v-slot:body="props">
+              <q-tr class="cursor-pointer" :props="props"
+                @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)">
+                <q-td key="index" :props="props">
+                  <q-icon :name="rowIcon" color="pink" size="sm" class="q-mr-sm" v-if="false"></q-icon>
+                  {{ props.row.index }} / {{ rows.length }}
+                </q-td>
+                <q-td key="title" :props="props">
+                  {{ props.row.title }}
+                </q-td>
+                <q-td key="artist" :props="props">
+                  <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
+                    :to="{ name: props.row.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.artist.mbId, name: props.row.artist.name, tab: 'overview' } }"><q-icon
+                      name="link" class="q-mr-sm"></q-icon>{{
+                        props.row.artist.name }}</router-link>
+                </q-td>
+                <q-td key="albumArtist" :props="props">
+                  <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
+                    :to="{ name: props.row.album.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.album.artist.mbId, name: props.row.album.artist.name, tab: 'overview' } }"><q-icon
+                      name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
+                </q-td>
+                <q-td key="albumTitle" :props="props">
+                  {{ props.row.album.title }}
+                </q-td>
+                <q-td key="albumTrackIndex" :props="props">
+                  {{ props.row.trackNumber }}
+                </q-td>
+                <q-td key="year" :props="props">
+                  {{ props.row.album.year }}
+                </q-td>
+                <q-td key="actions" :props="props">
+                  <q-btn-group outline>
+                    <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow" :title="t('Play')"
+                      @click="trackActions.play(props.row)" />
+                    <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
+                      :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
+                  </q-btn-group>
+                </q-td>
+              </q-tr>
+            </template>
           </q-table>
         </q-card-section>
       </q-card>
     </q-tab-panel>
-    <q-tab-panel name="stats">
+    <q-tab-panel name="metrics">
       <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
         <q-card-section>
           <div class="text-h6">Stats</div>
@@ -506,15 +512,24 @@ const $q = useQuasar();
 
 const spieldoseStore = useSpieldoseStore();
 
-const route = useRoute()
+const route = useRoute();
 
+const tabFromRoute = computed(() => route.params.tab);
+
+watch(tabFromRoute, (newValue) => {
+  if (newValue && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(newValue)) {
+    tab.value = newValue;
+  } else {
+    tab.value = 'overview';
+  }
+});
 
 const artistMBId = ref(route.params.mbid);
 const artistName = ref(route.params.name);
 
-const tab = ref('overview');
+const tab = ref(route.params.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.params.tab) ? route.params.tab : 'overview');
 
-watch (tab, (newValue) => {
+watch(tab, (newValue) => {
   if (newValue) {
     window.scrollTo(0, 0);
   }

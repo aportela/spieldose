@@ -3,8 +3,9 @@
     <slot name="prepend">
     </slot>
     <q-icon name="link" size="sm" class="q-mr-xs" />
-    <span v-if="artist.name"><router-link :to="{ name: 'artist', params: { name: artist.name } }">{{
-      artist.name }}</router-link></span>
+    <span v-if="artist.name"><router-link
+        :to="{ name: artist.mbId ? 'mbArtist' : 'artist', params: { mbid: artist.mbId, name: artist.name, tab: 'overview' } }">{{
+          artist.name }}</router-link></span>
     <slot name="append">
     </slot>
   </li>

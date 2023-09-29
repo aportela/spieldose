@@ -57,14 +57,14 @@
           </q-td>
           <q-td key="artist" :props="props">
             <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.artist.name } }"><q-icon name="link"
-                class="q-mr-sm"></q-icon>{{
+              :to="{ name: props.row.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.artist.mbId, name: props.row.artist.name, tab: 'overview' } }"><q-icon
+                name="link" class="q-mr-sm"></q-icon>{{
                   props.row.artist.name }}</router-link>
           </q-td>
           <q-td key="albumArtist" :props="props">
             <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.album.artist.name } }"><q-icon name="link"
-                class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
+              :to="{ name: props.row.album.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.album.artist.mbId, name: props.row.album.artist.name, tab: 'overview' } }"><q-icon
+                name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
           </q-td>
           <q-td key="albumTitle" :props="props">
             {{ props.row.album.title }}

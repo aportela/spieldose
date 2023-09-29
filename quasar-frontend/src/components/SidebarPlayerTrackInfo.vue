@@ -1,12 +1,12 @@
 <template>
   <div class="q-px-md" style="max-width: 400px;" v-if="isTrack">
-    <p class="text-center text-weight-bolder ellipsis text-pink"
-      :title="currentElement.track.title || '&nbsp;'">{{ currentElement.track.title || null }}</p>
+    <p class="text-center text-weight-bolder ellipsis text-pink" :title="currentElement.track.title || '&nbsp;'">{{
+      currentElement.track.title || null }}</p>
     <p class="text-center ellipsis" :title="currentElement.track.album.title || null">{{
       currentElement.track.album.title || "&nbsp;" }}</p>
     <p class="text-center ellipsis">
       <router-link v-if="currentElement.track.artist.name" style="text-decoration: none;"
-        :to="{ name: 'artist', params: { name: currentElement.track.artist.name } }"
+        :to="{ name: currentElement.track.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: currentElement.track.artist.mbId, name: currentElement.track.artist.name, tab: 'overview' } }"
         :title="currentElement.track.artist.name">{{ currentElement.track.artist.name }}</router-link>
       <span v-else>&nbsp;</span>
     </p>

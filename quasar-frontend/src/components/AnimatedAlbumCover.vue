@@ -5,8 +5,10 @@
         width="174px" height="174px" spinner-color="pink" @load="onLoad" @error="onError">
       </q-img>
       <div class="album-actions">
-        <q-icon class="cursor-pointer" name="add_box" size="80px" color="pink" title="Enqueue album" style="left: 10px;" @click="onEnqueue"></q-icon>
-        <q-icon class="cursor-pointer" name="play_arrow" size="80px" color="pink" title="Play album" style="left: 80px;" @click="onPlay"></q-icon>
+        <q-icon class="cursor-pointer" name="add_box" size="80px" color="pink" title="Enqueue album" style="left: 10px;"
+          @click="onEnqueue"></q-icon>
+        <q-icon class="cursor-pointer" name="play_arrow" size="80px" color="pink" title="Play album" style="left: 80px;"
+          @click="onPlay"></q-icon>
         <span class="clear: both;"></span>
       </div>
       <img class="vinyl no-cover" src="images/vinyl-medium.png" v-if="loaded || errors" />
@@ -14,8 +16,9 @@
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">{{ title }}</p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
-          :to="{ name: 'artist', params: { name: artistName } }">{{ artistName }}</router-link> <span v-if="year">({{ year
-          }})</span></p>
+          :to="{ name: artistMbId ? 'mbArtist' : 'artist', params: { mbid: artistMbId, name: artistName, tab: 'overview' } }">{{
+            artistName }}</router-link> <span v-if="year">({{ year
+  }})</span></p>
       <p v-else-if="year">({{ year }})</p>
     </div>
   </div>
@@ -155,6 +158,7 @@ const emit = defineEmits(['play', 'enqueue']);
 
 const props = defineProps({
   title: String,
+  artistMbId: String,
   artistName: String,
   year: Number,
   image: String

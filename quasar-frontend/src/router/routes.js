@@ -41,12 +41,12 @@ const routes = [
       },
       {
         name: "artist",
-        path: "artist/:name",
+        path: "artist/:name/:tab",
         component: () => import("pages/ArtistPage.vue"),
       },
       {
         name: "mbArtist",
-        path: "mb-artist/:mbid/:name",
+        path: "mb-artist/:mbid/:name/:tab",
         component: () => import("pages/ArtistPage.vue"),
       },
       {
