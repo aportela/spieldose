@@ -302,7 +302,12 @@
     <q-tab-panel name="tracks">
       <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered style="min-height: 344px;">
         <q-card-section>
-          <div class="text-h6">Tracks</div>
+          <div class="text-h6">Tracks
+            <q-btn-group class="q-ml-md">
+            <q-btn size="sm" icon="play_arrow" @click.prevent="onPlayAllArtistTracks">play all</q-btn>
+            <q-btn size="sm" icon="add_box" @click.prevent="onEnqueueAllArtistTracks">enqueue all</q-btn>
+          </q-btn-group>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -809,6 +814,14 @@ function onToggleFavorite(trackId, favorited) {
           break;
       }
     });
+}
+
+function onPlayAllArtistTracks() {
+  spieldoseStore.sendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return({ track: element}); }));
+}
+
+function onEnqueueAllArtistTracks() {
+  spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return({ track: element}); }));
 }
 
 get(artistMBId.value, artistName.value);
