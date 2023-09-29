@@ -72,7 +72,7 @@ class Utils
         if ($done != $total) {
             $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . " / " . sprintf("%d %s", ($eta > 3600 ? $eta / 3600 : ($eta > 60 ? $eta / 60 : $eta)), ($eta > 3600 ? "hours" : ($eta > 60 ? "minutes" : "seconds"))) . ")";
         } else {
-            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . ")";;
+            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . ")";
         }
 
         if (!empty($extraMessage)) {
