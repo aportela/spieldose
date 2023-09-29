@@ -827,14 +827,9 @@ return function (App $app) {
                 $title = $queryParams["title"] ?? "";
                 $artist = $queryParams["artist"] ?? "";
                 $lyrics = new \Spieldose\Lyrics($title, $artist);
-                try {
-                    $lyrics = $lyrics->get($dbh) ? $lyrics->data : null;
-                } catch (\Throwable $e) {
-                    // TODO: register error
-                }
                 $payload = json_encode(
                     [
-                        'lyrics' => $lyrics
+                        'lyrics' => $lyrics->get($dbh, $this->get(\Spieldose\Logger\ScraperLogger::class)) ? $lyrics->data : null
                     ]
                 );
                 $response->getBody()->write($payload);

@@ -22,6 +22,7 @@
         "aportela/mediawiki-wrapper": "^1.0",
         "aportela/musicbrainz-wrapper": "^2.0",
         "aportela/remote-thumbnail-cache-wrapper": "^2.0",
+        "aportela/scraper-lyrics": "^1.0",
         "firebase/php-jwt": "^6.8",
         "james-heinrich/getid3": "^1.9",
         "monolog/monolog": "^3.4",

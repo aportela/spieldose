@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "671db83d0c4e0f593ba77dfbc5a5a0c4",
+    "content-hash": "c6afe3c4f7986fe2f87204997a0c6caa",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -332,6 +332,53 @@
                 "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.0.4"
             },
             "time": "2023-09-22T21:19:23+00:00"
+        },
+        {
+            "name": "aportela/scraper-lyrics",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aportela/scraper-lyrics.git",
+                "reference": "9c1940e38dfd6258c1a44ded3bf8e91e3da6b735"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/9c1940e38dfd6258c1a44ded3bf8e91e3da6b735",
+                "reference": "9c1940e38dfd6258c1a44ded3bf8e91e3da6b735",
+                "shasum": ""
+            },
+            "require": {
+                "aportela/httprequest-wrapper": "^2.0",
+                "php": ">=8.1",
+                "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.28",
+                "phpunit/phpunit": "^10.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "aportela\\ScraperLyrics\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "alex",
+                    "email": "766f6964+github@gmail.com"
+                }
+            ],
+            "description": "Search & scrap lyrics from various sources",
+            "homepage": "https://github.com/aportela/scraper-lyrics",
+            "support": {
+                "issues": "https://github.com/aportela/scraper-lyrics/issues",
+                "source": "https://github.com/aportela/scraper-lyrics/tree/1.0.0"
+            },
+            "time": "2023-09-29T10:50:58+00:00"
         },
         {
             "name": "brick/math",
