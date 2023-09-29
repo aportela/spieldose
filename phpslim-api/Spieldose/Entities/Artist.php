@@ -747,13 +747,12 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $this->getFromNoCache($useLocalCovers);
         }
-        $sortItems = [];
-        $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
-            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
-            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-            true
+        $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+            [
+                new \aportela\DatabaseBrowserWrapper\SortItem("year", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                new \aportela\DatabaseBrowserWrapper\SortItem("releaseTitle", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+            ]
         );
-        $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
         $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
         $data = array();
         $filter = array(
