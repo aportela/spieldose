@@ -280,6 +280,7 @@ class Metrics
         $fieldDefinitions = [
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
+            "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, FIT.year)"
         ];
 
