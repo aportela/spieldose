@@ -44,12 +44,7 @@ class Lyrics
         $lyrics = new \aportela\ScraperLyrics\Lyrics($logger);
         if ($lyrics->scrap(
             $this->title,
-            $this->artist,
-            [
-                \aportela\ScraperLyrics\SourceProvider::SEARCH_ENGINE_DUCKDUCKGO,
-                \aportela\ScraperLyrics\SourceProvider::SEARCH_ENGINE_GOOGLE,
-                \aportela\ScraperLyrics\SourceProvider::SEARCH_ENGINE_BING
-            ]
+            $this->artist
         )) {
             $this->title = $lyrics->title;
             $this->artist = $lyrics->artist;
