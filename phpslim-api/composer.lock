@@ -101,16 +101,16 @@
         },
         {
             "name": "aportela/httprequest-wrapper",
-            "version": "2.0.3",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/httprequest-wrapper.git",
-                "reference": "7aaa7b6ba011ebcdeade29cf26cec9322f0becc2"
+                "reference": "411a047c0add426421095d7aa56a90e47a902946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/7aaa7b6ba011ebcdeade29cf26cec9322f0becc2",
-                "reference": "7aaa7b6ba011ebcdeade29cf26cec9322f0becc2",
+                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/411a047c0add426421095d7aa56a90e47a902946",
+                "reference": "411a047c0add426421095d7aa56a90e47a902946",
                 "shasum": ""
             },
             "require": {
@@ -141,9 +141,9 @@
             "homepage": "https://github.com/aportela/httprequest-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/httprequest-wrapper/issues",
-                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.3"
+                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.0.5"
             },
-            "time": "2023-09-22T21:15:44+00:00"
+            "time": "2023-10-02T09:50:26+00:00"
         },
         {
             "name": "aportela/lastfm-wrapper",
@@ -335,16 +335,16 @@
         },
         {
             "name": "aportela/scraper-lyrics",
-            "version": "1.0.1",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/scraper-lyrics.git",
-                "reference": "0e99cece98e846758868571f8cdf6eb077634e17"
+                "reference": "26ceb0dc8170435b6fdc90324524c25adef4a6fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/0e99cece98e846758868571f8cdf6eb077634e17",
-                "reference": "0e99cece98e846758868571f8cdf6eb077634e17",
+                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/26ceb0dc8170435b6fdc90324524c25adef4a6fe",
+                "reference": "26ceb0dc8170435b6fdc90324524c25adef4a6fe",
                 "shasum": ""
             },
             "require": {
@@ -376,9 +376,9 @@
             "homepage": "https://github.com/aportela/scraper-lyrics",
             "support": {
                 "issues": "https://github.com/aportela/scraper-lyrics/issues",
-                "source": "https://github.com/aportela/scraper-lyrics/tree/1.0.1"
+                "source": "https://github.com/aportela/scraper-lyrics/tree/1.0.3"
             },
-            "time": "2023-09-29T21:28:47+00:00"
+            "time": "2023-10-02T10:46:08+00:00"
         },
         {
             "name": "brick/math",
