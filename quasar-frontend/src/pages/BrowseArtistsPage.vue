@@ -19,29 +19,12 @@
             </template>
           </q-input>
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4" v-if="genresValues && genresValues.length > 0">
-          <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense label="Genre"
-            :disable="loading || route.params.genre != null" emit-value filled clearable=""
-            :hint="!genre ? 'Minimum 3 characters to trigger filtering' : 'Filtering by genre'" use-input hide-selected
-            input-debounce="0" @filter="onFilterGenres" @update:model-value="search(true)">
-            <template v-slot:selected>
-              <q-chip v-if="genre" dense square color="white" text-color="primary" class="q-my-none q-ml-xs q-mr-none">
-                {{ genre.name }}
-              </q-chip>
-              <q-badge v-else>*none*</q-badge>
-            </template>
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  No results
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <ArtistsGenreSelector :defaultGenre="filterByGenre" @change="onChangeGenre"></ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
-            @update:model-value="search(true)" :disable="loading">
+            @update:model-value="onChangeSortField" :disable="loading">
             <template v-slot:selected-item="scope">
               {{ scope.opt.label }}
             </template>
@@ -49,7 +32,7 @@
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-            @update:model-value="search(true)" :disable="loading">
+            @update:model-value="onChangeSortOrder" :disable="loading">
             <template v-slot:selected-item="scope">
               {{ scope.opt.label }}
             </template>
@@ -123,8 +106,11 @@ import { ref, nextTick, computed, watch } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { isNumeric } from "chartist";
+import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
 
+const { t } = useI18n();
 const $q = useQuasar();
 
 const artistName = ref(null);
@@ -162,39 +148,43 @@ const sortOrderValues = [
   }
 ];
 
-const routeName = computed(() => route.name);
 const routeParams = computed(() => route.params || {});
 const routeQuery = computed(() => route.query || {});
 
-watch(routeParams, (newValue, oldValue) => {
-  if (newValue.page != oldValue.page) {
-    search(false);
-  } else if (routeName.value == "artists") {
+router.beforeEach(async (to, from) => {
+  if (from.name == "artists" || from.name == "artistsPaged") {
+    currentPageIndex.value = parseInt(to.params.page || 1);
+    filterByGenre.value = to.query.genre || null;
+    artistName.value = to.query.q || null;
+    sortOrder.value = sortOrderValues[to.query.sortOrder == "DESC" ? 1 : 0];
+    sortField.value = sortFieldValues[to.query.sortField == "totalTracks" ? 1 : 0];
+    if (to.params.page != from.params.page) {
+      search(false);
+    } else if (to.query != from.query) {
+      search(true);
+    } else {
+      // TODO ?
+    }
+  } else {
     search(true);
   }
-});
+}
+);
 
 const sortOrder = ref(sortOrderValues[0]);
 
-let genresValues = [];
-
-let filteredGenres = ref([]);
-
-const genre = ref(routeParams.value.genre || null);
+const filterByGenre = ref(routeQuery.value.genre || null);
 
 const totalPages = ref(0);
 
-//const currentPageIndex = ref(parseInt(routeParams.value.page || 1));
-
-const currentPageIndex = computed(() => parseInt(routeParams.value.page || 1));
+const currentPageIndex = ref(parseInt(routeParams.value.page || 1));
 
 const artistNameRef = ref(null);
 
 function search(resetPager) {
   artistsNotFound.value = false;
   loading.value = true;
-
-  api.artist.search({ genre: genre.value || null, name: artistName.value || null }, resetPager ? 1: currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, resetPager ? 1 : currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (success.data.data.pager.totalResults < 1) {
@@ -203,7 +193,7 @@ function search(resetPager) {
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {
-      artistNameRef.value.$el.focus();
+      artistNameRef.value.focus();
     });
   }).catch((error) => {
     artists.value = [];
@@ -218,54 +208,35 @@ function search(resetPager) {
 }
 
 function onPaginationChanged(pageIndex) {
+  refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value.value);
+}
+
+function onChangeGenre(selectedGenre) {
+  refreshURL(1, artistName.value, selectedGenre, sortField.value.value, sortOrder.value.value);
+}
+
+function onChangeSortField(selectedSortField) {
+  refreshURL(1, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value.value);
+}
+
+function onChangeSortOrder(selectedSortOrder) {
+  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder.value);
+}
+
+function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
   const query = Object.assign({}, routeQuery.value);
-  //OJO : https://stackoverflow.com/a/61353880
+  query.q = artistName || null;
+  query.genre = selectedGenre || null;
+  query.sortField = sortField || "name";
+  query.sortOrder = sortOrder || "ASC";
   router.push({
-        name: "artistsPaged",
-        params: {
-          page: pageIndex
-        },
-        query: query
-      });
-      /*
-  currentPageIndex.value = pageIndex;
-  search(false);
-  */
-}
-
-// TODO: split component
-function refreshGenres() {
-  loading.value = true;
-  api.artistGenres.get().then((success) => {
-    genresValues = success.data.genres;
-    if (route.params.genre) {
-      genre.value = route.params.genre;
-    }
-    filteredGenres.value = genresValues;
-    loading.value = false;
-  }).catch((error) => {
-    // TODO: custom menssage
-    $q.notify({
-      type: "negative",
-      message: "API Error: error loading genres ",
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-    });
-    loading.value = false;
+    name: "artistsPaged",
+    params: {
+      page: pageIndex
+    },
+    query: query
   });
 }
-
-function onFilterGenres(val, update, abort) {
-  if (val.length < 3) {
-    abort();
-    return;
-  }
-  update(() => {
-    const needle = val.toLowerCase();
-    filteredGenres.value = genresValues.filter(genre => genre.toLowerCase().indexOf(needle) > -1);
-  });
-}
-
-refreshGenres();
 
 search(false);
 </script>
