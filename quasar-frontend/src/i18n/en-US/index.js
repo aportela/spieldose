@@ -152,6 +152,10 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
 
+  // browse artists
+  "API Error: error loading artists genres":
+    "API Error: error loading artists genres",
+
   // radio stations
   "My radio stations": "My radio stations",
   "Public radio stations": "Public radio stations",
