@@ -37,7 +37,7 @@ $settings['error'] = [
 ];
 
 $settings['logger'] = [
-    'defaultLevel' => $settings['environment'] == 'development' ? \Monolog\Logger::DEBUG : \Monolog\Logger::ERROR,
+    'defaultLevel' => $settings['environment'] == 'development' ? \Monolog\Level::Debug : \Monolog\Level::Critical,
     'channels' => [
         'default'  => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'default.log',
