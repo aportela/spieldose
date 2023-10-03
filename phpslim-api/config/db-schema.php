@@ -247,11 +247,10 @@ return (array(
     16 => array(
         '
             CREATE TABLE `LYRICS` (
-                `md5_hash` VARCHAR(32) NOT NULL,
                 `title` VARCHAR(512) NOT NULL,
                 `artist` VARCHAR(128) NOT NULL,
                 `data` TEXT NOT NULL,
-                PRIMARY KEY (`md5_hash`)
+                PRIMARY KEY (`title`, `artist`)
             );
         ',
     ),

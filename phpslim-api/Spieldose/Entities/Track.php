@@ -132,13 +132,12 @@ class Track extends \Spieldose\Entities\Entity
             }
             $this->favorited = $results[0]->favorited;
             if (!empty($this->title) && !empty($this->artist->name)) {
-                $lyrics = new \Spieldose\Lyrics($this->title, $this->artist->name);
+                // TODO: custom logger
+                $lyrics = new \Spieldose\Lyrics(new \Psr\Log\NullLogger());
                 try {
-                    $this->lyrics = $lyrics->get($dbh) ? $lyrics->data : null;
+                    $this->lyrics = $lyrics->get($dbh, $this->title, $this->artist->name) ? $lyrics->lyrics : null;
                 } catch (\Throwable $e) {
-                    print_r($e);
-                    exit;
-                    // TODO: register error
+                    // TODO: register error ?
                 }
             } else {
                 $this->lyrics = null;

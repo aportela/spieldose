@@ -826,10 +826,10 @@ return function (App $app) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $title = $queryParams["title"] ?? "";
                 $artist = $queryParams["artist"] ?? "";
-                $lyrics = new \Spieldose\Lyrics($title, $artist);
+                $lyrics = new \Spieldose\Lyrics($this->get(\Spieldose\Logger\ScraperLogger::class));
                 $payload = json_encode(
                     [
-                        'lyrics' => $lyrics->get($dbh, $this->get(\Spieldose\Logger\ScraperLogger::class)) ? $lyrics->data : null
+                        'lyrics' => $lyrics->get($dbh, $title, $artist) ? $lyrics->lyrics : null
                     ]
                 );
                 $response->getBody()->write($payload);
