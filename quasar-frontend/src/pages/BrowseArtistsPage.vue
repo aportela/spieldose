@@ -119,12 +119,14 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref, nextTick } from "vue";
-import { useRoute } from 'vue-router';
+import { ref, nextTick, computed, watch } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
+import { isNumeric } from "chartist";
 
 const $q = useQuasar();
+
 const artistName = ref(null);
 const artistsNotFound = ref(false);
 const loading = ref(false);
@@ -134,6 +136,7 @@ const artists = ref([]);
 const lastChangesTimestamp = ref(0);
 
 const route = useRoute();
+const router = useRouter();
 
 const sortFieldValues = [
   {
@@ -159,28 +162,39 @@ const sortOrderValues = [
   }
 ];
 
+const routeName = computed(() => route.name);
+const routeParams = computed(() => route.params || {});
+const routeQuery = computed(() => route.query || {});
+
+watch(routeParams, (newValue, oldValue) => {
+  if (newValue.page != oldValue.page) {
+    search(false);
+  } else if (routeName.value == "artists") {
+    search(true);
+  }
+});
+
 const sortOrder = ref(sortOrderValues[0]);
 
 let genresValues = [];
 
 let filteredGenres = ref([]);
 
-const genre = ref(route.params.genre || null);
+const genre = ref(routeParams.value.genre || null);
 
 const totalPages = ref(0);
 
-const currentPageIndex = ref(1);
+//const currentPageIndex = ref(parseInt(routeParams.value.page || 1));
+
+const currentPageIndex = computed(() => parseInt(routeParams.value.page || 1));
 
 const artistNameRef = ref(null);
 
 function search(resetPager) {
-  if (resetPager) {
-    currentPageIndex.value = 1;
-  }
   artistsNotFound.value = false;
   loading.value = true;
 
-  api.artist.search({ genre: genre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  api.artist.search({ genre: genre.value || null, name: artistName.value || null }, resetPager ? 1: currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (success.data.data.pager.totalResults < 1) {
@@ -204,8 +218,19 @@ function search(resetPager) {
 }
 
 function onPaginationChanged(pageIndex) {
+  const query = Object.assign({}, routeQuery.value);
+  //OJO : https://stackoverflow.com/a/61353880
+  router.push({
+        name: "artistsPaged",
+        params: {
+          page: pageIndex
+        },
+        query: query
+      });
+      /*
   currentPageIndex.value = pageIndex;
   search(false);
+  */
 }
 
 // TODO: split component
@@ -241,6 +266,6 @@ function onFilterGenres(val, update, abort) {
 }
 
 refreshGenres();
-search(true);
 
+search(false);
 </script>
