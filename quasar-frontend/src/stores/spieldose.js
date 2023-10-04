@@ -100,7 +100,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].shuffleIndexes[
-      state.data.playlists[0].currentElementIndex
+        state.data.playlists[0].currentElementIndex
       ],
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
@@ -128,7 +128,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
+                state.data.playlists[0].currentElementIndex
               ]
             ];
           }
@@ -152,7 +152,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
+                state.data.playlists[0].currentElementIndex
               ]
             ].track.url;
           }
@@ -186,7 +186,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
+                state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.normal;
           }
@@ -226,7 +226,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
+                state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.small;
           }
@@ -456,10 +456,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-            return { track: track };
-          })
+              return { track: track };
+            })
           : [],
-        shuffleIndexes: playlist.tracks ? shuffle([...Array(playlist.tracks.length).keys()]) : [],
+        shuffleIndexes: playlist.tracks
+          ? shuffle([...Array(playlist.tracks.length).keys()])
+          : [],
         currentRadioStation: null,
       };
       this.data.currentPlaylistIndex = 0;
@@ -492,7 +494,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
           lastChangeTimestamp: Date.now(),
           currentElementIndex: hasValues ? 0 : -1,
           elements: hasValues ? elements : [],
-          shuffleIndexes: hasValues ? shuffle([...Array(elements.length).keys()]) : [],
+          shuffleIndexes: hasValues
+            ? shuffle([...Array(elements.length).keys()])
+            : [],
           currentRadioStation: null,
         };
         this.data.currentPlaylistIndex = 0;
@@ -509,7 +513,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
       if (hasValues) {
         this.data.playlists[0].elements =
           this.data.playlists[0].elements.concat(elements);
-        this.data.playlists[0].shuffleIndexes = shuffle([...Array(this.data.playlists[0].elements.length).keys()]);
+        this.data.playlists[0].shuffleIndexes = shuffle([
+          ...Array(this.data.playlists[0].elements.length).keys(),
+        ]);
         this.data.playlists[0].currentRadioStation = null;
         if (!hasPreviousElements) {
           this.data.playlists[0].currentElementIndex = hasValues ? 0 : -1;
@@ -526,7 +532,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     shuffleCurrentPlaylist: function () {
       this.interact();
       this.stop();
-      const elements = shuffle([...Array(this.data.playlists[0].elements)]);
+      const elements = shuffle([...this.data.playlists[0].elements]);
       const hasValues =
         elements && Array.isArray(elements) && elements.length > 0;
       if (hasValues) {
@@ -541,7 +547,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
           lastChangeTimestamp: Date.now(),
           currentElementIndex: hasValues ? 0 : -1,
           elements: hasValues ? elements : [],
-          shuffleIndexes: hasValues ? shuffle([...Array(elements.length).keys()]) : [],
+          shuffleIndexes: hasValues
+            ? shuffle([...Array(elements.length).keys()])
+            : [],
           currentRadioStation: null,
         };
         this.data.currentPlaylistIndex = 0;
