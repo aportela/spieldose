@@ -129,16 +129,25 @@ const artists = ref([]);
 const lastChangesTimestamp = ref(0);
 
 const totalPages = ref(0);
-const currentPageIndex = ref(parseInt(route.params.page || 1));
+const currentPageIndex = ref(parseInt(route.query.page || 1));
 
 router.beforeEach(async (to, from) => {
   if (from.name == "artists" || from.name == "artistsPaged") {
-    currentPageIndex.value = parseInt(to.params.page || 1);
+    currentPageIndex.value = parseInt(to.query.page || 1);
     filterByGenre.value = to.query.genre || null;
     artistName.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
     sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
-    if ((to.name == "artists" || to.name == "artistsPaged") && (to.params.page != from.params.page || to.query != from.query)) {
+    if (
+      (to.name == "artists" || to.name == "artistsPaged") &&
+      (
+        to.query.page != from.query.page ||
+        to.query != from.query ||
+        to.query.genre != from.query.genre ||
+        to.query.sortOrder != from.query.sortOrder ||
+        to.query.sortField != from.query.sortField
+      )
+    ) {
       nextTick(() => {
         search();
       });
@@ -148,15 +157,13 @@ router.beforeEach(async (to, from) => {
 
 function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
+  query.page = pageIndex || 1;
   query.q = artistName || null;
   query.genre = selectedGenre || null;
   query.sortField = sortField || "name";
   query.sortOrder = sortOrder || "ASC";
   router.push({
-    name: "artistsPaged",
-    params: {
-      page: pageIndex
-    },
+    name: "artists",
     query: query
   });
 }

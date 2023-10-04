@@ -32,12 +32,7 @@ const routes = [
       {
         name: "artists",
         path: "artists",
-        component: () => import("pages/BrowseArtistsPage.vue"),
-      },
-      {
-        name: "artistsPaged",
-        path: "artists/page/:page",
-        component: () => import("pages/BrowseArtistsPage.vue"),
+        component: () => import("pages/BrowseArtistsPage.vue")
       },
       {
         name: "artist",
