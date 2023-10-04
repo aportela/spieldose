@@ -138,7 +138,7 @@ router.beforeEach(async (to, from) => {
     artistName.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
     sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
-    if (to.params.page != from.params.page || to.query != from.query) {
+    if ((to.name == "artists" || to.name == "artistsPaged") && (to.params.page != from.params.page || to.query != from.query)) {
       nextTick(() => {
         search();
       });
