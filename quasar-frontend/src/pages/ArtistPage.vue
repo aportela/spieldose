@@ -599,7 +599,7 @@ const artistTracksColumns = [
     label: 'Index',
     align: 'right',
     field: row => row.index,
-    sortable: false
+    sortable: true
   },
   {
     name: 'title',
