@@ -79,6 +79,7 @@ export default {
   "play album": "play album",
   "enqueue album": "enqueue album",
   Clear: "Clear",
+  Discover: "Discover",
   Randomize: "Randomize",
   Previous: "Previous",
   Play: "Play",

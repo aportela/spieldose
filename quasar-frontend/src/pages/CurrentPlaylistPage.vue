@@ -8,8 +8,11 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
         :disable="loading || !(elements && elements.length > 0)">
       </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="bolt" @click="onRandom"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt" @click="onDiscover"
         :disable="loading">
+      </q-btn>
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle" @click="onRandomize"
+      :disable="loading || !(elements && elements.length > 0)">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
         @click="onPreviusPlaylist" :disable="loading || !spieldoseStore.allowSkipPrevious" />
@@ -378,7 +381,12 @@ watch(currentPlaylistTrackIndex, (newValue) => {
   tableRef.value.scrollTo(newValue, 'center-force');
 });
 
-function onRandom() {
+function onRandomize() {
+  spieldoseStore.stop();
+  spieldoseStore.shuffleCurrentPlaylist();
+}
+
+function onDiscover() {
   spieldoseStore.stop();
   search();
 }

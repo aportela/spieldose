@@ -79,6 +79,7 @@ export default {
   "play album": "reproducir album",
   "enqueue album": "encolar album",
   Clear: "Vaciar",
+  Discover: "Descubrir",
   Randomize: "Aleatoria",
   Previous: "Anterior",
   Play: "Reproducir",

@@ -13,6 +13,19 @@ const localStorageBasilOptions = {
   expireDays: 3650,
 };
 
+/**
+ * https://stackoverflow.com/a/6274381
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export const useSpieldoseStore = defineStore("spieldose", {
   state: () => ({
     data: {
@@ -87,7 +100,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].shuffleIndexes[
-        state.data.playlists[0].currentElementIndex
+      state.data.playlists[0].currentElementIndex
       ],
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
@@ -115,7 +128,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ];
           }
@@ -139,7 +152,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.url;
           }
@@ -173,7 +186,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.normal;
           }
@@ -213,7 +226,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.small;
           }
@@ -443,8 +456,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-              return { track: track };
-            })
+            return { track: track };
+          })
           : [],
         shuffleIndexes: [
           ...Array(playlist.tracks ? playlist.tracks.length : 0).keys(),
@@ -485,8 +498,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
           elements: hasValues ? elements : [],
           shuffleIndexes: hasValues
             ? [...Array(elements.length).keys()].sort(function () {
-                return 0.5 - Math.random();
-              })
+              return 0.5 - Math.random();
+            })
             : [],
           currentRadioStation: null,
         };
@@ -520,6 +533,38 @@ export const useSpieldoseStore = defineStore("spieldose", {
           this.setAudioSource(this.getCurrentPlaylistElementURL);
           this.play(true);
         }
+      }
+    },
+    shuffleCurrentPlaylist: function () {
+      console.log("shuffle");
+      this.interact();
+      this.stop();
+      const elements = shuffle(this.data.playlists[0].elements);
+      const hasValues =
+        elements && Array.isArray(elements) && elements.length > 0;
+      if (hasValues) {
+        this.data.playlists[0] = {
+          id: null,
+          name: null,
+          owner: {
+            id: null,
+            name: null,
+          },
+          public: false,
+          lastChangeTimestamp: Date.now(),
+          currentElementIndex: hasValues ? 0 : -1,
+          elements: hasValues ? elements : [],
+          shuffleIndexes: hasValues
+            ? [...Array(elements.length).keys()].sort(function () {
+              return 0.5 - Math.random();
+            })
+            : [],
+          currentRadioStation: null,
+        };
+        this.data.currentPlaylistIndex = 0;
+        this.saveCurrentPlaylist();
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        this.play(true);
       }
     },
     restoreCurrentPlaylist: function () {
