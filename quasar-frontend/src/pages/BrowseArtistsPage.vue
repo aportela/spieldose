@@ -8,9 +8,9 @@
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
           <q-input v-model="artistName" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search artists with name" :loading="loading" @keydown.enter.prevent="onChangeName" @clear="search"
-            :error="artistsNotFound" :errorMessage="'No artists found with specified condition'" :disable="loading"
-            ref="artistNameRef">
+            :hint="t('Search by artist name')" :loading="loading" @keydown.enter.prevent="onChangeName" @clear="search"
+            :error="noItemsFound" :errorMessage="t('No results found with the specified condition filter')"
+            :disable="loading" ref="artistNameRef">
             <template v-slot:prepend>
               <q-icon name="filter_alt" />
             </template>
@@ -94,8 +94,8 @@ img.artist_image:hover {
 <script setup>
 
 import { ref, nextTick, onMounted } from "vue";
-import { useRoute, useRouter } from 'vue-router';
-import { api } from 'boot/axios';
+import { useRoute, useRouter } from "vue-router";
+import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
@@ -105,17 +105,12 @@ import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 const { t } = useI18n();
 const $q = useQuasar();
 
-const artistName = ref(null);
-const artistsNotFound = ref(false);
-const loading = ref(false);
-
-const artists = ref([]);
-
-const lastChangesTimestamp = ref(0);
-
 const route = useRoute();
 const router = useRouter();
 
+const artistNameRef = ref(null);
+const artistName = ref(route.query.q || null);
+const filterByGenre = ref(route.query.genre || null);
 const sortFieldOptions = [
   {
     label: 'Sort by artist name',
@@ -126,8 +121,15 @@ const sortFieldOptions = [
     value: 'totalTracks'
   }
 ];
-
 const sortField = ref(sortFieldOptions[0].value);
+const sortOrder = ref(null);
+const noItemsFound = ref(false);
+const loading = ref(false);
+const artists = ref([]);
+const lastChangesTimestamp = ref(0);
+
+const totalPages = ref(0);
+const currentPageIndex = ref(parseInt(route.params.page || 1));
 
 router.beforeEach(async (to, from) => {
   if (from.name == "artists" || from.name == "artistsPaged") {
@@ -144,39 +146,18 @@ router.beforeEach(async (to, from) => {
   }
 });
 
-const sortOrder = ref(null);
-
-const filterByGenre = ref(null);
-
-const totalPages = ref(0);
-
-const currentPageIndex = ref(parseInt(route.params.page || 1));
-
-const artistNameRef = ref(null);
-
-function search() {
-  artistsNotFound.value = false;
-  loading.value = true;
-  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
-    artists.value = success.data.data.items;
-    totalPages.value = success.data.data.pager.totalPages;
-    if (success.data.data.pager.totalResults < 1) {
-      artistsNotFound.value = true;
-    }
-    loading.value = false;
-    lastChangesTimestamp.value = Date.now();
-    nextTick(() => {
-      artistNameRef.value.focus();
-    });
-  }).catch((error) => {
-    artists.value = [];
-    $q.notify({
-      type: "negative",
-      message: "API Error: error loading artists",
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-    });
-    loading.value = false;
-    lastChangesTimestamp.value = Date.now();
+function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
+  const query = Object.assign({}, route.query || {});
+  query.q = artistName || null;
+  query.genre = selectedGenre || null;
+  query.sortField = sortField || "name";
+  query.sortOrder = sortOrder || "ASC";
+  router.push({
+    name: "artistsPaged",
+    params: {
+      page: pageIndex
+    },
+    query: query
   });
 }
 
@@ -200,18 +181,27 @@ function onChangeSortOrder(selectedSortOrder) {
   refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value, selectedSortOrder);
 }
 
-function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
-  const query = Object.assign({}, route.query || {});
-  query.q = artistName || null;
-  query.genre = selectedGenre || null;
-  query.sortField = sortField || "name";
-  query.sortOrder = sortOrder || "ASC";
-  router.push({
-    name: "artistsPaged",
-    params: {
-      page: pageIndex
-    },
-    query: query
+function search() {
+  noItemsFound.value = false;
+  loading.value = true;
+  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+    artists.value = success.data.data.items;
+    totalPages.value = success.data.data.pager.totalPages;
+    noItemsFound.value = success.data.data.pager.totalResults < 1;
+    loading.value = false;
+    lastChangesTimestamp.value = Date.now();
+    nextTick(() => {
+      artistNameRef.value.focus();
+    });
+  }).catch((error) => {
+    artists.value = [];
+    $q.notify({
+      type: "negative",
+      message: "API Error: error loading artists",
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+    });
+    loading.value = false;
+    lastChangesTimestamp.value = Date.now();
   });
 }
 

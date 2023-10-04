@@ -19,6 +19,7 @@ export default {
   Artists: "Artists",
   Albums: "Albums",
   Genres: "Genres",
+  Genre: "Genre",
 
   // date ranges
   Today: "Today",
@@ -160,9 +161,15 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
 
+  // common browse labels
+  "No results found with the specified condition filter":
+    "No results found with the specified condition filter",
+
   // browse artists
+  "Search by artist name": "Search by artist name",
   "API Error: error loading artists genres":
     "API Error: error loading artists genres",
+  "API Error: error loading artists": "API Error: error loading artists",
 
   // radio stations
   "My radio stations": "My radio stations",
@@ -174,4 +181,8 @@ export default {
   "API Error: error playing album": "API Error: error playing album",
   "API Error: error enqueueing album": "API Error: error enqueueing album",
   "API Error: error loading playlist": "API Error: error loading playlist",
+
+  // other
+  "Minimum 3 characters to trigger autocomplete":
+    "Minimum 3 characters to trigger autocomplete",
 };

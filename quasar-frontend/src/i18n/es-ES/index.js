@@ -19,6 +19,7 @@ export default {
   Artists: "Artistas",
   Albums: "Álbumes",
   Genres: "Géneros",
+  Genre: "Género",
 
   // date ranges
   Today: "Hoy",
@@ -154,8 +155,8 @@ export default {
   "Save as": "Guardar como",
   Index: "Índice",
   Title: "Título",
-  //Artist: "Intérprete",
-  "Album Artist": "Intérprete del álbum",
+  Artist: "Artista",
+  "Album Artist": "Artista del álbum",
   Album: "Album",
   "Album Track nº": "nº de pista del álbum",
   Year: "Año",
@@ -163,9 +164,15 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error cargando las canciones aleatorias",
 
+  // common browse labels
+  "No results found with the specified condition filter":
+    "No hay resultados para el filtro de condiciones especificado",
+
   // browse artists
+  "Search by artist name": "Buscar por nombre del artista",
   "API Error: error loading artists genres":
     "API Error: error cargando los géneros de los artistas",
+  "API Error: error loading artists": "API Error: error cargando los artists",
 
   // radio stations
   "My radio stations": "Mis estaciones de radio",
@@ -179,4 +186,8 @@ export default {
     "API Error: error poniendo en cola el album",
   "API Error: error loading playlist":
     "API Error: error cargando la lista de reproducción",
+
+  // other
+  "Minimum 3 characters to trigger autocomplete":
+    "Teclee mínimo 3 caracteres para lanzar el autocompletado",
 };

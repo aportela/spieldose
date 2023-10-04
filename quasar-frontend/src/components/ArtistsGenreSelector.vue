@@ -1,7 +1,7 @@
 <template>
-  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense label="Genre" :disable="loading"
+  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')" :disable="loading"
     emit-value filled clearable=""
-    :hint="!genre ? 'Minimum 3 characters to trigger autocomplete' : 'Filtering by selected genre'" use-input
+    :hint="!genre ? t('Minimum 3 characters to trigger autocomplete') : null" use-input
     input-debounce="0" @filter="onFilterGenres" @update:model-value="onChangeGenre">
   </q-select>
 </template>

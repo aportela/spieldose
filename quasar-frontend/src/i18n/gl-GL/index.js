@@ -19,6 +19,7 @@ export default {
   Artists: "Artistas",
   Albums: "Álbumes",
   Genres: "Xéneros",
+  Genre: "Xénero",
 
   // date ranges
   Today: "Hoxe",
@@ -153,8 +154,8 @@ export default {
   "Save as": "Gardar como",
   Index: "Índice",
   Title: "Título",
-  Artist: "Intérprete",
-  "Album Artist": "Intérprete do álbum",
+  Artist: "Artista",
+  "Album Artist": "Artista do álbum",
   Album: "Album",
   "Album Track nº": "nº de pista do álbum",
   Year: "Ano",
@@ -162,9 +163,15 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error cargando as cancións aleatorias",
 
+  // common browse labels
+  "No results found with the specified condition filter":
+    "Non hai resultados pra o filtro de condicións especificado",
+
   // browse artists
+  "Search by artist name": "Buscar por nome do artista",
   "API Error: error loading artists genres":
     "API Error: error cargando os xéneros dos artistas",
+  "API Error: error loading artists": "API Error: error cargando os artistas",
 
   // radio stations
   "My radio stations": "As miñas estacións de radio",
@@ -178,4 +185,8 @@ export default {
     "API Error: error poniendo en cola el album",
   "API Error: error loading playlist":
     "API Error: error cargando a lista de reproducción",
+
+  // other
+  "Minimum 3 characters to trigger autocomplete":
+    "Teclee mínimo 3 caracteres pra lanzar o autocompletado",
 };
