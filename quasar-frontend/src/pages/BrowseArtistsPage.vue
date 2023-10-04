@@ -8,9 +8,9 @@
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
           <q-input v-model="artistName" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search artists with name" :loading="loading" @keydown.enter.prevent="onChangeName"
-            @clear="artistsNotFound = false; search(true)" :error="artistsNotFound"
-            :errorMessage="'No artists found with specified condition'" :disable="loading" ref="artistNameRef">
+            hint="Search artists with name" :loading="loading" @keydown.enter.prevent="onChangeName" @clear="search"
+            :error="artistsNotFound" :errorMessage="'No artists found with specified condition'" :disable="loading"
+            ref="artistNameRef">
             <template v-slot:prepend>
               <q-icon name="filter_alt" />
             </template>
@@ -97,7 +97,7 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref, nextTick, computed, watch } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
@@ -132,43 +132,35 @@ const sortFieldValues = [
 
 const sortField = ref(sortFieldValues[0]);
 
-const routeParams = computed(() => route.params || {});
-const routeQuery = computed(() => route.query || {});
-
 router.beforeEach(async (to, from) => {
   if (from.name == "artists" || from.name == "artistsPaged") {
     currentPageIndex.value = parseInt(to.params.page || 1);
     filterByGenre.value = to.query.genre || null;
     artistName.value = to.query.q || null;
-    sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder :  "ASC";
+    sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
     sortField.value = sortFieldValues[to.query.sortField == "totalTracks" ? 1 : 0];
     if (to.params.page != from.params.page) {
-      search(false);
-    } else if (to.query != from.query) {
-      search(true);
-    } else {
-      // TODO ?
+      nextTick(() => {
+        search(false);
+      });
     }
-  } else {
-    search(true);
   }
-}
-);
+});
 
-const sortOrder = ref(routeQuery.value.sortOrder == "DESC" ? routeQuery.value.sortOrder: "ASC");
+const sortOrder = ref(null);
 
-const filterByGenre = ref(routeQuery.value.genre || null);
+const filterByGenre = ref(null);
 
 const totalPages = ref(0);
 
-const currentPageIndex = ref(parseInt(routeParams.value.page || 1));
+const currentPageIndex = ref(parseInt(route.params.page || 1));
 
 const artistNameRef = ref(null);
 
-function search(resetPager) {
+function search() {
   artistsNotFound.value = false;
   loading.value = true;
-  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, resetPager ? 1 : currentPageIndex.value, 32, sortField.value.value, sortOrder.value).then((success) => {
+  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (success.data.data.pager.totalResults < 1) {
@@ -192,19 +184,19 @@ function search(resetPager) {
 }
 
 function onPaginationChanged(pageIndex) {
-  refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value.value);
+  refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value);
 }
 
 function onChangeName(name) {
-  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value.value);
+  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value);
 }
 
 function onChangeGenre(selectedGenre) {
-  refreshURL(1, artistName.value, selectedGenre, sortField.value.value, sortOrder.value.value);
+  refreshURL(1, artistName.value, selectedGenre, sortField.value.value, sortOrder.value);
 }
 
 function onChangeSortField(selectedSortField) {
-  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value.value);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value);
 }
 
 function onChangeSortOrder(selectedSortOrder) {
@@ -212,7 +204,7 @@ function onChangeSortOrder(selectedSortOrder) {
 }
 
 function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
-  const query = Object.assign({}, routeQuery.value);
+  const query = Object.assign({}, route.query || {});
   query.q = artistName || null;
   query.genre = selectedGenre || null;
   query.sortField = sortField || "name";
@@ -226,5 +218,8 @@ function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) 
   });
 }
 
-search(false);
+onMounted(() => {
+  search();
+});
+
 </script>
