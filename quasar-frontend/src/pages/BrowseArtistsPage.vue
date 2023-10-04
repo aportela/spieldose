@@ -8,7 +8,7 @@
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
           <q-input v-model="artistName" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search artists with name" :loading="loading" @keydown.enter.prevent="search(true)"
+            hint="Search artists with name" :loading="loading" @keydown.enter.prevent="onChangeName"
             @clear="artistsNotFound = false; search(true)" :error="artistsNotFound"
             :errorMessage="'No artists found with specified condition'" :disable="loading" ref="artistNameRef">
             <template v-slot:prepend>
@@ -209,6 +209,10 @@ function search(resetPager) {
 
 function onPaginationChanged(pageIndex) {
   refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value.value);
+}
+
+function onChangeName(name) {
+  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value.value);
 }
 
 function onChangeGenre(selectedGenre) {
