@@ -63,9 +63,12 @@ export default {
   nYearsAgo: "hace {count} años",
 
   // sort
-  "Sort order": "Orden",
-  Ascending: "Ascendente",
-  Descending: "Descendente",
+  "Sort field": "Campo de ordenación",
+  "Sort by artist name": "Nombre",
+  "Sort by total tracks": "Nº de canciones",
+  "Sort order": "Tipo de orden",
+  Ascending: "Ascending",
+  Descending: "Descending",
 
   // actions
   "Search...": "Buscar...",
@@ -151,7 +154,7 @@ export default {
   "Save as": "Guardar como",
   Index: "Índice",
   Title: "Título",
-  Artist: "Intérprete",
+  //Artist: "Intérprete",
   "Album Artist": "Intérprete del álbum",
   Album: "Album",
   "Album Track nº": "nº de pista del álbum",

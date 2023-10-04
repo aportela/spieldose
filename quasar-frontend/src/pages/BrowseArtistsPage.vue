@@ -23,12 +23,8 @@
           <ArtistsGenreSelector :defaultGenre="filterByGenre" @change="onChangeGenre"></ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
-            @update:model-value="onChangeSortField" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <SortFieldSelector :options="sortFieldOptions" :field="sortField" @change="onChangeSortField">
+          </SortFieldSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <SortOrderSelector :order="sortOrder" @change="onChangeSortOrder"></SortOrderSelector>
@@ -103,6 +99,7 @@ import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
+import { default as SortFieldSelector } from "components/SortFieldSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 
 const { t } = useI18n();
@@ -119,18 +116,18 @@ const lastChangesTimestamp = ref(0);
 const route = useRoute();
 const router = useRouter();
 
-const sortFieldValues = [
+const sortFieldOptions = [
   {
-    label: 'Name',
+    label: 'Sort by artist name',
     value: 'name'
   },
   {
-    label: 'Total tracks',
+    label: 'Sort by total tracks',
     value: 'totalTracks'
   }
 ];
 
-const sortField = ref(sortFieldValues[0]);
+const sortField = ref(sortFieldOptions[0].value);
 
 router.beforeEach(async (to, from) => {
   if (from.name == "artists" || from.name == "artistsPaged") {
@@ -138,10 +135,12 @@ router.beforeEach(async (to, from) => {
     filterByGenre.value = to.query.genre || null;
     artistName.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
-    sortField.value = sortFieldValues[to.query.sortField == "totalTracks" ? 1 : 0];
-    if (to.params.page != from.params.page) {
+    sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
+    console.log(from.query);
+    console.log(to.query);
+    if (to.params.page != from.params.page || to.query != from.query) {
       nextTick(() => {
-        search(false);
+        search();
       });
     }
   }
@@ -160,7 +159,7 @@ const artistNameRef = ref(null);
 function search() {
   artistsNotFound.value = false;
   loading.value = true;
-  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value).then((success) => {
+  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (success.data.data.pager.totalResults < 1) {
@@ -184,23 +183,23 @@ function search() {
 }
 
 function onPaginationChanged(pageIndex) {
-  refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value);
+  refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value, sortOrder.value);
 }
 
 function onChangeName(name) {
-  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, sortOrder.value);
+  refreshURL(1, artistName.value, filterByGenre.value, sortField.value, sortOrder.value);
 }
 
 function onChangeGenre(selectedGenre) {
-  refreshURL(1, artistName.value, selectedGenre, sortField.value.value, sortOrder.value);
+  refreshURL(1, artistName.value, selectedGenre, sortField.value, sortOrder.value);
 }
 
 function onChangeSortField(selectedSortField) {
-  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, selectedSortField, sortOrder.value);
 }
 
 function onChangeSortOrder(selectedSortOrder) {
-  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value, selectedSortOrder);
 }
 
 function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
