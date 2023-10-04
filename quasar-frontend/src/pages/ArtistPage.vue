@@ -173,7 +173,7 @@
           </q-card>
         </div>
         <div class="col-2">
-          <q-card class="my-card shadow-box shadow-10" bordered
+          <q-card class="my-card shadow-box shadow-10 q-mb-lg" bordered
             v-if="artistData.relations && artistData.relations.length > 0">
             <q-card-section>
               Relations
@@ -186,7 +186,7 @@
               </p>
             </q-card-section>
           </q-card>
-          <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered
+          <q-card class="my-card shadow-box shadow-10 q-mb-lg" bordered
             v-if="artistData.similar && artistData.similar.length > 0">
             <q-card-section>
               Similar
@@ -209,7 +209,7 @@
               </div>
             </q-card-section>
           </q-card>
-          <q-card class="my-card shadow-box shadow-10 q-mt-lg" bordered>
+          <q-card class="my-card shadow-box shadow-10" bordered>
             <q-card-section>
               Stats
             </q-card-section>
