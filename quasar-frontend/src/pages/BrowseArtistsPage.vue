@@ -216,11 +216,11 @@ function onChangeGenre(selectedGenre) {
 }
 
 function onChangeSortField(selectedSortField) {
-  refreshURL(1, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value.value);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, selectedSortField.value, sortOrder.value.value);
 }
 
 function onChangeSortOrder(selectedSortOrder) {
-  refreshURL(1, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder.value);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder.value);
 }
 
 function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {
