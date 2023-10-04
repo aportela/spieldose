@@ -20,14 +20,14 @@
           </q-input>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <ArtistsGenreSelector :defaultGenre="filterByGenre" @change="onChangeGenre"></ArtistsGenreSelector>
+          <ArtistsGenreSelector :disable="loading" :defaultGenre="filterByGenre" @change="onChangeGenre"></ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortFieldSelector :options="sortFieldOptions" :field="sortField" @change="onChangeSortField">
+          <SortFieldSelector :disable="loading" :options="sortFieldOptions" :field="sortField" @change="onChangeSortField">
           </SortFieldSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortOrderSelector :order="sortOrder" @change="onChangeSortOrder"></SortOrderSelector>
+          <SortOrderSelector :disable="loading" :order="sortOrder" @change="onChangeSortOrder"></SortOrderSelector>
         </div>
       </div>
       <div v-if="artists && artists.length > 0">

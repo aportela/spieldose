@@ -1,5 +1,5 @@
 <template>
-  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')" :disable="loading"
+  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')" :disable="loading || disable"
     emit-value filled clearable=""
     :hint="!genre ? t('Minimum 3 characters to trigger autocomplete') : null" use-input
     input-debounce="0" @filter="onFilterGenres" @update:model-value="onChangeGenre">
@@ -12,7 +12,7 @@ import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 
-const props = defineProps(['defaultGenre']);
+const props = defineProps(['disable', 'defaultGenre']);
 const emit = defineEmits(['change']);
 
 const { t } = useI18n();
