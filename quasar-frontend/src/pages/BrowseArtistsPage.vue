@@ -74,15 +74,13 @@
 
 <style>
 img.artist_image {
-  opacity: 0.5;
-  -webkit-filter: grayscale(100%);
+  -webkit-filter: grayscale(100%) blur(4px) opacity(0.5);
   /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%) blur(2px);
+  filter: grayscale(100%) blur(4px) opacity(0.5);
   transition: filter 0.2s ease-in;
 }
 
 img.artist_image:hover {
-  opacity: 1;
   -webkit-filter: none;
   /* Safari 6.0 - 9.0 */
   filter: none;
