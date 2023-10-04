@@ -15,7 +15,7 @@
               <q-icon name="filter_alt" />
             </template>
             <template v-slot:append>
-              <q-icon name="search" class="cursor-pointer" @click="search" />
+              <q-icon name="search" class="cursor-pointer" @click="onChangeName" />
             </template>
           </q-input>
         </div>
@@ -136,8 +136,6 @@ router.beforeEach(async (to, from) => {
     artistName.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
     sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
-    console.log(from.query);
-    console.log(to.query);
     if (to.params.page != from.params.page || to.query != from.query) {
       nextTick(() => {
         search();
@@ -186,7 +184,7 @@ function onPaginationChanged(pageIndex) {
   refreshURL(pageIndex, artistName.value, filterByGenre.value, sortField.value, sortOrder.value);
 }
 
-function onChangeName(name) {
+function onChangeName() {
   refreshURL(1, artistName.value, filterByGenre.value, sortField.value, sortOrder.value);
 }
 
