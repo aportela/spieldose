@@ -102,7 +102,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { api } from 'boot/axios';
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { isNumeric } from "chartist";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 
