@@ -31,12 +31,7 @@
           </q-select>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-            @update:model-value="onChangeSortOrder" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <SortOrderSelector :order="sortOrder" @change="onChangeSortOrder"></SortOrderSelector>
         </div>
       </div>
       <div v-if="artists && artists.length > 0">
@@ -109,6 +104,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { isNumeric } from "chartist";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
+import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -137,17 +133,6 @@ const sortFieldValues = [
 
 const sortField = ref(sortFieldValues[0]);
 
-const sortOrderValues = [
-  {
-    label: 'Ascending',
-    value: 'ASC'
-  },
-  {
-    label: 'Descending',
-    value: 'DESC'
-  }
-];
-
 const routeParams = computed(() => route.params || {});
 const routeQuery = computed(() => route.query || {});
 
@@ -156,7 +141,7 @@ router.beforeEach(async (to, from) => {
     currentPageIndex.value = parseInt(to.params.page || 1);
     filterByGenre.value = to.query.genre || null;
     artistName.value = to.query.q || null;
-    sortOrder.value = sortOrderValues[to.query.sortOrder == "DESC" ? 1 : 0];
+    sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder :  "ASC";
     sortField.value = sortFieldValues[to.query.sortField == "totalTracks" ? 1 : 0];
     if (to.params.page != from.params.page) {
       search(false);
@@ -171,7 +156,7 @@ router.beforeEach(async (to, from) => {
 }
 );
 
-const sortOrder = ref(sortOrderValues[0]);
+const sortOrder = ref(routeQuery.value.sortOrder == "DESC" ? routeQuery.value.sortOrder: "ASC");
 
 const filterByGenre = ref(routeQuery.value.genre || null);
 
@@ -184,7 +169,7 @@ const artistNameRef = ref(null);
 function search(resetPager) {
   artistsNotFound.value = false;
   loading.value = true;
-  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, resetPager ? 1 : currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  api.artist.search({ genre: filterByGenre.value || null, name: artistName.value || null }, resetPager ? 1 : currentPageIndex.value, 32, sortField.value.value, sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     if (success.data.data.pager.totalResults < 1) {
@@ -224,7 +209,7 @@ function onChangeSortField(selectedSortField) {
 }
 
 function onChangeSortOrder(selectedSortOrder) {
-  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder.value);
+  refreshURL(currentPageIndex.value, artistName.value, filterByGenre.value, sortField.value.value, selectedSortOrder);
 }
 
 function refreshURL(pageIndex, artistName, selectedGenre, sortField, sortOrder) {

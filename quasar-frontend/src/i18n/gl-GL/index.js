@@ -62,6 +62,11 @@ export default {
   oneYearAgo: "fai {count} ano",
   nYearsAgo: "fai {count} anos",
 
+  // sort
+  "Sort order": "Orde",
+  Ascending: "Ascendente",
+  Descending: "Descendente",
+
   // actions
   "Search...": "Procurar...",
   reload: "recargar",

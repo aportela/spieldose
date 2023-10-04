@@ -62,6 +62,11 @@ export default {
   oneYearAgo: "hace {count} año",
   nYearsAgo: "hace {count} años",
 
+  // sort
+  "Sort order": "Orden",
+  Ascending: "Ascendente",
+  Descending: "Descendente",
+
   // actions
   "Search...": "Buscar...",
   reload: "recargar",
