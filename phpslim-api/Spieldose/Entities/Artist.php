@@ -47,7 +47,7 @@ class Artist extends \Spieldose\Entities\Entity
             $filterConditions[] = " artist_name IS NOT NULL ";
         }
         if (isset($filter["genre"]) && !empty($filter["genre"])) {
-            $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = TMP_ARTISTS.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
+            $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = FIT.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
         }
         $fieldDefinitions = [
