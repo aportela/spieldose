@@ -8,7 +8,7 @@
       @click="trackActions.enqueue(track)" />
     <span>{{ track.title }}</span>
     <span v-if="track.artist.name"> / <router-link
-        :to="{ name: track.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: track.artist.mbId, name: track.artist.name, tab: 'overview' } }">{{
+        :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
           track.artist.name }}</router-link></span>
     <slot name="append">
     </slot>

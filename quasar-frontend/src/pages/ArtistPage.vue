@@ -50,24 +50,30 @@
         </div>
       </div>
       <q-tabs class="tex-white q-mt-md">
-        <q-route-tab icon="summarize" name="overview" label="Overview" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'overview'} }" />
+        <q-route-tab icon="summarize" name="overview" label="Overview"
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'overview' } }" />
         <q-route-tab icon="menu_book" name="biography" label="Biography"
-          :disable="!(artistData.bio && artistData.bio.content)" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'biography'} }">
+          :disable="!(artistData.bio && artistData.bio.content)"
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'biography' } }">
           <q-badge color="pink" floating v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
           <q-badge color="pink" floating v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
         </q-route-tab>
-        <q-route-tab icon="groups" name="similar" label="Similar artists" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'similar'} }">
+        <q-route-tab icon="groups" name="similar" label="Similar artists"
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'similar' } }">
           <q-badge color="pink" floating v-if="artistData.similar && artistData.similar.length > 0">{{
             artistData.similar.length }}</q-badge>
         </q-route-tab>
-        <q-route-tab icon="album" name="albums" label="Albums" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'albums'} }">
+        <q-route-tab icon="album" name="albums" label="Albums"
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'albums' } }">
           <q-badge color="pink" floating v-if="artistData.topAlbums && artistData.topAlbums.length > 0">{{
             artistData.topAlbums.length }}</q-badge>
         </q-route-tab>
-        <q-route-tab icon="audiotrack" name="tracks" label="Tracks" :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'tracks'} }">
+        <q-route-tab icon="audiotrack" name="tracks" label="Tracks"
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'tracks' } }">
           <q-badge color="pink" floating v-if="rows && rows.length > 0">{{ rows.length }}</q-badge>
         </q-route-tab>
-        <q-route-tab icon="analytics" name="metrics" label="Stats" disable :to="{ name: artistData.mbId ? 'mbArtist': 'artist', params: { mbid: artistData.mbId, name: artistData.name, tab: 'metrics'} }"/>
+        <q-route-tab icon="analytics" name="metrics" label="Stats" disable
+          :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'metrics' } }" />
       </q-tabs>
     </div>
   </div>
@@ -197,7 +203,7 @@
                 <div class="col-4" v-for="similar in artistData.similar.slice(0, 3)" :key="similar.name">
                   <p class="text-center">
                     <router-link
-                      :to="{ name: similar.mbId ? 'mbArtist' : 'artist', params: { mbid: similar.mbId, name: similar.name, tab: 'overview' } }"
+                      :to="{ name: 'artist', params: { name: similar.name }, query: { mbid: similar.mbId, tab: 'overview' } }"
                       style="text-decoration: none">
                       <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
                         fit="cover" width="96px" height="96px" spinner-color="pink" />
@@ -245,7 +251,7 @@
         <q-card-section v-if="artistData.similar && artistData.similar.length > 0">
           <div class="q-gutter-md row items-start">
             <router-link
-              :to="{ name: artist.mbId ? 'mbArtist' : 'artist', params: { mbid: artist.mbId, name: artist.name, tab: 'overview' } }"
+              :to="{ name: 'artist', params: { name: artist.name }, query: { mbid: artist.mbId, tab: 'overview' } }"
               v-for="artist in artistData.similar" :key="artist.name">
               <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
                 <div class="absolute-bottom text-subtitle1 text-center">
@@ -304,9 +310,9 @@
         <q-card-section>
           <div class="text-h6">Tracks
             <q-btn-group class="q-ml-md">
-            <q-btn size="sm" icon="play_arrow" @click.prevent="onPlayAllArtistTracks">play all</q-btn>
-            <q-btn size="sm" icon="add_box" @click.prevent="onEnqueueAllArtistTracks">enqueue all</q-btn>
-          </q-btn-group>
+              <q-btn size="sm" icon="play_arrow" @click.prevent="onPlayAllArtistTracks">play all</q-btn>
+              <q-btn size="sm" icon="add_box" @click.prevent="onEnqueueAllArtistTracks">enqueue all</q-btn>
+            </q-btn-group>
           </div>
         </q-card-section>
         <q-separator />
@@ -325,13 +331,13 @@
                 </q-td>
                 <q-td key="artist" :props="props">
                   <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
-                    :to="{ name: props.row.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.artist.mbId, name: props.row.artist.name, tab: 'overview' } }"><q-icon
+                    :to="{ name: 'artist', params: { name: props.row.artist.name }, query: { mbid: props.row.artist.mbId, tab: 'overview' } }"><q-icon
                       name="link" class="q-mr-sm"></q-icon>{{
                         props.row.artist.name }}</router-link>
                 </q-td>
                 <q-td key="albumArtist" :props="props">
                   <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
-                    :to="{ name: props.row.album.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.album.artist.mbId, name: props.row.album.artist.name, tab: 'overview' } }"><q-icon
+                    :to="{ name: 'artist', params: { name: props.row.album.artist.name }, query: { mbid: props.row.album.artist.mbId, tab: 'overview' } }"><q-icon
                       name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
                 </q-td>
                 <q-td key="albumTitle" :props="props">
@@ -517,7 +523,7 @@ const spieldoseStore = useSpieldoseStore();
 
 const route = useRoute();
 
-const tabFromRoute = computed(() => route.params.tab);
+const tabFromRoute = computed(() => route.query.tab || 'overview');
 
 watch(tabFromRoute, (newValue) => {
   if (newValue && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(newValue)) {
@@ -527,10 +533,10 @@ watch(tabFromRoute, (newValue) => {
   }
 });
 
-const artistMBId = ref(route.params.mbid);
+const artistMBId = ref(route.query.mbid);
 const artistName = ref(route.params.name);
 
-const tab = ref(route.params.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.params.tab) ? route.params.tab : 'overview');
+const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
 
 watch(tab, (newValue) => {
   if (newValue) {
@@ -561,7 +567,7 @@ const artistData = ref({
 
 const artistImage = ref(null);
 
-const currentArtist = computed(() => { return (route.params.name); });
+const currentArtist = computed(() => { return (route.query.name); });
 
 watch(currentArtist, (newValue, oldValue) => {
   artistName.value = newValue;
@@ -815,11 +821,11 @@ function onToggleFavorite(trackId, favorited) {
 }
 
 function onPlayAllArtistTracks() {
-  spieldoseStore.sendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return({ track: element}); }));
+  spieldoseStore.sendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
 }
 
 function onEnqueueAllArtistTracks() {
-  spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return({ track: element}); }));
+  spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
 }
 
 get(artistMBId.value, artistName.value);

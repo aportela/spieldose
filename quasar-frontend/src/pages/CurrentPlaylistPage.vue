@@ -11,8 +11,8 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt" @click="onDiscover"
         :disable="loading">
       </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle" @click="onRandomize"
-      :disable="loading || !(elements && elements.length > 0)">
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle"
+        @click="onRandomize" :disable="loading || !(elements && elements.length > 0)">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
         @click="onPreviusPlaylist" :disable="loading || !spieldoseStore.allowSkipPrevious" />
@@ -60,13 +60,13 @@
           </q-td>
           <q-td key="artist" :props="props">
             <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: props.row.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.artist.mbId, name: props.row.artist.name, tab: 'overview' } }"><q-icon
+              :to="{ name: 'artist', params: { name: props.row.artist.name }, query: { mbid: props.row.artist.mbId, tab: 'overview' } }"><q-icon
                 name="link" class="q-mr-sm"></q-icon>{{
                   props.row.artist.name }}</router-link>
           </q-td>
           <q-td key="albumArtist" :props="props">
             <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: props.row.album.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: props.row.album.artist.mbId, name: props.row.album.artist.name, tab: 'overview' } }"><q-icon
+              :to="{ name: 'artist', params: { name: props.row.album.artist.name }, query: { mbid: props.row.album.artist.mbId, tab: 'overview' } }"><q-icon
                 name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
           </q-td>
           <q-td key="albumTitle" :props="props">

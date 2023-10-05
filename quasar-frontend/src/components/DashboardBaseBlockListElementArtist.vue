@@ -4,7 +4,7 @@
     </slot>
     <q-icon name="link" size="sm" class="q-mr-xs" />
     <span v-if="artist.name"><router-link
-        :to="{ name: artist.mbId ? 'mbArtist' : 'artist', params: { mbid: artist.mbId, name: artist.name, tab: 'overview' } }">{{
+        :to="{ name: 'artist', params: { name: artist.name }, query: { mbid: artist.mbId, tab: 'overview' } }">{{
           artist.name }}</router-link></span>
     <slot name="append">
     </slot>

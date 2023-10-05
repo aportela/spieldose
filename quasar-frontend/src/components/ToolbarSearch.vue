@@ -68,7 +68,8 @@
             </div>
           </q-item-section>
         </q-item>
-        <q-item v-else-if="scope.opt.isArtist" clickable :to="{ name: scope.opt.isMBArtist ? 'mbArtist': 'artist', params: { mbid: scope.opt.id, name: scope.opt.label } }">
+        <q-item v-else-if="scope.opt.isArtist" clickable
+          :to="{ name: 'artist', params: { name: scope.opt.label }, query: { mbid: scope.opt.id, tab: 'overview' } }">
           <q-item-section avatar top>
             <q-icon name="person" color="black" size="34px" />
           </q-item-section>

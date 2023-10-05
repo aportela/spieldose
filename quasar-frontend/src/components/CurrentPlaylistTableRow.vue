@@ -6,13 +6,13 @@
     <td class="text-left cursor-pointer" @click="setcurrentIndex">{{ element.track.title }}</td>
     <td class="text-left"><router-link v-if="element.track.artist && element.track.artist.name"
         :class="{ 'text-white text-bold': selected }"
-        :to="{ name: element.track.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: element.track.artist.mbId, name: element.track.artist.name, tab: 'overview' } }"><q-icon
+        :to="{ name: 'artist', params: { name: element.track.artist.name }, query: { mbid: element.track.artist.mbId, tab: 'overview' } }"><q-icon
           name="link" class="q-mr-sm"></q-icon>{{
             element.track.artist.name }}</router-link></td>
     <td class="text-left gt-lg"><router-link
         v-if="element.track.album && element.track.album.artist && element.track.album.artist.name"
         :class="{ 'text-white text-bold': selected }"
-        :to="{ name: element.track.album.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: element.track.album.artist.mbId, name: element.track.album.artist.name, tab: 'overview' } }"><q-icon
+        :to="{ name: 'artist', params: { name: element.track.album.artist.name }, query: { mbid: element.track.album.artist.mbId, tab: 'overview' } }"><q-icon
           name="link" class="q-mr-sm"></q-icon>{{ element.track.album.artist.name }}</router-link></td>
     <td class="text-left">{{ element.track.album ? element.track.album.title : null }}<span class="is-clickable"><i
           class="fas fa-link ml-1"></i></span></td>

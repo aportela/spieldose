@@ -34,8 +34,7 @@
       </div>
     </template>
     <template #items>
-      <router-link
-        :to="{ name: artist.mbId && artist.name ? 'mbArtist' : 'artist', params: { mbid: artist.mbId, name: artist.name, tab: 'overview' } }"
+      <router-link :to="{ name: 'artist', params: { name: artist.name }, query: { mbid: artist.mbId, tab: 'overview' } }"
         v-for="artist in artists" :key="artist.hash" v-memo="[lastChangesTimestamp]">
         <q-img img-class="sp-artist-image-filter" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
           <div class="absolute-bottom text-subtitle1 text-center">
@@ -119,7 +118,7 @@ const sortFieldOptions = computed(() => [
 ]);
 
 const sortField = ref(sortFieldOptions.value[0].value);
-const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC": "ASC");
+const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
 const loading = ref(false);
 const artists = ref([]);

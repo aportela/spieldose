@@ -6,7 +6,7 @@
       currentElement.track.album.title || "&nbsp;" }}</p>
     <p class="text-center ellipsis">
       <router-link v-if="currentElement.track.artist.name" style="text-decoration: none;"
-        :to="{ name: currentElement.track.artist.mbId ? 'mbArtist' : 'artist', params: { mbid: currentElement.track.artist.mbId, name: currentElement.track.artist.name, tab: 'overview' } }"
+        :to="{ name: 'artist', params: { name: currentElement.track.artist.name }, query: { mbid: currentElement.track.artist.mbId, tab: 'overview' } }"
         :title="currentElement.track.artist.name">{{ currentElement.track.artist.name }}</router-link>
       <span v-else>&nbsp;</span>
     </p>

@@ -16,7 +16,7 @@
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">{{ title }}</p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
-          :to="{ name: artistMbId ? 'mbArtist' : 'artist', params: { mbid: artistMbId, name: artistName, tab: 'overview' } }">{{
+          :to="{ name: 'artist', params: { name: artistName }, query: { mbid: artistMbId, tab: 'overview' } }">{{
             artistName }}</router-link> <span v-if="year">({{ year
   }})</span></p>
       <p v-else-if="year">({{ year }})</p>

@@ -6,9 +6,8 @@
     <span>{{ album.title }}</span>
     <span v-if="album.year"> ({{ album.year }}) </span>
     <span v-if="album.albumArtistName"> / <router-link
-        :to="{ name: album.albumArtistMBId ? 'mbArtist' : 'artist', params: { mbid: album.albumArtistMBId, name: album.albumArtistName, tab: 'overview' } }">{{
+        :to="{ name: 'artist', params: { name: album.albumArtistName }, query: { mbid: album.albumArtistMBId, tab: 'overview' } }">{{
           album.albumArtistName }}</router-link></span>
-
     <slot name="append">
     </slot>
   </li>
