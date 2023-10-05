@@ -14,7 +14,9 @@
       <img class="vinyl no-cover" src="images/vinyl-medium.png" v-if="loaded || errors" />
     </div>
     <div class="album-info">
-      <p class="album-name" v-if="title" :title="title">{{ title }}</p>
+      <p class="album-name" v-if="title" :title="title">
+        <router-link :to="{ name: 'album', params: { title: title }, query: { artist: artistName, year: year} }">{{ title }}</router-link>
+      </p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
           :to="{ name: 'artist', params: { name: artistName }, query: { mbid: artistMbId, tab: 'overview' } }">{{
             artistName }}</router-link> <span v-if="year">({{ year
@@ -145,6 +147,10 @@ div.animated-album-cover-item div.album-info p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+div.animated-album-cover-item div.album-info p.album-name {
+  margin-bottom: 4px;
 }
 
 /* album thumb */
