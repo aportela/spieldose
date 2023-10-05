@@ -15,6 +15,8 @@ export default {
   "Selected language": "Idioma seleccionado",
 
   // entities
+  track: "canción",
+  tracks: "cancións",
   Tracks: "Cancións",
   Artists: "Artistas",
   Albums: "Álbumes",
@@ -164,11 +166,8 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error cargando as cancións aleatorias",
 
-  // common browse labels
-  "No results found with the specified condition filter":
-    "Non hai resultados pra o filtro de condicións especificado",
-
   // browse artists
+  "Browse artists": "Explorer artistas",
   "Search by artist name": "Buscar por nome do artista",
   "API Error: error loading artists genres":
     "API Error: error cargando os xéneros dos artistas",
@@ -188,6 +187,9 @@ export default {
     "API Error: error cargando a lista de reproducción",
 
   // other
+  "Type text condition": "Teclee a condición de texto",
   "Minimum 3 characters to trigger autocomplete":
     "Teclee mínimo 3 caracteres pra lanzar o autocompletado",
+  "No results found with the specified condition filter":
+    "Non hai resultados pra o filtro de condicións especificado",
 };

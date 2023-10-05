@@ -15,6 +15,8 @@ export default {
   "Selected language": "Selected language",
 
   // entities
+  track: "track",
+  tracks: "tracks",
   Tracks: "Tracks",
   Artists: "Artists",
   Albums: "Albums",
@@ -162,11 +164,8 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
 
-  // common browse labels
-  "No results found with the specified condition filter":
-    "No results found with the specified condition filter",
-
   // browse artists
+  "Browse artists": "Browse artists",
   "Search by artist name": "Search by artist name",
   "API Error: error loading artists genres":
     "API Error: error loading artists genres",
@@ -184,6 +183,9 @@ export default {
   "API Error: error loading playlist": "API Error: error loading playlist",
 
   // other
+  "Type text condition": "Type text condition",
   "Minimum 3 characters to trigger autocomplete":
     "Minimum 3 characters to trigger autocomplete",
+  "No results found with the specified condition filter":
+    "No results found with the specified condition filter",
 };

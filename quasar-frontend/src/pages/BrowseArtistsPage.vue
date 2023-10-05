@@ -2,12 +2,12 @@
   <q-card class="q-pa-lg">
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <q-breadcrumbs-el icon="person" label="Browse artists" />
+      <q-breadcrumbs-el icon="person" :label="t('Browse artists')" />
     </q-breadcrumbs>
     <q-card-section>
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
-          <q-input v-model="artistName" clearable type="search" outlined dense placeholder="Text condition"
+          <q-input v-model="artistName" clearable type="search" outlined dense :placeholder="t('Type text condition')"
             :hint="t('Search by artist name')" :loading="loading" @keydown.enter.prevent="onChangeName" @clear="search"
             :error="noItemsFound" :errorMessage="t('No results found with the specified condition filter')"
             :disable="loading" ref="artistNameRef">
@@ -42,8 +42,7 @@
             <q-img img-class="artist_image" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
               <div class="absolute-bottom text-subtitle1 text-center">
                 {{ artist.name }}
-                <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
-                  'track') }}</p>
+                <p class="text-caption q-mb-none">{{ artist.totalTracks }} {{ t(artist.totalTracks > 1 ? "tracks": "track") }}</p>
               </div>
               <template v-slot:loading>
                 <div class="absolute-full flex flex-center bg-grey-3 text-dark">
