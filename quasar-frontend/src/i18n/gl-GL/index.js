@@ -70,8 +70,8 @@ export default {
   "Sort by artist name": "Nome",
   "Sort by total tracks": "Nº de cancións",
   "Sort order": "Tipo de orden",
-  Ascending: "Ascending",
-  Descending: "Descending",
+  Ascending: "Ascendente",
+  Descending: "Descendente",
 
   // actions
   "Search...": "Procurar...",

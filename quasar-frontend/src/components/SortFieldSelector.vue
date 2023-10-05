@@ -2,7 +2,7 @@
   <q-select outlined dense v-model="model" :options="options" options-dense :label="t('Sort field')"
     @update:model-value="onChange" :disable="disable">
     <template v-slot:selected-item="scope">
-      {{ t(scope.opt.label) }}
+      {{ scope.opt.label }}
     </template>
   </q-select>
 </template>
@@ -16,6 +16,7 @@ const { t } = useI18n();
 
 const props = defineProps({
   disable: Boolean,
+  // TODO: when changed global locale (from layout menu), selected-item label will not translated until model change (BUG)
   options: Array,
   field: String
 });

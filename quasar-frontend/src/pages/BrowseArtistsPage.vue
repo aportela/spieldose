@@ -90,7 +90,7 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
@@ -108,17 +108,18 @@ const router = useRouter();
 const artistNameRef = ref(null);
 const artistName = ref(route.query.q || null);
 const filterByGenre = ref(route.query.genre || null);
-const sortFieldOptions = [
+const sortFieldOptions = computed(() => [
   {
-    label: 'Sort by artist name',
+    label: t('Sort by artist name'),
     value: 'name'
   },
   {
-    label: 'Sort by total tracks',
+    label: t('Sort by total tracks'),
     value: 'totalTracks'
   }
-];
-const sortField = ref(sortFieldOptions[0].value);
+]);
+
+const sortField = ref(sortFieldOptions.value[0].value);
 const sortOrder = ref(null);
 const noItemsFound = ref(false);
 const loading = ref(false);
@@ -134,7 +135,7 @@ router.beforeEach(async (to, from) => {
     filterByGenre.value = to.query.genre || null;
     artistName.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? to.query.sortOrder : "ASC";
-    sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
+    sortField.value = sortFieldOptions.value[to.query.sortField == "totalTracks" ? 1 : 0].value;
     if (
       (to.name == "artists" || to.name == "artistsPaged") &&
       (
