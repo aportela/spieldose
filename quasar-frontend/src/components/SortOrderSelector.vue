@@ -36,7 +36,6 @@ const options = computed(() => [
 const model = ref(options.value[props.order == "DESC" ? 1 : 0]);
 
 function onChange(orderModel) {
-  console.log(orderModel.label);
   emit("change", orderModel.value);
 }
 
