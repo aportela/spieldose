@@ -52,13 +52,15 @@ class MusicBrainz
     public function saveCache(\aportela\DatabaseWrapper\DB $dbh)
     {
         $query = "
-            INSERT INTO CACHE_RELEASE_MUSICBRAINZ (mbid, title, year, media_count, ctime, mtime) VALUES (:mbid, :title, :year, :media_count, strftime('%s', 'now'), strftime('%s', 'now'))
+            INSERT INTO CACHE_RELEASE_MUSICBRAINZ (mbid, title, year, artist_mbid, artist_name, media_count, ctime, mtime) VALUES (:mbid, :title, :year, :media_count, strftime('%s', 'now'), strftime('%s', 'now'))
                 ON CONFLICT(mbid) DO
-            UPDATE SET title = :title, year = :year, media_count = :media_count, mtime = strftime('%s', 'now')
+            UPDATE SET title = :title, year = :year, :artist_mbid, :artist_name, media_count = :media_count, mtime = strftime('%s', 'now')
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
             new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->artist->mbId),
+            new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $this->artist->name),
             new \aportela\DatabaseWrapper\Param\IntegerParam(":media_count", count($this->media))
         );
         if ($this->year != null) {

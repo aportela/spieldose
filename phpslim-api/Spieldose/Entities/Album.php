@@ -12,14 +12,34 @@ class Album extends \Spieldose\Entities\Entity
     public ?int $year;
     public ?string $pathId;
 
-    public function __construct(?string $mbId = null, ?string $title = null)
+    public function __construct(?string $mbId = null, ?string $title = null, ?int $year, ?object $artist)
     {
         $this->mbId = $mbId;
         $this->title = $title;
+        $this->year = $year;
+        $this->artist = $artist;
     }
 
     public function get(\aportela\DatabaseWrapper\DB $dbh, bool $useLocalCovers = true)
     {
+        if (!empty($this->mbId)) {
+            $query = "
+                SELECT title, year, artist_mbid, artist_name, media_count
+                FROM CACHE_RELEASE_MUSICBRAINZ
+                WHERE mbid = :mbid
+            ";
+            $params = [new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)];
+            $results = $dbh->query($query, $params);
+            if (count($results) == 1) {
+                $this->title = $results[0]->title;
+                $this->year = $results[0]->year;
+                $this->artist = (object) ["mbId" => $results[0]->artist_mbid, "name" => $results[0]->artist_name];
+            } else {
+                throw new \Spieldose\Exception\NotFoundException("mbid");
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("mbid");
+        }
     }
 
     public static function getAlbumLocalPathCoverFromPathId(\aportela\DatabaseWrapper\DB $dbh, string $pathId): ?string

@@ -265,7 +265,6 @@ return (array(
             ALTER TABLE `LYRICS` ADD "mtime" INTEGER NOT NULL;
         '
     ),
-
     18 => array(
         '
             CREATE TABLE `FILE_SCRAP` (
@@ -276,7 +275,6 @@ return (array(
             );
         '
     ),
-
     19 => array(
         '
             CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ` (
@@ -398,5 +396,14 @@ return (array(
                 PRIMARY KEY (`id`)
             );
         ',
+    ),
+    23 => array(
+        // TODO: not null
+        '
+            ALTER TABLE `CACHE_RELEASE_MUSICBRAINZ` ADD `artist_mbid` VARCHAR(36);
+        ',
+        '
+            ALTER TABLE `CACHE_RELEASE_MUSICBRAINZ` ADD `artist_name` VARCHAR(128);
+        '
     )
 ));
