@@ -172,7 +172,7 @@ export default {
   "Search by artist name": "Buscar por nombre del artista",
   "API Error: error loading artists genres":
     "API Error: error cargando los géneros de los artistas",
-  "API Error: error loading artists": "API Error: error cargando los artists",
+  "API Error: error loading artists": "API Error: error cargando los artistas",
 
   // radio stations
   "My radio stations": "Mis estaciones de radio",
