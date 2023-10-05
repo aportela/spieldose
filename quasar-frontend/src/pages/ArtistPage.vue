@@ -571,7 +571,7 @@ const artistData = ref({
 
 const artistImage = ref(null);
 
-const currentArtist = computed(() => { return (route.query.name); });
+const currentArtist = computed(() => { return (route.params.name); });
 
 watch(currentArtist, (newValue, oldValue) => {
   artistName.value = newValue;
