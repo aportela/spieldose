@@ -459,8 +459,8 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref, onMounted, computed, watch, inject } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { api } from 'boot/axios';
@@ -522,21 +522,25 @@ const $q = useQuasar();
 const spieldoseStore = useSpieldoseStore();
 
 const route = useRoute();
+const router = useRouter();
 
-const tabFromRoute = computed(() => route.query.tab || 'overview');
-
-watch(tabFromRoute, (newValue) => {
-  if (newValue && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(newValue)) {
-    tab.value = newValue;
-  } else {
-    tab.value = 'overview';
-  }
-});
+const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
 
 const artistMBId = ref(route.query.mbid);
 const artistName = ref(route.params.name);
 
-const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
+router.beforeEach(async (to, from) => {
+  if (to.name == "artist") {
+    artistName.value = to.params.name;
+    artistMBId.value = to.query.mbid;
+    tab.value = to.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(to.query.tab) ? to.query.tab : 'overview';
+    if (from.params.name != to.params.name || from.query.mbid != to.query.mbid) {
+        nextTick(() => {
+          get(artistMBId.value, artistName.value);
+        });
+      }
+    }
+});
 
 watch(tab, (newValue) => {
   if (newValue) {
@@ -593,7 +597,6 @@ watch(currentArtist, (newValue, oldValue) => {
     get(artistMBId.value, artistName.value);
   }
 });
-
 
 const rows = ref([]);
 const artistTracksColumns = [
