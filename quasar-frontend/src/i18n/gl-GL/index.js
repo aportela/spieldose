@@ -167,7 +167,7 @@ export default {
     "API Error: error cargando as cancións aleatorias",
 
   // browse artists
-  "Browse artists": "Explorer artistas",
+  "Browse artists": "Explorar artistas",
   "Search by artist name": "Buscar por nome do artista",
   "API Error: error loading artists genres":
     "API Error: error cargando os xéneros dos artistas",
