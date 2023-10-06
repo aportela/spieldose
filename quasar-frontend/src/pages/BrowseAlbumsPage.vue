@@ -8,7 +8,7 @@
       <div class="row q-gutter-xs">
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <q-select outlined dense v-model="searchOn" :options="searchOnValues" options-dense label="Search on"
-            @update:model-value="search(true)" :disable="loading">
+            @update:model-value="onSearchOnChanged" :disable="loading">
             <template v-slot:selected-item="scope">
               {{ scope.opt.label }}
             </template>
@@ -160,6 +160,12 @@ function search(resetPager) {
     });
     loading.value = false;
   });
+}
+
+function onSearchOnChanged(a) {
+  if(searchText.value) {
+    search(true);
+  }
 }
 
 function onPaginationChanged(pageIndex) {
