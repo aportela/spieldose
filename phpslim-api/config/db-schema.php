@@ -405,5 +405,26 @@ return (array(
         '
             ALTER TABLE `CACHE_RELEASE_MUSICBRAINZ` ADD `artist_name` VARCHAR(128);
         '
+    ),
+    24 => array(
+        '
+            CREATE TABLE `CURRENT_PLAYLIST` (
+                `id` VARCHAR(36) NOT NULL,
+                `user_id` VARCHAR(36) NOT NULL,
+                `ctime` INTEGER NOT NULL,
+                `mtime` INTEGER NOT NULL,
+                PRIMARY KEY (`id`),
+                FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
+            );
+        ',
+        '
+            CREATE TABLE `CURRENT_PLAYLIST_TRACK` (
+                `playlist_id` VARCHAR(36) NOT NULL,
+                `track_id` VARCHAR(36) NOT NULL,
+                `track_index` INTEGER NOT NULL,
+                PRIMARY KEY (`playlist_id`, `track_id`),
+                FOREIGN KEY(`playlist_id`) REFERENCES CURRENT_PLAYLIST (`id`)
+            );
+        '
     )
 ));
