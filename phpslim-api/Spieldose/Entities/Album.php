@@ -12,7 +12,7 @@ class Album extends \Spieldose\Entities\Entity
     public ?int $year;
     public ?string $pathId;
 
-    public function __construct(?string $mbId = null, ?string $title = null, ?int $year, ?object $artist)
+    public function __construct(string $mbId = null, string $title, ?int $year, ?object $artist)
     {
         $this->mbId = $mbId;
         $this->title = $title;
