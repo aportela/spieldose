@@ -50,7 +50,7 @@
       </div>
       <div class="q-gutter-md row items-start">
         <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
-          :title="album.title" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year"
+          :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year"
           @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
         </AnimatedAlbumCover>
       </div>

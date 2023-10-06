@@ -15,7 +15,7 @@
     </div>
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">
-        <router-link :to="{ name: 'album', params: { title: title }, query: { artist: artistName, year: year} }">{{ title }}</router-link>
+        <router-link :to="{ name: 'album', params: { title: title }, query: { mbid: albumMbId, artist: artistName, year: year} }">{{ title }}</router-link>
       </p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
           :to="{ name: 'artist', params: { name: artistName }, query: { mbid: artistMbId, tab: 'overview' } }">{{
@@ -164,6 +164,7 @@ const emit = defineEmits(['play', 'enqueue']);
 
 const props = defineProps({
   title: String,
+  albumMbId: String,
   artistMbId: String,
   artistName: String,
   year: Number,
