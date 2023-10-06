@@ -249,6 +249,27 @@ const api = {
           });
       });
     },
+    get: function (mbId, title, artistMbId, artistName, year) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(
+            "api/2/album?mbId=" +
+              encodeURIComponent(mbId || "") +
+              "&title=" +
+              encodeURIComponent(title || ""),
+            "&artistMbId=" + encodeURIComponent(artistMbId || ""),
+            "&artistName=" + encodeURIComponent(artistName || ""),
+            "&year=" + encodeURIComponent(year || ""),
+            {}
+          )
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   track: {
     get: function (id) {
