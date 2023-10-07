@@ -410,13 +410,12 @@ return (array(
         '
             CREATE TABLE `CURRENT_PLAYLIST` (
                 `id` VARCHAR(36) NOT NULL,
-                `user_id` VARCHAR(36) NOT NULL UNIQUE,
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
                 `current_index` INTEGER NOT NULL DEFAULT 0,
                 `radiostation_id` VARCHAR(36),
                 PRIMARY KEY (`id`),
-                FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
+                FOREIGN KEY(`id`) REFERENCES USER (`id`)
             );
         ',
         '
