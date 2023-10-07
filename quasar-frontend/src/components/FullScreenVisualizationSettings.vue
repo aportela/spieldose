@@ -53,9 +53,9 @@
               <q-item-label header>Analyzer mode</q-item-label>
               <q-item dense>
                 <q-item-section>
-                  <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="10" :step="1" label
+                  <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="9" :step="1" label
                     label-always switch-label-side :label-value="selectedModeLabel" color="grey"
-                    @change="onSet('mode', settings.audioMotionAnalyzer.mode)" />
+                    @change="onSet('mode', settings.audioMotionAnalyzer.mode < 9 ? settings.audioMotionAnalyzer.mode: 10)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -66,7 +66,8 @@
                   <q-btn-toggle dense size="sm" v-model="settings.audioMotionAnalyzer.channelLayout" unelevated
                     toggle-color="pink" spread :options="[
                       { label: 'mono', value: 'single' },
-                      { label: 'stereo', value: 'dual-vertical' }
+                      { label: 'stereo (v)', value: 'dual-vertical' },
+                      { label: 'stereo (h)', value: 'dual-horizontal' }
                     ]" @update:model-value="(v) => onSet('channelLayout', v)" />
                 </q-item-section>
               </q-item>
@@ -605,11 +606,13 @@ const modes = {
   6: '1/3rd octave bands',
   7: 'Half octave bands',
   8: 'Full octave bands',
-  9: 'Line / Area graph'
+  9: 'Line / Area graph',
 };
+
 const selectedModeLabel = computed(() => {
   return (modes[settings.value.audioMotionAnalyzer.mode]);
 });
+
 const selectedmaxFPSLabel = computed(() => {
   if (settings.value.audioMotionAnalyzer.maxFPS != 0) {
     return (settings.value.audioMotionAnalyzer.maxFPS);
@@ -657,6 +660,7 @@ const defaultAudioMotionAnalyzerSettings = {
   lumiBars: false,
   alphaBars: false,
   showPeaks: true,
+  //peakLine: true,
   channelLayout: 'single',
   reflexRatio: 0.3,
   reflexAlpha: 0.2,
@@ -673,7 +677,9 @@ const defaultAudioMotionAnalyzerSettings = {
 };
 
 const settings = ref(spieldoseStore.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
-
+if (settings.value.audioMotionAnalyzer.mode == 9)  {
+  settings.value.audioMotionAnalyzer.mode = 10;
+}
 function onSet(optionName, optionValue) {
   const option = {};
   option[optionName] = optionValue;
