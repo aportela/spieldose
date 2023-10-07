@@ -803,6 +803,20 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/current_playlist', function (Request $request, Response $response, array $args) {
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $playlist = new \Spieldose\Playlist(
+                    $args['id'] ?? "",
+                    "",
+                    [],
+                    false
+                );
+                $playlist->get($dbh);
+                $payload = json_encode(["playlist" => $playlist]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
