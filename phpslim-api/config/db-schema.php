@@ -423,6 +423,7 @@ return (array(
                 `playlist_id` VARCHAR(36) NOT NULL,
                 `track_id` VARCHAR(36) NOT NULL,
                 `track_index` INTEGER NOT NULL,
+                `track_shuffled_index` INTEGER NOT NULL,
                 PRIMARY KEY (`playlist_id`, `track_id`, `track_index`),
                 FOREIGN KEY(`playlist_id`) REFERENCES CURRENT_PLAYLIST (`id`)
             );
