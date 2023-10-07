@@ -6,17 +6,19 @@ namespace Spieldose;
 
 class CurrentPlaylist
 {
-    public string $id;
-    public $ctime = null;
-    public $mtime = null;
-    public int $currentIndex;
-    public ?object $radioStation;
-    public array $tracks = [];
+    protected ?string $id;
+    protected $ctime = null;
+    protected $mtime = null;
+    protected int $currentIndex;
+    protected object $radioStation;
+    protected array $tracks = [];
 
-    public function __construct(string $id, array $tracks = [], int $currentIndex)
+    public function __construct()
     {
         $this->id = \Spieldose\UserSession::isLogged() ? \Spieldose\UserSession::getUserId() : null;
-        $this->tracks = $tracks;
+        $this->currentIndex = -1;
+        $this->radioStation = (object) ["id" => null, "name" => null];
+        $this->tracks = [];
     }
 
     public function __destruct()
@@ -78,22 +80,33 @@ class CurrentPlaylist
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now'), current_index = :current_index, radiostation_id = :radiostation_id
             ";
-            $dbh->exec($query, $params);
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", \Spieldose\UserSession::getUserId())
-            );
-            $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
-            // TODO: gen indexes
-            if (is_array($this->tracks) && count($this->tracks) > 0) {
-                foreach ($this->tracks as $trackIndex => $trackId) {
-                    /*
-                    $params = array(
-                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
-                        new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
-                    );
-                    $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
-                    */
+            $success = false;
+            $dbh->beginTransaction();
+            try {
+                $dbh->exec($query, $params);
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", \Spieldose\UserSession::getUserId())
+                );
+                $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                // TODO: gen indexes
+                if (is_array($this->tracks) && count($this->tracks) > 0) {
+                    foreach ($this->tracks as $trackIndex => $trackId) {
+                        /*
+                        $params = array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
+                        );
+                        $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
+                        */
+                    }
+                }
+                $success = true;
+            } finally {
+                if ($success) {
+                    $dbh->commit();
+                } else {
+                    $dbh->rollBack();
                 }
             }
         } else {
