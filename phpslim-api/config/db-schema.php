@@ -414,6 +414,7 @@ return (array(
                 `ctime` INTEGER NOT NULL,
                 `mtime` INTEGER NOT NULL,
                 `current_index` INTEGER NOT NULL DEFAULT 0,
+                `radiostation_id` VARCHAR(36),
                 PRIMARY KEY (`id`),
                 FOREIGN KEY(`user_id`) REFERENCES USER (`id`)
             );
@@ -423,7 +424,7 @@ return (array(
                 `playlist_id` VARCHAR(36) NOT NULL,
                 `track_id` VARCHAR(36) NOT NULL,
                 `track_index` INTEGER NOT NULL,
-                PRIMARY KEY (`playlist_id`, `track_id`),
+                PRIMARY KEY (`playlist_id`, `track_id`, `track_index`),
                 FOREIGN KEY(`playlist_id`) REFERENCES CURRENT_PLAYLIST (`id`)
             );
         '
