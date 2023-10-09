@@ -147,4 +147,97 @@ const playListActions = {
   },
 };
 
+const currentPlayListActions = {
+  get: function () {
+    return new Promise((resolve, reject) => {
+      spieldoseStore.interact();
+      api.currentPlaylist
+        .get()
+        .then((success) => {
+          //TODO
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  getCurrentElement: function () {
+    return new Promise((resolve, reject) => {
+      spieldoseStore.interact();
+      api.currentPlaylist
+        .getCurrentElement()
+        .then((success) => {
+          spieldoseStore.setCurrentElement(success.data);
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  skipToPreviousElement: function () {
+    return new Promise((resolve, reject) => {
+      spieldoseStore.interact();
+      api.currentPlaylist
+        .skipToPreviousElement()
+        .then((success) => {
+          spieldoseStore.setCurrentElement(success.data);
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  skipToNextElement: function () {
+    return new Promise((resolve, reject) => {
+      spieldoseStore.interact();
+      api.currentPlaylist
+        .skipToNextElement()
+        .then((success) => {
+          spieldoseStore.setCurrentElement(success.data);
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  skipToElementAtIndex: function (index) {
+    return new Promise((resolve, reject) => {
+      spieldoseStore.interact();
+      api.currentPlaylist
+        .skipToElementAtIndex(index)
+        .then((success) => {
+          spieldoseStore.setCurrentElement(success.data);
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  saveElements: function (data) {
+    spieldoseStore.sendElementsToCurrentPlaylist(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
+    api.currentPlaylist.setTracks(
+      Array.isArray(data) ? success.data.data.items.map((data) => data.id) : [data]
+    );
+  },
+  appendElements: function (data) {
+    spieldoseStore.appendElementsToCurrentPlaylist(
+      Array.isArray(data) ? data : [{ track: data }]
+    );
+    api.currentPlaylist.appendTracks(
+      Array.isArray(data) ? success.data.data.items.map((data) => data.id) : [data]
+    );
+  },
+  setRadioStation: function (radioStation) {
+    spieldoseStore.interact();
+    spieldoseStore.setCurrentRadioStation(radioStation);
+  },
+};
+
 export { trackActions, albumActions, playListActions };
