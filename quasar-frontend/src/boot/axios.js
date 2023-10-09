@@ -179,9 +179,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -254,9 +254,9 @@ const api = {
         axios
           .get(
             "api/2/album?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&title=" +
-              encodeURIComponent(title || ""),
+            encodeURIComponent(mbId || "") +
+            "&title=" +
+            encodeURIComponent(title || ""),
             "&artistMbId=" + encodeURIComponent(artistMbId || ""),
             "&artistName=" + encodeURIComponent(artistName || ""),
             "&year=" + encodeURIComponent(year || ""),
@@ -584,6 +584,54 @@ const api = {
           });
       });
     },
+    getCurrentElement: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/current_playlist/current_element")
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getPreviousElement: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/current_playlist/previous_element")
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getNextElement: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/current_playlist/next_element")
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    getElementAtIndex: function (index) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/current_playlist/element_at_index?index=" + index)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    }
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {
@@ -612,9 +660,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-              encodeURIComponent(title || "") +
-              "&artist=" +
-              encodeURIComponent(artist || ""),
+            encodeURIComponent(title || "") +
+            "&artist=" +
+            encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {

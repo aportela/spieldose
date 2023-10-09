@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
+import { api } from "boot/axios";
 
 const hashedSite = Array.from(window.location.host).reduce(
   (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
@@ -101,7 +102,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       state.data.playlists[0].currentElementIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
       state.data.playlists[0].shuffleIndexes[
-        state.data.playlists[0].currentElementIndex
+      state.data.playlists[0].currentElementIndex
       ],
     getCurrentPlaylistLastChangedTimestamp: (state) =>
       state.data.playlists[0].lastChangeTimestamp,
@@ -129,7 +130,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ];
           }
@@ -153,7 +154,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.url;
           }
@@ -187,7 +188,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.normal;
           }
@@ -227,7 +228,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           } else {
             return state.data.playlists[0].elements[
               state.data.playlists[0].shuffleIndexes[
-                state.data.playlists[0].currentElementIndex
+              state.data.playlists[0].currentElementIndex
               ]
             ].track.covers.small;
           }
@@ -457,8 +458,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-              return { track: track };
-            })
+            return { track: track };
+          })
           : [],
         shuffleIndexes: playlist.tracks
           ? shuffle([...Array(playlist.tracks.length).keys()])
@@ -590,6 +591,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         // TODO: required ?
         this.play(true);
+        api.currentPlaylist.getPreviousElement();
       }
     },
     skipNext: function () {
@@ -605,6 +607,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         // TODO: required ?
         this.play(true);
+        api.currentPlaylist.getNextElement();
       }
     },
     skipToIndex: function (index) {
@@ -620,6 +623,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         // TODO: required ?
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play(true);
+        api.currentPlaylist.getNextElement(index);
       }
     },
     /*
