@@ -596,7 +596,7 @@ const api = {
           });
       });
     },
-    getPreviousElement: function () {
+    skipToPreviousElement: function () {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/current_playlist/previous_element")
@@ -608,7 +608,7 @@ const api = {
           });
       });
     },
-    getNextElement: function () {
+    skipToNextElement: function () {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/current_playlist/next_element")
@@ -620,7 +620,7 @@ const api = {
           });
       });
     },
-    getElementAtIndex: function (index) {
+    skipToElementAtIndex: function (index) {
       return new Promise((resolve, reject) => {
         axios
           .get(baseAPIPath + "/current_playlist/element_at_index?index=" + index)
