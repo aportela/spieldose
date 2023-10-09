@@ -51,12 +51,14 @@ const trackActions = {
     spieldoseStore.sendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
+    api.currentPlaylist.setTracks([data.id]);
   },
   enqueue: function (data) {
     spieldoseStore.interact();
     spieldoseStore.appendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
+    api.currentPlaylist.appendTracks([data.id]);
   },
 };
 
@@ -72,6 +74,9 @@ const albumActions = {
             success.data.data.items.map((item) => {
               return { track: item };
             })
+          );
+          api.currentPlaylist.setTracks(
+            success.data.data.items.map((item) => item.id)
           );
           resolve(success);
         })
@@ -92,6 +97,9 @@ const albumActions = {
             success.data.data.items.map((item) => {
               return { track: item };
             })
+          );
+          api.currentPlaylist.appendElements(
+            success.data.data.items.map((item) => item.id)
           );
           resolve(success);
         })
@@ -121,10 +129,16 @@ const playListActions = {
     spieldoseStore.sendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
     );
+    api.currentPlaylist.setTracks(
+      success.data.data.items.map((data) => data.id)
+    );
   },
   appendElements: function (data) {
     spieldoseStore.appendElementsToCurrentPlaylist(
       Array.isArray(data) ? data : [{ track: data }]
+    );
+    api.currentPlaylist.appendTracks(
+      success.data.data.items.map((data) => data.id)
     );
   },
   setRadioStation: function (radioStation) {

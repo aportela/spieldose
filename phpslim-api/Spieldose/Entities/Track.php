@@ -193,8 +193,13 @@ class Track extends \Spieldose\Entities\Entity
             } else {
                 $filterConditions[] = " EXISTS (SELECT PT.playlist_id FROM PLAYLIST_TRACK PT WHERE PT.playlist_id = :playlist_id AND PT.track_id = F.id) ";
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $filter["playlistId"]);
-                $leftJoins[] = " LEFT JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
+                $leftJoins[] = " INNER JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
             }
+        }
+        if (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
+            $filterConditions[] = " EXISTS (SELECT CPT.playlist_id FROM CURRENT_PLAYLIST_TRACK CPT WHERE CPT.playlist_id = :currentPlaylistId AND CPT.track_id = F.id) ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":currentPlaylistId", $filter["currentPlaylistId"]);
+            $leftJoins[] = " INNER JOIN CURRENT_PLAYLIST_TRACK ON CURRENT_PLAYLIST_TRACK.playlist_id = :currentPlaylistId AND CURRENT_PLAYLIST_TRACK.track_id = F.id ";
         }
         if (isset($filter["albumMbId"]) && !empty($filter["albumMbId"])) {
             $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
@@ -233,6 +238,8 @@ class Track extends \Spieldose\Entities\Entity
             } else {
                 $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";
             }
+        } else if (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
+            $fieldDefinitions["currentPlaylistTrackIndex"] = "CURRENT_PLAYLIST_TRACK.track_index";
         }
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"

@@ -541,6 +541,50 @@ const api = {
       });
     },
   },
+  currentPlaylist: {
+    get: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/current_playlist")
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    setTracks: function (trackIds) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          trackIds: trackIds || [],
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/set_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    appendTracks: function (trackIds) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          trackIds: trackIds || [],
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/append_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {
       return new Promise((resolve, reject) => {

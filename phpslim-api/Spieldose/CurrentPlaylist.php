@@ -6,12 +6,13 @@ namespace Spieldose;
 
 class CurrentPlaylist
 {
-    protected ?string $id;
-    protected $ctime = null;
-    protected $mtime = null;
-    protected int $currentIndex;
-    protected object $radioStation;
-    protected array $tracks = [];
+    public ?string $id;
+    public $ctime = null;
+    public $mtime = null;
+    public int $currentIndex;
+    public array $shuffledIndexes;
+    public object $radioStation;
+    public array $tracks = [];
 
     public function __construct()
     {
@@ -19,16 +20,49 @@ class CurrentPlaylist
         $this->currentIndex = -1;
         $this->radioStation = (object) ["id" => null, "name" => null];
         $this->tracks = [];
+        $this->shuffledIndexes = [];
     }
 
     public function __destruct()
     {
     }
 
+    private function getTracks(\aportela\DatabaseWrapper\DB $dbh): array
+    {
+        $filter = array(
+            "currentPlaylistId" => \Spieldose\UserSession::getUserId()
+        );
+        $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+            [
+                new \aportela\DatabaseBrowserWrapper\SortItem("currentPlaylistTrackIndex", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+            ]
+        );
+        $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
+        $data = \Spieldose\Entities\Track::search($dbh, $filter, $sort, $pager);
+        return ($data->items);
+    }
+
+    private function setCurrentTrackIndex(\aportela\DatabaseWrapper\DB $dbh, int $index)
+    {
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":index", $index)
+        );
+        $query = "
+                INSERT INTO CURRENT_PLAYLIST
+                    (id, ctime, mtime, current_index, radiostation_id)
+                VALUES
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :index, NULL)
+                ON CONFLICT(id) DO
+                    UPDATE SET mtime = strftime('%s', 'now'), current_index = :index, radiostation_id = NULL
+            ";
+        $dbh->exec($query, $params);
+    }
+
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
+        $this->tracks = [];
         if (\Spieldose\UserSession::isLogged()) {
-
             $params = array();
             $query = null;
             $query = "
@@ -44,7 +78,14 @@ class CurrentPlaylist
                 $this->ctime = $data[0]->ctime;
                 $this->mtime = $data[0]->mtime;
                 $this->currentIndex = $data[0]->current_index;
-                $this->tracks = [];
+                $query = " SELECT track_shuffled_index FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :id ORDER BY track_index ";
+                $data = $dbh->query($query, $params);
+                if (count($data) > 0) {
+                    foreach ($data as $item) {
+                        $this->shuffledIndexes[] = $item->track_shuffled_index;
+                    }
+                    $this->tracks = $this->getTracks($dbh);
+                }
             } else {
                 $this->id = null;
                 $this->ctime = null;
@@ -57,48 +98,154 @@ class CurrentPlaylist
         }
     }
 
-    public function save(\aportela\DatabaseWrapper\DB $dbh)
+    public static function getCurrentTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    {
+        $currentPlaylist = new \Spieldose\CurrentPlaylist();
+        $currentPlaylist->get($dbh);
+        $track = null;
+        if (!$shuffled) {
+        } else {
+        }
+        return ($track);
+    }
+
+    public static function getPreviousTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    {
+        $currentPlaylist = new \Spieldose\CurrentPlaylist();
+        $currentPlaylist->get($dbh);
+        $track = null;
+        if ($currentPlaylist->currentIndex > 0) {
+            $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex - 1);
+            if (!$shuffled) {
+                $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex - 1];
+            } else {
+                $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex - 1]];
+            }
+        }
+        return ($track);
+    }
+
+    public static function getNextTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    {
+        $currentPlaylist = new \Spieldose\CurrentPlaylist();
+        $currentPlaylist->get($dbh);
+        $track = null;
+        if ($currentPlaylist->currentIndex < count($currentPlaylist->tracks)) {
+            $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex + 1);
+            if (!$shuffled) {
+                $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex + 1];
+            } else {
+                $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex + 1]];
+            }
+        }
+        return ($track);
+    }
+
+    public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = [])
     {
         if (\Spieldose\UserSession::isLogged()) {
-            if (empty($this->id)) {
-                $this->id = \Spieldose\UserSession::getUserId();
-            }
+            $this->id = \Spieldose\UserSession::getUserId();
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_index", $this->currentIndex)
             );
             if (!empty($this->radioStation->id)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $this->radioStation->id);
+                //$params[] = new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $this->radioStation->id);
             } else {
-                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":radiostation_id");
+                //$params[] = new \aportela\DatabaseWrapper\Param\NullParam(":radiostation_id");
             }
             $query = "
                 INSERT INTO CURRENT_PLAYLIST
                     (id, ctime, mtime, current_index, radiostation_id)
                 VALUES
-                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :current_index, :radiostation_id)
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), 0, NULL)
                 ON CONFLICT(id) DO
-                    UPDATE SET mtime = strftime('%s', 'now'), current_index = :current_index, radiostation_id = :radiostation_id
+                    UPDATE SET mtime = strftime('%s', 'now'), current_index = 0, radiostation_id = NULL
             ";
             $success = false;
             $dbh->beginTransaction();
             try {
                 $dbh->exec($query, $params);
                 $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", \Spieldose\UserSession::getUserId())
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
                 $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
                 // TODO: gen indexes
-                if (is_array($this->tracks) && count($this->tracks) > 0) {
-                    foreach ($this->tracks as $trackIndex => $trackId) {
-                        /*
+                if (is_array($trackIds) && count($trackIds) > 0) {
+                    $shuffledIndexes = range(0, count($trackIds) - 1);
+                    shuffle($shuffledIndexes);
+                    foreach ($trackIds as $index => $trackId) {
                         $params = array(
                             new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
                             new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $index),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_shuffled_index", $shuffledIndexes[$index])
                         );
-                        $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
-                        */
+                        $dbh->exec(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
+                    }
+                }
+                $success = true;
+            } finally {
+                if ($success) {
+                    $dbh->commit();
+                } else {
+                    $dbh->rollBack();
+                }
+            }
+        } else {
+            throw new \Spieldose\Exception\UnauthorizedException("");
+        }
+    }
+
+    public function append(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = [])
+    {
+        if (\Spieldose\UserSession::isLogged()) {
+            $this->id = \Spieldose\UserSession::getUserId();
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            );
+            if (!empty($this->radioStation->id)) {
+                //$params[] = new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $this->radioStation->id);
+            } else {
+                //$params[] = new \aportela\DatabaseWrapper\Param\NullParam(":radiostation_id");
+            }
+            $query = "
+                INSERT INTO CURRENT_PLAYLIST
+                    (id, ctime, mtime, current_index, radiostation_id)
+                VALUES
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), 0, NULL)
+                ON CONFLICT(id) DO
+                    UPDATE SET mtime = strftime('%s', 'now')
+            ";
+            $success = false;
+            $dbh->beginTransaction();
+            try {
+                $dbh->exec($query, $params);
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
+                );
+                if (is_array($trackIds) && count($trackIds) > 0) {
+                    $query = " SELECT track_id AS id FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ORDER BY track_index ";
+                    $data = $dbh->query($query, $params);
+                    if (count($data) > 0) {
+                        $existingTrackIds = [];
+                        foreach ($data as $track) {
+                            $existingTrackIds[] = $track->id;
+                        }
+                    }
+                    if (count($existingTrackIds) > 0) {
+                        $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                    }
+                    $newTrackIds = array_merge($existingTrackIds, $trackIds);
+                    $shuffledIndexes = range(0, count($newTrackIds) - 1);
+                    shuffle($shuffledIndexes);
+                    foreach ($newTrackIds as $index => $trackId) {
+                        $params = array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $index),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_shuffled_index", $shuffledIndexes[$index])
+                        );
+                        $dbh->exec(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
                     }
                 }
                 $success = true;
@@ -117,8 +264,8 @@ class CurrentPlaylist
     public function empty(\aportela\DatabaseWrapper\DB $dbh)
     {
         $this->currentIndex = -1;
-        $this->radioStation->id = null;
+        //$this->radioStation->id = null;
         $this->tracks = [];
-        $this->save($dbh);
+        $this->save($dbh, []);
     }
 }

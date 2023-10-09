@@ -812,6 +812,52 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/current_playlist/current_track', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
+                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getCurrentTrack($dbh, isset($queryParams["shuffled"]))]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->get('/current_playlist/previous_track', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
+                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getPreviousTrack($dbh, isset($queryParams["shuffled"]))]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->get('/current_playlist/next_track', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
+                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getNextTrack($dbh, isset($queryParams["shuffled"]))]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->post('/current_playlist/set_tracks', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $currentPlaylist->save($dbh, $params["trackIds"] ?? []);
+                $currentPlaylist->get($dbh);
+                $payload = json_encode(["currentPlaylist" => $currentPlaylist]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->post('/current_playlist/append_tracks', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $currentPlaylist->append($dbh, $params["trackIds"] ?? []);
+                $currentPlaylist->get($dbh);
+                $payload = json_encode(["currentPlaylist" => $currentPlaylist]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
