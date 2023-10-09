@@ -13,6 +13,7 @@ class CurrentPlaylist
     public array $shuffledIndexes;
     public object $radioStation;
     public array $tracks = [];
+    protected int $totalTracks;
 
     public function __construct()
     {
@@ -63,6 +64,7 @@ class CurrentPlaylist
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $this->tracks = [];
+        $this->totalTracks = 0;
         if (\Spieldose\UserSession::isLogged()) {
             $params = array();
             $query = null;
@@ -86,6 +88,7 @@ class CurrentPlaylist
                         $this->shuffledIndexes[] = $item->track_shuffled_index;
                     }
                     $this->tracks = $this->getTracks($dbh);
+                    $this->totalTracks = is_array($this->tracks) ? count($this->tracks) : 0;
                 }
             } else {
                 $this->id = null;
@@ -99,22 +102,29 @@ class CurrentPlaylist
         }
     }
 
+    private function AllowSkipPrevious(): bool
+    {
+        return ($this->totalTracks > 0 && $this->currentIndex > 0);
+    }
+
+    private function AllowSkipNext(): bool
+    {
+        return ($this->totalTracks > 0 && $this->currentIndex < $this->totalTracks);
+    }
+
     public static function getCurrentTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
-        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
-        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
-        if ($currentPlaylist->currentIndex >= 0 && $currentPlaylist->currentIndex < $totalTracks) {
+        if ($currentPlaylist->currentIndex >= 0 && $currentPlaylist->currentIndex < $currentPlaylist->totalTracks) {
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
             } else {
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $currentPlaylist->AllowSkipPrevious(), "allowSkipNext" => $currentPlaylist->AllowSkipNext()]]);
     }
 
     public static function getPreviousTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -122,10 +132,7 @@ class CurrentPlaylist
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
-        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
-        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
-        if ($allowSkipPrevious) {
+        if ($currentPlaylist->AllowSkipPrevious()) {
             $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex - 1);
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
@@ -133,7 +140,7 @@ class CurrentPlaylist
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $currentPlaylist->AllowSkipPrevious(), "allowSkipNext" => $currentPlaylist->AllowSkipNext()]]);
     }
 
     public static function getNextTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -141,10 +148,7 @@ class CurrentPlaylist
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
-        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
-        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
-        if ($allowSkipNext) {
+        if ($currentPlaylist->AllowSkipNext()) {
             $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex + 1);
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
@@ -152,7 +156,7 @@ class CurrentPlaylist
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $currentPlaylist->AllowSkipPrevious(), "allowSkipNext" => $currentPlaylist->AllowSkipNext()]]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
