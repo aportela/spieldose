@@ -848,7 +848,13 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                if (!$currentPlaylist->save($dbh, $params["trackIds"] ?? [])) {
+                $trackIds = [];
+                if (isset($params["discover"])) {
+                    $trackIds = \Spieldose\Entities\Track::getRandomTrackIds($dbh, 32);
+                } else {
+                    $trackIds = $params["trackIds"] ?? [];
+                }
+                if (!$currentPlaylist->save($dbh, $trackIds)) {
                     // TODO
                     throw new \Exception("save error");
                 }
