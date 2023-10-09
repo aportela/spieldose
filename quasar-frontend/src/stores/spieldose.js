@@ -66,6 +66,10 @@ export const useSpieldoseStore = defineStore("spieldose", {
           currentRadioStation: null,
         },
       ],
+      currentElement: {
+        track: null,
+        radioStation: null
+      }
     },
   }),
   getters: {
@@ -561,6 +565,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
     },
     restoreCurrentPlaylist: function () {
+      api.currentPlaylist.getCurrentElement();
       this.clearCurrentPlaylist(true);
       const basil = useBasil(localStorageBasilOptions);
       const currentPlaylist = basil.get("currentPlaylist");
@@ -687,5 +692,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
           : null
       );
     },
+    setCurrentElement: function (data) {
+
+    }
   },
 });
