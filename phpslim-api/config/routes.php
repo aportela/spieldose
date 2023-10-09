@@ -815,7 +815,7 @@ return function (App $app) {
             $group->get('/current_playlist/current_track', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
-                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getCurrentTrack($dbh, isset($queryParams["shuffled"]))]);
+                $payload = json_encode(\Spieldose\CurrentPlaylist::getCurrentTrack($dbh, isset($queryParams["shuffled"])));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -823,7 +823,7 @@ return function (App $app) {
             $group->get('/current_playlist/previous_track', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
-                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getPreviousTrack($dbh, isset($queryParams["shuffled"]))]);
+                $payload = json_encode(\Spieldose\CurrentPlaylist::getCurrentTrack($dbh, isset($queryParams["shuffled"])));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -831,7 +831,7 @@ return function (App $app) {
             $group->get('/current_playlist/next_track', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
-                $payload = json_encode(["track" => \Spieldose\CurrentPlaylist::getNextTrack($dbh, isset($queryParams["shuffled"]))]);
+                $payload = json_encode(\Spieldose\CurrentPlaylist::getCurrentTrack($dbh, isset($queryParams["shuffled"])));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);

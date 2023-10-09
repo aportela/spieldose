@@ -99,27 +99,33 @@ class CurrentPlaylist
         }
     }
 
-    public static function getCurrentTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    public static function getCurrentTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        if ($currentPlaylist->currentIndex >= 0 && $currentPlaylist->currentIndex < count($currentPlaylist->tracks)) {
+        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
+        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
+        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
+        if ($currentPlaylist->currentIndex >= 0 && $currentPlaylist->currentIndex < $totalTracks) {
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
             } else {
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ($track);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
     }
 
-    public static function getPreviousTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    public static function getPreviousTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        if ($currentPlaylist->currentIndex > 0) {
+        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
+        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
+        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
+        if ($allowSkipPrevious) {
             $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex - 1);
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
@@ -127,15 +133,18 @@ class CurrentPlaylist
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ($track);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
     }
 
-    public static function getNextTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): ?\Spieldose\Entities\Track
+    public static function getNextTrack(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $currentPlaylist = new \Spieldose\CurrentPlaylist();
         $currentPlaylist->get($dbh);
         $track = null;
-        if ($currentPlaylist->currentIndex < count($currentPlaylist->tracks)) {
+        $totalTracks = is_array($currentPlaylist->tracks) && count($currentPlaylist->tracks);
+        $allowSkipPrevious =  $totalTracks > 0 && $currentPlaylist->currentIndex > 0;
+        $allowSkipNext = $totalTracks > 0 && $currentPlaylist->currentIndex < $totalTracks;
+        if ($allowSkipNext) {
             $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex + 1);
             if (!$shuffled) {
                 $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
@@ -143,7 +152,7 @@ class CurrentPlaylist
                 $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
             }
         }
-        return ($track);
+        return ((object) ["track" => $track, "navigation" => ["allowSkipPrevious" => $allowSkipPrevious, "allowSkipNext" => $allowSkipNext]]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
