@@ -124,10 +124,6 @@ const albumActions = {
 };
 
 const playListActions = {
-  setRadioStation: function (radioStation) {
-    spieldoseStore.interact();
-    spieldoseStore.setCurrentRadioStation(radioStation);
-  },
   play: function (id) {
     return new Promise((resolve, reject) => {
       api.currentPlaylist
