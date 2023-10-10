@@ -91,11 +91,14 @@ function onTreeNodeSelected(nodeHash) {
   spieldoseStore.interact();
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id && node.totalFiles > 0) {
+    // TODO
+    /*
     loading.value = true;
       currentPlayListActions.saveElements(success.data.data.items.map((item) => { return (item.id); })).then((success) => {}).catch((error) => {
       // TODO
       loading.value = false;
     });
+    */
   }
   return (true);
 }

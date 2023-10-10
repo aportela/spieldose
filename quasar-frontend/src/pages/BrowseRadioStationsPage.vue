@@ -99,7 +99,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { useSpieldoseStore } from "stores/spieldose";
 
-import { currentPlayListActions, playListActions } from "src/boot/spieldose";
+import { radioStationActions } from "src/boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -152,7 +152,7 @@ function onPaginationChanged(pageIndex) {
 
 function onPlayRadioStation(id) {
   spieldoseStore.interact();
-  currentPlayListActions.setRadioStation(id).then((success) => { }).catch((error) => {
+  radioStationActions.play(id).then((success) => { }).catch((error) => {
     $q.notify({
       type: "negative",
       // TODO

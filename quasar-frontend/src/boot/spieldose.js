@@ -162,6 +162,27 @@ const playListActions = {
   },
 };
 
+const radioStationActions = {
+  play: function (id) {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setRadioStation(id)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+};
+
 const currentPlayListActions = {
   get: function () {
     return new Promise((resolve, reject) => {
@@ -247,6 +268,7 @@ const currentPlayListActions = {
         });
     });
   },
+  /*
   saveElements: function (data) {
     return new Promise((resolve, reject) => {
       api.currentPlaylist
@@ -309,6 +331,7 @@ const currentPlayListActions = {
         });
     });
   },
+  */
   clear: function () {
     return new Promise((resolve, reject) => {
       api.currentPlaylist
@@ -324,4 +347,10 @@ const currentPlayListActions = {
   },
 };
 
-export { trackActions, albumActions, playListActions, currentPlayListActions };
+export {
+  trackActions,
+  albumActions,
+  playListActions,
+  radioStationActions,
+  currentPlayListActions,
+};
