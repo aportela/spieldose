@@ -223,7 +223,9 @@ const currentPlayListActions = {
       Array.isArray(data) ? data : [{ track: data }]
     );
     api.currentPlaylist.setTracks(
-      Array.isArray(data) ? success.data.data.items.map((data) => data.id) : [data]
+      Array.isArray(data)
+        ? success.data.data.items.map((data) => data.id)
+        : [data]
     );
   },
   appendElements: function (data) {
@@ -231,7 +233,9 @@ const currentPlayListActions = {
       Array.isArray(data) ? data : [{ track: data }]
     );
     api.currentPlaylist.appendTracks(
-      Array.isArray(data) ? success.data.data.items.map((data) => data.id) : [data]
+      Array.isArray(data)
+        ? success.data.data.items.map((data) => data.id)
+        : [data]
     );
   },
   setRadioStation: function (radioStation) {
@@ -240,4 +244,4 @@ const currentPlayListActions = {
   },
 };
 
-export { trackActions, albumActions, playListActions };
+export { trackActions, albumActions, playListActions, currentPlayListActions };
