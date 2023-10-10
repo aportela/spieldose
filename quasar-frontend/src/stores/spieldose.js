@@ -160,7 +160,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     allowSkipNext: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
-        state.data.currentPlaylist.totalTracks - 1,
+      state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {
@@ -180,7 +180,6 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
       this.restoreFullScreenVisualizationSettings();
       this.restorePlayerSettings(this.hasPreviousUserInteractions);
-      this.getCurrentElement();
     },
     setAudioSource(src) {
       if (src !== undefined && src) {
@@ -463,25 +462,6 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.play(true);
       }
       */
-    },
-    getCurrentElement: function () {
-      api.currentPlaylist
-        .getCurrentElement()
-        .then((success) => {
-          this.data.currentPlaylist.totalTracks = success.data.totalTracks;
-          this.data.currentPlaylist.currentTrackIndex =
-            success.data.currentTrackIndex;
-          this.data.currentPlaylist.currentElement.track =
-            success.data.currentTrack;
-          this.data.currentPlaylist.currentElement.radioStation =
-            success.data.radioStation;
-          this.data.currentPlaylist.lastChangeTimestamp = Date.now();
-          this.setAudioSource(this.getCurrentPlaylistElementURL);
-        })
-        .catch((error) => {
-          // TODO
-          console.log(error);
-        });
     },
     setCurrentPlaylist: function (
       currentTrackIndex,
