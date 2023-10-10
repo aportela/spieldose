@@ -348,7 +348,7 @@ function onRowClick(evt, row, index) {
 }
 
 function getCurrentPlaylist() {
-  spieldoseStore.interact();
+  //spieldoseStore.interact();
   loading.value = true;
   currentPlayListActions.get().then((success) => {
     elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
