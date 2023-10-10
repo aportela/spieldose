@@ -297,4 +297,28 @@ class CurrentPlaylist
             throw new \Spieldose\Exception\UnauthorizedException("");
         }
     }
+
+    public function discover(\aportela\DatabaseWrapper\DB $dbh, int $count = 32, bool $shuffled = false)
+    {
+        if ($this->save($dbh, \Spieldose\Entities\Track::getRandomTrackIds($dbh, $count))) {
+            $this->get($dbh);
+            $track = null;
+            $radioStation = null;
+            if (!empty($this->radioStation->id)) {
+                $radioStation = $this->radioStation;
+            } else {
+                if ($this->currentIndex >= 0 && $this->currentIndex < $this->totalTracks) {
+                    if (!$shuffled) {
+                        $track = $this->tracks[$this->currentIndex];
+                    } else {
+                        $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
+                    }
+                }
+            }
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+        } else {
+            // TODO
+            throw new \Exception("");
+        }
+    }
 }

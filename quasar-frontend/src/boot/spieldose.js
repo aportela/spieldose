@@ -150,26 +150,28 @@ const playListActions = {
 const currentPlayListActions = {
   get: function () {
     return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
       api.currentPlaylist
         .get()
         .then((success) => {
-          //TODO
-          resolve();
+          resolve(success);
         })
         .catch((error) => {
           reject(error);
         });
     });
   },
-  getCurrentElement: function () {
+  discover: function (count) {
     return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
       api.currentPlaylist
-        .getCurrentElement()
+        .discover(count, spieldoseStore.getShuffle)
         .then((success) => {
-          spieldoseStore.setCurrentElement(success.data);
-          resolve();
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
         })
         .catch((error) => {
           reject(error);
@@ -178,12 +180,16 @@ const currentPlayListActions = {
   },
   skipToPreviousElement: function () {
     return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
       api.currentPlaylist
-        .skipToPreviousElement()
+        .skipToPreviousElement(spieldoseStore.getShuffle)
         .then((success) => {
-          spieldoseStore.setCurrentElement(success.data);
-          resolve();
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.track,
+            success.data.radioStation
+          );
+          resolve(success);
         })
         .catch((error) => {
           reject(error);
@@ -192,26 +198,34 @@ const currentPlayListActions = {
   },
   skipToNextElement: function () {
     return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
       api.currentPlaylist
-        .skipToNextElement()
+        .skipToNextElement(spieldoseStore.getShuffle)
         .then((success) => {
-          spieldoseStore.setCurrentElement(success.data);
-          resolve();
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.track,
+            success.data.radioStation
+          );
+          resolve(success);
         })
         .catch((error) => {
           reject(error);
         });
     });
   },
-  skipToElementAtIndex: function (index) {
+  skipToElementIndex: function (index) {
     return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
       api.currentPlaylist
-        .skipToElementAtIndex(index)
+        .skipToElementAtIndex(index, spieldoseStore.getShuffle)
         .then((success) => {
-          spieldoseStore.setCurrentElement(success.data);
-          resolve();
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.track,
+            success.data.radioStation
+          );
+          resolve(success);
         })
         .catch((error) => {
           reject(error);
@@ -219,28 +233,65 @@ const currentPlayListActions = {
     });
   },
   saveElements: function (data) {
-    spieldoseStore.sendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.setTracks(
-      Array.isArray(data)
-        ? success.data.data.items.map((data) => data.id)
-        : [data]
-    );
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setTracks(
+          Array.isArray(data)
+            ? success.data.data.items.map((data) => data.id)
+            : [data]
+        )
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.track,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
   appendElements: function (data) {
-    spieldoseStore.appendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.appendTracks(
-      Array.isArray(data)
-        ? success.data.data.items.map((data) => data.id)
-        : [data]
-    );
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .appendTracks(
+          Array.isArray(data)
+            ? success.data.data.items.map((data) => data.id)
+            : [data]
+        )
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.track,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
   setRadioStation: function (radioStation) {
     spieldoseStore.interact();
     spieldoseStore.setCurrentRadioStation(radioStation);
+  },
+  clear: function () {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setTracks([])
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(-1, 0, null, null);
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
 };
 

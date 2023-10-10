@@ -15,8 +15,7 @@
         -->
         <q-tabs shrink dense no-caps>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
-             />
+            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label />
           <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack>
             <q-list dense style="min-width: 200px">
               <q-item class="GL__menu-link-signed-in">
@@ -90,9 +89,7 @@ import { default as FullScreenVisualization } from "components/FullScreenVisuali
 import { bus } from "boot/bus";
 import { fabGithub } from "@quasar/extras/fontawesome-v6";
 import { useSpieldoseStore } from "stores/spieldose";
-
-const spieldoseStore = useSpieldoseStore();
-spieldoseStore.create();
+import { currentPlayListActions } from "src/boot/spieldose";
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -102,6 +99,9 @@ const session = useSessionStore();
 if (!session.isLoaded) {
   session.load();
 }
+
+const spieldoseStore = useSpieldoseStore();
+spieldoseStore.create();
 
 const showFullScreenVisualization = ref(false);
 

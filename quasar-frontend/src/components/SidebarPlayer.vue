@@ -12,11 +12,12 @@
     <SidebarPlayerVolumeControl :isMuted="spieldoseStore.isMuted" :defaultValue="spieldoseStore.getVolume"
       @volumeChange="(volume) => spieldoseStore.setVolume(volume)" @toggleMute="spieldoseStore.toggleMute()">
     </SidebarPlayerVolumeControl>
-    <SidebarPlayerTrackInfo :currentElement="currentElement"></SidebarPlayerTrackInfo>
+    <SidebarPlayerTrackInfo :track="currentElement.track" :radioStation="currentElement.radioStation">
+    </SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="false" :allowSkipPrevious="spieldoseStore.allowSkipPrevious"
       :allowPlay="spieldoseStore.hasCurrentPlaylistElements" :allowSkipNext="spieldoseStore.allowSkipNext"
-      :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="spieldoseStore.skipPrevious()" @play="play()"
-      @skipNext="spieldoseStore.skipNext()"></SidebarPlayerMainControls>
+      :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="skipToPrevious()" @play="play()"
+      @skipNext="skipToNext()"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
@@ -50,7 +51,7 @@ import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPla
 import { spieldoseEvents } from "boot/events";
 
 import { useSpieldoseStore } from "stores/spieldose";
-import { trackActions } from "../boot/spieldose";
+import { trackActions, currentPlayListActions } from "../boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -61,11 +62,9 @@ const currentElement = computed(() => { return (spieldoseStore.getCurrentPlaylis
 
 const detailsModal = ref(false);
 
-const showAnalyzer = ref(true);
-
 // TODO: use store getter
 const isCurrentElementTrack = computed(() => {
-  return (currentElement.value && currentElement.value.track != null);
+  return (spieldoseStore.isCurrentPlaylistElementATrack);
 });
 
 // TODO: use currentElement globally
@@ -75,14 +74,6 @@ const currentElementId = computed(() => {
     return (currentElement.value.track.id || null);
   } else if (currentElement.value && currentElement.value.radioStation) {
     return (currentElement.value.radioStation.id || null);
-  } else {
-    return (null);
-  }
-});
-
-const currentElementFavorited = computed(() => {
-  if (currentElement.value && currentElement.value.track) {
-    return (currentElement.value.track.favorited || null);
   } else {
     return (null);
   }
@@ -210,7 +201,23 @@ function play(ignoreStatus) {
   spieldoseStore.play(ignoreStatus);
 }
 
+function skipToPrevious() {
+  spieldoseStore.interact();
+  if (spieldoseStore.allowSkipPrevious) {
+    currentPlayListActions.skipToPreviousElement().then((success) => { }).catch((error) => {
+      // TODO
+    });
+  }
+}
 
+function skipToNext() {
+  spieldoseStore.interact();
+  if (spieldoseStore.allowSkipNext) {
+    currentPlayListActions.skipToNextElement().then((success) => { }).catch((error) => {
+      // TODO
+    });
+  }
+}
 
 function onSeek(position) {
   if (position >= 0 && position < 1) {

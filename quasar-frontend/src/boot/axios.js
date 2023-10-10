@@ -179,9 +179,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-            encodeURIComponent(mbId || "") +
-            "&name=" +
-            encodeURIComponent(name || ""),
+              encodeURIComponent(mbId || "") +
+              "&name=" +
+              encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -254,9 +254,9 @@ const api = {
         axios
           .get(
             "api/2/album?mbId=" +
-            encodeURIComponent(mbId || "") +
-            "&title=" +
-            encodeURIComponent(title || ""),
+              encodeURIComponent(mbId || "") +
+              "&title=" +
+              encodeURIComponent(title || ""),
             "&artistMbId=" + encodeURIComponent(artistMbId || ""),
             "&artistName=" + encodeURIComponent(artistName || ""),
             "&year=" + encodeURIComponent(year || ""),
@@ -584,10 +584,14 @@ const api = {
           });
       });
     },
-    getCurrentElement: function () {
+    getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
+        const params = {};
+        if (shuffle) {
+          params.shuffle = true;
+        }
         axios
-          .get(baseAPIPath + "/current_playlist/current_element")
+          .get(baseAPIPath + "/current_playlist/current_element", { params })
           .then((response) => {
             resolve(response);
           })
@@ -596,10 +600,14 @@ const api = {
           });
       });
     },
-    skipToPreviousElement: function () {
+    skipToPreviousElement: function (shuffle) {
       return new Promise((resolve, reject) => {
+        const params = {};
+        if (shuffle) {
+          params.shuffle = true;
+        }
         axios
-          .get(baseAPIPath + "/current_playlist/previous_element")
+          .get(baseAPIPath + "/current_playlist/previous_element", { params })
           .then((response) => {
             resolve(response);
           })
@@ -608,10 +616,14 @@ const api = {
           });
       });
     },
-    skipToNextElement: function () {
+    skipToNextElement: function (shuffle) {
       return new Promise((resolve, reject) => {
+        const params = {};
+        if (shuffle) {
+          params.shuffle = true;
+        }
         axios
-          .get(baseAPIPath + "/current_playlist/next_element")
+          .get(baseAPIPath + "/current_playlist/next_element", { params })
           .then((response) => {
             resolve(response);
           })
@@ -620,10 +632,16 @@ const api = {
           });
       });
     },
-    skipToElementAtIndex: function (index) {
+    skipToElementAtIndex: function (index, shuffle) {
       return new Promise((resolve, reject) => {
+        const params = {
+          index: index,
+        };
+        if (shuffle) {
+          params.shuffle = true;
+        }
         axios
-          .get(baseAPIPath + "/current_playlist/element_at_index?index=" + index)
+          .get(baseAPIPath + "/current_playlist/element_at_index", { params })
           .then((response) => {
             resolve(response);
           })
@@ -631,7 +649,23 @@ const api = {
             reject(error);
           });
       });
-    }
+    },
+    discover: function (count, shuffle) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          count: count || 32,
+          shuffle: shuffle || false,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/discover_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {
@@ -660,9 +694,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-            encodeURIComponent(title || "") +
-            "&artist=" +
-            encodeURIComponent(artist || ""),
+              encodeURIComponent(title || "") +
+              "&artist=" +
+              encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {

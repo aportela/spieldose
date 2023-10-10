@@ -740,14 +740,16 @@ function onSkipPrevious() {
   //spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
   //emit('skipPrevious');
   spieldoseStore.interact();
-  spieldoseStore.skipPrevious();
+  // TODO
+  //spieldoseStore.skipPrevious();
 }
 
 function onSkipNext() {
   //spieldoseEvents.emit.currentPlaylist.nextTrack();
   //emit('skipNext');
   spieldoseStore.interact();
-  spieldoseStore.skipNext();
+  // TODO
+  //spieldoseStore.skipNext();
 }
 
 function onSetCurrentIndex(index) {

@@ -807,7 +807,7 @@ return function (App $app) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
                 $currentPlaylist->get($dbh);
-                $payload = json_encode(["currentPlaylist" => $currentPlaylist]);
+                $payload = json_encode($currentPlaylist);
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -846,19 +846,22 @@ return function (App $app) {
 
             $group->post('/current_playlist/set_tracks', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $trackIds = [];
-                if (isset($params["discover"])) {
-                    $trackIds = \Spieldose\Entities\Track::getRandomTrackIds($dbh, 32);
-                } else {
-                    $trackIds = $params["trackIds"] ?? [];
-                }
-                if (!$currentPlaylist->save($dbh, $trackIds)) {
+                if (!$currentPlaylist->save($dbh, $params["trackIds"] ?? [])) {
                     // TODO
                     throw new \Exception("save error");
                 }
                 $payload = json_encode(\Spieldose\CurrentPlaylist::getCurrentElement($dbh, isset($params["shuffled"])));
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->post('/current_playlist/discover_tracks', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $payload = json_encode($currentPlaylist->discover($dbh, $params["count"] ?? 32, isset($params["shuffled"])));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);

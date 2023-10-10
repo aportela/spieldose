@@ -355,7 +355,7 @@ class Track extends \Spieldose\Entities\Entity
 
     public static function getRandomTrackIds(\aportela\DatabaseWrapper\DB $dbh, int $count = 32)
     {
-        $query = " SELECT F.id FILE F ORDER BY RANDOM() LIMIT :count ";
+        $query = " SELECT F.id FROM FILE F ORDER BY RANDOM() LIMIT :count ";
         $params = [
             new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count)
         ];

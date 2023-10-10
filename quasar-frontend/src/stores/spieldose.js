@@ -68,8 +68,17 @@ export const useSpieldoseStore = defineStore("spieldose", {
       ],
       currentElement: {
         track: null,
-        radioStation: null
-      }
+        radioStation: null,
+      },
+      currentPlaylist: {
+        lastChangeTimestamp: null,
+        totalTracks: 0,
+        currentTrackIndex: -1,
+        currentElement: {
+          track: null,
+          radioStation: null,
+        },
+      },
     },
   }),
   getters: {
@@ -95,166 +104,63 @@ export const useSpieldoseStore = defineStore("spieldose", {
     getRepeatMode: (state) => state.data.player.repeatMode,
     getShuffle: (state) => state.data.player.shuffle,
     currentPlaylistElementCount: (state) =>
-      state.data.playlists[0].elements
-        ? state.data.playlists[0].elements.length
-        : 0,
+      state.data.currentPlaylist.totalTracks,
     hasCurrentPlaylistElements(state) {
       return this.currentPlaylistElementCount > 0;
     },
     getCurrentPlaylist: (state) => state.data.playlists[0],
     getCurrentPlaylistIndex: (state) =>
-      state.data.playlists[0].currentElementIndex,
+      state.data.currentPlaylist.currentTrackIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
-      state.data.playlists[0].shuffleIndexes[
-      state.data.playlists[0].currentElementIndex
-      ],
+      state.data.currentPlaylist.currentTrackIndex,
     getCurrentPlaylistLastChangedTimestamp: (state) =>
-      state.data.playlists[0].lastChangeTimestamp,
+      state.data.currentPlaylist.lastChangeTimestamp,
     isCurrentPlaylistElementATrack(state) {
-      return (
-        !this.hasCurrentPlaylistARadioStation &&
-        this.hasCurrentPlaylistElements &&
-        state.data.playlists[0].elements[
-          state.data.playlists[0].currentElementIndex
-        ].track
-      );
+      return state.data.currentPlaylist.currentElement.track != null;
     },
     hasCurrentPlaylistARadioStation: (state) =>
-      state.data.playlists[0].currentRadioStation != null,
+      state.data.currentPlaylist.currentElement.radioStation != null,
     getCurrentPlaylistElement(state) {
-      if (!this.hasCurrentPlaylistARadioStation) {
-        if (
-          this.hasCurrentPlaylistElements &&
-          state.data.playlists[0].currentElementIndex >= 0
-        ) {
-          if (!this.getShuffle) {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].currentElementIndex
-            ];
-          } else {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
-              ]
-            ];
-          }
-        } else {
-          return null;
-        }
-      } else {
-        return { radioStation: state.data.playlists[0].currentRadioStation };
-      }
+      return state.data.currentPlaylist.currentElement;
     },
     getCurrentPlaylistElementURL(state) {
-      if (!this.hasCurrentPlaylistARadioStation) {
-        if (
-          this.hasCurrentPlaylistElements &&
-          state.data.playlists[0].currentElementIndex >= 0
-        ) {
-          if (!this.getShuffle) {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].currentElementIndex
-            ].track.url;
-          } else {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
-              ]
-            ].track.url;
-          }
-        } else {
-          return null;
-        }
-      } else {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.url;
+      } else if (this.hasCurrentPlaylistARadioStation) {
         // TODO
-        return state.data.playlists[0].currentRadioStation.directStream;
+        return state.data.currentPlaylist.currentElement.radioStation
+          .directStream;
+      } else {
+        return null;
       }
     },
     getCurrentPlaylistElementNormalImage(state) {
-      if (!this.hasCurrentPlaylistARadioStation) {
-        if (
-          this.hasCurrentPlaylistElements &&
-          state.data.playlists[0].currentElementIndex >= 0 &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers.normal
-        ) {
-          if (!this.getShuffle) {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].currentElementIndex
-            ].track.covers.normal;
-          } else {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
-              ]
-            ].track.covers.normal;
-          }
-        } else {
-          return null;
-        }
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.covers.normal;
+      } else if (this.hasCurrentPlaylistARadioStation) {
+        return state.data.currentPlaylist.currentElement.radioStation.images
+          .normal;
       } else {
-        if (
-          state.data.playlists[0].currentRadioStation.images &&
-          state.data.playlists[0].currentRadioStation.images.normal
-        ) {
-          return state.data.playlists[0].currentRadioStation.images.normal;
-        } else {
-          return null;
-        }
+        return null;
       }
     },
     getCurrentPlaylistElementSmallImage(state) {
-      if (!this.hasCurrentPlaylistARadioStation) {
-        if (
-          this.hasCurrentPlaylistElements &&
-          state.data.playlists[0].currentElementIndex >= 0 &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers &&
-          state.data.playlists[0].elements[
-            state.data.playlists[0].currentElementIndex
-          ].track.covers.small
-        ) {
-          if (!this.getShuffle) {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].currentElementIndex
-            ].track.covers.small;
-          } else {
-            return state.data.playlists[0].elements[
-              state.data.playlists[0].shuffleIndexes[
-              state.data.playlists[0].currentElementIndex
-              ]
-            ].track.covers.small;
-          }
-        } else {
-          return null;
-        }
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.covers.small;
+      } else if (this.hasCurrentPlaylistARadioStation) {
+        return state.data.currentPlaylist.currentElement.radioStation.images
+          .small;
       } else {
-        if (
-          state.data.playlists[0].currentRadioStation.images &&
-          state.data.playlists[0].currentRadioStation.images.small
-        ) {
-          return state.data.playlists[0].currentRadioStation.images.small;
-        } else {
-          return null;
-        }
+        return null;
       }
     },
     allowSkipPrevious: (state) =>
-      state.data.playlists[0].currentElementIndex > 0,
+      state.data.currentPlaylist.totalTracks > 0 &&
+      state.data.currentPlaylist.currentTrackIndex > 0,
     allowSkipNext: (state) =>
-      state.data.playlists[0].currentElementIndex <
-      state.data.playlists[0].elements.length - 1,
+      state.data.currentPlaylist.totalTracks > 0 &&
+      state.data.currentPlaylist.currentTrackIndex <
+        state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {
@@ -274,7 +180,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
       this.restoreFullScreenVisualizationSettings();
       this.restorePlayerSettings(this.hasPreviousUserInteractions);
-      this.restoreCurrentPlaylist();
+      this.getCurrentElement();
     },
     setAudioSource(src) {
       if (src !== undefined && src) {
@@ -430,28 +336,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.data.player.shuffle = !this.data.player.shuffle;
       this.savePlayerSettings();
     },
-    clearCurrentPlaylist: function (ignoreSave) {
-      this.stop();
-      this.data.playlists[0] = {
-        id: null,
-        name: null,
-        owner: {
-          id: null,
-          name: null,
-        },
-        public: false,
-        lastChangeTimestamp: Date.now(),
-        currentIndex: -1,
-        elements: [],
-        shuffleIndexes: [],
-        currentRadioStation: null,
-      };
-      this.data.currentPlaylistIndex = 0;
-      if (!ignoreSave) {
-        this.saveCurrentPlaylist();
-      }
-    },
     setPlaylistAsCurrent: function (playlist) {
+      console.error("TODO");
+      /*
       this.stop();
       this.data.playlists[0] = {
         id: playlist.id,
@@ -462,8 +349,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
         elements: playlist.tracks
           ? playlist.tracks.map((track) => {
-            return { track: track };
-          })
+              return { track: track };
+            })
           : [],
         shuffleIndexes: playlist.tracks
           ? shuffle([...Array(playlist.tracks.length).keys()])
@@ -476,14 +363,20 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play(true);
       }
+      */
     },
     setCurrentRadioStation: function (radioStation) {
+      console.error("TODO");
+      /*
       this.data.playlists[0].currentRadioStation = radioStation;
       this.saveCurrentPlaylist();
       this.setAudioSource(this.getCurrentPlaylistElementURL);
       this.play(true);
+      */
     },
     sendElementsToCurrentPlaylist: function (elements) {
+      console.error("TODO");
+      /*
       this.interact();
       this.stop();
       const hasValues =
@@ -510,8 +403,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play(true);
       }
+      */
     },
     appendElementsToCurrentPlaylist: function (elements) {
+      console.error("TODO");
+      /*
       this.interact();
       const hasPreviousElements = this.data.playlists[0].elements.length > 0;
       const hasValues =
@@ -534,8 +430,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
           this.play(true);
         }
       }
+      */
     },
     shuffleCurrentPlaylist: function () {
+      console.error("TODO");
+      /*
       this.interact();
       this.stop();
       const elements = shuffle([...this.data.playlists[0].elements]);
@@ -563,73 +462,57 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.setAudioSource(this.getCurrentPlaylistElementURL);
         this.play(true);
       }
+      */
     },
-    restoreCurrentPlaylist: function () {
-      api.currentPlaylist.getCurrentElement();
-      this.clearCurrentPlaylist(true);
-      const basil = useBasil(localStorageBasilOptions);
-      const currentPlaylist = basil.get("currentPlaylist");
-      if (currentPlaylist) {
-        this.data.playlists[0] = currentPlaylist;
-        if (
-          this.hasCurrentPlaylistElements ||
-          this.hasCurrentPlaylistARadioStation
-        ) {
+    getCurrentElement: function () {
+      api.currentPlaylist
+        .getCurrentElement()
+        .then((success) => {
+          this.data.currentPlaylist.totalTracks = success.data.totalTracks;
+          this.data.currentPlaylist.currentTrackIndex =
+            success.data.currentTrackIndex;
+          this.data.currentPlaylist.currentElement.track = success.data.track;
+          this.data.currentPlaylist.currentElement.radioStation =
+            success.data.radioStation;
+          this.data.currentPlaylist.lastChangeTimestamp = Date.now();
           this.setAudioSource(this.getCurrentPlaylistElementURL);
-        }
+        })
+        .catch((error) => {
+          // TODO
+          console.log(error);
+        });
+    },
+    setCurrentPlaylist: function (
+      currentTrackIndex,
+      totalTracks,
+      track,
+      radioStation
+    ) {
+      this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
+      this.data.currentPlaylist.totalTracks = totalTracks;
+      this.data.currentPlaylist.currentElement.track = track;
+      this.data.currentPlaylist.currentElement.radioStation = radioStation;
+      this.data.currentPlaylist.lastChangeTimestamp = Date.now();
+      this.setAudioSource(this.getCurrentPlaylistElementURL);
+      if (this.hasPreviousUserInteractions) {
+        this.play(true);
       }
     },
     saveCurrentPlaylist: function () {
+      console.error("TODO");
+      /*
       const basil = useBasil(localStorageBasilOptions);
       basil.set("currentPlaylist", this.data.playlists[0]);
+      */
     },
     skipPrevious: function () {
-      if (this.allowSkipPrevious) {
-        this.interact();
-        if (this.data.playlists[0].currentRadioStation) {
-          this.data.playlists[0].currentRadioStation = null;
-        }
-        this.data.playlists[0].currentElementIndex--;
-        this.data.playlists[0].lastChangeTimestamp = Date.now();
-        // TODO evaluate cost of this for big playlists (elements do not change)
-        this.saveCurrentPlaylist();
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        // TODO: required ?
-        this.play(true);
-        api.currentPlaylist.getPreviousElement();
-      }
+      console.error("TODO");
     },
     skipNext: function () {
-      if (this.allowSkipNext) {
-        this.interact();
-        if (this.data.playlists[0].currentRadioStation) {
-          this.data.playlists[0].currentRadioStation = null;
-        }
-        this.data.playlists[0].currentElementIndex++;
-        this.data.playlists[0].lastChangeTimestamp = Date.now();
-        // TODO evaluate cost of this for big playlists (elements do not change)
-        this.saveCurrentPlaylist();
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        // TODO: required ?
-        this.play(true);
-        api.currentPlaylist.getNextElement();
-      }
+      console.error("TODO");
     },
     skipToIndex: function (index) {
-      if (index >= 0 && index < this.data.playlists[0].elements.length) {
-        this.interact();
-        if (this.data.playlists[0].currentRadioStation) {
-          this.data.playlists[0].currentRadioStation = null;
-        }
-        this.data.playlists[0].currentElementIndex = index;
-        this.data.playlists[0].lastChangeTimestamp = Date.now();
-        // TODO evaluate cost of this for big playlists (elements do not change)
-        this.saveCurrentPlaylist();
-        // TODO: required ?
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play(true);
-        api.currentPlaylist.getNextElement(index);
-      }
+      console.error("TODO");
     },
     /*
     hasPlaylistId: function (id) {
@@ -692,8 +575,5 @@ export const useSpieldoseStore = defineStore("spieldose", {
           : null
       );
     },
-    setCurrentElement: function (data) {
-
-    }
   },
 });
