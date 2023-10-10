@@ -176,6 +176,8 @@ export default {
   // radio stations
   "My radio stations": "As miñas estacións de radio",
   "Public radio stations": "Estacións de radio públicas",
+  "API Error: error loading radiostation":
+    "API Error: error cargando a estación de radio",
 
   // generic
   "API Error: error increasing track play count":

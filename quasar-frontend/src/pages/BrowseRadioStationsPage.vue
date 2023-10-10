@@ -38,7 +38,7 @@
       </div>
       <div class="q-gutter-md row items-start">
         <div v-for="radioStation in radioStations" :key="radioStation.id" :radioStation="radioStation"
-          class="cursor-pointer" @click="onPlayRadioStation(radioStation)">
+          class="cursor-pointer" @click="onPlayRadioStation(radioStation.id)">
           <q-img img-class="radiostation_image" :src="radioStation.images.normal || '#'" width="300px" height="300px"
             fit="cover">
             <div class="absolute-bottom text-subtitle1 text-center">
@@ -99,7 +99,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { useSpieldoseStore } from "stores/spieldose";
 
-import { playListActions } from "src/boot/spieldose";
+import { currentPlayListActions, playListActions } from "src/boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -150,8 +150,19 @@ function onPaginationChanged(pageIndex) {
 }
 
 
-function onPlayRadioStation(radioStation) {
-  playListActions.setRadioStation(radioStation);
+function onPlayRadioStation(id) {
+  spieldoseStore.interact();
+  currentPlayListActions.setRadioStation(id).then((success) => { }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      // TODO
+      message: t("API Error: error loading radiostation"),
+      caption: t("API Error: fatal error details", {
+        status: error.response.status,
+        statusText: error.response.statusText,
+      }),
+    });
+  });
 }
 
 search(true);

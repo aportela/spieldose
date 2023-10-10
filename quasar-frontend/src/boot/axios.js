@@ -644,6 +644,21 @@ const api = {
           });
       });
     },
+    setRadioStation: function (id) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          id: id || null,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/set_radiostation", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
         const params = {};

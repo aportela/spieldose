@@ -824,11 +824,13 @@ function onToggleFavorite(trackId, favorited) {
 }
 
 function onPlayAllArtistTracks() {
-  spieldoseStore.sendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
+  console.log("TODO");
+  //spieldoseStore.sendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
 }
 
 function onEnqueueAllArtistTracks() {
-  spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
+  console.log("TODO");
+  //spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
 }
 
 get(artistMBId.value, artistName.value);

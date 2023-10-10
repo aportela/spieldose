@@ -29,7 +29,7 @@ import { useQuasar } from "quasar";
 import { useSpieldoseStore } from "stores/spieldose";
 
 
-import { playListActions } from "src/boot/spieldose";
+import { playListActions, currentPlayListActions } from "src/boot/spieldose";
 const $q = useQuasar();
 const spieldoseStore = useSpieldoseStore();
 
@@ -92,10 +92,7 @@ function onTreeNodeSelected(nodeHash) {
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id && node.totalFiles > 0) {
     loading.value = true;
-    api.track.search({ path: node.id }, 1, 0, false, 'filename', 'ASC').then((success) => {
-      playListActions.saveElements(success.data.data.items.map((item) => { return ({ track: item }); }));
-      loading.value = false;
-    }).catch((error) => {
+      currentPlayListActions.saveElements(success.data.data.items.map((item) => { return (item.id); })).then((success) => {}).catch((error) => {
       // TODO
       loading.value = false;
     });

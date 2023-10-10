@@ -124,36 +124,6 @@ const albumActions = {
 };
 
 const playListActions = {
-  loadPlaylist: function (id) {
-    return new Promise((resolve, reject) => {
-      spieldoseStore.interact();
-      api.playlist
-        .get(id)
-        .then((success) => {
-          spieldoseStore.setPlaylistAsCurrent(success.data.playlist);
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-  saveElements: function (data) {
-    spieldoseStore.sendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.setTracks(
-      success.data.data.items.map((data) => data.id)
-    );
-  },
-  appendElements: function (data) {
-    spieldoseStore.appendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.appendTracks(
-      success.data.data.items.map((data) => data.id)
-    );
-  },
   setRadioStation: function (radioStation) {
     spieldoseStore.interact();
     spieldoseStore.setCurrentRadioStation(radioStation);
@@ -325,9 +295,23 @@ const currentPlayListActions = {
         });
     });
   },
-  setRadioStation: function (radioStation) {
-    spieldoseStore.interact();
-    spieldoseStore.setCurrentRadioStation(radioStation);
+  setRadioStation: function (id) {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setRadioStation(id)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
   clear: function () {
     return new Promise((resolve, reject) => {

@@ -19,7 +19,7 @@ class CurrentPlaylist
     {
         $this->id = \Spieldose\UserSession::isLogged() ? \Spieldose\UserSession::getUserId() : null;
         $this->currentIndex = -1;
-        $this->radioStation = (object) ["id" => null, "name" => null];
+        $this->radioStation = (object) ["id" => null, "name" => null, "url" => null, "playlist" => null, "directStream" => null, "images" => ["small" => null, "normal" => null]];
         $this->tracks = [];
         $this->shuffledIndexes = [];
     }
@@ -69,9 +69,8 @@ class CurrentPlaylist
             $params = array();
             $query = null;
             $query = "
-                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, RS.name
+                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id
                 FROM CURRENT_PLAYLIST CP
-                LEFT JOIN RADIO_STATION RS ON RS.ID = CP.radiostation_id
                 WHERE CP.id = :id
             ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\UserSession::getUserId());
@@ -81,6 +80,14 @@ class CurrentPlaylist
                 $this->ctime = $data[0]->ctime;
                 $this->mtime = $data[0]->mtime;
                 $this->currentIndex = $data[0]->current_index;
+                if (!empty($data[0]->radiostation_id)) {
+                    $radioStations = include "../Spieldose/RadioStations.php";
+                    foreach ($radioStations as $radioStation) {
+                        if ($radioStation["id"] == $data[0]->radiostation_id) {
+                            $this->radioStation = (object)$radioStation;
+                        }
+                    }
+                }
                 $query = " SELECT track_shuffled_index FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :id ORDER BY track_index ";
                 $data = $dbh->query($query, $params);
                 if (count($data) > 0) {
@@ -226,6 +233,25 @@ class CurrentPlaylist
         } else {
             throw new \Spieldose\Exception\UnauthorizedException("");
         }
+    }
+
+    public function setRadiostation(\aportela\DatabaseWrapper\DB $dbh, string $id)
+    {
+        $this->id = \Spieldose\UserSession::getUserId();
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":index", $this->currentIndex),
+            new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $id)
+        );
+        $query = "
+                INSERT INTO CURRENT_PLAYLIST
+                    (id, ctime, mtime, current_index, radiostation_id)
+                VALUES
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :index, :radiostation_id)
+                ON CONFLICT(id) DO
+                    UPDATE SET mtime = strftime('%s', 'now'), radiostation_id = :radiostation_id
+            ";
+        $dbh->exec($query, $params);
     }
 
     public function append(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
