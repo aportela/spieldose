@@ -474,9 +474,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.data.currentPlaylist.currentElement.track = track;
       this.data.currentPlaylist.currentElement.radioStation = radioStation;
       this.data.currentPlaylist.lastChangeTimestamp = Date.now();
-      this.setAudioSource(this.getCurrentPlaylistElementURL);
-      if (this.hasPreviousUserInteractions) {
-        this.play(true);
+      if (this.getCurrentPlaylistElementURL) {
+        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        if (this.hasPreviousUserInteractions) {
+          this.play(true);
+        }
+      } else if (!this.isStopped) {
+        this.stop();
       }
     },
     saveCurrentPlaylist: function () {
