@@ -44,21 +44,43 @@ const trackActions = {
         });
     });
   },
-  play: function (data) {
-    if (!spieldoseStore.isStopped) {
-      spieldoseStore.stop();
-    }
-    spieldoseStore.sendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.setTracks([data.id]);
-  },
-  enqueue: function (data) {
+  play: function (id) {
     spieldoseStore.interact();
-    spieldoseStore.appendElementsToCurrentPlaylist(
-      Array.isArray(data) ? data : [{ track: data }]
-    );
-    api.currentPlaylist.appendTracks([data.id]);
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setTracks([id])
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  enqueue: function (id) {
+    spieldoseStore.interact();
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .appendTracks([id])
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
 };
 

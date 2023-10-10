@@ -352,7 +352,7 @@
                 <q-td key="actions" :props="props">
                   <q-btn-group outline>
                     <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow" :title="t('Play')"
-                      @click="trackActions.play(props.row)" />
+                      @click="trackActions.play(props.row.id)" />
                     <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
                       :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
                   </q-btn-group>
@@ -711,11 +711,11 @@ function nl2br(str, replaceMode, isXhtml) {
 }
 
 function playTrack(track) {
-  trackActions.play([{ track: track }]);
+  trackActions.play([ track.id ]);
 }
 
 function enqueueTrack(track) {
-  trackActions.enqueue([{ track: track }]);
+  trackActions.enqueue([ track.id ]);
 }
 
 function get(mbId, name) {

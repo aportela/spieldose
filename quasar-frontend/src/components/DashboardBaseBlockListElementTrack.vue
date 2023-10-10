@@ -3,9 +3,9 @@
     <slot name="prepend">
     </slot>
     <q-icon name="play_arrow" size="sm" :title="t('play track')" class="cursor-pointer q-mr-xs"
-      @click="trackActions.play(track)" />
+      @click="trackActions.play(track.id)" />
     <q-icon name="add_box" size="sm" :title="t('enqueue track')" class="cursor-pointer q-mr-xs"
-      @click="trackActions.enqueue(track)" />
+      @click="trackActions.enqueue(track.id)" />
     <span>{{ track.title }}</span>
     <span v-if="track.artist.name"> / <router-link
         :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{

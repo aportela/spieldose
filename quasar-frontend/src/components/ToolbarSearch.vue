@@ -155,17 +155,11 @@ function onFilter(val, update) {
 }
 
 function onPlayTrack(trackId) {
-  const element = searchResults.value.tracks.find((element) => element.id == trackId);
-  if (element) {
-    trackActions.play(element);
-  }
+  trackActions.play(trackId);
 }
 
 function onAppendTrack(trackId) {
-  const element = searchResults.value.tracks.find((element) => element.id == trackId);
-  if (element) {
-    trackActions.enqueue(element);
-  }
+  trackActions.enqueue(trackId);
 }
 
 function onPlayAlbum(albumId, title, artistName, year) {
@@ -181,7 +175,8 @@ function onPlayAlbum(albumId, title, artistName, year) {
     };
   }
   api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    trackActions.play(success.data.data.items.map((item) => { return ({ track: item }); }));
+    // TODO: currentPlaylist actions
+    trackActions.play(success.data.data.items.map((item) => { return (item.id); }));
   }).catch((error) => {
     // TODO: on error
   });
@@ -200,7 +195,7 @@ function onAppendAlbum(albumId, title, artistName, year) {
     };
   }
   api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    trackActions.enqueue(success.data.data.items.map((item) => { return ({ track: item }); }));
+    trackActions.enqueue(success.data.data.items.map((item) => { return (item.id); }));
   }).catch((error) => {
     // TODO: on error
   });
