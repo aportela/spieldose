@@ -93,8 +93,6 @@
         </q-tr>
       </template>
     </q-table>
-
-  </q-card>
   <q-dialog v-model="showSavePlaylistDialog">
     <q-card style="min-width: 350px">
       <q-card-section>
@@ -116,6 +114,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+</q-card>
 </template>
 
 <style lang="sass">
@@ -287,8 +286,11 @@ const newPlaylistName = ref(null);
 const newPlaylistPublic = ref(false);
 
 function onClear() {
+  spieldoseStore.interact();
   spieldoseStore.stop();
   currentPlayListActions.clear();
+  elements.value = [];
+  rows.value = [];
 }
 
 function setCurrentTrackIndex(index) {
