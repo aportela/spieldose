@@ -103,6 +103,19 @@ if (!session.isLoaded) {
 const spieldoseStore = useSpieldoseStore();
 spieldoseStore.create();
 
+currentPlayListActions.restoreCurrentPlaylistElement().then((success) => {
+})
+  .catch((error) => {
+    // TODO
+    /*
+    $q.notify({
+      type: "negative",
+      message: t("API Error: fatal error"),
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+    });
+    */
+  });
+
 const showFullScreenVisualization = ref(false);
 
 bus.on('showFullScreenVisualization', () => {

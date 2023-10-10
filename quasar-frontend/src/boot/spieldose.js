@@ -345,6 +345,24 @@ const currentPlayListActions = {
         });
     });
   },
+  restoreCurrentPlaylistElement: function () {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .getCurrentElement()
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
 };
 
 export {
