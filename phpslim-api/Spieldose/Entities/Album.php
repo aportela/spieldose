@@ -177,4 +177,33 @@ class Album extends \Spieldose\Entities\Entity
         $data = $browser->launch($query, $queryCount);
         return ($data);
     }
+
+    public static function getTrackIds(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    {
+        $params = [];
+        $whereConditions = [];
+        if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
+            $whereConditions[] = " FIT.mb_album_id = :mbid ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("filter");
+        }
+        $query = sprintf(
+            "
+                SELECT F.id
+                FROM FILE_ID3_TAG FIT
+                INNER JOIN FILE F ON F.ID = FIT.id
+                LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
+                %s
+                ORDER BY FIT.track_number
+            ",
+            count($whereConditions) ? " WHERE " . implode(" AND ", $whereConditions) : null
+        );
+        $data = $dbh->query($query, $params);
+        $ids = [];
+        foreach ($data as $item) {
+            $ids[] = $item->id;
+        }
+        return ($ids);
+    }
 }

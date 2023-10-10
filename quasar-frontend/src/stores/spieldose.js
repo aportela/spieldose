@@ -471,7 +471,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
           this.data.currentPlaylist.totalTracks = success.data.totalTracks;
           this.data.currentPlaylist.currentTrackIndex =
             success.data.currentTrackIndex;
-          this.data.currentPlaylist.currentElement.track = success.data.track;
+          this.data.currentPlaylist.currentElement.track =
+            success.data.currentTrack;
           this.data.currentPlaylist.currentElement.radioStation =
             success.data.radioStation;
           this.data.currentPlaylist.lastChangeTimestamp = Date.now();

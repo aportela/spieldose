@@ -65,18 +65,14 @@ const trackActions = {
 const albumActions = {
   play: function (album) {
     return new Promise((resolve, reject) => {
-      // TODO: use get album api
-      api.track
-        // TODO: add another filters
-        .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+      api.currentPlaylist
+        .setAlbum(album.mbId)
         .then((success) => {
-          spieldoseStore.sendElementsToCurrentPlaylist(
-            success.data.data.items.map((item) => {
-              return { track: item };
-            })
-          );
-          api.currentPlaylist.setTracks(
-            success.data.data.items.map((item) => item.id)
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
           );
           resolve(success);
         })
@@ -87,19 +83,14 @@ const albumActions = {
   },
   enqueue: function (data) {
     return new Promise((resolve, reject) => {
-      // TODO: use get album api
-      api.track
-        // TODO: add another filters
-        .search({ albumMbId: album.mbId }, 1, 0, false, "trackNumber", "ASC")
+      api.currentPlaylist
+        .appendAlbum(album.mbId)
         .then((success) => {
-          spieldoseStore.interact();
-          spieldoseStore.appendElementsToCurrentPlaylist(
-            success.data.data.items.map((item) => {
-              return { track: item };
-            })
-          );
-          api.currentPlaylist.appendElements(
-            success.data.data.items.map((item) => item.id)
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
           );
           resolve(success);
         })
@@ -186,7 +177,7 @@ const currentPlayListActions = {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
             success.data.totalTracks,
-            success.data.track,
+            success.data.currentTrack,
             success.data.radioStation
           );
           resolve(success);
@@ -204,7 +195,7 @@ const currentPlayListActions = {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
             success.data.totalTracks,
-            success.data.track,
+            success.data.currentTrack,
             success.data.radioStation
           );
           resolve(success);
@@ -222,7 +213,7 @@ const currentPlayListActions = {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
             success.data.totalTracks,
-            success.data.track,
+            success.data.currentTrack,
             success.data.radioStation
           );
           resolve(success);
@@ -244,7 +235,7 @@ const currentPlayListActions = {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
             success.data.totalTracks,
-            success.data.track,
+            success.data.currentTrack,
             success.data.radioStation
           );
           resolve(success);
@@ -266,7 +257,7 @@ const currentPlayListActions = {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
             success.data.totalTracks,
-            success.data.track,
+            success.data.currentTrack,
             success.data.radioStation
           );
           resolve(success);

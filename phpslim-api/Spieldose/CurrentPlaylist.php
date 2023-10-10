@@ -112,68 +112,64 @@ class CurrentPlaylist
         return ($this->totalTracks > 0 && $this->currentIndex < $this->totalTracks);
     }
 
-    public static function getCurrentElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
+    public function getCurrentElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
-        $currentPlaylist = new \Spieldose\CurrentPlaylist();
-        $currentPlaylist->get($dbh);
+        $this->get($dbh);
         $track = null;
         $radioStation = null;
-        if (!empty($currentPlaylist->radioStation->id)) {
-            $radioStation = $currentPlaylist->radioStation;
+        if (!empty($this->radioStation->id)) {
+            $radioStation = $this->radioStation;
         } else {
-            if ($currentPlaylist->currentIndex >= 0 && $currentPlaylist->currentIndex < $currentPlaylist->totalTracks) {
+            if ($this->currentIndex >= 0 && $this->currentIndex < $this->totalTracks) {
                 if (!$shuffled) {
-                    $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
+                    $track = $this->tracks[$this->currentIndex];
                 } else {
-                    $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
+                    $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
                 }
             }
         }
-        return ((object) ["currentTrackIndex" => $currentPlaylist->currentIndex, "totalTracks" => $currentPlaylist->totalTracks, "track" => $track, "radioStation" => $radioStation]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation]);
     }
 
-    public static function getPreviousElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
+    public function getPreviousElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
-        $currentPlaylist = new \Spieldose\CurrentPlaylist();
-        $currentPlaylist->get($dbh);
+        $this->get($dbh);
         $track = null;
-        if ($currentPlaylist->AllowSkipPrevious()) {
-            $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex - 1);
+        if ($this->AllowSkipPrevious()) {
+            $this->setCurrentTrackIndex($dbh, $this->currentIndex - 1);
             if (!$shuffled) {
-                $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
+                $track = $this->tracks[$this->currentIndex];
             } else {
-                $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
+                $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $currentPlaylist->currentIndex, "totalTracks" => $currentPlaylist->totalTracks, "track" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
     }
 
-    public static function getNextElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
+    public function getNextElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
-        $currentPlaylist = new \Spieldose\CurrentPlaylist();
-        $currentPlaylist->get($dbh);
+        $this->get($dbh);
         $track = null;
-        if ($currentPlaylist->AllowSkipNext()) {
-            $currentPlaylist->setCurrentTrackIndex($dbh, $currentPlaylist->currentIndex + 1);
+        if ($this->AllowSkipNext()) {
+            $this->setCurrentTrackIndex($dbh, $this->currentIndex + 1);
             if (!$shuffled) {
-                $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
+                $track = $this->tracks[$this->currentIndex];
             } else {
-                $track = $currentPlaylist->tracks[$currentPlaylist->shuffledIndexes[$currentPlaylist->currentIndex]];
+                $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $currentPlaylist->currentIndex, "totalTracks" => $currentPlaylist->totalTracks, "track" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
     }
 
-    public static function getElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index): object
+    public function getElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index): object
     {
-        $currentPlaylist = new \Spieldose\CurrentPlaylist();
-        $currentPlaylist->get($dbh);
+        $this->get($dbh);
         $track = null;
-        if ($index >= 0 && $index < $currentPlaylist->totalTracks) {
-            $currentPlaylist->setCurrentTrackIndex($dbh, $index);
-            $track = $currentPlaylist->tracks[$currentPlaylist->currentIndex];
+        if ($index >= 0 && $index < $this->totalTracks) {
+            $this->setCurrentTrackIndex($dbh, $index);
+            $track = $this->tracks[$this->currentIndex];
         }
-        return ((object) ["currentTrackIndex" => $currentPlaylist->currentIndex, "totalTracks" => $currentPlaylist->totalTracks, "track" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool

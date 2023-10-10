@@ -584,6 +584,36 @@ const api = {
           });
       });
     },
+    setAlbum: function (mbId) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          albumMBId: mbId || null,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/set_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    appendAlbum: function (mbId) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          albumMBId: mbId || null,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/append_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
         const params = {};

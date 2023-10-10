@@ -65,10 +65,13 @@ import { api } from "boot/axios";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
+import { useSpieldoseStore } from "stores/spieldose";
 import { albumActions } from "src/boot/spieldose";
 
 const { t } = useI18n();
 const $q = useQuasar();
+
+const spieldoseStore = useSpieldoseStore();
 
 const searchText = ref(null);
 
@@ -174,6 +177,7 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
+  spieldoseStore.interact();
   albumActions.play(album).then((success) => {
   })
     .catch((error) => {
@@ -191,6 +195,7 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
+  spieldoseStore.interact();
   albumActions.enqueue(album).then((success) => {
   })
     .catch((error) => {
