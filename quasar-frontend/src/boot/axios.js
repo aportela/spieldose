@@ -614,6 +614,36 @@ const api = {
           });
       });
     },
+    setPlaylist: function (id) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          playlistId: id || null,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/set_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    appendPlaylist: function (id) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          playlistId: id || null,
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/append_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
         const params = {};

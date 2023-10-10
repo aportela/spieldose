@@ -158,6 +158,42 @@ const playListActions = {
     spieldoseStore.interact();
     spieldoseStore.setCurrentRadioStation(radioStation);
   },
+  play: function (id) {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setPlaylist(id)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  enqueue: function (id) {
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .appendPlaylist(id)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
 };
 
 const currentPlayListActions = {

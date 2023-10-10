@@ -89,10 +89,13 @@ import { useI18n } from 'vue-i18n';
 
 import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
+import { useSpieldoseStore } from "stores/spieldose";
 import { playListActions } from "boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const spieldoseStore = useSpieldoseStore();
 
 const playlistName = ref(null);
 const noPlaylistsFound = ref(false);
@@ -208,7 +211,9 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlay(playlistId) {
-  playListActions.loadPlaylist(playlistId).then((success) => { }).catch((error) => {
+  spieldoseStore.interact();
+  playListActions.play(playlistId)
+  .then((success) => { }).catch((error) => {
     $q.notify({
       type: "negative",
       message: t("API Error: error loading playlist"),

@@ -370,4 +370,35 @@ class Playlist
 
         return ($data);
     }
+
+    public static function getTrackIds(\aportela\DatabaseWrapper\DB $dbh, string $id): array
+    {
+        $query = "";
+        $params = [];
+        if ($id == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
+            $query = "
+                SELECT F.id
+                FROM FILE_FAVORITE FF
+                INNER JOIN FILE F ON F.ID = FF.file_id
+                WHERE FF.user_id = :user_id
+                ORDER BY FF.favorited
+            ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+        } else {
+            $query = "
+                    SELECT F.id
+                    FROM PLAYLIST_TRACK PT
+                    INNER JOIN FILE F ON F.ID = PT.track_id
+                    WHERE PT.playlist_id = :playlist_id
+                    ORDER BY PT.track_index
+                ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $id);
+        }
+        $data = $dbh->query($query, $params);
+        $ids = [];
+        foreach ($data as $item) {
+            $ids[] = $item->id;
+        }
+        return ($ids);
+    }
 }

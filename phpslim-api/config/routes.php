@@ -872,6 +872,12 @@ return function (App $app) {
                         // TODO
                         throw new \Exception("save error");
                     }
+                } else if (isset($params["playlistId"]) && !empty($params["playlistId"])) {
+                    $playlistTrackIds = \Spieldose\Playlist::getTrackIds($dbh, $params["playlistId"]);
+                    if (!$currentPlaylist->save($dbh, $playlistTrackIds)) {
+                        // TODO
+                        throw new \Exception("save error");
+                    }
                 }
                 $payload = json_encode($currentPlaylist->getCurrentElement($dbh, isset($params["shuffled"])));
                 $response->getBody()->write($payload);
@@ -890,6 +896,12 @@ return function (App $app) {
                 } else if (isset($params["albumMBId"]) && !empty($params["albumMBId"])) {
                     $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["albumMBId"]]);
                     if (!$currentPlaylist->append($dbh, $albumTrackIds)) {
+                        // TODO
+                        throw new \Exception("save error");
+                    }
+                } else if (isset($params["playlistId"]) && !empty($params["playlistId"])) {
+                    $playlistTrackIds = \Spieldose\Playlist::getTrackIds($dbh, $params["playlistId"]);
+                    if (!$currentPlaylist->save($dbh, $playlistTrackIds)) {
                         // TODO
                         throw new \Exception("save error");
                     }
