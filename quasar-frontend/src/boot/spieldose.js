@@ -6,6 +6,7 @@ const spieldoseStore = useSpieldoseStore();
 
 const trackActions = {
   setFavorite: function (id) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.track
         .setFavorite(id)
@@ -19,6 +20,7 @@ const trackActions = {
     });
   },
   unSetFavorite: function (id) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.track
         .unSetFavorite(id)
@@ -86,6 +88,7 @@ const trackActions = {
 
 const albumActions = {
   play: function (album) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .setAlbum(album.mbId)
@@ -104,6 +107,7 @@ const albumActions = {
     });
   },
   enqueue: function (data) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .appendAlbum(album.mbId)
@@ -125,6 +129,7 @@ const albumActions = {
 
 const playListActions = {
   play: function (id) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .setPlaylist(id)
@@ -143,6 +148,7 @@ const playListActions = {
     });
   },
   enqueue: function (id) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .appendPlaylist(id)
@@ -164,6 +170,7 @@ const playListActions = {
 
 const radioStationActions = {
   play: function (id) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .setRadioStation(id)
@@ -197,6 +204,7 @@ const currentPlayListActions = {
     });
   },
   discover: function (count) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .discover(count, spieldoseStore.getShuffle)
@@ -215,6 +223,7 @@ const currentPlayListActions = {
     });
   },
   skipToPreviousElement: function () {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .skipToPreviousElement(spieldoseStore.getShuffle)
@@ -233,6 +242,7 @@ const currentPlayListActions = {
     });
   },
   skipToNextElement: function () {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .skipToNextElement(spieldoseStore.getShuffle)
@@ -251,6 +261,7 @@ const currentPlayListActions = {
     });
   },
   skipToElementIndex: function (index) {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .skipToElementAtIndex(index, spieldoseStore.getShuffle)
@@ -268,71 +279,8 @@ const currentPlayListActions = {
         });
     });
   },
-  /*
-  saveElements: function (data) {
-    return new Promise((resolve, reject) => {
-      api.currentPlaylist
-        .setTracks(
-          Array.isArray(data)
-            ? success.data.data.items.map((data) => data.id)
-            : [data]
-        )
-        .then((success) => {
-          spieldoseStore.setCurrentPlaylist(
-            success.data.currentTrackIndex,
-            success.data.totalTracks,
-            success.data.currentTrack,
-            success.data.radioStation
-          );
-          resolve(success);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-  appendElements: function (data) {
-    return new Promise((resolve, reject) => {
-      api.currentPlaylist
-        .appendTracks(
-          Array.isArray(data)
-            ? success.data.data.items.map((data) => data.id)
-            : [data]
-        )
-        .then((success) => {
-          spieldoseStore.setCurrentPlaylist(
-            success.data.currentTrackIndex,
-            success.data.totalTracks,
-            success.data.currentTrack,
-            success.data.radioStation
-          );
-          resolve(success);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-  setRadioStation: function (id) {
-    return new Promise((resolve, reject) => {
-      api.currentPlaylist
-        .setRadioStation(id)
-        .then((success) => {
-          spieldoseStore.setCurrentPlaylist(
-            success.data.currentTrackIndex,
-            success.data.totalTracks,
-            success.data.currentTrack,
-            success.data.radioStation
-          );
-          resolve(success);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-  */
   clear: function () {
+    spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
         .setTracks([])
