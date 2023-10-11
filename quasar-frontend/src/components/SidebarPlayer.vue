@@ -153,16 +153,20 @@ onMounted(() => {
       if (spieldoseStore.allowSkipNext) {
       } else {
         spieldoseStore.stop();
-        spieldoseStore.skipToIndex(0);
+        currentPlayListActions.skipToElementIndex(0).then((success) => { }).catch((error) => {
+        // TODO
+      });
         // TODO: not working, skip is fine, but playing has a bug
-        spieldoseStore.play();
+        //spieldoseStore.play();
       }
     } else if (spieldoseStore.getRepeatMode == 'track') {
       spieldoseStore.stop();
       spieldoseStore.play();
     } else {
       if (spieldoseStore.allowSkipNext) {
-        spieldoseStore.skipNext();
+        currentPlayListActions.skipToNextElement().then((success) => { }).catch((error) => {
+        // TODO
+      });
       } else {
         spieldoseStore.stop();
       }
