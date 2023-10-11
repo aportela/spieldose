@@ -431,38 +431,6 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
       */
     },
-    shuffleCurrentPlaylist: function () {
-      console.error("TODO");
-      /*
-      this.interact();
-      this.stop();
-      const elements = shuffle([...this.data.playlists[0].elements]);
-      const hasValues =
-        elements && Array.isArray(elements) && elements.length > 0;
-      if (hasValues) {
-        this.data.playlists[0] = {
-          id: null,
-          name: null,
-          owner: {
-            id: null,
-            name: null,
-          },
-          public: false,
-          lastChangeTimestamp: Date.now(),
-          currentElementIndex: hasValues ? 0 : -1,
-          elements: hasValues ? elements : [],
-          shuffleIndexes: hasValues
-            ? shuffle([...Array(elements.length).keys()])
-            : [],
-          currentRadioStation: null,
-        };
-        this.data.currentPlaylistIndex = 0;
-        this.saveCurrentPlaylist();
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play(true);
-      }
-      */
-    },
     setCurrentPlaylist: function (
       currentTrackIndex,
       totalTracks,

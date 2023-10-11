@@ -751,6 +751,22 @@ const api = {
           });
       });
     },
+    randomize: function (shuffle) {
+      return new Promise((resolve, reject) => {
+        const params = {};
+        if (shuffle) {
+          params.shuffle = true;
+        }
+        axios
+          .get(baseAPIPath + "/current_playlist/sort/random", { params })
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {

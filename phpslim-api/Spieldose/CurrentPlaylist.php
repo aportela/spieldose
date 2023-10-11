@@ -343,4 +343,34 @@ class CurrentPlaylist
             throw new \Exception("");
         }
     }
+
+    public function randomSort(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false)
+    {
+        $this->get($dbh);
+        $trackIds = [];
+        foreach ($this->tracks as $track) {
+            $trackIds[] = $track->id;
+        }
+        shuffle($trackIds);
+        if ($this->save($dbh, $trackIds)) {
+            $this->get($dbh);
+            $track = null;
+            $radioStation = null;
+            if (!empty($this->radioStation->id)) {
+                $radioStation = $this->radioStation;
+            } else {
+                if ($this->currentIndex >= 0 && $this->currentIndex < $this->totalTracks) {
+                    if (!$shuffled) {
+                        $track = $this->tracks[$this->currentIndex];
+                    } else {
+                        $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
+                    }
+                }
+            }
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+        } else {
+            // TODO
+            throw new \Exception("");
+        }
+    }
 }

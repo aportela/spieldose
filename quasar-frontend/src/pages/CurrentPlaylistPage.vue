@@ -377,11 +377,26 @@ watch(currentPlaylistTrackIndex, (newValue) => {
 
 function onRandomize() {
   spieldoseStore.stop();
-  spieldoseStore.shuffleCurrentPlaylist();
+  loading.value = true;
+  currentPlayListActions.randomize().then((success) => {
+    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
+    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    currentTrackIndex.value = currentPlaylistTrackIndex.value;
+    loading.value = false;
+  }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: t("API Error: error loading random tracks"),
+      caption: t("API Error: fatal error details", {
+        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+          ? error.response.statusText : 'undefined'
+      })
+    });
+    loading.value = false;
+  });
 }
 
 function onDiscover() {
-  spieldoseStore.interact();
   spieldoseStore.stop();
   loading.value = true;
   currentPlayListActions.discover(32).then((success) => {

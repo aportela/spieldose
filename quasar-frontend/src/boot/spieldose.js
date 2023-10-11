@@ -222,6 +222,25 @@ const currentPlayListActions = {
         });
     });
   },
+  randomize: function () {
+    spieldoseStore.interact();
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .randomize(spieldoseStore.getShuffle)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
   skipToPreviousElement: function () {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {

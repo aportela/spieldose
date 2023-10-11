@@ -812,6 +812,15 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/current_playlist/sort/random', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $payload = json_encode($currentPlaylist->randomSort($dbh, ((isset($params["shuffle"]) && $params["shuffle"]) && $params["shuffle"])));
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->get('/current_playlist/current_element', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
