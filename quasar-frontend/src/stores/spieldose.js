@@ -160,7 +160,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     allowSkipNext: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
-      state.data.currentPlaylist.totalTracks - 1,
+        state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {
@@ -469,13 +469,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
       track,
       radioStation
     ) {
+      const oldURL = this.getCurrentPlaylistElementURL;
       this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
       this.data.currentPlaylist.totalTracks = totalTracks;
       this.data.currentPlaylist.currentElement.track = track;
       this.data.currentPlaylist.currentElement.radioStation = radioStation;
       this.data.currentPlaylist.lastChangeTimestamp = Date.now();
       if (this.getCurrentPlaylistElementURL) {
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
+        if (oldURL != this.getCurrentPlaylistElementURL)
+          this.setAudioSource(this.getCurrentPlaylistElementURL);
         if (this.hasPreviousUserInteractions) {
           this.play(true);
         }
