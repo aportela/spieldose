@@ -387,6 +387,7 @@ function onDiscover() {
   currentPlayListActions.discover(32).then((success) => {
     elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
     rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    currentTrackIndex.value = currentPlaylistTrackIndex.value;
     loading.value = false;
   }).catch((error) => {
     $q.notify({
