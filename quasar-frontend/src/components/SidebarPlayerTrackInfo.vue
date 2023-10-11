@@ -3,7 +3,7 @@
     <p class="text-center text-weight-bolder ellipsis text-pink" :title="track.title || '&nbsp;'">{{
       track.title || null }}</p>
     <p class="text-center ellipsis" :title="track.album.title || null">
-      <router-link style="text-decoration: none;" :to="{ name: 'album', params: { title: track.album.title }, query: { mbid: track.album.mbId }}" v-if="track.album.title && track.album.mbId">{{ track.album.title }}</router-link>
+      <router-link style="text-decoration: none;" :to="{ name: 'album', params: { title: track.album.title }, query: { mbid: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year }}" v-if="track.album && track.album.title && track.album.mbId">{{ track.album.title }}</router-link>
       <span v-else>&nbsp;</span>
     </p>
     <p class="text-center ellipsis">
