@@ -33,7 +33,7 @@ const props = defineProps({
 
 const currentPageIndex = computed(() => props.currentPageIndex || 1);
 
-const currentPage = ref(currentPageIndex);
+const currentPage = ref(currentPageIndex.value);
 
 watch (currentPageIndex, (newValue) => {
   currentPage.value = newValue;
