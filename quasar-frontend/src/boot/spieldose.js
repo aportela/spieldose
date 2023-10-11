@@ -348,7 +348,7 @@ const currentPlayListActions = {
   restoreCurrentPlaylistElement: function () {
     return new Promise((resolve, reject) => {
       api.currentPlaylist
-        .getCurrentElement()
+        .getCurrentElement(spieldoseStore.getShuffle)
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
@@ -362,7 +362,7 @@ const currentPlayListActions = {
           reject(error);
         });
     });
-  }
+  },
 };
 
 export {
