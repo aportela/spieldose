@@ -766,7 +766,13 @@ function get(mbId, name) {
 }
 
 function onPlayAlbum(album) {
-  albumActions.play(album).then((success) => {
+  albumActions.play(
+    album.mbId || null,
+    album.title || null,
+    album.artist ? album.artist.mbId : null,
+    album.artist ? album.artist.name : null,
+    album.year || null
+  ).then((success) => {
   })
     .catch((error) => {
       switch (error.response.status) {
@@ -783,7 +789,12 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
-  albumActions.enqueue(album).then((success) => {
+  albumActions.enqueue(album.mbId || null,
+    album.title || null,
+    album.artist ? album.artist.mbId : null,
+    album.artist ? album.artist.name : null,
+    album.year || null
+  ).then((success) => {
   })
     .catch((error) => {
       switch (error.response.status) {
@@ -798,7 +809,6 @@ function onEnqueueAlbum(album) {
       }
     });
 }
-
 function onRowClick(evt, row, index) {
   if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
     spieldoseStore.interact();
