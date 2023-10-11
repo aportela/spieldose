@@ -193,7 +193,7 @@ const columns = [
     label: 'Title',
     align: 'left',
     field: row => row.title,
-    sortable: true
+    sortable: false
   },
   {
     name: 'artist',
@@ -201,7 +201,7 @@ const columns = [
     label: 'Artist',
     align: 'left',
     field: row => row.artist.name,
-    sortable: true
+    sortable: false
   },
   {
     name: 'albumArtist',
@@ -209,7 +209,7 @@ const columns = [
     label: 'Album artist',
     align: 'left',
     field: row => row.album.artist.name,
-    sortable: true
+    sortable: false
   },
   {
     name: 'albumTitle',
@@ -217,7 +217,7 @@ const columns = [
     label: 'Album',
     align: 'left',
     field: row => row.album.title,
-    sortable: true
+    sortable: false
   },
   {
     name: 'albumTrackIndex',
@@ -225,7 +225,7 @@ const columns = [
     label: 'Album Track nº',
     align: 'right',
     field: row => row.trackNumber,
-    sortable: true
+    sortable: false
   },
   {
     name: 'year',
@@ -233,7 +233,7 @@ const columns = [
     label: 'Year',
     align: 'right',
     field: row => row.album.year,
-    sortable: true
+    sortable: false
   },
   {
     name: 'actions',
