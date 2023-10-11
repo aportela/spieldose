@@ -181,6 +181,8 @@ export default {
     "API Error: error cargando la estación de radio",
 
   // generic
+  "API Error: error restoring playlist":
+    "API Error: error restaurando la lista de reproducción",
   "API Error: error increasing track play count":
     "API Error: error incrementando las reproducciones de la canción",
   "API Error: error playing album": "API Error: error reproduciendo el album",

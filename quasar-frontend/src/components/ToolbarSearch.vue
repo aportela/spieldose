@@ -1,6 +1,6 @@
 <template>
   <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
-    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;">
+    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;" :disable="disable">
     <template v-slot:no-option v-if="searching">
       <q-item>
         <q-item-section>
@@ -103,6 +103,10 @@ import { i18n } from "src/boot/i18n";
 import { trackActions, albumActions } from '../boot/spieldose';
 
 const { t } = useI18n();
+
+const props = defineProps({
+  disable: Boolean
+});
 
 const searchText = ref(null);
 
