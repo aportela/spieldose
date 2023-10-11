@@ -87,11 +87,11 @@ const trackActions = {
 };
 
 const albumActions = {
-  play: function (album) {
+  play: function (mbId, title, artistMBId, artistName, year) {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
-        .setAlbum(album.mbId)
+        .setAlbum(mbId, title, artistMBId, artistName, year)
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
@@ -106,11 +106,11 @@ const albumActions = {
         });
     });
   },
-  enqueue: function (data) {
+  enqueue: function (mbId, title, artistMBId, artistName, year) {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
-        .appendAlbum(album.mbId)
+        .appendAlbum(mbId, title, artistMBId, artistName, year)
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,

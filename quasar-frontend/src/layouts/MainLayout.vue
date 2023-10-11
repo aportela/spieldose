@@ -14,8 +14,10 @@
         -->
         <q-tabs shrink dense no-caps>
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label :disable="loading" />
-          <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack :disable="loading">
+            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
+            :disable="loading" />
+          <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack
+            :disable="loading">
             <q-list dense style="min-width: 200px">
               <q-item class="GL__menu-link-signed-in">
                 <q-item-section>
@@ -35,7 +37,7 @@
           <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
             href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps stack
-            @click="signOut" :disable="loading"/>
+            @click="signOut" :disable="loading" />
         </q-tabs>
 
       </q-toolbar>
@@ -201,11 +203,11 @@ loading.value = true;
 currentPlayListActions.restoreCurrentPlaylistElement().then((success) => {
   loading.value = false;
 }).catch((error) => {
-    loading.value = false;
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error restoring playlist"),
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-    });
+  loading.value = false;
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error restoring playlist"),
+    caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
   });
+});
 </script>

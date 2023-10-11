@@ -584,10 +584,15 @@ const api = {
           });
       });
     },
-    setAlbum: function (mbId) {
+    setAlbum: function (mbId, title, artistMBId, artistName, year) {
       return new Promise((resolve, reject) => {
         const params = {
-          albumMBId: mbId || null,
+          album: {
+            mbId: mbId || null,
+            title: title || null,
+            artist: { mbId: artistMBId || null, name: artistName || null },
+            year: year || null,
+          },
         };
         axios
           .post(baseAPIPath + "/current_playlist/set_tracks", params)
@@ -599,10 +604,15 @@ const api = {
           });
       });
     },
-    appendAlbum: function (mbId) {
+    appendAlbum: function (mbId, title, artistMBId, artistName, year) {
       return new Promise((resolve, reject) => {
         const params = {
-          albumMBId: mbId || null,
+          album: {
+            mbId: mbId || null,
+            title: title || null,
+            artist: { mbId: artistMBId || null, name: artistName || null },
+            year: year || null,
+          },
         };
         axios
           .post(baseAPIPath + "/current_playlist/append_tracks", params)

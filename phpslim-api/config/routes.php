@@ -866,8 +866,9 @@ return function (App $app) {
                         // TODO
                         throw new \Exception("save error");
                     }
-                } else if (isset($params["albumMBId"]) && !empty($params["albumMBId"])) {
-                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["albumMBId"]]);
+                } else if (isset($params["album"]) && isset($params["album"]["mbId"]) && !empty($params["album"]["mbId"])) {
+                    // TODO: search on another fields
+                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["album"]["mbId"]]);
                     if (!$currentPlaylist->save($dbh, $albumTrackIds)) {
                         // TODO
                         throw new \Exception("save error");
@@ -893,8 +894,9 @@ return function (App $app) {
                         // TODO
                         throw new \Exception("save error");
                     }
-                } else if (isset($params["albumMBId"]) && !empty($params["albumMBId"])) {
-                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["albumMBId"]]);
+                } else if (isset($params["album"]) && isset($params["album"]["mbId"]) && !empty($params["album"]["mbId"])) {
+                    // TODO: search on another fields
+                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["album"]["mbId"]]);
                     if (!$currentPlaylist->append($dbh, $albumTrackIds)) {
                         // TODO
                         throw new \Exception("save error");

@@ -50,8 +50,8 @@
       </div>
       <div class="q-gutter-md row items-start">
         <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
-          :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year"
-          @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
+          :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
+          :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
         </AnimatedAlbumCover>
       </div>
     </q-card-section>
@@ -166,7 +166,7 @@ function search(resetPager) {
 }
 
 function onSearchOnChanged(a) {
-  if(searchText.value) {
+  if (searchText.value) {
     search(true);
   }
 }
@@ -177,8 +177,13 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onPlayAlbum(album) {
-  spieldoseStore.interact();
-  albumActions.play(album).then((success) => {
+  albumActions.play(
+    album.mbId || null,
+    album.title || null,
+    album.artist ? album.artist.mbId : null,
+    album.artist ? album.artist.name : null,
+    album.year || null
+  ).then((success) => {
   })
     .catch((error) => {
       switch (error.response.status) {
@@ -195,8 +200,12 @@ function onPlayAlbum(album) {
 }
 
 function onEnqueueAlbum(album) {
-  spieldoseStore.interact();
-  albumActions.enqueue(album).then((success) => {
+  albumActions.enqueue(album.mbId || null,
+    album.title || null,
+    album.artist ? album.artist.mbId : null,
+    album.artist ? album.artist.name : null,
+    album.year || null
+  ).then((success) => {
   })
     .catch((error) => {
       switch (error.response.status) {

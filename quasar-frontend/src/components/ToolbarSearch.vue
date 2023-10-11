@@ -1,6 +1,7 @@
 <template>
   <q-select ref="search" dense standout use-input hide-selected class="q-mx-md" filled color="pink" :stack-label="false"
-    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;" :disable="disable">
+    :label="t('Search...')" v-model="searchText" :options="filteredOptions" @filter="onFilter" style="min-width: 24%;"
+    :disable="disable">
     <template v-slot:no-option v-if="searching">
       <q-item>
         <q-item-section>
@@ -62,9 +63,9 @@
           <q-item-section top side>
             <div class="text-grey-8 q-gutter-xs">
               <q-btn class="gt-xs" size="12px" flat dense round icon="play_arrow" :title="t('play album')"
-                @click="onPlayAlbum(scope.opt.id, scope.opt.label, scope.opt.albumArtist, scope.opt.year)" />
+                @click="onPlayAlbum(scope.opt.id, scope.opt.label, scope.opt.artist, scope.opt.year)" />
               <q-btn class="gt-xs" size="12px" flat dense round icon="add_box" :title="t('enqueue album')"
-                @click="onAppendAlbum(scope.opt.id, scope.opt.label, scope.opt.albumArtist, scope.opt.year)" />
+                @click="onAppendAlbum(scope.opt.id, scope.opt.label, scope.opt.artist, scope.opt.year)" />
             </div>
           </q-item-section>
         </q-item>
@@ -131,7 +132,7 @@ function onFilter(val, update) {
               return ({ isTrack: true, id: item.id, label: item.title, caption: t('fastSearchResultCaption', { artistName: item.artist.name, albumTitle: item.album.title, albumYear: item.album.year }) });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.albums.map((item) => {
-              return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', albumArtist: item.artist.name, year: item.year, image: item.covers.small });
+              return ({ isAlbum: true, id: item.mbId, label: item.title, caption: 'by  ' + item.artist.name + ' (' + item.year + ')', artist: item.artist, year: item.year, image: item.covers.small });
             }));
             filteredOptions.value = filteredOptions.value.concat(searchResults.value.artists.map((item) => {
               return ({ isMBArtist: false, isArtist: true, id: item.mbId, label: item.name, caption: 'total tracks: ' + item.totalTracks });
@@ -166,43 +167,50 @@ function onAppendTrack(trackId) {
   trackActions.enqueue(trackId);
 }
 
-function onPlayAlbum(albumId, title, artistName, year) {
-  let filter = {};
-  if (albumId) {
-    filter = { albumMbId: albumId };
-  } else {
-    // TODO: check filter
-    filter = {
-      albumTitle: title || null,
-      artistName: artistName || null,
-      year: year || null
-    };
-  }
-  api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    // TODO: currentPlaylist actions
-    trackActions.play(success.data.data.items.map((item) => { return (item.id); }));
-  }).catch((error) => {
-    // TODO: on error
-  });
+function onPlayAlbum(albumId, title, artist, year) {
+  albumActions.play(
+    albumId || null,
+    title || null,
+    artist ? artist.mbId : null,
+    artist ? artist.name : null,
+    year || null
+  ).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
-function onAppendAlbum(albumId, title, artistName, year) {
-  let filter = {};
-  if (albumId) {
-    filter = { albumMbId: albumId };
-  } else {
-    // TODO: check filter
-    filter = {
-      albumTitle: title || null,
-      artistName: artistName || null,
-      year: year || null
-    };
-  }
-  api.globalSearch.search(filter, 1, 0, false, 'trackNumber', 'ASC').then((success) => {
-    trackActions.enqueue(success.data.data.items.map((item) => { return (item.id); }));
-  }).catch((error) => {
-    // TODO: on error
-  });
+function onAppendAlbum(albumId, title, artist, year) {
+  albumActions.enqueue(
+    albumId || null,
+    title || null,
+    artist ? artist.mbId : null,
+    artist ? artist.name : null,
+    year || null
+  ).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 </script>
