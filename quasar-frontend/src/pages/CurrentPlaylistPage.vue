@@ -276,6 +276,7 @@ watch(currentPlayListElementsLastChanges, (newValue) => {
 const elements = ref([]);
 
 const currentTrackIndex = ref(0);
+const shuffledIndexes = ref([]);
 
 const loading = ref(false);
 
@@ -348,11 +349,12 @@ function onRowClick(evt, row, index) {
 }
 
 function getCurrentPlaylist() {
-  //spieldoseStore.interact();
   loading.value = true;
   currentPlayListActions.get().then((success) => {
     elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
     rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    shuffledIndexes.value = success.data.shuffledIndexes;
+    currentTrackIndex.value = !spieldoseStore.getShuffle ? success.data.currentIndex: shuffledIndexes.value[success.data.currentIndex];
     loading.value = false;
   }).catch((error) => {
     // TODO
@@ -364,7 +366,7 @@ const currentPlaylistTrackIndex = computed(() => {
   if (!spieldoseStore.getShuffle) {
     return (spieldoseStore.getCurrentPlaylistIndex);
   } else {
-    return (spieldoseStore.getShuffleCurrentPlaylistIndex);
+    return(!spieldoseStore.getShuffle ? success.data.currentIndex: shuffledIndexes.value[spieldoseStore.getCurrentPlaylistIndex]);
   }
 });
 
