@@ -2,8 +2,10 @@
   <div class="q-px-md" style="max-width: 400px;" v-if="isTrack">
     <p class="text-center text-weight-bolder ellipsis text-pink" :title="track.title || '&nbsp;'">{{
       track.title || null }}</p>
-    <p class="text-center ellipsis" :title="track.album.title || null">{{
-      track.album.title || "&nbsp;" }}</p>
+    <p class="text-center ellipsis" :title="track.album.title || null">
+      <router-link style="text-decoration: none;" :to="{ name: 'album', params: { title: track.album.title }, query: { mbid: track.album.mbId }}" v-if="track.album.title && track.album.mbId">{{ track.album.title }}</router-link>
+      <span v-else>&nbsp;</span>
+    </p>
     <p class="text-center ellipsis">
       <router-link v-if="track.artist.name" style="text-decoration: none;"
         :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }"
