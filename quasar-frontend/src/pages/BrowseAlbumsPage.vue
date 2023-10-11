@@ -28,20 +28,12 @@
           </q-input>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortField" :options="sortFieldOptions" options-dense label="Sort field"
-            @update:model-value="search(true)" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <SortFieldSelector :disable="loading" :options="sortFieldOptions" :field="sortField"
+            @change="onSortFieldChanged">
+          </SortFieldSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-            @update:model-value="search(true)" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <SortOrderSelector :disable="loading" :order="sortOrder" @change="onSortOrderChanged"></SortOrderSelector>
         </div>
       </div>
       <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -65,8 +57,11 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
+import { default as SortFieldSelector } from "components/SortFieldSelector.vue";
+import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { albumActions } from "src/boot/spieldose";
+
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -92,7 +87,7 @@ const searchOnOptions = computed(() => [
   }
 ]);
 
-const searchOn = ref(searchOnOptions.value[0].value);
+const searchOn = ref(searchOnOptions.value[0]);
 
 const sortFieldOptions = computed(() => [
   {
@@ -110,19 +105,7 @@ const sortFieldOptions = computed(() => [
 ]);
 
 const sortField = ref(sortFieldOptions.value[0].value);
-
-const sortOrderValues = [
-  {
-    label: 'Ascending',
-    value: 'ASC'
-  },
-  {
-    label: 'Descending',
-    value: 'DESC'
-  }
-];
-
-const sortOrder = ref(sortOrderValues[0].value);
+const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 
 const noAlbumsFound = ref(false);
 const loading = ref(false);
