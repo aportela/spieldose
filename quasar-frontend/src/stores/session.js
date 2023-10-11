@@ -10,7 +10,7 @@ const localStorageBasilOptions = {
   namespace: "spieldose#" + hashedSite,
   storages: ["local", "cookie", "session", "memory"],
   storage: "local",
-  sameSite: "Lax",
+  sameSite: "strict",
   expireDays: 3650,
 };
 
