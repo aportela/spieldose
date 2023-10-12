@@ -13,7 +13,7 @@
           <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
             hint="Search albums with specified condition" :loading="loading" :disable="loading"
             @keydown.enter.prevent="onTextChanged" @clear="search(true)" :error="noAlbumsFound"
-            :errorMessage="'No albums found with specified condition'" ref="searchTextRef">
+            :errorMessage="'No albums found with specified condition'" ref="autoFocusRef">
             <template v-slot:prepend>
               <q-icon name="filter_alt" />
             </template>
@@ -108,7 +108,7 @@ const totalPages = ref(0);
 const totalResults = ref(0);
 const currentPageIndex = ref(parseInt(route.query.page || 1));
 
-const searchTextRef = ref(null);
+const autoFocusRef = ref(null);
 
 router.beforeEach(async (to, from) => {
   if (from.name == "albums") {
@@ -198,10 +198,10 @@ function search() {
     if (searchText.value && success.data.data.pager.totalResults < 1) {
       noAlbumsFound.value = true;
     }
-    nextTick(() => {
-      searchTextRef.value.focus();
-    });
     loading.value = false;
+    nextTick(() => {
+      autoFocusRef.value.$el.focus();
+    });
   }).catch((error) => {
     albums = [];
     totalPages.value = 0;
