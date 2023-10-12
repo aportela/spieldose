@@ -29,7 +29,7 @@
           </SortFieldSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortOrderSelector :disable="loading" :order="sortOrder" @change="onSortOrderChanged"></SortOrderSelector>
+          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged"></SortOrderSelector>
         </div>
       </div>
     </template>

@@ -1,42 +1,34 @@
 <template>
-  <q-select outlined dense v-model="model" :options="options" options-dense :label="t('Sort order')"
-    @update:model-value="onChange" :disable="disable">
-    <template v-slot:selected-item="scope">
-      {{ scope.opt.label }}
-    </template>
-  </q-select>
+  <CustomSelector label="Sort order" :options="options" v-model="value" :disable="disable"></CustomSelector>
 </template>
 
 <script setup>
 
-import { ref, computed } from "vue";
-import { useI18n } from "vue-i18n";
+import { computed } from "vue";
 
-const { t } = useI18n();
+import { default as CustomSelector } from "components/CustomSelector.vue";
 
-const props = defineProps({
-  disable: Boolean,
-  order: String
-});
+const props = defineProps(['modelValue', 'disable']);
+const emit = defineEmits(['update:modelValue']);
 
-const emit = defineEmits(['change']);
-
-// TODO: when changed global locale (from layout menu), selected-item label will not translated until model change (BUG)
-const options = computed(() => [
+const options = [
   {
-    label: t("Ascending"),
+    label: "Ascending",
     value: "ASC"
   },
   {
-    label: t("Descending"),
+    label: "Descending",
     value: "DESC"
   }
-]);
+];
 
-const model = ref(options.value[props.order == "DESC" ? 1 : 0]);
-
-function onChange(orderModel) {
-  emit("change", orderModel.value);
-}
+const value = computed({
+  get() {
+    return (props.modelValue);
+  },
+  set(val) {
+    emit('update:modelValue', val);
+  }
+});
 
 </script>
