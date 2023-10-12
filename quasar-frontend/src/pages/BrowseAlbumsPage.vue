@@ -7,10 +7,13 @@
     <q-card-section v-if="albums">
       <div class="row q-gutter-xs">
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn" @update:modelValue="onSearchOnChanged"></CustomSelector>
+          <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn"
+            @update:modelValue="onSearchOnChanged"></CustomSelector>
         </div>
         <div class="col">
-          <CustomInput :disable="loading" hint="Search albums with specified condition" placeholder="Text condition" :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText" @submit="onTextChanged" inputRef="autoFocusRef"></CustomInput>
+          <CustomInput :disable="loading" hint="Search albums with specified condition" placeholder="Text condition"
+            :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText"
+            @submit="onTextChanged" ref="autoFocusRef"></CustomInput>
           <!--
           <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
             hint="Search albums with specified condition" :loading="loading && searchText?.length > 0" :disable="loading"
@@ -26,10 +29,12 @@
           -->
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField" @update:modelValue="onSortFieldChanged"></CustomSelector>
+          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
+            @update:modelValue="onSortFieldChanged"></CustomSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged"></SortOrderSelector>
+          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged">
+          </SortOrderSelector>
         </div>
       </div>
       <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -204,7 +209,7 @@ function search() {
     }
     loading.value = false;
     nextTick(() => {
-      //autoFocusRef.value.$el.focus();
+      autoFocusRef.value.focus();
     });
   }).catch((error) => {
     albums = [];
