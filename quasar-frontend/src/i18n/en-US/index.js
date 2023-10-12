@@ -191,4 +191,8 @@ export default {
     "Minimum 3 characters to trigger autocomplete",
   "No results found with the specified condition filter":
     "No results found with the specified condition filter",
+
+  // custom selectors
+  "Search on": "Search on",
+  "Title & Artist": "Title & Artist",
 };

@@ -196,4 +196,8 @@ export default {
     "Teclee mínimo 3 caracteres pra lanzar o autocompletado",
   "No results found with the specified condition filter":
     "Non hai resultados pra o filtro de condicións especificado",
+
+  // custom selectors
+  "Search on": "Buscar en",
+  "Title & Artist": "Título e artista",
 };

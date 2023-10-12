@@ -7,12 +7,7 @@
     <q-card-section v-if="albums">
       <div class="row q-gutter-xs">
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="searchOn" :options="searchOnOptions" options-dense label="Search on"
-            @update:model-value="onSearchOnChanged" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn" @update:modelValue="onSortFieldChanged"></CustomSelector>
         </div>
         <div class="col">
           <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
@@ -28,12 +23,10 @@
           </q-input>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortFieldSelector :disable="loading" :options="sortFieldOptions" :field="sortField"
-            @change="onSortFieldChanged">
-          </SortFieldSelector>
+          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField" @update:modelValue="onSortFieldChanged"></CustomSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortOrderSelector :disable="loading" :order="sortOrder" @change="onSortOrderChanged"></SortOrderSelector>
+          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged"></SortOrderSelector>
         </div>
       </div>
       <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
@@ -57,7 +50,7 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
-import { default as SortFieldSelector } from "components/SortFieldSelector.vue";
+import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { albumActions } from "src/boot/spieldose";
@@ -72,39 +65,39 @@ const router = useRouter();
 const textRef = ref(null);
 const searchText = ref(route.query.q || null);
 
-const searchOnOptions = computed(() => [
+const searchOnOptions = [
   {
-    label: t('Title'),
-    value: 'title'
+    label: "Title",
+    value: "title"
   },
   {
-    label: t('Artist'),
-    value: 'albumArtistName'
+    label: "Artist",
+    value: "albumArtistName"
   },
   {
-    label: t('Title & Artist'),
-    value: 'all'
+    label: "Title & Artist",
+    value: "all"
   }
-]);
+];
 
-const searchOn = ref(searchOnOptions.value[0]);
+const searchOn = ref(searchOnOptions[0].value);
 
-const sortFieldOptions = computed(() => [
+const sortFieldOptions = [
   {
-    label: t('Title'),
-    value: 'title'
+    label: "Title",
+    value: "title"
   },
   {
-    label: t('Artist'),
-    value: 'albumArtistName'
+    label: "Artist",
+    value: "albumArtistName"
   },
   {
-    label: t('Year'),
-    value: 'year'
+    label: "Year",
+    value: "year"
   }
-]);
+];
 
-const sortField = ref(sortFieldOptions.value[0].value);
+const sortField = ref(sortFieldOptions[0].value);
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 
 const noAlbumsFound = ref(false);
@@ -120,21 +113,21 @@ const searchTextRef = ref(null);
 router.beforeEach(async (to, from) => {
   if (from.name == "albums") {
     currentPageIndex.value = parseInt(to.query.page || 1);
-    searchOn.value = to.query.searchOn || searchOnOptions.value[0].value;
+    searchOn.value = to.query.searchOn || searchOnOptions[0].value;
     searchText.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
     switch (to.query.sortField) {
       case 'title':
-        sortField.value = sortFieldOptions.value[0].value
+        sortField.value = sortFieldOptions[0].value
         break;
       case 'albumArtistName':
-        sortField.value = sortFieldOptions.value[1].value
+        sortField.value = sortFieldOptions[1].value
         break;
       case 'year':
-        sortField.value = sortFieldOptions.value[2].value
+        sortField.value = sortFieldOptions[2].value
         break;
       default:
-        sortField.value = sortFieldOptions.value[0].value
+        sortField.value = sortFieldOptions[0].value
         break;
     }
     if (
