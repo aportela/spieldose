@@ -11,9 +11,9 @@
             @update:modelValue="onSearchOnChanged"></CustomSelector>
         </div>
         <div class="col">
-          <CustomInput :disable="loading" hint="Search albums with specified condition" placeholder="Text condition"
+          <CustomInputSearch :disable="loading" hint="Search albums with specified condition" placeholder="Text condition"
             :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText"
-            @submit="onTextChanged" ref="autoFocusRef"></CustomInput>
+            @submit="onTextChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -45,7 +45,7 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
-import { default as CustomInput } from "components/CustomInput.vue";
+import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
@@ -195,7 +195,9 @@ function search() {
     }
     loading.value = false;
     nextTick(() => {
-      autoFocusRef.value.focus();
+      if (autoFocusRef.value) {
+        autoFocusRef.value.focus();
+      }
     });
   }).catch((error) => {
     albums = [];
