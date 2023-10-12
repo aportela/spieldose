@@ -11,7 +11,7 @@
         </div>
         <div class="col">
           <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search albums with specified condition" :loading="loading" :disable="loading"
+            hint="Search albums with specified condition" :loading="loading && searchText?.length > 0" :disable="loading"
             @keydown.enter.prevent="onTextChanged" @clear="search(true)" :error="noAlbumsFound"
             :errorMessage="'No albums found with specified condition'" ref="autoFocusRef">
             <template v-slot:prepend>
