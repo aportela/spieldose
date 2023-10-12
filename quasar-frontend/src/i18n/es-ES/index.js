@@ -66,10 +66,10 @@ export default {
   nYearsAgo: "hace {count} años",
 
   // sort
-  "Sort field": "Campo de ordenación",
+  "Sort field": "Ordenar por",
   "Sort by artist name": "Nombre",
   "Sort by total tracks": "Nº de canciones",
-  "Sort order": "Tipo de orden",
+  "Sort order": "Dirección",
   Ascending: "Ascendente",
   Descending: "Descendente",
 
