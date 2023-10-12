@@ -10,7 +10,7 @@
           <q-input v-model="name" clearable type="search" outlined dense :placeholder="t('Type text condition')"
             :hint="t('Search by artist name')" :loading="loading && name?.length > 0" @keydown.enter.prevent="onNameChanged" @clear="search"
             :error="warningNoItems" :errorMessage="t('No results found with the specified condition filter')"
-            :disable="loading" ref="nameRef">
+            :disable="loading" ref="autoFocusRef">
             <template v-slot:prepend>
               <q-icon name="filter_alt" />
             </template>
@@ -101,7 +101,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-const nameRef = ref(null);
+const autoFocusRef = ref(null);
 const name = ref(route.query.q || null);
 const filterByGenre = ref(route.query.genre || null);
 const sortFieldOptions = [
@@ -194,7 +194,7 @@ function search() {
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {
-      nameRef.value.$el.focus();
+      autoFocusRef.value.$el.focus();
     });
   }).catch((error) => {
     artists.value = [];
