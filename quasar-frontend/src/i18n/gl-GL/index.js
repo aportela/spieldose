@@ -173,6 +173,10 @@ export default {
     "API Error: error cargando os xéneros dos artistas",
   "API Error: error loading artists": "API Error: error cargando os artistas",
 
+  // browse albums
+  "Search albums with specified condition": "Buscar albums con la condición especificada",
+  "No albums found with specified condition": "No hay albums con la condición especificada",
+
   // radio stations
   "My radio stations": "As miñas estacións de radio",
   "Public radio stations": "Estacións de radio públicas",
@@ -196,6 +200,9 @@ export default {
     "Teclee mínimo 3 caracteres pra lanzar o autocompletado",
   "No results found with the specified condition filter":
     "Non hai resultados pra o filtro de condicións especificado",
+
+  // custom inputs
+  "Text condition": "Text condition",
 
   // custom selectors
   "Search on": "Buscar en",

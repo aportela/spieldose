@@ -1,0 +1,38 @@
+<template>
+  <q-input v-model="value" clearable type="search" outlined dense :placeholder="t(placeholder)"
+    :hint="t(hint)" :loading="disable && value?.length > 0" :disable="disable"
+    @keydown.enter.prevent="onSubmit" @clear="value = null" :error="error"
+    :errorMessage="t(errorMessage)" ref="inputRef">
+    <template v-slot:prepend>
+      <q-icon name="filter_alt" />
+    </template>
+    <template v-slot:append>
+      <q-icon name="search" class="cursor-pointer" @click="onSubmit" />
+    </template>
+  </q-input>
+</template>
+
+<script setup>
+
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const props = defineProps(['inputRef', 'hint', 'placeholder', 'error', 'errorMessage', 'modelValue', 'disable']);
+const emit = defineEmits(['update:modelValue', 'submit']);
+
+const { t } = useI18n();
+
+const value = computed({
+  get() {
+    return (props.modelValue);
+  },
+  set(val) {
+    emit('update:modelValue', val);
+  }
+});
+
+function onSubmit() {
+  emit('submit');
+}
+
+</script>

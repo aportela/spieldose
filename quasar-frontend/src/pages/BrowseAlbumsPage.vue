@@ -7,9 +7,11 @@
     <q-card-section v-if="albums">
       <div class="row q-gutter-xs">
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn" @update:modelValue="onSortFieldChanged"></CustomSelector>
+          <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn" @update:modelValue="onSearchOnChanged"></CustomSelector>
         </div>
         <div class="col">
+          <CustomInput :disable="loading" hint="Search albums with specified condition" placeholder="Text condition" :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText" @submit="onTextChanged" inputRef="autoFocusRef"></CustomInput>
+          <!--
           <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
             hint="Search albums with specified condition" :loading="loading && searchText?.length > 0" :disable="loading"
             @keydown.enter.prevent="onTextChanged" @clear="search(true)" :error="noAlbumsFound"
@@ -21,6 +23,7 @@
               <q-icon name="search" class="cursor-pointer" @click="search" />
             </template>
           </q-input>
+          -->
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField" @update:modelValue="onSortFieldChanged"></CustomSelector>
@@ -50,6 +53,7 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
+import { default as CustomInput } from "components/CustomInput.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
@@ -168,8 +172,8 @@ function onTextChanged() {
   refreshURL(1, searchText.value, searchOn.value, sortField.value, sortOrder.value);
 }
 
-function onSearchOnChanged() {
-  refreshURL(1, searchText.value, searchOn.value, sortField.value, sortOrder.value);
+function onSearchOnChanged(val) {
+  refreshURL(1, searchText.value, val, sortField.value, sortOrder.value);
 }
 
 function onSortFieldChanged(selectedSortField) {
@@ -184,9 +188,9 @@ function search() {
   noAlbumsFound.value = false;
   loading.value = true;
   let filter = {
-    title: searchOn.value.value == 'title' ? searchText.value : null,
-    albumArtistName: searchOn.value.value == 'albumArtistName' ? searchText.value : null,
-    text: searchOn.value.value == 'all' ? searchText.value : null,
+    title: searchOn.value == 'title' ? searchText.value : null,
+    albumArtistName: searchOn.value == 'albumArtistName' ? searchText.value : null,
+    text: searchOn.value == 'all' ? searchText.value : null,
   };
   api.album.search(filter, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
     albums = success.data.data.items.map((item) => {
@@ -200,7 +204,7 @@ function search() {
     }
     loading.value = false;
     nextTick(() => {
-      autoFocusRef.value.$el.focus();
+      //autoFocusRef.value.$el.focus();
     });
   }).catch((error) => {
     albums = [];
