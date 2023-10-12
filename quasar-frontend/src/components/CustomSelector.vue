@@ -1,29 +1,38 @@
 <template>
-  <q-select outlined dense v-model="model" :options="options" options-dense :label="label" @update:model-value="onChange"
-    :disable="disable">
-    <template v-slot:selected-item="scope">
-      {{ scope.opt.label }}
+  <q-select outlined dense v-model="value" :options="options" options-dense :label="t(label)" :disable="disable">
+    <template v-slot:option="scope">
+      <q-item v-bind="scope.itemProps">
+        <q-item-section>
+          <q-item-label>{{ t(scope.opt.label) }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
+    <template v-slot:selected-item>
+      {{ t(selectedItemLabel) }}
     </template>
   </q-select>
 </template>
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
-const props = defineProps({
-  disable: Boolean,
-  label: String,
-  options: Array,
-  field: String
+const props = defineProps(['label', 'options', 'modelValue', 'disable']);
+const emit = defineEmits(['update:modelValue']);
+
+const { t } = useI18n();
+
+const selectedItemLabel = ref((props.options.find((option) => option.value == props.modelValue) || props.options[0]).label);
+
+const value = computed({
+  get() {
+    return (props.modelValue);
+  },
+  set(option) {
+    selectedItemLabel.value = option.label;
+    emit('update:modelValue', option.value);
+  }
 });
-
-const emit = defineEmits(['change']);
-
-const model = ref(props.options && Array.isArray(props.options) && props.options.length > 0 ? (props.options.find((option) => option.value == props.field) || props.options[0]): null);
-
-function onChange(fieldModel) {
-  emit("change", fieldModel.value);
-}
 
 </script>
