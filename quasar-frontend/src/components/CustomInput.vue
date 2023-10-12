@@ -1,8 +1,7 @@
 <template>
-  <q-input v-model="value" clearable type="search" outlined dense :placeholder="t(placeholder)"
-    :hint="t(hint)" :loading="disable && value?.length > 0" :disable="disable"
-    @keydown.enter.prevent="onSubmit" @clear="value = null" :error="error"
-    :errorMessage="t(errorMessage)" ref="inputRef">
+  <q-input v-model="value" clearable type="search" outlined dense :placeholder="t(placeholder)" :hint="t(hint)"
+    :loading="disable && value?.length > 0" :disable="disable" @keydown.enter.prevent="onSubmit" @clear="value = null"
+    :error="error" :errorMessage="t(errorMessage)" ref="inputRef">
     <template v-slot:prepend>
       <q-icon name="filter_alt" />
     </template>
@@ -14,13 +13,15 @@
 
 <script setup>
 
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-const props = defineProps(['inputRef', 'hint', 'placeholder', 'error', 'errorMessage', 'modelValue', 'disable']);
+const props = defineProps(['hint', 'placeholder', 'error', 'errorMessage', 'modelValue', 'disable']);
 const emit = defineEmits(['update:modelValue', 'submit']);
 
 const { t } = useI18n();
+
+const inputRef = ref(null);
 
 const value = computed({
   get() {
@@ -34,5 +35,11 @@ const value = computed({
 function onSubmit() {
   emit('submit');
 }
+
+const focus = () => {
+  inputRef.value.focus();
+}
+
+defineExpose({ focus });
 
 </script>
