@@ -24,9 +24,7 @@
           </ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortFieldSelector :disable="loading" :options="sortFieldOptions" :field="sortField"
-            @change="onSortFieldChanged">
-          </SortFieldSelector>
+          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField" @update:modelValue="onSortFieldChanged"></CustomSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged"></SortOrderSelector>
@@ -94,7 +92,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/BrowserBase.vue";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
-import { default as SortFieldSelector } from "components/SortFieldSelector.vue";
+import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 
 const $q = useQuasar();
@@ -106,18 +104,18 @@ const router = useRouter();
 const nameRef = ref(null);
 const name = ref(route.query.q || null);
 const filterByGenre = ref(route.query.genre || null);
-const sortFieldOptions = computed(() => [
+const sortFieldOptions = [
   {
-    label: t('Sort by artist name'),
-    value: 'name'
+    label: "Sort by artist name",
+    value: "name"
   },
   {
-    label: t('Sort by total tracks'),
-    value: 'totalTracks'
+    label: "Sort by total tracks",
+    value: "totalTracks"
   }
-]);
+];
 
-const sortField = ref(sortFieldOptions.value[0].value);
+const sortField = ref(sortFieldOptions[0].value);
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
 const loading = ref(false);
@@ -134,7 +132,7 @@ router.beforeEach(async (to, from) => {
     filterByGenre.value = to.query.genre || null;
     name.value = to.query.q || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
-    sortField.value = sortFieldOptions.value[to.query.sortField == "totalTracks" ? 1 : 0].value;
+    //sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
     if (
       (to.name == "artists") &&
       (
