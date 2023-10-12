@@ -14,19 +14,6 @@
           <CustomInput :disable="loading" hint="Search albums with specified condition" placeholder="Text condition"
             :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText"
             @submit="onTextChanged" ref="autoFocusRef"></CustomInput>
-          <!--
-          <q-input v-model="searchText" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search albums with specified condition" :loading="loading && searchText?.length > 0" :disable="loading"
-            @keydown.enter.prevent="onTextChanged" @clear="search(true)" :error="noAlbumsFound"
-            :errorMessage="'No albums found with specified condition'" ref="autoFocusRef">
-            <template v-slot:prepend>
-              <q-icon name="filter_alt" />
-            </template>
-            <template v-slot:append>
-              <q-icon name="search" class="cursor-pointer" @click="search" />
-            </template>
-          </q-input>
-          -->
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -71,7 +58,6 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-const textRef = ref(null);
 const searchText = ref(route.query.q || null);
 
 const searchOnOptions = [
