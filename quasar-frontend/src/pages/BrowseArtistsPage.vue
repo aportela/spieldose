@@ -8,7 +8,7 @@
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
           <q-input v-model="name" clearable type="search" outlined dense :placeholder="t('Type text condition')"
-            :hint="t('Search by artist name')" :loading="loading" @keydown.enter.prevent="onNameChanged" @clear="search"
+            :hint="t('Search by artist name')" :loading="loading && name?.length > 0" @keydown.enter.prevent="onNameChanged" @clear="search"
             :error="warningNoItems" :errorMessage="t('No results found with the specified condition filter')"
             :disable="loading" ref="nameRef">
             <template v-slot:prepend>
@@ -194,7 +194,7 @@ function search() {
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {
-      nameRef.value.focus();
+      nameRef.value.$el.focus();
     });
   }).catch((error) => {
     artists.value = [];
