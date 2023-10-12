@@ -173,10 +173,14 @@ export default {
   "API Error: error loading artists genres":
     "API Error: error cargando los géneros de los artistas",
   "API Error: error loading artists": "API Error: error cargando los artistas",
+  "No artists found with the specified condition filter":
+    "No hay artistas con la condición especificada",
 
   // browse albums
-  "Search albums with specified condition": "Buscar albums con la condición especificada",
-  "No albums found with specified condition": "No hay albums con la condición especificada",
+  "Search albums with specified condition":
+    "Buscar albums con la condición especificada",
+  "No albums found with specified condition":
+    "No hay albums con la condición especificada",
 
   // radio stations
   "My radio stations": "Mis estaciones de radio",
@@ -199,8 +203,6 @@ export default {
   "Type text condition": "Teclee la condición de texto",
   "Minimum 3 characters to trigger autocomplete":
     "Teclee mínimo 3 caracteres para lanzar el autocompletado",
-  "No results found with the specified condition filter":
-    "No hay resultados para el filtro de condiciones especificado",
 
   // custom inputs
   "Text condition": "Text condition",

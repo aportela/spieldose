@@ -7,27 +7,21 @@
     <template #filter>
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
-          <q-input v-model="name" clearable type="search" outlined dense :placeholder="t('Type text condition')"
-            :hint="t('Search by artist name')" :loading="loading && name?.length > 0" @keydown.enter.prevent="onNameChanged" @clear="search"
-            :error="warningNoItems" :errorMessage="t('No results found with the specified condition filter')"
-            :disable="loading" ref="autoFocusRef">
-            <template v-slot:prepend>
-              <q-icon name="filter_alt" />
-            </template>
-            <template v-slot:append>
-              <q-icon name="search" class="cursor-pointer" @click="onNameChanged" />
-            </template>
-          </q-input>
+          <CustomInputSearch :disable="loading" hint="Search by artist name" placeholder="Text condition"
+            :error="warningNoItems" errorMessage="No artists found with the specified condition filter" v-model="name"
+            @submit="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <ArtistsGenreSelector :disable="loading" :defaultGenre="filterByGenre" @change="onGenreChanged">
           </ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField" @update:modelValue="onSortFieldChanged"></CustomSelector>
+          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
+            @update:modelValue="onSortFieldChanged"></CustomSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged"></SortOrderSelector>
+          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged">
+          </SortOrderSelector>
         </div>
       </div>
     </template>
@@ -92,6 +86,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/BrowserBase.vue";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
+import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 
@@ -194,7 +189,9 @@ function search() {
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {
-      autoFocusRef.value.$el.focus();
+      if (autoFocusRef.value) {
+        autoFocusRef.value.focus();
+      }
     });
   }).catch((error) => {
     artists.value = [];
