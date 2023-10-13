@@ -10,7 +10,7 @@
           <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0"
             hint="Search playlists with specified condition" placeholder="Text condition"
             :error="warningNoItems && name?.length > 0" errorMessage="No playlists found with specified condition"
-            v-model="name" @submit="onTextSubmitted" ref="autoFocusRef"></CustomInputSearch>
+            v-model="name" @submit="onNameChanged" @clear="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Playlist type" :options="typeOptions" v-model="type"
@@ -175,7 +175,7 @@ function onPaginationChanged(pageIndex) {
   refreshURL(pageIndex, type.value, name.value, sortField.value, sortOrder.value);
 }
 
-function onTextSubmitted() {
+function onNameChanged() {
   refreshURL(1, type.value, name.value, sortField.value, sortOrder.value);
 }
 

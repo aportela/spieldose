@@ -14,7 +14,7 @@
           <CustomInputSearch :disable="loading" :loading="loading && text?.length > 0"
             hint="Search albums with specified condition" placeholder="Text condition"
             :error="warningNoItems && text?.length > 0" errorMessage="No albums found with specified condition"
-            v-model="text" @submit="onTextSubmitted" ref="autoFocusRef"></CustomInputSearch>
+            v-model="text" @submit="onTextChanged" @clear="onTextChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -155,7 +155,7 @@ function onPaginationChanged(pageIndex) {
   refreshURL(pageIndex, searchOn.value, text.value, sortField.value, sortOrder.value);
 }
 
-function onTextSubmitted() {
+function onTextChanged() {
   refreshURL(1, searchOn.value, text.value, sortField.value, sortOrder.value);
 }
 

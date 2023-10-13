@@ -9,7 +9,7 @@
         <div class="col">
           <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0" hint="Search by artist name"
             placeholder="Text condition" :error="warningNoItems && name?.length > 0"
-            errorMessage="No artists found with the specified condition filter" v-model="name" @submit="onNameSubmitted"
+            errorMessage="No artists found with the specified condition filter" v-model="name" @submit="onNameChanged" @clear="onNameChanged"
             ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
@@ -119,7 +119,7 @@ function onPaginationChanged(pageIndex) {
   refreshURL(pageIndex, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
-function onNameSubmitted() {
+function onNameChanged() {
   refreshURL(1, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
