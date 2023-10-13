@@ -26,7 +26,7 @@
       :visibleAnalyzer="spieldoseStore.isSidebarAudioMotionAnalyzerVisible" :shuffle="spieldoseStore.getShuffle"
       :repeatMode="spieldoseStore.getRepeatMode" @toggleAnalyzer="spieldoseStore.toggleSidebarAudioMotionAnalyzer()"
       @toggleShuffle="spieldoseStore.toggleShuffeMode()" @toggleRepeatMode="spieldoseStore.toggleRepeatMode()"
-      @toggleTrackDetailsModal="detailsModal = true">
+      @toggleFavorite="onToggleFavorite" @toggleTrackDetailsModal="detailsModal = true">
     </SidebarPlayerTrackActions>
     <SidebarPlayerTrackDetailsModal v-if="detailsModal" :coverImage="coverImage" :trackId="currentElementId"
       @hide="detailsModal = false">
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, inject } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from 'vue-i18n';
 
@@ -48,7 +48,7 @@ import { default as SidebarPlayerSeekControl } from "components/SidebarPlayerSee
 import { default as SidebarPlayerTrackActions } from "components/SidebarPlayerTrackActions.vue";
 import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPlayerTrackDetailsModal.vue";
 
-import { spieldoseEvents } from "boot/events";
+import { spieldoseEventNames } from "boot/events";
 
 import { useSpieldoseStore } from "stores/spieldose";
 import { trackActions, currentPlayListActions } from "../boot/spieldose";
@@ -236,4 +236,22 @@ const defaultSettings = {
   }
 };
 
+function onToggleFavorite() {
+  const funct = !currentElement.value.track.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+  funct(currentElement.value.track.id).then((success) => {
+    spieldoseStore.toggleFavoriteOnCurrentTrack(success.data.favorited);
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error when toggling favorite flag"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
 </script>
