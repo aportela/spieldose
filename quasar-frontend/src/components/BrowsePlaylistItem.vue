@@ -1,5 +1,5 @@
 <template>
-  <q-card class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 shadow-box shadow-10 q-mt-lg" bordered>
+  <q-card class="shadow-box shadow-10" bordered>
     <q-card-section>{{ playlist.name }}</q-card-section>
     <q-separator />
     <q-card-section v-if="showMosaic">
@@ -20,7 +20,7 @@
       </div>
     </q-card-section>
     <q-card-section style="height: 140px;" v-else-if="showVinylCollection">
-      <q-avatar v-for="n in 9" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
+      <q-avatar v-for="n in totalVinyls" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
         <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n -1))"
           v-if="playlist.covers[n]" />
         <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
@@ -65,12 +65,15 @@ img.mosaic_cover_element {
 <script setup>
 
 import { computed } from "vue";
+import { useQuasar } from "quasar";
 
 import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
 /**
   * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
 */
+
+const $q = useQuasar();
 
 const defaultImage = 'images/vinyl-small.png';
 
@@ -80,6 +83,8 @@ const props = defineProps({
   playlist: Object,
   mode: String
 });
+
+const totalVinyls = computed(() => $q.screen.gt.xl ? 9 : 6);
 
 const showMosaic = computed(() => { return (props.mode == 'mosaic') });
 
