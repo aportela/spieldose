@@ -2,7 +2,7 @@
   <q-card class="shadow-box shadow-10" bordered>
     <q-card-section>{{ playlist.name }}</q-card-section>
     <q-separator />
-    <q-card-section v-if="showMosaic">
+    <q-card-section v-if="showMosaic" style="width: 350px;">
       <div class="row">
         <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[0] || defaultImage" /></div>
         <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[1] || defaultImage" /></div>
@@ -19,8 +19,8 @@
         <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[8] || defaultImage" /></div>
       </div>
     </q-card-section>
-    <q-card-section style="height: 140px;" v-else-if="showVinylCollection">
-      <q-avatar v-for="n in totalVinyls" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
+    <q-card-section style="width: 350px; height: 140px;" v-else-if="showVinylCollection">
+      <q-avatar v-for="n in 9" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
         <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n -1))"
           v-if="playlist.covers[n]" />
         <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
@@ -50,7 +50,7 @@ div.no_cover {
 }
 
 img.mosaic_cover_element {
-  width: 100%;
+  width: 100px;
   max-width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -83,8 +83,6 @@ const props = defineProps({
   playlist: Object,
   mode: String
 });
-
-const totalVinyls = computed(() => $q.screen.gt.xl ? 9 : 6);
 
 const showMosaic = computed(() => { return (props.mode == 'mosaic') });
 
