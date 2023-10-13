@@ -205,7 +205,7 @@ export default {
     "Teclee mínimo 3 caracteres para lanzar el autocompletado",
 
   // custom inputs
-  "Text condition": "Text condition",
+  "Text condition": "Condición de texto",
 
   // custom selectors
   "Search on": "Buscar en",
