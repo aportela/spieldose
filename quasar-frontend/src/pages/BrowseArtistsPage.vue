@@ -7,9 +7,10 @@
     <template #filter>
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
-          <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0" hint="Search by artist name" placeholder="Text condition"
-            :error="warningNoItems && name?.length > 0" errorMessage="No artists found with the specified condition filter" v-model="name"
-            @submit="onNameSubmitted" ref="autoFocusRef"></CustomInputSearch>
+          <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0" hint="Search by artist name"
+            placeholder="Text condition" :error="warningNoItems && name?.length > 0"
+            errorMessage="No artists found with the specified condition filter" v-model="name" @submit="onNameSubmitted"
+            ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
@@ -26,56 +27,11 @@
       </div>
     </template>
     <template #items>
-      <router-link :to="{ name: 'artist', params: { name: artist.name }, query: { mbid: artist.mbId, tab: 'overview' } }"
-        v-for="artist in artists" :key="artist.hash" v-memo="[lastChangesTimestamp]">
-        <q-img img-class="sp-artist-image-filter" :src="artist.image || '#'" width="250px" height="250px" fit="cover">
-          <div class="absolute-bottom text-subtitle1 text-center">
-            {{ artist.name }}
-            <p class="text-caption q-mb-none">{{ artist.totalTracks }} {{ t(artist.totalTracks > 1 ? "tracks" : "track")
-            }}
-            </p>
-          </div>
-          <template v-slot:loading>
-            <div class="absolute-full flex flex-center bg-grey-3 text-dark">
-              <q-spinner color="pink" size="xl" />
-              <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
-                {{ artist.name }}
-                <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
-                  'track') }}</p>
-              </div>
-            </div>
-          </template>
-          <template v-slot:error>
-            <div class="absolute-full flex flex-center bg-grey-3 text-dark">
-              <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
-                {{ artist.name }}
-                <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
-                  'track') }}</p>
-              </div>
-            </div>
-          </template>
-        </q-img>
-      </router-link>
+      <ArtistAvatarLink v-for="artist in artists" :key="artist.hash" v-memo="[lastChangesTimestamp]" :mbId="artist.mbId"
+        :name="artist.name" :image="artist.image" :totalTracks="artist.totalTracks"></ArtistAvatarLink>
     </template>
   </BrowserBase>
 </template>
-
-<style>
-img.sp-artist-image-filter {
-  -webkit-filter: grayscale(100%) blur(4px) opacity(0.5);
-  /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%) blur(4px) opacity(0.5);
-  transition: filter 0.2s ease-in;
-}
-
-img.sp-artist-image-filter:hover {
-  -webkit-filter: none;
-  /* Safari 6.0 - 9.0 */
-  filter: none;
-  transition: filter 0.2s ease-out;
-
-}
-</style>
 
 <script setup>
 
@@ -89,6 +45,7 @@ import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
+import { default as ArtistAvatarLink } from "components/ArtistAvatarLink.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -110,7 +67,7 @@ const sortFieldOptions = [
   }
 ];
 
-const sortField = ref(sortFieldOptions[0].value);
+const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
 const loading = ref(false);
@@ -124,10 +81,10 @@ const currentPageIndex = ref(parseInt(route.query.page || 1));
 router.beforeEach(async (to, from) => {
   if (from.name == "artists") {
     currentPageIndex.value = parseInt(to.query.page || 1);
-    genre.value = to.query.genre || null;
     name.value = to.query.name || null;
+    genre.value = to.query.genre || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
-    //sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
+    sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
     if (
       (to.name == "artists") &&
       (
