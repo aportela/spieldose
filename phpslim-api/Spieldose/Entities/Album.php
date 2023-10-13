@@ -127,6 +127,8 @@ class Album extends \Spieldose\Entities\Entity
                         ];
                     }
                     unset($result->coverPathId);
+                    // create a unique hash for this element, this is done because artist name && artist musicbrainz are not both mandatory and can not be used as key on vue v-for
+                    $result->hash = md5($result->mbId . $result->title);
                     return ($result);
                 },
                 $data->items
