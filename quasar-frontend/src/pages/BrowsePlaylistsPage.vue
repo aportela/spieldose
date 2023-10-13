@@ -9,7 +9,7 @@
         <div class="col">
           <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0"
             hint="Search playlists with specified condition" placeholder="Text condition"
-            :error="warningNoItems && text?.length > 0" errorMessage="No playlists found with specified condition"
+            :error="warningNoItems && name?.length > 0" errorMessage="No playlists found with specified condition"
             v-model="name" @submit="onTextSubmitted" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
