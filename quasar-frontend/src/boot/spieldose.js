@@ -330,6 +330,25 @@ const currentPlayListActions = {
         });
     });
   },
+  resortByIndexes: function (indexes) {
+    spieldoseStore.interact();
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .resortByIndexes(indexes, spieldoseStore.getShuffle)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
 };
 
 export {

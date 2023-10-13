@@ -179,9 +179,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -254,9 +254,9 @@ const api = {
         axios
           .get(
             "api/2/album?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&title=" +
-              encodeURIComponent(title || ""),
+            encodeURIComponent(mbId || "") +
+            "&title=" +
+            encodeURIComponent(title || ""),
             "&artistMbId=" + encodeURIComponent(artistMbId || ""),
             "&artistName=" + encodeURIComponent(artistName || ""),
             "&year=" + encodeURIComponent(year || ""),
@@ -671,10 +671,7 @@ const api = {
     },
     getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
-        const params = {};
-        if (shuffle) {
-          params.shuffle = true;
-        }
+        const params = { shuffle: shuffle ? true : false };
         axios
           .get(baseAPIPath + "/current_playlist/current_element", { params })
           .then((response) => {
@@ -687,10 +684,7 @@ const api = {
     },
     skipToPreviousElement: function (shuffle) {
       return new Promise((resolve, reject) => {
-        const params = {};
-        if (shuffle) {
-          params.shuffle = true;
-        }
+        const params = { shuffle: shuffle ? true : false };
         axios
           .get(baseAPIPath + "/current_playlist/previous_element", { params })
           .then((response) => {
@@ -703,10 +697,7 @@ const api = {
     },
     skipToNextElement: function (shuffle) {
       return new Promise((resolve, reject) => {
-        const params = {};
-        if (shuffle) {
-          params.shuffle = true;
-        }
+        const params = { shuffle: shuffle ? true : false };
         axios
           .get(baseAPIPath + "/current_playlist/next_element", { params })
           .then((response) => {
@@ -719,12 +710,7 @@ const api = {
     },
     skipToElementAtIndex: function (index, shuffle) {
       return new Promise((resolve, reject) => {
-        const params = {
-          index: index,
-        };
-        if (shuffle) {
-          params.shuffle = true;
-        }
+        const params = { shuffle: shuffle ? true : false };
         axios
           .get(baseAPIPath + "/current_playlist/element_at_index", { params })
           .then((response) => {
@@ -739,7 +725,7 @@ const api = {
       return new Promise((resolve, reject) => {
         const params = {
           count: count || 32,
-          shuffle: shuffle || false,
+          shuffle: shuffle ? true : false,
         };
         axios
           .post(baseAPIPath + "/current_playlist/discover_tracks", params)
@@ -753,10 +739,7 @@ const api = {
     },
     randomize: function (shuffle) {
       return new Promise((resolve, reject) => {
-        const params = {};
-        if (shuffle) {
-          params.shuffle = true;
-        }
+        const params = { shuffle: shuffle ? true : false };
         axios
           .get(baseAPIPath + "/current_playlist/sort/random", { params })
           .then((response) => {
@@ -767,6 +750,19 @@ const api = {
           });
       });
     },
+    resortByIndexes: function (indexes, shuffle) {
+      return new Promise((resolve, reject) => {
+        const params = { indexes: indexes || [], shuffle: shuffle ? true : false };
+        axios
+          .post(baseAPIPath + "/current_playlist/sort/indexes", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    }
   },
   radioStation: {
     search: function (currentPageIndex, resultsPage, filter) {
@@ -795,9 +791,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-              encodeURIComponent(title || "") +
-              "&artist=" +
-              encodeURIComponent(artist || ""),
+            encodeURIComponent(title || "") +
+            "&artist=" +
+            encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {

@@ -813,10 +813,23 @@ return function (App $app) {
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->get('/current_playlist/sort/random', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $payload = json_encode($currentPlaylist->randomSort($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == true));
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->post('/current_playlist/sort/indexes', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->randomSort($dbh, ((isset($params["shuffle"]) && $params["shuffle"]) && $params["shuffle"])));
+                $indexes = [];
+                if (isset($params["indexes"]) && is_array($params["indexes"])) {
+                    $indexes = $params["indexes"];
+                }
+                $payload = json_encode($currentPlaylist->sortByIndexes($dbh, $indexes, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == true));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -825,7 +838,7 @@ return function (App $app) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, isset($queryParams["shuffle"])));
+                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == true));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -834,7 +847,7 @@ return function (App $app) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);;
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getPreviousElement($dbh, isset($queryParams["shuffle"])));
+                $payload = json_encode($currentPlaylist->getPreviousElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == true));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -843,7 +856,7 @@ return function (App $app) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getNextElement($dbh, isset($queryParams["shuffle"])));
+                $payload = json_encode($currentPlaylist->getNextElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == true));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -861,7 +874,7 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->discover($dbh, $params["count"] ?? 32, ((isset($params["shuffle"]) && $params["shuffle"]) && $params["shuffle"])));
+                $payload = json_encode($currentPlaylist->discover($dbh, $params["count"] ?? 32, ((isset($params["shuffle"]) && $params["shuffle"] == true) && $params["shuffle"])));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -889,7 +902,7 @@ return function (App $app) {
                         throw new \Exception("save error");
                     }
                 }
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"])));
+                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == true)));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -917,7 +930,7 @@ return function (App $app) {
                         throw new \Exception("save error");
                     }
                 }
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"])));
+                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == true)));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -927,7 +940,7 @@ return function (App $app) {
                 $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
                 $currentPlaylist->setRadiostation($dbh, $params["id"]);
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"])));
+                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == true)));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);

@@ -163,6 +163,7 @@ export default {
   Actions: "Actions",
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
+  "API Error: error resorting tracks": "API Error: error resorting tracks",
 
   // browse artists
   "Browse artists": "Browse artists",

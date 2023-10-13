@@ -373,4 +373,41 @@ class CurrentPlaylist
             throw new \Exception("");
         }
     }
+
+    public function sortByIndexes(\aportela\DatabaseWrapper\DB $dbh, array $indexes = [], bool $shuffled = false)
+    {
+        $totalIndexes = count($indexes);
+        if ($totalIndexes > 0) {
+            $this->get($dbh);
+            if (count($this->tracks) == $totalIndexes) {
+                $trackIds = [];
+                for ($i = 0; $i < $totalIndexes; $i++) {
+                    $trackIds[] = $this->tracks[$indexes[$i]]->id;
+                }
+                if ($this->save($dbh, $trackIds)) {
+                    $this->get($dbh);
+                    $track = null;
+                    $radioStation = null;
+                    if (!empty($this->radioStation->id)) {
+                        $radioStation = $this->radioStation;
+                    } else {
+                        if ($this->currentIndex >= 0 && $this->currentIndex < $this->totalTracks) {
+                            if (!$shuffled) {
+                                $track = $this->tracks[$this->currentIndex];
+                            } else {
+                                $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
+                            }
+                        }
+                    }
+                    return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+                } else {
+                    // TODO
+                    throw new \Exception("");
+                }
+            } else {
+                // TODO
+                throw new \Exception("");
+            }
+        }
+    }
 }

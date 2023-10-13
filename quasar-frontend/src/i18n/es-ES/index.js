@@ -166,6 +166,7 @@ export default {
   Actions: "Acciones",
   "API Error: error loading random tracks":
     "API Error: error cargando las canciones aleatorias",
+  "API Error: error resorting tracks": "API Error: error reordenando las canciones",
 
   // browse artists
   "Browse artists": "Explorar artistas",

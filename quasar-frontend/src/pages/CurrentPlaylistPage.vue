@@ -80,10 +80,10 @@
           </q-td>
           <q-td key="actions" :props="props">
             <q-btn-group outline>
-              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" disable
-                @click="onMoveUpTrackAtIndex" />
-              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" disable
-                @click="onMoveDownTrackAtIndex" />
+              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" :disable="props.row.index == 1 || props.row.id == currentTrackIndex"
+                @click="onMoveUpTrackAtIndex(props.row.index - 1)" />
+              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="props.row.index == rows.length || props.row.id == currentTrackIndex"
+                @click="onMoveDownTrackAtIndex(props.row.index - 1)" />
               <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
                 :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
               <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
@@ -299,18 +299,50 @@ function setCurrentTrackIndex(index) {
   spieldoseStore.skipToIndex(index);
 }
 
-function onMoveUpTrackAtIndex(index) {
+function onMoveUpTrackAtIndex(oldIndex) {
+  let indexes = Array.from({length: rows.value.length}, (e, i)=> i);
   // https://stackoverflow.com/a/6470794
-  const element = elements.value[index];
-  elements.value.splice(index, 1);
-  elements.value.splice(index - 1, 0, element);
+  indexes.splice(oldIndex, 1);
+  indexes.splice(oldIndex - 1, 0, oldIndex);
+  currentPlayListActions.resortByIndexes(indexes).then((success) => {
+    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
+    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    currentTrackIndex.value = currentPlaylistTrackIndex.value;
+    loading.value = false;
+  }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: t("API Error: error resorting tracks"),
+      caption: t("API Error: fatal error details", {
+        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+          ? error.response.statusText : 'undefined'
+      })
+    });
+    loading.value = false;
+  });
 }
 
-function onMoveDownTrackAtIndex(index) {
+function onMoveDownTrackAtIndex(oldIndex) {
+  let indexes = Array.from({length: rows.value.length}, (e, i)=> i);
   // https://stackoverflow.com/a/6470794
-  const element = elements.value[index];
-  elements.value.splice(index, 1);
-  elements.value.splice(index + 1, 0, element);
+  indexes.splice(oldIndex, 1);
+  indexes.splice(oldIndex + 1, 0, oldIndex);
+  currentPlayListActions.resortByIndexes(indexes).then((success) => {
+    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
+    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    currentTrackIndex.value = currentPlaylistTrackIndex.value;
+    loading.value = false;
+  }).catch((error) => {
+    $q.notify({
+      type: "negative",
+      message: t("API Error: error resorting tracks"),
+      caption: t("API Error: fatal error details", {
+        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+          ? error.response.statusText : 'undefined'
+      })
+    });
+    loading.value = false;
+  });
 }
 
 function onToggleFavorite(trackId, favorited) {
