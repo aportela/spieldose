@@ -247,7 +247,7 @@ function onToggleFavorite() {
           // TODO: custom message
           $q.notify({
             type: "negative",
-            message: t("API Error: error when toggling favorite flag"),
+            message: t("API Error: error toggling favorite flag"),
             caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
           });
           break;
