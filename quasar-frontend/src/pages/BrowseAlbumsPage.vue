@@ -27,7 +27,7 @@
       </div>
     </template>
     <template #items>
-      <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
+      <AnimatedAlbumCover v-for="album in albums" :key="album.hash" v-memo="[lastChangesTimestamp]" :image="album.image"
           :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
           :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
         </AnimatedAlbumCover>
