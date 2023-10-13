@@ -7,12 +7,12 @@
     <template #filter>
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">
-          <CustomInputSearch :disable="loading" hint="Search by artist name" placeholder="Text condition"
-            :error="warningNoItems" errorMessage="No artists found with the specified condition filter" v-model="name"
-            @submit="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
+          <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0" hint="Search by artist name" placeholder="Text condition"
+            :error="warningNoItems && name?.length > 0" errorMessage="No artists found with the specified condition filter" v-model="name"
+            @submit="onNameSubmitted" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <ArtistsGenreSelector :disable="loading" :defaultGenre="filterByGenre" @change="onGenreChanged">
+          <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
           </ArtistsGenreSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
@@ -79,7 +79,7 @@ img.sp-artist-image-filter:hover {
 
 <script setup>
 
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
@@ -97,8 +97,8 @@ const route = useRoute();
 const router = useRouter();
 
 const autoFocusRef = ref(null);
-const name = ref(route.query.q || null);
-const filterByGenre = ref(route.query.genre || null);
+const name = ref(route.query.name || null);
+const genre = ref(route.query.genre || null);
 const sortFieldOptions = [
   {
     label: "Sort by artist name",
@@ -124,32 +124,32 @@ const currentPageIndex = ref(parseInt(route.query.page || 1));
 router.beforeEach(async (to, from) => {
   if (from.name == "artists") {
     currentPageIndex.value = parseInt(to.query.page || 1);
-    filterByGenre.value = to.query.genre || null;
-    name.value = to.query.q || null;
+    genre.value = to.query.genre || null;
+    name.value = to.query.name || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
     //sortField.value = sortFieldOptions[to.query.sortField == "totalTracks" ? 1 : 0].value;
     if (
       (to.name == "artists") &&
       (
         to.query.page != from.query.page ||
-        to.query != from.query ||
+        to.query.name != from.query.name ||
         to.query.genre != from.query.genre ||
         to.query.sortOrder != from.query.sortOrder ||
         to.query.sortField != from.query.sortField
       )
     ) {
       nextTick(() => {
-        search();
+        browse();
       });
     }
   }
 });
 
-function refreshURL(pageIndex, name, selectedGenre, sortField, sortOrder) {
+function refreshURL(pageIndex, name, genre, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
   query.page = pageIndex || 1;
-  query.q = name || null;
-  query.genre = selectedGenre || null;
+  query.name = name || null;
+  query.genre = genre || null;
   query.sortField = sortField || "name";
   query.sortOrder = sortOrder || "ASC";
   router.push({
@@ -159,29 +159,29 @@ function refreshURL(pageIndex, name, selectedGenre, sortField, sortOrder) {
 }
 
 function onPaginationChanged(pageIndex) {
-  refreshURL(pageIndex, name.value, filterByGenre.value, sortField.value, sortOrder.value);
+  refreshURL(pageIndex, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
-function onNameChanged() {
-  refreshURL(1, name.value, filterByGenre.value, sortField.value, sortOrder.value);
+function onNameSubmitted() {
+  refreshURL(1, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
-function onGenreChanged(selectedGenre) {
-  refreshURL(1, name.value, selectedGenre, sortField.value, sortOrder.value);
+function onGenreChanged(genre) {
+  refreshURL(1, name.value, genre, sortField.value, sortOrder.value);
 }
 
-function onSortFieldChanged(selectedSortField) {
-  refreshURL(currentPageIndex.value, name.value, filterByGenre.value, selectedSortField, sortOrder.value);
+function onSortFieldChanged(sortField) {
+  refreshURL(currentPageIndex.value, name.value, genre.value, sortField, sortOrder.value);
 }
 
-function onSortOrderChanged(selectedSortOrder) {
-  refreshURL(currentPageIndex.value, name.value, filterByGenre.value, sortField.value, selectedSortOrder);
+function onSortOrderChanged(sortOrder) {
+  refreshURL(currentPageIndex.value, name.value, genre.value, sortField.value, sortOrder);
 }
 
-function search() {
+function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  api.artist.search({ genre: filterByGenre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+  api.artist.search({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;
@@ -208,7 +208,7 @@ function search() {
 }
 
 onMounted(() => {
-  search();
+  browse();
 });
 
 </script>
