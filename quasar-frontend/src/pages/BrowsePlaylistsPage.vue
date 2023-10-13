@@ -44,7 +44,6 @@
       <q-card-section>
         <p>Are you sure ?</p>
       </q-card-section>
-
       <q-card-actions align="right">
         <q-btn flat label="Cancel" color="primary" v-close-popup />
         <q-btn flat label="YES" color="primary" @click="onDeletePlaylist" />
@@ -185,11 +184,11 @@ function onTypeChanged(type) {
 }
 
 function onSortFieldChanged(sortField) {
-  refreshURL(currentPageIndex.value, name.value, sortField, sortOrder.value);
+  refreshURL(currentPageIndex.value, type.value, name.value, sortField, sortOrder.value);
 }
 
 function onSortOrderChanged(sortOrder) {
-  refreshURL(currentPageIndex.value, name.value, sortField.value, sortOrder);
+  refreshURL(currentPageIndex.value, type.value, name.value, sortField.value, sortOrder);
 }
 
 const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
