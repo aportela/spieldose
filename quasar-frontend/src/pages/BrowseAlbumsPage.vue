@@ -1,19 +1,20 @@
 <template>
-  <q-card class="q-pa-lg">
-    <q-breadcrumbs class="q-mb-lg">
-      <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <q-breadcrumbs-el icon="album" label="Browse albums" />
-    </q-breadcrumbs>
-    <q-card-section v-if="albums">
-      <div class="row q-gutter-xs">
+  <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
+    :totalResults="totalResults" @paginationChanged="onPaginationChanged">
+    <template #breacrumb>
+      <q-breadcrumbs-el icon="person" :label="t('Browse albums')" />
+    </template>
+    <template #filter>
+      <div class="row q-gutter-xs q-mb-md">
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Search on" :options="searchOnOptions" v-model="searchOn"
             @update:modelValue="onSearchOnChanged"></CustomSelector>
         </div>
         <div class="col">
-          <CustomInputSearch :disable="loading" hint="Search albums with specified condition" placeholder="Text condition"
-            :error="noAlbumsFound" errorMessage="No albums found with specified condition" v-model="searchText"
-            @submit="onTextChanged" ref="autoFocusRef"></CustomInputSearch>
+          <CustomInputSearch :disable="loading" :loading="loading && text?.length > 0"
+            hint="Search albums with specified condition" placeholder="Text condition"
+            :error="warningNoItems && text?.length > 0" errorMessage="No albums found with specified condition"
+            v-model="text" @submit="onTextSubmitted" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -24,27 +25,24 @@
           </SortOrderSelector>
         </div>
       </div>
-      <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
-        <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
-          direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
-      </div>
-      <div class="q-gutter-md row items-start">
-        <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
+    </template>
+    <template #items>
+      <AnimatedAlbumCover v-for="album in albums" :key="album.mbId || album.title" :image="album.image"
           :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
           :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
         </AnimatedAlbumCover>
-      </div>
-    </q-card-section>
-  </q-card>
+    </template>
+  </BrowserBase>
 </template>
 
 <script setup>
 
-import { ref, nextTick, onMounted, computed } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "boot/axios";
-import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
+import { default as BrowserBase } from "components/BrowserBase.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
@@ -58,7 +56,8 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-const searchText = ref(route.query.q || null);
+const autoFocusRef = ref(null);
+const text = ref(route.query.text || null);
 
 const searchOnOptions = [
   {
@@ -92,24 +91,22 @@ const sortFieldOptions = [
   }
 ];
 
-const sortField = ref(sortFieldOptions[0].value);
+const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
-
-const noAlbumsFound = ref(false);
+const warningNoItems = ref(false);
 const loading = ref(false);
-let albums = [];
+const albums = ref([]);
+const lastChangesTimestamp = ref(0);
 
 const totalPages = ref(0);
 const totalResults = ref(0);
 const currentPageIndex = ref(parseInt(route.query.page || 1));
 
-const autoFocusRef = ref(null);
-
 router.beforeEach(async (to, from) => {
   if (from.name == "albums") {
     currentPageIndex.value = parseInt(to.query.page || 1);
     searchOn.value = to.query.searchOn || searchOnOptions[0].value;
-    searchText.value = to.query.q || null;
+    text.value = to.query.text || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
     switch (to.query.sortField) {
       case 'title':
@@ -129,24 +126,24 @@ router.beforeEach(async (to, from) => {
       (to.name == "albums") &&
       (
         to.query.page != from.query.page ||
-        to.query != from.query ||
-        to.searchOn != from.searchOn ||
+        to.query.searchOn != from.query.searchOn ||
+        to.query.text != from.query.text ||
         to.query.sortOrder != from.query.sortOrder ||
         to.query.sortField != from.query.sortField
       )
     ) {
       nextTick(() => {
-        search();
+        browse();
       });
     }
   }
 });
 
-function refreshURL(pageIndex, name, searchOn, sortField, sortOrder) {
+function refreshURL(pageIndex, searchOn, text, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
   query.page = pageIndex || 1;
-  query.q = name || null;
   query.searchOn = searchOn || 'all'
+  query.text = text || null;
   query.sortField = sortField || "title";
   query.sortOrder = sortOrder || "ASC";
   router.push({
@@ -156,59 +153,59 @@ function refreshURL(pageIndex, name, searchOn, sortField, sortOrder) {
 }
 
 function onPaginationChanged(pageIndex) {
-  refreshURL(pageIndex, searchText.value, searchOn.value, sortField.value, sortOrder.value);
+  refreshURL(pageIndex, searchOn.value, text.value, sortField.value, sortOrder.value);
 }
 
-function onTextChanged() {
-  refreshURL(1, searchText.value, searchOn.value, sortField.value, sortOrder.value);
+function onTextSubmitted() {
+  refreshURL(1, searchOn.value, text.value, sortField.value, sortOrder.value);
 }
 
-function onSearchOnChanged(val) {
-  refreshURL(1, searchText.value, val, sortField.value, sortOrder.value);
+function onSearchOnChanged(searchOn) {
+  refreshURL(1, searchOn, text.value, sortField.value, sortOrder.value);
 }
 
-function onSortFieldChanged(selectedSortField) {
-  refreshURL(currentPageIndex.value, searchOn.value, searchText.value, selectedSortField, sortOrder.value);
+function onSortFieldChanged(sortField) {
+  refreshURL(currentPageIndex.value, searchOn.value, text.value, sortField, sortOrder.value);
 }
 
-function onSortOrderChanged(selectedSortOrder) {
-  refreshURL(currentPageIndex.value, searchOn.value, searchText.value, sortField.value, selectedSortOrder);
+function onSortOrderChanged(sortOrder) {
+  refreshURL(currentPageIndex.value, searchOn.value, text.value, sortField.value, sortOrder);
 }
 
-function search() {
-  noAlbumsFound.value = false;
+function browse() {
+  warningNoItems.value = false;
   loading.value = true;
-  let filter = {
-    title: searchOn.value == 'title' ? searchText.value : null,
-    albumArtistName: searchOn.value == 'albumArtistName' ? searchText.value : null,
-    text: searchOn.value == 'all' ? searchText.value : null,
+  const filter = {
+    title: searchOn.value == 'title' ? text.value : null,
+    albumArtistName: searchOn.value == 'albumArtistName' ? text.value : null,
+    text: searchOn.value == 'all' ? text.value : null,
   };
-  api.album.search(filter, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
-    albums = success.data.data.items.map((item) => {
+  api.album.search(filter, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+    albums.value = success.data.data.items.map((item) => {
       item.image = item.covers.small;
       return (item);
     });
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;
-    if (searchText.value && success.data.data.pager.totalResults < 1) {
-      noAlbumsFound.value = true;
-    }
+    warningNoItems.value = success.data.data.pager.totalResults < 1;
     loading.value = false;
+    lastChangesTimestamp.value = Date.now();
     nextTick(() => {
       if (autoFocusRef.value) {
         autoFocusRef.value.focus();
       }
     });
   }).catch((error) => {
-    albums = [];
+    albums.value = [];
     totalPages.value = 0;
     totalResults.value = 0;
     $q.notify({
       type: "negative",
-      message: "API Error: error loading albums",
+      message: t("API Error: error loading albums"),
       caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
+    lastChangesTimestamp.value = Date.now();
   });
 }
 
@@ -258,7 +255,7 @@ function onEnqueueAlbum(album) {
 }
 
 onMounted(() => {
-  search();
+  browse();
 });
 
 </script>

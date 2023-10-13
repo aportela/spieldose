@@ -180,6 +180,7 @@ export default {
     "Buscar albums con la condición especificada",
   "No albums found with specified condition":
     "Non hai albums con la condición especificada",
+  "API Error: error loading albums": "API Error: error cargando os albums",
 
   // radio stations
   "My radio stations": "As miñas estacións de radio",
