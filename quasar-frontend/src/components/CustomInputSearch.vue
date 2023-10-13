@@ -1,6 +1,6 @@
 <template>
   <q-input v-model="value" clearable type="search" outlined dense :placeholder="t(placeholder)" :hint="t(hint)"
-    :loading="loading" :disable="disable" @keydown.enter.prevent="onSubmit" @clear="value = null"
+    :loading="loading" :disable="disable" @keydown.enter.prevent="onSubmit" @clear="onClear"
     :error="error" :errorMessage="t(errorMessage)" ref="inputRef">
     <template v-slot:prepend>
       <q-icon name="filter_alt" />
@@ -34,6 +34,11 @@ const value = computed({
 
 function onSubmit() {
   emit('submit');
+}
+
+function onClear() {
+  value.value = null;
+  emit('clear');
 }
 
 const focus = () => {
