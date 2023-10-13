@@ -49,7 +49,6 @@ import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { albumActions } from "src/boot/spieldose";
 
-
 const $q = useQuasar();
 const { t } = useI18n();
 

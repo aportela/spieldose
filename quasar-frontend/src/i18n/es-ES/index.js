@@ -177,11 +177,27 @@ export default {
     "No hay artistas con la condición especificada",
 
   // browse albums
+  "Browse albums": "Explorar albums",
   "Search albums with specified condition":
     "Buscar albums con la condición especificada",
   "No albums found with specified condition":
     "No hay albums con la condición especificada",
   "API Error: error loading albums": "API Error: error cargando los albums",
+
+  // browse playlists
+  "Browse playlists": "Explorar listas de reproducción",
+  "Search playlists with specified condition":
+    "Buscar listas con la condición especificada",
+  "Playlist type": "Tipo de lista",
+  "Playlist style": "Estilo de lista",
+  Mosaic: "Mosaico",
+  Vinyls: "Vinilos",
+  "No playlists found with specified condition":
+    "No hay listas con la condición especificada",
+  "API Error: error loading playlists": "API Error: error cargando las listas",
+  "All playlists": "Todas las listas",
+  "My playlists": "Mis listas",
+  "User playlists": "Listas del usuario",
 
   // radio stations
   "My radio stations": "Mis estaciones de radio",

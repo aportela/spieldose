@@ -173,14 +173,30 @@ export default {
     "API Error: error cargando os xéneros dos artistas",
   "API Error: error loading artists": "API Error: error cargando os artistas",
   "No artists found with the specified condition filter":
-    "Non hai artistas con la condición especificada",
+    "Non hai artistas coa condición especificada",
 
   // browse albums
+  "Browse albums": "Explorar albums",
   "Search albums with specified condition":
-    "Buscar albums con la condición especificada",
+    "Buscar albums coa condición especificada",
   "No albums found with specified condition":
-    "Non hai albums con la condición especificada",
+    "Non hai albums coa condición especificada",
   "API Error: error loading albums": "API Error: error cargando os albums",
+
+  // browse playlists
+  "Browse playlists": "Explorar listas de reproducción",
+  "Search playlists with specified condition":
+    "Buscar listas coa condición especificada",
+  "Playlist type": "Tipo de lista",
+  "Playlist style": "Estilo de lista",
+  Mosaic: "Mosaico",
+  Vinyls: "Vinilos",
+  "No playlists found with specified condition":
+    "Non hai listas coa condición especificada",
+  "API Error: error loading playlists": "API Error: error cargando as listas",
+  "All playlists": "Todas as listas",
+  "My playlists": "As miñas listas",
+  "User playlists": "Listas do usuario",
 
   // radio stations
   "My radio stations": "As miñas estacións de radio",

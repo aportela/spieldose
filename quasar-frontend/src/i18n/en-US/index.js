@@ -174,11 +174,27 @@ export default {
     "No artists found with the specified condition filter",
 
   // browse albums
+  "Browse albums": "Browse albums",
   "Search albums with specified condition":
     "Search albums with specified condition",
   "No albums found with specified condition":
     "No albums found with specified condition",
   "API Error: error loading albums": "API Error: error loading albums",
+
+  // browse playlists
+  "Browse playlists": "Browse playlists",
+  "Search playlists with specified condition":
+    "Search playlists with specified condition",
+  "Playlist type": "Playlist type",
+  "Playlist style": "Playlist style",
+  Mosaic: "Mosaic",
+  Vinyls: "Vinyls",
+  "No playlists found with specified condition":
+    "No playlists found with specified condition",
+  "API Error: error loading playlists": "API Error: error loading playlists",
+  "All playlists": "All playlists",
+  "My playlists": "My playlists",
+  "User playlists": "User playlists",
 
   // radio stations
   "My radio stations": "My radio stations",

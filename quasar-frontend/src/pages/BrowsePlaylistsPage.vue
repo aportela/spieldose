@@ -1,117 +1,86 @@
 <template>
-  <q-card class="q-pa-lg">
-    <q-breadcrumbs class="q-mb-lg">
-      <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <q-breadcrumbs-el icon="list" label="Browse playlists" />
-    </q-breadcrumbs>
-    <q-card-section v-if="playlists">
-      <div class="row q-gutter-xs">
+  <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
+    :totalResults="totalResults" @paginationChanged="onPaginationChanged">
+    <template #breacrumb>
+      <q-breadcrumbs-el icon="person" :label="t('Browse playlists')" />
+    </template>
+    <template #filter>
+      <div class="row q-gutter-xs q-mb-md">
         <div class="col">
-          <q-input v-model="playlistName" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search playlists with name" :loading="loading" :disable="loading" @keydown.enter.prevent="search(true)"
-            @clear="noPlaylistsFound = false; search(true)" :error="noPlaylistsFound"
-            :errorMessage="'No playlists found with specified condition'">
-            <template v-slot:prepend>
-              <q-icon name="filter_alt" />
-            </template>
-            <template v-slot:append>
-              <q-icon name="search" class="cursor-pointer" @click="search" />
-            </template>
-          </q-input>
-        </div>
-        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="playlistType" :options="playlistTypeValues" options-dense label="Type"
-            @update:model-value="search(true)" :disable="loading || filterByOwnerId != null">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
-        </div>
-        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortField" :options="sortFieldValues" options-dense label="Sort field"
-            @update:model-value="search(true)" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
-        </div>
-        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="sortOrder" :options="sortOrderValues" options-dense label="Sort order"
-            @update:model-value="search(true)" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0"
+            hint="Search playlists with specified condition" placeholder="Text condition"
+            :error="warningNoItems && text?.length > 0" errorMessage="No playlists found with specified condition"
+            v-model="name" @submit="onTextSubmitted" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <q-select outlined dense v-model="style" :options="styleValues" options-dense label="Style" :disable="loading">
-            <template v-slot:selected-item="scope">
-              {{ scope.opt.label }}
-            </template>
-          </q-select>
+          <CustomSelector :disable="loading" label="Playlist type" :options="typeOptions" v-model="type"
+            @update:modelValue="onTypeChanged"></CustomSelector>
+        </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
+            @update:modelValue="onSortFieldChanged"></CustomSelector>
+        </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged">
+          </SortOrderSelector>
+        </div>
+        <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <CustomSelector :disable="loading" label="Playlist style" :options="styleOptions" v-model="style"></CustomSelector>
         </div>
       </div>
-      <div class="q-pa-lg flex flex-center" v-if="totalPages > 1">
-        <q-pagination v-model="currentPageIndex" color="dark" :max="totalPages" :max-pages="5" boundary-numbers
-          direction-links boundary-links @update:model-value="onPaginationChanged" :disable="loading" />
-      </div>
-      <div class="q-gutter-sm row items-start">
-        <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style.value"
-          @play="onPlay(playlist.id)" @delete="onDelete(playlist.id)">
-        </BrowsePlaylistItem>
-      </div>
-      <q-dialog v-model="showDeleteConfirmationDialog" persistent>
-        <q-card>
-          <q-card-section class="row items-center">
-            <q-avatar icon="info" />
-            <span class="q-ml-sm">Delete playlist</span>
-          </q-card-section>
-          <q-card-section>
-            <p>Are you sure ?</p>
-          </q-card-section>
+    </template>
+    <template #items>
+      <BrowsePlaylistItem v-for="playlist in playlists" :key="playlist.id" :playlist="playlist" :mode="style"
+        @play="onPlay(playlist.id)" @delete="onDelete(playlist.id)">
+      </BrowsePlaylistItem>
+    </template>
+  </BrowserBase>
+  <q-dialog v-model="showDeleteConfirmationDialog" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="info" />
+        <span class="q-ml-sm">Delete playlist</span>
+      </q-card-section>
+      <q-card-section>
+        <p>Are you sure ?</p>
+      </q-card-section>
 
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" v-close-popup />
-            <q-btn flat label="YES" color="primary" @click="onDeletePlaylist" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </q-card-section>
-  </q-card>
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="YES" color="primary" @click="onDeletePlaylist" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 
-import { ref, watch, inject } from "vue";
-import { api } from 'boot/axios'
+import { ref, nextTick, onMounted, inject } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
-
-import { useRoute } from 'vue-router';
+import { useI18n } from "vue-i18n";
+import { default as BrowserBase } from "components/BrowserBase.vue";
+import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
+import { default as CustomSelector } from "components/CustomSelector.vue";
+import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
-import { useSpieldoseStore } from "stores/spieldose";
 import { playListActions } from "boot/spieldose";
+import { useSpieldoseStore } from "stores/spieldose";
 import { spieldoseEventNames } from "boot/events";
-
 
 const $q = useQuasar();
 const { t } = useI18n();
 
+const route = useRoute();
+const router = useRouter();
+
 const spieldoseStore = useSpieldoseStore();
 
-const playlistName = ref(null);
-const noPlaylistsFound = ref(false);
-const loading = ref(false);
-let playlists = [];
+const autoFocusRef = ref(null);
+const name = ref(route.query.name || null);
 
-const route = useRoute();
-
-const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
-
-const totalPages = ref(0);
-const currentPageIndex = ref(1);
-
-const playlistTypeValues = [
+const typeOptions = [
   {
     label: 'All playlists',
     value: 'all',
@@ -129,9 +98,7 @@ const playlistTypeValues = [
   },
 ];
 
-const playlistType = ref(!filterByOwnerId.value ? playlistTypeValues[0] : playlistTypeValues[2]);
-
-const sortFieldValues = [
+const sortFieldOptions = [
   {
     label: 'Name',
     value: 'name'
@@ -142,33 +109,92 @@ const sortFieldValues = [
   }
 ];
 
-const sortField = ref(sortFieldValues[0]);
-
-const sortOrderValues = [
-  {
-    label: 'Ascending',
-    value: 'ASC'
-  },
-  {
-    label: 'Descending',
-    value: 'DESC'
-  }
-];
-
-const sortOrder = ref(sortOrderValues[0]);
-
-const styleValues = [
+const styleOptions = [
   {
     label: 'Mosaic',
     value: 'mosaic'
   },
   {
-    label: 'Vinyl collection',
+    label: 'Vinyls',
     value: 'vinyls'
   }
 ];
 
-const style = ref(styleValues[0]);
+const type = ref(!true ? typeOptions[0].value : typeOptions[2].value);
+const sortField = ref(route.query.sortField == "updated" ? "updated" : "name");
+const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
+const style = ref(route.query.style == "vinyls" ? "vinyls": "mosaic");
+const warningNoItems = ref(false);
+const loading = ref(false);
+const playlists = ref([]);
+const lastChangesTimestamp = ref(0);
+
+const totalPages = ref(0);
+const totalResults = ref(0);
+const currentPageIndex = ref(parseInt(route.query.page || 1));
+
+router.beforeEach(async (to, from) => {
+  if (from.name == "playlists") {
+    currentPageIndex.value = parseInt(to.query.page || 1);
+    type.value = to.query.type || typeOptions[0].value;
+    name.value = to.query.name || null;
+    sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
+    sortField.value = sortFieldOptions[to.query.sortField == "updated" ? 1 : 0].value;
+    style.value = styleOptions[to.query.style == "vinyls" ? 1 : 0].value;
+    if (
+      (to.name == "playlists") &&
+      (
+        to.query.page != from.query.page ||
+        to.query.type != from.query.type ||
+        to.query.name != from.query.name ||
+        to.query.sortOrder != from.query.sortOrder ||
+        to.query.sortField != from.query.sortField
+      )
+    ) {
+      nextTick(() => {
+        browse();
+      });
+    }
+  }
+});
+
+function refreshURL(pageIndex, type, name, sortField, sortOrder) {
+  const query = Object.assign({}, route.query || {});
+  query.page = pageIndex || 1;
+  query.type = type || 'all'
+  query.name = name || null;
+  query.sortField = sortField || "title";
+  query.sortOrder = sortOrder || "ASC";
+  query.style = styleOptions[style.value == "vinyls" ? 1 : 0].value
+  router.push({
+    name: "playlists",
+    query: query
+  });
+}
+
+function onPaginationChanged(pageIndex) {
+  refreshURL(pageIndex, type.value, name.value, sortField.value, sortOrder.value);
+}
+
+function onTextSubmitted() {
+  refreshURL(1, type.value, name.value, sortField.value, sortOrder.value);
+}
+
+function onTypeChanged(type) {
+  refreshURL(1, type, name.value, sortField.value, sortOrder.value);
+}
+
+function onSortFieldChanged(sortField) {
+  refreshURL(currentPageIndex.value, name.value, sortField, sortOrder.value);
+}
+
+function onSortOrderChanged(sortOrder) {
+  refreshURL(currentPageIndex.value, name.value, sortField.value, sortOrder);
+}
+
+const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
+
+
 
 
 const showDeleteConfirmationDialog = ref(false);
@@ -184,47 +210,50 @@ function getRandomColor() {
   return (S);
 }
 
-function search(resetPager) {
-  if (resetPager) {
-    currentPageIndex.value = 1;
-  }
-  noPlaylistsFound.value = false;
+function browse() {
+  warningNoItems.value = false;
   loading.value = true;
-  api.playlist.search({ name: playlistName.value }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
-    playlists = success.data.data.items;
+  loading.value = true;
+  api.playlist.search({ name: name.value }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+    playlists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
-    if (playlistName.value && success.data.data.pager.totalResults < 1) {
-      noPlaylistsFound.value = true;
-    }
+    totalResults.value = success.data.data.pager.totalResults;
+    warningNoItems.value = success.data.data.pager.totalResults < 1;
     loading.value = false;
+    lastChangesTimestamp.value = Date.now();
+    nextTick(() => {
+      if (autoFocusRef.value) {
+        autoFocusRef.value.focus();
+      }
+    });
   }).catch((error) => {
+    playlists.value = [];
+    totalPages.value = 0;
+    totalResults.value = 0;
     $q.notify({
       type: "negative",
       message: "API Error: error loading playlists",
       caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
+    lastChangesTimestamp.value = Date.now();
   });
 }
 
-function onPaginationChanged(pageIndex) {
-  currentPageIndex.value = pageIndex;
-  search(false);
-}
 
 function onPlay(playlistId) {
   spieldoseStore.interact();
   playListActions.play(playlistId)
-  .then((success) => { }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error loading playlist"),
-      caption: t("API Error: fatal error details", {
-        status: error.response.status,
-        statusText: error.response.statusText,
-      }),
+    .then((success) => { }).catch((error) => {
+      $q.notify({
+        type: "negative",
+        message: t("API Error: error loading playlist"),
+        caption: t("API Error: fatal error details", {
+          status: error.response.status,
+          statusText: error.response.statusText,
+        }),
+      });
     });
-  });
 }
 
 function onDelete(playlistId) {
@@ -243,7 +272,7 @@ function onDeletePlaylist() {
       message: "Playlist deleted",
     });
     loading.value = false;
-    search(true);
+    browse(true);
   }).catch((error) => {
     // TODO
     loading.value = false;
@@ -251,15 +280,17 @@ function onDeletePlaylist() {
 
 }
 
-search(true);
+onMounted(() => {
+  browse();
+});
 
 const bus = inject('bus');
 
 bus.on(spieldoseEventNames.track.setFavorite, (data) => {
-  search(true);
+  browse(true);
 });
 
 bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
-  search(true);
+  browse(true);
 });
 </script>
