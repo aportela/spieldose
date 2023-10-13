@@ -91,6 +91,8 @@ import { useRoute } from 'vue-router';
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
 import { useSpieldoseStore } from "stores/spieldose";
 import { playListActions } from "boot/spieldose";
+import { spieldoseEventNames } from "boot/events";
+
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -251,4 +253,13 @@ function onDeletePlaylist() {
 
 search(true);
 
+const bus = inject('bus');
+
+bus.on(spieldoseEventNames.track.setFavorite, (data) => {
+  search(true);
+});
+
+bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
+  search(true);
+});
 </script>
