@@ -75,6 +75,7 @@ class CurrentPlaylist
                 FROM CURRENT_PLAYLIST CP
                 LEFT JOIN PLAYLIST P ON P.ID = CP.playlist_id
                 WHERE CP.id = :id
+                ORDER BY CP.current_index
             ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\UserSession::getUserId());
             $data = $dbh->query($query, $params);
@@ -146,7 +147,7 @@ class CurrentPlaylist
                 }
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "playlist" => $playlist]);
     }
 
     public function getPreviousElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -165,7 +166,7 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getNextElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -184,7 +185,7 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index): object
@@ -199,7 +200,7 @@ class CurrentPlaylist
             $this->setCurrentTrackIndex($dbh, $index);
             $track = $this->tracks[$this->currentIndex];
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool

@@ -66,14 +66,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
           currentRadioStation: null,
         },
       ],
-      currentElement: {
-        track: null,
-        radioStation: null,
-      },
       currentPlaylist: {
         lastChangeTimestamp: null,
         totalTracks: 0,
         currentTrackIndex: -1,
+        currentTrackShuffledIndex: - 1,
         currentElement: {
           track: null,
           radioStation: null,
@@ -112,6 +109,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
     getCurrentPlaylist: (state) => state.data.playlists[0],
     getCurrentPlaylistIndex: (state) =>
       state.data.currentPlaylist.currentTrackIndex,
+    getCurrentPlaylistShuffledIndex: (state) =>
+      state.data.currentPlaylist.currentTrackShuffledIndex,
     getShuffleCurrentPlaylistIndex: (state) =>
       state.data.currentPlaylist.currentTrackIndex,
     getCurrentPlaylistLastChangedTimestamp: (state) =>
@@ -344,104 +343,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.data.currentPlaylist.currentElement.track.favorited = timestamp;
       }
     },
-    setPlaylistAsCurrent: function (playlist) {
-      console.error("TODO");
-      /*
-      this.stop();
-      this.data.playlists[0] = {
-        id: playlist.id,
-        name: playlist.name,
-        owner: playlist.owner,
-        public: playlist.public || false,
-        lastChangeTimestamp: Date.now(),
-        currentElementIndex: playlist.tracks.length > 0 ? 0 : -1,
-        elements: playlist.tracks
-          ? playlist.tracks.map((track) => {
-              return { track: track };
-            })
-          : [],
-        shuffleIndexes: playlist.tracks
-          ? shuffle([...Array(playlist.tracks.length).keys()])
-          : [],
-        currentRadioStation: null,
-      };
-      this.data.currentPlaylistIndex = 0;
-      this.saveCurrentPlaylist();
-      if (this.hasCurrentPlaylistElements) {
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play(true);
-      }
-      */
-    },
-    setCurrentRadioStation: function (radioStation) {
-      console.error("TODO");
-      /*
-      this.data.playlists[0].currentRadioStation = radioStation;
-      this.saveCurrentPlaylist();
-      this.setAudioSource(this.getCurrentPlaylistElementURL);
-      this.play(true);
-      */
-    },
-    sendElementsToCurrentPlaylist: function (elements) {
-      console.error("TODO");
-      /*
-      this.interact();
-      this.stop();
-      const hasValues =
-        elements && Array.isArray(elements) && elements.length > 0;
-      if (hasValues) {
-        this.data.playlists[0] = {
-          id: null,
-          name: null,
-          owner: {
-            id: null,
-            name: null,
-          },
-          public: false,
-          lastChangeTimestamp: Date.now(),
-          currentElementIndex: hasValues ? 0 : -1,
-          elements: hasValues ? elements : [],
-          shuffleIndexes: hasValues
-            ? shuffle([...Array(elements.length).keys()])
-            : [],
-          currentRadioStation: null,
-        };
-        this.data.currentPlaylistIndex = 0;
-        this.saveCurrentPlaylist();
-        this.setAudioSource(this.getCurrentPlaylistElementURL);
-        this.play(true);
-      }
-      */
-    },
-    appendElementsToCurrentPlaylist: function (elements) {
-      console.error("TODO");
-      /*
-      this.interact();
-      const hasPreviousElements = this.data.playlists[0].elements.length > 0;
-      const hasValues =
-        elements && Array.isArray(elements) && elements.length > 0;
-      if (hasValues) {
-        this.data.playlists[0].elements =
-          this.data.playlists[0].elements.concat(elements);
-        this.data.playlists[0].shuffleIndexes = shuffle([
-          ...Array(this.data.playlists[0].elements.length).keys(),
-        ]);
-        this.data.playlists[0].currentRadioStation = null;
-        if (!hasPreviousElements) {
-          this.data.playlists[0].currentElementIndex = hasValues ? 0 : -1;
-        }
-        this.data.currentPlaylistIndex = 0;
-        this.data.playlists[0].lastChangeTimestamp = Date.now();
-        this.saveCurrentPlaylist();
-        if (!this.isPlaying) {
-          this.setAudioSource(this.getCurrentPlaylistElementURL);
-          this.play(true);
-        }
-      }
-      */
-    },
     setCurrentPlaylist: function (
       currentTrackIndex,
+      currentTrackShuffledIndex,
       totalTracks,
       track,
       radioStation,
@@ -449,6 +353,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     ) {
       const oldURL = this.getCurrentPlaylistElementURL;
       this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
+      this.data.currentPlaylist.currentTrackShuffledIndex = currentTrackShuffledIndex;
       this.data.currentPlaylist.totalTracks = totalTracks;
       this.data.currentPlaylist.currentElement.track = track;
       this.data.currentPlaylist.currentElement.radioStation = radioStation;
@@ -464,58 +369,6 @@ export const useSpieldoseStore = defineStore("spieldose", {
         this.stop();
       }
     },
-    saveCurrentPlaylist: function () {
-      console.error("TODO");
-      /*
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set("currentPlaylist", this.data.playlists[0]);
-      */
-    },
-    skipPrevious: function () {
-      console.error("TODO");
-    },
-    skipNext: function () {
-      console.error("TODO");
-    },
-    skipToIndex: function (index) {
-      console.error("TODO");
-    },
-    /*
-    hasPlaylistId: function (id) {
-      return (
-        this.data.playlists.length > 1 &&
-        this.data.playlists.findIndex((playlist) => playlist.id == id) !== -1
-      );
-    },
-    addNewPlaylist: function (playlist) {
-      this.data.playlists.push({
-        id: playlist.id,
-        name: playlist.name,
-        owner: playlist.owner,
-        public: playlist.public || false,
-        lastChangeTimestamp: Date.now(),
-        currentElementIndex: 0,
-        elements: playlist.tracks.map((track) => {
-          return { track: track };
-        }),
-        shuffleIndexes: [...Array(playlist.tracks.length).keys()].sort(
-          function () {
-            return 0.5 - Math.random();
-          }
-        ),
-      });
-      this.data.currentPlaylistIndex = this.data.playlists.length - 1;
-    },
-    removePlaylist: function (id) {
-      if (id) {
-        const index =
-          this.data.playlists.findIndex((playlist) => playlist.id == id) !== -1;
-        if (index !== -1) {
-          this.data.playlists.slice(index, 1);
-        }
-      }
-    },
-    */
     restoreFullScreenVisualizationSettings: function () {
       const basil = useBasil(localStorageBasilOptions);
       const fullScreenVisualizationSettings = basil.get(

@@ -405,7 +405,7 @@ const currentPlaylistTrackIndex = computed(() => {
   if (!spieldoseStore.getShuffle) {
     return (spieldoseStore.getCurrentPlaylistIndex);
   } else {
-    return (!spieldoseStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[spieldoseStore.getCurrentPlaylistIndex]);
+    return (spieldoseStore.getCurrentPlaylistShuffledIndex);
   }
 });
 

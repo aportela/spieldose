@@ -728,11 +728,10 @@ const api = {
           });
       });
     },
-    skipToElementAtIndex: function (index, shuffle) {
+    skipToElementAtIndex: function (index) {
       return new Promise((resolve, reject) => {
         const params = {
           index: index >= 0 ? index : -1,
-          shuffle: shuffle ? true : false,
         };
         axios
           .get(baseAPIPath + "/current_playlist/element_at_index", { params })

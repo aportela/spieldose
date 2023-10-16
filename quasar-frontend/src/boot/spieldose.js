@@ -54,6 +54,7 @@ const trackActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -74,6 +75,7 @@ const trackActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -97,6 +99,7 @@ const albumActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -117,6 +120,7 @@ const albumActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -140,6 +144,7 @@ const playListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -160,6 +165,7 @@ const playListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -183,6 +189,7 @@ const radioStationActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -218,6 +225,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -238,6 +246,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -258,6 +267,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -278,6 +288,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -294,10 +305,11 @@ const currentPlayListActions = {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.currentPlaylist
-        .skipToElementAtIndex(index, spieldoseStore.getShuffle)
+        .skipToElementAtIndex(index)
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -316,7 +328,7 @@ const currentPlayListActions = {
       api.currentPlaylist
         .setTracks([])
         .then((success) => {
-          spieldoseStore.setCurrentPlaylist(-1, 0, null, null, null);
+          spieldoseStore.setCurrentPlaylist(-1, -1, 0, null, null, null);
           resolve(success);
         })
         .catch((error) => {
@@ -331,6 +343,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -351,6 +364,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
@@ -371,6 +385,7 @@ const currentPlayListActions = {
         .then((success) => {
           spieldoseStore.setCurrentPlaylist(
             success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
             success.data.totalTracks,
             success.data.currentTrack,
             success.data.radioStation,
