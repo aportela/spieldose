@@ -710,7 +710,10 @@ const api = {
     },
     skipToElementAtIndex: function (index, shuffle) {
       return new Promise((resolve, reject) => {
-        const params = { shuffle: shuffle ? true : false };
+        const params = {
+          index: index >= 0 ? index : -1,
+          shuffle: shuffle ? true : false,
+        };
         axios
           .get(baseAPIPath + "/current_playlist/element_at_index", { params })
           .then((response) => {

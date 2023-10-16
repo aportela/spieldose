@@ -295,11 +295,6 @@ function onClear() {
   rows.value = [];
 }
 
-function setCurrentTrackIndex(index) {
-  spieldoseStore.interact();
-  spieldoseStore.skipToIndex(index);
-}
-
 function onMoveUpTrackAtIndex(oldIndex) {
   let indexes = Array.from({ length: rows.value.length }, (e, i) => i);
   // https://stackoverflow.com/a/6470794
