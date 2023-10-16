@@ -500,15 +500,20 @@ function onSavePlaylist() {
 }
 
 function onSavePlaylistElements() {
+  const ids = rows.value.map((element) => element.id);
   spieldoseStore.interact();
   loading.value = true;
-  currentTrackIndex.value = 0;
-  api.playlist.add(uid(), newPlaylistName.value, elements.value.filter((element) => element.track).map((element) => { return (element.track.id); }), newPlaylistPublic.value).then((success) => {
-    //elements.value = success.data.data.items.map((item) => { return ({ track: item }); });
-    //currentPlaylist.saveElements(elements.value);
+  const funct = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update: api.playlist.add;
+  const id = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? spieldoseStore.getCurrentPlaylistLinkedPlaylist.id: uid();
+  funct(id, newPlaylistName.value, ids, newPlaylistPublic.value).then((success) => {
+      spieldoseStore.data.currentPlaylist.playlist = {
+        id: id,
+        name: newPlaylistName.value
+      };
     loading.value = false;
     showSavePlaylistDialog.value = false;
   }).catch((error) => {
+    console.log(2);
     $q.notify({
       type: "negative",
       message: t("API Error: error loading random tracks"),

@@ -34,7 +34,8 @@ class Playlist
     {
         if (!empty($this->id)) {
             // special playlists, user allowed
-            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+            if ($this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+                return (true);
             } else {
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
@@ -58,69 +59,12 @@ class Playlist
         }
     }
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh): void
-    {
-        if (!empty($this->id)) {
-            $params = array();
-            $query = null;
-            if ($this->id != self::FAVORITE_TRACKS_PLAYLIST_ID) {
-                $query = "
-                    SELECT P.id, P.name, P.ctime, P.mtime, P.name, P.public, P.user_id AS ownerId, U.name AS ownerName
-                    FROM PLAYLIST P
-                    LEFT JOIN USER U ON U.id = P.user_id
-                    WHERE P.id = :id
-                ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id);
-            } else {
-                $query = "
-                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, MIN(FF.favorited) AS ctime, MAX(FF.favorited) AS mtime, '#' AS name, NULL AS public, :user_id AS ownerId, U.name AS ownerName
-                    FROM USER U
-                    LEFT JOIN FILE_FAVORITE FF ON FF.user_id = U.id
-                    WHERE U.id = :user_id
-                    GROUP BY (U.id)
-                ";
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
-            }
-            $data = $dbh->query($query, $params);
-            if (count($data) == 1) {
-                $this->id = $data[0]->id;
-                $this->name = $data[0]->name;
-                $this->ctime = $data[0]->ctime;
-                $this->mtime = $data[0]->mtime;
-                $this->name = $data[0]->name;
-                $this->owner = new \stdClass();
-                $this->owner->id = $data[0]->ownerId;
-                $this->owner->name = $data[0]->ownerName;
-                $this->public = $data[0]->public ?? false;
-                if (!($this->public || $this->owner->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID)) {
-                    throw new \Spieldose\Exception\AccessDeniedException("id");
-                } else {
-                    $filter = array(
-                        "playlistId" => $this->id
-                    );
-                    $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                        [
-                            new \aportela\DatabaseBrowserWrapper\SortItem("playListTrackIndex", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
-                        ]
-                    );
-                    $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
-                    $data = \Spieldose\Entities\Track::search($dbh, $filter, $sort, $pager);
-                    $this->tracks = $data->items;
-                }
-            } else {
-                throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
-            }
-        } else {
-            throw new \Spieldose\Exception\InvalidParamsException("id");
-        }
-    }
-
     public function allowUpdate(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->id)) {
             // special playlists, user allowed
-            if ($this->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+            if ($this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+                return (false);
             } else {
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
@@ -138,6 +82,68 @@ class Playlist
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
                 }
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("id");
+        }
+    }
+
+    public function get(\aportela\DatabaseWrapper\DB $dbh): void
+    {
+        if (!empty($this->id)) {
+            if ($this->allowView($dbh)) {
+                $params = array();
+                $query = null;
+                if ($this->id != self::FAVORITE_TRACKS_PLAYLIST_ID) {
+                    $query = "
+                        SELECT P.id, P.name, P.ctime, P.mtime, P.name, P.public, P.user_id AS ownerId, U.name AS ownerName
+                        FROM PLAYLIST P
+                        LEFT JOIN USER U ON U.id = P.user_id
+                        WHERE P.id = :id
+                    ";
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id);
+                } else {
+                    $query = "
+                        SELECT :uuid_zero AS id, 'My favorite tracks' AS name, MIN(FF.favorited) AS ctime, MAX(FF.favorited) AS mtime, '#' AS name, NULL AS public, :user_id AS ownerId, U.name AS ownerName
+                        FROM USER U
+                        LEFT JOIN FILE_FAVORITE FF ON FF.user_id = U.id
+                        WHERE U.id = :user_id
+                        GROUP BY (U.id)
+                    ";
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
+                    $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
+                }
+                $data = $dbh->query($query, $params);
+                if (count($data) == 1) {
+                    $this->id = $data[0]->id;
+                    $this->name = $data[0]->name;
+                    $this->ctime = $data[0]->ctime;
+                    $this->mtime = $data[0]->mtime;
+                    $this->name = $data[0]->name;
+                    $this->owner = new \stdClass();
+                    $this->owner->id = $data[0]->ownerId;
+                    $this->owner->name = $data[0]->ownerName;
+                    $this->public = $data[0]->public ?? false;
+                    if (!($this->public || $this->owner->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID)) {
+                        throw new \Spieldose\Exception\AccessDeniedException("id");
+                    } else {
+                        $filter = array(
+                            "playlistId" => $this->id
+                        );
+                        $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                            [
+                                new \aportela\DatabaseBrowserWrapper\SortItem("playListTrackIndex", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                            ]
+                        );
+                        $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
+                        $data = \Spieldose\Entities\Track::search($dbh, $filter, $sort, $pager);
+                        $this->tracks = $data->items;
+                    }
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
+                }
+            } else {
+                throw new \Spieldose\Exception\AccessDeniedException("userId: " . \Spieldose\UserSession::getUserId());
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
@@ -181,10 +187,9 @@ class Playlist
                 if (!empty($this->name)) {
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
                     );
-                    $dbh->exec(" UPDATE SET name = :name, mtime = strftime('%s', 'now') WHERE id = :id AND user_id = :user_id ", $params);
+                    $dbh->exec(" UPDATE PLAYLIST SET name = :name, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                     );

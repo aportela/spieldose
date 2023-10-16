@@ -179,9 +179,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -254,9 +254,9 @@ const api = {
         axios
           .get(
             "api/2/album?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&title=" +
-              encodeURIComponent(title || ""),
+            encodeURIComponent(mbId || "") +
+            "&title=" +
+            encodeURIComponent(title || ""),
             "&artistMbId=" + encodeURIComponent(artistMbId || ""),
             "&artistName=" + encodeURIComponent(artistName || ""),
             "&year=" + encodeURIComponent(year || ""),
@@ -502,12 +502,32 @@ const api = {
           playlist: {
             id: id,
             name: name,
-            tracks: tracks,
-            public: isPublic,
+            tracks: tracks || [],
+            public: isPublic || false,
           },
         };
         axios
           .post(baseAPIPath + "/playlist/add", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    update: function (id, name, tracks, isPublic) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          playlist: {
+            id: id,
+            name: name,
+            tracks: tracks || [],
+            public: isPublic || false,
+          },
+        };
+        axios
+          .post(baseAPIPath + "/playlist/update", params)
           .then((response) => {
             resolve(response);
           })
@@ -816,9 +836,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-              encodeURIComponent(title || "") +
-              "&artist=" +
-              encodeURIComponent(artist || ""),
+            encodeURIComponent(title || "") +
+            "&artist=" +
+            encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {

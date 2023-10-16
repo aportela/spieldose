@@ -767,6 +767,21 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->post('/playlist/update', function (Request $request, Response $response, array $args) {
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $params = $request->getParsedBody();
+                $playlist = new \Spieldose\Playlist(
+                    $params["playlist"]["id"] ?? "",
+                    $params["playlist"]["name"] ?? "",
+                    $params["playlist"]["tracks"] ?? [],
+                    $params["playlist"]["public"] ?? false
+                );
+                $playlist->update($dbh);
+                $payload = json_encode(["playlist" => $params["playlist"]]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) {
                 if (!empty($args['id'])) {
                     $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
