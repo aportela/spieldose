@@ -506,10 +506,10 @@ function onSavePlaylistElements() {
   const funct = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update: api.playlist.add;
   const id = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? spieldoseStore.getCurrentPlaylistLinkedPlaylist.id: uid();
   funct(id, newPlaylistName.value, ids, newPlaylistPublic.value).then((success) => {
-      spieldoseStore.data.currentPlaylist.playlist = {
-        id: id,
-        name: newPlaylistName.value
-      };
+    spieldoseStore.data.currentPlaylist.playlist = {
+      id: id,
+      name: newPlaylistName.value
+    };
     loading.value = false;
     showSavePlaylistDialog.value = false;
   }).catch((error) => {

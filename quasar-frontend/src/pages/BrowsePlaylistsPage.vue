@@ -266,6 +266,7 @@ function onDeletePlaylist() {
     loading.value = false;
     showDeleteConfirmationDialog.value = false;
     selectedPlaylistId.value = null;
+    spieldoseStore.data.currentPlaylist.playlist = null;
     $q.notify({
       type: "positive",
       message: "Playlist deleted",

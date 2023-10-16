@@ -172,6 +172,8 @@ class Playlist
                         $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                     }
                 }
+                $cp = new \Spieldose\CurrentPlaylist();
+                $cp->setLinkedPlaylist($dbh, $this->id);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("name");
             }
@@ -187,9 +189,10 @@ class Playlist
                 if (!empty($this->name)) {
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
                     );
-                    $dbh->exec(" UPDATE PLAYLIST SET name = :name, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
+                    $dbh->exec(" UPDATE PLAYLIST SET name = :name, public = :public, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                     );
@@ -204,6 +207,8 @@ class Playlist
                             $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                         }
                     }
+                    $cp = new \Spieldose\CurrentPlaylist();
+                    $cp->setLinkedPlaylist($dbh, $this->id);
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
@@ -219,6 +224,10 @@ class Playlist
     {
         if (!empty($this->id)) {
             if ($this->allowUpdate($dbh)) {
+                $params = array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
+                );
+                $dbh->exec(" UPDATE CURRENT_PLAYLIST SET playlist_id = NULL WHERE playlist_id = :playlist_id ", $params);
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );

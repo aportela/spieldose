@@ -278,6 +278,25 @@ class CurrentPlaylist
         $dbh->exec($query, $params);
     }
 
+    public function setLinkedPlaylist(\aportela\DatabaseWrapper\DB $dbh, string $id)
+    {
+        $this->id = \Spieldose\UserSession::getUserId();
+        $params = array(
+            new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":index", $this->currentIndex),
+            new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $id)
+        );
+        $query = "
+                INSERT INTO CURRENT_PLAYLIST
+                    (id, ctime, mtime, current_index, radiostation_id, playlist_id)
+                VALUES
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :index, NULL, :playlist_id)
+                ON CONFLICT(id) DO
+                    UPDATE SET mtime = strftime('%s', 'now'), playlist_id = :playlist_id
+            ";
+        $dbh->exec($query, $params);
+    }
+
     public function append(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
     {
         if (\Spieldose\UserSession::isLogged()) {
