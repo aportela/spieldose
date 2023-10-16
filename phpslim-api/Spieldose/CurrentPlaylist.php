@@ -12,6 +12,7 @@ class CurrentPlaylist
     public int $currentIndex;
     public array $shuffledIndexes;
     public object $radioStation;
+    public object $playlist;
     public array $tracks = [];
     protected int $totalTracks;
 
@@ -20,6 +21,7 @@ class CurrentPlaylist
         $this->id = \Spieldose\UserSession::isLogged() ? \Spieldose\UserSession::getUserId() : null;
         $this->currentIndex = -1;
         $this->radioStation = (object) ["id" => null, "name" => null, "url" => null, "playlist" => null, "directStream" => null, "images" => ["small" => null, "normal" => null]];
+        $this->playlist = (object) ["id" => null, "name" => null];
         $this->tracks = [];
         $this->shuffledIndexes = [];
     }
@@ -69,8 +71,9 @@ class CurrentPlaylist
             $params = array();
             $query = null;
             $query = "
-                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id
+                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, CP.playlist_id, P.name AS playlist_name
                 FROM CURRENT_PLAYLIST CP
+                LEFT JOIN PLAYLIST P ON P.ID = CP.playlist_id
                 WHERE CP.id = :id
             ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\UserSession::getUserId());
@@ -87,6 +90,10 @@ class CurrentPlaylist
                             $this->radioStation = (object)$radioStation;
                         }
                     }
+                }
+                if (!empty($data[0]->playlist_id)) {
+                    $this->playlist->id = $data[0]->playlist_id;
+                    $this->playlist->name = $data[0]->playlist_name;
                 }
                 $query = " SELECT track_shuffled_index FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :id ORDER BY track_index ";
                 $data = $dbh->query($query, $params);
@@ -124,6 +131,10 @@ class CurrentPlaylist
         $this->get($dbh);
         $track = null;
         $radioStation = null;
+        $playlist = null;
+        if (!empty($this->playlist->id)) {
+            $playlist = $this->playlist;
+        }
         if (!empty($this->radioStation->id)) {
             $radioStation = $this->radioStation;
         } else {
@@ -135,13 +146,17 @@ class CurrentPlaylist
                 }
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "playlist" => $playlist]);
     }
 
     public function getPreviousElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $this->get($dbh);
         $track = null;
+        $playlist = null;
+        if (!empty($this->playlist->id)) {
+            $playlist = $this->playlist;
+        }
         if ($this->AllowSkipPrevious()) {
             $this->setCurrentTrackIndex($dbh, $this->currentIndex - 1);
             if (!$shuffled) {
@@ -150,13 +165,17 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getNextElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
     {
         $this->get($dbh);
         $track = null;
+        $playlist = null;
+        if (!empty($this->playlist->id)) {
+            $playlist = $this->playlist;
+        }
         if ($this->AllowSkipNext()) {
             $this->setCurrentTrackIndex($dbh, $this->currentIndex + 1);
             if (!$shuffled) {
@@ -165,40 +184,45 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index): object
     {
         $this->get($dbh);
         $track = null;
+        $playlist = null;
+        if (!empty($this->playlist->id)) {
+            $playlist = $this->playlist;
+        }
         if ($index >= 0 && $index < $this->totalTracks) {
             $this->setCurrentTrackIndex($dbh, $index);
             $track = $this->tracks[$this->currentIndex];
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
     {
         if (\Spieldose\UserSession::isLogged()) {
             $this->id = \Spieldose\UserSession::getUserId();
+            $totalTracks = count($trackIds);
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_index", count($trackIds) > 0 ? 0 : -1)
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_index", $totalTracks > 0 ? 0 : -1)
             );
-            if (!empty($this->radioStation->id)) {
-                //$params[] = new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $this->radioStation->id);
+            if (!empty($this->playlist->id) && $this->playlist->id != \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->playlist->id);
             } else {
-                //$params[] = new \aportela\DatabaseWrapper\Param\NullParam(":radiostation_id");
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playlist_id");
             }
             $query = "
                 INSERT INTO CURRENT_PLAYLIST
-                    (id, ctime, mtime, current_index, radiostation_id)
+                    (id, ctime, mtime, current_index, radiostation_id, playlist_id)
                 VALUES
-                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :current_index, NULL)
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :current_index, NULL, :playlist_id)
                 ON CONFLICT(id) DO
-                    UPDATE SET mtime = strftime('%s', 'now'), current_index = :current_index, radiostation_id = NULL
+                    UPDATE SET mtime = strftime('%s', 'now'), current_index = :current_index, radiostation_id = NULL, playlist_id = :playlist_id
             ";
             $success = false;
             $dbh->beginTransaction();
@@ -208,8 +232,8 @@ class CurrentPlaylist
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
                 $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
-                if (is_array($trackIds) && count($trackIds) > 0) {
-                    $shuffledIndexes = range(0, count($trackIds) - 1);
+                if (is_array($trackIds) && $totalTracks > 0) {
+                    $shuffledIndexes = range(0, $totalTracks - 1);
                     shuffle($shuffledIndexes);
                     foreach ($trackIds as $index => $trackId) {
                         $params = array(
@@ -245,9 +269,9 @@ class CurrentPlaylist
         );
         $query = "
                 INSERT INTO CURRENT_PLAYLIST
-                    (id, ctime, mtime, current_index, radiostation_id)
+                    (id, ctime, mtime, current_index, radiostation_id, playlist_id)
                 VALUES
-                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :index, :radiostation_id)
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), :index, :radiostation_id, NULL)
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now'), radiostation_id = :radiostation_id
             ";
@@ -261,16 +285,11 @@ class CurrentPlaylist
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
             );
-            if (!empty($this->radioStation->id)) {
-                //$params[] = new \aportela\DatabaseWrapper\Param\StringParam(":radiostation_id", $this->radioStation->id);
-            } else {
-                //$params[] = new \aportela\DatabaseWrapper\Param\NullParam(":radiostation_id");
-            }
             $query = "
                 INSERT INTO CURRENT_PLAYLIST
-                    (id, ctime, mtime, current_index, radiostation_id)
+                    (id, ctime, mtime, current_index, radiostation_id, playlist_id)
                 VALUES
-                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), 0, NULL)
+                    (:id, strftime('%s', 'now'), strftime('%s', 'now'), 0, NULL, NULL)
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now')
             ";
@@ -326,6 +345,10 @@ class CurrentPlaylist
             $this->get($dbh);
             $track = null;
             $radioStation = null;
+            $playlist = null;
+            if (!empty($this->playlist->id)) {
+                $playlist = $this->playlist;
+            }
             if (!empty($this->radioStation->id)) {
                 $radioStation = $this->radioStation;
             } else {
@@ -337,7 +360,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -347,6 +370,10 @@ class CurrentPlaylist
     public function randomSort(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false)
     {
         $this->get($dbh);
+        $playlist = null;
+        if (!empty($this->playlist->id)) {
+            $playlist = $this->playlist;
+        }
         $trackIds = [];
         foreach ($this->tracks as $track) {
             $trackIds[] = $track->id;
@@ -367,7 +394,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -379,6 +406,10 @@ class CurrentPlaylist
         $totalIndexes = count($indexes);
         if ($totalIndexes > 0) {
             $this->get($dbh);
+            $playlist = null;
+            if (!empty($this->playlist->id)) {
+                $playlist = $this->playlist;
+            }
             if (count($this->tracks) == $totalIndexes) {
                 $trackIds = [];
                 for ($i = 0; $i < $totalIndexes; $i++) {
@@ -399,7 +430,7 @@ class CurrentPlaylist
                             }
                         }
                     }
-                    return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks]);
+                    return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
                 } else {
                     // TODO
                     throw new \Exception("");

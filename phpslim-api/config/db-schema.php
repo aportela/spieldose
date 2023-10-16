@@ -428,5 +428,10 @@ return (array(
                 FOREIGN KEY(`playlist_id`) REFERENCES CURRENT_PLAYLIST (`id`)
             );
         '
+    ),
+    25 => array(
+        '
+            ALTER TABLE `CURRENT_PLAYLIST` ADD `playlist_id` VARCHAR(36);
+        ',
     )
 ));

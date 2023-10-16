@@ -56,7 +56,8 @@ const trackActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -75,7 +76,8 @@ const trackActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -97,7 +99,8 @@ const albumActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -116,7 +119,8 @@ const albumActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -138,7 +142,8 @@ const playListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -157,7 +162,8 @@ const playListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -179,7 +185,8 @@ const radioStationActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -213,7 +220,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -232,7 +240,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -251,7 +260,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -270,7 +280,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -289,7 +300,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -304,7 +316,7 @@ const currentPlayListActions = {
       api.currentPlaylist
         .setTracks([])
         .then((success) => {
-          spieldoseStore.setCurrentPlaylist(-1, 0, null, null);
+          spieldoseStore.setCurrentPlaylist(-1, 0, null, null, null);
           resolve(success);
         })
         .catch((error) => {
@@ -321,7 +333,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -340,7 +353,8 @@ const currentPlayListActions = {
             success.data.currentTrackIndex,
             success.data.totalTracks,
             success.data.currentTrack,
-            success.data.radioStation
+            success.data.radioStation,
+            success.data.playlist
           );
           resolve(success);
         })
@@ -348,7 +362,7 @@ const currentPlayListActions = {
           reject(error);
         });
     });
-  }
+  },
 };
 
 export {

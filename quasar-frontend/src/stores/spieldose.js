@@ -77,6 +77,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         currentElement: {
           track: null,
           radioStation: null,
+          playlist: null,
         },
       },
     },
@@ -153,6 +154,9 @@ export const useSpieldoseStore = defineStore("spieldose", {
       } else {
         return null;
       }
+    },
+    getCurrentPlaylistLinkedPlaylist(state) {
+      return state.data.currentPlaylist.currentElement.playlist;
     },
     allowSkipPrevious: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
@@ -440,13 +444,15 @@ export const useSpieldoseStore = defineStore("spieldose", {
       currentTrackIndex,
       totalTracks,
       track,
-      radioStation
+      radioStation,
+      playlist
     ) {
       const oldURL = this.getCurrentPlaylistElementURL;
       this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
       this.data.currentPlaylist.totalTracks = totalTracks;
       this.data.currentPlaylist.currentElement.track = track;
       this.data.currentPlaylist.currentElement.radioStation = radioStation;
+      this.data.currentPlaylist.currentElement.playlist = playlist;
       this.data.currentPlaylist.lastChangeTimestamp = Date.now();
       if (this.getCurrentPlaylistElementURL) {
         if (oldURL != this.getCurrentPlaylistElementURL)

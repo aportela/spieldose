@@ -3,6 +3,7 @@
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
+      <q-breadcrumbs-el v-if="spieldoseStore.getCurrentPlaylistLinkedPlaylist" :label="spieldoseStore.getCurrentPlaylistLinkedPlaylist.name" />
     </q-breadcrumbs>
     <q-btn-group spread class="q-mb-md">
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
@@ -488,6 +489,9 @@ function onNextPlaylist() {
 
 function onSavePlaylist() {
   newPlaylistName.value = null;
+  if (spieldoseStore.getCurrentPlaylistLinkedPlaylist) {
+    newPlaylistName.value = spieldoseStore.getCurrentPlaylistLinkedPlaylist.name;
+  }
   showSavePlaylistDialog.value = true;
 }
 

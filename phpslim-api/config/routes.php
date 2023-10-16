@@ -883,6 +883,7 @@ return function (App $app) {
                 $params = $request->getParsedBody();
                 $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $currentPlaylist->playlist->id = null;
                 if (isset($params["trackIds"]) && is_array($params["trackIds"])) {
                     if (!$currentPlaylist->save($dbh, $params["trackIds"])) {
                         // TODO
@@ -897,6 +898,7 @@ return function (App $app) {
                     }
                 } else if (isset($params["playlistId"]) && !empty($params["playlistId"])) {
                     $playlistTrackIds = \Spieldose\Playlist::getTrackIds($dbh, $params["playlistId"]);
+                    $currentPlaylist->playlist->id = $params["playlistId"];
                     if (!$currentPlaylist->save($dbh, $playlistTrackIds)) {
                         // TODO
                         throw new \Exception("save error");
@@ -937,12 +939,16 @@ return function (App $app) {
 
             $group->post('/current_playlist/set_radiostation', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
-                $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
-                $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $currentPlaylist->setRadiostation($dbh, $params["id"]);
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == true)));
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                if (!empty($params["id"])) {
+                    $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
+                    $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                    $currentPlaylist->setRadiostation($dbh, $params["id"]);
+                    $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == true)));
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("id");
+                }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
