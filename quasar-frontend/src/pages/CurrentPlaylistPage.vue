@@ -3,34 +3,35 @@
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <q-breadcrumbs-el icon="list_alt" :label="t('Current playlist')" />
-      <q-breadcrumbs-el v-if="spieldoseStore.getCurrentPlaylistLinkedPlaylist" :label="spieldoseStore.getCurrentPlaylistLinkedPlaylist.name" />
+      <q-breadcrumbs-el v-if="spieldoseStore.getCurrentPlaylistLinkedPlaylist"
+        :label="spieldoseStore.getCurrentPlaylistLinkedPlaylist.name" />
     </q-breadcrumbs>
     <q-btn-group spread class="q-mb-md">
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
-        :disable="loading || !(elements && elements.length > 0)">
+        :disable="loading || !(rows && rows.length > 0)">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt" @click="onDiscover"
         :disable="loading">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle"
-        @click="onRandomize" :disable="loading || !(elements && elements.length > 0)">
+        @click="onRandomize" :disable="loading || !(rows && rows.length > 0)">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
         @click="onPreviusPlaylist" :disable="loading || !spieldoseStore.allowSkipPrevious" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
         :disable="loading || !spieldoseStore.hasCurrentPlaylistElements" v-if="spieldoseStore.isStopped" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
-        :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldoseStore.isPlaying" />
+        :disable="loading || !(rows && rows.length > 0)" v-else-if="spieldoseStore.isPlaying" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
-        @click="onResume" :disable="loading || !(elements && elements.length > 0)" v-else-if="spieldoseStore.isPaused" />
+        @click="onResume" :disable="loading || !(rows && rows.length > 0)" v-else-if="spieldoseStore.isPaused" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
-        :disable="loading || spieldoseStore.isStopped || !(elements && elements.length > 0)" />
+        :disable="loading || spieldoseStore.isStopped || !(rows && rows.length > 0)" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
         @click="onNextPlaylist" :disable="loading || !spieldoseStore.allowSkipNext" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
         :disable="loading || !spieldoseStore.getCurrentElementURL" :href="spieldoseStore.getCurrentElementURL" />
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
-        :disable="loading || !(elements && elements.length > 0)" @click="onSavePlaylist" />
+        :disable="loading || !(rows && rows.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
     <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.8em" :rows="rows" :columns="columns"
       row-key="id" virtual-scroll :rows-per-page-options="[0]" :visible-columns="visibleColumns" :hide-bottom="true">
@@ -81,12 +82,15 @@
           </q-td>
           <q-td key="actions" :props="props">
             <q-btn-group outline>
-              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')" :disable="props.row.index == 1 || props.row.id == currentTrackIndex"
+              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')"
+                :disable="props.row.index == 1 || props.row.id == currentTrackIndex"
                 @click="onMoveUpTrackAtIndex(props.row.index - 1)" />
-              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')" :disable="props.row.index == rows.length || props.row.id == currentTrackIndex"
+              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')"
+                :disable="props.row.index == rows.length || props.row.id == currentTrackIndex"
                 @click="onMoveDownTrackAtIndex(props.row.index - 1)" />
               <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
-                :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
+                :title="t('Toggle favorite')"
+                @click="onToggleFavorite(props.row.index, props.row.id, props.row.favorited)" />
               <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
                 @click.stop.prevent="onRemoveElementAtIndex(props.row.index - 1)" />
             </q-btn-group>
@@ -94,28 +98,28 @@
         </q-tr>
       </template>
     </q-table>
-  <q-dialog v-model="showSavePlaylistDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Save current playlist</div>
-      </q-card-section>
+    <q-dialog v-model="showSavePlaylistDialog">
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Save current playlist</div>
+        </q-card-section>
 
-      <q-card-section class="q-pt-none">
-        <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false"
-          label="Playlist name" />
-      </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false"
+            label="Playlist name" />
+        </q-card-section>
 
-      <q-card-section class="q-pt-none">
-        <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
-      </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
+        </q-card-section>
 
-      <q-card-actions align="right" class="">
-        <q-btn outline label="Cancel" v-close-popup />
-        <q-btn outline label="Save" :disable="!newPlaylistName" @click="onSavePlaylistElements" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-</q-card>
+        <q-card-actions align="right" class="">
+          <q-btn outline label="Cancel" v-close-popup />
+          <q-btn outline label="Save" :disable="!newPlaylistName" @click="onSavePlaylistElements" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </q-card>
 </template>
 
 <style lang="sass">
@@ -269,12 +273,9 @@ const rowIcon = computed(() => {
 
 watch(currentPlayListElementsLastChanges, (newValue) => {
   // TODO
-  //elements.value = spieldoseStore.getCurrentPlaylist.elements;
   //rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
   //currentTrackIndex.value = spieldoseStore.getCurrentPlaylistIndex;
 });
-
-const elements = ref([]);
 
 const currentTrackIndex = ref(0);
 const shuffledIndexes = ref([]);
@@ -291,7 +292,6 @@ function onClear() {
   spieldoseStore.interact();
   spieldoseStore.stop();
   currentPlayListActions.clear();
-  elements.value = [];
   rows.value = [];
 }
 
@@ -301,13 +301,12 @@ function setCurrentTrackIndex(index) {
 }
 
 function onMoveUpTrackAtIndex(oldIndex) {
-  let indexes = Array.from({length: rows.value.length}, (e, i)=> i);
+  let indexes = Array.from({ length: rows.value.length }, (e, i) => i);
   // https://stackoverflow.com/a/6470794
   indexes.splice(oldIndex, 1);
   indexes.splice(oldIndex - 1, 0, oldIndex);
   currentPlayListActions.resortByIndexes(indexes).then((success) => {
-    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
-    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
     currentTrackIndex.value = currentPlaylistTrackIndex.value;
     loading.value = false;
   }).catch((error) => {
@@ -324,13 +323,12 @@ function onMoveUpTrackAtIndex(oldIndex) {
 }
 
 function onMoveDownTrackAtIndex(oldIndex) {
-  let indexes = Array.from({length: rows.value.length}, (e, i)=> i);
+  let indexes = Array.from({ length: rows.value.length }, (e, i) => i);
   // https://stackoverflow.com/a/6470794
   indexes.splice(oldIndex, 1);
   indexes.splice(oldIndex + 1, 0, oldIndex);
   currentPlayListActions.resortByIndexes(indexes).then((success) => {
-    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
-    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
     currentTrackIndex.value = currentPlaylistTrackIndex.value;
     loading.value = false;
   }).catch((error) => {
@@ -346,9 +344,10 @@ function onMoveDownTrackAtIndex(oldIndex) {
   });
 }
 
-function onToggleFavorite(trackId, favorited) {
+function onToggleFavorite(index, trackId, favorited) {
   const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
   funct(trackId).then((success) => {
+    rows.value[index - 1].favorited = success.data.favorited;
   })
     .catch((error) => {
       switch (error.response.status) {
@@ -375,19 +374,18 @@ function onRowClick(evt, row, index) {
   if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
     spieldoseStore.interact();
     currentPlayListActions.skipToElementIndex(index).then((success) => {
-  }).catch((error) => {
-    // TODO
-  });
+    }).catch((error) => {
+      // TODO
+    });
   }
 }
 
 function getCurrentPlaylist() {
   loading.value = true;
   currentPlayListActions.get().then((success) => {
-    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
-    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
     shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = !spieldoseStore.getShuffle ? success.data.currentIndex: shuffledIndexes.value[success.data.currentIndex];
+    currentTrackIndex.value = !spieldoseStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[success.data.currentIndex];
     loading.value = false;
   }).catch((error) => {
     // TODO
@@ -399,7 +397,7 @@ const currentPlaylistTrackIndex = computed(() => {
   if (!spieldoseStore.getShuffle) {
     return (spieldoseStore.getCurrentPlaylistIndex);
   } else {
-    return(!spieldoseStore.getShuffle ? success.data.currentIndex: shuffledIndexes.value[spieldoseStore.getCurrentPlaylistIndex]);
+    return (!spieldoseStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[spieldoseStore.getCurrentPlaylistIndex]);
   }
 });
 
@@ -412,8 +410,7 @@ function onRandomize() {
   spieldoseStore.stop();
   loading.value = true;
   currentPlayListActions.randomize().then((success) => {
-    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
-    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
     currentTrackIndex.value = currentPlaylistTrackIndex.value;
     loading.value = false;
   }).catch((error) => {
@@ -433,8 +430,7 @@ function onDiscover() {
   spieldoseStore.stop();
   loading.value = true;
   currentPlayListActions.discover(32).then((success) => {
-    elements.value = success.data.tracks.map((item) => { return ({ track: item }); });
-    rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
     currentTrackIndex.value = currentPlaylistTrackIndex.value;
     loading.value = false;
   }).catch((error) => {
@@ -517,8 +513,7 @@ function onSavePlaylistElements() {
   });
 }
 
-elements.value = spieldoseStore.getCurrentPlaylist.elements;
-rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
+//rows.value = spieldoseStore.getCurrentPlaylist.elements.map((element, index) => { element.index = index + 1; return (element) });
 currentTrackIndex.value = currentPlaylistTrackIndex.value;
 
 onMounted(() => {
