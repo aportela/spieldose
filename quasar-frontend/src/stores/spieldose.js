@@ -335,6 +335,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.savePlayerSettings();
     },
     toggleShuffeMode: function () {
+      if (this.data.player.shuffle) {
+        this.data.currentPlaylist.currentTrackIndex = this.data.currentPlaylist.currentTrackShuffledIndex;
+      } else {
+        this.data.currentPlaylist.currentTrackShuffledIndex = this.data.currentPlaylist.currentTrackIndex;
+      }
       this.data.player.shuffle = !this.data.player.shuffle;
       this.savePlayerSettings();
     },
