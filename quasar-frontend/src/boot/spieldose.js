@@ -363,6 +363,26 @@ const currentPlayListActions = {
         });
     });
   },
+  removeElementAtIndex: function (index) {
+    spieldoseStore.interact();
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .removeElementAtIndex(index, spieldoseStore.getShuffle)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation,
+            success.data.playlist
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
 };
 
 export {

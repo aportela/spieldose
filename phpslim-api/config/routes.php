@@ -870,6 +870,15 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->post('/current_playlist/remove_element_at_index', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $payload = json_encode($currentPlaylist->removeElementAtIndex($dbh, $params["index"] ?? -1, ((isset($params["shuffle"]) && $params["shuffle"] == true) && $params["shuffle"])));
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->post('/current_playlist/discover_tracks', function (Request $request, Response $response, array $args) {
                 $params = $request->getParsedBody();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);

@@ -352,7 +352,6 @@ function onToggleFavorite(index, trackId, favorited) {
     .catch((error) => {
       switch (error.response.status) {
         default:
-          // TODO: custom message
           $q.notify({
             type: "negative",
             message: t("API Error: error toggling favorite flag"),
@@ -364,10 +363,24 @@ function onToggleFavorite(index, trackId, favorited) {
 }
 
 function onRemoveElementAtIndex(index) {
-  // TODO
-  //elements.value.splice(index, 1);
-  //rows.value = elements.value.map((element, index) => { element.track.index = index + 1; return (element.track) });
-  //spieldoseStore.saveCurrentPlaylistElements(elements.value);
+  loading.value = true;
+  currentPlayListActions.removeElementAtIndex(index).then((success) => {
+    rows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+    currentTrackIndex.value = currentPlaylistTrackIndex.value;
+    loading.value = false;
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error removing element"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+      loading.value = false;
+    });
 }
 
 function onRowClick(evt, row, index) {

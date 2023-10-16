@@ -367,6 +367,47 @@ class CurrentPlaylist
         }
     }
 
+
+    public function removeElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index = -1, bool $shuffled = false)
+    {
+        if ($index >= 0) {
+            $this->get($dbh);
+            $trackIds = [];
+            foreach ($this->tracks as $track) {
+                $trackIds[] = $track->id;
+            }
+            array_splice($trackIds, $index, 1);
+
+            if ($this->save($dbh, $trackIds)) {
+                $this->get($dbh);
+                $track = null;
+                $radioStation = null;
+                $playlist = null;
+                if (!empty($this->playlist->id)) {
+                    $playlist = $this->playlist;
+                }
+                if (!empty($this->radioStation->id)) {
+                    $radioStation = $this->radioStation;
+                } else {
+                    if ($this->currentIndex >= 0 && $this->currentIndex < $this->totalTracks) {
+                        if (!$shuffled) {
+                            $track = $this->tracks[$this->currentIndex];
+                        } else {
+                            $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
+                        }
+                    }
+                }
+                return ((object) ["currentTrackIndex" => $this->currentIndex, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+            } else {
+                // TODO
+                throw new \Exception("");
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("index");
+        }
+    }
+
+
     public function randomSort(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false)
     {
         $this->get($dbh);

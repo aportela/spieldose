@@ -165,7 +165,9 @@ export default {
   Actions: "Accións",
   "API Error: error loading random tracks":
     "API Error: error cargando as cancións aleatorias",
-  "API Error: error resorting tracks": "API Error: error reordeando as cancións",
+  "API Error: error resorting tracks":
+    "API Error: error reordeando as cancións",
+  "API Error: error removing element": "API Error: error eliminando o elemento",
 
   // browse artists
   "Browse artists": "Explorar artistas",
@@ -210,7 +212,8 @@ export default {
     "API Error: error restaurando a lista de reproducción",
   "API Error: error increasing track play count":
     "API Error: error incrementando las reproducciones de la canción",
-  "API Error: error toggling favorite flag": "API Error: error establecendo o flag de favorita na canción",
+  "API Error: error toggling favorite flag":
+    "API Error: error establecendo o flag de favorita na canción",
   "API Error: error playing album": "API Error: error reproduciendo el album",
   "API Error: error enqueueing album":
     "API Error: error poniendo en cola el album",

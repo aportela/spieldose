@@ -164,6 +164,7 @@ export default {
   "API Error: error loading random tracks":
     "API Error: error loading random tracks",
   "API Error: error resorting tracks": "API Error: error resorting tracks",
+  "API Error: error removing element": "API Error: error removing element",
 
   // browse artists
   "Browse artists": "Browse artists",
@@ -207,7 +208,8 @@ export default {
   "API Error: error restoring playlist": "API Error: error restoring playlist",
   "API Error: error increasing track play count":
     "API Error: error increasing track play count",
-  "API Error: error toggling favorite flag": "API Error: error toggling favorite flag",
+  "API Error: error toggling favorite flag":
+    "API Error: error toggling favorite flag",
   "API Error: error playing album": "API Error: error playing album",
   "API Error: error enqueueing album": "API Error: error enqueueing album",
   "API Error: error loading playlist": "API Error: error loading playlist",
