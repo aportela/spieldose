@@ -21,7 +21,7 @@ class CurrentPlaylist
         $this->id = \Spieldose\UserSession::isLogged() ? \Spieldose\UserSession::getUserId() : null;
         $this->currentIndex = -1;
         $this->radioStation = (object) ["id" => null, "name" => null, "url" => null, "playlist" => null, "directStream" => null, "images" => ["small" => null, "normal" => null]];
-        $this->playlist = (object) ["id" => null, "name" => null, "public" => false];
+        $this->playlist = (object) ["id" => null, "name" => null, "public" => false, "owner" => ["id" => null, "name" => null], "allowUpdate" => false];
         $this->tracks = [];
         $this->shuffledIndexes = [];
     }
@@ -71,9 +71,10 @@ class CurrentPlaylist
             $params = array();
             $query = null;
             $query = "
-                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, CP.playlist_id, P.name AS playlist_name, P.public
+                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, CP.playlist_id, P.name AS playlist_name, P.public, P.user_id AS ownerId, U.name AS ownerName
                 FROM CURRENT_PLAYLIST CP
                 LEFT JOIN PLAYLIST P ON P.ID = CP.playlist_id
+                LEFT JOIN USER U ON U.id = P.user_id
                 WHERE CP.id = :id
                 ORDER BY CP.current_index
             ";
@@ -96,6 +97,10 @@ class CurrentPlaylist
                     $this->playlist->id = $data[0]->playlist_id;
                     $this->playlist->name = $data[0]->playlist_name;
                     $this->playlist->public = $data[0]->public == "S";
+                    $this->playlist->owner = new \stdClass();
+                    $this->playlist->owner->id = $data[0]->ownerId;
+                    $this->playlist->owner->name = $data[0]->ownerName;
+                    $this->playlist->allowUpdate = $data[0]->ownerId == \Spieldose\UserSession::getUserId();
                 }
                 $query = " SELECT track_shuffled_index FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :id ORDER BY track_index ";
                 $data = $dbh->query($query, $params);
