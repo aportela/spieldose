@@ -154,11 +154,10 @@ import { ref, watch, computed, onMounted, inject } from "vue";
 import { useQuasar, uid } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from 'boot/axios';
-//import { default as CurrentPlaylistTableRow } from 'components/CurrentPlaylistTableRow.vue';
 import { spieldoseEventNames } from "boot/events";
 import { useSpieldoseStore } from "stores/spieldose";
 
-import { trackActions, playListActions, currentPlayListActions } from '../boot/spieldose';
+import { trackActions, currentPlayListActions } from '../boot/spieldose';
 
 const $q = useQuasar();
 const { t } = useI18n();
