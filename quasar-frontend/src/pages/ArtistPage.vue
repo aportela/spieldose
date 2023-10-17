@@ -211,8 +211,8 @@
                       }}</router-link>
                   </p>
                 </div>
-                <q-btn size="sm" @click="tab = 'similarArtists'">view more</q-btn>
               </div>
+              <q-btn size="sm" @click="tab = 'similarArtists'">view more</q-btn>
             </q-card-section>
           </q-card>
           <q-card class="my-card shadow-box shadow-10" bordered>
