@@ -380,7 +380,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -417,7 +417,7 @@ class CurrentPlaylist
                         }
                     }
                 }
-                return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+                return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
             } else {
                 // TODO
                 throw new \Exception("");
@@ -455,7 +455,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -491,7 +491,7 @@ class CurrentPlaylist
                             }
                         }
                     }
-                    return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+                    return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
                 } else {
                     // TODO
                     throw new \Exception("");
