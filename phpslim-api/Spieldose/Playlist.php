@@ -123,7 +123,7 @@ class Playlist
                     $this->owner = new \stdClass();
                     $this->owner->id = $data[0]->ownerId;
                     $this->owner->name = $data[0]->ownerName;
-                    $this->public = $data[0]->public ?? false;
+                    $this->public = $data[0]->public == "S";
                     if (!($this->public || $this->owner->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID)) {
                         throw new \Spieldose\Exception\AccessDeniedException("id");
                     } else {
