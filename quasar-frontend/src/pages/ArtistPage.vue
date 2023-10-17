@@ -310,8 +310,8 @@
         <q-card-section>
           <div class="text-h6">Tracks
             <q-btn-group class="q-ml-md">
-              <q-btn size="sm" icon="play_arrow" @click.prevent="onPlayAllArtistTracks">play all</q-btn>
-              <q-btn size="sm" icon="add_box" @click.prevent="onEnqueueAllArtistTracks">enqueue all</q-btn>
+              <q-btn size="md" icon="play_arrow" @click.prevent="onPlayAllArtistTracks">play all</q-btn>
+              <q-btn size="md" icon="add_box" @click.prevent="onEnqueueAllArtistTracks">enqueue all</q-btn>
             </q-btn-group>
           </div>
         </q-card-section>
