@@ -17,7 +17,7 @@ import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps(['hint', 'placeholder', 'error', 'errorMessage', 'modelValue', 'disable', 'loading']);
-const emit = defineEmits(['update:modelValue', 'submit']);
+const emit = defineEmits(['update:modelValue', 'submit', 'clear']);
 
 const { t } = useI18n();
 
