@@ -95,17 +95,17 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-input outlined dense v-model="newPlaylistName" autofocus @keyup.enter="showSavePlaylistDialog = false"
+          <q-input outlined dense v-model="playlist.name" autofocus @keyup.enter="showSavePlaylistDialog = false"
             label="Playlist name" />
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-toggle label="Public" color="pink" v-model="newPlaylistPublic" />
+          <q-toggle label="Public" color="pink" v-model="playlist.public" />
         </q-card-section>
 
         <q-card-actions align="right" class="">
           <q-btn outline label="Cancel" v-close-popup />
-          <q-btn outline label="Save" :disable="!newPlaylistName" @click="onSavePlaylistElements" />
+          <q-btn outline label="Save" :disable="!playlist.name" @click="onSavePlaylistElements" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -252,10 +252,13 @@ const loading = ref(false);
 
 const showSavePlaylistDialog = ref(false);
 
-const newPlaylistName = ref(null);
-
-const newPlaylistPublic = ref(false);
-
+const playlist = ref(
+  {
+    id: null,
+    name: null,
+    public: false
+  }
+);
 
 const bus = inject('bus');
 
@@ -490,9 +493,26 @@ function onNextPlaylist() {
 }
 
 function onSavePlaylist() {
-  newPlaylistName.value = null;
   if (spieldoseStore.getCurrentPlaylistLinkedPlaylist) {
-    newPlaylistName.value = spieldoseStore.getCurrentPlaylistLinkedPlaylist.name;
+    console.log("hya plyalist");
+    if (spieldoseStore.getCurrentPlaylistLinkedPlaylist.allowUpdate) {
+      console.log("se puede actualizar");
+      playlist.value = spieldoseStore.getCurrentPlaylistLinkedPlaylist;
+    } else {
+      playlist.value = {
+        id: uid(),
+        name: spieldoseStore.getCurrentPlaylistLinkedPlaylist.name,
+        public: false,
+        allowUpdate: true,
+      };
+    }
+  } else {
+      playlist.value = {
+        id: uid(),
+        name: null,
+        public: false,
+        allowUpdate: true,
+    };
   }
   showSavePlaylistDialog.value = true;
 }
@@ -502,12 +522,8 @@ function onSavePlaylistElements() {
   spieldoseStore.interact();
   loading.value = true;
   const funct = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update : api.playlist.add;
-  const id = spieldoseStore.getCurrentPlaylistLinkedPlaylist ? spieldoseStore.getCurrentPlaylistLinkedPlaylist.id : uid();
-  funct(id, newPlaylistName.value, ids, newPlaylistPublic.value).then((success) => {
-    spieldoseStore.data.currentPlaylist.playlist = {
-      id: id,
-      name: newPlaylistName.value
-    };
+  funct(playlist.value.id, playlist.value.name, ids, playlist.value.public).then((success) => {
+    spieldoseStore.data.currentPlaylist.playlist = playlist.value;
     loading.value = false;
     showSavePlaylistDialog.value = false;
   }).catch((error) => {
