@@ -28,7 +28,7 @@
           </div>
         </template>
         <template v-slot:after>
-          <DashboardBaseBlockChart :globalStats="tab == 'globalStats'" :trackId="trackId"></DashboardBaseBlockChart>
+          <DashboardBaseBlockChart :globalStats="false" :trackId="trackId"></DashboardBaseBlockChart>
           <div class="q-pa-md">
             <h4 class="bg-white q-mt-none q-pt-none text-center">Lyrics</h4>
             <pre class="q-mt-xl" v-if="track.lyrics">{{ track.lyrics }}</pre>
