@@ -21,7 +21,7 @@ class CurrentPlaylist
         $this->id = \Spieldose\UserSession::isLogged() ? \Spieldose\UserSession::getUserId() : null;
         $this->currentIndex = -1;
         $this->radioStation = (object) ["id" => null, "name" => null, "url" => null, "playlist" => null, "directStream" => null, "images" => ["small" => null, "normal" => null]];
-        $this->playlist = (object) ["id" => null, "name" => null];
+        $this->playlist = (object) ["id" => null, "name" => null, "public" => false];
         $this->tracks = [];
         $this->shuffledIndexes = [];
     }
@@ -71,7 +71,7 @@ class CurrentPlaylist
             $params = array();
             $query = null;
             $query = "
-                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, CP.playlist_id, P.name AS playlist_name
+                SELECT CP.id, CP.ctime, CP.mtime, CP.current_index, CP.radiostation_id, CP.playlist_id, P.name AS playlist_name, P.public
                 FROM CURRENT_PLAYLIST CP
                 LEFT JOIN PLAYLIST P ON P.ID = CP.playlist_id
                 WHERE CP.id = :id
@@ -95,6 +95,7 @@ class CurrentPlaylist
                 if (!empty($data[0]->playlist_id)) {
                     $this->playlist->id = $data[0]->playlist_id;
                     $this->playlist->name = $data[0]->playlist_name;
+                    $this->playlist->public = $data[0]->public == "S";
                 }
                 $query = " SELECT track_shuffled_index FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :id ORDER BY track_index ";
                 $data = $dbh->query($query, $params);
