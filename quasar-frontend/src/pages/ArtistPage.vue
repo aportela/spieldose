@@ -817,7 +817,7 @@ function onRowClick(evt, row, index) {
 
 function onToggleFavorite(trackId, favorited) {
   const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
-  funct(trackId).then((success) => {
+  funct(trackId, 'ArtistPage').then((success) => {
   })
     .catch((error) => {
       switch (error.response.status) {

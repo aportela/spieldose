@@ -238,7 +238,7 @@ const defaultSettings = {
 
 function onToggleFavorite() {
   const funct = !currentElement.value.track.favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
-  funct(currentElement.value.track.id).then((success) => {
+  funct(currentElement.value.track.id, 'SidebarPlayer').then((success) => {
     spieldoseStore.toggleFavoriteOnCurrentTrack(success.data.favorited);
   })
     .catch((error) => {

@@ -54,22 +54,24 @@ const spieldoseEvents = {
       },
     },
     track: {
-      setFavorite: function (id, timestamp) {
+      setFavorite: function (id, timestamp, source) {
         bus.emit(spieldoseEventNames.track.setFavorite, {
           id: id,
           timestamp: timestamp,
+          source: source || null,
         });
       },
-      unSetFavorite: function (id) {
+      unSetFavorite: function (id, source) {
         bus.emit(spieldoseEventNames.track.unSetFavorite, {
           id: id,
+          source: source || null,
         });
       },
       increasePlayCount: function (id) {
         bus.emit(spieldoseEventNames.track.increasePlayCount, {
           id: id,
         });
-      }
+      },
     },
   },
 };

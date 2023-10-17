@@ -5,13 +5,17 @@ import { spieldoseEvents } from "boot/events";
 const spieldoseStore = useSpieldoseStore();
 
 const trackActions = {
-  setFavorite: function (id) {
+  setFavorite: function (id, source) {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.track
         .setFavorite(id)
         .then((success) => {
-          spieldoseEvents.emit.track.setFavorite(id, success.data.favorited);
+          spieldoseEvents.emit.track.setFavorite(
+            id,
+            success.data.favorited,
+            source
+          );
           resolve(success);
         })
         .catch((error) => {
@@ -19,13 +23,13 @@ const trackActions = {
         });
     });
   },
-  unSetFavorite: function (id) {
+  unSetFavorite: function (id, source) {
     spieldoseStore.interact();
     return new Promise((resolve, reject) => {
       api.track
         .unSetFavorite(id)
         .then((success) => {
-          spieldoseEvents.emit.track.unSetFavorite(id);
+          spieldoseEvents.emit.track.unSetFavorite(id, source);
           resolve(success);
         })
         .catch((error) => {
