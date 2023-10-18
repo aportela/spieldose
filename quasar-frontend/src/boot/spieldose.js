@@ -404,10 +404,35 @@ const currentPlayListActions = {
   },
 };
 
+const pathActions = {
+  play: function (id) {
+    spieldoseStore.interact();
+    return new Promise((resolve, reject) => {
+      api.currentPlaylist
+        .setPath(id)
+        .then((success) => {
+          spieldoseStore.setCurrentPlaylist(
+            success.data.currentTrackIndex,
+            success.data.currentTrackShuffledIndex,
+            success.data.totalTracks,
+            success.data.currentTrack,
+            success.data.radioStation,
+            success.data.playlist
+          );
+          resolve(success);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+};
+
 export {
   trackActions,
   albumActions,
   playListActions,
   radioStationActions,
   currentPlayListActions,
+  pathActions,
 };

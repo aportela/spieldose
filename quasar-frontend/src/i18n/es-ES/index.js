@@ -209,6 +209,11 @@ export default {
   "API Error: error loading radiostation":
     "API Error: error cargando la estación de radio",
 
+  // paths
+  "Browse paths": "Explorar rutas",
+  "API Error: error loading paths": "API Error: error cargando las rutas",
+  "API Error: error playing path": "API Error: error reproduciendo la ruta",
+
   // generic
   "API Error: error restoring playlist":
     "API Error: error restaurando la lista de reproducción",

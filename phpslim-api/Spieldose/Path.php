@@ -46,7 +46,7 @@ class Path
                         $totalFiles = $fullPaths[$completePath]->totalFiles;
                         $id = $fullPaths[$completePath]->id;
                     } else {
-                        $id = \Spieldose\Utils::uuidv4();
+                        //$id = \Spieldose\Utils::uuidv4();
                     }
                     /*
                     if ($i) {
@@ -60,5 +60,24 @@ class Path
             }
         }
         return ($tree);
+    }
+
+    public static function getTrackIds(\aportela\DatabaseWrapper\DB $dbh, string $id): array
+    {
+        $query = "";
+        $params = [];
+        $query = "
+                SELECT F.id
+                FROM FILE F
+                WHERE F.directory_id = :path_id
+                ORDER BY F.name
+            ";
+        $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path_id", $id);
+        $data = $dbh->query($query, $params);
+        $ids = [];
+        foreach ($data as $item) {
+            $ids[] = $item->id;
+        }
+        return ($ids);
     }
 }
