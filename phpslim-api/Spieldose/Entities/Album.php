@@ -98,8 +98,6 @@ class Album extends \Spieldose\Entities\Entity
             "totalResults" => " COUNT(*)"
         ];
 
-        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
-
         $afterBrowseFunction = function ($data) use ($useLocalCovers) {
             $data->items = array_map(
                 function ($result) use ($useLocalCovers) {
@@ -135,7 +133,7 @@ class Album extends \Spieldose\Entities\Entity
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
 
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
