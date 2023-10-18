@@ -244,7 +244,6 @@ class Track extends \Spieldose\Entities\Entity
         $fieldCountDefinition = [
             "totalResults" => " COUNT(FIT.id)"
         ];
-        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
         $afterBrowseFunction = function ($data) {
             $data->items = array_map(
@@ -270,7 +269,7 @@ class Track extends \Spieldose\Entities\Entity
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
