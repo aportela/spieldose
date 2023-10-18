@@ -208,6 +208,10 @@ export default {
   "Browse paths": "Browse paths",
   "API Error: error loading paths": "API Error: error loading paths",
   "API Error: error playing path": "API Error: error playing path",
+  "Search paths with specified condition":
+    "Search paths with specified condition",
+  "No paths found": "No paths found",
+  "No matching paths found": "No matching paths found",
 
   // generic
   "API Error: error restoring playlist": "API Error: error restoring playlist",

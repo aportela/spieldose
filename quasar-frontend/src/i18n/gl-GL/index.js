@@ -211,6 +211,11 @@ export default {
   "Browse paths": "Explorar rutas",
   "API Error: error loading paths": "API Error: error cargando as rutas",
   "API Error: error playing path": "API Error: error reproducindo a ruta",
+  "Search paths with specified condition":
+    "Buscar rutas coa condición especificada",
+  "No paths found": "Non hai rutas",
+  "No matching paths found":
+    "No hai rutas que coincidan coa condición especificada",
 
   // generic
   "API Error: error restoring playlist":

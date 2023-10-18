@@ -5,13 +5,15 @@
       <q-breadcrumbs-el icon="person" :label="t('Browse paths')" />
     </q-breadcrumbs>
     <q-card-section>
-      <q-btn-group v-if="! loading && directories && directories.length > 0" class="q-mb-md">
+      <CustomInputSearch :disable="loading" hint="Search paths with specified condition" placeholder="Text condition" v-model="filter" @update:modelValue="onFilterChanged"></CustomInputSearch>
+
+      <q-btn-group v-if="! loading && directories && directories.length > 0" class="q-my-md">
         <q-btn size="sm" label="expand all" @click="onExpandAll" />
         <q-btn size="sm" label="collapse all" @click="onCollapseAll "/>
       </q-btn-group>
 
       <q-tree ref="treeRef" v-if="! loading" :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name" children-key="children"
-        no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true">
+        no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true" selected-color="pink" :filter="filter" :no-results-label="t('No matching paths found')" :no-nodes-label="t('No paths found')">
         <template v-slot:default-header="prop">
           <div v-if="prop.node.totalFiles > 0">
             <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
@@ -31,6 +33,7 @@ import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { pathActions } from "src/boot/spieldose";
+import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -40,7 +43,10 @@ const noPathsFound = ref(false);
 const loading = ref(false);
 const directories = ref([]);
 
+const filter = ref('');
 const selected = ref(null);
+
+const isExpanded = ref(true);
 
 function getTree() {
   noPathsFound.value = false;
@@ -114,6 +120,13 @@ function onExpandAll() {
 
 function onCollapseAll() {
   treeRef.value.collapseAll();
+  isExpanded.value = false;
+}
+
+function onFilterChanged(v) {
+  if (filter.value && ! isExpanded.value) {
+    onExpandAll();
+  }
 }
 
 getTree();
