@@ -59,7 +59,6 @@ class Artist extends \Spieldose\Entities\Entity
         $fieldCountDefinition = [
             "totalResults" => " COUNT(artist_name) "
         ];
-        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
         $afterBrowseFunction = function ($data) {
             $data->items = array_map(
@@ -74,7 +73,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $data->items
             );
         };
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
