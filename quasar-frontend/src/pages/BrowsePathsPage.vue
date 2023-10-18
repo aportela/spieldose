@@ -4,19 +4,22 @@
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <q-breadcrumbs-el icon="person" :label="t('Browse paths')" />
     </q-breadcrumbs>
-    <q-card-section v-if="directories && directories.length > 0">
-      <div>
-        <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name" children-key="children"
-          no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true">
-          <template v-slot:default-header="prop">
-            <div v-if="prop.node.totalFiles > 0 ">
-              <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
-                prop.node.totalFiles }} total tracks)</span>
-            </div>
-            <span v-else>{{ prop.node.name }}</span>
-          </template>
-        </q-tree>
-      </div>
+    <q-card-section>
+      <q-btn-group v-if="! loading && directories && directories.length > 0" class="q-mb-md">
+        <q-btn size="sm" label="expand all" @click="onExpandAll" />
+        <q-btn size="sm" label="collapse all" @click="onCollapseAll "/>
+      </q-btn-group>
+
+      <q-tree ref="treeRef" v-if="! loading" :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name" children-key="children"
+        no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true">
+        <template v-slot:default-header="prop">
+          <div v-if="prop.node.totalFiles > 0">
+            <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
+              prop.node.totalFiles }} total tracks)</span>
+          </div>
+          <span v-else>{{ prop.node.name }}</span>
+        </template>
+      </q-tree>
     </q-card-section>
   </q-card>
 </template>
@@ -32,6 +35,7 @@ import { pathActions } from "src/boot/spieldose";
 const $q = useQuasar();
 const { t } = useI18n();
 
+const treeRef = ref(null);
 const noPathsFound = ref(false);
 const loading = ref(false);
 const directories = ref([]);
@@ -88,20 +92,28 @@ function onTreeNodeSelected(nodeHash) {
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id && node.totalFiles > 0) {
     pathActions.play(node.id).then((success) => {
-  })
-    .catch((error) => {
-      switch (error.response.status) {
-        default:
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error playing path"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-    });
+    })
+      .catch((error) => {
+        switch (error.response.status) {
+          default:
+            $q.notify({
+              type: "negative",
+              message: t("API Error: error playing path"),
+              caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+            });
+            break;
+        }
+      });
   }
   return (true);
+}
+
+function onExpandAll() {
+  treeRef.value.expandAll();
+}
+
+function onCollapseAll() {
+  treeRef.value.collapseAll();
 }
 
 getTree();
