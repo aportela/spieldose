@@ -194,8 +194,6 @@ function onSortOrderChanged(sortOrder) {
 const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
 
 
-
-
 const showDeleteConfirmationDialog = ref(false);
 const selectedPlaylistId = ref(null);
 
@@ -213,7 +211,7 @@ function browse() {
   warningNoItems.value = false;
   loading.value = true;
   loading.value = true;
-  api.playlist.search({ name: name.value }, currentPageIndex.value, 32, sortField.value.value, sortOrder.value.value).then((success) => {
+  api.playlist.search({ name: name.value }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     playlists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;
