@@ -927,6 +927,12 @@ return function (App $app) {
                         // TODO
                         throw new \Exception("save error");
                     }
+                } else if (isset($params["pathId"]) && !empty($params["pathId"])) {
+                    $pathTracksIds = \Spieldose\Path::getTrackIds($dbh, $params["pathId"]);
+                    if (!$currentPlaylist->save($dbh, $pathTracksIds)) {
+                        // TODO
+                        throw new \Exception("save error");
+                    }
                 }
                 $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == "true")));
                 $response->getBody()->write($payload);

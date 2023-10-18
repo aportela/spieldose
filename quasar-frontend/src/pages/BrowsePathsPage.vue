@@ -2,14 +2,14 @@
   <q-card class="q-pa-lg">
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <q-breadcrumbs-el icon="person" label="Browse paths" />
+      <q-breadcrumbs-el icon="person" :label="t('Browse paths')" />
     </q-breadcrumbs>
     <q-card-section v-if="directories && directories.length > 0">
       <div>
         <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name" children-key="children"
           no-transition @update:selected="onTreeNodeSelected">
           <template v-slot:default-header="prop">
-            <div v-if="prop.node.totalFiles > 0 || prop.node.children">
+            <div v-if="prop.node.totalFiles > 0 ">
               <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
                 prop.node.totalFiles }} total tracks)</span>
             </div>
@@ -26,14 +26,11 @@
 import { ref } from "vue";
 import { api } from 'boot/axios'
 import { useQuasar } from "quasar";
-import { useSpieldoseStore } from "stores/spieldose";
+import { useI18n } from "vue-i18n";
+import { pathActions } from "src/boot/spieldose";
 
-
-import { playListActions, currentPlayListActions } from "src/boot/spieldose";
 const $q = useQuasar();
-const spieldoseStore = useSpieldoseStore();
-
-
+const { t } = useI18n();
 
 const noPathsFound = ref(false);
 const loading = ref(false);
@@ -50,7 +47,7 @@ function getTree() {
   }).catch((error) => {
     $q.notify({
       type: "negative",
-      message: "API Error: error loading paths",
+      message: t("API Error: error loading paths"),
       caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
@@ -88,17 +85,21 @@ function findNode(hash, currentNode) {
 }
 
 function onTreeNodeSelected(nodeHash) {
-  spieldoseStore.interact();
   let node = findNode(nodeHash, directories.value[0]);
   if (node && node.id && node.totalFiles > 0) {
-    // TODO
-    /*
-    loading.value = true;
-      currentPlayListActions.saveElements(success.data.data.items.map((item) => { return (item.id); })).then((success) => {}).catch((error) => {
-      // TODO
-      loading.value = false;
+    pathActions.play(node.id).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing path"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
     });
-    */
   }
   return (true);
 }

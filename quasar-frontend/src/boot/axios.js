@@ -689,6 +689,21 @@ const api = {
           });
       });
     },
+    setPath: function (id) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          pathId: id || null
+        };
+        axios
+          .post(baseAPIPath + "/current_playlist/set_tracks", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     getCurrentElement: function (shuffle) {
       return new Promise((resolve, reject) => {
         const params = { shuffle: shuffle ? true : false };
