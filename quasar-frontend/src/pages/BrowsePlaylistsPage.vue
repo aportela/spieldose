@@ -119,7 +119,9 @@ const styleOptions = [
   }
 ];
 
-const type = ref(!true ? typeOptions[0].value : typeOptions[2].value);
+
+const type = ref(route.query.type && typeOptions.find((opt) => opt.value == route.query.type) ? route.query.type: typeOptions[0].value);
+
 const sortField = ref(route.query.sortField == "updated" ? "updated" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const style = ref(route.query.style == "vinyls" ? "vinyls": "mosaic");
@@ -190,9 +192,6 @@ function onSortFieldChanged(sortField) {
 function onSortOrderChanged(sortOrder) {
   refreshURL(currentPageIndex.value, type.value, name.value, sortField.value, sortOrder);
 }
-
-const filterByOwnerId = ref(route.name == "playlistsByUserId" && route.params.id ? route.params.id : null);
-
 
 const showDeleteConfirmationDialog = ref(false);
 const selectedPlaylistId = ref(null);
