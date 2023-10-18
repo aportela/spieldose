@@ -1,5 +1,5 @@
 <template>
-  <q-select outlined dense v-model="value" :options="options" options-dense :label="t(label)" :disable="disable">
+  <q-select outlined dense v-model="value" :options="options" options-dense :label="label ? t(label): null" :disable="disable">
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps">
         <q-item-section>

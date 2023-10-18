@@ -1,7 +1,7 @@
 <template>
-  <q-input v-model="value" clearable type="search" outlined dense :placeholder="t(placeholder)" :hint="t(hint)"
+  <q-input v-model="value" clearable type="search" outlined dense :placeholder="placeholder ? t(placeholder): null" :hint="hint ? t(hint): null"
     :loading="loading" :disable="disable" @keydown.enter.prevent="onSubmit" @clear="onClear"
-    :error="error" :errorMessage="t(errorMessage)" ref="inputRef">
+    :error="error" :errorMessage="errorMessage ? t(errorMessage): null" ref="inputRef">
     <template v-slot:prepend>
       <q-icon name="filter_alt" />
     </template>
