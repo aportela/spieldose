@@ -7,7 +7,7 @@
     <q-card-section v-if="directories && directories.length > 0">
       <div>
         <q-tree :nodes="directories" v-model:selected="selected" node-key="hash" label-key="name" children-key="children"
-          no-transition @update:selected="onTreeNodeSelected">
+          no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true">
           <template v-slot:default-header="prop">
             <div v-if="prop.node.totalFiles > 0 ">
               <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
