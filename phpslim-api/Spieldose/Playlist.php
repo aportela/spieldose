@@ -295,7 +295,7 @@ class Playlist
         $filterConditions = array();
         $type = $filter->getParamValue("type");
         $userId = $filter->getParamValue("userId");
-        if ($type == "myPlaylists") {
+        if ($type == "myPlaylists" || ($type == "userPlaylists" && $userId == \Spieldose\UserSession::getUserId())) {
             $filterConditions[] = " (PLAYLIST.user_id = :session_user_id) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":session_user_id", \Spieldose\UserSession::getUserId());
@@ -356,7 +356,7 @@ class Playlist
 
         $query = null;
         $queryCount = null;
-        if ($type == "myPlaylists" || $type == "allPlaylists") {
+        if ($type == "myPlaylists" || $type == "allPlaylists" || ($type == "userPlaylists" && $userId == \Spieldose\UserSession::getUserId())) {
             $query = sprintf(
                 "
                     SELECT *
