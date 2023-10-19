@@ -433,5 +433,10 @@ return (array(
         '
             ALTER TABLE `CURRENT_PLAYLIST` ADD `playlist_id` VARCHAR(36);
         ',
+    ),
+    26 => array(
+        '
+            DROP TABLE `RADIO_STATION`;
+        '
     )
 ));
