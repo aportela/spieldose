@@ -361,23 +361,23 @@ return function (App $app) {
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
                 $localPathNormalSize = null;
                 try {
-                    $localPathNormalSize = \Spieldose\Track::getLocalThumbnail($dbh, $logger, $args['id'], $settings['sizes']['normal']['quality'], $settings['sizes']['normal']['width'], $settings['sizes']['normal']['height']);
+                    $localPathNormalSize = \Spieldose\Entities\Track::getLocalThumbnail($dbh, $logger, $args['id'], $settings['sizes']['normal']['quality'], $settings['sizes']['normal']['width'], $settings['sizes']['normal']['height']);
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
                 if (empty($localPathNormalSize)) {
                     try {
-                        $localPathNormalSize = \Spieldose\Track::getRemoteThumbnail($dbh, $logger, $args['id'], $settings['sizes']['normal']['quality'], $settings['sizes']['normal']['width'], $settings['sizes']['normal']['height']);
+                        $localPathNormalSize = \Spieldose\Entities\Track::getRemoteThumbnail($dbh, $logger, $args['id'], $settings['sizes']['normal']['quality'], $settings['sizes']['normal']['width'], $settings['sizes']['normal']['height']);
                     } catch (\Spieldose\Exception\NotFoundException $e) {
                     }
                 }
                 $localPathSmallSize = null;
                 try {
-                    $localPathSmallSize = \Spieldose\Track::getLocalThumbnail($dbh, $logger, $args['id'], $settings['sizes']['small']['quality'], $settings['sizes']['small']['width'], $settings['sizes']['small']['height']);
+                    $localPathSmallSize = \Spieldose\Entities\Track::getLocalThumbnail($dbh, $logger, $args['id'], $settings['sizes']['small']['quality'], $settings['sizes']['small']['width'], $settings['sizes']['small']['height']);
                 } catch (\Spieldose\Exception\NotFoundException $e) {
                 }
                 if (empty($localPathSmallSize)) {
                     try {
-                        $localPathSmallSize = \Spieldose\Track::getRemoteThumbnail($dbh, $logger, $args['id'], $settings['sizes']['small']['quality'], $settings['sizes']['small']['width'], $settings['sizes']['small']['height']);
+                        $localPathSmallSize = \Spieldose\Entities\Track::getRemoteThumbnail($dbh, $logger, $args['id'], $settings['sizes']['small']['quality'], $settings['sizes']['small']['width'], $settings['sizes']['small']['height']);
                     } catch (\Spieldose\Exception\NotFoundException $e) {
                     }
                 }

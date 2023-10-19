@@ -365,4 +365,76 @@ class Track extends \Spieldose\Entities\Entity
         }
         return ($ids);
     }
+
+    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
+    {
+        $results = $db->query(
+            "
+                SELECT
+                    (DIRECTORY.path || :directory_separator || DIRECTORY.cover_filename) AS localCoverPath
+                FROM FILE
+                INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
+                WHERE FILE.id = :id
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
+            )
+        );
+        if (count($results) == 1) {
+            // TODO: get from settings
+            $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
+            if (!empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
+                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
+                $thumbnail->setDimensions($width, $height);
+                $thumbnail->setQuality($quality);
+                if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath)) {
+                    return ($thumbnail->path);
+                } else {
+                    return (null);
+                }
+            } else {
+                return (null);
+            }
+        } else {
+            throw new \Spieldose\Exception\NotFoundException("Invalid path for id: " . $id);
+        }
+    }
+
+    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
+    {
+        $results = $db->query(
+            "
+                SELECT
+                    FILE_ID3_TAG.mb_album_id AS musicBrainzAlbumId
+                FROM FILE
+                LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.id = FILE.id
+                WHERE FILE.ID = :id
+            ",
+            array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
+            )
+        );
+        if (count($results) == 1) {
+            $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
+            $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
+            $thumbnail->setDimensions($width, $height);
+            $thumbnail->setQuality($quality);
+            $url = null;
+            if ($width < 250) {
+                $url = sprintf("https://coverartarchive.org/release/%s/front-250", $results[0]->musicBrainzAlbumId);
+            } elseif ($width < 500) {
+                $url = sprintf("https://coverartarchive.org/release/%s/front-500", $results[0]->musicBrainzAlbumId);
+            } else {
+                $url = sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId);
+            }
+            if ($thumbnail->getFromRemoteURL($url)) {
+                return ($thumbnail->path);
+            } else {
+                return (null);
+            }
+        } else {
+            throw new \Spieldose\Exception\NotFoundException("Invalid musicBrainzAlbumId for id: " . $id);
+        }
+    }
 }
