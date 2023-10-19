@@ -34,7 +34,7 @@
     <q-card-section>
       <q-btn-group spread outline>
         <q-btn :label="t('Play')" stack icon="play_arrow" @click.prevent="onPlay" />
-        <q-btn :label="t('Remove')" stack icon="delete" @click.prevent="onDelete" :disable="playlist.allowDelete" />
+        <q-btn :label="t('Remove')" stack icon="delete" @click.prevent="onDelete" :disable="! playlist.allowDelete" />
       </q-btn-group>
     </q-card-section>
     <q-separator />
