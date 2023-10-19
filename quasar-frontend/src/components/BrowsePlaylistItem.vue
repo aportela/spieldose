@@ -37,7 +37,7 @@
     <q-separator />
     <q-card-section class="text-right">
       <span class="q-mr-sm">{{ playlist.trackCount }} track/s</span>
-      <router-link :to="{ name: 'playlistsByUserId', params: { id: playlist.owner.id }}">by {{  playlist.owner.name }}</router-link>
+      <router-link :to="{ name: 'playlists', query: routeQueryParams}">by {{  playlist.owner.name }}</router-link>
       <LabelTimestampAgo className="q-ml-sm" :timestamp="playlist.updated * 1000"></LabelTimestampAgo>
     </q-card-section>
   </q-card>
@@ -64,7 +64,8 @@ img.mosaic_cover_element {
 
 <script setup>
 
-import { computed } from "vue";
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 
 import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
@@ -73,7 +74,10 @@ import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
 */
 
+const route = useRoute();
+
 const $q = useQuasar();
+
 
 const defaultImage = 'images/vinyl-small.png';
 
@@ -105,5 +109,8 @@ function getRandomColor() {
   }
   return (S);
 }
+
+const routeQueryParams = ref(Object.assign({}, route.query || {}));
+routeQueryParams.value.userId = props.playlist.owner.id;
 
 </script>
