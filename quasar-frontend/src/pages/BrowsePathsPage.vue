@@ -16,7 +16,7 @@
         no-transition @update:selected="onTreeNodeSelected" :default-expand-all="true" selected-color="pink" :filter="filter" :no-results-label="t('No matching paths found')" :no-nodes-label="t('No paths found')">
         <template v-slot:default-header="prop">
           <div v-if="prop.node.totalFiles > 0">
-            <q-icon name="playlist_play" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
+            <q-icon name="play_arrow" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
               prop.node.totalFiles }} total tracks)</span>
           </div>
           <span v-else>{{ prop.node.name }}</span>
