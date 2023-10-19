@@ -391,7 +391,7 @@ class Playlist
                     FROM (
                         SELECT COALESCE(COUNT (DISTINCT FF.user_id), 0) AS total
                         FROM FILE_FAVORITE FF
-                        WHERE FF.user_id = :user_id
+                        WHERE FF.user_id = :session_user_id
                         AND :uuid_zero IS NOT NULL
                         UNION
                         SELECT COUNT(PLAYLIST.id) AS total
