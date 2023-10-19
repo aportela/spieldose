@@ -60,11 +60,6 @@ const routes = [
         component: () => import("pages/BrowsePlaylistsPage.vue"),
       },
       {
-        name: "playlistsByUserId",
-        path: "playlists/user/:id",
-        component: () => import("pages/BrowsePlaylistsPage.vue"),
-      },
-      {
         name: "radioStations",
         path: "radio_stations",
         component: () => import("pages/BrowseRadioStationsPage.vue"),
