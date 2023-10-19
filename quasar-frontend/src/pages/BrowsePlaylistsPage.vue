@@ -25,7 +25,8 @@
           </SortOrderSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Playlist style" :options="styleOptions" v-model="style"></CustomSelector>
+          <CustomSelector :disable="loading" label="Playlist style" :options="styleOptions" v-model="style">
+          </CustomSelector>
         </div>
       </div>
     </template>
@@ -120,11 +121,19 @@ const styleOptions = [
 ];
 
 
-const type = ref(route.query.type && typeOptions.find((opt) => opt.value == route.query.type) ? route.query.type: typeOptions[0].value);
-
+let queryType = null;
+if (route.query.userId) {
+  queryType = typeOptions[2].value;
+} else if (route.query.type && typeOptions.find((opt) => opt.value == route.query.type)) {
+  queryType = route.query.type;
+} else {
+  queryType = typeOptions[0].value;
+}
+const type = ref(queryType);
+const userId = ref(null);
 const sortField = ref(route.query.sortField == "updated" ? "updated" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
-const style = ref(route.query.style == "vinyls" ? "vinyls": "mosaic");
+const style = ref(route.query.style == "vinyls" ? "vinyls" : "mosaic");
 const warningNoItems = ref(false);
 const loading = ref(false);
 const playlists = ref([]);
@@ -138,6 +147,7 @@ router.beforeEach(async (to, from) => {
   if (from.name == "playlists") {
     currentPageIndex.value = parseInt(to.query.page || 1);
     type.value = to.query.type || typeOptions[0].value;
+    userId.value = to.query.userId || null;
     name.value = to.query.name || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
     sortField.value = sortFieldOptions[to.query.sortField == "updated" ? 1 : 0].value;
@@ -147,6 +157,7 @@ router.beforeEach(async (to, from) => {
       (
         to.query.page != from.query.page ||
         to.query.type != from.query.type ||
+        to.query.userId != from.query.userId ||
         to.query.name != from.query.name ||
         to.query.sortOrder != from.query.sortOrder ||
         to.query.sortField != from.query.sortField
@@ -162,7 +173,8 @@ router.beforeEach(async (to, from) => {
 function refreshURL(pageIndex, type, name, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
   query.page = pageIndex || 1;
-  query.type = type || 'all'
+  query.type = type || 'all';
+  query.userId = userId.value || null;
   query.name = name || null;
   query.sortField = sortField || "title";
   query.sortOrder = sortOrder || "ASC";
@@ -194,23 +206,14 @@ function onSortOrderChanged(sortOrder) {
 }
 
 const showDeleteConfirmationDialog = ref(false);
-const selectedPlaylistId = ref(null);
 
-// https://stackoverflow.com/a/1484514
-function getRandomColor() {
-  const allowed = "ABCDEF0123456789";
-  let S = "#";
-  while (S.length < 7) {
-    S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
-  }
-  return (S);
-}
+const selectedPlaylistId = ref(null);
 
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
   loading.value = true;
-  api.playlist.search({ name: name.value }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+  api.playlist.search({ name: name.value, userId: userId.value }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     playlists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;
@@ -277,10 +280,6 @@ function onDeletePlaylist() {
 
 }
 
-onMounted(() => {
-  browse();
-});
-
 const bus = inject('bus');
 
 bus.on(spieldoseEventNames.track.setFavorite, (data) => {
@@ -290,4 +289,9 @@ bus.on(spieldoseEventNames.track.setFavorite, (data) => {
 bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
   browse(true);
 });
+
+onMounted(() => {
+  browse();
+});
+
 </script>
