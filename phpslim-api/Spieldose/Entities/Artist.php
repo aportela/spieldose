@@ -31,13 +31,14 @@ class Artist extends \Spieldose\Entities\Entity
     }
     */
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         // TODO: ignore ids like "/"
         $params = array();
         $filterConditions = array();
-        if (isset($filter["name"]) && !empty($filter["name"])) {
-            $words = explode(" ", trim($filter["name"]));
+        $name = $filter->getParamValue("name") ?? "";
+        if (!empty($name)) {
+            $words = explode(" ", trim($name));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
                 $filterConditions[] = sprintf(" artist_name LIKE %s", $paramName);
@@ -46,9 +47,10 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $filterConditions[] = " artist_name IS NOT NULL ";
         }
-        if (isset($filter["genre"]) && !empty($filter["genre"])) {
+        $genre = $filter->getParamValue("genre") ?? "";
+        if (!empty($genre)) {
             $filterConditions[] = " EXISTS (SELECT CACHE_ARTIST_MUSICBRAINZ_GENRE.genre FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE CACHE_ARTIST_MUSICBRAINZ_GENRE.artist_mbid = FIT.mb_artist_id AND CACHE_ARTIST_MUSICBRAINZ_GENRE.genre = :genre) ";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $filter["genre"]);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
         }
         $fieldDefinitions = [
             "mbId" => "artist_mbid",
@@ -73,7 +75,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $data->items
             );
         };
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }

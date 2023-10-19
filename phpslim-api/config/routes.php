@@ -438,9 +438,11 @@ return function (App $app) {
             $group->post('/artist/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
-                $filter = array(
-                    "name" => $params["filter"]["name"] ?? null,
-                    "genre" => $params["filter"]["genre"] ?? null
+                $filter = new \aportela\DatabaseBrowserWrapper\Filter(
+                    array(
+                        "name" => $params["filter"]["name"] ?? null,
+                        "genre" => $params["filter"]["genre"] ?? null
+                    )
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
@@ -734,7 +736,8 @@ return function (App $app) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
-                    "name" => $params["filter"]["name"] ?? ""
+                    "name" => $params["filter"]["name"] ?? "",
+                    "userId" => $params["filter"]["userId"] ?? ""
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                     [
