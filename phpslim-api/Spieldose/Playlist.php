@@ -289,19 +289,38 @@ class Playlist
         return ($covers);
     }
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $dbh, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID),
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-        );
-        $filterConditions = array(
-            " PLAYLIST.user_id = :user_id OR PLAYLIST.public = 'S' "
-        );
-        if (isset($filter["name"]) && !empty($filter["name"])) {
-            $filterConditions[] = " PLAYLIST.name LIKE :name";
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter["name"] . "%");
+        $params = array();
+        $filterConditions = array();
+        $type = $filter->getParamValue("type");
+        $userId = $filter->getParamValue("userId");
+        if ($type == "myPlaylists") {
+            $filterConditions[] = " (PLAYLIST.user_id = :session_user_id) ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":session_user_id", \Spieldose\UserSession::getUserId());
+        } else if ($type == "userPlaylists") {
+            if (!empty($userId)) {
+                $filterConditions[] = " PLAYLIST.user_id = :user_id ";
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId);
+            } else {
+                throw new \Spieldose\Exception\InvalidParamsException("userId");
+            }
+        } else {
+            $filterConditions[] = " (PLAYLIST.user_id = :session_user_id OR PLAYLIST.public = 'S') ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":session_user_id", \Spieldose\UserSession::getUserId());
         }
+        $name = $filter->getParamValue("name");
+        if (!empty($name)) {
+            $words = explode(" ", trim($name));
+            foreach ($words as $word) {
+                $paramName = ":name_" . uniqid();
+                $filterConditions[] = sprintf(" PLAYLIST.name LIKE %s", $paramName);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
+            }
+        }
+
         $fieldDefinitions = [
             "id" => "PLAYLIST.id",
             "name" => "PLAYLIST.name",
@@ -313,7 +332,6 @@ class Playlist
         $fieldCountDefinition = [
             "totalResults" => " SUM(total)"
         ];
-        $filter = new \aportela\DatabaseBrowserWrapper\Filter();
 
         $afterBrowseFunction = function ($data) use ($dbh) {
             $data->items = array_map(
@@ -324,62 +342,99 @@ class Playlist
                     $result->owner->name = $result->ownerName;
                     unset($result->ownerId);
                     unset($result->ownerName);
+                    $result->allowDelete = $result->id != Playlist::FAVORITE_TRACKS_PLAYLIST_ID && $result->owner->id == \Spieldose\UserSession::getUserId();
                     return ($result);
                 },
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
 
-        $query = sprintf(
-            "
-                SELECT *
-                FROM (
-                    SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount, :user_id AS ownerId, USER.email AS ownerName, MAX(FF.favorited) AS updated
-                    FROM FILE_FAVORITE FF
-                    LEFT JOIN USER ON USER.id = :user_id
-                    WHERE FF.user_id = :user_id
-                    GROUP BY FF.user_id
-                    HAVING COUNT(file_id) > 0
+        $query = null;
+        $queryCount = null;
+        if ($type == "myPlaylists" || $type == "allPlaylists") {
+            $query = sprintf(
+                "
+                    SELECT *
+                    FROM (
+                        SELECT :uuid_zero AS id, 'My favorite tracks' AS name, COUNT(file_id) AS trackCount, :user_id AS ownerId, USER.email AS ownerName, MAX(FF.favorited) AS updated
+                        FROM FILE_FAVORITE FF
+                        LEFT JOIN USER ON USER.id = :session_user_id
+                        WHERE FF.user_id = :session_user_id
+                        GROUP BY FF.user_id
+                        HAVING COUNT(file_id) > 0
 
-                    UNION
+                        UNION
 
+                        SELECT %s
+                        FROM PLAYLIST
+                        LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
+                        LEFT JOIN USER ON USER.id = PLAYLIST.user_id
+                        %s
+                        GROUP BY PLAYLIST.id
+                    )
+                    %s
+                    %s
+                ",
+                $browser->getQueryFields(),
+                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                $browser->getQuerySort(),
+                $pager->getQueryLimit()
+            );
+            $queryCount = sprintf(
+                "
                     SELECT %s
-                    FROM PLAYLIST
-                    LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
-                    LEFT JOIN USER ON USER.id = PLAYLIST.user_id
+                    FROM (
+                        SELECT COALESCE(COUNT (DISTINCT FF.user_id), 0) AS total
+                        FROM FILE_FAVORITE FF
+                        WHERE FF.user_id = :user_id
+                        AND :uuid_zero IS NOT NULL
+                        UNION
+                        SELECT COUNT(PLAYLIST.id) AS total
+                        FROM PLAYLIST
+                        %s
+                    )
+                ",
+                $browser->getQueryCountFields(),
+                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            );
+        } else {
+            $query = sprintf(
+                "
+                    SELECT *
+                    FROM (
+                        SELECT %s
+                        FROM PLAYLIST
+                        LEFT JOIN PLAYLIST_TRACK ON PLAYLIST.id = PLAYLIST_TRACK.playlist_id
+                        LEFT JOIN USER ON USER.id = PLAYLIST.user_id
+                        %s
+                        GROUP BY PLAYLIST.id
+                    )
                     %s
-                    GROUP BY PLAYLIST.id
-                )
-                %s
-                %s
-            ",
-            $browser->getQueryFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
-            $browser->getQuerySort(),
-            $pager->getQueryLimit()
-        );
-        $queryCount = sprintf(
-            "
-                SELECT %s
-                FROM (
-                    SELECT COALESCE(COUNT (DISTINCT FF.user_id), 0) AS total
-                    FROM FILE_FAVORITE FF
-                    WHERE FF.user_id = :user_id
-                    AND :uuid_zero IS NOT NULL
-                    UNION
-                    SELECT COUNT(PLAYLIST.id) AS total
-                    FROM PLAYLIST
                     %s
-                )
-            ",
-            $browser->getQueryCountFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
-        );
+                ",
+                $browser->getQueryFields(),
+                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                $browser->getQuerySort(),
+                $pager->getQueryLimit()
+            );
+            $queryCount = sprintf(
+                "
+                    SELECT %s
+                    FROM (
+                        SELECT COUNT(PLAYLIST.id) AS total
+                        FROM PLAYLIST
+                        %s
+                    )
+                ",
+                $browser->getQueryCountFields(),
+                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            );
+        }
         $data = $browser->launch($query, $queryCount);
 
         return ($data);
@@ -396,6 +451,7 @@ class Playlist
                 INNER JOIN FILE F ON F.ID = FF.file_id
                 WHERE FF.user_id = :user_id
                 ORDER BY FF.favorited
+
             ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
         } else {

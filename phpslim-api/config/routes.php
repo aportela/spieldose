@@ -735,24 +735,32 @@ return function (App $app) {
             $group->post('/playlist/search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
-                $filter = array(
-                    "name" => $params["filter"]["name"] ?? "",
-                    "userId" => $params["filter"]["userId"] ?? ""
-                );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                    [
-                        new \aportela\DatabaseBrowserWrapper\SortItem(
-                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
-                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                            true
+                // TODO: include this check on all search api methods
+                if (!empty($params["filter"])) {
+                    $filter = new \aportela\DatabaseBrowserWrapper\Filter(
+                        array(
+                            "name" => $params["filter"]["name"] ?? "",
+                            "userId" => $params["filter"]["userId"] ?? "",
+                            "type" => $params["filter"]["type"] ?? ""
                         )
-                    ]
-                );
-                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $data = \Spieldose\Playlist::search($dbh, $filter, $sort, $pager);
-                $payload = json_encode(["data" => $data]);
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                    );
+                    $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                        [
+                            new \aportela\DatabaseBrowserWrapper\SortItem(
+                                (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                                (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                                true
+                            )
+                        ]
+                    );
+                    $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                    $data = \Spieldose\Playlist::search($dbh, $filter, $sort, $pager);
+                    $payload = json_encode(["data" => $data]);
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("filter");
+                }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/playlist/add', function (Request $request, Response $response, array $args) {

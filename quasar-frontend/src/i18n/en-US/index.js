@@ -191,12 +191,14 @@ export default {
   "Playlist style": "Playlist style",
   Mosaic: "Mosaic",
   Vinyls: "Vinyls",
+  "My favourite tracks": "My favourite tracks",
   "No playlists found with specified condition":
     "No playlists found with specified condition",
   "API Error: error loading playlists": "API Error: error loading playlists",
   "All playlists": "All playlists",
   "My playlists": "My playlists",
   "User playlists": "User playlists",
+  by: "by",
 
   // radio stations
   "My radio stations": "My radio stations",

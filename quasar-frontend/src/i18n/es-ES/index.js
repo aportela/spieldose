@@ -196,12 +196,14 @@ export default {
   "Playlist style": "Estilo de lista",
   Mosaic: "Mosaico",
   Vinyls: "Vinilos",
+  "My favourite tracks": "Mis canciones favoritas",
   "No playlists found with specified condition":
     "No hay listas con la condición especificada",
   "API Error: error loading playlists": "API Error: error cargando las listas",
   "All playlists": "Todas las listas",
   "My playlists": "Mis listas",
   "User playlists": "Listas del usuario",
+  by: "por",
 
   // radio stations
   "My radio stations": "Mis estaciones de radio",

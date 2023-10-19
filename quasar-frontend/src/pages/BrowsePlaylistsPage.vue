@@ -25,7 +25,7 @@
           </SortOrderSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <CustomSelector :disable="loading" label="Playlist style" :options="styleOptions" v-model="style">
+          <CustomSelector :disable="loading" label="Playlist style" :options="styleOptions" v-model="style" @update:modelValue="onStyleChanged">
           </CustomSelector>
         </div>
       </div>
@@ -83,12 +83,12 @@ const name = ref(route.query.name || null);
 const typeOptions = [
   {
     label: 'All playlists',
-    value: 'all',
+    value: 'allPlaylists',
     disable: false
   },
   {
     label: 'My playlists',
-    value: 'mine',
+    value: 'myPlaylists',
     disable: false
   },
   {
@@ -130,7 +130,7 @@ if (route.query.userId) {
   queryType = typeOptions[0].value;
 }
 const type = ref(queryType);
-const userId = ref(null);
+const userId = ref(queryType == "userPlaylists" ? route.query.userId || null: null);
 const sortField = ref(route.query.sortField == "updated" ? "updated" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const style = ref(route.query.style == "vinyls" ? "vinyls" : "mosaic");
@@ -147,7 +147,7 @@ router.beforeEach(async (to, from) => {
   if (from.name == "playlists") {
     currentPageIndex.value = parseInt(to.query.page || 1);
     type.value = to.query.type || typeOptions[0].value;
-    userId.value = to.query.userId || null;
+    userId.value = type.value == "userPlaylists" ? to.query.userId || null: null;
     name.value = to.query.name || null;
     sortOrder.value = to.query.sortOrder == "DESC" ? "DESC" : "ASC";
     sortField.value = sortFieldOptions[to.query.sortField == "updated" ? 1 : 0].value;
@@ -173,8 +173,8 @@ router.beforeEach(async (to, from) => {
 function refreshURL(pageIndex, type, name, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
   query.page = pageIndex || 1;
-  query.type = type || 'all';
-  query.userId = userId.value || null;
+  query.type = type || 'allPlaylists';
+  query.userId = query.type == "userPlaylists" ? userId.value || null: null;
   query.name = name || null;
   query.sortField = sortField || "title";
   query.sortOrder = sortOrder || "ASC";
@@ -205,6 +205,10 @@ function onSortOrderChanged(sortOrder) {
   refreshURL(currentPageIndex.value, type.value, name.value, sortField.value, sortOrder);
 }
 
+function onStyleChanged(style) {
+  refreshURL(currentPageIndex.value, type.value, name.value, sortField.value, sortOrder.value);
+}
+
 const showDeleteConfirmationDialog = ref(false);
 
 const selectedPlaylistId = ref(null);
@@ -213,7 +217,7 @@ function browse() {
   warningNoItems.value = false;
   loading.value = true;
   loading.value = true;
-  api.playlist.search({ name: name.value, userId: userId.value }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+  api.playlist.search({ name: name.value, userId: userId.value, type: type.value }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     playlists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;

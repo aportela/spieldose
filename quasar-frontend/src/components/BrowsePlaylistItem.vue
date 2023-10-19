@@ -1,6 +1,7 @@
 <template>
   <q-card class="shadow-box shadow-10" bordered>
-    <q-card-section>{{ playlist.name }}</q-card-section>
+    <q-card-section>{{ playlist.id != "00000000-0000-0000-0000-000000000000" ? playlist.name : t("My favourite tracks")
+    }}</q-card-section>
     <q-separator />
     <q-card-section v-if="showMosaic" style="width: 350px;">
       <div class="row">
@@ -19,26 +20,28 @@
         <div class="col-4"><img class="mosaic_cover_element" :src="playlist.covers[8] || defaultImage" /></div>
       </div>
     </q-card-section>
-    <q-card-section style="width: 350px; height: 140px;" v-else-if="showVinylCollection">
-      <q-avatar v-for="n in 9" :key="n" size="100px" class="overlapping" :style="`left: ${n * 25}px`">
-        <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * (n -1))"
-          v-if="playlist.covers[n]" />
-        <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
-      </q-avatar>
+    <q-card-section style="width: 350px; height: 140px;" v-else>
+      <div class="row">
+        <div class="col-12" style="height: 100px;">
+          <q-avatar v-for="n, index in [5, 4, 3, 2, 1, 0]" :key="n" size="100px" class="overlapping" :style="`left: ${(index) * 49}px`">
+            <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * n)" v-if="playlist.covers[n]" />
+            <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
+          </q-avatar>
+        </div>
+      </div>
     </q-card-section>
     <q-separator />
     <q-card-section>
       <q-btn-group spread outline>
-        <q-btn label="play" stack icon="play_arrow" @click.prevent="onPlay" />
-        <q-btn label="edit" stack icon="edit" disabled/>
-        <q-btn label="delete" stack icon="delete" @click.prevent="onDelete" :disable="playlist.id == '00000000-0000-0000-0000-000000000000'"/>
+        <q-btn :label="t('Play')" stack icon="play_arrow" @click.prevent="onPlay" />
+        <q-btn :label="t('Remove')" stack icon="delete" @click.prevent="onDelete" :disable="playlist.allowDelete" />
       </q-btn-group>
     </q-card-section>
     <q-separator />
     <q-card-section class="text-right">
-      <span class="q-mr-sm">{{ playlist.trackCount }} track/s</span>
-      <router-link :to="{ name: 'playlists', query: routeQueryParams}">by {{  playlist.owner.name }}</router-link>
-      <LabelTimestampAgo className="q-ml-sm" :timestamp="playlist.updated * 1000"></LabelTimestampAgo>
+      <span>{{ playlist.trackCount }} {{ t(playlist.trackCount > 1 ? "tracks" : "track") }}</span>
+      {{ t('by') }} <router-link :to="{ name: 'playlists', query: routeQueryParams }"> {{ playlist.owner.name }}</router-link>
+      <LabelTimestampAgo className="q-ml-xs" :timestamp="playlist.updated * 1000"></LabelTimestampAgo>
     </q-card-section>
   </q-card>
 </template>
@@ -66,31 +69,25 @@ img.mosaic_cover_element {
 
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 
 import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
+
+const route = useRoute();
+
+const { t } = useI18n();
+
 /**
   * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
   * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
 */
 
-const route = useRoute();
-
-const $q = useQuasar();
-
-
 const defaultImage = 'images/vinyl-small.png';
 
+const props = defineProps(['playlist', 'mode']);
 const emit = defineEmits(['play', 'delete']);
 
-const props = defineProps({
-  playlist: Object,
-  mode: String
-});
-
 const showMosaic = computed(() => { return (props.mode == 'mosaic') });
-
-const showVinylCollection = computed(() => { return (props.mode == 'vinyls') });
 
 function onPlay() {
   emit('play', props.playlist.id);
@@ -112,5 +109,6 @@ function getRandomColor() {
 
 const routeQueryParams = ref(Object.assign({}, route.query || {}));
 routeQueryParams.value.userId = props.playlist.owner.id;
+routeQueryParams.value.type = "userPlaylists";
 
 </script>
