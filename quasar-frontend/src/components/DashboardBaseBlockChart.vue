@@ -72,10 +72,8 @@ const dateRanges = [
 ];
 
 const props = defineProps({
-  icon: {
-    type: String,
-    trackId: String
-  },
+  icon: String,
+  trackId: String,
   globalStats: Boolean
 })
 
