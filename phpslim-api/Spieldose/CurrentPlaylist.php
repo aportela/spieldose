@@ -153,7 +153,7 @@ class CurrentPlaylist
                 }
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "playlist" => $playlist]);
     }
 
     public function getPreviousElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -172,7 +172,7 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getNextElement(\aportela\DatabaseWrapper\DB $dbh, bool $shuffled = false): object
@@ -191,7 +191,7 @@ class CurrentPlaylist
                 $track = $this->tracks[$this->shuffledIndexes[$this->currentIndex]];
             }
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function getElementAtIndex(\aportela\DatabaseWrapper\DB $dbh, int $index): object
@@ -206,7 +206,7 @@ class CurrentPlaylist
             $this->setCurrentTrackIndex($dbh, $index);
             $track = $this->tracks[$this->currentIndex];
         }
-        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
+        return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => null, "playlist" => $playlist]);
     }
 
     public function save(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
@@ -386,7 +386,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -423,7 +423,7 @@ class CurrentPlaylist
                         }
                     }
                 }
-                return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+                return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
             } else {
                 // TODO
                 throw new \Exception("");
@@ -461,7 +461,7 @@ class CurrentPlaylist
                     }
                 }
             }
-            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+            return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
         } else {
             // TODO
             throw new \Exception("");
@@ -497,7 +497,7 @@ class CurrentPlaylist
                             }
                         }
                     }
-                    return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->shuffledIndexes[$this->currentIndex], "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
+                    return ((object) ["currentTrackIndex" => $this->currentIndex, "currentTrackShuffledIndex" => $this->currentIndex >= 0 ? $this->shuffledIndexes[$this->currentIndex] : -1, "shuffledIndexes" => $this->shuffledIndexes, "totalTracks" => $this->totalTracks, "currentTrack" => $track, "radioStation" => $radioStation, "tracks" => $this->tracks, "playlist" => $playlist]);
                 } else {
                     // TODO
                     throw new \Exception("");
