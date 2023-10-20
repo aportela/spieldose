@@ -25,7 +25,6 @@ $container = $containerBuilder->build();
 // Create App instance
 $app = $container->get(App::class);
 
-
 // Register routes
 (require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'routes.php')($app);
 
