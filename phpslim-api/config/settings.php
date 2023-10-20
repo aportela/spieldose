@@ -154,7 +154,10 @@ $settings['common'] = [
     'locale' => 'en' // (en | es | gl)
 ];
 
-//$settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+// TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
+//$settings['similarArtistsPreferredAlgorithmRelevance'] = ["lastFMSimilar", "lastFMTag", "musicbrainzGenre", "fileID3TagGenre"];
+
+$settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
 $settings['jwt'] = [
     'passphrase' => '~!yK^I7AhbnuqY@J4*Lst[g+QD6a9N5URPB?%Gf`XF(]eMrvckSm$ECx,j;3H&dV' // WARNING: for security reasons, generate a random string for using as your OWN (not default) passphrase
