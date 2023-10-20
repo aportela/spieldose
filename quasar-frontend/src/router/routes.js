@@ -64,6 +64,11 @@ const routes = [
         path: "radio_stations",
         component: () => import("pages/BrowseRadioStationsPage.vue"),
       },
+      {
+        name: "profile",
+        path: "profile",
+        component: () => import("pages/ProfilePage.vue"),
+      },
     ],
   },
   // Always leave this as last one,

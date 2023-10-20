@@ -9,6 +9,7 @@ export default {
   "Browse paths": "Rutas",
   "Browse playlists": "Listas de reproducción",
   "Browse radio stations": "Estaciones de radio",
+  "My profile": "Mi perfil",
   Signout: "Salir",
 
   // locale settings

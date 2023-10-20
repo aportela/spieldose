@@ -161,6 +161,12 @@ const links = [
     text: 'Browse radio stations',
     icon: 'radio',
     linkRouteName: 'radioStations'
+  },
+  {
+    name: 'profile',
+    text: 'My profile',
+    icon: 'person',
+    linkRouteName: 'profile'
   }
 ];
 
