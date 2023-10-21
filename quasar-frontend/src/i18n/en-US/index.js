@@ -216,6 +216,11 @@ export default {
   "No paths found": "No paths found",
   "No matching paths found": "No matching paths found",
 
+  // profile
+  "API Error: error loading profile": "API Error: error loading profile",
+  "New password": "New password",
+  "Confirm password": "Confirm password",
+
   // generic
   "API Error: error restoring playlist": "API Error: error restoring playlist",
   "API Error: error increasing track play count":

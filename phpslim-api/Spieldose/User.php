@@ -80,6 +80,10 @@ class User
         }
     }
 
+    public function updateProfile(\aportela\DatabaseWrapper\DB $dbh, ?string $oldPassword)
+    {
+    }
+
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $results = null;

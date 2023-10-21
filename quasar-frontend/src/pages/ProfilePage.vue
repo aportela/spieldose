@@ -5,7 +5,6 @@
       <q-breadcrumbs-el icon="person" :label="t('My profile')" />
     </q-breadcrumbs>
     <q-card-section style="height: 698px;">
-
       <div class="row q-col-gutter-md">
         <div class="col-6">
           <q-input dense outlined ref="emailRef" v-model="email" type="email" name="email" :label="t('Email')"
@@ -25,12 +24,11 @@
           </template>
         </q-input>
         </div>
-
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-6">
           <q-input dense outlined ref="passwordRef" v-model="password" name="password" type="password"
-          :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
+          :label="t('New password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
           :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
           <template v-slot:prepend>
             <q-icon name="key" />
@@ -39,7 +37,7 @@
         </div>
         <div class="col-6">
           <q-input dense outlined ref="passwordRef" v-model="password" name="password" type="password"
-          :label="t('Password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
+          :label="t('Confirm password')" :disable="loading" :rules="requiredFieldRules" lazy-rules
           :error="remoteValidation.password.hasErrors" :errorMessage="remoteValidation.password.message">
           <template v-slot:prepend>
             <q-icon name="key" />
@@ -47,25 +45,18 @@
         </q-input>
         </div>
       </div>
-
-
-
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { api } from 'boot/axios';
 
 const { t } = useI18n();
 const $q = useQuasar();
-
-const route = useRoute();
-const router = useRouter();
 
 const loading = ref(false);
 
@@ -96,5 +87,28 @@ const nameRef = ref(null);
 
 const password = ref(null);
 const passwordRef = ref(null);
+
+function refresh() {
+  loading.value = true;
+  api.user
+    .getProfile()
+    .then((success) => {
+      email.value = success.data.email;
+      name.value = success.data.name;
+      loading.value = false;
+    })
+    .catch((error) => {
+      $q.notify({
+        type: "negative",
+        message: t("API Error: error loading profile"),
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      });
+      loading.value = false;
+    });
+}
+
+onMounted(() => {
+  refresh();
+});
 
 </script>

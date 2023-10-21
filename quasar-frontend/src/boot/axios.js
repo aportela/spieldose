@@ -110,6 +110,18 @@ const api = {
           });
       });
     },
+    getProfile: function () {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(baseAPIPath + "/user/profile", {})
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   globalSearch: {
     search: function (

@@ -222,6 +222,11 @@ export default {
   "No matching paths found":
     "No hay rutas que coincidan con la condición especificada",
 
+  // profile
+  "API Error: error loading profile": "API Error: error cargando el perfil",
+  "New password": "Nueva contraseña",
+  "Confirm password": "Confirme la contraseña",
+
   // generic
   "API Error: error restoring playlist":
     "API Error: error restaurando la lista de reproducción",
