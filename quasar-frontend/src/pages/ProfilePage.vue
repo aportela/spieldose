@@ -4,7 +4,8 @@
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <q-breadcrumbs-el icon="person" :label="t('My profile')" />
     </q-breadcrumbs>
-    <q-card-section style="height: 698px;">
+    <q-card-section style="height: 702px;">
+      <h3 class="text-h3">{{ t('My profile') }}</h3>
       <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off">
         <div class="row q-col-gutter-md">
           <div class="col-6">
@@ -64,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { api } from 'boot/axios';
