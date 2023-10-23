@@ -122,6 +122,23 @@ const api = {
           });
       });
     },
+    updateProfile: function (email, name, password) {
+      return new Promise((resolve, reject) => {
+        const params = {
+          email: email || null,
+          name: name || null,
+          password: password || null,
+        };
+        axios
+          .post(baseAPIPath + "/user/profile", params)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   globalSearch: {
     search: function (
@@ -191,9 +208,9 @@ const api = {
         axios
           .get(
             "api/2/artist?mbId=" +
-            encodeURIComponent(mbId || "") +
-            "&name=" +
-            encodeURIComponent(name || ""),
+              encodeURIComponent(mbId || "") +
+              "&name=" +
+              encodeURIComponent(name || ""),
             {}
           )
           .then((response) => {
@@ -266,9 +283,9 @@ const api = {
         axios
           .get(
             "api/2/album?mbId=" +
-            encodeURIComponent(mbId || "") +
-            "&title=" +
-            encodeURIComponent(title || ""),
+              encodeURIComponent(mbId || "") +
+              "&title=" +
+              encodeURIComponent(title || ""),
             "&artistMbId=" + encodeURIComponent(artistMbId || ""),
             "&artistName=" + encodeURIComponent(artistName || ""),
             "&year=" + encodeURIComponent(year || ""),
@@ -704,7 +721,7 @@ const api = {
     setPath: function (id) {
       return new Promise((resolve, reject) => {
         const params = {
-          pathId: id || null
+          pathId: id || null,
         };
         axios
           .post(baseAPIPath + "/current_playlist/set_tracks", params)
@@ -862,9 +879,9 @@ const api = {
         axios
           .get(
             "api/2/lyrics?title=" +
-            encodeURIComponent(title || "") +
-            "&artist=" +
-            encodeURIComponent(artist || ""),
+              encodeURIComponent(title || "") +
+              "&artist=" +
+              encodeURIComponent(artist || ""),
             {}
           )
           .then((response) => {

@@ -226,6 +226,9 @@ export default {
   "API Error: error loading profile": "API Error: error cargando el perfil",
   "New password": "Nueva contraseña",
   "Confirm password": "Confirme la contraseña",
+  "Save profile changes": "Guardar los cambios del perfil",
+  "Passwords don't match": "Las contraseñas no coinciden",
+  "Profile has been updated": "El perfil se ha actualizado",
 
   // generic
   "API Error: error restoring playlist":

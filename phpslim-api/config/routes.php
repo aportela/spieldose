@@ -153,6 +153,21 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->post('/user/profile', function (Request $request, Response $response, array $args) {
+                $params = $request->getParsedBody();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $user = new \Spieldose\User(
+                    \Spieldose\UserSession::getUserId(),
+                    $params["email"] ?? "",
+                    $params["password"] ?? "",
+                    $params["name"] ?? "",
+                );
+                $user->updateProfile($dbh);
+                $payload = json_encode(["id" => $user->id, "name" => $user->name, "email" => $user->email]);
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->post('/global_search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();

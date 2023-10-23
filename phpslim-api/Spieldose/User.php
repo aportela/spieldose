@@ -80,8 +80,42 @@ class User
         }
     }
 
-    public function updateProfile(\aportela\DatabaseWrapper\DB $dbh, ?string $oldPassword)
+    public function updateProfile(\aportela\DatabaseWrapper\DB $dbh): void
     {
+        $this->id = \Spieldose\UserSession::getUserId();
+        if (!empty($this->email) && mb_strlen($this->email) <= 255 && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+            if (!self::isEmailUsedByAnotherUser($dbh, $this->email)) {
+                if (!empty($this->name) && mb_strlen($this->name) <= 32) {
+                    if (!self::isNameUsedByAnotherUser($dbh, $this->name)) {
+                        if (!empty($this->password)) {
+                            $params = array(
+                                new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
+                                new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
+                                new \aportela\DatabaseWrapper\Param\StringParam(":password_hash", $this->passwordHash($this->password)),
+                                new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
+                            );
+                            $dbh->exec(" UPDATE USER SET email = :email, password_hash = :password_hash, name = :name, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
+                        } else {
+                            $params = array(
+                                new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
+                                new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
+                                new \aportela\DatabaseWrapper\Param\StringParam(":name", mb_strtolower($this->name))
+                            );
+                            $dbh->exec(" UPDATE USER SET email = :email, name = :name, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
+                        }
+                        \Spieldose\UserSession::set($this->id, $this->email, $this->name);
+                    } else {
+                        throw new \Spieldose\Exception\AlreadyExistsException("name");
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
+                }
+            } else {
+                throw new \Spieldose\Exception\AlreadyExistsException("email");
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("email");
+        }
     }
 
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
@@ -90,11 +124,11 @@ class User
         if (!empty($this->id) && mb_strlen($this->id) == 36) {
             $results = $dbh->query(
                 "
-                        SELECT
-                            USER.id, USER.email, USER.password_hash AS passwordHash, USER.name, USER.dtime
-                        FROM USER
-                        WHERE USER.id = :id
-                    ",
+                    SELECT
+                        USER.id, USER.email, USER.password_hash AS passwordHash, USER.name, USER.dtime
+                    FROM USER
+                    WHERE USER.id = :id
+                ",
                 array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id))
                 )
@@ -134,10 +168,34 @@ class User
                     SELECT
                         USER.id
                     FROM USER
-                        WHERE USER.email = :email
-                    ",
+                    WHERE USER.email = :email
+                ",
                 array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($email))
+                )
+            );
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("email");
+        }
+        return (count($results) == 1);
+    }
+
+    public static function isEmailUsedByAnotherUser(\aportela\DatabaseWrapper\DB $dbh, string $email): bool
+    {
+        $results = null;
+        if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL) && mb_strlen($email) <= 255) {
+            $results = $dbh->query(
+                "
+                    SELECT
+                        USER.id
+                    FROM USER
+                    WHERE USER.email = :email
+                    AND USER.id <> :id
+                ",
+                array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($email)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\UserSession::getUserId())
+
                 )
             );
         } else {
@@ -159,6 +217,29 @@ class User
                     ",
                 array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $name)
+                )
+            );
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("name");
+        }
+        return (count($results) == 1);
+    }
+
+    public static function isNameUsedByAnotherUser(\aportela\DatabaseWrapper\DB $dbh, string $name): bool
+    {
+        $results = null;
+        if (!empty($name) && mb_strlen($name) <= 36) {
+            $results = $dbh->query(
+                "
+                    SELECT
+                        USER.id
+                    FROM USER
+                    WHERE USER.name = :name
+                    AND USER.id <> :id
+                ",
+                array(
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\UserSession::getUserId())
                 )
             );
         } else {
