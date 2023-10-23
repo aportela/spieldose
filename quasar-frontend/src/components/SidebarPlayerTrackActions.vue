@@ -32,8 +32,8 @@ div#current_track_actions {
 <script setup>
 // TODO: translations
 import { computed } from 'vue';
-
 import { useI18n } from 'vue-i18n';
+import { bus } from "boot/bus";
 
 const { t } = useI18n();
 
