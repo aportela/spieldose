@@ -15,7 +15,7 @@
     <SidebarPlayerTrackInfo :track="currentElement.track" :radioStation="currentElement.radioStation">
     </SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="false" :allowSkipPrevious="spieldoseStore.allowSkipPrevious"
-      :allowPlay="spieldoseStore.hasCurrentPlaylistElements" :allowSkipNext="spieldoseStore.allowSkipNext"
+      :allowPlay="spieldoseStore.hasCurrentPlaylistElements || spieldoseStore.hasCurrentPlaylistARadioStation" :allowSkipNext="spieldoseStore.allowSkipNext"
       :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="skipToPrevious()" @play="play()"
       @skipNext="skipToNext()"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
