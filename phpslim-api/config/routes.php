@@ -192,8 +192,10 @@ return function (App $app) {
                     true
                 );
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
-                $filter = array(
-                    "name" => $params["filter"]["text"] ?? "",
+                $filter = new \aportela\DatabaseBrowserWrapper\Filter(
+                    array(
+                        "name" => $params["filter"]["text"] ?? "",
+                    )
                 );
                 $result = \Spieldose\Entities\Artist::search($dbh, $filter, $sort, $pager);
                 $data["artists"] = $result->items;
