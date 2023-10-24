@@ -573,31 +573,6 @@ const artistImage = ref(null);
 
 const currentArtist = computed(() => { return (route.params.name); });
 
-watch(currentArtist, (newValue, oldValue) => {
-  artistName.value = newValue;
-  if (artistName.value) {
-    artistData.value = {
-      mbId: null,
-      name: null,
-      popularAlbum: {
-        title: null,
-        year: null,
-        image: null
-      },
-      latestAlbum: {
-        title: null,
-        year: null,
-        image: null
-      },
-      topTracks: [],
-      similar: []
-    }
-    artistImage.value = null;
-    tab.value = 'overview';
-    get(artistMBId.value, artistName.value);
-  }
-});
-
 const rows = ref([]);
 const artistTracksColumns = [
   {
