@@ -118,6 +118,18 @@ class User
         }
     }
 
+    public function exists(\aportela\DatabaseWrapper\DB $dbh): bool
+    {
+        $exists = false;
+        try {
+            $this->get($dbh);
+            $exists = true;
+        } catch (\Throwable $e) {
+        } finally {
+            return ($exists);
+        }
+    }
+
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $results = null;
