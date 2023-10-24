@@ -8,11 +8,13 @@ class JWT
 {
     protected $logger;
     private $passphrase;
+    protected $dbh;
 
     public function __construct(\Psr\Container\ContainerInterface $container)
     {
         $this->logger = $container->get(\Spieldose\Logger\HTTPRequestLogger::class);
         $this->passphrase = $container->get('settings')['jwt']['passphrase'];
+        $this->dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
     }
 
     /**
@@ -33,7 +35,12 @@ class JWT
             $decoded = $jwt->decode($clientHeaderJWT);
             if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
                 $this->logger->notice("JWT valid data decoded", [print_r($decoded->data, true)]);
-                \Spieldose\UserSession::set($decoded->data->userId, $decoded->data->email);
+                $user = new \Spieldose\User($decoded->data->userId);
+                if (!$user->exists($this->dbh)) {
+                    \Spieldose\UserSession::set($decoded->data->userId, $decoded->data->email);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("userId");
+                }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("jwt");
             }
