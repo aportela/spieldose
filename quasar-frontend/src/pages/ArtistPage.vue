@@ -571,8 +571,6 @@ const artistData = ref({
 
 const artistImage = ref(null);
 
-const currentArtist = computed(() => { return (route.params.name); });
-
 const rows = ref([]);
 const artistTracksColumns = [
   {
