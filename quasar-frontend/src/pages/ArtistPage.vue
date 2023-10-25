@@ -80,7 +80,7 @@
   <q-tab-panels v-model="tab" animated v-if="artistData">
     <q-tab-panel name="overview">
       <div class="row q-col-gutter-lg">
-        <div class="col-10">
+        <div class="col-xl-10 col-lg-8 col-md-7 col-sm-6 col-xs-6">
           <q-card class="my-card shadow-box shadow-10 q-pa-lg" bordered v-if="artistData.bio && artistData.bio.summary">
             <q-card-section>
               <div class="text-h6">Overview</div>
@@ -178,7 +178,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-4 col-md-5 col-sm-6 col-xs-6">
           <q-card class="my-card shadow-box shadow-10 q-mb-lg" bordered
             v-if="artistData.relations && artistData.relations.length > 0">
             <q-card-section>
@@ -535,18 +535,18 @@ router.beforeEach(async (to, from) => {
     artistMBId.value = to.query.mbid || null;
     tab.value = to.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(to.query.tab) ? to.query.tab : 'overview';
     if (from.query.name != to.query.name || from.query.mbid != to.query.mbid) {
-        nextTick(() => {
-          switch(tab.value) {
-            case 'overview':
+      nextTick(() => {
+        switch (tab.value) {
+          case 'overview':
             getOverview(artistMBId.value, artistName.value);
-              break;
-            default:
+            break;
+          default:
             get(artistMBId.value, artistName.value);
             break;
-          }
-        });
-      }
+        }
+      });
     }
+  }
 });
 
 watch(tab, (newValue) => {
@@ -653,11 +653,11 @@ function nl2br(str, replaceMode, isXhtml) {
 }
 
 function playTrack(track) {
-  trackActions.play([ track.id ]);
+  trackActions.play([track.id]);
 }
 
 function enqueueTrack(track) {
-  trackActions.enqueue([ track.id ]);
+  trackActions.enqueue([track.id]);
 }
 
 function get(mbId, name) {
@@ -834,14 +834,14 @@ function onEnqueueAllArtistTracks() {
 }
 
 onMounted(() => {
-  switch(tab.value) {
-            case 'overview':
-            getOverview(artistMBId.value, artistName.value);
-              break;
-            default:
-            get(artistMBId.value, artistName.value);
-            break;
-          }
+  switch (tab.value) {
+    case 'overview':
+      getOverview(artistMBId.value, artistName.value);
+      break;
+    default:
+      get(artistMBId.value, artistName.value);
+      break;
+  }
 });
 
 </script>
