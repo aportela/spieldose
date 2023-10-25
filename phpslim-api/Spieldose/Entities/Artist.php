@@ -241,7 +241,7 @@ class Artist extends \Spieldose\Entities\Entity
             "mbId" => "artist_mbid",
             "name" => "artist_name",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_ARTIST_MUSICBRAINZ.image)",
-            "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
+            "totalTracks" => "(COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, 0) + COALESCE(TOTAL_TRACKS_BY_ARTIST_NAME.total, 0))"
         ];
 
         $fields = [];
@@ -277,8 +277,8 @@ class Artist extends \Spieldose\Entities\Entity
                     ORDER BY RANDOM()
                     LIMIT %d
                 ) TMP_ARTISTS
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
-                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
+                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid AND CACHE_ARTIST_MUSICBRAINZ.image IS NOT NULL
+                LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name)) AND CACHE_ARTIST_LASTFM.image IS NOT NULL
                 LEFT JOIN (
                     SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                     FROM FILE_ID3_TAG
@@ -289,8 +289,8 @@ class Artist extends \Spieldose\Entities\Entity
                     SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
                     FROM FILE_ID3_TAG
                     GROUP BY FILE_ID3_TAG.artist
-                    HAVING FILE_ID3_TAG.artist NOT NULL
-                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
+                    HAVING FILE_ID3_TAG.artist NOT NULL AND FILE_ID3_TAG.mb_artist_id IS NULL
+                ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name AND TMP_ARTISTS.artist_mbid IS NULL
             ",
             implode(", ", $fields),
             count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
@@ -298,9 +298,10 @@ class Artist extends \Spieldose\Entities\Entity
         );
 
         $similarArtists = $dbh->query($query, $params);
+        $totalSimilarArtists = count($similarArtists);
 
         // no similar by last.fm, try by musicbrainz genres
-        if (count($similarArtists) < 1 && !empty($filter["mbId"])) {
+        if ($totalSimilarArtists < $limitCount && !empty($filter["mbId"])) {
             $params = [
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $filter["mbId"])
             ];
@@ -328,8 +329,8 @@ class Artist extends \Spieldose\Entities\Entity
                         ORDER BY RANDOM()
                         LIMIT %d
                     ) TMP_ARTISTS
-                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid
-                    LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name))
+                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = TMP_ARTISTS.artist_mbid AND CACHE_ARTIST_MUSICBRAINZ.image IS NOT NULL
+                    LEFT JOIN CACHE_ARTIST_LASTFM ON ((TMP_ARTISTS.artist_mbid IS NOT NULL AND CACHE_ARTIST_LASTFM.mbid = TMP_ARTISTS.artist_mbid) OR (TMP_ARTISTS.artist_mbid IS NULL AND CACHE_ARTIST_LASTFM.name = TMP_ARTISTS.artist_name)) AND CACHE_ARTIST_LASTFM.image IS NOT NULL
                     LEFT JOIN (
                         SELECT FILE_ID3_TAG.mb_artist_id AS artistMBId, COUNT(*) AS total
                         FROM FILE_ID3_TAG
@@ -340,14 +341,15 @@ class Artist extends \Spieldose\Entities\Entity
                         SELECT FILE_ID3_TAG.artist AS artistName, COUNT(*) AS total
                         FROM FILE_ID3_TAG
                         GROUP BY FILE_ID3_TAG.artist
-                        HAVING FILE_ID3_TAG.artist NOT NULL
-                    ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name
+                        HAVING FILE_ID3_TAG.artist NOT NULL AND FILE_ID3_TAG.mb_artist_id IS NULL
+                    ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name AND TMP_ARTISTS.artist_mbid IS NULL
                 ",
                 implode(", ", $fields),
                 count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
-                $limitCount
+                $limitCount - $totalSimilarArtists
             );
-            $similarArtists = $dbh->query($query, $params);
+            $musicBrainzSimilarArtists = $dbh->query($query, $params);
+            $similarArtists = array_merge($similarArtists, $musicBrainzSimilarArtists);
         }
 
         foreach ($similarArtists as $artist) {
