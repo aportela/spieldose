@@ -488,6 +488,27 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/artist_overview', function (Request $request, Response $response, array $args) {
+                $queryParams = $request->getQueryParams();
+                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $artist = new \Spieldose\Entities\Artist($dbh);
+                $artist->mbId = $queryParams["mbId"] ?? null;
+                $artist->name = $queryParams["name"] ?? null;
+                if (!(empty($artist->mbId) && empty($artist->name))) {
+                    $settings = $this->get('settings')['thumbnails']['albums'];
+                    $artist->get($settings['useLocalCovers']);
+                    $payload = json_encode(
+                        [
+                            'artist' => $artist
+                        ]
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->get('/artist', function (Request $request, Response $response, array $args) {
                 $queryParams = $request->getQueryParams();
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);

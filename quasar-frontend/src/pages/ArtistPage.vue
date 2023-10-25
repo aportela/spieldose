@@ -203,7 +203,7 @@
                 <div class="col-4" v-for="similar in artistData.similar.slice(0, 3)" :key="similar.name">
                   <p class="text-center">
                     <router-link
-                      :to="{ name: 'artist', params: { name: similar.name }, query: { mbid: similar.mbId, tab: 'overview' } }"
+                      :to="{ name: 'artist', query: { mbid: similar.mbId, name: similar.name, tab: 'overview' } }"
                       style="text-decoration: none">
                       <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
                         fit="cover" width="96px" height="96px" spinner-color="pink" />
@@ -459,7 +459,7 @@ img.artist_image:hover {
 
 <script setup>
 
-import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
+import { ref, computed, watch, inject, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
@@ -527,16 +527,23 @@ const router = useRouter();
 const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
 
 const artistMBId = ref(route.query.mbid);
-const artistName = ref(route.params.name);
+const artistName = ref(route.query.name);
 
 router.beforeEach(async (to, from) => {
   if (to.name == "artist") {
-    artistName.value = to.params.name;
-    artistMBId.value = to.query.mbid;
+    artistName.value = to.query.name || null;
+    artistMBId.value = to.query.mbid || null;
     tab.value = to.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(to.query.tab) ? to.query.tab : 'overview';
-    if (from.params.name != to.params.name || from.query.mbid != to.query.mbid) {
+    if (from.query.name != to.query.name || from.query.mbid != to.query.mbid) {
         nextTick(() => {
-          get(artistMBId.value, artistName.value);
+          switch(tab.value) {
+            case 'overview':
+            getOverview(artistMBId.value, artistName.value);
+              break;
+            default:
+            get(artistMBId.value, artistName.value);
+            break;
+          }
         });
       }
     }
@@ -638,44 +645,6 @@ const artistTracksColumns = [
   },
 ];
 
-onMounted(() => {
-  /*
-  const chartOptions = {
-    low: 0,
-    showArea: true,
-    fullWidth: true,
-    chartPadding: { left: 48, right: 48 },
-    axisX: {
-      type: FixedScaleAxis,
-      divisor: 5,
-      labelInterpolationFnc: function(value) {
-        console.log(value);
-        return date.formatDate(value, 'MMM');
-      }
-    },
-    axisY: {
-    }
-  };
-
-  let count = 16;
-
-  let labels = [];
-  let series = [];
-  while (count > 0) {
-    labels.push(date.formatDate(date.addToDate(new Date(), { months: -count }), 'X'));
-    series.push(Math.round(Math.random() * 501))
-    count--;
-  }
-
-  const data = {
-    labels : labels,
-    series: [series]
-  };
-
-  new LineChart('.ct-chart', data, chartOptions);
-  */
-});
-
 // https://gist.github.com/yidas/41cc9272d3dff50f3c9560fb05e7255e
 function nl2br(str, replaceMode, isXhtml) {
   var breakTag = (isXhtml) ? '<br />' : '<br>';
@@ -694,6 +663,53 @@ function enqueueTrack(track) {
 function get(mbId, name) {
   loading.value = true;
   api.artist.get(mbId, name).then((success) => {
+    try {
+      artistData.value = success.data.artist;
+      artistImage.value = artistData.value.image;
+      let totalPlays = 0;
+      artistData.value.topTracks.forEach((track) => {
+        totalPlays += track.playCount;
+      });
+      artistData.value.topTracks = artistData.value.topTracks.map((track) => {
+        if (track.coverPathId) {
+          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+        } else if (track.covertArtArchiveURL) {
+          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+        } else {
+          track.image = null;
+        }
+        track.percentPlay = Math.round(track.playCount * 100 / totalPlays) / 100;
+        return (track);
+      });
+
+      artistData.value.topAlbums.value = artistData.value.topAlbums.map((item) => {
+        item.image = item.covers.small;
+        return (item);
+      });
+      artistData.value.appearsOnAlbums.value = artistData.value.appearsOnAlbums.map((item) => {
+        item.image = item.covers.small;
+        return (item);
+      });
+      rows.value = success.data.artist.tracks.map((element, index) => { element.index = index + 1; return (element) });
+    } catch (e) { console.log(e); }
+    loading.value = false;
+  }).catch((error) => {
+    loading.value = false;
+    switch (error.response.status) {
+      default:
+        $q.notify({
+          type: "negative",
+          message: t("API Error: fatal error"),
+          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        });
+        break;
+    }
+  });
+}
+
+function getOverview(mbId, name) {
+  loading.value = true;
+  api.artist.getOverview(mbId, name).then((success) => {
     try {
       artistData.value = success.data.artist;
       artistImage.value = artistData.value.image;
@@ -782,6 +798,7 @@ function onEnqueueAlbum(album) {
       }
     });
 }
+
 function onRowClick(evt, row, index) {
   if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
     spieldoseStore.interact();
@@ -816,6 +833,15 @@ function onEnqueueAllArtistTracks() {
   //spieldoseStore.appendElementsToCurrentPlaylist(artistData.value.tracks.map((element) => { return ({ track: element }); }));
 }
 
-get(artistMBId.value, artistName.value);
+onMounted(() => {
+  switch(tab.value) {
+            case 'overview':
+            getOverview(artistMBId.value, artistName.value);
+              break;
+            default:
+            get(artistMBId.value, artistName.value);
+            break;
+          }
+});
 
 </script>

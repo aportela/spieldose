@@ -221,6 +221,24 @@ const api = {
           });
       });
     },
+    getOverview: function (mbId, name) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(
+            "api/2/artist_overview?mbId=" +
+              encodeURIComponent(mbId || "") +
+              "&name=" +
+              encodeURIComponent(name || ""),
+            {}
+          )
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   artistGenres: {
     get: function () {
