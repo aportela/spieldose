@@ -11,6 +11,8 @@ class Album extends \Spieldose\Entities\Entity
     public object $artist;
     public ?int $year;
     public ?string $pathId;
+    public array $media;
+    public array $covers;
 
     public function __construct(string $mbId = null, string $title, ?int $year, ?object $artist)
     {
@@ -18,9 +20,11 @@ class Album extends \Spieldose\Entities\Entity
         $this->title = $title;
         $this->year = $year;
         $this->artist = $artist;
+        $this->media = [];
+        $this->covers = [];
     }
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh, bool $useLocalCovers = true)
+    public function get(\aportela\DatabaseWrapper\DB $dbh, bool $useLocalCovers = true, bool $scrap = true)
     {
         if (!empty($this->mbId)) {
             $query = "
@@ -29,11 +33,64 @@ class Album extends \Spieldose\Entities\Entity
                 WHERE mbid = :mbid
             ";
             $params = [new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)];
-            $results = $dbh->query($query, $params);
-            if (count($results) == 1) {
-                $this->title = $results[0]->title;
-                $this->year = $results[0]->year;
-                $this->artist = (object) ["mbId" => $results[0]->artist_mbid, "name" => $results[0]->artist_name];
+            $releaseResults = $dbh->query($query, $params);
+            if (count($releaseResults) == 1) {
+                $this->title = $releaseResults[0]->title;
+                $this->year = $releaseResults[0]->year;
+                $this->artist = (object) ["mbId" => $releaseResults[0]->artist_mbid, "name" => $releaseResults[0]->artist_name];
+                $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                $url = $cover->getReleaseImageURL($this->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                $this->covers = [
+                    "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
+                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                ];
+                $query = "
+                    SELECT position, track_count
+                    FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA
+                    WHERE release_mbid = :mbid
+                ";
+                $params = [new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)];
+                $mediaResults = $dbh->query($query, $params);
+                foreach ($mediaResults as $mediaResult) {
+                    $query = "
+                        SELECT
+                            position, mbid, title, artist_mbid, artist_name, length
+                        FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK
+                        WHERE release_mbid = :mbid
+                        AND release_media = :media
+                        ORDER BY position
+                    ";
+                    $params = [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":media", $mediaResult->position)
+                    ];
+                    $tracks = [];
+                    foreach ($dbh->query($query, $params) as $track) {
+                        $tracks[] = (object) [
+                            "position" => $track->position,
+                            "mbId" => $track->mbid,
+                            "title" => $track->title,
+                            "artist" => (object) [
+                                "mbId" => $track->artist_mbid,
+                                "name" => $track->artist_name,
+                            ],
+                            "length" => $track->length
+                        ];
+                    }
+                    $this->media[$mediaResult->position - 1] = ["tracks" => $tracks];
+                }
+            } else if ($scrap) {
+                $release = new \Spieldose\Scraper\Release\MusicBrainz(
+                    new \Psr\Log\NullLogger(),
+                    \aportela\MusicBrainzWrapper\APIFormat::JSON
+                );
+                $release->mbId = $this->mbId;
+                if ($release->scrap()) {
+                    $release->saveCache($dbh);
+                    $this->get($dbh, $useLocalCovers, false);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("mbid");
+                }
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbid");
             }

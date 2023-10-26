@@ -590,7 +590,7 @@ return function (App $app) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $this->get(\aportela\DatabaseWrapper\DB::class);
                 $album = new \Spieldose\Entities\Album(
-                    $queryParams["mbid"] ?? null,
+                    $queryParams["mbId"] ?? null,
                     $queryParams["title"] ?? null,
                     $queryParams["year"] ?? null,
                     (object) ["mbId" => $queryParams["artistMBId"] ?? null, "name" => $queryParams["artistName"] ?? null]

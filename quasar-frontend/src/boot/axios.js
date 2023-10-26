@@ -297,18 +297,16 @@ const api = {
       });
     },
     get: function (mbId, title, artistMbId, artistName, year) {
+      const params = {
+        mbId: mbId || null,
+        title: title || null,
+        artistMBId: artistMbId || null,
+        artistName: artistName || null,
+        year: year || null,
+      };
       return new Promise((resolve, reject) => {
         axios
-          .get(
-            "api/2/album?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&title=" +
-              encodeURIComponent(title || ""),
-            "&artistMbId=" + encodeURIComponent(artistMbId || ""),
-            "&artistName=" + encodeURIComponent(artistName || ""),
-            "&year=" + encodeURIComponent(year || ""),
-            {}
-          )
+          .get("api/2/album", { params })
           .then((response) => {
             resolve(response);
           })

@@ -1,5 +1,48 @@
 <template>
-  <p></p>
+  <q-card class="q-pa-lg">
+    <q-breadcrumbs class="q-mb-lg">
+      <q-breadcrumbs-el icon="home" label="Spieldose" />
+      <q-breadcrumbs-el icon="album" :label="t('Album')" />
+    </q-breadcrumbs>
+    <q-card-section>
+      <div>
+        <div style="float: left; margin-right: 2em;">
+          <q-img :src="album.covers.normal" width="400px" height="400px" spinner-color="pink" v-if="album.covers.normal"
+            :img-style="{ 'text-align': 'left' }"></q-img>
+          <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" spinner-color="pink" />
+        </div>
+        <div style="padding-top: 100px">
+          <p class="text-subtitle2">Album</p>
+          <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
+          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
+            formatSecondsAsTime(Math.round(totalLength / 100)) }}</p>
+          <p><q-icon name="play_arrow" size="xl"></q-icon><q-icon name="add_box" size="xl"></q-icon></p>
+        </div>
+      </div>
+      <p style="clear: both;"></p>
+      <q-markup-table class="q-mt-md">
+        <thead>
+          <tr>
+            <th class="text-left" style="width: 2em;" v-if="album.media.length > 1"><q-icon name="album"
+                size="xs"></q-icon></th>
+            <th class="text-left" style="width: 2em;">#</th>
+            <th class="text-left">Title</th>
+            <th class="text-left" style="width: 5em;"><q-icon name="schedule" size="xs"></q-icon></th>
+          </tr>
+        </thead>
+        <tbody v-for="media, index in album.media" :key="index">
+          <tr v-for="track in media.tracks" :key="track.mbId">
+            <td v-if="album.media.length > 1">{{ index + 1 }}</td>
+            <td>{{ track.position }}</td>
+            <td>{{ track.title }}<br><router-link
+                :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
+                  track.artist.name }}</router-link></td>
+            <td>{{ formatSecondsAsTime(Math.round(track.length / 1000)) }}</td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script setup>
@@ -15,11 +58,51 @@ const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
 
+router.beforeEach(async (to, from) => {
+  if (to.name == "album") {
+    if (to.query.mbId && to.params.title) {
+      get(to.query.mbId, to.params.title, to.query.artistMBId, to.query.artistName, to.query.year);
+    } else {
+      // TODO
+      $q.notify({
+        type: "negative",
+        message: t("API Error: fatal error"),
+        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      });
+    }
+  }
+});
+
 const loading = ref(false);
 
-function get(mbId, title, artist, year) {
+const album = ref({
+  mbId: null,
+  title: null,
+  artist: {
+    mbId: null,
+    name: null,
+  },
+  year: null,
+  covers: [],
+  media: []
+});
+
+const totalTracks = ref(0);
+const totalLength = ref(0);
+
+function get(mbId, title, artistMBId, artistName, year) {
+  totalTracks.value = 0;
+  totalLength.value = 0;
   loading.value = true;
-  api.album.get(mbId, title, artist, year).then((success) => {
+  api.album.get(mbId, title, artistMBId, artistName, year).then((success) => {
+    album.value = success.data.album;
+    album.value.media.forEach((media) => {
+      media.tracks.forEach((track) => {
+        totalTracks.value++;
+        totalLength.value += track.length;
+      })
+    });
+    loading.value = false;
   }).catch((error) => {
     loading.value = false;
     switch (error.response.status) {
@@ -33,6 +116,35 @@ function get(mbId, title, artist, year) {
     }
   });
 }
+function formatSecondsAsTime(secs, format) {
+  if (secs && Number.isInteger(secs) && secs > 0) {
+    var hr = Math.floor(secs / 3600);
+    var min = Math.floor((secs - (hr * 3600)) / 60);
+    var sec = Math.floor(secs - (hr * 3600) - (min * 60));
 
-get(route.query.mbId ?? null, route.params.title, route.query.artistMbId || null, route.query.artistMbName || null, route.query.year || null);
+    if (min < 10) {
+      min = '0' + min;
+    }
+    if (sec < 10) {
+      sec = '0' + sec;
+    }
+    return (min + ':' + sec);
+  } else {
+    return ('00:00');
+  }
+}
+
+
+onMounted(() => {
+  if (route.query.mbId && route.params.title) {
+    get(route.query.mbId, route.params.title, route.query.artistMBId, route.query.artistName, route.query.year);
+  } else {
+    // TODO
+    $q.notify({
+      type: "negative",
+      message: t("API Error: fatal error"),
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+    });
+  }
+});
 </script>
