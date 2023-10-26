@@ -90,7 +90,7 @@ const sortFieldOptions = [
   }
 ];
 
-const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "name");
+const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "title");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
 const loading = ref(false);
