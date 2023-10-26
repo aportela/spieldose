@@ -12,11 +12,10 @@
           <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" spinner-color="pink" />
         </div>
         <div style="padding-top: 100px">
-          <p class="text-subtitle2">Album</p>
+          <p class="text-subtitle2">{{ t('Album') }}</p>
           <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
-          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
-            formatSecondsAsTime(Math.round(totalLength / 100)) }}</p>
-          <p><q-icon name="play_arrow" size="xl"></q-icon><q-icon name="add_box" size="xl"></q-icon></p>
+          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{ formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
+          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" @click="onPlayAlbum"></q-icon></p>
         </div>
       </div>
       <p style="clear: both;"></p>
@@ -26,7 +25,7 @@
             <th class="text-left" style="width: 2em;" v-if="album.media.length > 1"><q-icon name="album"
                 size="xs"></q-icon></th>
             <th class="text-left" style="width: 2em;">#</th>
-            <th class="text-left">Title</th>
+            <th class="text-left">{{ t('Title') }}</th>
             <th class="text-left" style="width: 5em;"><q-icon name="schedule" size="xs"></q-icon></th>
           </tr>
         </thead>
@@ -51,6 +50,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { api } from 'boot/axios';
+import { albumActions } from "src/boot/spieldose";
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -134,6 +134,28 @@ function formatSecondsAsTime(secs, format) {
   }
 }
 
+function onPlayAlbum() {
+  albumActions.play(
+    album.value.mbId || null,
+    album.value.title || null,
+    album.value.artist.mbId|| null,
+    album.value.artist.name || null,
+    album.value.year || null
+  ).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
 
 onMounted(() => {
   if (route.query.mbId && route.params.title) {
