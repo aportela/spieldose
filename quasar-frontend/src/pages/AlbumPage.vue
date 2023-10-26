@@ -20,7 +20,7 @@
         </div>
       </div>
       <p style="clear: both;"></p>
-      <q-markup-table class="q-mt-md">
+      <q-markup-table class="q-mt-md" v-if="album.media?.length">
         <thead>
           <tr>
             <th class="text-left" style="width: 1em;" v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
@@ -117,6 +117,7 @@ const totalTracks = ref(0);
 const totalLength = ref(0);
 
 function get(mbId, title, artistMBId, artistName, year) {
+  console.log(1);
   totalTracks.value = 0;
   totalLength.value = 0;
   loading.value = true;
@@ -142,6 +143,7 @@ function get(mbId, title, artistMBId, artistName, year) {
     }
   });
 }
+
 function formatSecondsAsTime(secs, format) {
   if (secs && Number.isInteger(secs) && secs > 0) {
     var hr = Math.floor(secs / 3600);
@@ -225,7 +227,7 @@ onMounted(() => {
     $q.notify({
       type: "negative",
       message: t("API Error: fatal error"),
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+      caption: t("API Error: fatal error details", { status: 404, statusText: "not found" })
     });
   }
 });
