@@ -115,8 +115,10 @@ class Album extends \Spieldose\Entities\Entity
         } else if (!empty($this->title) && !empty($this->artist->name) && !empty($this->year)) {
             $query = "
                         SELECT
-                            id, track_number AS position, mb_release_track_id AS mbid, title, mb_artist_id AS artist_mbid, artist AS artist_name, (playtime_seconds * 100) AS length, COALESCE(disc_number, 1) AS disc_number
+                            FILE_ID3_TAG.id, track_number AS position, mb_release_track_id AS mbid, title, mb_artist_id AS artist_mbid, artist AS artist_name, (playtime_seconds * 100) AS length, COALESCE(disc_number, 1) AS disc_number, DIRECTORY.id AS coverPathId
                         FROM FILE_ID3_TAG
+                        INNER JOIN FILE ON FILE.id = FILE_ID3_TAG.id
+                        LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id AND DIRECTORY.cover_filename IS NOT NULL
                         WHERE FILE_ID3_TAG.album = :title
                         AND FILE_ID3_TAG.album_artist = :artistName
                         AND FILE_ID3_TAG.year = :year
@@ -129,10 +131,25 @@ class Album extends \Spieldose\Entities\Entity
             ];
             $discNumbers = [];
             $trackResults = $dbh->query($query, $params);
+            $coverPathId = null;
             foreach ($trackResults as $result) {
                 if (!in_array($result->disc_number, $discNumbers)) {
                     $discNumbers[] = $result->disc_number;
                 }
+                if (empty($coverPathId) && !empty($result->coverPathId)) {
+                    $coverPathId = $result->coverPathId;
+                }
+            }
+            if ($useLocalCovers && !empty($coverPathId)) {
+                $this->covers = [
+                    "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $coverPathId),
+                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $coverPathId)
+                ];
+            } else {
+                $this->covers = [
+                    "small" => null,
+                    "normal" => null
+                ];
             }
             foreach ($discNumbers as $discNumber) {
                 $tracks = [];
