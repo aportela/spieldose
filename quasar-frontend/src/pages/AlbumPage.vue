@@ -23,7 +23,8 @@
       <q-markup-table class="q-mt-md" v-if="album.media?.length">
         <thead>
           <tr>
-            <th class="text-left" style="width: 1em;" v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
+            <th class="text-left" style="width: 1em;"
+              v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
             <th class="text-left" style="width: 3em;" v-if="album.media.length > 1"><q-icon name="album"
                 size="xs"></q-icon></th>
             <th class="text-left" style="width: 2em;">#</th>
@@ -34,16 +35,20 @@
         <tbody v-for="media, index in album.media" :key="index">
           <tr v-for="track in media.tracks" :key="track.mbId">
             <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
-              <q-icon :name="currentElementRowIcon" size="md" color="pink" v-if="currentTrackId == track.id"></q-icon>
+              <q-icon :name="currentElementRowIcon" size="md" :color="! spieldoseStore.isStopped ? 'pink': 'dark'" class="cursor-pointer"
+                v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
             </td>
             <td v-if="album.media.length > 1">{{ index + 1 }}</td>
             <td>{{ track.position }}</td>
             <td>
-              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)" v-if="track.id"></q-icon>
-              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)" v-if="track.id"></q-icon>
+              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)"
+                v-if="track.id"></q-icon>
+              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)"
+                v-if="track.id"></q-icon>
               {{ track.title }}<br><router-link
                 :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
-                  track.artist.name }}</router-link></td>
+                  track.artist.name }}</router-link>
+            </td>
             <td>{{ formatSecondsAsTime(Math.round(track.length / 1000)) }}</td>
           </tr>
         </tbody>
@@ -70,15 +75,11 @@ const router = useRouter();
 
 const spieldoseStore = useSpieldoseStore();
 
-const currentTrackId = computed(() => spieldoseStore.getCurrentPlaylistTrackId );
+const currentTrackId = computed(() => spieldoseStore.getCurrentPlaylistTrackId);
 
 const currentElementRowIcon = computed(() => {
-  if (spieldoseStore.isPlaying) {
-    return ('play_arrow');
-  } else if (spieldoseStore.isPaused) {
+  if (spieldoseStore.isPaused) {
     return ('pause');
-  } else if (spieldoseStore.isStopped) {
-    return ('stop');
   } else {
     return ('play_arrow');
   }
@@ -207,6 +208,15 @@ function onPlayAlbum() {
           break;
       }
     });
+}
+
+function onPauseResume() {
+  spieldoseStore.interact();
+  if (!spieldoseStore.isPlaying) {
+    spieldoseStore.play();
+  } else  {
+    spieldoseStore.pause();
+  }
 }
 
 onMounted(() => {
