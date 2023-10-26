@@ -235,9 +235,12 @@ export default {
     "API Error: error incrementando las reproducciones de la canción",
   "API Error: error toggling favorite flag":
     "API Error: error establecendo o flag de favorita na canción",
-  "API Error: error playing album": "API Error: error reproduciendo el album",
+  "API Error: error playing album": "API Error: error reproducindo o album",
   "API Error: error enqueueing album":
     "API Error: error poniendo en cola el album",
+  "API Error: error playing track": "API Error: error reproducindo a canción",
+  "API Error: error enqueueing track":
+    "API Error: error poniendo en cola la canción",
   "API Error: error loading playlist":
     "API Error: error cargando a lista de reproducción",
 

@@ -232,6 +232,8 @@ export default {
     "API Error: error toggling favorite flag",
   "API Error: error playing album": "API Error: error playing album",
   "API Error: error enqueueing album": "API Error: error enqueueing album",
+  "API Error: error playing track": "API Error: error playing track",
+  "API Error: error enqueueing track": "API Error: error enqueueing track",
   "API Error: error loading playlist": "API Error: error loading playlist",
 
   // other

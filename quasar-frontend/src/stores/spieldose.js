@@ -70,7 +70,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         lastChangeTimestamp: null,
         totalTracks: 0,
         currentTrackIndex: -1,
-        currentTrackShuffledIndex: - 1,
+        currentTrackShuffledIndex: -1,
         currentElement: {
           track: null,
           radioStation: null,
@@ -134,6 +134,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
         return null;
       }
     },
+    getCurrentPlaylistTrackId(state) {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.id;
+      } else {
+        return null;
+      }
+    },
     getCurrentPlaylistElementNormalImage(state) {
       if (this.isCurrentPlaylistElementATrack) {
         return state.data.currentPlaylist.currentElement.track.covers.normal;
@@ -163,7 +170,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     allowSkipNext: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
-      state.data.currentPlaylist.totalTracks - 1,
+        state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {
@@ -336,9 +343,11 @@ export const useSpieldoseStore = defineStore("spieldose", {
     },
     toggleShuffeMode: function () {
       if (this.data.player.shuffle) {
-        this.data.currentPlaylist.currentTrackIndex = this.data.currentPlaylist.currentTrackShuffledIndex;
+        this.data.currentPlaylist.currentTrackIndex =
+          this.data.currentPlaylist.currentTrackShuffledIndex;
       } else {
-        this.data.currentPlaylist.currentTrackShuffledIndex = this.data.currentPlaylist.currentTrackIndex;
+        this.data.currentPlaylist.currentTrackShuffledIndex =
+          this.data.currentPlaylist.currentTrackIndex;
       }
       this.data.player.shuffle = !this.data.player.shuffle;
       this.savePlayerSettings();
@@ -358,7 +367,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
     ) {
       const oldURL = this.getCurrentPlaylistElementURL;
       this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
-      this.data.currentPlaylist.currentTrackShuffledIndex = currentTrackShuffledIndex;
+      this.data.currentPlaylist.currentTrackShuffledIndex =
+        currentTrackShuffledIndex;
       this.data.currentPlaylist.totalTracks = totalTracks;
       this.data.currentPlaylist.currentElement.track = track;
       this.data.currentPlaylist.currentElement.radioStation = radioStation;

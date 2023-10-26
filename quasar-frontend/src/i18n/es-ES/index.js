@@ -240,6 +240,9 @@ export default {
   "API Error: error playing album": "API Error: error reproduciendo el album",
   "API Error: error enqueueing album":
     "API Error: error poniendo en cola el album",
+  "API Error: error playing track": "API Error: error reproduciendo la canción",
+  "API Error: error enqueueing track":
+    "API Error: error poniendo en cola la canción",
   "API Error: error loading playlist":
     "API Error: error cargando la lista de reproducción",
 

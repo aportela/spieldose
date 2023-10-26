@@ -14,7 +14,8 @@
         <div style="padding-top: 100px">
           <p class="text-subtitle2">{{ t('Album') }}</p>
           <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
-          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{ formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
+          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
+            formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
           <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" @click="onPlayAlbum"></q-icon></p>
         </div>
       </div>
@@ -22,7 +23,8 @@
       <q-markup-table class="q-mt-md">
         <thead>
           <tr>
-            <th class="text-left" style="width: 2em;" v-if="album.media.length > 1"><q-icon name="album"
+            <th class="text-left" style="width: 1em;" v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
+            <th class="text-left" style="width: 3em;" v-if="album.media.length > 1"><q-icon name="album"
                 size="xs"></q-icon></th>
             <th class="text-left" style="width: 2em;">#</th>
             <th class="text-left">{{ t('Title') }}</th>
@@ -31,9 +33,15 @@
         </thead>
         <tbody v-for="media, index in album.media" :key="index">
           <tr v-for="track in media.tracks" :key="track.mbId">
+            <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
+              <q-icon :name="currentElementRowIcon" size="md" color="pink" v-if="currentTrackId == track.id"></q-icon>
+            </td>
             <td v-if="album.media.length > 1">{{ index + 1 }}</td>
             <td>{{ track.position }}</td>
-            <td>{{ track.title }}<br><router-link
+            <td>
+              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)"></q-icon>
+              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)"></q-icon>
+              {{ track.title }}<br><router-link
                 :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
                   track.artist.name }}</router-link></td>
             <td>{{ formatSecondsAsTime(Math.round(track.length / 1000)) }}</td>
@@ -49,14 +57,32 @@ import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
+import { useSpieldoseStore } from "stores/spieldose";
 import { api } from 'boot/axios';
-import { albumActions } from "src/boot/spieldose";
+import { albumActions, trackActions } from "src/boot/spieldose";
+
 
 const { t } = useI18n();
 const $q = useQuasar();
 
 const route = useRoute();
 const router = useRouter();
+
+const spieldoseStore = useSpieldoseStore();
+
+const currentTrackId = computed(() => spieldoseStore.getCurrentPlaylistTrackId );
+
+const currentElementRowIcon = computed(() => {
+  if (spieldoseStore.isPlaying) {
+    return ('play_arrow');
+  } else if (spieldoseStore.isPaused) {
+    return ('pause');
+  } else if (spieldoseStore.isStopped) {
+    return ('stop');
+  } else {
+    return ('play_arrow');
+  }
+});
 
 router.beforeEach(async (to, from) => {
   if (to.name == "album") {
@@ -134,11 +160,45 @@ function formatSecondsAsTime(secs, format) {
   }
 }
 
+function onPlayTrack(id) {
+  trackActions.play(id).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing track"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
+function onEnqueueTrack(id) {
+  trackActions.enqueue(id).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing track"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
 function onPlayAlbum() {
   albumActions.play(
     album.value.mbId || null,
     album.value.title || null,
-    album.value.artist.mbId|| null,
+    album.value.artist.mbId || null,
     album.value.artist.name || null,
     album.value.year || null
   ).then((success) => {

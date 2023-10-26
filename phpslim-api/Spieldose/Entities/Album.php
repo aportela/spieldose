@@ -70,11 +70,12 @@ class Album extends \Spieldose\Entities\Entity
                 foreach ($mediaResults as $mediaResult) {
                     $query = "
                         SELECT
-                            position, mbid, title, artist_mbid, artist_name, length
+                            FILE_ID3_TAG.id AS id, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.position, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.mbid, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.title, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.artist_mbid, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.artist_name, CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.length
                         FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK
-                        WHERE release_mbid = :mbid
-                        AND release_media = :media
-                        ORDER BY position
+                        LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.mb_release_track_id = CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.mbid
+                        WHERE CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.release_mbid = :mbid
+                        AND CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.release_media = :media
+                        ORDER BY CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK.position
                     ";
                     $params = [
                         new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
@@ -83,6 +84,7 @@ class Album extends \Spieldose\Entities\Entity
                     $tracks = [];
                     foreach ($dbh->query($query, $params) as $track) {
                         $tracks[] = (object) [
+                            "id" => $track->id,
                             "position" => $track->position,
                             "mbId" => $track->mbid,
                             "title" => $track->title,
