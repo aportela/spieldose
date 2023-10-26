@@ -438,5 +438,10 @@ return (array(
         '
             DROP TABLE `RADIO_STATION`;
         '
+    ),
+    27 => array(
+        '
+            ALTER TABLE `CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK` ADD `length` INTEGER NOT NULL
+        '
     )
 ));

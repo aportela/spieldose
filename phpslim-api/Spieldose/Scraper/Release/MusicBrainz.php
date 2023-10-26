@@ -40,9 +40,13 @@ class MusicBrainz
                 $this->artist = $mbRelease->artist;
                 $this->media = $mbRelease->media;
                 $this->scraped = true;
-                echo "scrapped";
+                if (php_sapi_name() == "cli") {
+                    echo "scrapped";
+                }
             } catch (\Throwable $e) {
-                echo "not scraped";
+                if (php_sapi_name() == "cli") {
+                    echo "not scraped";
+                }
                 $this->logger->warning(sprintf("[MusicBrainz] error scraping mbid %s: %s", $this->mbId, $e->getMessage()));
             }
         }
@@ -52,9 +56,9 @@ class MusicBrainz
     public function saveCache(\aportela\DatabaseWrapper\DB $dbh)
     {
         $query = "
-            INSERT INTO CACHE_RELEASE_MUSICBRAINZ (mbid, title, year, artist_mbid, artist_name, media_count, ctime, mtime) VALUES (:mbid, :title, :year, :media_count, strftime('%s', 'now'), strftime('%s', 'now'))
+            INSERT INTO CACHE_RELEASE_MUSICBRAINZ (mbid, title, year, artist_mbid, artist_name, media_count, ctime, mtime) VALUES (:mbid, :title, :year, :artist_mbid, :artist_name, :media_count, strftime('%s', 'now'), strftime('%s', 'now'))
                 ON CONFLICT(mbid) DO
-            UPDATE SET title = :title, year = :year, :artist_mbid, :artist_name, media_count = :media_count, mtime = strftime('%s', 'now')
+            UPDATE SET title = :title, year = :year, artist_mbid = :artist_mbid, artist_name = :artist_name, media_count = :media_count, mtime = strftime('%s', 'now')
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
@@ -97,7 +101,7 @@ class MusicBrainz
                 $dbh->exec($query, $params);
                 foreach ($media->tracks as $track) {
                     $query = "
-                        INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK (mbid, release_mbid, release_media, position, title, artist_mbid, artist_name) VALUES (:mbid, :release_mbid, :release_media, :position, :title, :artist_mbid, :artist_name)
+                        INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK (mbid, release_mbid, release_media, position, title, artist_mbid, artist_name, length) VALUES (:mbid, :release_mbid, :release_media, :position, :title, :artist_mbid, :artist_name, :length)
                     ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $track->mbId),
@@ -107,6 +111,7 @@ class MusicBrainz
                         new \aportela\DatabaseWrapper\Param\StringParam(":title", $track->title),
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $track->artist->mbId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $track->artist->name),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":length", $track->length),
                     );
                     $dbh->exec($query, $params);
                 }
