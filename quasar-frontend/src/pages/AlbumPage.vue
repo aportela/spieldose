@@ -86,16 +86,7 @@ const currentElementRowIcon = computed(() => {
 
 router.beforeEach(async (to, from) => {
   if (to.name == "album") {
-    if (to.query.mbId && to.params.title) {
-      get(to.query.mbId, to.params.title, to.query.artistMBId, to.query.artistName, to.query.year);
-    } else {
-      // TODO
-      $q.notify({
-        type: "negative",
-        message: t("API Error: fatal error"),
-        caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-      });
-    }
+    get(route.query.mbId, route.params.title, route.query.artistMBId, route.query.artistName, route.query.year);
   }
 });
 
@@ -220,15 +211,6 @@ function onPlayAlbum() {
 }
 
 onMounted(() => {
-  if (route.query.mbId && route.params.title) {
-    get(route.query.mbId, route.params.title, route.query.artistMBId, route.query.artistName, route.query.year);
-  } else {
-    // TODO
-    $q.notify({
-      type: "negative",
-      message: t("API Error: fatal error"),
-      caption: t("API Error: fatal error details", { status: 404, statusText: "not found" })
-    });
-  }
+  get(route.query.mbId, route.params.title, route.query.artistMBId, route.query.artistName, route.query.year);
 });
 </script>

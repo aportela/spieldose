@@ -112,6 +112,47 @@ class Album extends \Spieldose\Entities\Entity
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbid");
             }
+        } else if (!empty($this->title) && !empty($this->artist->name) && !empty($this->year)) {
+            $query = "
+                        SELECT
+                            id, track_number AS position, mb_release_track_id AS mbid, title, mb_artist_id AS artist_mbid, artist AS artist_name, (playtime_seconds * 100) AS length, COALESCE(disc_number, 1) AS disc_number
+                        FROM FILE_ID3_TAG
+                        WHERE FILE_ID3_TAG.album = :title
+                        AND FILE_ID3_TAG.album_artist = :artistName
+                        AND FILE_ID3_TAG.year = :year
+                        ORDER BY COALESCE(disc_number, 1), track_number
+                    ";
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artistName", $this->artist->name),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $this->year)
+            ];
+            $discNumbers = [];
+            $trackResults = $dbh->query($query, $params);
+            foreach ($trackResults as $result) {
+                if (!in_array($result->disc_number, $discNumbers)) {
+                    $discNumbers[] = $result->disc_number;
+                }
+            }
+            foreach ($discNumbers as $discNumber) {
+                $tracks = [];
+                foreach ($trackResults as $track) {
+                    if ($track->disc_number == $discNumber) {
+                        $tracks[] = (object) [
+                            "id" => $track->id,
+                            "position" => $track->position,
+                            "mbId" => $track->mbid,
+                            "title" => $track->title,
+                            "artist" => (object) [
+                                "mbId" => $track->artist_mbid,
+                                "name" => $track->artist_name,
+                            ],
+                            "length" => $track->length
+                        ];
+                    }
+                }
+                $this->media[$discNumber - 1] = ["tracks" => $tracks];
+            }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("mbid");
         }
