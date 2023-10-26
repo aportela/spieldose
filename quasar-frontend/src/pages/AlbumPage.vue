@@ -108,7 +108,6 @@ const totalTracks = ref(0);
 const totalLength = ref(0);
 
 function get(mbId, title, artistMBId, artistName, year) {
-  console.log(1);
   totalTracks.value = 0;
   totalLength.value = 0;
   loading.value = true;
