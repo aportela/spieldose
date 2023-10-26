@@ -39,8 +39,8 @@
             <td v-if="album.media.length > 1">{{ index + 1 }}</td>
             <td>{{ track.position }}</td>
             <td>
-              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)"></q-icon>
-              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)"></q-icon>
+              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)" v-if="track.id"></q-icon>
+              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)" v-if="track.id"></q-icon>
               {{ track.title }}<br><router-link
                 :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
                   track.artist.name }}</router-link></td>
