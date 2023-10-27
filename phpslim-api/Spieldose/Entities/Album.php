@@ -322,6 +322,15 @@ class Album extends \Spieldose\Entities\Entity
         if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
             $whereConditions[] = " FIT.mb_album_id = :mbid ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
+        } else if (isset($filter["title"]) && !empty($filter["title"]) && isset($filter["artistName"]) && !empty($filter["artistName"])) {
+            $whereConditions[] = " FIT.album = :title ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", $filter["title"]);
+            $whereConditions[] = " COALESCE(FIT.album_artist, FIT.artist) = :artistName ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artistName", $filter["artistName"]);
+            if (isset($filter["year"]) && !empty($filter["year"])) {
+                $whereConditions[] = " FIT.year = :year ";
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $filter["year"]);
+            }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("filter");
         }

@@ -973,9 +973,16 @@ return function (App $app) {
                         // TODO
                         throw new \Exception("save error");
                     }
-                } else if (isset($params["album"]) && isset($params["album"]["mbId"]) && !empty($params["album"]["mbId"])) {
-                    // TODO: search on another fields
-                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["album"]["mbId"]]);
+                } else if (isset($params["album"])) {
+                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds(
+                        $dbh,
+                        [
+                            "mbId" => $params["album"]["mbId"] ?? null,
+                            "title" => $params["album"]["title"] ?? null,
+                            "artistName" => $params["album"]["artist"]["name"] ?? null,
+                            "year" => $params["album"]["year"] ?? null
+                        ]
+                    );
                     if (!$currentPlaylist->save($dbh, $albumTrackIds)) {
                         // TODO
                         throw new \Exception("save error");
@@ -1009,8 +1016,15 @@ return function (App $app) {
                         throw new \Exception("save error");
                     }
                 } else if (isset($params["album"]) && isset($params["album"]["mbId"]) && !empty($params["album"]["mbId"])) {
-                    // TODO: search on another fields
-                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds($dbh, ["mbId" => $params["album"]["mbId"]]);
+                    $albumTrackIds = \Spieldose\Entities\Album::getTrackIds(
+                        $dbh,
+                        [
+                            "mbId" => $params["album"]["mbId"] ?? null,
+                            "title" => $params["album"]["title"] ?? null,
+                            "artistName" => $params["album"]["artist"]["name"] ?? null,
+                            "year" => $params["album"]["year"] ?? null
+                        ]
+                    );
                     if (!$currentPlaylist->append($dbh, $albumTrackIds)) {
                         // TODO
                         throw new \Exception("save error");
