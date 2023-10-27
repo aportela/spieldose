@@ -16,7 +16,7 @@
           <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
           <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
             formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
-          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" @click="onPlayAlbum"></q-icon></p>
+          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')" @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl" :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
         </div>
       </div>
       <p style="clear: both;"></p>
@@ -147,40 +147,6 @@ function formatSecondsAsTime(secs, format) {
   }
 }
 
-function onPlayTrack(id) {
-  trackActions.play(id).then((success) => {
-  })
-    .catch((error) => {
-      switch (error.response.status) {
-        default:
-          // TODO: custom message
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error playing track"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-    });
-}
-
-function onEnqueueTrack(id) {
-  trackActions.enqueue(id).then((success) => {
-  })
-    .catch((error) => {
-      switch (error.response.status) {
-        default:
-          // TODO: custom message
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error enqueueing track"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-    });
-}
-
 function onPlayAlbum() {
   albumActions.play(
     album.value.mbId || null,
@@ -197,6 +163,29 @@ function onPlayAlbum() {
           $q.notify({
             type: "negative",
             message: t("API Error: error playing album"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
+function onEnqueueAlbum() {
+  albumActions.enqueue(
+    album.value.mbId || null,
+    album.value.title || null,
+    album.value.artist.mbId || null,
+    album.value.artist.name || null,
+    album.value.year || null
+  ).then((success) => {
+  })
+  .catch((error) => {
+      switch (error.response.status) {
+        default:
+          // TODO: custom message
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing album"),
             caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
           });
           break;
