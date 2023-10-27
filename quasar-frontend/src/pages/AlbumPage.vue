@@ -35,8 +35,8 @@
         <tbody v-for="media, index in album.media" :key="index">
           <tr v-for="track in media.tracks" :key="track.mbId">
             <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
-              <q-icon :name="currentElementRowIcon" size="md" :color="! spieldoseStore.isStopped ? 'pink': 'dark'" class="cursor-pointer"
-                v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
+              <q-icon :name="currentElementRowIcon" size="md" :color="!spieldoseStore.isStopped ? 'pink' : 'dark'"
+                class="cursor-pointer" v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
             </td>
             <td v-if="album.media.length > 1">{{ index + 1 }}</td>
             <td>{{ track.position }}</td>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, inject, nextTick } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
@@ -82,12 +82,6 @@ const currentElementRowIcon = computed(() => {
     return ('pause');
   } else {
     return ('play_arrow');
-  }
-});
-
-router.beforeEach(async (to, from) => {
-  if (to.name == "album") {
-    get(route.query.mbId, route.params.title, route.query.artistMBId, route.query.artistName, route.query.year);
   }
 });
 
@@ -214,7 +208,7 @@ function onPauseResume() {
   spieldoseStore.interact();
   if (!spieldoseStore.isPlaying) {
     spieldoseStore.play();
-  } else  {
+  } else {
     spieldoseStore.pause();
   }
 }
