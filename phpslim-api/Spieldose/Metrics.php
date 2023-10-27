@@ -279,6 +279,7 @@ class Metrics
         $filterConditions = array();
         $fieldDefinitions = [
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
+            "mbId" => "FIT.mb_album_id",
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
             "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, FIT.year)"
@@ -323,7 +324,7 @@ class Metrics
                         INNER JOIN FILE_ID3_TAG FIT ON FIT.id = FPS.file_id
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                         %s
-                        GROUP BY COALESCE(MB_CACHE_RELEASE.title, FIT.album)
+                        GROUP BY COALESCE(MB_CACHE_RELEASE.title, FIT.album, FIT.mb_album_id)
                         HAVING COALESCE(MB_CACHE_RELEASE.title, FIT.album) NOT NULL
                         ORDER BY playCount %s
                         LIMIT :count
