@@ -59,7 +59,9 @@
                 name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
           </q-td>
           <q-td key="albumTitle" :props="props">
-            {{ props.row.album.title }}
+            <router-link v-if="props.row.album.title" :class="{ 'text-white text-bold': false }"
+              :to="{ name: 'album', params: { title: props.row.album.title }, query: { mbId: props.row.album.mbId, artistMbId: props.row.album.artist.mbId, artistName: props.row.album.artist.name, year: props.row.album.year}  }"><q-icon
+                name="link" class="q-mr-sm"></q-icon>{{ props.row.album.title }}</router-link>
           </q-td>
           <q-td key="albumTrackIndex" :props="props">
             {{ props.row.trackNumber }}
