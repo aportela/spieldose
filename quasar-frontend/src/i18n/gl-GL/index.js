@@ -23,6 +23,7 @@ export default {
   Albums: "Álbumes",
   Genres: "Xéneros",
   Genre: "Xénero",
+  Disc: "Disco",
 
   // date ranges
   Today: "Hoxe",

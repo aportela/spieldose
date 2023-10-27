@@ -23,6 +23,7 @@ export default {
   Albums: "Albums",
   Genres: "Genres",
   Genre: "Genre",
+  Disc: "Disc",
 
   // date ranges
   Today: "Today",

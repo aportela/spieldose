@@ -653,11 +653,11 @@ function nl2br(str, replaceMode, isXhtml) {
 }
 
 function playTrack(track) {
-  trackActions.play([track.id]);
+  trackActions.play(track.id);
 }
 
 function enqueueTrack(track) {
-  trackActions.enqueue([track.id]);
+  trackActions.enqueue(track.id);
 }
 
 function get(mbId, name) {

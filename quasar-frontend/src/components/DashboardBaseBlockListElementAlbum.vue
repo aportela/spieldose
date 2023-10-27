@@ -3,7 +3,8 @@
     <slot name="prepend">
     </slot>
     <q-icon name="album" size="sm" class="q-mr-xs" />
-    <span>{{ album.title }}</span>
+    <router-link style="text-decoration: none;" :to="{ name: 'album', params: { title: album.title }, query: { mbId: album.mbId, artistName: album.albumArtistName, artistMBId: album.albumArtistMBId, year: album.year }}" v-if="album.title">{{ album.title }}</router-link>
+    <span v-else>&nbsp;</span>
     <span v-if="album.year"> ({{ album.year }}) </span>
     <span v-if="album.albumArtistName"> / <router-link
         :to="{ name: 'artist', params: { name: album.albumArtistName }, query: { mbid: album.albumArtistMBId, tab: 'overview' } }">{{
