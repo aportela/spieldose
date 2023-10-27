@@ -16,7 +16,9 @@
           <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
           <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
             formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
-          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')" @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl" :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
+          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')"
+              @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl"
+              :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
         </div>
       </div>
       <p style="clear: both;"></p>
@@ -179,7 +181,7 @@ function onEnqueueAlbum() {
     album.value.year || null
   ).then((success) => {
   })
-  .catch((error) => {
+    .catch((error) => {
       switch (error.response.status) {
         default:
           // TODO: custom message
