@@ -112,7 +112,7 @@ class Album extends \Spieldose\Entities\Entity
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbid");
             }
-        } else if (!empty($this->title) && !empty($this->artist->name) && !empty($this->year)) {
+        } else if (!empty($this->title) && !empty($this->artist->name)) {
             $query = "
                         SELECT
                             FILE_ID3_TAG.id, track_number AS position, mb_release_track_id AS mbid, title, mb_artist_id AS artist_mbid, artist AS artist_name, (playtime_seconds * 100) AS length, COALESCE(disc_number, 1) AS disc_number, DIRECTORY.id AS coverPathId
@@ -127,8 +127,12 @@ class Album extends \Spieldose\Entities\Entity
             $params = [
                 new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
                 new \aportela\DatabaseWrapper\Param\StringParam(":artistName", $this->artist->name),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $this->year)
             ];
+            if (!empty($this->year)) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $this->year);
+            } else {
+                $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
+            }
             $discNumbers = [];
             $trackResults = $dbh->query($query, $params);
             $coverPathId = null;
@@ -171,7 +175,7 @@ class Album extends \Spieldose\Entities\Entity
                 $this->media[$discNumber - 1] = ["tracks" => $tracks];
             }
         } else {
-            throw new \Spieldose\Exception\InvalidParamsException("mbid");
+            throw new \Spieldose\Exception\InvalidParamsException("mbid,title,artist");
         }
     }
 
