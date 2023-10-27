@@ -26,7 +26,7 @@
         <div :class="{ 'col-6': album.media?.length > 1, 'col-12': album.media?.length <= 1 }"
           v-for="media, index in album.media" :key="index">
           <q-markup-table>
-            <caption v-if="album.media?.length > 1" class="q-pa-md"><q-icon name="album" size="xs"></q-icon> Disc {{ index
+            <caption v-if="album.media?.length > 1" class="q-pa-md"><q-icon name="album" size="xs"></q-icon> {{ t("Disc") }} {{ index
               + 1 }}</caption>
             <thead>
               <tr>
