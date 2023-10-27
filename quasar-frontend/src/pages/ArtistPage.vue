@@ -203,7 +203,7 @@
                 <div class="col-4" v-for="similar in artistData.similar.slice(0, 3)" :key="similar.name">
                   <p class="text-center">
                     <router-link
-                      :to="{ name: 'artist', query: { mbid: similar.mbId, name: similar.name, tab: 'overview' } }"
+                      :to="{ name: 'artist', params: { name: similar.name }, query: { mbid: similar.mbId, tab: 'overview' } }"
                       style="text-decoration: none">
                       <q-img class="q-mr-sm q-mb-sm rounded-borders" style="border-radius: 50%" :src="similar.image"
                         fit="cover" width="96px" height="96px" spinner-color="pink" />
@@ -527,14 +527,14 @@ const router = useRouter();
 const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
 
 const artistMBId = ref(route.query.mbid);
-const artistName = ref(route.query.name);
+const artistName = ref(route.params.name);
 
 router.beforeEach(async (to, from) => {
-  if (to.name == "artist") {
-    artistName.value = to.query.name || null;
+  if (from.name == "artist" && to.name == "artist") {
+    artistName.value = to.params.name || null;
     artistMBId.value = to.query.mbid || null;
     tab.value = to.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(to.query.tab) ? to.query.tab : 'overview';
-    if (from.query.name != to.query.name || from.query.mbid != to.query.mbid) {
+    if (from.params.name != to.params.name || from.query.mbid != to.query.mbid) {
       nextTick(() => {
         switch (tab.value) {
           case 'overview':
