@@ -22,39 +22,44 @@
         </div>
       </div>
       <p style="clear: both;"></p>
-      <q-markup-table class="q-mt-md" v-if="album.media?.length">
-        <thead>
-          <tr>
-            <th class="text-left" style="width: 1em;"
-              v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
-            <th class="text-left" style="width: 3em;" v-if="album.media.length > 1"><q-icon name="album"
-                size="xs"></q-icon></th>
-            <th class="text-left" style="width: 2em;">#</th>
-            <th class="text-left">{{ t('Title') }}</th>
-            <th class="text-left" style="width: 5em;"><q-icon name="schedule" size="xs"></q-icon></th>
-          </tr>
-        </thead>
-        <tbody v-for="media, index in album.media" :key="index">
-          <tr v-for="track in media.tracks" :key="track.mbId">
-            <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
-              <q-icon :name="currentElementRowIcon" size="md" :color="!spieldoseStore.isStopped ? 'pink' : 'dark'"
-                class="cursor-pointer" v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
-            </td>
-            <td v-if="album.media.length > 1">{{ index + 1 }}</td>
-            <td>{{ track.position }}</td>
-            <td>
-              <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)"
-                v-if="track.id"></q-icon>
-              <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)"
-                v-if="track.id"></q-icon>
-              {{ track.title }}<br><router-link
-                :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
-                  track.artist.name }}</router-link>
-            </td>
-            <td>{{ formatSecondsAsTime(Math.round(track.length / 1000)) }}</td>
-          </tr>
-        </tbody>
-      </q-markup-table>
+      <div class="q-mt-md row q-col-gutter-lg" v-if="album.media?.length">
+        <div :class="{ 'col-6': album.media?.length > 1, 'col-12': album.media?.length <= 1 }"
+          v-for="media, index in album.media" :key="index">
+          <q-markup-table>
+            <caption v-if="album.media?.length > 1" class="q-pa-md"><q-icon name="album" size="xs"></q-icon> Disc {{ index
+              + 1 }}</caption>
+            <thead>
+              <tr>
+                <th class="text-left" style="width: 1em;"
+                  v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack"></th>
+                <th class="text-left" style="width: 2em;">#</th>
+                <th class="text-left">{{ t('Title') }}</th>
+                <th class="text-left" style="width: 5em;"><q-icon name="schedule" size="xs"></q-icon></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="track in media.tracks" :key="track.mbId">
+                <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
+                  <q-icon :name="currentElementRowIcon" size="md" :color="!spieldoseStore.isStopped ? 'pink' : 'dark'"
+                    class="cursor-pointer" v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
+                    <q-icon :name="currentElementRowIcon" size="md" color="white" style="opacity: 0" v-else></q-icon>
+                </td>
+                <td>{{ track.position }}</td>
+                <td>
+                  <q-icon name="play_arrow" class="cursor-pointer q-mr-sm" size="sm" @click="onPlayTrack(track.id)"
+                    v-if="track.id"></q-icon>
+                  <q-icon name="add_box" class="cursor-pointer q-mr-sm" size="sm" @click="onEnqueueTrack(track.id)"
+                    v-if="track.id"></q-icon>
+                  {{ track.title }}<br><router-link
+                    :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }">{{
+                      track.artist.name }}</router-link>
+                </td>
+                <td>{{ formatSecondsAsTime(Math.round(track.length / 1000)) }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -103,14 +108,17 @@ const album = ref({
 
 const totalTracks = ref(0);
 const totalLength = ref(0);
+const totalMedia = ref(0);
 
 function get(mbId, title, artistMBId, artistName, year) {
   totalTracks.value = 0;
   totalLength.value = 0;
+  totalMedia.value = 0;
   loading.value = true;
   api.album.get(mbId, title, artistMBId, artistName, year).then((success) => {
     album.value = success.data.album;
     album.value.media.forEach((media) => {
+      totalMedia.value++;
       media.tracks.forEach((track) => {
         totalTracks.value++;
         totalLength.value += track.length;
@@ -147,6 +155,39 @@ function formatSecondsAsTime(secs, format) {
   } else {
     return ('00:00');
   }
+}
+
+function onPlayTrack(id) {
+  trackActions.play(id).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error playing track"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
+}
+
+
+function onEnqueueTrack(id) {
+  trackActions.enqueue(id).then((success) => {
+  })
+    .catch((error) => {
+      switch (error.response.status) {
+        default:
+          $q.notify({
+            type: "negative",
+            message: t("API Error: error enqueueing track"),
+            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+          });
+          break;
+      }
+    });
 }
 
 function onPlayAlbum() {
