@@ -12,13 +12,18 @@
           <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" spinner-color="pink" />
         </div>
         <div style="padding-top: 100px">
-          <p class="text-subtitle2">{{ t('Album') }}</p>
-          <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
-          <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
-            formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
-          <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')"
-              @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl"
-              :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
+          <div v-if="loading">
+              <q-spinner size="120px" color="pink" class="q-ml-xl"></q-spinner>
+          </div>
+          <div v-else>
+            <p class="text-subtitle2">{{ t('Album') }}</p>
+            <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
+            <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
+              formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
+            <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')"
+                @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl"
+                :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
+            </div>
         </div>
       </div>
       <p style="clear: both;"></p>
