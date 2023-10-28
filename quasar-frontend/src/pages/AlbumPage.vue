@@ -18,8 +18,8 @@
           <div v-else>
             <p class="text-subtitle2">{{ t('Album') }}</p>
             <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
-            <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} tracks, {{
-              formatSecondsAsTime(Math.round(totalLength / 1000)) }}</p>
+            <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} {{ t('tracks') }}, {{
+              formatSecondsAsTime(Math.round(totalLengthInSeconds)) }}</p>
             <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')"
                 @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl"
                 :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
@@ -112,12 +112,12 @@ const album = ref({
 });
 
 const totalTracks = ref(0);
-const totalLength = ref(0);
+const totalLengthInSeconds = ref(0);
 const totalMedia = ref(0);
 
 function get(mbId, title, artistMBId, artistName, year) {
   totalTracks.value = 0;
-  totalLength.value = 0;
+  totalLengthInSeconds.value = 0;
   totalMedia.value = 0;
   loading.value = true;
   api.album.get(mbId, title, artistMBId, artistName, year).then((success) => {
@@ -126,8 +126,9 @@ function get(mbId, title, artistMBId, artistName, year) {
       totalMedia.value++;
       media.tracks.forEach((track) => {
         totalTracks.value++;
-        totalLength.value += track.length;
+        totalLengthInSeconds.value += track.length / 1000;
       })
+      //totalLengthInSeconds.value = totalLengthInSeconds.value / 1000;
     });
     loading.value = false;
   }).catch((error) => {
