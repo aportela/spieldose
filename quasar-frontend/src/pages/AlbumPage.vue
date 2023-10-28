@@ -71,7 +71,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { useSpieldoseStore } from "stores/spieldose";
@@ -83,7 +83,6 @@ const { t } = useI18n();
 const $q = useQuasar();
 
 const route = useRoute();
-const router = useRouter();
 
 const spieldoseStore = useSpieldoseStore();
 
@@ -128,7 +127,6 @@ function get(mbId, title, artistMBId, artistName, year) {
         totalTracks.value++;
         totalLengthInSeconds.value += track.length / 1000;
       })
-      //totalLengthInSeconds.value = totalLengthInSeconds.value / 1000;
     });
     loading.value = false;
   }).catch((error) => {
@@ -208,7 +206,6 @@ function onPlayAlbum() {
     .catch((error) => {
       switch (error.response.status) {
         default:
-          // TODO: custom message
           $q.notify({
             type: "negative",
             message: t("API Error: error playing album"),
@@ -231,7 +228,6 @@ function onEnqueueAlbum() {
     .catch((error) => {
       switch (error.response.status) {
         default:
-          // TODO: custom message
           $q.notify({
             type: "negative",
             message: t("API Error: error enqueueing album"),
