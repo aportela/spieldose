@@ -55,7 +55,7 @@
                 <q-item-section>
                   <q-slider dense v-model="settings.audioMotionAnalyzer.mode" :min="0" :max="9" :step="1" label
                     label-always switch-label-side :label-value="selectedModeLabel" color="grey"
-                    @change="onSet('mode', settings.audioMotionAnalyzer.mode < 9 ? settings.audioMotionAnalyzer.mode: 10)" />
+                    @change="onSet('mode', settings.audioMotionAnalyzer.mode < 9 ? settings.audioMotionAnalyzer.mode : 10)" />
                 </q-item-section>
               </q-item>
             </div>
@@ -322,11 +322,11 @@
             </q-item>
             <q-separator spaced />
             <q-virtual-scroll style="height: 400px;" dark visible separator
-              :items="spieldoseStore.getCurrentPlaylist.elements" v-slot="{ item, index }">
+              :items="playlistItems" v-slot="{ item, index }">
               <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
                 <q-item-section avatar>
                   <q-avatar>
-                    <q-img :src="item.track.covers.small" v-if="item.track.covers.small">
+                    <q-img :src="item.covers.small" v-if="item.covers.small">
                       <template v-slot:error>
                         <q-icon name="album"></q-icon>
                       </template>
@@ -335,8 +335,8 @@
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ item.track.title }}</q-item-label>
-                  <q-item-label caption>{{ item.track.artist.name }}</q-item-label>
+                  <q-item-label>{{ item.title }}</q-item-label>
+                  <q-item-label caption>{{ item.artist.name }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-virtual-scroll>
@@ -396,6 +396,8 @@ import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { useSpieldoseStore } from "stores/spieldose";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { api } from 'boot/axios';
+import { currentPlayListActions } from '../boot/spieldose';
+
 
 const disabled = ref(false);
 
@@ -677,7 +679,7 @@ const defaultAudioMotionAnalyzerSettings = {
 };
 
 const settings = ref(spieldoseStore.getFullScreenVisualizationSettings || { audioMotionAnalyzer: defaultAudioMotionAnalyzerSettings });
-if (settings.value.audioMotionAnalyzer.mode == 9)  {
+if (settings.value.audioMotionAnalyzer.mode == 9) {
   settings.value.audioMotionAnalyzer.mode = 10;
 }
 function onSet(optionName, optionValue) {
@@ -733,35 +735,54 @@ const emit = defineEmits(['hide', 'skipPrevious', 'play', 'skipNext']);
 
 function onPlay() {
   spieldoseStore.interact();
-  spieldoseStore.play(false);
+  spieldoseStore.play();
 }
 
 function onSkipPrevious() {
-  //spieldoseEvents.emit.currentPlaylist.skipToPreviousTrack();
-  //emit('skipPrevious');
   spieldoseStore.interact();
-  // TODO
-  //spieldoseStore.skipPrevious();
+  currentPlayListActions.skipToPreviousElement().then((success) => {
+  }).catch((error) => {
+    // TODO
+  });
 }
 
 function onSkipNext() {
-  //spieldoseEvents.emit.currentPlaylist.nextTrack();
-  //emit('skipNext');
   spieldoseStore.interact();
-  // TODO
-  //spieldoseStore.skipNext();
+  currentPlayListActions.skipToNextElement().then((success) => {
+  }).catch((error) => {
+    // TODO
+  });
 }
 
 function onSetCurrentIndex(index) {
   spieldoseStore.interact();
-  spieldoseStore.skipToIndex(index);
+    currentPlayListActions.skipToElementIndex(index).then((success) => {
+    }).catch((error) => {
+      // TODO
+    });
 }
 
 function onClose() {
   analyzer.value.toggleAnalyzer();
 }
 
+const playlistItems = ref([]);
+
+const loading = ref(false);
+
+function getCurrentPlaylist() {
+  loading.value = true;
+  currentPlayListActions.get().then((success) => {
+    playlistItems.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+    loading.value = false;
+  }).catch((error) => {
+    // TODO
+    loading.value = false;
+  });
+}
+
 onMounted(() => {
+  getCurrentPlaylist();
   createAnalyzer();
 });
 
