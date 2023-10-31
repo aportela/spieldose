@@ -373,7 +373,7 @@ div#analyzer-canvas-container {
 #settings-container {
   width: 80em;
   max-width: 1280px;
-  opacity: 0.8;
+  opacity: 0.9;
   z-index: 1;
 }
 
