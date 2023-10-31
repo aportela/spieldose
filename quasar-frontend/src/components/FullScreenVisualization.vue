@@ -1,5 +1,10 @@
 <template>
   <div>
+    <!--
+      image credits:
+      “Band Performing on Stage” by Vishnu R Nair on Unsplash
+      https://unsplash.com/photos/band-performing-on-stage-in-front-of-people-m1WZS5ye404
+    -->
     <div id="visualization-container" style="background-image: url('images/overlay.jpg');">
       <div id="analyzer-canvas-container"></div>
       <q-card id="settings-container" class="bg-grey-4 q-pb-lg fixed-center" v-if="showSettings">
