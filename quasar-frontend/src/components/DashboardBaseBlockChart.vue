@@ -7,6 +7,9 @@
           :label="t(tabElement.label)" />
       </q-tabs>
     </template>
+     <template #prepend>
+      <slot name="prepend"></slot>
+    </template>
     <template #chart>
       <div :id="divId" v-show="items && items.length > 0"></div>
       <div v-if="!loading">

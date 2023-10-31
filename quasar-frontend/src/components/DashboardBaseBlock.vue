@@ -15,6 +15,7 @@
       <slot name="body">
         <q-skeleton type="text" square animation="blink" height="198px" v-if="loading" />
         <div v-else>
+          <slot name="prepend"></slot>
           <slot name="tabs"></slot>
           <slot name="list"></slot>
           <slot name="chart"></slot>
