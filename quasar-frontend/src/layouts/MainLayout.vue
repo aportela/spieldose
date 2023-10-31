@@ -72,7 +72,7 @@ import { useI18n } from "vue-i18n";
 import { i18n, defaultLocale } from "src/boot/i18n";
 import { default as leftSidebar } from "components/AppLeftSidebar.vue";
 import { default as ToolbarSearch } from "components/ToolbarSearch.vue";
-import { default as FullScreenVisualization } from "components/FullScreenVisualizationSettings.vue";
+import { default as FullScreenVisualization } from "components/FullScreenVisualization.vue";
 import { bus } from "boot/bus";
 import { fabGithub } from "@quasar/extras/fontawesome-v6";
 import { useSpieldoseStore } from "stores/spieldose";
