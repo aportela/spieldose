@@ -1,6 +1,16 @@
 <template>
   <q-dialog v-model="visible" @hide="onHide">
     <div v-if="track" style="width: 1024px; max-width: 80vw; background: #fff;">
+
+      <q-card>
+
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Track details</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+      </q-card>
       <q-splitter v-model="splitterModel" unit="px" style="height: 768px" disable after-class="q-pa-none">
         <template v-slot:before>
           <q-img :src="track.covers.normal" width="400px" height="400px" spinner-color="pink" />
@@ -24,11 +34,20 @@
             <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">on year {{
               track.album.year }}</p>
             <p class="q-mt-md text-subtitle2 text-grey-9" v-if="track.favorited"><q-icon name="favorite"
-                class="q-mr-sm"></q-icon> Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ss Z") }}</p>
+                class="q-mr-sm"></q-icon> Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ssZ") }}</p>
           </div>
         </template>
         <template v-slot:after>
-          <DashboardBaseBlockChart :globalStats="false" :trackId="trackId"></DashboardBaseBlockChart>
+          <DashboardBaseBlockChart :globalStats="tab == 'globalStats'" :trackId="trackId">
+            <template #prepend>
+              <q-btn-group spread color="white" text-color="text-pink-7">
+                <q-btn :label="t('My stats')" icon="person" :color="tab == 'myStats' ? 'pink' : 'dark'"
+                  @click="onSetTab('myStats')" />
+                <q-btn :label="t('Global stats')" icon="public" :color="tab == 'globalStats' ? 'pink' : 'dark'"
+                  @click="onSetTab('globalStats')" />
+              </q-btn-group>
+            </template>
+          </DashboardBaseBlockChart>
           <div class="q-pa-md">
             <h4 class="bg-white q-mt-none q-pt-none text-center">Lyrics</h4>
             <pre class="q-mt-xl" v-if="track.lyrics">{{ track.lyrics }}</pre>
@@ -40,9 +59,8 @@
   </q-dialog>
 </template>
 
-
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useQuasar, date } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { api } from "src/boot/axios";
@@ -66,6 +84,8 @@ function onHide() {
   emit('hide');
 }
 
+const tab = ref('myStats');
+
 const track = ref(null);
 
 function refresh() {
@@ -84,9 +104,16 @@ function refresh() {
     });
     loading.value = false;
   });
-
-
 }
 
-refresh();
+function onSetTab(t) {
+  if (t != tab.value) {
+    tab.value = t;
+  }
+}
+
+onMounted(() => {
+  refresh();
+});
+
 </script>
