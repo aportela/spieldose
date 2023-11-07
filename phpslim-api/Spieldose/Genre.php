@@ -17,7 +17,7 @@ class Genre
     public static function search(\Spieldose\Database\DB $dbh, array $filter = array(), string $order = "")
     {
         $sqlOrder = "";
-        if (! empty($order)) {
+        if (!empty($order)) {
             $sqlOrder = " ORDER BY RANDOM() ";
         } else {
             $sqlOrder = " ORDER BY genre ASC ";

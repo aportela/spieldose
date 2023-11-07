@@ -97,7 +97,7 @@ class Album extends \Spieldose\Entities\Entity
                     }
                     $this->media[$mediaResult->position - 1] = ["tracks" => $tracks];
                 }
-            } else if ($scrap) {
+            } elseif ($scrap) {
                 $release = new \Spieldose\Scraper\Release\MusicBrainz(
                     new \Psr\Log\NullLogger(),
                     \aportela\MusicBrainzWrapper\APIFormat::JSON
@@ -112,7 +112,7 @@ class Album extends \Spieldose\Entities\Entity
             } else {
                 throw new \Spieldose\Exception\NotFoundException("mbid");
             }
-        } else if (!empty($this->title) && !empty($this->artist->name)) {
+        } elseif (!empty($this->title) && !empty($this->artist->name)) {
             $query = "
                         SELECT
                             FILE_ID3_TAG.id, track_number AS position, mb_release_track_id AS mbid, title, mb_artist_id AS artist_mbid, artist AS artist_name, (playtime_seconds * 100) AS length, COALESCE(disc_number, 1) AS disc_number, DIRECTORY.id AS coverPathId
@@ -322,7 +322,7 @@ class Album extends \Spieldose\Entities\Entity
         if (isset($filter["mbId"]) && !empty($filter["mbId"])) {
             $whereConditions[] = " FIT.mb_album_id = :mbid ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $filter["mbId"]);
-        } else if (isset($filter["title"]) && !empty($filter["title"]) && isset($filter["artistName"]) && !empty($filter["artistName"])) {
+        } elseif (isset($filter["title"]) && !empty($filter["title"]) && isset($filter["artistName"]) && !empty($filter["artistName"])) {
             $whereConditions[] = " FIT.album = :title ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", $filter["title"]);
             $whereConditions[] = " COALESCE(FIT.album_artist, FIT.artist) = :artistName ";

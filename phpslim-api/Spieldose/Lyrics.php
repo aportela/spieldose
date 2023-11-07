@@ -6,7 +6,6 @@ namespace Spieldose;
 
 class Lyrics extends \aportela\ScraperLyrics\Lyrics
 {
-
     private function save(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $query = " INSERT INTO LYRICS (title, artist, data, source, ctime, mtime) VALUES (:title, :artist, :data, :source, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (title, artist) DO UPDATE SET data = :data, source = :source, mtime = strftime('%s', 'now') ";

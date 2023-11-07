@@ -238,7 +238,7 @@ class Track extends \Spieldose\Entities\Entity
             } else {
                 $fieldDefinitions["playListTrackIndex"] = "PLAYLIST_TRACK.track_index";
             }
-        } else if (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
+        } elseif (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
             $fieldDefinitions["currentPlaylistTrackIndex"] = "CURRENT_PLAYLIST_TRACK.track_index";
         }
         $fieldCountDefinition = [

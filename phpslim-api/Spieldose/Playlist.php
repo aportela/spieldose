@@ -299,7 +299,7 @@ class Playlist
             $filterConditions[] = " (PLAYLIST.user_id = :session_user_id) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":session_user_id", \Spieldose\UserSession::getUserId());
-        } else if ($type == "userPlaylists") {
+        } elseif ($type == "userPlaylists") {
             if (!empty($userId)) {
                 $filterConditions[] = " PLAYLIST.user_id = :user_id ";
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId);
