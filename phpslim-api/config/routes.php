@@ -321,7 +321,7 @@ return function (App $app) {
                         $response->getBody()->write($data);
                         return $response
                             ->withHeader('Content-Type', 'image/jpeg')
-                            ->withHeader('Content-Length', $filesize)
+                            ->withHeader('Content-Length', (string) $filesize)
                             ->withHeader('ETag', sha1($queryParams["url"] . $thumbnail->path . $filesize))
                             ->withHeader('Cache-Control', 'max-age=86400')
                             ->withStatus(200);
@@ -367,7 +367,7 @@ return function (App $app) {
                         $response->getBody()->write($data);
                         return $response
                             ->withHeader('Content-Type', 'image/jpeg')
-                            ->withHeader('Content-Length', $filesize)
+                            ->withHeader('Content-Length', (string) $filesize)
                             ->withHeader('ETag', sha1($queryParams["path"] . $thumbnail->path . $filesize))
                             ->withHeader('Cache-Control', 'max-age=86400')
                             ->withStatus(200);
@@ -419,7 +419,7 @@ return function (App $app) {
                     $response->getBody()->write($data);
                     return $response
                         ->withHeader('Content-Type', 'image/jpeg')
-                        ->withHeader('Content-Length', $filesize)
+                        ->withHeader('Content-Length', (string) $filesize)
                         ->withHeader('ETag', sha1($args['id'] . $localPath . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
@@ -454,7 +454,7 @@ return function (App $app) {
                     $response->getBody()->write($data);
                     return $response
                         ->withHeader('Content-Type', 'image/jpeg')
-                        ->withHeader('Content-Length', $filesize)
+                        ->withHeader('Content-Length', (string) $filesize)
                         ->withHeader('ETag', sha1($args["size"] . $args['hash'] . $localPath . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
@@ -846,7 +846,7 @@ return function (App $app) {
                 if (!empty($args['id'])) {
                     $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                     $playlist = new \Spieldose\Playlist(
-                        $args['id'] ?? "",
+                        $args['id'],
                         "",
                         [],
                         false
@@ -864,7 +864,7 @@ return function (App $app) {
                 if (!empty($args['id'])) {
                     $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
                     $playlist = new \Spieldose\Playlist(
-                        $args['id'] ?? "",
+                        $args['id'],
                         "",
                         [],
                         false
@@ -904,7 +904,7 @@ return function (App $app) {
                 if (isset($params["indexes"]) && is_array($params["indexes"])) {
                     $indexes = $params["indexes"];
                 }
-                $payload = json_encode($currentPlaylist->sortByIndexes($dbh, $indexes, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                $payload = json_encode($currentPlaylist->sortByIndexes($dbh, $indexes, isset($params["shuffle"]) && $params["shuffle"] == "true"));
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
