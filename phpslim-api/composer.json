@@ -23,9 +23,9 @@
         "aportela/musicbrainz-wrapper": "^2.0",
         "aportela/remote-thumbnail-cache-wrapper": "^2.0",
         "aportela/scraper-lyrics": "^1.0",
-        "firebase/php-jwt": "^6.8",
+        "firebase/php-jwt": "^6.9",
         "james-heinrich/getid3": "^1.9",
-        "monolog/monolog": "^3.4",
+        "monolog/monolog": "^3.5",
         "php-di/php-di": "^7.0",
         "ramsey/uuid": "^4.7",
         "slim/psr7": "^1.6",
@@ -33,9 +33,9 @@
         "slim/twig-view": "^3.3"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.28",
+        "friendsofphp/php-cs-fixer": "^3.38",
         "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.3"
+        "phpunit/phpunit": "^10.4"
     },
     "autoload": {
         "psr-4": {
