@@ -5,7 +5,7 @@
       <q-card>
 
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Track details</div>
+          <div class="text-h6">{{ t('Track details') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -13,12 +13,12 @@
       </q-card>
       <q-splitter v-model="splitterModel" unit="px" style="height: 768px" disable after-class="q-pa-none">
         <template v-slot:before>
-          <q-img :src="track.covers.normal" width="400px" height="400px" spinner-color="pink" />
+          <q-img :src="track.covers.normal || 'images/vinyl-medium.png'" @error="track.covers.normal = 'images/vinyl-medium.png'" width="400px" height="400px" spinner-color="pink" />
           <div class="q-pa-md">
             <p class="q-ma-none text-h5 text-grey-9"><q-icon name="music_note" class="q-mr-sm"></q-icon> {{ track.title }}
             </p>
             <p class="q-my-sm text-h5 text-grey-9 q-pl-lg q-ml-md" v-if="track.artist.name">
-              by
+              {{ t('by') }}
               <a class="text-grey-9" v-if="track.artist.mbId"
                 :href="'https://musicbrainz.org/artist/' + track.artist.mbId" target="blank">{{ track.artist.name }}</a>
               <span v-else>{{ track.artist.name }}</span>
@@ -29,12 +29,12 @@
                 :href="'https://musicbrainz.org/release/' + track.album.mbId" target="_blank">{{ track.album.title }}</a>
               <span v-else>{{ track.album.title }}</span>
             </p>
-            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">track number: {{
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">{{ t('Track number') }}: {{
               track.trackNumber }}</p>
-            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">on year {{
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">{{ t('On year') }} {{
               track.album.year }}</p>
             <p class="q-mt-md text-subtitle2 text-grey-9" v-if="track.favorited"><q-icon name="favorite"
-                class="q-mr-sm"></q-icon> Favorited at: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ssZ") }}</p>
+                class="q-mr-sm"></q-icon> {{ t('Favorited on') }}: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ssZ") }}</p>
           </div>
         </template>
         <template v-slot:after>
@@ -49,9 +49,9 @@
             </template>
           </DashboardBaseBlockChart>
           <div class="q-pa-md">
-            <h4 class="bg-white q-mt-none q-pt-none text-center">Lyrics</h4>
+            <h4 class="bg-white q-mt-none q-pt-none text-center">{{ t('Lyrics') }}</h4>
             <pre class="q-mt-xl" v-if="track.lyrics">{{ track.lyrics }}</pre>
-            <p v-else class="text-h6 text-center text-grey-8"><q-icon name="warning"></q-icon> No lyrics found</p>
+            <p v-else class="text-h6 text-center text-grey-8"><q-icon name="warning"></q-icon> {{ t('No lyrics found') }}</p>
           </div>
         </template>
       </q-splitter>

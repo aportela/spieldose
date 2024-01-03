@@ -231,6 +231,14 @@ export default {
   "Passwords don't match": "Las contraseñas no coinciden",
   "Profile has been updated": "El perfil se ha actualizado",
 
+  // track details modal
+  "Track details": "Detalles de la canción",
+  "Track number": "Número de canción",
+  "On year": "En el año",
+  "Favorited on": "Añadida a favoritos en",
+  "No lyrics found": "No se encuentran letras",
+  Lyrics: "Letras",
+
   // generic
   "API Error: error restoring playlist":
     "API Error: error restaurando la lista de reproducción",

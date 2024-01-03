@@ -225,6 +225,14 @@ export default {
   "Passwords don't match": "Passwords don't match",
   "Profile has been updated": "Profile has been updated",
 
+  // track details modal
+  "Track details": "Track details",
+  "Track number": "Track number",
+  "On year": "On year",
+  "Favorited on": "Favorited on",
+  "No lyrics found": "No lyrics found",
+  Lyrics: "Lyrics",
+
   // generic
   "API Error: error restoring playlist": "API Error: error restoring playlist",
   "API Error: error increasing track play count":
