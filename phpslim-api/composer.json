@@ -24,6 +24,7 @@
         "aportela/remote-thumbnail-cache-wrapper": "^2.0",
         "aportela/scraper-lyrics": "^1.0",
         "firebase/php-jwt": "^6.10",
+        "james-heinrich/getid3": "^1.9",
         "monolog/monolog": "^3.5",
         "php-di/php-di": "^7.0",
         "ramsey/uuid": "^4.7",
