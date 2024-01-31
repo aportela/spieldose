@@ -65,7 +65,7 @@ $settings['logger'] = [
         ],
         'database' => [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : $settings['paths']['logs'] . DIRECTORY_SEPARATOR . 'database.log',
-            'name' => 'Homedocs::Database'
+            'name' => 'Spieldose::Database'
         ]
     ]
 ];
