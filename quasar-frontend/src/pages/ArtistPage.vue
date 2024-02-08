@@ -353,6 +353,8 @@
                   <q-btn-group outline>
                     <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow" :title="t('Play')"
                       @click="trackActions.play(props.row.id)" />
+                      <q-btn size="sm" color="white" text-color="grey-5" icon="add_box" :title="t('enqueue track')"
+                      @click="trackActions.enqueue(props.row.id)" />
                     <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
                       :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
                   </q-btn-group>
