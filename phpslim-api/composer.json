@@ -29,11 +29,11 @@
         "php-di/php-di": "^7.0",
         "ramsey/uuid": "^4.7",
         "slim/psr7": "^1.6",
-        "slim/slim": "^4.12",
+        "slim/slim": "^4.13",
         "slim/twig-view": "^3.3"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.45",
+        "friendsofphp/php-cs-fixer": "^3.53",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.5"
     },
