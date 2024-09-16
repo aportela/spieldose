@@ -10,8 +10,8 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
         :disable="loading || !(tableRows?.length > 0)">
       </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt" @click="onDiscover"
-        :disable="loading">
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt"
+        @click="onDiscover" :disable="loading">
       </q-btn>
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle"
         @click="onRandomizeSorting" :disable="loading || !(tableRows?.length > 0)">
@@ -31,7 +31,7 @@
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
         :disable="loading || !spieldoseStore.isCurrentPlaylistElementATrack"
         :href="spieldoseStore.isCurrentPlaylistElementATrack ? spieldoseStore.getCurrentPlaylistElementURL : '#'" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save_alt"
+      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save"
         :disable="loading || !(tableRows?.length > 0)" @click="onSavePlaylist" />
     </q-btn-group>
     <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.2em" :rows="tableRows"
@@ -60,7 +60,7 @@
           </q-td>
           <q-td key="albumTitle" :props="props">
             <router-link v-if="props.row.album.title" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'album', params: { title: props.row.album.title }, query: { mbId: props.row.album.mbId, artistMbId: props.row.album.artist.mbId, artistName: props.row.album.artist.name, year: props.row.album.year}  }"><q-icon
+              :to="{ name: 'album', params: { title: props.row.album.title }, query: { mbId: props.row.album.mbId, artistMbId: props.row.album.artist.mbId, artistName: props.row.album.artist.name, year: props.row.album.year } }"><q-icon
                 name="link" class="q-mr-sm"></q-icon>{{ props.row.album.title }}</router-link>
           </q-td>
           <q-td key="albumTrackIndex" :props="props">
@@ -412,6 +412,7 @@ const currentPlaylistTrackIndex = computed(() => {
 
 watch(currentPlaylistTrackIndex, (newValue) => {
   currentTrackIndex.value = newValue;
+  // TODO: only scroll on actions buttons click (NOT row click)
   tableRef.value.scrollTo(newValue, 'center-force');
 });
 
@@ -509,11 +510,11 @@ function onSavePlaylist() {
       };
     }
   } else {
-      playlist.value = {
-        id: uid(),
-        name: null,
-        public: false,
-        allowUpdate: true,
+    playlist.value = {
+      id: uid(),
+      name: null,
+      public: false,
+      allowUpdate: true,
     };
   }
   showSavePlaylistDialog.value = true;
