@@ -36,7 +36,7 @@ class JWT
             if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
                 $this->logger->notice("JWT valid data decoded", [print_r($decoded->data, true)]);
                 $user = new \Spieldose\User($decoded->data->userId);
-                if (!$user->exists($this->dbh)) {
+                if ($user->exists($this->dbh)) {
                     \Spieldose\UserSession::set($decoded->data->userId, $decoded->data->email);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("userId");
