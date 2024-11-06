@@ -15,9 +15,9 @@
     <SidebarPlayerTrackInfo :track="currentElement.track" :radioStation="currentElement.radioStation">
     </SidebarPlayerTrackInfo>
     <SidebarPlayerMainControls :disabled="false" :allowSkipPrevious="spieldoseStore.allowSkipPrevious"
-      :allowPlay="spieldoseStore.hasCurrentPlaylistElements || spieldoseStore.hasCurrentPlaylistARadioStation" :allowSkipNext="spieldoseStore.allowSkipNext"
-      :playerStatus="spieldoseStore.getPlayerStatus" @skipPrevious="skipToPrevious()" @play="play()"
-      @skipNext="skipToNext()"></SidebarPlayerMainControls>
+      :allowPlay="spieldoseStore.hasCurrentPlaylistElements || spieldoseStore.hasCurrentPlaylistARadioStation"
+      :allowSkipNext="spieldoseStore.allowSkipNext" :playerStatus="spieldoseStore.getPlayerStatus"
+      @skipPrevious="skipToPrevious()" @play="play()" @skipNext="skipToNext()"></SidebarPlayerMainControls>
     <SidebarPlayerSeekControl :disabled="disablePlayerControls || !isCurrentElementTrack"
       :currentElementTimeData="currentElementTimeData" @seek="onSeek"></SidebarPlayerSeekControl>
     <SidebarPlayerTrackActions :disabled="disablePlayerControls" :id="currentElementId"
@@ -154,8 +154,8 @@ onMounted(() => {
       } else {
         spieldoseStore.stop();
         currentPlayListActions.skipToElementIndex(0).then((success) => { }).catch((error) => {
-        // TODO
-      });
+          // TODO
+        });
         // TODO: not working, skip is fine, but playing has a bug
         //spieldoseStore.play();
       }
@@ -165,8 +165,8 @@ onMounted(() => {
     } else {
       if (spieldoseStore.allowSkipNext) {
         currentPlayListActions.skipToNextElement().then((success) => { }).catch((error) => {
-        // TODO
-      });
+          // TODO
+        });
       } else {
         spieldoseStore.stop();
       }
@@ -175,6 +175,9 @@ onMounted(() => {
   audioElement.value.addEventListener('error', (event) => {
     console.debug('Audio loading error');
     console.log(event);
+    currentPlayListActions.skipToNextElement().then((success) => { }).catch((error) => {
+      // TODO
+    });
   });
 
   audioElement.value.addEventListener('timeupdate', (event) => {
