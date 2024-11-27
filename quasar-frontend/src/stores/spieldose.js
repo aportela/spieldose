@@ -4,7 +4,7 @@ import { api } from "boot/axios";
 
 const hashedSite = Array.from(window.location.host).reduce(
   (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
-  0
+  0,
 );
 
 const localStorageBasilOptions = {
@@ -272,9 +272,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
       if (this.hasPreviousUserInteractions) {
         if (ignoreStatus) {
           if (this.data.audio) {
-            this.data.audio.play();
+            this.data.audio
+              .play()
+              .then(() => (this.data.player.status = "playing"))
+              .catch((error) => {
+                // TODO: show error ?
+              });
           }
-          this.data.player.status = "playing";
         } else {
           if (this.isPlaying) {
             if (this.data.audio) {
@@ -283,14 +287,24 @@ export const useSpieldoseStore = defineStore("spieldose", {
             this.data.player.status = "paused";
           } else if (this.isPaused) {
             if (this.data.audio) {
-              this.data.audio.play();
+              this.data.audio
+                .play()
+                .then(() => (this.data.player.status = "playing"))
+                .catch((error) => {
+                  // TODO: show error ?
+                });
             }
             this.data.player.status = "playing";
           } else {
             // TODO: required ?
             //audio.load();
             if (this.data.audio) {
-              this.data.audio.play();
+              this.data.audio
+                .play()
+                .then(() => (this.data.player.status = "playing"))
+                .catch((error) => {
+                  // TODO: show error ?
+                });
             }
             this.data.player.status = "playing";
           }
@@ -310,7 +324,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
     resume: function () {
       if (this.isPaused) {
         if (this.data.audio) {
-          this.data.audio.play();
+          this.data.audio
+            .play()
+            .then(() => (this.data.player.status = "playing"))
+            .catch((error) => {
+              // TODO: show error ?
+            });
         }
         this.data.player.status = "playing";
       }
@@ -363,7 +382,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
       totalTracks,
       track,
       radioStation,
-      playlist
+      playlist,
     ) {
       const oldURL = this.getCurrentPlaylistElementURL;
       this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
@@ -387,12 +406,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
     restoreFullScreenVisualizationSettings: function () {
       const basil = useBasil(localStorageBasilOptions);
       const fullScreenVisualizationSettings = basil.get(
-        "fullScreenVisualizationSettings"
+        "fullScreenVisualizationSettings",
       );
       if (fullScreenVisualizationSettings) {
         try {
           this.data.fullScreenVisualizationSettings = JSON.parse(
-            fullScreenVisualizationSettings
+            fullScreenVisualizationSettings,
           );
         } catch (e) {
           // console.error("error");
@@ -406,7 +425,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
         "fullScreenVisualizationSettings",
         this.data.fullScreenVisualizationSettings
           ? JSON.stringify(this.data.fullScreenVisualizationSettings)
-          : null
+          : null,
       );
     },
   },
