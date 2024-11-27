@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14a7c1dadc6230aa63330458fcdc1910",
+    "content-hash": "ce6b6365c203ac9f4950bf684fee5894",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
