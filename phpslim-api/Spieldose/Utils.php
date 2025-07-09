@@ -62,7 +62,7 @@ class Utils
 
         $status_bar .= "] $disp%  $done/$total";
 
-        $rate = ($now - $start_time) / $done;
+        $rate = $done > 0 ? ($now - $start_time) / $done : 0;
         $left = $total - $done;
 
         $eta = round($rate * $left, 2);
