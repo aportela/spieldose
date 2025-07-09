@@ -48,7 +48,7 @@ if (count($missingExtensions) > 0) {
             echo "ok!" . PHP_EOL;
         } else {
             echo "User not found, creating account...";
-            $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u->id = (\Ramsey\Uuid\Uuid::uuid7())->toString();
             $u->add($db);
             echo "ok!" . PHP_EOL;
         }

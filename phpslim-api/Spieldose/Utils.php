@@ -91,7 +91,7 @@ class Utils
 
     public static function uuidv4(): string
     {
-        return ((\Ramsey\Uuid\Uuid::uuid4())->toString());
+        return ((\Ramsey\Uuid\Uuid::uuid7())->toString());
     }
 
     public static function nl2P(string $text, bool $removeDuplicated = true): string

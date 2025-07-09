@@ -21,9 +21,7 @@ class Scanner
         $this->validCoverFilenames = self::VALID_COVER_FILENAMES;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function setValidCoverFilenames(string $pattern): void
     {
@@ -45,7 +43,7 @@ class Scanner
         $this->dbh->exec(
             " INSERT INTO SCANNER_DIRECTORY (id, path, ctime, atime) VALUES (:id, :path, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (path) DO UPDATE SET atime = strftime('%s', 'now') ",
             array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid7())->toString()),
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", $path)
             )
         );
@@ -65,7 +63,7 @@ class Scanner
         $this->dbh->exec(
             " INSERT INTO DIRECTORY (id, path, mtime, cover_filename) VALUES (:id, :path, :mtime, :cover_filename) ON CONFLICT (path) DO UPDATE SET mtime = :mtime, cover_filename = :cover_filename ",
             array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid7())->toString()),
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
                 !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
@@ -85,7 +83,7 @@ class Scanner
         $this->dbh->exec(
             " INSERT INTO FILE (id, directory_id, name, mtime, added_timestamp) VALUES (:id, :directory_id, :name, :mtime, strftime('%s', 'now')) ON CONFLICT (`directory_id`, `name`) DO UPDATE SET MTIME = :mtime ",
             array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid7())->toString()),
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $fileName),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $mtime)
