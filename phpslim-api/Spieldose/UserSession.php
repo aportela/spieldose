@@ -6,7 +6,7 @@ namespace Spieldose;
 
 class UserSession
 {
-    public static function set($userId = "", string $email = "", string $name = ""): void
+    public static function set(string $userId = "", string $email = "", string $name = ""): void
     {
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
