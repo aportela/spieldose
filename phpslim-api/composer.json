@@ -45,7 +45,7 @@
   "scripts": {
     "test": "vendor/bin/phpunit --testdox",
     "fix": "vendor/bin/php-cs-fixer fix Spieldose",
-    "stan": "vendor/bin/phpstan analyse -c phpstan.neon",
+    "stan": "vendor/bin/phpstan analyse -c phpstan.neon --memory-limit 1G",
     "start": "php -S 127.0.0.1:8081 -t public public/cliserver.php"
   }
 }
