@@ -110,13 +110,13 @@ class MusicBrainz
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->name),
             );
-            $totalUpdates = $dbh->exec($query, $params);
+            $totalUpdates = $dbh->execute($query, $params);
             $query = " UPDATE FILE_ID3_TAG SET mb_album_artist_id = :mbid WHERE mb_album_artist_id IS NULL AND album_artist = :artist ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->name),
             );
-            $totalUpdates += $dbh->exec($query, $params);
+            $totalUpdates += $dbh->execute($query, $params);
             return ($totalUpdates > 0);
         } else {
             $this->logger->warning("[MusicBrainz] mbid && name are required for fixing tags");
@@ -151,14 +151,14 @@ class MusicBrainz
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":country");
             }
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             $query = "
                 DELETE FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE artist_mbid = :artist_mbid
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId)
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             if (is_array($this->genres) && count($this->genres) > 0) {
                 $this->logger->debug(sprintf("[MusicBrainz] saving %d genres for artist %s (mbId: %s)", count($this->genres), $this->name, $this->mbId));
                 foreach ($this->genres as $genre) {
@@ -169,7 +169,7 @@ class MusicBrainz
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":genre", mb_strtolower($genre))
                     );
-                    $dbh->exec($query, $params);
+                    $dbh->execute($query, $params);
                 }
             }
             $query = "
@@ -178,7 +178,7 @@ class MusicBrainz
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId)
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             $allowedRelations = array_column(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::cases(), 'value');
             if (is_array($this->relations) && count($this->relations) > 0) {
                 $this->logger->debug(sprintf("[MusicBrainz] saving %d url relationships for artist %s (mbId: %s)", count($this->relations), $this->name, $this->mbId));
@@ -195,7 +195,7 @@ class MusicBrainz
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->name),
                             new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
                         );
-                        $dbh->exec($query, $params);
+                        $dbh->execute($query, $params);
                     }
                 }
             }

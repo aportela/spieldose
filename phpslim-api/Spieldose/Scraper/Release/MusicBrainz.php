@@ -72,21 +72,21 @@ class MusicBrainz
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
         }
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
         $query = "
             DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA WHERE release_mbid = :release_mbid
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId)
         );
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
         $query = "
             DELETE FROM CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK WHERE release_mbid = :release_mbid
         ";
         $params = array(
             new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $this->mbId)
         );
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
 
         if (is_array($this->media) && count($this->media) > 0) {
             foreach ($this->media as $media) {
@@ -98,7 +98,7 @@ class MusicBrainz
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $media->position),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":track_count", count($media->tracks))
                 );
-                $dbh->exec($query, $params);
+                $dbh->execute($query, $params);
                 foreach ($media->tracks as $track) {
                     $query = "
                         INSERT INTO CACHE_RELEASE_MUSICBRAINZ_MEDIA_TRACK (mbid, release_mbid, release_media, position, title, artist_mbid, artist_name, length) VALUES (:mbid, :release_mbid, :release_media, :position, :title, :artist_mbid, :artist_name, :length)
@@ -113,7 +113,7 @@ class MusicBrainz
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $track->artist->name),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":length", $track->length),
                     );
-                    $dbh->exec($query, $params);
+                    $dbh->execute($query, $params);
                 }
             }
         }

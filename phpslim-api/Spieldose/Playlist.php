@@ -26,9 +26,7 @@ class Playlist
         $this->owner->name = $ownerName;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function allowView(\aportela\DatabaseWrapper\DB $dbh): bool
     {
@@ -160,7 +158,7 @@ class Playlist
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
                     new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
                 );
-                $dbh->exec(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime, public) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now'), :public) ", $params);
+                $dbh->execute(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime, public) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now'), :public) ", $params);
                 if (is_array($this->tracks) && count($this->tracks) > 0) {
                     foreach ($this->tracks as $trackIndex => $trackId) {
                         $params = array(
@@ -169,7 +167,7 @@ class Playlist
                             new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
                         );
-                        $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
+                        $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                     }
                 }
                 $cp = new \Spieldose\CurrentPlaylist();
@@ -192,11 +190,11 @@ class Playlist
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
                         new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
                     );
-                    $dbh->exec(" UPDATE PLAYLIST SET name = :name, public = :public, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
+                    $dbh->execute(" UPDATE PLAYLIST SET name = :name, public = :public, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                     );
-                    $dbh->exec(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
+                    $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
                     if (is_array($this->tracks) && count($this->tracks) > 0) {
                         foreach ($this->tracks as $trackIndex => $trackId) {
                             $params = array(
@@ -204,7 +202,7 @@ class Playlist
                                 new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
                                 new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
                             );
-                            $dbh->exec(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
+                            $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                         }
                     }
                     $cp = new \Spieldose\CurrentPlaylist();
@@ -227,16 +225,16 @@ class Playlist
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
-                $dbh->exec(" UPDATE CURRENT_PLAYLIST SET playlist_id = NULL WHERE playlist_id = :playlist_id ", $params);
+                $dbh->execute(" UPDATE CURRENT_PLAYLIST SET playlist_id = NULL WHERE playlist_id = :playlist_id ", $params);
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
-                $dbh->exec(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
+                $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
                 );
-                $dbh->exec(" DELETE FROM PLAYLIST WHERE id = :id AND user_id = :user_id ", $params);
+                $dbh->execute(" DELETE FROM PLAYLIST WHERE id = :id AND user_id = :user_id ", $params);
             } else {
                 throw new \Spieldose\Exception\AccessDeniedException("userId: " . \Spieldose\UserSession::getUserId());
             }
@@ -249,8 +247,9 @@ class Playlist
     {
         $covers = [];
         if ($playlistId == self::FAVORITE_TRACKS_PLAYLIST_ID) {
-            foreach ($dbh->query(
-                "
+            foreach (
+                $dbh->query(
+                    "
                    SELECT
                         DISTINCT DIRECTORY.id
                     FROM DIRECTORY
@@ -260,15 +259,17 @@ class Playlist
                     ORDER BY RANDOM()
                     LIMIT 16
                 ",
-                [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-                ]
-            ) as $cover) {
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+                    ]
+                ) as $cover
+            ) {
                 $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         } else {
-            foreach ($dbh->query(
-                "
+            foreach (
+                $dbh->query(
+                    "
                    SELECT
                         DISTINCT DIRECTORY.id
                     FROM DIRECTORY
@@ -278,10 +279,11 @@ class Playlist
                     ORDER BY RANDOM()
                     LIMIT 16
                 ",
-                [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
-                ]
-            ) as $cover) {
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
+                    ]
+                ) as $cover
+            ) {
                 $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         }

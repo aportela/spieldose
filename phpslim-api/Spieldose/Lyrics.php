@@ -15,7 +15,7 @@ class Lyrics extends \aportela\ScraperLyrics\Lyrics
             new \aportela\DatabaseWrapper\Param\StringParam(":data", $this->lyrics),
             new \aportela\DatabaseWrapper\Param\StringParam(":source", $this->source)
         );
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
     }
 
     public function get(\aportela\DatabaseWrapper\DB $dbh, string $title, string $artist): bool

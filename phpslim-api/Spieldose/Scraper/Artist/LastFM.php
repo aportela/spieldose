@@ -130,14 +130,14 @@ class LastFM
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":bio_content");
             }
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             $query = "
                 DELETE FROM CACHE_ARTIST_LASTFM_TAG WHERE artist_hash = :md5_hash
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash)
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             if (is_array($this->tags) && count($this->tags) > 0) {
                 $this->logger->debug(sprintf("[LastFM] saving %d tags for artist %s (mbId: %s)", count($this->tags), $this->name, $this->mbId));
                 foreach ($this->tags as $tag) {
@@ -148,7 +148,7 @@ class LastFM
                         new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash),
                         new \aportela\DatabaseWrapper\Param\StringParam(":tag", mb_strtolower($tag))
                     );
-                    $dbh->exec($query, $params);
+                    $dbh->execute($query, $params);
                 }
             }
             $query = "
@@ -157,7 +157,7 @@ class LastFM
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash)
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             if (is_array($this->similar) && count($this->similar) > 0) {
                 $this->logger->debug(sprintf("[LastFM] saving %d similar artists for artist %s (mbId: %s)", count($this->similar), $this->name, $this->mbId));
                 foreach ($this->similar as $artist) {
@@ -168,7 +168,7 @@ class LastFM
                         new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash),
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name)
                     );
-                    $dbh->exec($query, $params);
+                    $dbh->execute($query, $params);
                 }
             }
             return (true);

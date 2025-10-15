@@ -117,7 +117,7 @@ class Wikipedia
                 new \aportela\DatabaseWrapper\Param\StringParam(":intro", $this->intro),
                 new \aportela\DatabaseWrapper\Param\StringParam(":page", $this->html),
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             return (true);
         }
     }

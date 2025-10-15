@@ -26,9 +26,7 @@ class CurrentPlaylist
         $this->shuffledIndexes = [];
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     private function getTracks(\aportela\DatabaseWrapper\DB $dbh): array
     {
@@ -60,7 +58,7 @@ class CurrentPlaylist
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now'), current_index = :index, radiostation_id = NULL
             ";
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
     }
 
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
@@ -234,11 +232,11 @@ class CurrentPlaylist
             $success = false;
             $dbh->beginTransaction();
             try {
-                $dbh->exec($query, $params);
+                $dbh->execute($query, $params);
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
-                $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                $dbh->execute(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
                 if (is_array($trackIds) && $totalTracks > 0) {
                     $shuffledIndexes = range(0, $totalTracks - 1);
                     shuffle($shuffledIndexes);
@@ -249,7 +247,7 @@ class CurrentPlaylist
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $index),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_shuffled_index", $shuffledIndexes[$index])
                         );
-                        $dbh->exec(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
+                        $dbh->execute(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
                     }
                 }
                 $success = true;
@@ -282,7 +280,7 @@ class CurrentPlaylist
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now'), radiostation_id = :radiostation_id
             ";
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
     }
 
     public function setLinkedPlaylist(\aportela\DatabaseWrapper\DB $dbh, string $id)
@@ -301,7 +299,7 @@ class CurrentPlaylist
                 ON CONFLICT(id) DO
                     UPDATE SET mtime = strftime('%s', 'now'), playlist_id = :playlist_id
             ";
-        $dbh->exec($query, $params);
+        $dbh->execute($query, $params);
     }
 
     public function append(\aportela\DatabaseWrapper\DB $dbh, array $trackIds = []): bool
@@ -322,7 +320,7 @@ class CurrentPlaylist
             $success = false;
             $dbh->beginTransaction();
             try {
-                $dbh->exec($query, $params);
+                $dbh->execute($query, $params);
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
                 );
@@ -336,7 +334,7 @@ class CurrentPlaylist
                         }
                     }
                     if (count($existingTrackIds) > 0) {
-                        $dbh->exec(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
+                        $dbh->execute(" DELETE FROM CURRENT_PLAYLIST_TRACK WHERE playlist_id = :playlist_id ", $params);
                     }
                     $newTrackIds = array_merge($existingTrackIds, $trackIds);
                     $shuffledIndexes = range(0, count($newTrackIds) - 1);
@@ -348,7 +346,7 @@ class CurrentPlaylist
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $index),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":track_shuffled_index", $shuffledIndexes[$index])
                         );
-                        $dbh->exec(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
+                        $dbh->execute(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
                     }
                 }
                 $success = true;

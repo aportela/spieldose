@@ -53,9 +53,7 @@ class Track extends \Spieldose\Entities\Entity
         $this->favorited = $favorited;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
@@ -322,7 +320,7 @@ class Track extends \Spieldose\Entities\Entity
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
         }
@@ -341,7 +339,7 @@ class Track extends \Spieldose\Entities\Entity
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
             );
-            $dbh->exec($query, $params);
+            $dbh->execute($query, $params);
             if ($flag) {
                 $query = " SELECT favorited FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
                 $data = $dbh->query($query, $params);
