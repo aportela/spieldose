@@ -81,7 +81,7 @@ return function (App $app) {
     })->add(\Spieldose\Middleware\JWT::class);
 
     $app->group(
-        '/api/2',
+        '/api2',
         function (RouteCollectorProxy $group) use ($app) {
 
             $initialState = \Spieldose\Utils::getInitialState($app->getContainer());

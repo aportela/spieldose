@@ -26,9 +26,7 @@ class Playlist
         $this->owner->name = $ownerName;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function allowView(\aportela\DatabaseWrapper\DB $dbh): bool
     {
@@ -249,8 +247,9 @@ class Playlist
     {
         $covers = [];
         if ($playlistId == self::FAVORITE_TRACKS_PLAYLIST_ID) {
-            foreach ($dbh->query(
-                "
+            foreach (
+                $dbh->query(
+                    "
                    SELECT
                         DISTINCT DIRECTORY.id
                     FROM DIRECTORY
@@ -260,15 +259,17 @@ class Playlist
                     ORDER BY RANDOM()
                     LIMIT 16
                 ",
-                [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-                ]
-            ) as $cover) {
-                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+                    ]
+                ) as $cover
+            ) {
+                $covers[] = sprintf("api2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         } else {
-            foreach ($dbh->query(
-                "
+            foreach (
+                $dbh->query(
+                    "
                    SELECT
                         DISTINCT DIRECTORY.id
                     FROM DIRECTORY
@@ -278,11 +279,12 @@ class Playlist
                     ORDER BY RANDOM()
                     LIMIT 16
                 ",
-                [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
-                ]
-            ) as $cover) {
-                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
+                    ]
+                ) as $cover
+            ) {
+                $covers[] = sprintf("api2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         }
 
