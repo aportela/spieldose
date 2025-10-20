@@ -167,31 +167,65 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->get('/user/profile', function (Request $request, Response $response, array $args) {
-                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
-                $user = new \Spieldose\User(
-                    \Spieldose\UserSession::getUserId()
-                );
-                $user->get($dbh);
-                $payload = json_encode(["id" => $user->id, "name" => $user->name, "email" => $user->email]);
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
+
+                $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                    $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
+                    $user->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                    unset($user->password);
+                    unset($user->passwordHash);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            'data' => $user
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                })->add(\Spieldose\Middleware\CheckAuth::class);
+
+                $group->put('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                    $params = $request->getParsedBody();
+                    $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+                    $user = new \Spieldose\User(
+                        \Spieldose\UserSession::getUserId(),
+                        $params["email"] ?? "",
+                        $params["password"] ?? "",
+                        $params["name"] ?? "",
+                    );
+                    $user->get($dbh);
+                    if ($params["email"] != \Spieldose\UserSession::getEmail()) {
+                        $tmpUser = new \Spieldose\User(
+                            "",
+                            $params["email"]
+                        );
+                        if ($tmpUser->exists($dbh)) {
+                            throw new \Spieldose\Exception\AlreadyExistsException("email");
+                        }
+                    }
+                    $user->email = $params["email"] ?? "";
+                    $user->password = $params["password"] ?? "";
+                    // TODO: check user update / updateprofile methods (same?)
+                    $user->updateProfile($dbh);
+                    unset($user->password);
+                    unset($user->passwordHash);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            'data' => $user
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                })->add(\Spieldose\Middleware\CheckAuth::class);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/user/profile', function (Request $request, Response $response, array $args) {
-                $params = $request->getParsedBody();
-                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
-                $user = new \Spieldose\User(
-                    \Spieldose\UserSession::getUserId(),
-                    $params["email"] ?? "",
-                    $params["password"] ?? "",
-                    $params["name"] ?? "",
-                );
-                $user->updateProfile($dbh);
-                $payload = json_encode(["id" => $user->id, "name" => $user->name, "email" => $user->email]);
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->post('/global_search', function (Request $request, Response $response, array $args) {
                 $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);

@@ -130,7 +130,7 @@ const api = {
           password: password || null,
         };
         axios
-          .post(baseAPIPath + "/user/profile", params)
+          .put(baseAPIPath + "/user/profile", params)
           .then((response) => {
             resolve(response);
           })
