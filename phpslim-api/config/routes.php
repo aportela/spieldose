@@ -99,7 +99,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->post('/user/sign-up', function (Request $request, Response $response, array $args) {
+            $group->post('/user/sign-up', function (Request $request, Response $response, array $args) use ($initialState) {
                 $settings = $this->get('settings');
                 if ($settings['common']['allowSignUp']) {
                     $params = $request->getParsedBody();
@@ -116,7 +116,14 @@ return function (App $app) {
                             $params["name"] ?? ""
                         );
                         $user->add($dbh);
-                        $payload = json_encode([]);
+                        $payload = json_encode(
+                            [
+                                'initialState' => $initialState
+                            ]
+                        );
+                        if (json_last_error() != JSON_ERROR_NONE) {
+                            throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                        }
                         $response->getBody()->write($payload);
                         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                     }
@@ -125,9 +132,9 @@ return function (App $app) {
                 }
             });
 
-            $group->post('/user/sign-in', function (Request $request, Response $response, array $args) {
+            $group->post('/user/sign-in', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
-                $dbh =  $this->get(\aportela\DatabaseWrapper\DB::class);
+                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $user = new \Spieldose\User(
                     "",
                     $params["email"] ?? "",
@@ -135,15 +142,27 @@ return function (App $app) {
                     $params["name"] ?? ""
                 );
                 $user->signIn($dbh);
-                $payload = json_encode([]);
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
-            $group->post('/user/sign-out', function (Request $request, Response $response, array $args) {
-                $settings = $this->get('settings');
-                \Spieldose\User::signOut();
-                $payload = json_encode([]);
+            $group->post('/user/sign-out', function (Request $request, Response $response, array $args) use ($initialState) {
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
