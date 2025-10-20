@@ -19,10 +19,6 @@ return [
         return AppFactory::create();
     },
 
-    ResponseFactoryInterface::class => function (ContainerInterface $container) {
-        return $container->get(Psr17Factory::class);
-    },
-
     ErrorMiddleware::class => function (ContainerInterface $container) {
         $app = $container->get(App::class);
         $settings = $container->get('settings')['error'];
