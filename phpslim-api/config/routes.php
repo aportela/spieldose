@@ -82,13 +82,19 @@ return function (App $app) {
 
     $app->group(
         '/api/2',
-        function (RouteCollectorProxy $group) {
-            $group->get('/initial_state', function (Request $request, Response $response, array $args) {
+        function (RouteCollectorProxy $group) use ($app) {
+
+            $initialState = \Spieldose\Utils::getInitialState($app->getContainer());
+
+            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState) {
                 $payload = json_encode(
                     [
-                        'initialState' => json_encode(\Spieldose\Utils::getInitialState($this))
+                        'initialState' => $initialState
                     ]
                 );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
@@ -626,7 +632,7 @@ return function (App $app) {
                     }
                     $uri = $request->getUri();
                     $urls = array_map(
-                        fn ($hash) =>
+                        fn($hash) =>
                         sprintf(\Spieldose\API::CACHED_HASH_SMALL_THUMBNAIL, $hash),
                         $hashes
                     );
