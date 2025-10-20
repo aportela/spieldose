@@ -6,7 +6,10 @@ namespace Spieldose;
 
 class Utils
 {
-    public static function getInitialState($container): array
+    /**
+     * @return array<mixed>
+     */
+    public static function getInitialState(\Psr\Container\ContainerInterface $container): array
     {
         $settings = $container->get('settings');
         return ([
