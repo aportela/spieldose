@@ -264,7 +264,7 @@ class Playlist
                     ]
                 ) as $cover
             ) {
-                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+                $covers[] = sprintf("api2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         } else {
             foreach (
@@ -284,7 +284,7 @@ class Playlist
                     ]
                 ) as $cover
             ) {
-                $covers[] = sprintf("api/2/thumbnail/small/local/album/?path=%s", $cover->id);
+                $covers[] = sprintf("api2/thumbnail/small/local/album/?path=%s", $cover->id);
             }
         }
 

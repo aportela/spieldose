@@ -89,7 +89,7 @@ module.exports = configure(function (ctx) {
       open: true, // opens browser window automatically
       proxy: {
         // proxy all requests starting with /api to jsonplaceholder
-        "/api/2": {
+        "/api2": {
           target: "http://127.0.0.1:8081",
           changeOrigin: true,
           pathRewrite: {

@@ -385,7 +385,7 @@ class Artist extends \Spieldose\Entities\Entity
             $this->image = $results[0]->image;
             if (!empty($this->image)) {
                 // TODO: use API URL
-                $this->image = sprintf("api/2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
+                $this->image = sprintf("api2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
             }
             $this->bio = (object) [
                 "source" => $results[0]->bio_source,

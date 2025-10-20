@@ -143,6 +143,7 @@ function refresh() {
   api.user
     .getProfile()
     .then((success) => {
+      // TODO: change to new data response
       email.value = success.data.email;
       name.value = success.data.name;
       password.value = null;
@@ -194,6 +195,7 @@ function onSubmitForm() {
   api.user
     .updateProfile(email.value, name.value, password.value)
     .then((success) => {
+      // TODO: change to new data response
       email.value = success.data.email;
       name.value = success.data.name;
       password.value = null;

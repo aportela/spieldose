@@ -14,6 +14,45 @@ class APIExceptionCatcher
     }
 
     /**
+     * @param array<mixed> $payload
+     */
+    private function handleException(\Exception $e, int $statusCode, array $payload): \Psr\Http\Message\ResponseInterface
+    {
+        $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
+        $response = new \Slim\Psr7\Response();
+        $response->getBody()->write(json_encode($payload));
+        return $response->withStatus($statusCode);
+    }
+
+    private function handleGenericException(\Throwable $e): \Psr\Http\Message\ResponseInterface
+    {
+        $this->logger->error(sprintf("Unhandled exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
+        $this->logger->debug($e->getTraceAsString());
+        $response = new \Slim\Psr7\Response();
+        $exception = [
+            'type' => get_class($e),
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ];
+        $parent = $e->getPrevious();
+        if ($parent) {
+            $exception['parent'] = [
+                'type' => get_class($parent),
+                'message' => $parent->getMessage(),
+                'file' => $parent->getFile(),
+                'line' => $parent->getLine()
+            ];
+        }
+        $payload = json_encode([
+            'exception' => $exception,
+            'status' => 500
+        ]);
+        $response->getBody()->write($payload);
+        return $response->withStatus(500);
+    }
+
+    /**
      * APIExceptionCatcher middleware invokable class
      *
      * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
@@ -26,62 +65,21 @@ class APIExceptionCatcher
         try {
             $this->logger->debug($request->getMethod() . " " . $request->getUri()->getPath());
             $this->logger->debug($request->getBody());
-            $response = $handler->handle($request);
-            return $response;
+            return $handler->handle($request);
         } catch (\Spieldose\Exception\InvalidParamsException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode(['invalidOrMissingParams' => explode(",", $e->getMessage())]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(400);
+            return $this->handleException($e, 400, ['invalidOrMissingParams' => explode(",", $e->getMessage())]);
         } catch (\Spieldose\Exception\AlreadyExistsException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode(['invalidOrMissingParams' => explode(",", $e->getMessage())]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(409);
+            return $this->handleException($e, 409, ['invalidOrMissingParams' => explode(",", $e->getMessage())]);
         } catch (\Spieldose\Exception\UnauthorizedException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode([]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(401);
+            return $this->handleException($e, 401, []);
         } catch (\Spieldose\Exception\AccessDeniedException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode([]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(403);
+            return $this->handleException($e, 403, []);
         } catch (\Spieldose\Exception\NotFoundException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode(['keyNotFound' => $e->getMessage()]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(404);
+            return $this->handleException($e, 404, ['keyNotFound' => $e->getMessage()]);
         } catch (\Spieldose\Exception\DeletedException $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $payload = json_encode([]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(410);
+            return $this->handleException($e, 410, []);
         } catch (\Throwable $e) {
-            $this->logger->debug(sprintf("Exception caught (%s) - Message: %s", get_class($e), $e->getMessage()));
-            $response = new \Slim\Psr7\Response();
-            $exception = [
-                'type' => get_class($e),
-                'message' => $e->getMessage(),
-                'file' => $e->getLine(),
-                'line' => $e->getFile()
-            ];
-            $parent = $e->getPrevious();
-            if ($parent) {
-                $exception['parent'] = ['type' => get_class($parent), 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
-            }
-            $payload = json_encode([
-                'exception' => $exception
-            ]);
-            $response->getBody()->write($payload);
-            return ($response)->withStatus(500);
+            return $this->handleGenericException($e);
         }
     }
 }

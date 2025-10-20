@@ -42,17 +42,17 @@ axios.interceptors.response.use(
       }
       return Promise.reject(error);
     }
-  }
+  },
 );
 
-const baseAPIPath = "api/2";
+const baseAPIPath = "api2";
 
 const api = {
   common: {
     initialState: function () {
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/initial_state", {})
+          .get("api2/initial_state", {})
           .then((response) => {
             resolve(response);
           })
@@ -130,7 +130,7 @@ const api = {
           password: password || null,
         };
         axios
-          .post(baseAPIPath + "/user/profile", params)
+          .put(baseAPIPath + "/user/profile", params)
           .then((response) => {
             resolve(response);
           })
@@ -147,7 +147,7 @@ const api = {
       resultsPage,
       randomSort,
       sortField,
-      sortOrder
+      sortOrder,
     ) {
       return new Promise((resolve, reject) => {
         const params = {
@@ -179,7 +179,7 @@ const api = {
       currentPageIndex,
       resultsPage,
       sortField,
-      sortOrder
+      sortOrder,
     ) {
       return new Promise((resolve, reject) => {
         const params = {
@@ -207,11 +207,11 @@ const api = {
       return new Promise((resolve, reject) => {
         axios
           .get(
-            "api/2/artist?mbId=" +
+            "api2/artist?mbId=" +
               encodeURIComponent(mbId || "") +
               "&name=" +
               encodeURIComponent(name || ""),
-            {}
+            {},
           )
           .then((response) => {
             resolve(response);
@@ -225,11 +225,11 @@ const api = {
       return new Promise((resolve, reject) => {
         axios
           .get(
-            "api/2/artist_overview?mbId=" +
+            "api2/artist_overview?mbId=" +
               encodeURIComponent(mbId || "") +
               "&name=" +
               encodeURIComponent(name || ""),
-            {}
+            {},
           )
           .then((response) => {
             resolve(response);
@@ -260,7 +260,7 @@ const api = {
       currentPageIndex,
       resultsPage,
       sortField,
-      sortOrder
+      sortOrder,
     ) {
       return new Promise((resolve, reject) => {
         const params = {
@@ -306,7 +306,7 @@ const api = {
       };
       return new Promise((resolve, reject) => {
         axios
-          .get("api/2/album", { params })
+          .get("api2/album", { params })
           .then((response) => {
             resolve(response);
           })
@@ -335,7 +335,7 @@ const api = {
       resultsPage,
       randomSort,
       sortField,
-      sortOrder
+      sortOrder,
     ) {
       return new Promise((resolve, reject) => {
         const params = {
@@ -517,7 +517,7 @@ const api = {
       currentPageIndex,
       resultsPage,
       sortField,
-      sortOrder
+      sortOrder,
     ) {
       return new Promise((resolve, reject) => {
         const params = {
@@ -857,7 +857,7 @@ const api = {
         axios
           .post(
             baseAPIPath + "/current_playlist/remove_element_at_index",
-            params
+            params,
           )
           .then((response) => {
             resolve(response);
@@ -894,11 +894,11 @@ const api = {
       return new Promise((resolve, reject) => {
         axios
           .get(
-            "api/2/lyrics?title=" +
+            "api2/lyrics?title=" +
               encodeURIComponent(title || "") +
               "&artist=" +
               encodeURIComponent(artist || ""),
-            {}
+            {},
           )
           .then((response) => {
             resolve(response);

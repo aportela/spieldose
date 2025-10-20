@@ -7,7 +7,8 @@
       <div class="q-pl-xl q-pt-xl">
         <p class="text-h3 text-bold">{{ artistName }} <q-icon name="settings" class="rotate" v-if="loading"></q-icon>
         </p>
-        <p class="text-white text-bold"><span class="text-grey"><q-icon name="groups" size="sm" class="q-mr-sm"></q-icon>
+        <p class="text-white text-bold"><span class="text-grey"><q-icon name="groups" size="sm"
+              class="q-mr-sm"></q-icon>
             Listeners: </span>
           <span class="text-white">0 user/s</span>
         </p>
@@ -55,8 +56,10 @@
         <q-route-tab icon="menu_book" name="biography" label="Biography"
           :disable="!(artistData.bio && artistData.bio.content)"
           :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'biography' } }">
-          <q-badge color="pink" floating v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
-          <q-badge color="pink" floating v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
+          <q-badge color="pink" floating
+            v-if="artistData.bio && artistData.bio.source == 'wikipedia'">wikipedia</q-badge>
+          <q-badge color="pink" floating
+            v-else-if="artistData.bio && artistData.bio.source == 'lastfm'">Last.FM</q-badge>
         </q-route-tab>
         <q-route-tab icon="groups" name="similar" label="Similar artists"
           :to="{ name: 'artist', params: { name: artistData.name }, query: { mbid: artistData.mbId, tab: 'similar' } }">
@@ -135,8 +138,8 @@
                   </tr>
                 </tbody>
               </q-markup-table>
-              <h5 class="text-h5 text-center" v-if="!loading && !(artistData.topTracks.length > 0)"><q-icon name="warning"
-                  size="xl"></q-icon> No enought data</h5>
+              <h5 class="text-h5 text-center" v-if="!loading && !(artistData.topTracks.length > 0)"><q-icon
+                  name="warning" size="xl"></q-icon> No enought data</h5>
             </q-card-section>
           </q-card>
           <q-card class="my-card shadow-box shadow-10 q-pa-lg q-mt-lg" bordered
@@ -264,7 +267,8 @@
                     <q-spinner color="pink" size="xl" />
                     <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
                       {{ artist.name }}
-                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks'
+                        :
                         'track') }}</p>
                     </div>
                   </div>
@@ -273,7 +277,8 @@
                   <div class="absolute-full flex flex-center bg-grey-3 text-dark">
                     <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
                       {{ artist.name }}
-                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks' :
+                      <p class="text-caption q-mb-none">{{ artist.totalTracks + " " + (artist.totalTracks > 1 ? 'tracks'
+                        :
                         'track') }}</p>
                     </div>
                   </div>
@@ -353,7 +358,7 @@
                   <q-btn-group outline>
                     <q-btn size="sm" color="white" text-color="grey-5" icon="play_arrow" :title="t('Play')"
                       @click="trackActions.play(props.row.id)" />
-                      <q-btn size="sm" color="white" text-color="grey-5" icon="add_box" :title="t('enqueue track')"
+                    <q-btn size="sm" color="white" text-color="grey-5" icon="add_box" :title="t('enqueue track')"
                       @click="trackActions.enqueue(props.row.id)" />
                     <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
                       :title="t('Toggle favorite')" @click="onToggleFavorite(props.row.id, props.row.favorited)" />
@@ -674,9 +679,9 @@ function get(mbId, name) {
       });
       artistData.value.topTracks = artistData.value.topTracks.map((track) => {
         if (track.coverPathId) {
-          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+          track.image = "api2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
         } else if (track.covertArtArchiveURL) {
-          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+          track.image = "api2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
         } else {
           track.image = null;
         }
@@ -721,9 +726,9 @@ function getOverview(mbId, name) {
       });
       artistData.value.topTracks = artistData.value.topTracks.map((track) => {
         if (track.coverPathId) {
-          track.image = "api/2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
+          track.image = "api2/thumbnail/small/local/album/?path=" + encodeURIComponent(track.coverPathId);
         } else if (track.covertArtArchiveURL) {
-          track.image = "api/2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
+          track.image = "api2/thumbnail/small/remote/album/?url=" + encodeURIComponent(track.covertArtArchiveURL);
         } else {
           track.image = null;
         }

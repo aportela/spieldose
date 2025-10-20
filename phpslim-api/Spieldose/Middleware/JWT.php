@@ -6,9 +6,9 @@ namespace Spieldose\Middleware;
 
 class JWT
 {
-    protected $logger;
-    private $passphrase;
-    protected $dbh;
+    protected \Psr\Log\LoggerInterface $logger;
+    private string $passphrase;
+    protected \aportela\DatabaseWrapper\DB $dbh;
 
     public function __construct(\Psr\Container\ContainerInterface $container)
     {
@@ -33,7 +33,7 @@ class JWT
             // try decoding jwt data
             $jwt = new \Spieldose\JWT($this->logger, $this->passphrase);
             $decoded = $jwt->decode($clientHeaderJWT);
-            if (isset($decoded) && isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
+            if (isset($decoded->data) && isset($decoded->data->userId) && isset($decoded->data->email)) {
                 $this->logger->notice("JWT valid data decoded", [print_r($decoded->data, true)]);
                 $user = new \Spieldose\User($decoded->data->userId);
                 if ($user->exists($this->dbh)) {
