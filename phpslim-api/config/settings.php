@@ -19,7 +19,7 @@ $settings['paths']['root'] = dirname(__DIR__);
 $settings['paths']['vendor'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'vendor';
 $settings['paths']['database'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'spieldose2.sqlite3';
 $settings['paths']['templates'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'templates';
-$settings['paths']['logs'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'logs';
+$settings['paths']['logs'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'logs';
 
 // Error Handling Middleware settings
 $settings['error'] = [
