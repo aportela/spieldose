@@ -6,7 +6,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import { default as leftSidebarPlayer } from 'components/SidebarPlayer.vue';
+import { default as leftSidebarPlayer } from "components/SidebarPlayer.vue";
 
 const $q = useQuasar();
 

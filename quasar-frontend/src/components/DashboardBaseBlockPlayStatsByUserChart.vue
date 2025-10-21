@@ -26,7 +26,7 @@
 <script setup>
 import { ref, watch, nextTick, computed } from "vue";
 import { date, useQuasar } from "quasar";
-import { useI18n } from "vue-i18n"
+import { useI18n } from "vue-i18n";
 import { BarChart, LineChart } from "chartist";
 import { default as dashboardBaseBlock } from "components/DashboardBaseBlock.vue";
 import { useAPI } from "src/composables/useAPI";

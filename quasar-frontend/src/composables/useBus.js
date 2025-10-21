@@ -1,4 +1,4 @@
-import { EventBus } from 'quasar';
+import { EventBus } from "quasar";
 
 const bus = new EventBus();
 

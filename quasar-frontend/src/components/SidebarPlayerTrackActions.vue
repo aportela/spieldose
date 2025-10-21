@@ -8,7 +8,8 @@
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
           :name="repeatModeIcon" :color="repeatMode && repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track"
-        @click="onToggleFavorite"><q-icon name="favorite" :color="trackFavoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
+        @click="onToggleFavorite"><q-icon name="favorite"
+          :color="trackFavoritedTimestamp ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Download track" v-if="downloadURL"
         :href="downloadURL"><q-icon name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable title="Download track" v-else><q-icon
@@ -16,8 +17,8 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle visualization"
         @click="onToggleVisualization"><q-icon name="screenshot_monitor"></q-icon></q-btn>
       <!-- TODO enable only for tracks-->
-      <q-btn dense unelevated size="md" title="View track details & lyrics" @click="onShowTrackDetailsModal" :disable="disabled"><q-icon
-          name="tag"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" title="View track details & lyrics" @click="onShowTrackDetailsModal"
+        :disable="disabled"><q-icon name="tag"></q-icon></q-btn>
     </q-btn-group>
   </div>
 </template>
@@ -31,8 +32,8 @@ div#current_track_actions {
 
 <script setup>
 // TODO: translations
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { bus } from "boot/bus";
 
 const { t } = useI18n();

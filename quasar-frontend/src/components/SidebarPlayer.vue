@@ -37,7 +37,7 @@
 <script setup>
 import { ref, computed, onMounted, inject } from "vue";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerSpectrumAnalyzer } from "components/SidebarPlayerSpectrumAnalyzer.vue";

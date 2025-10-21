@@ -42,13 +42,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
-import { default as DashboardBaseBlockTop } from 'components/DashboardBaseBlockTop.vue';
-import { default as DashboardBaseBlockRecently } from 'components/DashboardBaseBlockRecently.vue';
-import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
-import { default as DashboardBaseBlockPlayStatsByUserChart } from 'components/DashboardBaseBlockPlayStatsByUserChart.vue';
+import { useI18n } from "vue-i18n";
+import { default as DashboardBaseBlockTop } from "components/DashboardBaseBlockTop.vue";
+import { default as DashboardBaseBlockRecently } from "components/DashboardBaseBlockRecently.vue";
+import { default as DashboardBaseBlockChart } from "components/DashboardBaseBlockChart.vue";
+import { default as DashboardBaseBlockPlayStatsByUserChart } from "components/DashboardBaseBlockPlayStatsByUserChart.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -58,6 +58,6 @@ const tabs = ref([{ label: 'My stats', value: 'myStats', icon: 'person' }, { lab
 const tab = ref(tabs.value[0].value);
 
 const colXLClass = computed(() => {
-  return($q.screen.width >= 2560 ? 'col-xl-4': 'col-xl-6');
+  return ($q.screen.width >= 2560 ? 'col-xl-4' : 'col-xl-6');
 });
 </script>
