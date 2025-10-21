@@ -17,15 +17,13 @@ const localStorageBasilOptions = {
 export const useSessionStore = defineStore("session", {
   state: () => ({
     loaded: false,
-    jwt: null,
-    locale: null,
+    jwt: null
   }),
 
   getters: {
     isLoaded: (state) => state.loaded,
     isLogged: (state) => state.jwt != null,
-    getJWT: (state) => state.jwt,
-    getLocale: (state) => state.locale,
+    getJWT: (state) => state.jwt
   },
   actions: {
     load() {
@@ -34,16 +32,7 @@ export const useSessionStore = defineStore("session", {
       if (jwt) {
         this.jwt = jwt;
       }
-      const locale = basil.get("locale");
-      if (locale) {
-        this.locale = locale;
-      }
       this.loaded = true;
-    },
-    saveLocale(locale) {
-      this.locale = locale;
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set("locale", locale);
     },
     save(jwt) {
       const basil = useBasil(localStorageBasilOptions);
