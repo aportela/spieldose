@@ -17,9 +17,9 @@ div#spieldose-album-cover-tiles-container {
   background-color: #666;
   height: 100vh;
   overflow: hidden;
-  filter: blur(6px);
-  transition: filter 0.3s ease-in;
-  opacity: 0.5;
+  filter: blur(4px);
+  transition: filter 2.3s ease-in;
+  opacity: 0.8;
 }
 
 img.spieldose-album-cover-tile {
