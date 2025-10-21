@@ -19,6 +19,27 @@ export function useLocalStorage() {
     }
   };
 
+  const remove = (key) => {
+    try {
+      LocalStorage.removeItem(key);
+    } catch (error) {
+      console.error("Error accessing localStorage:", error);
+    }
+  };
+
+  const jwt = {
+    get() {
+      return get("jwt");
+    },
+    set(value) {
+      set("jwt", value);
+    },
+    remove() {
+      remove("jwt");
+    }
+  };
+
+
   const darkMode = {
     get() {
       return get("darkMode");
@@ -26,9 +47,12 @@ export function useLocalStorage() {
     set(value) {
       set("darkMode", !!value);
     },
+    remove(value) {
+      remove("darkMode");
+    },
   };
 
   return {
-    darkMode
+    jwt, darkMode
   };
 }
