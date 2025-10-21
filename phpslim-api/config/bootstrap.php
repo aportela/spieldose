@@ -3,15 +3,6 @@
 use DI\ContainerBuilder;
 use Slim\App;
 
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_set_cookie_params(["SameSite" => "Strict"]);
-    session_set_cookie_params(["Secure" => "true"]);
-    session_set_cookie_params(["HttpOnly" => "true"]);
-    session_id('SPIELDOSE');
-    session_name('SPIELDOSE');
-    session_start();
-}
-
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 $containerBuilder = new ContainerBuilder();
