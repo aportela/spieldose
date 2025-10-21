@@ -31,6 +31,7 @@ return [
         );
     },
 
+    // TODO: remove twig
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['twig'];
         $twig = \Slim\Views\Twig::create($settings['path'], $settings['options']);
@@ -60,7 +61,7 @@ return [
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['http']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
-        //$handler->setFormatter($formatter);
+        $handler->setFormatter($formatter);
         $logger->pushHandler($handler);
         return (new \Spieldose\Logger\HTTPRequestLogger($logger));
     },
@@ -72,7 +73,7 @@ return [
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['default']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
-        //$handler->setFormatter($formatter);
+        $handler->setFormatter($formatter);
         $logger->pushHandler($handler);
         return (new \Spieldose\Logger\DefaultLogger($logger));
     },
@@ -84,7 +85,7 @@ return [
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['database']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
-        //$handler->setFormatter($formatter);
+        $handler->setFormatter($formatter);
         $logger->pushHandler($handler);
         return (new \Spieldose\Logger\DBLogger($logger));
     },
@@ -96,7 +97,7 @@ return [
         $handler = new \Monolog\Handler\RotatingFileHandler($settings['channels']['installer']['path'], 0, $settings['defaultLevel']);
         $handler->setFilenameFormat('{date}/{filename}', \Monolog\Handler\RotatingFileHandler::FILE_PER_DAY);
         $formatter = new \Monolog\Formatter\LineFormatter(null, null, true, true);
-        //$handler->setFormatter($formatter);
+        $handler->setFormatter($formatter);
         $logger->pushHandler($handler);
         return (new \Spieldose\Logger\InstallerLogger($logger));
     },
