@@ -26,7 +26,9 @@ class CurrentPlaylist
         $this->shuffledIndexes = [];
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     private function getTracks(\aportela\DatabaseWrapper\DB $dbh): array
     {

@@ -21,7 +21,9 @@ class Scanner
         $this->validCoverFilenames = self::VALID_COVER_FILENAMES;
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     public function setValidCoverFilenames(string $pattern): void
     {

@@ -26,7 +26,9 @@ class Playlist
         $this->owner->name = $ownerName;
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     public function allowView(\aportela\DatabaseWrapper\DB $dbh): bool
     {

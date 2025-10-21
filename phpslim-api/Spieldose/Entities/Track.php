@@ -53,7 +53,9 @@ class Track extends \Spieldose\Entities\Entity
         $this->favorited = $favorited;
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {

@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace Spieldose\Logger;
 
-final class DefaultLogger extends BaseLogger {}
+final class DefaultLogger extends BaseLogger
+{
+}

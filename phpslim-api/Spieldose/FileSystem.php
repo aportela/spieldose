@@ -57,7 +57,7 @@ class FileSystem
     {
         $mime = "application/octet-stream";
         $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        switch($extension) {
+        switch ($extension) {
             case "jpg":
             case "jpeg":
                 $mime = image_type_to_mime_type(IMAGETYPE_JPEG);
