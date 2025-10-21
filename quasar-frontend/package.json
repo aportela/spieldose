@@ -16,7 +16,6 @@
     "@quasar/extras": "^1.17.0",
     "audiomotion-analyzer": "^4.5.1",
     "axios": "^1.12.2",
-    "basil.js": "^0.4.11",
     "chartist": "^1.4.0",
     "core-js": "^3.44.0",
     "i": "^0.3.7",

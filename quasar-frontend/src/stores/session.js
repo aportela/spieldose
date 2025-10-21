@@ -1,18 +1,8 @@
 import { defineStore } from "pinia";
-import { default as useBasil } from "basil.js";
 
-const hashedSite = Array.from(window.location.host).reduce(
-  (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
-  0
-);
+import { useLocalStorage } from "src/composables/useLocalStorage";
 
-const localStorageBasilOptions = {
-  namespace: "spieldose#" + hashedSite,
-  storages: ["local", "cookie", "session", "memory"],
-  storage: "local",
-  sameSite: "strict",
-  expireDays: 3650,
-};
+const { jwt } = useLocalStorage();
 
 export const useSessionStore = defineStore("session", {
   state: () => ({
@@ -27,24 +17,22 @@ export const useSessionStore = defineStore("session", {
   },
   actions: {
     load() {
-      const basil = useBasil(localStorageBasilOptions);
-      const jwt = basil.get("jwt");
-      if (jwt) {
-        this.jwt = jwt;
+      const savedJWT = jwt.get();
+      if (savedJWT) {
+        this.jwt = savedJWT;
       }
       this.loaded = true;
     },
-    save(jwt) {
-      const basil = useBasil(localStorageBasilOptions);
-      if (jwt !== null) {
-        basil.set("jwt", jwt);
+    save(newJWT) {
+      if (newJWT !== null) {
+        jwt.set(newJWT);
       } else {
-        basil.remove("jwt");
+        jwt.remove();
       }
     },
-    signIn(jwt) {
-      this.jwt = jwt;
-      this.save(jwt);
+    signIn(newJWT) {
+      this.jwt = newJWT;
+      this.save(newJWT);
     },
     signOut() {
       this.jwt = null;
