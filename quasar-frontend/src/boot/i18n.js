@@ -1,40 +1,11 @@
-import { createI18n } from "vue-i18n";
-import { useSessionStore } from "stores/session";
-import messages from "src/i18n";
+import { boot } from "quasar/wrappers";
 
-const session = useSessionStore();
-if (!session.isLoaded) {
-  session.load();
-}
-let defaultLocale = "en-US";
+import { usei18n } from "src/composables/usei18n";
 
-if (session.getLocale) {
-  defaultLocale = session.getLocale;
-} else {
-  switch ((navigator.language || navigator.userLanguage).substring(0, 2)) {
-    case "es":
-      defaultLocale = "es-ES";
-      break;
-    case "gl":
-      defaultLocale = "gl-GL";
-      break;
-    default:
-      defaultLocale = "en-US";
-      break;
-  }
-}
+const { i18n } = usei18n();
 
-// Create I18n instance
-const i18n = createI18n({
-  locale: defaultLocale,
-  legacy: false, // you must set `false`, to use Composition API
-  globalInjection: true,
-  messages,
-});
-
-export default ({ app }) => {
-  // Tell app to use the I18n instance
+// "async" is optional;
+// more info on params: https://v2.quasar.dev/quasar-cli/boot-files
+export default boot(async ({ app, router, store }) => {
   app.use(i18n);
-};
-
-export { i18n, defaultLocale };
+});
