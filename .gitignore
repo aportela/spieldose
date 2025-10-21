@@ -32,10 +32,15 @@ yarn-error.log*
 *.sln
 
 /phpslim-api/vendor/
-/phpslim-api/logs/*
-!/phpslim-api/logs/README.md
+
+/phpslim-api/data/logs/*
+!/phpslim-api/data/logs/README.md
+
+/phpslim-api/data/storage/*
+!/phpslim-api/data/storage/README.md
+
 /phpslim-api/data/*
-!/phpslim-api/data/README.md
+
 /phpslim-api/.phpunit.result.cache
 /phpslim-api/.php-cs-fixer.cache
 
