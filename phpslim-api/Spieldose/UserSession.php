@@ -8,6 +8,9 @@ class UserSession
 {
     public static function set(string $userId = "", string $email = "", string $name = ""): void
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
         $_SESSION["name"] = $name;
@@ -15,14 +18,13 @@ class UserSession
 
     public static function clear(): void
     {
-        $_SESSION = array();
-        if (ini_get("session.use_cookies")) {
-            if (PHP_SAPI != 'cli') {
+        if (session_status() !== PHP_SESSION_NONE) {
+            $_SESSION = [];
+            session_unset();
+            if (ini_get("session.use_cookies") && PHP_SAPI != 'cli') {
                 $params = session_get_cookie_params();
                 setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
             }
-        }
-        if (session_status() != PHP_SESSION_NONE) {
             session_destroy();
         }
     }
