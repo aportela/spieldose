@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app) {
-    $app->get('/', function (Request $request, Response $response, array $args) {
+    $app->get('/', function (Request $request, Response $response, array $args) use ($app) {
         $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
         if (!$dbh->isSchemaInstalled()) {
             // TODO: check upgrades
@@ -225,30 +225,39 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/global_search', function (Request $request, Response $response, array $args) {
+            $group->post('/global_search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
-                $sortItems = [];
-                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
-                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
-                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                    true
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem(
+                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
+                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                            true
+                        )
+                    ]
                 );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"] ?? 3);
                 $data = array();
                 $filter = array(
                     "title" => $params["filter"]["text"] ?? "",
                 );
-                $result = \Spieldose\Entities\Track::search($dbh, $filter, $sort, $pager);
-                $data["tracks"] = $result->items;
-                $sortItems = [];
-                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
-                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
-                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                    true
+                $result = \Spieldose\Entities\Track::search(
+                    $dbh,
+                    $filter,
+                    $sort,
+                    $pager
                 );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
+                $data["tracks"] = $result->items;
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem(
+                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                            true
+                        )
+                    ]
+                );
                 $filter = new \aportela\DatabaseBrowserWrapper\Filter(
                     array(
                         "name" => $params["filter"]["text"] ?? "",
@@ -256,19 +265,29 @@ return function (App $app) {
                 );
                 $result = \Spieldose\Entities\Artist::search($dbh, $filter, $sort, $pager);
                 $data["artists"] = $result->items;
-                $sortItems = [];
-                $sortItems[] = new \aportela\DatabaseBrowserWrapper\SortItem(
-                    (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
-                    (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                    true
+                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                    [
+                        new \aportela\DatabaseBrowserWrapper\SortItem(
+                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "title",
+                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                            true
+                        )
+                    ]
                 );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort($sortItems);
                 $filter = array(
                     "title" => $params["filter"]["text"] ?? "",
                 );
                 $result = \Spieldose\Entities\Album::search($dbh, $filter, $sort, $pager, true);
                 $data["albums"] = $result->items;
-                $payload = json_encode(["data" => $data]);
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "data" => $data
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -566,8 +585,7 @@ return function (App $app) {
                 }
             });
 
-            $group->post('/artist/search', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+            $group->post('/artist/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 $filter = new \aportela\DatabaseBrowserWrapper\Filter(
                     array(
@@ -585,13 +603,52 @@ return function (App $app) {
                     ]
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $data = \Spieldose\Entities\Artist::search($dbh, $filter, $sort, $pager);
-                $payload = json_encode(["data" => $data]);
+                $data = \Spieldose\Entities\Artist::search(
+                    $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                    $filter,
+                    $sort,
+                    $pager
+                );
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "data" => $data
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/artist_overview', function (Request $request, Response $response, array $args) {
+            $group->get('/artist_overview', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $queryParams = $request->getQueryParams();
+                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+                // TODO: change dbh handler to public methods param ?
+                $artist = new \Spieldose\Entities\Artist($dbh);
+                $artist->mbId = $queryParams["mbId"] ?? null;
+                $artist->name = $queryParams["name"] ?? null;
+                if (!(empty($artist->mbId) && empty($artist->name))) {
+                    $settings = $this->get('settings')['thumbnails']['albums'];
+                    $artist->get($settings['useLocalCovers']);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            'artist' => $artist
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->get('/artist', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $artist = new \Spieldose\Entities\Artist($dbh);
@@ -602,9 +659,13 @@ return function (App $app) {
                     $artist->get($settings['useLocalCovers']);
                     $payload = json_encode(
                         [
+                            'initialState' => $initialState,
                             'artist' => $artist
                         ]
                     );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 } else {
@@ -612,28 +673,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/artist', function (Request $request, Response $response, array $args) {
-                $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-                $artist = new \Spieldose\Entities\Artist($dbh);
-                $artist->mbId = $queryParams["mbId"] ?? null;
-                $artist->name = $queryParams["name"] ?? null;
-                if (!(empty($artist->mbId) && empty($artist->name))) {
-                    $settings = $this->get('settings')['thumbnails']['albums'];
-                    $artist->get($settings['useLocalCovers']);
-                    $payload = json_encode(
-                        [
-                            'artist' => $artist
-                        ]
-                    );
-                    $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-                } else {
-                    throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
-                }
-            })->add(\Spieldose\Middleware\CheckAuth::class);
-
-            $group->get('/artists_genres', function (Request $request, Response $response, array $args) {
+            $group->get('/artists_genres', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $filter = [];
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -649,6 +689,7 @@ return function (App $app) {
                 $data = \Spieldose\ArtistGenre::search($dbh, $filter, $sort, $pager);
                 $payload = json_encode(
                     [
+                        'initialState' => $initialState,
                         "genres" =>
                         array_map(
                             function ($result) {
@@ -658,11 +699,14 @@ return function (App $app) {
                         )
                     ]
                 );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/album/search', function (Request $request, Response $response, array $args) {
+            $group->post('/album/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
@@ -684,12 +728,20 @@ return function (App $app) {
                 $settings = $this->get('settings')['thumbnails']['albums'];
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
                 $data = \Spieldose\Entities\Album::search($dbh, $filter, $sort, $pager, $settings['useLocalCovers']);
-                $payload = json_encode(["data" => $data]);
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "data" => $data
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/album', function (Request $request, Response $response, array $args) {
+            $group->get('/album', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $album = new \Spieldose\Entities\Album(
@@ -702,14 +754,19 @@ return function (App $app) {
                 $album->get($dbh, $settings['useLocalCovers']);
                 $payload = json_encode(
                     [
+                        'initialState' => $initialState,
                         'album' => $album
                     ]
                 );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) {
+            $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                // TODO
                 $settings = $this->get('settings')['thumbnails']['albums'];
                 $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
                 $urls = [];
@@ -734,10 +791,16 @@ return function (App $app) {
                         $hashes
                     );
                 }
-                $payload = array(
-                    'coverURLs' => $urls
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        'coverURLs' => $urls
+                    ]
                 );
-                $response->getBody()->write(json_encode($payload));
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
+                $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             });
 
@@ -784,10 +847,17 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/path/tree', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-                $data = \Spieldose\Path::getTree($dbh);
-                $payload = json_encode(["items" => $data]);
+            $group->get('/path/tree', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $data = \Spieldose\Path::getTree($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "items" => $data
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
@@ -920,8 +990,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/search', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+            $group->post('/playlist/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 // TODO: include this check on all search api methods
                 if (!empty($params["filter"])) {
@@ -942,8 +1011,16 @@ return function (App $app) {
                         ]
                     );
                     $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                    $data = \Spieldose\Playlist::search($dbh, $filter, $sort, $pager);
-                    $payload = json_encode(["data" => $data]);
+                    $data = \Spieldose\Playlist::search($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "data" => $data
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 } else {
@@ -951,8 +1028,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/add', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+            $group->post('/playlist/add', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 $playlist = new \Spieldose\Playlist(
                     $params["playlist"]["id"] ?? "",
@@ -960,14 +1036,21 @@ return function (App $app) {
                     $params["playlist"]["tracks"] ?? [],
                     $params["playlist"]["public"] ?? false
                 );
-                $playlist->add($dbh);
-                $payload = json_encode(["playlist" => $params["playlist"]]);
+                $playlist->add($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "playlist" => $params["playlist"]
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/update', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+            $group->post('/playlist/update', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 $playlist = new \Spieldose\Playlist(
                     $params["playlist"]["id"] ?? "",
@@ -975,23 +1058,37 @@ return function (App $app) {
                     $params["playlist"]["tracks"] ?? [],
                     $params["playlist"]["public"] ?? false
                 );
-                $playlist->update($dbh);
-                $payload = json_encode(["playlist" => $params["playlist"]]);
+                $playlist->update($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                $payload = json_encode(
+                    [
+                        'initialState' => $initialState,
+                        "playlist" => $params["playlist"]
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) {
+            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 if (!empty($args['id'])) {
-                    $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $playlist = new \Spieldose\Playlist(
                         $args['id'],
                         "",
                         [],
                         false
                     );
-                    $playlist->remove($dbh);
-                    $payload = json_encode([]);
+                    $playlist->remove($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 } else {
@@ -999,17 +1096,24 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/playlist/{id}', function (Request $request, Response $response, array $args) {
+            $group->get('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 if (!empty($args['id'])) {
-                    $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $playlist = new \Spieldose\Playlist(
                         $args['id'],
                         "",
                         [],
                         false
                     );
-                    $playlist->get($dbh);
-                    $payload = json_encode(["playlist" => $playlist]);
+                    $playlist->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "playlist" => $playlist
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 } else {
@@ -1017,92 +1121,150 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist', function (Request $request, Response $response, array $args) {
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+            $group->get('/current_playlist', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $currentPlaylist->get($dbh);
+                $currentPlaylist->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
+                // TODO: initialState
                 $payload = json_encode($currentPlaylist);
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist/sort/random', function (Request $request, Response $response, array $args) {
+            $group->get('/current_playlist/sort/random', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->randomSort($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                // TODO: initialState
+                $payload = json_encode($currentPlaylist->randomSort($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/sort/indexes', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/sort/indexes', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
                 $indexes = [];
                 if (isset($params["indexes"]) && is_array($params["indexes"])) {
                     $indexes = $params["indexes"];
                 }
-                $payload = json_encode($currentPlaylist->sortByIndexes($dbh, $indexes, isset($params["shuffle"]) && $params["shuffle"] == "true"));
+                $payload = json_encode(
+                    $currentPlaylist->sortByIndexes(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        $indexes,
+                        isset($params["shuffle"]) && $params["shuffle"] == "true"
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist/current_element', function (Request $request, Response $response, array $args) {
+            $group->get('/current_playlist/current_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);;
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                $payload = json_encode(
+                    $currentPlaylist->getCurrentElement(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist/previous_element', function (Request $request, Response $response, array $args) {
+            $group->get('/current_playlist/previous_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);;
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getPreviousElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                $payload = json_encode(
+                    $currentPlaylist->getPreviousElement(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist/next_element', function (Request $request, Response $response, array $args) {
+            $group->get('/current_playlist/next_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getNextElement($dbh, isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"));
+                $payload = json_encode(
+                    $currentPlaylist->getNextElement(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        isset($queryParams["shuffle"]) && $queryParams["shuffle"] == "true"
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist/element_at_index', function (Request $request, Response $response, array $args) {
+            $group->get('/current_playlist/element_at_index', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->getElementAtIndex($dbh, $queryParams["index"] ?? -1));
+                $payload = json_encode(
+                    $currentPlaylist->getElementAtIndex(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        $queryParams["index"] ?? -1
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/remove_element_at_index', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/remove_element_at_index', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->removeElementAtIndex($dbh, $params["index"] ?? -1, ((isset($params["shuffle"]) && $params["shuffle"] == "true") && $params["shuffle"])));
+                $payload = json_encode(
+                    $currentPlaylist->removeElementAtIndex(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        $params["index"] ?? -1,
+                        ((isset($params["shuffle"]) && $params["shuffle"] == "true") && $params["shuffle"])
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/discover_tracks', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/discover_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
-                $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
-                $payload = json_encode($currentPlaylist->discover($dbh, $params["count"] ?? 32, ((isset($params["shuffle"]) && $params["shuffle"] == "true") && $params["shuffle"])));
+                $payload = json_encode(
+                    $currentPlaylist->discover(
+                        $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
+                        $params["count"] ?? 32,
+                        ((isset($params["shuffle"]) && $params["shuffle"] == "true") && $params["shuffle"])
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/set_tracks', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/set_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
@@ -1140,12 +1302,20 @@ return function (App $app) {
                         throw new \Exception("save error");
                     }
                 }
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == "true")));
+                $payload = json_encode(
+                    $currentPlaylist->getCurrentElement(
+                        $dbh,
+                        (isset($params["shuffle"]) && $params["shuffle"] == "true")
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/append_tracks', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/append_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
@@ -1175,18 +1345,34 @@ return function (App $app) {
                         throw new \Exception("save error");
                     }
                 }
-                $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == "true")));
+                $payload = json_encode(
+                    $currentPlaylist->getCurrentElement(
+                        $dbh,
+                        (isset($params["shuffle"]) && $params["shuffle"] == "true")
+                    )
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/current_playlist/set_radiostation', function (Request $request, Response $response, array $args) {
+            $group->post('/current_playlist/set_radiostation', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $params = $request->getParsedBody();
                 if (!empty($params["id"])) {
-                    $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+                    $dbh =  $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $currentPlaylist->setRadiostation($dbh, $params["id"]);
-                    $payload = json_encode($currentPlaylist->getCurrentElement($dbh, (isset($params["shuffle"]) && $params["shuffle"] == "true")));
+                    $payload = json_encode(
+                        $currentPlaylist->getCurrentElement(
+                            $dbh,
+                            (isset($params["shuffle"]) && $params["shuffle"] == "true")
+                        )
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 } else {
@@ -1194,7 +1380,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/radio_station/search', function (Request $request, Response $response, array $args) {
+            $group->post('/radio_station/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
@@ -1209,12 +1395,20 @@ return function (App $app) {
                 $data = [
                     "items" => include "../Spieldose/RadioStations.php"
                 ];
-                $payload = json_encode(["data" => $data]);
+                $payload = json_encode(
+                    [
+                        "initialState" => $initialState,
+                        "data" => $data
+                    ]
+                );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/lyrics', function (Request $request, Response $response, array $args) {
+            $group->get('/lyrics', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $title = $queryParams["title"] ?? "";
@@ -1222,9 +1416,13 @@ return function (App $app) {
                 $lyrics = new \Spieldose\Lyrics($this->get(\Spieldose\Logger\ScraperLogger::class));
                 $payload = json_encode(
                     [
+                        "initialState" => $initialState,
                         'lyrics' => $lyrics->get($dbh, $title, $artist) ? $lyrics->lyrics : null
                     ]
                 );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
