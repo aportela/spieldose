@@ -9,8 +9,8 @@
         <div class="col">
           <CustomInputSearch :disable="loading" :loading="loading && name?.length > 0" hint="Search by artist name"
             placeholder="Text condition" :error="warningNoItems && name?.length > 0"
-            errorMessage="No artists found with the specified condition filter" v-model="name" @submit="onNameChanged" @clear="onNameChanged"
-            ref="autoFocusRef"></CustomInputSearch>
+            errorMessage="No artists found with the specified condition filter" v-model="name" @submit="onNameChanged"
+            @clear="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
@@ -37,7 +37,7 @@
 
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/BrowserBase.vue";
@@ -52,6 +52,8 @@ const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
+
+const { api } = useAPI();
 
 const autoFocusRef = ref(null);
 const name = ref(route.query.name || null);

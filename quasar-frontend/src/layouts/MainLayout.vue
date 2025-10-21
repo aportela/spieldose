@@ -36,8 +36,8 @@
           </q-btn-dropdown>
           <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
             href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
-          <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps stack
-            @click="signOut" :disable="loading" />
+          <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps
+            stack @click="signOut" :disable="loading" />
         </q-tabs>
 
       </q-toolbar>
@@ -65,7 +65,7 @@
 import { ref, computed, watch } from "vue";
 
 import { useRouter } from "vue-router";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -81,6 +81,8 @@ import { currentPlayListActions } from "src/boot/spieldose";
 const { t } = useI18n();
 const $q = useQuasar();
 const router = useRouter();
+
+const { api } = useAPI();
 
 const session = useSessionStore();
 if (!session.isLoaded) {

@@ -1,8 +1,10 @@
 import { useSpieldoseStore } from "stores/spieldose";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 import { spieldoseEvents } from "boot/events";
 
 const spieldoseStore = useSpieldoseStore();
+
+const { api } = useAPI();
 
 const trackActions = {
   setFavorite: function (id, source) {

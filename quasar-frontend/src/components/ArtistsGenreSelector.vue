@@ -1,14 +1,14 @@
 <template>
-  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')" :disable="loading || disable"
-    emit-value filled clearable=""
-    :hint="!genre ? t('Minimum 3 characters to trigger autocomplete') : null" use-input
-    input-debounce="0" @filter="onFilterGenres" @update:model-value="onChangeGenre">
+  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')"
+    :disable="loading || disable" emit-value filled clearable=""
+    :hint="!genre ? t('Minimum 3 characters to trigger autocomplete') : null" use-input input-debounce="0"
+    @filter="onFilterGenres" @update:model-value="onChangeGenre">
   </q-select>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 
@@ -17,6 +17,9 @@ const emit = defineEmits(['change']);
 
 const { t } = useI18n();
 const $q = useQuasar();
+
+const { api } = useAPI();
+
 let availableGenres = [];
 const genre = ref(props.defaultGenre || null);
 const filteredGenres = ref([]);

@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { default as useBasil } from "basil.js";
-import { api } from "boot/axios";
 
 const hashedSite = Array.from(window.location.host).reduce(
   (hash, char) => 0 | (31 * hash + char.charCodeAt(0)),
@@ -170,7 +169,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     allowSkipNext: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
-        state.data.currentPlaylist.totalTracks - 1,
+      state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {

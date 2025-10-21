@@ -29,10 +29,12 @@ import { date, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n"
 import { BarChart, LineChart } from "chartist";
 import { default as dashboardBaseBlock } from "components/DashboardBaseBlock.vue";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const loading = ref(false);
 let items = [];

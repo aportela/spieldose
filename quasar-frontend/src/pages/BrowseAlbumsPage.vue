@@ -28,9 +28,9 @@
     </template>
     <template #items>
       <AnimatedAlbumCover v-for="album in albums" :key="album.hash" v-memo="[lastChangesTimestamp]" :image="album.image"
-          :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
-          :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
-        </AnimatedAlbumCover>
+        :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
+        :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
+      </AnimatedAlbumCover>
     </template>
   </BrowserBase>
 </template>
@@ -39,7 +39,7 @@
 
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { api } from "boot/axios";
+import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/BrowserBase.vue";
@@ -54,6 +54,8 @@ const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
+
+const { api } = useAPI();
 
 const autoFocusRef = ref(null);
 const text = ref(route.query.text || null);
