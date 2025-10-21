@@ -156,7 +156,7 @@ class Metrics
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "");
+        $data = $browser->launch($query, "", true);
         return ($data->items);
     }
 
@@ -267,7 +267,7 @@ class Metrics
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "");
+        $data = $browser->launch($query, "", true);
         return ($data->items);
     }
 
@@ -381,7 +381,7 @@ class Metrics
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "");
+        $data = $browser->launch($query, "", true);
         return ($data->items);
     }
 
@@ -488,7 +488,7 @@ class Metrics
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "");
+        $data = $browser->launch($query, "", true);
         return ($data->items);
     }
 
