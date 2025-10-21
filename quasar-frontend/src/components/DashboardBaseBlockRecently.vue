@@ -78,7 +78,8 @@
       </ol>
       <div v-if="!loading">
         <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-if="loadingErrors"><q-icon name="error"
-            size="xl"></q-icon> {{ t('Error loading data') }}</h5>
+            size="xl"></q-icon>
+          {{ t('Error loading data') }}</h5>
         <h5 class="text-h5 text-center q-py-sm q-mt-xl q-mt-sm" v-else-if="!(items && items.length > 0)"><q-icon
             name="warning" size="xl"></q-icon> {{ t('No enought data') }}</h5>
       </div>
@@ -89,17 +90,19 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n'
-import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
-import { default as DashboardBaseBlockListElementTrack } from 'components/DashboardBaseBlockListElementTrack.vue';
-import { default as DashboardBaseBlockListElementArtist } from 'components/DashboardBaseBlockListElementArtist.vue';
-import { default as DashboardBaseBlockListElementAlbum } from 'components/DashboardBaseBlockListElementAlbum.vue';
-import { default as DashboardBaseBlockListElementGenre } from 'components/DashboardBaseBlockListElementGenre.vue';
+import { useI18n } from "vue-i18n";
+import { default as dashboardBaseBlock } from "components/DashboardBaseBlock.vue";
+import { default as DashboardBaseBlockListElementTrack } from "components/DashboardBaseBlockListElementTrack.vue";
+import { default as DashboardBaseBlockListElementArtist } from "components/DashboardBaseBlockListElementArtist.vue";
+import { default as DashboardBaseBlockListElementAlbum } from "components/DashboardBaseBlockListElementAlbum.vue";
+import { default as DashboardBaseBlockListElementGenre } from "components/DashboardBaseBlockListElementGenre.vue";
 import { default as LabelTimestampAgo } from "components/LabelTimestampAgo.vue";
-import { api } from 'boot/axios';
+import { useAPI } from "src/composables/useAPI";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const loading = ref(false);
 const items = ref([]);

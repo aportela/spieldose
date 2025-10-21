@@ -68,10 +68,12 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
-import { api } from 'boot/axios';
+import { useAPI } from "src/composables/useAPI";
 
 const { t } = useI18n();
 const $q = useQuasar();
+
+const { api } = useAPI();
 
 const loading = ref(false);
 

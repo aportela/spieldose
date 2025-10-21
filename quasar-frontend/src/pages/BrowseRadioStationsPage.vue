@@ -7,8 +7,8 @@
     <q-card-section v-if="radioStations">
       <div class="row q-gutter-xs">
         <div class="col">
-          <q-input v-model="personalRadioStationName" clearable type="search" outlined dense placeholder="Text condition"
-            hint="Search radio stations with name" :loading="loading" :disable="loading"
+          <q-input v-model="personalRadioStationName" clearable type="search" outlined dense
+            placeholder="Text condition" hint="Search radio stations with name" :loading="loading" :disable="loading"
             @keydown.enter.prevent="search(true)" @clear="noRadioStationsFound = false; search(true)"
             :error="noRadioStationsFound" :errorMessage="'No radio stations found with specified condition'"
             ref="personalRadioStationNameRef">
@@ -94,15 +94,17 @@ img.radiostation_image:hover {
 <script setup>
 
 import { ref, inject } from "vue";
-import { api } from 'boot/axios'
+import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 import { useSpieldoseStore } from "stores/spieldose";
 
 import { radioStationActions } from "src/boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const country = ref(null);
 const language = ref(null);

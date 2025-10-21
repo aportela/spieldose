@@ -49,8 +49,8 @@
 import { ref, nextTick, inject } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-import { useI18n } from 'vue-i18n'
-import { api } from 'boot/axios'
+import { useI18n } from "vue-i18n";
+import { useAPI } from "src/composables/useAPI";
 import { useSpieldoseStore } from "stores/spieldose";
 
 const { t } = useI18n();
@@ -60,6 +60,8 @@ const $q = useQuasar();
 const router = useRouter();
 
 const spieldoseStore = useSpieldoseStore();
+
+const { api } = useAPI();
 
 const loading = ref(false);
 

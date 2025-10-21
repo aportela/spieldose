@@ -166,8 +166,8 @@
                 <q-item-label header>Led bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.ledBars" unelevated toggle-color="pink"
-                      spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.ledBars" unelevated
+                      toggle-color="pink" spread :options="[
                         { label: 'ON', value: true },
                         { label: 'OFF', value: false }
                       ]" @update:model-value="(v) => onSet('ledBars', v)" />
@@ -178,8 +178,8 @@
                 <q-item-label header>True leds</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.trueLeds" unelevated toggle-color="pink"
-                      spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.trueLeds" unelevated
+                      toggle-color="pink" spread :options="[
                         { label: 'ON', value: true },
                         { label: 'OFF', value: false }
                       ]" @update:model-value="(v) => onSet('trueLeds', v)" />
@@ -190,8 +190,8 @@
                 <q-item-label header>Lumi bars</q-item-label>
                 <q-item dense>
                   <q-item-section>
-                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.lumiBars" unelevated toggle-color="pink"
-                      spread :options="[
+                    <q-btn-toggle size="sm" v-model="settings.audioMotionAnalyzer.lumiBars" unelevated
+                      toggle-color="pink" spread :options="[
                         { label: 'ON', value: true },
                         { label: 'OFF', value: false }
                       ]" @update:model-value="(v) => onSet('lumiBars', v)" />
@@ -234,17 +234,19 @@
                 <template v-slot:error>
                   <q-img src="images/vinyl.png" width="400px" height="400px"></q-img>
                 </template>
-              </q-img>
-              <q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
-                -->
-              <SidebarPlayerAlbumCover :normalImage="coverImage" :smallImage="coverImageSmall" :animation="animatedCover"
-                :animated="spieldoseStore.isPlaying" @change="animatedCover = !animatedCover">
+</q-img>
+<q-img v-else src="images/vinyl.png" width="400px" height="400px"></q-img>
+-->
+              <SidebarPlayerAlbumCover :normalImage="coverImage" :smallImage="coverImageSmall"
+                :animation="animatedCover" :animated="spieldoseStore.isPlaying"
+                @change="animatedCover = !animatedCover">
               </SidebarPlayerAlbumCover>
             </div>
             <div class="col-6">
               <div class="q-mt-lg">
-                <q-btn round dense size="30px" color="dark" style="opacity: 0.8" :disable="disabled || !allowSkipPrevious"
-                  @click="onSkipPrevious"><q-icon name="skip_previous" title="Skip to previous track"></q-icon></q-btn>
+                <q-btn round dense size="30px" color="dark" style="opacity: 0.8"
+                  :disable="disabled || !allowSkipPrevious" @click="onSkipPrevious"><q-icon name="skip_previous"
+                    title="Skip to previous track"></q-icon></q-btn>
                 <q-btn round dense class="q-mx-lg" size="60px" color="dark" style="opacity: 0.8" :disable="disabled"
                   @click="onPlay"><q-icon :name="spieldoseStore.isPlaying ? 'pause' : 'play_arrow'"
                     :class="{ 'text-pink-6': spieldoseStore.isPlaying }" title="Play/Pause/Resume track"
@@ -267,7 +269,7 @@
             </h4>
             <h4 class="text-grey-6 q-mt-xs"><q-icon name="album" size="xl" class="q-mr-sm"></q-icon>{{
               currentElement.track.album.title }} <span v-if="currentElement.track.album.year">({{
-    currentElement.track.album.year }})</span></h4>
+                currentElement.track.album.year }})</span></h4>
           </div>
         </div>
         <div class="col-3">
@@ -326,8 +328,8 @@
               </q-item-section>
             </q-item>
             <q-separator spaced />
-            <q-virtual-scroll style="height: 400px;" dark visible separator
-              :items="playlistItems" v-slot="{ item, index }">
+            <q-virtual-scroll style="height: 400px;" dark visible separator :items="playlistItems"
+              v-slot="{ item, index }">
               <q-item clickable :key="item.id" @click="onSetCurrentIndex(index)">
                 <q-item-section avatar>
                   <q-avatar>
@@ -400,8 +402,8 @@ import { bus } from "boot/bus";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { useSpieldoseStore } from "stores/spieldose";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
-import { api } from 'boot/axios';
-import { currentPlayListActions } from '../boot/spieldose';
+import { currentPlayListActions } from "../boot/spieldose";
+import { useAPI } from "src/composables/useAPI";
 
 
 const disabled = ref(false);
@@ -409,6 +411,8 @@ const disabled = ref(false);
 const spieldoseStore = useSpieldoseStore();
 
 const $q = useQuasar();
+
+const { api } = useAPI();
 
 const maxCanvasHeight = Math.round($q.screen.height / 2);
 //console.log($q.screen.height);
@@ -761,10 +765,10 @@ function onSkipNext() {
 
 function onSetCurrentIndex(index) {
   spieldoseStore.interact();
-    currentPlayListActions.skipToElementIndex(index).then((success) => {
-    }).catch((error) => {
-      // TODO
-    });
+  currentPlayListActions.skipToElementIndex(index).then((success) => {
+  }).catch((error) => {
+    // TODO
+  });
 }
 
 function onClose() {

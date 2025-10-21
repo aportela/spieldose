@@ -13,17 +13,18 @@
         </div>
         <div style="padding-top: 100px">
           <div v-if="loading">
-              <q-spinner size="120px" color="pink" class="q-ml-xl"></q-spinner>
+            <q-spinner size="120px" color="pink" class="q-ml-xl"></q-spinner>
           </div>
           <div v-else>
             <p class="text-subtitle2">{{ t('Album') }}</p>
             <p class="text-h2 text-weight-bolder">{{ album.title }}</p>
-            <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} {{ t('tracks') }}, {{
-              formatSecondsAsTime(Math.round(totalLengthInSeconds)) }}</p>
+            <p class="text-subtitle2">{{ album.artist.name }} - {{ album.year }} - {{ totalTracks }} {{ t('tracks') }},
+              {{
+                formatSecondsAsTime(Math.round(totalLengthInSeconds)) }}</p>
             <p><q-icon name="play_arrow" class="cursor-pointer" size="xl" :title="t('play album')"
                 @click="onPlayAlbum"></q-icon> <q-icon name="add_box" class="cursor-pointer" size="xl"
                 :title="t('enqueue album')" @click="onEnqueueAlbum"></q-icon></p>
-            </div>
+          </div>
         </div>
       </div>
       <p style="clear: both;"></p>
@@ -31,8 +32,9 @@
         <div :class="{ 'col-6': album.media?.length > 1, 'col-12': album.media?.length <= 1 }"
           v-for="media, index in album.media" :key="index">
           <q-markup-table>
-            <caption v-if="album.media?.length > 1" class="q-pa-md"><q-icon name="album" size="xs"></q-icon> {{ t("Disc") }} {{ index
-              + 1 }}</caption>
+            <caption v-if="album.media?.length > 1" class="q-pa-md"><q-icon name="album" size="xs"></q-icon> {{
+              t("Disc") }} {{ index
+                + 1 }}</caption>
             <thead>
               <tr>
                 <th class="text-left" style="width: 1em;"
@@ -47,7 +49,7 @@
                 <td v-if="spieldoseStore && spieldoseStore.isCurrentPlaylistElementATrack">
                   <q-icon :name="currentElementRowIcon" size="md" :color="!spieldoseStore.isStopped ? 'pink' : 'dark'"
                     class="cursor-pointer" v-if="currentTrackId == track.id" @click="onPauseResume"></q-icon>
-                    <q-icon :name="currentElementRowIcon" size="md" color="white" style="opacity: 0" v-else></q-icon>
+                  <q-icon :name="currentElementRowIcon" size="md" color="white" style="opacity: 0" v-else></q-icon>
                 </td>
                 <td>{{ track.position }}</td>
                 <td>
@@ -75,12 +77,14 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { useSpieldoseStore } from "stores/spieldose";
-import { api } from 'boot/axios';
+import { useAPI } from "src/composables/useAPI";
 import { albumActions, trackActions } from "src/boot/spieldose";
 
 
 const { t } = useI18n();
 const $q = useQuasar();
+
+const { api } = useAPI();
 
 const route = useRoute();
 

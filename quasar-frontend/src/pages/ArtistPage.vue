@@ -470,11 +470,12 @@ import { ref, computed, watch, inject, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
-import { api } from 'boot/axios';
-import { LineChart, FixedScaleAxis } from 'chartist';
 
-import { default as ArtistURLRelationshipChip } from 'components/ArtistURLRelationshipChip.vue';
-import { default as ArtistGenreChip } from 'components/ArtistGenreChip.vue';
+import { useAPI } from "src/composables/useAPI";
+import { LineChart, FixedScaleAxis } from "chartist";
+
+import { default as ArtistURLRelationshipChip } from "components/ArtistURLRelationshipChip.vue";
+import { default as ArtistGenreChip } from "components/ArtistGenreChip.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { default as WikipediaPage } from "components/WikipediaPage.vue";
 
@@ -530,6 +531,8 @@ const spieldoseStore = useSpieldoseStore();
 
 const route = useRoute();
 const router = useRouter();
+
+const { api } = useAPI();
 
 const tab = ref(route.query.tab && ['overview', 'biography', 'similar', 'albums', 'tracks', 'metrics'].includes(route.query.tab) ? route.query.tab : 'overview');
 

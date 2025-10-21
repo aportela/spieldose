@@ -154,15 +154,17 @@
 <script setup>
 import { ref, watch, computed, onMounted, inject } from "vue";
 import { useQuasar, uid } from "quasar";
-import { useI18n } from 'vue-i18n';
-import { api } from 'boot/axios';
+import { useI18n } from "vue-i18n";
+import { useAPI } from "src/composables/useAPI";
 import { spieldoseEventNames } from "boot/events";
 import { useSpieldoseStore } from "stores/spieldose";
 
-import { trackActions, currentPlayListActions } from '../boot/spieldose';
+import { trackActions, currentPlayListActions } from "../boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const spieldoseStore = useSpieldoseStore();
 

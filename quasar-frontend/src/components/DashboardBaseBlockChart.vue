@@ -7,7 +7,7 @@
           :label="t(tabElement.label)" />
       </q-tabs>
     </template>
-     <template #prepend>
+    <template #prepend>
       <slot name="prepend"></slot>
     </template>
     <template #chart>
@@ -29,13 +29,15 @@
 <script setup>
 import { ref, watch, nextTick, computed, onMounted } from "vue";
 import { useQuasar, uid } from "quasar";
-import { useI18n } from 'vue-i18n'
-import { BarChart, LineChart } from 'chartist';
-import { default as dashboardBaseBlock } from 'components/DashboardBaseBlock.vue';
-import { api } from 'boot/axios';
+import { useI18n } from "vue-i18n";
+import { BarChart, LineChart } from "chartist";
+import { default as dashboardBaseBlock } from "components/DashboardBaseBlock.vue";
+import { useAPI } from "src/composables/useAPI";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const divId = "ct-chart-" + uid();
 

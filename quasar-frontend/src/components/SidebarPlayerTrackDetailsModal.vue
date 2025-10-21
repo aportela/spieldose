@@ -13,9 +13,12 @@
       </q-card>
       <q-splitter v-model="splitterModel" unit="px" style="height: 768px" disable after-class="q-pa-none">
         <template v-slot:before>
-          <q-img :src="track.covers.normal || 'images/vinyl-medium.png'" @error="track.covers.normal = 'images/vinyl-medium.png'" width="400px" height="400px" spinner-color="pink" />
+          <q-img :src="track.covers.normal || 'images/vinyl-medium.png'"
+            @error="track.covers.normal = 'images/vinyl-medium.png'" width="400px" height="400px"
+            spinner-color="pink" />
           <div class="q-pa-md">
-            <p class="q-ma-none text-h5 text-grey-9"><q-icon name="music_note" class="q-mr-sm"></q-icon> {{ track.title }}
+            <p class="q-ma-none text-h5 text-grey-9"><q-icon name="music_note" class="q-mr-sm"></q-icon> {{ track.title
+            }}
             </p>
             <p class="q-my-sm text-h5 text-grey-9 q-pl-lg q-ml-md" v-if="track.artist.name">
               {{ t('by') }}
@@ -26,15 +29,19 @@
             <p class="q-ma-none q-pt-md text-h6 text-grey-8" v-if="track.album.title">
               <q-icon name="album" class="q-mr-md"></q-icon>
               <a class="q-ml-xs text-grey-8" v-if="track.album.mbId"
-                :href="'https://musicbrainz.org/release/' + track.album.mbId" target="_blank">{{ track.album.title }}</a>
+                :href="'https://musicbrainz.org/release/' + track.album.mbId" target="_blank">{{ track.album.title
+                }}</a>
               <span v-else>{{ track.album.title }}</span>
             </p>
-            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">{{ t('Track number') }}: {{
-              track.trackNumber }}</p>
-            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">{{ t('On year') }} {{
-              track.album.year }}</p>
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">{{ t('Track
+              number') }}: {{
+                track.trackNumber }}</p>
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">{{ t('On year') }}
+              {{
+                track.album.year }}</p>
             <p class="q-mt-md text-subtitle2 text-grey-9" v-if="track.favorited"><q-icon name="favorite"
-                class="q-mr-sm"></q-icon> {{ t('Favorited on') }}: {{ date.formatDate(track.favorited * 1000, "YYYY-MM-DD HH:mm:ssZ") }}</p>
+                class="q-mr-sm"></q-icon> {{ t('Favorited on') }}: {{ date.formatDate(track.favorited * 1000,
+                  "YYYY-MM-DD HH:mm:ssZ") }}</p>
           </div>
         </template>
         <template v-slot:after>
@@ -51,7 +58,8 @@
           <div class="q-pa-md">
             <h4 class="bg-white q-mt-none q-pt-none text-center">{{ t('Lyrics') }}</h4>
             <pre class="q-mt-xl" v-if="track.lyrics">{{ track.lyrics }}</pre>
-            <p v-else class="text-h6 text-center text-grey-8"><q-icon name="warning"></q-icon> {{ t('No lyrics found') }}</p>
+            <p v-else class="text-h6 text-center text-grey-8"><q-icon name="warning"></q-icon> {{ t('No lyrics found')
+            }}</p>
           </div>
         </template>
       </q-splitter>
@@ -62,12 +70,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useQuasar, date } from "quasar";
-import { useI18n } from 'vue-i18n';
-import { api } from "src/boot/axios";
-import { default as DashboardBaseBlockChart } from 'components/DashboardBaseBlockChart.vue';
+import { useI18n } from "vue-i18n";
+import { useAPI } from "src/composables/useAPI";
+import { default as DashboardBaseBlockChart } from "components/DashboardBaseBlockChart.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const splitterModel = ref(400);
 const props = defineProps({

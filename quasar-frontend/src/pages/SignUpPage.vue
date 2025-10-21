@@ -14,8 +14,8 @@
             <q-icon name="alternate_email" />
           </template>
         </q-input>
-        <q-input dense outlined ref="nameRef" v-model="name" type="text" name="name" :label="t('Name')" :disable="loading"
-          :rules="requiredFieldRules" lazy-rules :error="remoteValidation.name.hasErrors"
+        <q-input dense outlined ref="nameRef" v-model="name" type="text" name="name" :label="t('Name')"
+          :disable="loading" :rules="requiredFieldRules" lazy-rules :error="remoteValidation.name.hasErrors"
           :errorMessage="remoteValidation.name.message">
           <template v-slot:prepend>
             <q-icon name="badge" />
@@ -56,14 +56,16 @@
 import { ref, nextTick } from "vue";
 import { uid, useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-import { useI18n } from 'vue-i18n';
-import { api } from 'boot/axios';
+import { useI18n } from "vue-i18n";
+import { useAPI } from "src/composables/useAPI";
 
 const { t } = useI18n();
 
 const $q = useQuasar();
 
 const router = useRouter();
+
+const { api } = useAPI();
 
 const loading = ref(false);
 

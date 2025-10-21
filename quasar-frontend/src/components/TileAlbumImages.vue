@@ -33,7 +33,9 @@ img.spieldose-album-cover-tile {
 <script setup>
 
 import { ref } from "vue";
-import { api } from 'boot/axios'
+import { useAPI } from "src/composables/useAPI";
+
+const { api } = useAPI();
 
 /**
   * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)

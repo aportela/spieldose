@@ -98,13 +98,15 @@
 
 <script setup>
 import { ref } from "vue";
-import { api } from 'boot/axios';
+import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
-import { useI18n } from 'vue-i18n';
-import { trackActions, albumActions } from '../boot/spieldose';
+import { useI18n } from "vue-i18n";
+import { trackActions, albumActions } from "../boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const { api } = useAPI();
 
 const props = defineProps({
   disable: Boolean
