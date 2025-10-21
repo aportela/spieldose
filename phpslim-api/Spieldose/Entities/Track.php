@@ -13,7 +13,7 @@ class Track extends \Spieldose\Entities\Entity
     public object $album;
     public ?int $trackNumber;
     public array $covers;
-    public ?int $favorited;
+    public ?int $favorited; // TODO: change to boolean
     public ?string $lyrics;
 
     public function __construct(string $id, ?string $mbId = null, ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, ?int $trackNumber = null, ?string $coverPathId = null, ?int $favorited = null)
