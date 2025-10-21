@@ -150,8 +150,7 @@ $settings['thumbnails'] = [
 
 $settings['common'] = [
     'defaultResultsPage' => 64,
-    'allowSignUp' => true,
-    'locale' => 'en' // (en | es | gl)
+    'allowSignUp' => true
 ];
 
 // TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
