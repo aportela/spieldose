@@ -77,7 +77,7 @@ div#spieldose-album-cover-tiles-container {
 img.spieldose-album-cover-tile {
   width: 100%;
   max-width: 100%;
-  height: auto;
+  height: 100%;
   aspect-ratio: 1 / 1;
 }
 </style>
