@@ -201,7 +201,10 @@ class Scanner
         }
     }
 
-    public function scan(string $filePath): void
+    // TODO: scan all saved paths if null
+
+    // TODO: make private
+    public function scan(?string $filePath = null): void
     {
         $this->logger->debug("Processing file: " . $filePath);
         if (!empty($filePath)) {
