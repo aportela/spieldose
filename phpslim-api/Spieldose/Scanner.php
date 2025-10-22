@@ -6,24 +6,22 @@ namespace Spieldose;
 
 class Scanner
 {
-    private $dbh;
-    private $logger;
-    private $id3;
-    private $validCoverFilenames;
+    private \aportela\DatabaseWrapper\DB $dbh;
+    private \Psr\Log\LoggerInterface $logger;
+    private \Spieldose\ID3 $id3;
+    private string $validCoverFilenames;
 
-    private const VALID_COVER_FILENAMES = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+    private const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
         $this->id3 = new \Spieldose\ID3();
-        $this->validCoverFilenames = self::VALID_COVER_FILENAMES;
+        $this->validCoverFilenames = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function setValidCoverFilenames(string $pattern): void
     {
@@ -33,7 +31,7 @@ class Scanner
     private function getDirectoryCoverFilename(string $path): ?string
     {
         $coverFilename = null;
-        foreach (glob($path . DIRECTORY_SEPARATOR . $this->validCoverFilenames ?? self::VALID_COVER_FILENAMES, GLOB_BRACE) as $file) {
+        foreach (glob($path . DIRECTORY_SEPARATOR . $this->validCoverFilenames ?? self::VALID_COVER_FILENAMES_DEFAULT_PATTERN, GLOB_BRACE) as $file) {
             $coverFilename = basename(realpath($file)); // get real file "case"
             break;
         }
