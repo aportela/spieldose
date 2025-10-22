@@ -1,9 +1,9 @@
 <template>
   <div id="spieldose-album-cover-tiles-container">
-    <div class="row" v-for="row in [0, 1, 2, 3, 4, 5, 6]" :key="row">
-      <div class="col-2" v-for="column in [0, 1, 2, 3, 4, 5]" :key="column"
+    <div class="row" v-for="row, rowIndex in rows" :key="row">
+      <div class="col-md-3 col-lg-2 col-xl-1" v-for="column in columns" :key="column"
         :style="'background-color: ' + getRandomColor() + ';'">
-        <img class="spieldose-album-cover-tile" :src="getImageSourceFromIndex((6 * row) + column)"
+        <img class="spieldose-album-cover-tile" :src="getImageSourceFromIndex((rows.length * rowIndex) + column)"
           v-if="images.length > 0" @error="onImageError($event)">
         <img class="spieldose-album-cover-tile" :src="defaultImage" v-else>
       </div>
@@ -27,6 +27,9 @@ const defaultImage = 'images/vinyl-medium.png';
 
 const images = ref([]);
 
+const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
 // https://stackoverflow.com/a/1484514
 function getRandomColor() {
   const allowed = "ABCDEF0123456789";
@@ -46,7 +49,7 @@ function getImageSourceFromIndex(index) {
 }
 
 function loadRandomAlbumImages() {
-  api.album.getSmallRandomCovers(42).then(response => {
+  api.album.getSmallRandomCovers(144).then(response => {
     images.value = Array.isArray(response.data.coverURLs) ? response.data.coverURLs : [];
   }).catch(error => {
     console.error(error.response);
