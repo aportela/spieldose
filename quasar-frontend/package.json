@@ -16,10 +16,9 @@
     "@quasar/extras": "^1.17.0",
     "audiomotion-analyzer": "^4.5.1",
     "axios": "^1.12.2",
+    "cal-heatmap": "^4.2.4",
     "chartist": "^1.4.0",
-    "core-js": "^3.44.0",
-    "i": "^0.3.7",
-    "npm": "^10.2.5",
+    "core-js": "^3.37.1",
     "pinia": "^2.3.1",
     "quasar": "^2.18.5",
     "vue": "^3.5.22",
@@ -27,13 +26,13 @@
     "vue-router": "^4.6.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.28.0",
+    "@babel/eslint-parser": "^7.24.1",
     "@quasar/app-webpack": "^3.15.1",
-    "eslint": "^8.57.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vue": "^9.33.0",
-    "eslint-webpack-plugin": "^4.2.0",
-    "prettier": "^3.6.2"
+    "eslint-plugin-vue": "^9.24.0",
+    "eslint-webpack-plugin": "^4.1.0",
+    "prettier": "^3.2.5"
   },
   "browserslist": [
     "last 10 Chrome versions",

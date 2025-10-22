@@ -36,9 +36,8 @@ export function useLocalStorage() {
     },
     remove() {
       remove("jwt");
-    }
+    },
   };
-
 
   const darkMode = {
     get() {
@@ -52,7 +51,34 @@ export function useLocalStorage() {
     },
   };
 
+  const showToolTips = {
+    get() {
+      return get("showToolTips", false);
+    },
+    set(value) {
+      set("showToolTips", !!value);
+    },
+    remove() {
+      remove("showToolTips");
+    },
+  };
+
+  const locale = {
+    get() {
+      return get("locale", false);
+    },
+    set(value) {
+      set("locale", !!value);
+    },
+    remove() {
+      remove("locale");
+    },
+  };
+
   return {
-    jwt, darkMode
+    jwt,
+    darkMode,
+    showToolTips,
+    locale,
   };
 }

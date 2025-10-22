@@ -19,10 +19,6 @@
   </component>
 </template>
 
-<style lang="scss">
-@import "~chartist/dist/index.css";
-</style>
-
 <script setup>
 import { ref, watch, nextTick, computed } from "vue";
 import { date, useQuasar } from "quasar";
@@ -154,3 +150,7 @@ function refresh() {
 tab.value = 'lastWeek';
 
 </script>
+
+<style lang="css">
+@import "~chartist/dist/index.css";
+</style>

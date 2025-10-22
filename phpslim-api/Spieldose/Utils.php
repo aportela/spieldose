@@ -12,17 +12,18 @@ class Utils
     public static function getInitialState(\Psr\Container\ContainerInterface $container): array
     {
         $settings = $container->get('settings');
-        return ([
-            'locale' => $settings['common']['locale'],
-            'allowSignUp' => $settings['common']['allowSignUp'],
-            'defaultResultsPage' => $settings['common']['defaultResultsPage'],
-            'environment' => $settings['environment'],
-            'session' => array(
-                'logged' => \Spieldose\UserSession::isLogged(),
-                'id' => \Spieldose\UserSession::getUserId(),
-                'email' => \Spieldose\UserSession::getEmail()
-            )
-        ]
+        return (
+            [
+                'allowSignUp' => $settings['common']['allowSignUp'],
+                'defaultResultsPage' => $settings['common']['defaultResultsPage'],
+                'environment' => $settings['environment'],
+                'session' => array(
+                    'logged' => \Spieldose\UserSession::isLogged(),
+                    'id' => \Spieldose\UserSession::getUserId(),
+                    'email' => \Spieldose\UserSession::getEmail(),
+                    'name' => \Spieldose\UserSession::getName()
+                )
+            ]
         );
     }
 

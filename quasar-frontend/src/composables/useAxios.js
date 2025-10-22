@@ -3,7 +3,6 @@ import { useSessionStore } from "src/stores/session";
 import { useInitialStateStore } from "src/stores/initialState";
 
 export function useAxios() {
-
   const session = useSessionStore();
 
   const initialStateStore = useInitialStateStore();
@@ -54,6 +53,7 @@ export function useAxios() {
             statusText: "undefined",
           };
         }
+        error.isAPIError = true;
         error.customAPIErrorDetails = {
           method: error.config?.method || "N/A",
           url: error.request?.responseURL || "N/A",
@@ -101,4 +101,4 @@ export function useAxios() {
   };
 
   return { axios, bgDownload };
-};
+}

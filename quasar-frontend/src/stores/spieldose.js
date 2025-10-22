@@ -1,4 +1,7 @@
 import { defineStore } from "pinia";
+
+/*
+
 import { default as useBasil } from "basil.js";
 
 const hashedSite = Array.from(window.location.host).reduce(
@@ -13,6 +16,8 @@ const localStorageBasilOptions = {
   sameSite: "strict",
   expireDays: 3650,
 };
+
+*/
 
 /**
  * https://stackoverflow.com/a/6274381
@@ -169,7 +174,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
     allowSkipNext: (state) =>
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
-      state.data.currentPlaylist.totalTracks - 1,
+        state.data.currentPlaylist.totalTracks - 1,
   },
   actions: {
     create: function (src) {
@@ -224,10 +229,13 @@ export const useSpieldoseStore = defineStore("spieldose", {
       this.data.player.userInteracted = true;
     },
     savePlayerSettings: function () {
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set("playerSettings", this.data.player);
+      // TODO: BASIL
+      //const basil = useBasil(localStorageBasilOptions);
+      //basil.set("playerSettings", this.data.player);
     },
     restorePlayerSettings: function (userInteracted) {
+      // TODO: BASIL
+      /*
       const basil = useBasil(localStorageBasilOptions);
       const playerSettings = basil.get("playerSettings");
       if (playerSettings) {
@@ -245,6 +253,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           this.data.audio.muted = this.data.player.muted;
         }
       }
+        */
     },
     setVolume: function (volume) {
       if (volume >= 0 && volume <= 1) {
@@ -403,6 +412,8 @@ export const useSpieldoseStore = defineStore("spieldose", {
       }
     },
     restoreFullScreenVisualizationSettings: function () {
+      // TODO: BASIL
+      /*
       const basil = useBasil(localStorageBasilOptions);
       const fullScreenVisualizationSettings = basil.get(
         "fullScreenVisualizationSettings",
@@ -416,9 +427,12 @@ export const useSpieldoseStore = defineStore("spieldose", {
           // console.error("error");
         }
       }
+        */
     },
     saveFullScreenVisualizationSettings(settings) {
       this.data.fullScreenVisualizationSettings = settings;
+      // TODO: BASIL
+      /*
       const basil = useBasil(localStorageBasilOptions);
       basil.set(
         "fullScreenVisualizationSettings",
@@ -426,6 +440,7 @@ export const useSpieldoseStore = defineStore("spieldose", {
           ? JSON.stringify(this.data.fullScreenVisualizationSettings)
           : null,
       );
+      */
     },
   },
 });

@@ -22,10 +22,6 @@
   </component>
 </template>
 
-<style lang="scss">
-@import "~chartist/dist/index.css";
-</style>
-
 <script setup>
 import { ref, watch, nextTick, computed, onMounted } from "vue";
 import { useQuasar, uid } from "quasar";
@@ -195,3 +191,7 @@ onMounted(() => {
 });
 
 </script>
+
+<style lang="scss">
+@import "~chartist/dist/index.css";
+</style>

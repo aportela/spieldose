@@ -28,7 +28,7 @@
             <div class="float-left oneline-ellipsis" style="margin-left: 24px; margin-top: 10px;">
               <p class="q-mb-none text-grey">LATEST RELEASE</p>
               <p class="q-my-none text-white text-weight-bolder header-mini-album-title">{{ artistData.latestAlbum.title
-              }}</p>
+                }}</p>
               <p class="q-mt-none text-white" v-if="artistData.latestAlbum.year">{{ artistData.latestAlbum.year }}</p>
             </div>
           </div>
@@ -383,86 +383,6 @@
     </q-tab-panel>
   </q-tab-panels>
 </template>
-
-<style>
-.rotate {
-  width: 100px;
-  animation: rotation 2s infinite linear;
-}
-
-@keyframes rotation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-div#artist-header-block {
-  overflow: hidden;
-  color: #fff;
-  background: rgba(24, 24, 24, 1);
-  height: 416px;
-  position: relative;
-}
-
-div#artist-header-block-background-image {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 50% 25%;
-  width: 50%;
-  height: 416px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 0;
-  filter: blur(2px);
-  transition: filter 0.3s ease-in;
-}
-
-div#artist-header-block-background-overlay {
-  background: linear-gradient(0.25turn, rgba(24, 24, 24, 1), rgba(92, 71, 59, 0));
-  width: 51%;
-  height: 416px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-}
-
-div#artist-header-block-content {
-  width: 51%;
-  z-index: 2;
-}
-
-p.header-mini-album-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 16em;
-}
-
-img.artist_image {
-  -webkit-filter: grayscale(100%) blur(4px) opacity(0.5);
-  /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%) blur(4px) opacity(0.5);
-  transition: filter 0.2s ease-in;
-}
-
-img.artist_image:hover {
-  -webkit-filter: none;
-  /* Safari 6.0 - 9.0 */
-  filter: none;
-  transition: filter 0.2s ease-out;
-
-}
-</style>
-
-<style lang="scss">
-@import "~chartist/dist/index.css";
-</style>
 
 <script setup>
 
@@ -855,3 +775,79 @@ onMounted(() => {
 });
 
 </script>
+
+<style lang="css">
+.rotate {
+  width: 100px;
+  animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+div#artist-header-block {
+  overflow: hidden;
+  color: #fff;
+  background: rgba(24, 24, 24, 1);
+  height: 416px;
+  position: relative;
+}
+
+div#artist-header-block-background-image {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 25%;
+  width: 50%;
+  height: 416px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 0;
+  filter: blur(2px);
+  transition: filter 0.3s ease-in;
+}
+
+div#artist-header-block-background-overlay {
+  background: linear-gradient(0.25turn, rgba(24, 24, 24, 1), rgba(92, 71, 59, 0));
+  width: 51%;
+  height: 416px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+div#artist-header-block-content {
+  width: 51%;
+  z-index: 2;
+}
+
+p.header-mini-album-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 16em;
+}
+
+img.artist_image {
+  -webkit-filter: grayscale(100%) blur(4px) opacity(0.5);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%) blur(4px) opacity(0.5);
+  transition: filter 0.2s ease-in;
+}
+
+img.artist_image:hover {
+  -webkit-filter: none;
+  /* Safari 6.0 - 9.0 */
+  filter: none;
+  transition: filter 0.2s ease-out;
+
+}
+</style>

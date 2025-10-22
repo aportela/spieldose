@@ -15,18 +15,60 @@
     </div>
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">
-        <router-link :to="{ name: 'album', params: { title: title }, query: { mbId: albumMbId, artistMbId: artistMbId, artistName: artistName, year: year} }">{{ title }}</router-link>
+        <router-link
+          :to="{ name: 'album', params: { title: title }, query: { mbId: albumMbId, artistMbId: artistMbId, artistName: artistName, year: year } }">{{
+            title }}</router-link>
       </p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
           :to="{ name: 'artist', params: { name: artistName }, query: { mbid: artistMbId, tab: 'overview' } }">{{
             artistName }}</router-link> <span v-if="year">({{ year
-  }})</span></p>
+          }})</span></p>
       <p v-else-if="year">({{ year }})</p>
     </div>
   </div>
 </template>
 
-<style>
+<script setup>
+
+import { ref, computed } from "vue";
+
+const emit = defineEmits(['play', 'enqueue']);
+
+const props = defineProps({
+  title: String,
+  albumMbId: String,
+  artistMbId: String,
+  artistName: String,
+  year: Number,
+  image: String
+});
+
+const loaded = ref(false);
+const errors = ref(false);
+
+const imageSrc = computed(() => {
+  return ((props.image && !errors.value) ? props.image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=");
+});
+
+function onLoad() {
+  loaded.value = true;
+}
+
+function onError() {
+  errors.value = true;
+}
+
+function onPlay() {
+  emit('play');
+}
+
+function onEnqueue() {
+  emit('enqueue');
+}
+
+</script>
+
+<style lang="css">
 /* album thumb */
 
 div.animated-album-cover-item {
@@ -155,43 +197,3 @@ div.animated-album-cover-item div.album-info p.album-name {
 
 /* album thumb */
 </style>
-
-<script setup>
-
-import { ref, computed } from "vue";
-
-const emit = defineEmits(['play', 'enqueue']);
-
-const props = defineProps({
-  title: String,
-  albumMbId: String,
-  artistMbId: String,
-  artistName: String,
-  year: Number,
-  image: String
-});
-
-const loaded = ref(false);
-const errors = ref(false);
-
-const imageSrc = computed(() => {
-  return ((props.image && !errors.value) ? props.image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=");
-});
-
-function onLoad() {
-  loaded.value = true;
-}
-
-function onError() {
-  errors.value = true;
-}
-
-function onPlay() {
-  emit('play');
-}
-
-function onEnqueue() {
-  emit('enqueue');
-}
-
-</script>

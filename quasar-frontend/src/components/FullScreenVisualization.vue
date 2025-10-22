@@ -362,38 +362,6 @@
   </div>
 </template>
 
-<style scoped>
-div#visualization-container {
-  width: 100%;
-  height: fit-content;
-  background-color: #000;
-  background-repeat: no-repeat;
-  background-position: 50%;
-  background-size: auto 150%;
-}
-
-div#analyzer-canvas-container {
-  width: 100%;
-  height: fit-content;
-}
-
-#settings-container {
-  width: 80em;
-  max-width: 1280px;
-  opacity: 0.9;
-  z-index: 1;
-}
-
-i.visualization-bottom-icons {
-  opacity: 0.2;
-  transition: 0.3s;
-}
-
-i.visualization-bottom-icons:hover {
-  opacity: 1;
-}
-</style>
-
 <script setup>
 
 import { ref, computed, onMounted, watch } from "vue";
@@ -813,3 +781,35 @@ if (spieldoseStore.isCurrentPlaylistElementATrack) {
   getLyrics();
 }
 </script>
+
+<style lang="css" scoped>
+div#visualization-container {
+  width: 100%;
+  height: fit-content;
+  background-color: #000;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: auto 150%;
+}
+
+div#analyzer-canvas-container {
+  width: 100%;
+  height: fit-content;
+}
+
+#settings-container {
+  width: 80em;
+  max-width: 1280px;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+i.visualization-bottom-icons {
+  opacity: 0.2;
+  transition: 0.3s;
+}
+
+i.visualization-bottom-icons:hover {
+  opacity: 1;
+}
+</style>
