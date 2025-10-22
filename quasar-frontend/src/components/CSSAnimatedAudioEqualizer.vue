@@ -15,6 +15,9 @@
 </script>
 
 <style lang="css">
+/*
+  credits: https://codepen.io/xvilo/pen/ZJzQEZ
+*/
 .equilizer {
   height: 100px;
   width: 100%;
