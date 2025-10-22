@@ -6,7 +6,7 @@ namespace Spieldose\Test;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-final class UserSessionTest extends BaseTest
+final class UserSessionTest extends \Spieldose\Test\BaseTest
 {
     public function testIsLoggedWithoutSession(): void
     {
@@ -17,7 +17,7 @@ final class UserSessionTest extends BaseTest
     public function testIsLogged(): void
     {
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->signIn(self::$dbh);
         $this->assertTrue(\Spieldose\UserSession::isLogged());
@@ -33,7 +33,7 @@ final class UserSessionTest extends BaseTest
     {
         \Spieldose\User::signOut();
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->signIn(self::$dbh);
         $this->assertEquals($u->id, \Spieldose\UserSession::getUserId());
@@ -49,25 +49,9 @@ final class UserSessionTest extends BaseTest
     {
         \Spieldose\User::signOut();
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->signIn(self::$dbh);
         $this->assertEquals($u->email, \Spieldose\UserSession::getEmail());
-    }
-
-    public function testGetNameWithoutSession(): void
-    {
-        \Spieldose\User::signOut();
-        $this->assertEmpty(\Spieldose\UserSession::getName());
-    }
-
-    public function testGetName(): void
-    {
-        \Spieldose\User::signOut();
-        $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
-        $u->add(self::$dbh);
-        $u->signIn(self::$dbh);
-        $this->assertEquals($u->name, \Spieldose\UserSession::getName());
     }
 }

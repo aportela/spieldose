@@ -6,14 +6,13 @@ namespace Spieldose;
 
 class UserSession
 {
-    public static function set(string $userId = "", string $email = "", string $name = ""): void
+    public static function set(string $userId = "", string $email = ""): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
-        $_SESSION["name"] = $name;
     }
 
     public static function clear(): void
@@ -31,21 +30,16 @@ class UserSession
 
     public static function isLogged(): bool
     {
-        return (isset($_SESSION["userId"]) && !empty($_SESSION["userId"]));
+        return isset($_SESSION["userId"]) && !empty($_SESSION["userId"]);
     }
 
     public static function getUserId(): string
     {
-        return ($_SESSION["userId"] ?? "");
+        return $_SESSION["userId"] ?? '';
     }
 
     public static function getEmail(): string
     {
-        return ($_SESSION["email"] ??  "");
-    }
-
-    public static function getName(): string
-    {
-        return ($_SESSION["name"] ??  "");
+        return $_SESSION["email"] ?? '';
     }
 }

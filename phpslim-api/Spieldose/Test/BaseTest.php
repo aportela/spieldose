@@ -13,6 +13,14 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static $settings = null;
     public static ?\aportela\DatabaseWrapper\DB $dbh = null;
 
+    protected function createValidSession(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        \Spieldose\UserSession::set($id, $id . "@server.com");
+    }
+
     /**
      * Called once just like normal constructor
      */
@@ -57,7 +65,6 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static function tearDownAfterClass(): void
     {
         self::$dbh = null;
-        self::$container = null;
         self::$app = null;
     }
 }

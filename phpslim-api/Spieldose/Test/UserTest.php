@@ -6,7 +6,7 @@ namespace Spieldose\Test;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-final class UserTest extends BaseTest
+final class UserTest extends \Spieldose\Test\BaseTest
 {
     public function testAddWithoutId(): void
     {
@@ -56,37 +56,13 @@ final class UserTest extends BaseTest
         }
     }
 
-    public function testAddWithoutName(): void
-    {
-        if (self::$settings['common']['allowSignUp']) {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("name");
-            $id = \Spieldose\Utils::uuidv4();
-            (new \Spieldose\User($id, $id . "@localhost.localnet", "secret", ""))->add(self::$dbh);
-        } else {
-            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-        }
-    }
-
-    public function testAddWithoutValidNameLength(): void
-    {
-        if (self::$settings['common']['allowSignUp']) {
-            $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("name");
-            $id = \Spieldose\Utils::uuidv4();
-            (new \Spieldose\User($id, $id . "@localhost.localnet", "secret", str_repeat($id, 10)))->add(self::$dbh);
-        } else {
-            $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-        }
-    }
-
     public function testAddWithoutPassword(): void
     {
         if (self::$settings['common']['allowSignUp']) {
             $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("password");
             $id = \Spieldose\Utils::uuidv4();
-            (new \Spieldose\User($id, $id . "@localhost.localnet", "", "johndoe"))->add(self::$dbh);
+            (new \Spieldose\User($id, $id . "@localhost.localnet", ""))->add(self::$dbh);
         } else {
             $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
         }
@@ -97,7 +73,7 @@ final class UserTest extends BaseTest
         if (self::$settings['common']['allowSignUp']) {
             $this->expectNotToPerformAssertions();
             $id = \Spieldose\Utils::uuidv4();
-            (new \Spieldose\User($id, $id . "@localhost.localnet", "secret", "johndoe"))->add(self::$dbh);
+            (new \Spieldose\User($id, $id . "@localhost.localnet", "secret"))->add(self::$dbh);
         } else {
             $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
         }
@@ -116,7 +92,7 @@ final class UserTest extends BaseTest
         $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
         $this->expectExceptionMessage("email");
         $id = \Spieldose\Utils::uuidv4();
-        (new \Spieldose\User($id, "", "name of " . $id, "secret"))->update(self::$dbh);
+        (new \Spieldose\User($id, "", "secret"))->update(self::$dbh);
     }
 
     public function testUpdateWithoutValidEmailLength(): void
@@ -135,27 +111,11 @@ final class UserTest extends BaseTest
         (new \Spieldose\User($id, $id, "secret"))->update(self::$dbh);
     }
 
-    public function testUpdateWithoutName(): void
-    {
-        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-        $this->expectExceptionMessage("name");
-        $id = \Spieldose\Utils::uuidv4();
-        (new \Spieldose\User($id, $id . "@server.com", "secret", ""))->update(self::$dbh);
-    }
-
-    public function testUpdateWithoutValidNameLength(): void
-    {
-        $this->expectException(\Spieldose\Exception\InvalidParamsException::class);
-        $this->expectExceptionMessage("name");
-        $id = \Spieldose\Utils::uuidv4();
-        (new \Spieldose\User($id, $id . "@localhost.localnet", "secret", str_repeat($id, 10)))->update(self::$dbh);
-    }
-
     public function testUpdate(): void
     {
         $this->expectNotToPerformAssertions();
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->signIn(self::$dbh);
         $u->update(self::$dbh);
@@ -202,10 +162,25 @@ final class UserTest extends BaseTest
     public function testGet(): void
     {
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->get(self::$dbh);
         $this->assertTrue($id == $u->id);
+    }
+
+    public function testExists(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $u->add(self::$dbh);
+        $this->assertTrue($u->exists(self::$dbh));
+    }
+
+    public function testNotExists(): void
+    {
+        $id = \Spieldose\Utils::uuidv4();
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
+        $this->assertFalse($u->exists(self::$dbh));
     }
 
     public function testExistsEmailWithNonExistentEmail(): void
@@ -217,7 +192,7 @@ final class UserTest extends BaseTest
     public function testExistsEmailWithExistentEmail(): void
     {
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $this->assertTrue(\Spieldose\User::isEmailUsed(self::$dbh, $u->email));
     }
@@ -272,7 +247,7 @@ final class UserTest extends BaseTest
         $this->expectException(\Spieldose\Exception\UnauthorizedException::class);
         $this->expectExceptionMessage("password");
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $u->password = "other";
         $u->signIn(self::$dbh);
@@ -281,7 +256,7 @@ final class UserTest extends BaseTest
     public function testSignIn(): void
     {
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret", "johndoe");
+        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
         $u->add(self::$dbh);
         $this->assertTrue($u->signIn(self::$dbh));
     }
