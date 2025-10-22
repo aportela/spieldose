@@ -14,6 +14,14 @@ return (array(
 
             CREATE INDEX idx_user_email ON USER (email);
 
+            CREATE TABLE SCANNER_DIRECTORY (
+                id CHAR(36) NOT NULL,
+                path VARCHAR(4096) NOT NULL UNIQUE,
+                ctime INTEGER NOT NULL,
+                atime INTEGER NOT NULL,
+                PRIMARY KEY (`id`)
+            );
+
             CREATE TABLE DIRECTORY (
                 id CHAR(36) NOT NULL,
                 path VARCHAR(4096) NOT NULL UNIQUE,
