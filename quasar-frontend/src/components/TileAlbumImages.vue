@@ -70,7 +70,7 @@ div#spieldose-album-cover-tiles-container {
   background-color: #666;
   height: 100vh;
   overflow: hidden;
-  filter: blur(4px);
+  filter: blur(3px);
   opacity: 0.8;
 }
 
