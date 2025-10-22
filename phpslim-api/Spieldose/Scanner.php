@@ -8,7 +8,7 @@ class Scanner
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    private \Spieldose\ID3 $id3;
+    private \Spieldose\ID3Wrapper $id3;
     private string $validCoverFilenames;
 
     private const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
@@ -17,7 +17,7 @@ class Scanner
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->id3 = new \Spieldose\ID3();
+        $this->id3 = new \Spieldose\ID3Wrapper();
         $this->validCoverFilenames = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN;
     }
 
