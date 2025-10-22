@@ -1,13 +1,12 @@
 <template>
   <q-layout>
     <div class="row">
-      <div
-        class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-0 col-xl-3 offset-xl-0 desktop-only justify-center q-pa-xl">
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
         <q-page-container>
           <router-view />
         </q-page-container>
       </div>
-      <div class="gt-md col-lg-8 col-xl-9">
+      <div class="col-md-6 col-lg-8 col-xl-9 gt-sm">
         <TileAlbumImages></TileAlbumImages>
       </div>
     </div>
