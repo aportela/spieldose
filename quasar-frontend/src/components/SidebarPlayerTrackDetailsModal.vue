@@ -33,8 +33,8 @@
                 }}</a>
               <span v-else>{{ track.album.title }}</span>
             </p>
-            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">{{ t('Track
-              number') }}: {{
+            <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.trackNumber">
+              {{ t('Track number') }}: {{
                 track.trackNumber }}</p>
             <p class="q-my-none q-pl-md q-ml-lg text-subtitle1 text-grey-8" v-if="track.album.year">{{ t('On year') }}
               {{
