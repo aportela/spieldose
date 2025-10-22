@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class ID3
+class ID3Wrapper
 {
-    private $getID3Obj;
+    private \getID3 $getID3Obj;
     public $tagData;
 
     public function __construct()
@@ -14,23 +14,23 @@ class ID3
         $this->getID3Obj = new \getID3();
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     // convert $str to UTF-8 string (if required)
-    private function toUTF8($str)
+    private function toUTF8($str): ?string
     {
         if ($str != null && strlen($str) > 0) {
-            if (mb_detect_encoding($str, 'UTF-8', true)) {
+            $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+            if ($encoding === 'UTF-8') {
                 return ($str);
             } else {
-                return (utf8_encode($str));
+                return mb_convert_encoding($str, 'UTF-8', $encoding);
             }
         } else {
             return (null);
         }
     }
+
     public function analyze(string $filePath)
     {
         $this->tagData = $this->getID3Obj->analyze($filePath);
