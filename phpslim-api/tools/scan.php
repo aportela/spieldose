@@ -34,7 +34,8 @@ if (count($missingExtensions) > 0) {
         }
         $scanner = new \Spieldose\Scanner\Scanner($db, $logger);
         if (!empty($settings["albumCoverPathValidFilenames"])) {
-            $scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
+            // TODO
+            //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
         $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
         if ($cmdLine->hasParam("path")) {

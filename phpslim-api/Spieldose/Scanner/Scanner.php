@@ -9,34 +9,15 @@ class Scanner
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \Spieldose\ID3Wrapper $id3;
-    private string $validCoverFilenames;
-
-    private const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
         $this->id3 = new \Spieldose\ID3Wrapper();
-        $this->validCoverFilenames = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN;
     }
 
     public function __destruct() {}
-
-    public function setValidCoverFilenames(string $pattern): void
-    {
-        $this->validCoverFilenames = $pattern;
-    }
-
-    private function getDirectoryCoverFilename(string $path): ?string
-    {
-        $coverFilename = null;
-        foreach (glob($path . DIRECTORY_SEPARATOR . $this->validCoverFilenames ?? self::VALID_COVER_FILENAMES_DEFAULT_PATTERN, GLOB_BRACE) as $file) {
-            $coverFilename = basename(realpath($file)); // get real file "case"
-            break;
-        }
-        return ($coverFilename);
-    }
 
     public function addPath(string $path): string
     {
@@ -58,7 +39,7 @@ class Scanner
 
     private function saveDirectory(string $path): string
     {
-        $coverFilename = $this->getDirectoryCoverFilename($path);
+        $coverFilename = (new \Spieldose\Scanner\FileSystemCovers())->getCoverFilename($path);
         $stat = stat($path);
         $this->dbh->exec(
             " INSERT INTO DIRECTORY (id, path, mtime, cover_filename) VALUES (:id, :path, :mtime, :cover_filename) ON CONFLICT (path) DO UPDATE SET mtime = :mtime, cover_filename = :cover_filename ",
