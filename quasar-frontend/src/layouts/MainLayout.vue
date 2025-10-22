@@ -7,15 +7,19 @@
         </q-avatar>
         <q-toolbar-title>Spieldose</q-toolbar-title>
         <q-space />
+        <!--
         <ToolbarSearch :disable="loading"></ToolbarSearch>
+        -->
         <!--
         notice shrink property since we are placing it
         as child of QToolbar
         -->
         <q-tabs shrink dense no-caps>
+          <!--
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
             :disable="loading" />
+            -->
           <!--
           <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack
             :disable="loading">
@@ -36,8 +40,10 @@
             </q-list>
           </q-btn-dropdown>
           -->
+          <!--
           <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
             href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
+            -->
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps
             stack @click="logout" :disable="loading" />
         </q-tabs>
