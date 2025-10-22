@@ -71,7 +71,6 @@ div#spieldose-album-cover-tiles-container {
   height: 100vh;
   overflow: hidden;
   filter: blur(4px);
-  transition: filter 2.3s ease-in;
   opacity: 0.8;
 }
 
