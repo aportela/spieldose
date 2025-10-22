@@ -16,6 +16,7 @@
           <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
             :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
             :disable="loading" />
+          <!--
           <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack
             :disable="loading">
             <q-list dense style="min-width: 200px">
@@ -34,6 +35,7 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          -->
           <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
             href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps
@@ -69,7 +71,7 @@ import { useAPI } from "src/composables/useAPI";
 import { useSessionStore } from "stores/session";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { i18n, defaultLocale } from "src/boot/i18n";
+//import { i18n, defaultLocale } from "src/boot/i18n";
 import { default as leftSidebar } from "components/AppLeftSidebar.vue";
 import { default as ToolbarSearch } from "components/ToolbarSearch.vue";
 import { default as FullScreenVisualization } from "components/FullScreenVisualization.vue";
