@@ -4,15 +4,32 @@ return (array(
     2 => array(
         '
             CREATE TABLE USER (
-                id VARCHAR(36) NOT NULL,
+                id CHAR(36) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
-                password_hash VARCHAR(60) NOT NULL,
+                password_hash CHAR(60) NOT NULL,
                 created_on_timestamp INTEGER NOT NULL,
                 last_update_timestamp INTEGER,
                 PRIMARY KEY (id)
             );
 
             CREATE INDEX idx_user_email ON USER (email);
+
+            CREATE TABLE DIRECTORY (
+                id CHAR(36) NOT NULL,
+                path VARCHAR(4096) NOT NULL UNIQUE,
+                mtime INTEGER NOT NULL,
+                cover_filename VARCHAR(4096),
+                PRIMARY KEY (id)
+            );
+
+            CREATE TABLE `FILE` (
+                id CHAR(36) NOT NULL,
+                directory_id CHAR(36) NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                mtime INTEGER NOT NULL,
+                PRIMARY KEY (id),
+                FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id)
+            );
         '
     )
 ));
@@ -20,39 +37,8 @@ return (array(
 return (array(
     1 => array(
         '
-            PRAGMA foreign_keys = ON;
         ',
         '
-            CREATE TABLE `USER` (
-                `id` CHAR(36) NOT NULL,
-                `email` VARCHAR(255) NOT NULL UNIQUE,
-                `password_hash` CHAR(60) NOT NULL,
-                `name` VARCHAR(32) NOT NULL UNIQUE,
-                `ctime` INTEGER NOT NULL,
-                `mtime` INTEGER NOT NULL,
-                `dtime` INTEGER,
-                PRIMARY KEY (`id`)
-            );
-        ',
-        '
-            CREATE TABLE `DIRECTORY` (
-                `id` CHAR(36) NOT NULL,
-                `path` VARCHAR(4096) NOT NULL UNIQUE,
-                `mtime` INTEGER NOT NULL,
-                `cover_filename` VARCHAR(4096),
-                PRIMARY KEY (`id`)
-            );
-        ',
-        '
-            CREATE TABLE `FILE` (
-                `id` CHAR(36) NOT NULL,
-                `directory_id` CHAR(36) NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `mtime` INTEGER NOT NULL,
-                PRIMARY KEY (`id`),
-                FOREIGN KEY(`directory_id`) REFERENCES DIRECTORY(`id`),
-                UNIQUE(`directory_id`, `name`)
-            );
         ',
         '
             CREATE TABLE `FILE_ID3_TAG` (
