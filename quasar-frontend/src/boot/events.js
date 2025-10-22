@@ -1,5 +1,7 @@
 import { boot } from "quasar/wrappers";
-import { bus } from "boot/bus";
+import { useBus } from "src/composables/useBus";
+
+const { bus } = useBus();
 
 const spieldoseEventNames = {
   player: {

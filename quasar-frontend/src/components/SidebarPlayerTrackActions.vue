@@ -27,7 +27,9 @@
 // TODO: translations
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { bus } from "boot/bus";
+import { useBus } from "src/composables/useBus";
+
+const { bus } = useBus();
 
 const { t } = useI18n();
 

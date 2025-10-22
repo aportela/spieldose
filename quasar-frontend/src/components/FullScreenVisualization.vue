@@ -366,13 +366,15 @@
 
 import { ref, computed, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
-import { bus } from "boot/bus";
+
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { useSpieldoseStore } from "stores/spieldose";
 import { default as SidebarPlayerAlbumCover } from "components/SidebarPlayerAlbumCover.vue";
 import { currentPlayListActions } from "../boot/spieldose";
 import { useAPI } from "src/composables/useAPI";
+import { useBus } from "src/composables/useBus";
 
+const { bus } = useBus();
 
 const disabled = ref(false);
 

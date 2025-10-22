@@ -75,7 +75,8 @@ import { useI18n } from "vue-i18n";
 import { default as leftSidebar } from "components/AppLeftSidebar.vue";
 import { default as ToolbarSearch } from "components/ToolbarSearch.vue";
 import { default as FullScreenVisualization } from "components/FullScreenVisualization.vue";
-import { bus } from "boot/bus";
+import { useBus } from "src/composables/useBus";
+
 import { fabGithub } from "@quasar/extras/fontawesome-v6";
 import { useSpieldoseStore } from "stores/spieldose";
 import { currentPlayListActions } from "src/boot/spieldose";
@@ -85,6 +86,8 @@ const $q = useQuasar();
 const router = useRouter();
 
 const { api } = useAPI();
+
+const { bus } = useBus();
 
 const session = useSessionStore();
 if (!session.isLoaded) {
