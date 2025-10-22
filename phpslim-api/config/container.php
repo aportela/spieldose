@@ -1,8 +1,6 @@
 <?php
 
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ErrorMiddleware;
@@ -43,7 +41,8 @@ return [
         $adapter = new \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter(
             $settings["database"],
             // READ upgrade SQL schema file definition on next block of this README.md
-            $settings["upgradeSchemaPath"]
+            $settings["upgradeSchemaPath"],
+            \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter::FLAGS_PRAGMA_JOURNAL_WAL | \aportela\DatabaseWrapper\Adapter\PDOSQLiteAdapter::FLAGS_PRAGMA_FOREIGN_KEYS_ON
         );
         $logger = $container->get(\Spieldose\Logger\DBLogger::class);
         // main object
