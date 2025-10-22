@@ -113,8 +113,8 @@ const availableLocales = ref([
     value: 'gl-GL'
   }
 ]);
-const defaultBrowserLocale = availableLocales.value.find((lang) => lang.value == defaultLocale);
-const selectedLocale = ref(defaultBrowserLocale || availableLocales.value[0]);
+//const defaultBrowserLocale = availableLocales.value.find((lang) => lang.value == defaultLocale);
+//const selectedLocale = ref(defaultBrowserLocale || availableLocales.value[0]);
 const links = [
   {
     name: 'dashboard',
