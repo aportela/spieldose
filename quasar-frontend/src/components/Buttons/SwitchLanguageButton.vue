@@ -17,7 +17,7 @@
 <script setup>
 import { computed, watch, useAttrs, ref } from "vue";
 import { usei18n } from "src/composables/usei18n";
-import { LocalStorage } from "quasar";
+import { useLocalStorage } from "src/composables/useLocalStorage";
 import { useI18n } from "vue-i18n";
 
 import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
@@ -25,6 +25,8 @@ import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 const { t } = useI18n();
 
 const { i18n } = usei18n();
+
+const { locale } = useLocalStorage();
 
 const attrs = useAttrs();
 
@@ -49,7 +51,7 @@ const selectedLocale = ref(availableLocales[0]);
 watch(
   () => i18n.global.locale.value,
   (newLocale) => {
-    LocalStorage.set("locale", newLocale);
+    locale.set(newLocale);
     selectedLocale.value = availableLocales.find((locale) => locale.value === newLocale) || availableLocales[0];
   },
   { immediate: true }
@@ -57,7 +59,7 @@ watch(
 
 function onSelectLocale(locale) {
   i18n.global.locale.value = locale.value;
-  LocalStorage.set("locale", locale.value);
+  locale.set(locale.value);
 }
 
 </script>
