@@ -32,7 +32,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $scanner = new \Spieldose\Scanner($db, $logger);
+        $scanner = new \Spieldose\Scanner\Scanner($db, $logger);
         if (!empty($settings["albumCoverPathValidFilenames"])) {
             $scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
