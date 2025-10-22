@@ -15,26 +15,26 @@ export function useAPI() {
           email: email,
           password: password,
         };
-        return axios.post(basePath + "/auth/login", params);
+        return axios.post(baseAPIPath + "/auth/login", params);
       },
-      logout: () => axios.post(basePath + "/auth/logout"),
+      logout: () => axios.post(baseAPIPath + "/auth/logout"),
       register: function (id, email, password) {
         const params = {
           id: id,
           email: email,
           password: password,
         };
-        return axios.post(basePath + "/auth/register", params);
+        return axios.post(baseAPIPath + "/auth/register", params);
       },
     },
     user: {
-      getProfile: () => axios.get(basePath + "/user/profile"),
+      getProfile: () => axios.get(baseAPIPath + "/user/profile"),
       updateProfile: function (email, password) {
         const params = {
           email: email,
           password: password,
         };
-        return axios.put(basePath + "/user/profile", params);
+        return axios.put(baseAPIPath + "/user/profile", params);
       },
     },
     globalSearch: {
