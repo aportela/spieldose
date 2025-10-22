@@ -1,17 +1,17 @@
 const routes = [
   {
     path: "/auth",
-    component: () => import("layouts/AuthRegisterLayout.vue"),
+    component: () => import("layouts/LoginRegisterLayout.vue"),
     children: [
       {
-        name: "signIn",
-        path: "sign-in",
-        component: () => import("pages/SignInPage.vue"),
+        name: "login",
+        path: "login",
+        component: () => import("pages/LoginPage.vue"),
       },
       {
-        name: "signUp",
-        path: "sign-up",
-        component: () => import("pages/SignUpPage.vue"),
+        name: "register",
+        path: "register",
+        component: () => import("pages/RegisterPage.vue"),
       },
     ],
   },

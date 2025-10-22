@@ -32,7 +32,7 @@
       </CustomBanner>
       <CustomBanner v-else-if="userCreatedSuccessfully" text="Your account has been created" success class="q-mt-lg">
         <template v-slot:details>
-          <q-btn size="sm" color="primary" class="float-right" :label="t('Sign in')" to="{ name: 'signIn'}"></q-btn>
+          <q-btn size="sm" color="primary" class="float-right" :label="t('Sign in')" to="{ name: 'login'}"></q-btn>
         </template>
       </CustomBanner>
       <CustomErrorBanner v-else-if="state.loadingError && state.errorMessage" :text="state.errorMessage"
@@ -42,7 +42,7 @@
     <q-card-section class="text-center q-pt-none">
       <div>
         {{ t("Already have an account ?") }}
-        <router-link :to="{ name: 'signIn' }" class="main-app-text-link-hover">{{ t("Click here to sign in") }}
+        <router-link :to="{ name: 'login' }" class="main-app-text-link-hover">{{ t("Click here to sign in") }}
         </router-link>
       </div>
     </q-card-section>
@@ -141,8 +141,8 @@ const onSubmitForm = () => {
   state.errorMessage = null;
   state.apiError = null;
   userCreatedSuccessfully.value = false;
-  api.user
-    .signUp(uid(), profile.email, profile.password)
+  api.auth
+    .register(uid(), profile.email, profile.password)
     .then((successResponse) => {
       userCreatedSuccessfully.value = true;
       state.loading = false;

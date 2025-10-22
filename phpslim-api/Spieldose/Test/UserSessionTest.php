@@ -8,50 +8,38 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 final class UserSessionTest extends \Spieldose\Test\BaseTest
 {
-    public function testIsLoggedWithoutSession(): void
+    public function testSet(): void
     {
-        \Spieldose\User::signOut();
-        $this->assertFalse(\Spieldose\UserSession::isLogged());
+        $id = \Spieldose\Utils::uuidv4();
+        $email = "john@do.e";
+        \Spieldose\UserSession::set($id, $email);
+        $this->assertEquals($id, $_SESSION["userId"]);
+        $this->assertEquals($email, $_SESSION["email"]);
     }
 
     public function testIsLogged(): void
     {
+        \Spieldose\UserSession::clear();
+        $this->assertFalse(\Spieldose\UserSession::isLogged());
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-        $u->add(self::$dbh);
-        $u->signIn(self::$dbh);
+        $email = "john@do.e";
+        \Spieldose\UserSession::set($id, $email);
         $this->assertTrue(\Spieldose\UserSession::isLogged());
-    }
-
-    public function testGetUserIdWithoutSession(): void
-    {
-        \Spieldose\User::signOut();
-        $this->assertEmpty(\Spieldose\UserSession::getUserId());
     }
 
     public function testGetUserId(): void
     {
-        \Spieldose\User::signOut();
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-        $u->add(self::$dbh);
-        $u->signIn(self::$dbh);
-        $this->assertEquals($u->id, \Spieldose\UserSession::getUserId());
-    }
-
-    public function testGetEmailWithoutSession(): void
-    {
-        \Spieldose\User::signOut();
-        $this->assertEmpty(\Spieldose\UserSession::getEmail());
+        $email = "john@do.e";
+        \Spieldose\UserSession::set($id, $email);
+        $this->assertEquals($id, \Spieldose\UserSession::getUserId());
     }
 
     public function testGetEmail(): void
     {
-        \Spieldose\User::signOut();
         $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-        $u->add(self::$dbh);
-        $u->signIn(self::$dbh);
-        $this->assertEquals($u->email, \Spieldose\UserSession::getEmail());
+        $email = "john@do.e";
+        \Spieldose\UserSession::set($id, $email);
+        $this->assertEquals($email, \Spieldose\UserSession::getEmail());
     }
 }

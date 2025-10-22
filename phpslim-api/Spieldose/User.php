@@ -131,7 +131,7 @@ class User
         return (count($results) == 1);
     }
 
-    public function signIn(\aportela\DatabaseWrapper\DB $dbh): bool
+    public function login(\aportela\DatabaseWrapper\DB $dbh): bool
     {
         if (!empty($this->password)) {
             $this->get($dbh);
@@ -146,7 +146,7 @@ class User
         }
     }
 
-    public static function signOut(): bool
+    public static function logout(): bool
     {
         \Spieldose\UserSession::clear();
         return (true);

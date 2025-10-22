@@ -15,16 +15,16 @@ export default boot(({ app, router, store }) => {
     }
 
     if (session.isLogged) {
-      if (to.name === "signIn" || to.name === "signUp") {
+      if (to.name === "login" || to.name === "register") {
         next({ name: "dashboard" });
       } else {
         next();
       }
     } else {
-      if (to.name === "signIn" || to.name === "signUp") {
+      if (to.name === "login" || to.name === "register") {
         next();
       } else {
-        next({ name: "signIn" });
+        next({ name: "login" });
       }
     }
   });

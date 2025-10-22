@@ -30,7 +30,7 @@ export function useAxios() {
       const apiResponseJWT = response.headers["spieldose-jwt"] || null;
       if (apiResponseJWT) {
         if (apiResponseJWT && apiResponseJWT != session.getJWT) {
-          session.signIn(apiResponseJWT);
+          session.login(apiResponseJWT);
         }
       }
       if (response.data.initialState) {

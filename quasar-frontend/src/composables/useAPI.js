@@ -9,37 +9,32 @@ export function useAPI() {
     common: {
       initialState: () => axios.get(baseAPIPath + "/initial_state"),
     },
-    user: {
-      signIn: function (email, password, name) {
+    auth: {
+      login: function (email, password) {
         const params = {
           email: email,
           password: password,
-          name: name,
         };
-        return axios.post(baseAPIPath + "/user/sign-in", params);
+        return axios.post(basePath + "/auth/login", params);
       },
-      signOut: function () {
-        return axios.post(baseAPIPath + "/user/sign-out", {});
-      },
-      signUp: function (id, email, password, name) {
+      logout: () => axios.post(basePath + "/auth/logout"),
+      register: function (id, email, password) {
         const params = {
           id: id,
           email: email,
           password: password,
-          name: name,
         };
-        return axios.post(baseAPIPath + "/user/sign-up", params);
+        return axios.post(basePath + "/auth/register", params);
       },
-      getProfile: function () {
-        return axios.get(baseAPIPath + "/user/profile", {});
-      },
-      updateProfile: function (email, name, password) {
+    },
+    user: {
+      getProfile: () => axios.get(basePath + "/user/profile"),
+      updateProfile: function (email, password) {
         const params = {
-          email: email || null,
-          name: name || null,
-          password: password || null,
+          email: email,
+          password: password,
         };
-        return axios.put(baseAPIPath + "/user/profile", params);
+        return axios.put(basePath + "/user/profile", params);
       },
     },
     globalSearch: {

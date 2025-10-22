@@ -30,11 +30,11 @@ export const useSessionStore = defineStore("session", {
         jwt.remove();
       }
     },
-    signIn(newJWT) {
+    login(newJWT) {
       this.jwt = newJWT;
       this.save(newJWT);
     },
-    signOut() {
+    logout() {
       this.jwt = null;
       this.save(null);
     },

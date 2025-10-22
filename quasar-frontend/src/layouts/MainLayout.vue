@@ -39,7 +39,7 @@
           <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
             href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
           <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps
-            stack @click="signOut" :disable="loading" />
+            stack @click="logout" :disable="loading" />
         </q-tabs>
 
       </q-toolbar>
@@ -190,17 +190,19 @@ function onSelectLocale(locale, save) {
   }
 }
 
-function signOut() {
+function logout() {
   spieldoseStore.stop();
-  api.user
-    .signOut()
+  api.auth
+    .logout()
     .then((success) => {
-      session.signOut();
+      session.logout();
       router.push({
-        name: "signIn",
+        name: "login",
       });
     })
     .catch((error) => {
+      session.logout();
+      // TODO: remove
       $q.notify({
         type: "negative",
         message: t("API Error: fatal error"),

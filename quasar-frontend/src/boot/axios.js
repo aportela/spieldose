@@ -20,7 +20,7 @@ axios.interceptors.response.use(
     const apiResponseJWT = response.headers["spieldose-jwt"] || null;
     if (apiResponseJWT) {
       if (apiResponseJWT && apiResponseJWT != session.getJWT) {
-        session.signIn(apiResponseJWT);
+        session.login(apiResponseJWT);
       }
     }
     return response;
@@ -208,9 +208,9 @@ const api = {
         axios
           .get(
             "api2/artist?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {},
           )
           .then((response) => {
@@ -226,9 +226,9 @@ const api = {
         axios
           .get(
             "api2/artist_overview?mbId=" +
-              encodeURIComponent(mbId || "") +
-              "&name=" +
-              encodeURIComponent(name || ""),
+            encodeURIComponent(mbId || "") +
+            "&name=" +
+            encodeURIComponent(name || ""),
             {},
           )
           .then((response) => {
@@ -895,9 +895,9 @@ const api = {
         axios
           .get(
             "api2/lyrics?title=" +
-              encodeURIComponent(title || "") +
-              "&artist=" +
-              encodeURIComponent(artist || ""),
+            encodeURIComponent(title || "") +
+            "&artist=" +
+            encodeURIComponent(artist || ""),
             {},
           )
           .then((response) => {
