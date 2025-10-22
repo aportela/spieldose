@@ -55,10 +55,10 @@ export function useLocalStorage() {
 
   const locale = {
     get() {
-      return get("locale", false);
+      return get("locale");
     },
     set(value) {
-      set("locale", !!value);
+      set("locale", value);
     },
     remove() {
       remove("locale");
