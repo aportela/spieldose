@@ -13,7 +13,45 @@
   </div>
 </template>
 
-<style>
+<script setup>
+import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+
+const props = defineProps({
+  animation: Boolean,
+  animated: Boolean,
+  normalImage: String,
+  smallImage: String
+});
+
+const emit = defineEmits(['change']);
+
+const { t } = useI18n();
+
+// custom style for avoiding "images/vinyl.png" asset loading error if we put this on the <style> block
+const style = "background: url(images/vinyl.png) no-repeat; background-size: cover;";
+const images = ref({
+  normal: props.normalImage,
+  small: props.smallImage
+});
+const normalImage = computed(() => props.normalImage || null);
+const smallImage = computed(() => props.smallImage || null);
+
+watch(smallImage, (newValue) => {
+  images.value.small = newValue;
+});
+
+watch(normalImage, (newValue) => {
+  images.value.normal = newValue;
+});
+
+function toggleMode() {
+  emit('change');
+}
+</script>
+
+<style lang="css">
 div#spieldose-sidebar-vinyl-container {
   width: 400px;
   height: 400px;
@@ -58,41 +96,3 @@ div.spieldose-sidebar-animation-rotation-infinite {
   }
 }
 </style>
-
-<script setup>
-import { ref, computed, watch } from "vue";
-import { useI18n } from "vue-i18n";
-
-
-const props = defineProps({
-  animation: Boolean,
-  animated: Boolean,
-  normalImage: String,
-  smallImage: String
-});
-
-const emit = defineEmits(['change']);
-
-const { t } = useI18n();
-
-// custom style for avoiding "images/vinyl.png" asset loading error if we put this on the <style> block
-const style = "background: url(images/vinyl.png) no-repeat; background-size: cover;";
-const images = ref({
-  normal: props.normalImage,
-  small: props.smallImage
-});
-const normalImage = computed(() => props.normalImage || null);
-const smallImage = computed(() => props.smallImage || null);
-
-watch(smallImage, (newValue) => {
-  images.value.small = newValue;
-});
-
-watch(normalImage, (newValue) => {
-  images.value.normal = newValue;
-});
-
-function toggleMode() {
-  emit('change');
-}
-</script>

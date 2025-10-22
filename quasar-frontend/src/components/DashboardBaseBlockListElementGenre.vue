@@ -9,14 +9,6 @@
   </li>
 </template>
 
-<style>
-li.dashboard_list_item {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
-
 <script setup>
 
 const props = defineProps({
@@ -26,3 +18,11 @@ const props = defineProps({
 })
 
 </script>
+
+<style lang="css">
+li.dashboard_list_item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

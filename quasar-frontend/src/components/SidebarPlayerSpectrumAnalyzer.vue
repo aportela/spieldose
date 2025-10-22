@@ -1,14 +1,7 @@
 <template>
-  <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer" :title="t('Toggle analyzer octave bands number')"
-    @click="togglecurrentMode"></div>
+  <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
+    :title="t('Toggle analyzer octave bands number')" @click="togglecurrentMode"></div>
 </template>
-
-<style>
-div#spieldose-sidebar-analyzer-container {
-  width: 400px;
-  height: 40px;
-}
-</style>
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
@@ -29,11 +22,11 @@ const spieldoseStore = useSpieldoseStore();
 const currentMode = ref(props.mode || 7);
 const analyzer = ref(null);
 
-const create = computed(() => { return(props.create); });
+const create = computed(() => { return (props.create); });
 const active = computed(() => { return (props.active || false) });
 
 watch(create, (newValue, oldValue) => {
-  if (! oldValue && newValue && ! analyzer.value) {
+  if (!oldValue && newValue && !analyzer.value) {
     createAnalyzer(props.active);
   }
 });
@@ -110,3 +103,10 @@ onMounted(() => {
 });
 
 </script>
+
+<style lang="css">
+div#spieldose-sidebar-analyzer-container {
+  width: 400px;
+  height: 40px;
+}
+</style>

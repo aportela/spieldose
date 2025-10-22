@@ -11,7 +11,10 @@
   </svg>
 </template>
 
-<style>
+<script setup>
+</script>
+
+<style lang="css">
 .equilizer {
   height: 100px;
   width: 100%;
@@ -149,8 +152,4 @@
     height: 80px;
   }
 }
-
 </style>
-
-<script setup>
-</script>

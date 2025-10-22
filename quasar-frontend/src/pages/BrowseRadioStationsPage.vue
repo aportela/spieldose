@@ -72,25 +72,6 @@
   </q-card>
 </template>
 
-<style>
-img.radiostation_image {
-  opacity: 0.5;
-  -webkit-filter: grayscale(100%);
-  /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%) blur(2px);
-  transition: filter 0.2s ease-in;
-}
-
-img.radiostation_image:hover {
-  opacity: 1;
-  -webkit-filter: none;
-  /* Safari 6.0 - 9.0 */
-  filter: none;
-  transition: filter 0.2s ease-out;
-
-}
-</style>
-
 <script setup>
 
 import { ref, inject } from "vue";
@@ -171,3 +152,22 @@ search(true);
 
 
 </script>
+
+<style lang="css">
+img.radiostation_image {
+  opacity: 0.5;
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%) blur(2px);
+  transition: filter 0.2s ease-in;
+}
+
+img.radiostation_image:hover {
+  opacity: 1;
+  -webkit-filter: none;
+  /* Safari 6.0 - 9.0 */
+  filter: none;
+  transition: filter 0.2s ease-out;
+
+}
+</style>

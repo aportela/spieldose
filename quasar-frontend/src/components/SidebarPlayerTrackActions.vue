@@ -23,13 +23,6 @@
   </div>
 </template>
 
-<style>
-div#current_track_actions {
-  padding: 1rem;
-}
-</style>
-
-
 <script setup>
 // TODO: translations
 import { computed } from "vue";
@@ -109,3 +102,9 @@ function onShowTrackDetailsModal() {
 }
 
 </script>
+
+<style lang="css">
+div#current_track_actions {
+  padding: 1rem;
+}
+</style>

@@ -26,7 +26,16 @@
   </router-link>
 </template>
 
-<style>
+<script setup>
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
+const props = defineProps(['mbId', 'name', 'image', 'totalTracks']);
+
+</script>
+
+<style lang="css">
 img.sp-artist-image-filter {
   -webkit-filter: grayscale(100%) blur(4px) opacity(0.5);
   /* Safari 6.0 - 9.0 */
@@ -42,12 +51,3 @@ img.sp-artist-image-filter:hover {
 
 }
 </style>
-
-<script setup>
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
-
-const props = defineProps(['mbId', 'name', 'image', 'totalTracks']);
-
-</script>

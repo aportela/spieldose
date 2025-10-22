@@ -23,8 +23,10 @@
     <q-card-section style="width: 350px; height: 140px;" v-else>
       <div class="row">
         <div class="col-12" style="height: 100px;">
-          <q-avatar v-for="n, index in [5, 4, 3, 2, 1, 0]" :key="n" size="100px" class="overlapping" :style="`left: ${(index) * 49}px`">
-            <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * n)" v-if="playlist.covers[n]" />
+          <q-avatar v-for="n, index in [5, 4, 3, 2, 1, 0]" :key="n" size="100px" class="overlapping"
+            :style="`left: ${(index) * 49}px`">
+            <img :src="playlist.covers[n]" :class="'mosaic_cover_element rotate-' + (45 * n)"
+              v-if="playlist.covers[n]" />
             <div v-else class="no_cover" :style="'background: ' + getRandomColor()"></div>
           </q-avatar>
         </div>
@@ -34,36 +36,18 @@
     <q-card-section>
       <q-btn-group spread outline>
         <q-btn :label="t('Play')" stack icon="play_arrow" @click.prevent="onPlay" />
-        <q-btn :label="t('Remove')" stack icon="delete" @click.prevent="onDelete" :disable="! playlist.allowDelete" />
+        <q-btn :label="t('Remove')" stack icon="delete" @click.prevent="onDelete" :disable="!playlist.allowDelete" />
       </q-btn-group>
     </q-card-section>
     <q-separator />
     <q-card-section class="text-right">
       <span>{{ playlist.trackCount }} {{ t(playlist.trackCount > 1 ? "tracks" : "track") }}</span>
-      {{ t('by') }} <router-link :to="{ name: 'playlists', query: routeQueryParams }"> {{ playlist.owner.name }}</router-link>
+      {{ t('by') }} <router-link :to="{ name: 'playlists', query: routeQueryParams }"> {{ playlist.owner.name
+      }}</router-link>
       <LabelTimestampAgo className="q-ml-xs" :timestamp="playlist.updated * 1000"></LabelTimestampAgo>
     </q-card-section>
   </q-card>
 </template>
-
-<style>
-div.no_cover {
-  width: 100px;
-  height: 100px;
-}
-
-img.mosaic_cover_element {
-  width: 100px;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-}
-
-.overlapping {
-  border: 2px solid white;
-  position: absolute;
-}
-</style>
 
 <script setup>
 
@@ -112,3 +96,22 @@ routeQueryParams.value.userId = props.playlist.owner.id;
 routeQueryParams.value.type = "userPlaylists";
 
 </script>
+
+<style lang="css">
+div.no_cover {
+  width: 100px;
+  height: 100px;
+}
+
+img.mosaic_cover_element {
+  width: 100px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.overlapping {
+  border: 2px solid white;
+  position: absolute;
+}
+</style>

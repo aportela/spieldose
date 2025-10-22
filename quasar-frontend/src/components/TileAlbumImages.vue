@@ -11,25 +11,6 @@
   </div>
 </template>
 
-<style>
-div#spieldose-album-cover-tiles-container {
-  box-shadow: inset 24px 4px 64px -24px rgba(71, 71, 71, 1);
-  background-color: #666;
-  height: 100vh;
-  overflow: hidden;
-  filter: blur(4px);
-  transition: filter 2.3s ease-in;
-  opacity: 0.8;
-}
-
-img.spieldose-album-cover-tile {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-}
-</style>
-
 <script setup>
 
 import { ref } from "vue";
@@ -79,3 +60,22 @@ function onImageError(event) {
 loadRandomAlbumImages();
 
 </script>
+
+<style lang="css">
+div#spieldose-album-cover-tiles-container {
+  box-shadow: inset 24px 4px 64px -24px rgba(71, 71, 71, 1);
+  background-color: #666;
+  height: 100vh;
+  overflow: hidden;
+  filter: blur(4px);
+  transition: filter 2.3s ease-in;
+  opacity: 0.8;
+}
+
+img.spieldose-album-cover-tile {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+</style>
