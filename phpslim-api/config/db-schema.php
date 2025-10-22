@@ -1,6 +1,23 @@
 <?php
 
 return (array(
+    2 => array(
+        '
+            CREATE TABLE USER (
+                id VARCHAR(36) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password_hash VARCHAR(60) NOT NULL,
+                created_on_timestamp INTEGER NOT NULL,
+                last_update_timestamp INTEGER,
+                PRIMARY KEY (id)
+            );
+
+            CREATE INDEX idx_user_email ON USER (email);
+        '
+    )
+));
+/*
+return (array(
     1 => array(
         '
             PRAGMA foreign_keys = ON;
@@ -445,3 +462,4 @@ return (array(
         '
     )
 ));
+*/
