@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose;
+namespace Spieldose\Scanner;
 
 class Scanner
 {
