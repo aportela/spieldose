@@ -106,14 +106,11 @@ return function (App $app) {
                     $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     if (\Spieldose\User::isEmailUsed($dbh, $params["email"] ?? "")) {
                         throw new \Spieldose\Exception\AlreadyExistsException("email");
-                    } else if (\Spieldose\User::isNameUsed($dbh, $params["name"] ?? "")) {
-                        throw new \Spieldose\Exception\AlreadyExistsException("name");
                     } else {
                         $user = new \Spieldose\User(
                             $params["id"] ?? "",
                             $params["email"] ?? "",
-                            $params["password"] ?? "",
-                            $params["name"] ?? ""
+                            $params["password"] ?? ""
                         );
                         $user->add($dbh);
                         $payload = json_encode(
@@ -138,8 +135,7 @@ return function (App $app) {
                 $user = new \Spieldose\User(
                     "",
                     $params["email"] ?? "",
-                    $params["password"] ?? "",
-                    $params["name"] ?? ""
+                    $params["password"] ?? ""
                 );
                 $user->signIn($dbh);
                 $payload = json_encode(
@@ -155,6 +151,7 @@ return function (App $app) {
             });
 
             $group->post('/user/sign-out', function (Request $request, Response $response, array $args) use ($initialState) {
+                \Spieldose\User::signOut();
                 $payload = json_encode(
                     [
                         'initialState' => $initialState
@@ -189,12 +186,7 @@ return function (App $app) {
                 $group->put('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                     $params = $request->getParsedBody();
                     $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-                    $user = new \Spieldose\User(
-                        \Spieldose\UserSession::getUserId(),
-                        $params["email"] ?? "",
-                        $params["password"] ?? "",
-                        $params["name"] ?? "",
-                    );
+                    $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
                     $user->get($dbh);
                     if ($params["email"] != \Spieldose\UserSession::getEmail()) {
                         $tmpUser = new \Spieldose\User(
@@ -207,8 +199,7 @@ return function (App $app) {
                     }
                     $user->email = $params["email"] ?? "";
                     $user->password = $params["password"] ?? "";
-                    // TODO: check user update / updateprofile methods (same?)
-                    $user->updateProfile($dbh);
+                    $user->update($dbh);
                     unset($user->password);
                     unset($user->passwordHash);
                     $payload = json_encode(
