@@ -1,9 +1,11 @@
 import { LocalStorage } from "quasar";
 
+import { LOCAL_STORAGE_NAMESPACE } from "src/constants";
+
 export function useLocalStorage() {
   const get = (key, defaultValue = null) => {
     try {
-      const savedValue = LocalStorage.getItem(key);
+      const savedValue = LocalStorage.getItem(LOCAL_STORAGE_NAMESPACE + key);
       return savedValue === null ? defaultValue : savedValue;
     } catch (error) {
       console.error("Error accessing localStorage:", error);
@@ -13,7 +15,7 @@ export function useLocalStorage() {
 
   const set = (key, value) => {
     try {
-      LocalStorage.setItem(key, value);
+      LocalStorage.setItem(LOCAL_STORAGE_NAMESPACE + key, value);
     } catch (error) {
       console.error("Error accessing localStorage:", error);
     }
@@ -21,7 +23,7 @@ export function useLocalStorage() {
 
   const remove = (key) => {
     try {
-      LocalStorage.removeItem(key);
+      LocalStorage.removeItem(LOCAL_STORAGE_NAMESPACE + key);
     } catch (error) {
       console.error("Error accessing localStorage:", error);
     }
@@ -51,18 +53,6 @@ export function useLocalStorage() {
     },
   };
 
-  const showToolTips = {
-    get() {
-      return get("showToolTips", false);
-    },
-    set(value) {
-      set("showToolTips", !!value);
-    },
-    remove() {
-      remove("showToolTips");
-    },
-  };
-
   const locale = {
     get() {
       return get("locale", false);
@@ -75,10 +65,22 @@ export function useLocalStorage() {
     },
   };
 
+  const showToolTips = {
+    get() {
+      return get("showToolTips", false);
+    },
+    set(value) {
+      set("showToolTips", !!value);
+    },
+    remove() {
+      remove("showToolTips");
+    },
+  };
+
   return {
     jwt,
     darkMode,
-    showToolTips,
     locale,
+    showToolTips,
   };
 }
