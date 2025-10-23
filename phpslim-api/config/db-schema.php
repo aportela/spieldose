@@ -32,7 +32,7 @@ return (array(
                 FOREIGN KEY(library_path_id) REFERENCES LIBRARY_PATH(id) ON DELETE CASCADE
             );
 
-            CREATE TABLE `FILE` (
+            CREATE TABLE FILE (
                 id CHAR(36) NOT NULL,
                 directory_id CHAR(36) NOT NULL,
                 name VARCHAR(255) NOT NULL,
@@ -40,6 +40,27 @@ return (array(
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (id),
                 FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE FILE_ID3_TAG (
+                file_id CHAR(36) NOT NULL,
+                title VARCHAR(128),
+                artist VARCHAR(128),
+                album_artist VARCHAR(128),
+                album VARCHAR(128),
+                year INT,
+                genre VARCHAR(128),
+                track_number INT,
+                disc_number INT,
+                playtime_seconds INT,
+                mime VARCHAR(127),
+                mb_artist_id CHAR(36),
+                mb_album_artist_id CHAR(36),
+                mb_album_id CHAR(36),
+                mb_release_group_id CHAR(36),
+                mb_release_track_id CHAR(36),
+                PRIMARY KEY (`file_id`),
+                FOREIGN KEY(`file_id`) REFERENCES FILE(`id`)
             );
         '
     )
@@ -52,26 +73,7 @@ return (array(
         '
         ',
         '
-            CREATE TABLE `FILE_ID3_TAG` (
-                `id` CHAR(36) NOT NULL,
-                `title` VARCHAR(128),
-                `artist` VARCHAR(128),
-                `album_artist` VARCHAR(128),
-                `album` VARCHAR(128),
-                `year` CHAR(4),
-                `genre` VARCHAR(128),
-                `track_number` INT,
-                `disc_number` INT,
-                `playtime_seconds` INT,
-                `mime` VARCHAR(127),
-                `mb_artist_id` CHAR(36),
-                `mb_album_artist_id` CHAR(36),
-                `mb_album_id` CHAR(36),
-                `mb_release_group_id` CHAR(36),
-                `mb_release_track_id` CHAR(36),
-                PRIMARY KEY (`id`),
-                FOREIGN KEY(`id`) REFERENCES FILE(`id`)
-            );
+
         ',
         '
             CREATE TABLE `MB_CACHE_ARTIST` (
