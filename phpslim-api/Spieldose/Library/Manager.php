@@ -513,6 +513,7 @@ class Manager
      */
     public function scanLibrary()
     {
+        $this->logger->notice("Scanning full library");
         $paths = $this->getLibraryPaths();
         foreach ($paths as $path) {
             $this->scanLibraryPath($path->id, $path->path);
