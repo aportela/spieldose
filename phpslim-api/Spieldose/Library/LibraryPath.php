@@ -87,6 +87,55 @@ class LibraryPath
         }
     }
 
+    /**
+     * @return array<mixed>
+     */
+    public function getPaths(): array
+    {
+        return ($this->dbh->query(" SELECT id, path FROM LIBRARY_PATH ORDER BY path "));
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function getLibraryPathDirectories(string $libraryPathId): array
+    {
+        return (
+            $this->dbh->query(
+                " SELECT id, path FROM DIRECTORY WHERE library_path_id = :library_path_id ORDER BY path ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $libraryPathId)
+                ]
+            )
+        );
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function getLibraryPathDirectoryFiles(string $libraryPathDirectoryId): array
+    {
+        return (
+            $this->dbh->query(
+                " SELECT FILE.id, DIRECTORY.path, FILE.name FROM DIRECTORY INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id WHERE DIRECTORY.id = :directory_id ORDER BY path ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $libraryPathDirectoryId)
+                ],
+                function ($rows) {
+                    array_map(
+                        function ($item) {
+                            $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;
+                            unset($item->name);
+                            unset($item->path);
+                            return $item;
+                        },
+                        $rows
+                    );
+                }
+            )
+        );
+    }
+
     private function getDirectoryId(string $path): ?string
     {
         $results = $this->dbh->query(
@@ -100,19 +149,6 @@ class LibraryPath
         } else {
             return (null);
         }
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function getLibraryPaths(): array
-    {
-        return (
-            $this->dbh->query(
-                " SELECT id, path FROM LIBRARY_PATH ORDER BY path ",
-                []
-            )
-        );
     }
 
     private function getFileId(string $directoryId, string $name): ?string
@@ -207,12 +243,6 @@ class LibraryPath
                 }
             }
         }
-    }
-
-    public function scanFile(string $fileId, string $path)
-    {
-        $id3 = new \Spieldose\Library\ID3Wrapper();
-        $id3->analyze($path);
     }
 
     public function getLibraryFiles(?string $pathId = null): array
