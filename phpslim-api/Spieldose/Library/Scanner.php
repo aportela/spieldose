@@ -48,26 +48,26 @@ class Scanner
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist");
             }
             $trackYear = $this->id3->getTag(\Spieldose\Library\ID3TAGType::YEAR);
-            if (!empty($trackYear)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", intval($trackYear));
+            if ($trackYear != null) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $trackYear);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
             }
             $trackNumber = $this->id3->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
-            if (!empty($trackNumber)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":track_number", intval($trackNumber));
+            if ($trackNumber != null) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":track_number", $trackNumber);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":track_number");
             }
             $discNumber = $this->id3->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
-            if (!empty($discNumber)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":disc_number", intval($discNumber));
+            if ($discNumber != null) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":disc_number", $discNumber);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":disc_number");
             }
             $playtimeSeconds = $this->id3->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
-            if (!empty($playtimeSeconds)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":playtime_seconds", intval($playtimeSeconds));
+            if ($playtimeSeconds != null) {
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":playtime_seconds", $playtimeSeconds);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playtime_seconds");
             }
@@ -114,7 +114,7 @@ class Scanner
             }
             $genre = $this->id3->getTag(\Spieldose\Library\ID3TAGType::GENRE);
             if (!empty($genre)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", mb_strtolower($genre));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":genre");
             }
