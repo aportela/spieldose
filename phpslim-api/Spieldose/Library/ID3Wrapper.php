@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose;
+namespace Spieldose\Library;
 
 class ID3Wrapper
 {
