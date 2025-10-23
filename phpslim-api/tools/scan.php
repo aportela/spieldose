@@ -32,19 +32,56 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $scanner = new \Spieldose\Scanner\Scanner($dbh, $logger);
+        //$scanner = new \Spieldose\Scanner\Scanner($dbh, $logger);
         if (!empty($settings["albumCoverPathValidFilenames"])) {
             // TODO
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
-        // SET (NEW?) PATH
-        if ($cmdLine->hasParam("path")) {
-            $musicPath = realpath($cmdLine->getParamValue("path"));
-            if (file_exists($musicPath)) {
-                echo "Adding base path: " . $musicPath . PHP_EOL;
-                $scanner->addPath($musicPath);
-                /*
+        $cmdLine = new \Spieldose\CmdLine("", array("addlibpath:", "clean"));
+        if ($cmdLine->hasOptions()) {
+            if ($cmdLine->hasParam("addlibpath")) {
+                $newLibraryPath = realpath($cmdLine->getParamValue("addlibpath"));
+                echo "Add library path" . PHP_EOL;
+                echo "- Path: " . $newLibraryPath . PHP_EOL;
+                if (file_exists($newLibraryPath)) {
+                    $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
+                    $pathId = $libraryPath->getPathId($newLibraryPath);
+                    if (empty($pathId)) {
+                        if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
+                            echo "- ERROR: path is contained on existing library path" . PHP_EOL;
+                        } else {
+                            echo "- OK!" . PHP_EOL;
+                            $pathId = $libraryPath->addPath($newLibraryPath);
+                        }
+                    } else {
+                        echo "- ERROR: path already exists on library" . PHP_EOL;
+                    }
+                } else {
+                    echo "- ERROR: path not found on local filesystem" . PHP_EOL;
+                    //$logger->warning("Invalid music path / path not found");
+                }
+            }
+            if ($cmdLine->hasParam("clean")) {
+                echo "Cleaning database...";
+                //$scanner->cleanUp();
+                echo " ok!";
+            }
+        } else {
+            echo "No required params found." . PHP_EOL;
+            echo "Scan / update music path:" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --path <YOUR_MUSIC_PATH>" . PHP_EOL;
+            echo "Clean database (deleted/orphaned items):" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
+        }
+        //print_r($scanner->getPaths());
+    } catch (\Exception $e) {
+        echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
+        $logger->critical("Uncaught exception: " . $e->getMessage());
+    }
+
+
+    //$scanner->addPath($musicPath);
+    /*
                 $logger->info("Scanning base path: " . $musicPath);
 
                 $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
@@ -68,24 +105,4 @@ if (count($missingExtensions) > 0) {
                     echo "no files fixed" . PHP_EOL;
                 }
                     */
-            } else {
-                echo "Invalid music path / path not found" . PHP_EOL;
-                $logger->warning("Invalid music path / path not found");
-            }
-        } else if ($cmdLine->hasParam("clean")) {
-            echo "Cleaning database...";
-            //$scanner->cleanUp();
-            echo " ok!";
-        } else {
-            echo "No required params found." . PHP_EOL;
-            echo "Scan / update music path:" . PHP_EOL;
-            echo "\tphp " . $argv[0] . " --path <YOUR_MUSIC_PATH>" . PHP_EOL;
-            echo "Clean database (deleted/orphaned items):" . PHP_EOL;
-            echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
-        }
-        print_r($scanner->getPaths());
-    } catch (\Exception $e) {
-        echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
-        $logger->critical("Uncaught exception: " . $e->getMessage());
-    }
 }
