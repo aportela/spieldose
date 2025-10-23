@@ -307,12 +307,12 @@ class LibraryPath
                     $this->dbh->execute(
                         "
                             INSERT INTO QUEUE_FILE_ID3_SCAN
-                                (file_id, ctime)
+                                (file_id, created_on_timestamp)
                             VALUES
                                 (:file_id, :current_timestamp)
                             ON CONFLICT (file_id) DO
                             UPDATE SET
-                                ctime = :current_timestamp
+                                created_on_timestamp = :current_timestamp
                         ",
                         [
                             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
@@ -360,6 +360,38 @@ class LibraryPath
                     FROM FILE
                     INNER JOIN DIRECTORY ON DIRECTORY.ID = FILE.directory_id
                     ORDER BY DIRECTORY.path, FILE.name
+                ",
+                [],
+                function ($rows) {
+                    array_map(
+                        function ($item) {
+                            $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;
+                            unset($item->name);
+                            unset($item->path);
+                            return $item;
+                        },
+                        $rows
+                    );
+                }
+            )
+        );
+    }
+
+    /**
+     * full list (id/path) of library files (used for clean orphaned data)
+     * return array<mixed>
+     */
+    public function getAllLibraryDirectoryFilesQueuedForID3(): array
+    {
+        return (
+            $this->dbh->query(
+                "
+                    SELECT
+                        FILE.id, DIRECTORY.path, FILE.name
+                    FROM QUEUE_FILE_ID3_SCAN
+                    INNER JOIN FILE ON QUEUE_FILE_ID3_SCAN.file_id = FILE.id
+                    INNER JOIN DIRECTORY ON DIRECTORY.ID = FILE.directory_id
+                    ORDER BY QUEUE_FILE_ID3_SCAN.created_on_timestamp
                 ",
                 [],
                 function ($rows) {
