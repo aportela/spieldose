@@ -236,7 +236,7 @@ class LibraryPath
     }
 
     /**
-     * scan custom library path
+     * scan (fill DIRECTORY && FILE tables) custom library path
      */
     public function scanPath(string $pathId, string $path)
     {
