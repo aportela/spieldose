@@ -38,12 +38,15 @@ if (count($missingExtensions) > 0) {
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
         $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
+        // SET (NEW?) PATH
         if ($cmdLine->hasParam("path")) {
             $musicPath = realpath($cmdLine->getParamValue("path"));
             if (file_exists($musicPath)) {
-                echo "Scanning base path: " . $musicPath . PHP_EOL;
+                echo "Adding base path: " . $musicPath . PHP_EOL;
                 $scanner->addPath($musicPath);
+                /*
                 $logger->info("Scanning base path: " . $musicPath);
+
                 $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
                 $totalFiles = count($files);
                 echo "Total supported files on path: " . $totalFiles . PHP_EOL;
@@ -64,13 +67,14 @@ if (count($missingExtensions) > 0) {
                 } else {
                     echo "no files fixed" . PHP_EOL;
                 }
+                    */
             } else {
                 echo "Invalid music path / path not found" . PHP_EOL;
                 $logger->warning("Invalid music path / path not found");
             }
         } else if ($cmdLine->hasParam("clean")) {
             echo "Cleaning database...";
-            $scanner->cleanUp();
+            //$scanner->cleanUp();
             echo " ok!";
         } else {
             echo "No required params found." . PHP_EOL;
@@ -79,6 +83,7 @@ if (count($missingExtensions) > 0) {
             echo "Clean database (deleted/orphaned items):" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
         }
+        print_r($scanner->getPaths());
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
         $logger->critical("Uncaught exception: " . $e->getMessage());

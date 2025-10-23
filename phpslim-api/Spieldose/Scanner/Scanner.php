@@ -21,20 +21,31 @@ class Scanner
 
     public function addPath(string $path): string
     {
-        $this->dbh->exec(
-            " INSERT INTO SCANNER_DIRECTORY (id, path, ctime, atime) VALUES (:id, :path, strftime('%s', 'now'), strftime('%s', 'now')) ON CONFLICT (path) DO UPDATE SET atime = strftime('%s', 'now') ",
+        $this->dbh->execute(
+            " INSERT INTO SCANNER_DIRECTORY (id, path, ctime, mtime) VALUES (:id, :path, :current_timestamp, :current_timestamp) ON CONFLICT (path) DO UPDATE SET mtime = :current_timestamp ",
             array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid7())->toString()),
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path)
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\Utils::uuidv4()),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000))
             )
         );
         $directoryId = $this->dbh->query(
             "SELECT id FROM SCANNER_DIRECTORY WHERE path = :path",
             array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path)
             )
         )[0]->id;
         return ($directoryId);
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getPaths(): array
+    {
+        $paths = [];
+        $results = $this->dbh->query("SELECT path FROM SCANNER_DIRECTORY ORDER BY path");
+        return ();
     }
 
     private function saveDirectory(string $path): string

@@ -18,7 +18,7 @@ return (array(
                 id CHAR(36) NOT NULL,
                 path VARCHAR(4096) NOT NULL UNIQUE,
                 ctime INTEGER NOT NULL,
-                atime INTEGER NOT NULL,
+                mtime INTEGER NOT NULL,
                 PRIMARY KEY (`id`)
             );
 
