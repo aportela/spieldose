@@ -14,7 +14,7 @@ return (array(
 
             CREATE INDEX idx_user_email ON USER (email);
 
-            CREATE TABLE SCANNER_DIRECTORY (
+            CREATE TABLE LIBRARY_PATH (
                 id CHAR(36) NOT NULL,
                 path VARCHAR(4096) NOT NULL UNIQUE,
                 ctime INTEGER NOT NULL,
@@ -24,16 +24,19 @@ return (array(
 
             CREATE TABLE DIRECTORY (
                 id CHAR(36) NOT NULL,
+                library_path_id CHAR(36) NOT NULL,
                 path VARCHAR(4096) NOT NULL UNIQUE,
                 mtime INTEGER NOT NULL,
                 cover_filename VARCHAR(4096),
-                PRIMARY KEY (id)
+                PRIMARY KEY (id),
+                FOREIGN KEY(library_path_id) REFERENCES LIBRARY_PATH(id)
             );
 
             CREATE TABLE `FILE` (
                 id CHAR(36) NOT NULL,
                 directory_id CHAR(36) NOT NULL,
                 name VARCHAR(255) NOT NULL,
+                size INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (id),
                 FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id)
