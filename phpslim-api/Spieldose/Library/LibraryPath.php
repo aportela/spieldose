@@ -172,7 +172,7 @@ class LibraryPath
      */
     public function scan()
     {
-        $paths = $this->getLibraryPaths();
+        $paths = $this->getPaths();
         foreach ($paths as $path) {
             $this->scanPath($path->id, $path->path);
         }
