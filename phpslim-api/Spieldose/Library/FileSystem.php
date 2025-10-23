@@ -55,7 +55,7 @@ class FileSystem
     /**
      * check/return cover filename in selected path with (optional) custom pattern
      */
-    public function getCoverFilename(string $path, string $pattern = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN): ?string
+    public static function getCoverFilename(string $path, string $pattern = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN): ?string
     {
         $coverFilename = null;
         foreach (glob($path . DIRECTORY_SEPARATOR . $pattern, GLOB_BRACE) as $file) {
