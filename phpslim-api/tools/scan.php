@@ -60,8 +60,9 @@ if (count($missingExtensions) > 0) {
                     $libraryPath->scanPath($pathId, $newLibraryPath);
                     $files = $libraryPath->getLibraryFiles();
                     foreach ($files as $file) {
-                        $libraryPath->scanFile($file->id, $file->fullPath);
                     }
+                    $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
+                    $scanner->scan();
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
                     //$logger->warning("Invalid music path / path not found");
