@@ -21,7 +21,7 @@ class Scanner
 
     public function __destruct() {}
 
-    private function scanFile(string $libraryPathDirectoryFileId, string $path)
+    public function scanFile(string $libraryPathDirectoryFileId, string $path)
     {
         $this->id3->analyze($path);
         $params = [
@@ -124,7 +124,7 @@ class Scanner
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mime");
             }
-            $this->dbh->query(
+            $this->dbh->execute(
                 "
                     INSERT INTO FILE_ID3_TAG
                         (file_id, title, artist, album_artist, album, year, track_number, disc_number, playtime_seconds, mb_artist_id, mb_album_artist_id, mb_album_id, mb_release_group_id, mb_release_track_id, genre, mime)
@@ -151,8 +151,17 @@ class Scanner
                 ",
                 $params
             );
+            $this->dbh->execute(
+                "
+                    DELETE FROM QUEUE_FILE_ID3_SCAN
+                    WHERE file_id = :file_id
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $libraryPathDirectoryFileId)
+                ]
+            );
         } else {
-            $this->dbh->query(
+            $this->dbh->execute(
                 "
                     DELETE FROM FILE_ID3_TAG
                     WHERE file_id = :file_id
@@ -235,7 +244,7 @@ class Scanner
                 if (!file_exists($file->fullPath)) {
                     $this->logger->debug(sprintf("File id: %s - Path not found: %s", $file->id, $file->fullPath));
                     // FILE_ID3_TAG will be deleted ON CASCADE
-                    $this->dbh->query(
+                    $this->dbh->execute(
                         "
                             DELETE FROM FILE
                             WHERE id = :id

@@ -55,8 +55,6 @@ if (count($missingExtensions) > 0) {
                         // fill DIRECTORY && FILE tables for this library path
                         $libraryPath->scanPath($pathId, $newLibraryPath);
                         echo "ok!" . PHP_EOL;
-                        $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
-                        $scanner->scan();
                     }
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
@@ -69,9 +67,10 @@ if (count($missingExtensions) > 0) {
                 $queuedItems = $libraryPath->getAllLibraryDirectoryFilesQueuedForID3();
                 $totalQueuedItems = count($queuedItems);
                 echo " " . $totalQueuedItems . " items found" . PHP_EOL;
+                $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
                 for ($i = 0; $i < $totalQueuedItems; $i++) {
+                    $scanner->scanFile($queuedItems[$i]->id, $queuedItems[$i]->fullPath);
                     \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
-                    usleep(50);
                 }
                 echo "ID3 queue processed" . PHP_EOL;
             }
