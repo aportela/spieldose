@@ -7,6 +7,7 @@ namespace Spieldose\Library;
 class FileSystem
 {
     public const VALID_FORMATS = array("mp3", "ogg");
+    private const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     /**
      * get directory files (recursive)
@@ -49,6 +50,19 @@ class FileSystem
             }
         }
         return ($directories);
+    }
+
+    /**
+     * check/return cover filename in selected path with (optional) custom pattern
+     */
+    public function getCoverFilename(string $path, string $pattern = self::VALID_COVER_FILENAMES_DEFAULT_PATTERN): ?string
+    {
+        $coverFilename = null;
+        foreach (glob($path . DIRECTORY_SEPARATOR . $pattern, GLOB_BRACE) as $file) {
+            $coverFilename = basename(realpath($file)); // get real file "case"
+            break;
+        }
+        return ($coverFilename);
     }
 
     /**
