@@ -29,7 +29,7 @@ return (array(
                 mtime INTEGER NOT NULL,
                 cover_filename VARCHAR(4096),
                 PRIMARY KEY (id),
-                FOREIGN KEY(library_path_id) REFERENCES LIBRARY_PATH(id)
+                FOREIGN KEY(library_path_id) REFERENCES LIBRARY_PATH(id) ON DELETE CASCADE
             );
 
             CREATE TABLE `FILE` (
@@ -39,7 +39,7 @@ return (array(
                 size INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (id),
-                FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id)
+                FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id) ON DELETE CASCADE
             );
         '
     )
