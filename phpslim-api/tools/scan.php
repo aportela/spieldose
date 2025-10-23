@@ -79,13 +79,20 @@ if (count($missingExtensions) > 0) {
                 $libraryDirectoryFiles = $libraryPath->getAllLibraryDirectoryFiles();
                 $totalFiles = count($libraryDirectoryFiles);
                 echo " " . $totalFiles . " files found" . PHP_EOL;
+                $totalDeleted = 0;
                 for ($i = 0; $i < $totalFiles; $i++) {
                     if (! file_exists($libraryDirectoryFiles[$i]->fullPath)) {
+                        $libraryPath->removeFile($libraryDirectoryFiles[$i]->id);
+                        $totalDeleted++;
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $libraryDirectoryFiles[$i]->fullPath);
-                    usleep(50);
                 }
-                echo "Datatabase clean finished";
+                echo "Datatabase clean finished. ";
+                if ($totalDeleted > 0) {
+                    echo "Total deleted files: " . $totalDeleted . PHP_EOL;
+                } else {
+                    echo "No orphan/deleted files found" . PHP_EOL;
+                }
             }
         } else {
             echo "No required params found." . PHP_EOL;

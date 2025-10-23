@@ -235,6 +235,19 @@ class LibraryPath
         }
     }
 
+    public function removeFile(string $id)
+    {
+        $this->dbh->execute(
+            "
+                DELETE FROM FILE
+                WHERE id = :id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
+            ]
+        );
+    }
+
     /**
      * scan (fill DIRECTORY && FILE tables) custom library path
      */
