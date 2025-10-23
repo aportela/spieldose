@@ -37,30 +37,30 @@ if (count($missingExtensions) > 0) {
             // TODO
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addlibpath:", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
         if ($cmdLine->hasOptions()) {
-            if ($cmdLine->hasParam("addlibpath")) {
-                $newLibraryPath = realpath($cmdLine->getParamValue("addlibpath"));
-                echo "Add library path" . PHP_EOL;
-                echo "- Path: " . $newLibraryPath . PHP_EOL;
+            if ($cmdLine->hasParam("path")) {
+                $newLibraryPath = realpath($cmdLine->getParamValue("path"));
+                echo "Setting library path: " . $newLibraryPath . PHP_EOL;
                 if (file_exists($newLibraryPath)) {
                     $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
                     $pathId = $libraryPath->getPathId($newLibraryPath);
                     if (empty($pathId)) {
                         if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
-                            echo "- ERROR: path is contained on existing library path" . PHP_EOL;
+                            echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                         } else {
-                            echo "- OK!" . PHP_EOL;
                             $pathId = $libraryPath->addPath($newLibraryPath);
                         }
                     } else {
-                        echo "- ERROR: path already exists on library" . PHP_EOL;
+                        echo "\tERROR: path already exists on library" . PHP_EOL;
                     }
-                    echo "Scanning path..." . $pathId . PHP_EOL;
+                    echo "Scanning path..." . PHP_EOL;
+                    echo "- Id: " . $pathId . PHP_EOL;
+                    echo "- Path: " . $newLibraryPath . PHP_EOL;
+                    echo "- Processing...";
                     $libraryPath->scanPath($pathId, $newLibraryPath);
-                    $files = $libraryPath->getLibraryFiles();
-                    foreach ($files as $file) {
-                    }
+                    echo "ok!" . PHP_EOL;
+
                     $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
                     $scanner->scan();
                 } else {
