@@ -56,6 +56,8 @@ if (count($missingExtensions) > 0) {
                     } else {
                         echo "- ERROR: path already exists on library" . PHP_EOL;
                     }
+                    echo "Scanning path..." . $pathId . PHP_EOL;
+                    $libraryPath->scanPath($pathId, $newLibraryPath);
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
                     //$logger->warning("Invalid music path / path not found");
