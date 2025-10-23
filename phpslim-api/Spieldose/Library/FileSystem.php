@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\Scanner;
+namespace Spieldose\Library;
 
 class FileSystem
 {
@@ -30,8 +30,9 @@ class FileSystem
      * get directory names (recursive)
      *
      * @params $path string path of the directory
+     * @return array<string>
      */
-    public static function getRecursiveDirectories(string $path)
+    public static function getRecursiveDirectories(string $path): array
     {
         $directories = array($path);
         $rdi = new \RecursiveIteratorIterator(

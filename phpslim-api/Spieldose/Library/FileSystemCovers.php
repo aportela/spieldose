@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\Scanner;
+namespace Spieldose\Library;
 
 class FileSystemCovers
 {
