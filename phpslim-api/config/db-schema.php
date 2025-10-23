@@ -62,6 +62,13 @@ return (array(
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             );
+
+            CREATE TABLE QUEUE_FILE_ID3_SCAN (
+                file_id CHAR(36) NOT NULL,
+                ctime INTEGER NOT NULL,
+                PRIMARY KEY (file_id),
+                FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
+            );
         '
     )
 ));
