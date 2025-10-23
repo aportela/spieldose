@@ -122,11 +122,11 @@ class ID3Wrapper
         return (intval($number) > 0 ? $number : "");
     }
 
-    public function getYear(): string
+    public function getYear(): ?int
     {
         $year = (string) $this->getTagFieldValue($this->tagData, "year");
-        $year = (strlen($year) > 4) ? substr($year, 0, 4) : $year;
-        return (intval($year) > 0 ? $year : "");
+        $year = intval((strlen($year) > 4) ? substr($year, 0, 4) : $year);
+        return ($year > 0 ? $year : null);
     }
 
     public function getPlaytimeSeconds(): int
