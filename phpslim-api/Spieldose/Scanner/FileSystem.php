@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose;
+namespace Spieldose\Scanner;
 
 class FileSystem
 {
@@ -19,11 +19,11 @@ class FileSystem
         $rdi = new \RecursiveDirectoryIterator($path);
         foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
             $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-            if (in_array($extension, \Spieldose\FileSystem::VALID_FORMATS)) {
+            if (in_array($extension, self::VALID_FORMATS)) {
                 $files[] = $filename;
             }
         }
-        return($files);
+        return ($files);
     }
 
     /**
@@ -47,12 +47,13 @@ class FileSystem
                 $directories[] = $path;
             }
         }
-        return($directories);
+        return ($directories);
     }
 
     /**
      * get mime type of image file
      */
+    /*
     public static function getImageMimeSimple(string $filename)
     {
         $mime = "application/octet-stream";
@@ -66,6 +67,7 @@ class FileSystem
                 $mime = image_type_to_mime_type(IMAGETYPE_PNG);
                 break;
         }
-        return($mime);
+        return ($mime);
     }
+        */
 }
