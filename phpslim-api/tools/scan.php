@@ -44,25 +44,24 @@ if (count($missingExtensions) > 0) {
                 echo "Setting library path: " . $newLibraryPath . PHP_EOL;
                 if (file_exists($newLibraryPath)) {
                     $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
-                    $pathId = $libraryPath->getPathId($newLibraryPath);
-                    if (empty($pathId)) {
-                        if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
-                            echo "\tERROR: path is contained on existing library path" . PHP_EOL;
-                        } else {
-                            $pathId = $libraryPath->addPath($newLibraryPath);
-                        }
+                    if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
+                        echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                     } else {
-                        echo "\tERROR: path already exists on library" . PHP_EOL;
-                    }
-                    echo "Scanning path..." . PHP_EOL;
-                    echo "- Id: " . $pathId . PHP_EOL;
-                    echo "- Path: " . $newLibraryPath . PHP_EOL;
-                    echo "- Processing...";
-                    $libraryPath->scanPath($pathId, $newLibraryPath);
-                    echo "ok!" . PHP_EOL;
+                        $pathId = null;
+                        try {
+                            $pathId = $libraryPath->addPath($newLibraryPath);
+                        } catch (\Spieldose\Exception\AlreadyExistsException $e) {
+                        }
+                        echo "Scanning path..." . PHP_EOL;
+                        echo "- Id: " . $pathId . PHP_EOL;
+                        echo "- Path: " . $newLibraryPath . PHP_EOL;
+                        echo "- Processing...";
+                        $libraryPath->scanPath($pathId, $newLibraryPath);
+                        echo "ok!" . PHP_EOL;
 
-                    $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
-                    $scanner->scan();
+                        $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
+                        $scanner->scan();
+                    }
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
                     //$logger->warning("Invalid music path / path not found");

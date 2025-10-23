@@ -7,10 +7,6 @@ namespace Spieldose\Library;
 class LibraryPath
 {
     private \aportela\DatabaseWrapper\DB $dbh;
-    /**
-     * @var array<string, string>
-     */
-    public array $items = [];
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh)
     {
@@ -20,9 +16,9 @@ class LibraryPath
     public function __destruct() {}
 
     /**
-     * checks for path existence (returns path id || null)
+     * checks for library path existence (returns path id || null)
      */
-    public function getPathId(string $path): ?string
+    private function getPathId(string $path): ?string
     {
         $results = $this->dbh->query(
             " SELECT id FROM LIBRARY_PATH WHERE path = :path ",
@@ -38,38 +34,55 @@ class LibraryPath
     }
 
     /**
-     * this is used for preventing duplicated (children) items (ex: adding paths: "c:\music\" && "c:\music\jazz")
+     * this is used for preventing duplicated (children) library paths (ex: adding paths: "c:\music\" && "c:\music\jazz")
      */
     public function isPathContainedOnCurrentPaths(string $path): bool
     {
+        $path = realpath($path);
         $results = $this->dbh->query(" SELECT path FROM LIBRARY_PATH ORDER BY path ");
         foreach ($results as $result) {
-            if (str_starts_with(realpath($path), $result->path)) {
+            // TODO: str_starts_with works with unicode ?
+            if (str_starts_with($path, $result->path)) {
                 return (true);
             }
         }
         return (false);
     }
 
+    /**
+     * add / update library path
+     */
     public function addPath(string $path): string
     {
+        $path = realpath($path);
+        $pathId = $this->getPathId($path);
+        if (empty($pathId)) {
+            $pathId = \Spieldose\Utils::uuidv4();
+        }
+        $stat = stat($path);
         $this->dbh->execute(
-            " INSERT INTO LIBRARY_PATH (id, path, ctime, mtime) VALUES (:id, :path, :current_timestamp, :current_timestamp) ",
+            "
+                    INSERT INTO LIBRARY_PATH
+                        (id, path, ctime, mtime)
+                    VALUES
+                        (:id, :path, :current_timestamp, :mtime)
+                    ON CONFLICT (id) DO
+                    UPDATE SET
+                        mtime = :time;
+                ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\Utils::uuidv4()),
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000))
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
             ]
         );
-        $pathId = $this->dbh->query(
-            " SELECT id FROM LIBRARY_PATH WHERE path = :path ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path))
-            ]
-        )[0]->id;
         return ($pathId);
     }
 
+    /**
+     * remove library path
+     */
     public function removePath(string $path): bool
     {
         $pathId = $this->getPathId($path);
@@ -88,6 +101,7 @@ class LibraryPath
     }
 
     /**
+     * return all library paths
      * @return array<mixed>
      */
     public function getPaths(): array
@@ -108,6 +122,21 @@ class LibraryPath
                 ]
             )
         );
+    }
+
+    private function getDirectoryId(string $path): ?string
+    {
+        $results = $this->dbh->query(
+            " SELECT id FROM DIRECTORY WHERE path = :path ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
+            ]
+        );
+        if (count($results) == 1) {
+            return ($results[0]->id);
+        } else {
+            return (null);
+        }
     }
 
     /**
@@ -136,21 +165,6 @@ class LibraryPath
         );
     }
 
-    private function getDirectoryId(string $path): ?string
-    {
-        $results = $this->dbh->query(
-            " SELECT id FROM DIRECTORY WHERE path = :path ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
-            ]
-        );
-        if (count($results) == 1) {
-            return ($results[0]->id);
-        } else {
-            return (null);
-        }
-    }
-
     private function getFileId(string $directoryId, string $name): ?string
     {
         $results = $this->dbh->query(
@@ -170,7 +184,7 @@ class LibraryPath
     /**
      * scan all library paths
      */
-    public function scan()
+    public function scanLibrary()
     {
         $paths = $this->getPaths();
         foreach ($paths as $path) {
@@ -245,7 +259,11 @@ class LibraryPath
         }
     }
 
-    public function getLibraryFiles(?string $pathId = null): array
+    /**
+     * full list (id/path) of library files (used for clean orphaned data)
+     * return array<mixed>
+     */
+    public function getAllLibraryDirectoryFiles(): array
     {
         return (
             $this->dbh->query(
