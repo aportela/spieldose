@@ -57,9 +57,9 @@ watch(
   { immediate: true }
 );
 
-function onSelectLocale(locale) {
-  i18n.global.locale.value = locale.value;
-  locale.set(locale.value);
+function onSelectLocale(newLocale) {
+  i18n.global.locale.value = newLocale.value;
+  locale.set(newLocale.value);
 }
 
 </script>
