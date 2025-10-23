@@ -27,12 +27,12 @@ if (count($missingExtensions) > 0) {
     $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
 } else {
     try {
-        $db = $container->get(\aportela\DatabaseWrapper\DB::class);
-        if ($db->getCurrentSchemaVersion() < $db->getUpgradeSchemaVersion()) {
+        $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+        if ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $scanner = new \Spieldose\Scanner\Scanner($db, $logger);
+        $scanner = new \Spieldose\Scanner\Scanner($dbh, $logger);
         if (!empty($settings["albumCoverPathValidFilenames"])) {
             // TODO
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
