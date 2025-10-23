@@ -69,8 +69,18 @@ return (array(
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             );
-        '
-    )
+
+            CREATE TABLE LYRICS (
+                title VARCHAR(512) NOT NULL,
+                artist VARCHAR(128) NOT NULL,
+                data TEXT NOT NULL,
+                source VARCHAR(32) NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER NOT NULL,
+                PRIMARY KEY (title, artist)
+            );
+        ',
+    ),
 ));
 /*
 return (array(
