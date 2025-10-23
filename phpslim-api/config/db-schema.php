@@ -59,8 +59,8 @@ return (array(
                 mb_album_id CHAR(36),
                 mb_release_group_id CHAR(36),
                 mb_release_track_id CHAR(36),
-                PRIMARY KEY (`file_id`),
-                FOREIGN KEY(`file_id`) REFERENCES FILE(`id`)
+                PRIMARY KEY (file_id),
+                FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             );
         '
     )
