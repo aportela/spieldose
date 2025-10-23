@@ -82,8 +82,7 @@ class FileSystem
     /**
      * get mime type of image file
      */
-    /*
-    public static function getImageMimeSimple(string $filename)
+    public static function getImageMimeType(string $filename)
     {
         $mime = "application/octet-stream";
         $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -95,8 +94,10 @@ class FileSystem
             case "png":
                 $mime = image_type_to_mime_type(IMAGETYPE_PNG);
                 break;
+            case "bmp":
+                $mime = image_type_to_mime_type(IMAGETYPE_BMP);
+                break;
         }
         return ($mime);
     }
-        */
 }
