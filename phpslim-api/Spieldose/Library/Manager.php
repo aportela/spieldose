@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose\Library;
 
-class LibraryPath
+class Manager
 {
     private \aportela\DatabaseWrapper\DB $dbh;
 
@@ -18,7 +18,7 @@ class LibraryPath
     /**
      * checks for library path existence (returns path id || null)
      */
-    private function getPathId(string $path): ?string
+    private function getLibraryPathId(string $path): ?string
     {
         $results = $this->dbh->query(
             "
@@ -41,7 +41,7 @@ class LibraryPath
     /**
      * this is used for preventing duplicated (children) library paths (ex: adding paths: "c:\music\" && "c:\music\jazz")
      */
-    public function isPathContainedOnCurrentPaths(string $path): bool
+    public function isPathContainedOnCurrentLibraryPaths(string $path): bool
     {
         $path = realpath($path);
         $results = $this->dbh->query(
@@ -68,10 +68,10 @@ class LibraryPath
     /**
      * add / update library path
      */
-    public function addPath(string $path): string
+    public function addLibraryPath(string $path): string
     {
         $path = realpath($path);
-        $pathId = $this->getPathId($path);
+        $pathId = $this->getLibraryPathId($path);
         if (empty($pathId)) {
             $pathId = \Spieldose\Utils::uuidv4();
         }
@@ -99,9 +99,9 @@ class LibraryPath
     /**
      * remove library path
      */
-    public function removePath(string $path): bool
+    public function removeLibraryPath(string $path): bool
     {
-        $pathId = $this->getPathId($path);
+        $pathId = $this->getLibraryPathId($path);
         if (! empty($pathId)) {
             // DIRECTORY && FILE related rows are deleted on cascade
             $this->dbh->execute(
@@ -123,7 +123,7 @@ class LibraryPath
      * return all library paths
      * @return array<mixed>
      */
-    public function getPaths(): array
+    public function getLibraryPaths(): array
     {
         return (
             $this->dbh->query(
@@ -158,7 +158,7 @@ class LibraryPath
         );
     }
 
-    private function getDirectoryId(string $path): ?string
+    private function getLibraryPathDirectoryId(string $path): ?string
     {
         $results = $this->dbh->query(
             "
@@ -211,7 +211,7 @@ class LibraryPath
         );
     }
 
-    private function getFileId(string $directoryId, string $name): ?string
+    private function getLibraryPathDirectoryFileId(string $directoryId, string $name): ?string
     {
         $results = $this->dbh->query(
             "
@@ -235,7 +235,7 @@ class LibraryPath
         }
     }
 
-    public function removeFile(string $id)
+    public function removeLibraryPathDirectoryFile(string $id)
     {
         $this->dbh->execute(
             "
@@ -248,7 +248,7 @@ class LibraryPath
         );
     }
 
-    public function writeFileTags(
+    public function writeLibraryPathDirectoryFileTags(
         string $libraryPathDirectoryFileId,
         ?string $trackTitle,
         ?string $trackArtist,
@@ -382,7 +382,7 @@ class LibraryPath
         );
     }
 
-    public function removeFileTags($libraryPathDirectoryFileId)
+    public function removeLibraryPathDirectoryFileTags($libraryPathDirectoryFileId)
     {
         $this->dbh->execute(
             "
@@ -397,13 +397,13 @@ class LibraryPath
     /**
      * scan (fill DIRECTORY && FILE tables) custom library path
      */
-    public function scanPath(string $pathId, string $path)
+    public function scanLibraryPath(string $pathId, string $path)
     {
         $path = realpath($path);
         $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
         foreach ($directories as $directory) {
             $directory = realpath($directory);
-            $directoryId = $this->getDirectoryId($directory);
+            $directoryId = $this->getLibraryPathDirectoryId($directory);
             $files = \Spieldose\Library\FileSystem::getDirectoryFiles($directory);
             $totalFiles = count($files);
             // only add directories with supported files
@@ -438,7 +438,7 @@ class LibraryPath
                     $file = realpath($file);
                     $stat = stat($file);
                     $filename = basename($file);
-                    $fileId = $this->getFileId($directoryId, $filename);
+                    $fileId = $this->getLibraryPathDirectoryFileId($directoryId, $filename);
                     if (empty($fileId)) {
                         $fileId = \Spieldose\Utils::uuidv4();
                     }
@@ -499,9 +499,9 @@ class LibraryPath
      */
     public function scanLibrary()
     {
-        $paths = $this->getPaths();
+        $paths = $this->getLibraryPaths();
         foreach ($paths as $path) {
-            $this->scanPath($path->id, $path->path);
+            $this->scanLibraryPath($path->id, $path->path);
         }
     }
 
@@ -509,7 +509,7 @@ class LibraryPath
      * full list (id/path) of library files (used for clean orphaned data)
      * return array<mixed>
      */
-    public function getAllLibraryDirectoryFiles(): array
+    public function getAllLibraryPathDirectoryFiles(): array
     {
         return (
             $this->dbh->query(
@@ -540,7 +540,7 @@ class LibraryPath
      * full list (id/path) of library files (used for clean orphaned data)
      * return array<mixed>
      */
-    public function getAllLibraryDirectoryFilesQueuedForID3(): array
+    public function getAllLibraryPathDirectoryFilesQueuedForID3(): array
     {
         return (
             $this->dbh->query(

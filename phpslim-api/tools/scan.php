@@ -43,17 +43,17 @@ if (count($missingExtensions) > 0) {
                 $newLibraryPath = realpath($cmdLine->getParamValue("path"));
                 echo "Setting library path: " . $newLibraryPath . PHP_EOL;
                 if (file_exists($newLibraryPath)) {
-                    $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
-                    if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
+                    $libraryManager = new \Spieldose\Library\Manager($dbh);
+                    if ($libraryManager->isPathContainedOnCurrentLibraryPaths($newLibraryPath)) {
                         echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                     } else {
-                        $pathId = $libraryPath->addPath($newLibraryPath);
+                        $pathId = $libraryManager->addLibraryPath($newLibraryPath);
                         echo "Scanning path..." . PHP_EOL;
                         echo "- Id: " . $pathId . PHP_EOL;
                         echo "- Path: " . $newLibraryPath . PHP_EOL;
                         echo "- Propagating DIRECTORY & FILE tables... ";
                         // fill DIRECTORY && FILE tables for this library path
-                        $libraryPath->scanPath($pathId, $newLibraryPath);
+                        $libraryManager->scanLibraryPath($pathId, $newLibraryPath);
                         echo "ok!" . PHP_EOL;
                     }
                 } else {
@@ -63,15 +63,15 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("processID3Queue")) {
                 echo "Processing id3 queue...";
-                $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
-                $queuedItems = $libraryPath->getAllLibraryDirectoryFilesQueuedForID3();
+                $libraryManager = new \Spieldose\Library\Manager($dbh);
+                $queuedItems = $libraryManager->getAllLibraryPathDirectoryFilesQueuedForID3();
                 $totalQueuedItems = count($queuedItems);
                 echo " " . $totalQueuedItems . " items found" . PHP_EOL;
                 $id3 = new \Spieldose\Library\ID3Wrapper();
                 for ($i = 0; $i < $totalQueuedItems; $i++) {
                     $tagsData = $id3->getTagsData($queuedItems[$i]->fullPath);
                     if ($tagsData != null) {
-                        $libraryPath->writeFileTags(
+                        $libraryManager->writeLibraryPathDirectoryFileTags(
                             $queuedItems[$i]->id,
                             $tagsData->trackTitle,
                             $tagsData->trackArtist,
@@ -90,7 +90,7 @@ if (count($missingExtensions) > 0) {
                             $tagsData->mime,
                         );
                     } else {
-                        $libraryPath->removeFileTags($queuedItems[$i]->id);
+                        $libraryManager->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
                 }
@@ -98,14 +98,14 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
-                $libraryDirectoryFiles = $libraryPath->getAllLibraryDirectoryFiles();
+                $libraryDirectoryFiles = $libraryManager->getAllLibraryPathDirectoryFiles();
                 $totalFiles = count($libraryDirectoryFiles);
                 echo " " . $totalFiles . " files found" . PHP_EOL;
                 $totalDeleted = 0;
                 for ($i = 0; $i < $totalFiles; $i++) {
                     if (! file_exists($libraryDirectoryFiles[$i]->fullPath)) {
 
-                        $libraryPath->removeFile($libraryDirectoryFiles[$i]->id);
+                        $libraryManager->removeLibraryPathDirectoryFile($libraryDirectoryFiles[$i]->id);
                         $totalDeleted++;
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $libraryDirectoryFiles[$i]->fullPath);
