@@ -37,7 +37,7 @@ if (count($missingExtensions) > 0) {
             // TODO
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("path:", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("path:", "processID3Queue", "clean"));
         if ($cmdLine->hasOptions()) {
             if ($cmdLine->hasParam("path")) {
                 $newLibraryPath = realpath($cmdLine->getParamValue("path"));
@@ -47,18 +47,14 @@ if (count($missingExtensions) > 0) {
                     if ($libraryPath->isPathContainedOnCurrentPaths($newLibraryPath)) {
                         echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                     } else {
-                        $pathId = null;
-                        try {
-                            $pathId = $libraryPath->addPath($newLibraryPath);
-                        } catch (\Spieldose\Exception\AlreadyExistsException $e) {
-                        }
+                        $pathId = $libraryPath->addPath($newLibraryPath);
                         echo "Scanning path..." . PHP_EOL;
                         echo "- Id: " . $pathId . PHP_EOL;
                         echo "- Path: " . $newLibraryPath . PHP_EOL;
-                        echo "- Processing...";
+                        echo "- Propagating DIRECTORY & FILE tables... ";
+                        // fill DIRECTORY && FILE tables for this library path
                         $libraryPath->scanPath($pathId, $newLibraryPath);
                         echo "ok!" . PHP_EOL;
-
                         $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
                         $scanner->scan();
                     }
@@ -67,10 +63,30 @@ if (count($missingExtensions) > 0) {
                     //$logger->warning("Invalid music path / path not found");
                 }
             }
+            if ($cmdLine->hasParam("processID3Queue")) {
+                echo "Processing id3 queue...";
+                $libraryPath = new \Spieldose\Library\LibraryPath($dbh);
+                $queuedItems = $libraryPath->getAllLibraryDirectoryFilesQueuedForID3();
+                $totalQueuedItems = count($queuedItems);
+                echo " " . $totalQueuedItems . " items found" . PHP_EOL;
+                for ($i = 0; $i < $totalQueuedItems; $i++) {
+                    \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
+                    usleep(50);
+                }
+                echo "ID3 queue processed" . PHP_EOL;
+            }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
-                //$scanner->cleanUp();
-                echo " ok!";
+                $libraryDirectoryFiles = $libraryPath->getAllLibraryDirectoryFiles();
+                $totalFiles = count($libraryDirectoryFiles);
+                echo " " . $totalFiles . " files found" . PHP_EOL;
+                for ($i = 0; $i < $totalFiles; $i++) {
+                    if (! file_exists($libraryDirectoryFiles[$i]->fullPath)) {
+                    }
+                    \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $libraryDirectoryFiles[$i]->fullPath);
+                    usleep(50);
+                }
+                echo "Datatabase clean finished";
             }
         } else {
             echo "No required params found." . PHP_EOL;
