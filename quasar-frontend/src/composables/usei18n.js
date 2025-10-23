@@ -1,6 +1,10 @@
 import { createI18n } from "vue-i18n";
 import messages from "src/i18n";
-import { Lang, LocalStorage } from "quasar";
+import { Lang } from "quasar";
+import { useLocalStorage } from "./useLocalStorage";
+
+
+const { locale } = useLocalStorage();
 
 const availableLocales = Object.keys(messages);
 
@@ -13,7 +17,7 @@ const localeMappings = {
 const browserLocale = Lang.getLocale();
 const normalizedBrowsedLocale = browserLocale.length >= 2 ? (localeMappings[browserLocale.substring(0, 2)] || browserLocale) : browserLocale;
 
-const savedLocale = LocalStorage.getItem("locale");
+const savedLocale = locale.get();
 
 let currentLocale = savedLocale || normalizedBrowsedLocale;
 
