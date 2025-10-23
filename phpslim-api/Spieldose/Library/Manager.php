@@ -7,10 +7,12 @@ namespace Spieldose\Library;
 class Manager
 {
     private \aportela\DatabaseWrapper\DB $dbh;
+    private \Psr\Log\LoggerInterface $logger;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
+        $this->logger = $logger;
     }
 
     public function __destruct() {}
@@ -76,6 +78,7 @@ class Manager
             $pathId = \Spieldose\Utils::uuidv4();
         }
         $stat = stat($path);
+        $this->logger->info("Setting library path", [$pathId, $path]);
         $this->dbh->execute(
             "
                     INSERT INTO LIBRARY_PATH
@@ -103,6 +106,7 @@ class Manager
     {
         $pathId = $this->getLibraryPathId($path);
         if (! empty($pathId)) {
+            $this->logger->info("Removing library path", [$pathId, $path]);
             // DIRECTORY && FILE related rows are deleted on cascade
             $this->dbh->execute(
                 "
@@ -237,6 +241,7 @@ class Manager
 
     public function removeLibraryPathDirectoryFile(string $id)
     {
+        $this->logger->notice("Removing library path directory file", [$id]);
         $this->dbh->execute(
             "
                 DELETE FROM FILE
@@ -266,6 +271,7 @@ class Manager
         ?string $genre,
         ?string $mime,
     ) {
+        $this->logger->notice("Setting library path directory file tags", [$libraryPathDirectoryFileId]);
         $params = [
             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $libraryPathDirectoryFileId)
         ];
@@ -384,6 +390,7 @@ class Manager
 
     public function removeLibraryPathDirectoryFileTags($libraryPathDirectoryFileId)
     {
+        $this->logger->notice("Removing library path directory file tags", [$libraryPathDirectoryFileId]);
         $this->dbh->execute(
             "
                 DELETE FROM FILE_ID3_TAG
@@ -399,15 +406,18 @@ class Manager
      */
     public function scanLibraryPath(string $pathId, string $path)
     {
+        $this->logger->notice("Scanning library path", [$pathId, $path]);
         $path = realpath($path);
         $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
         foreach ($directories as $directory) {
             $directory = realpath($directory);
             $directoryId = $this->getLibraryPathDirectoryId($directory);
+            $this->logger->debug("Propagating library path directory", [$directoryId, $directory]);
             $files = \Spieldose\Library\FileSystem::getDirectoryFiles($directory);
             $totalFiles = count($files);
             // only add directories with supported files
             if ($totalFiles > 0) {
+                $this->logger->debug("Found directory files", [$totalFiles]);
                 $coverFilename = \Spieldose\Library\FileSystem::getCoverFilename($directory);
                 $stat = stat($directory);
                 if (empty($directoryId)) {
@@ -439,6 +449,7 @@ class Manager
                     $stat = stat($file);
                     $filename = basename($file);
                     $fileId = $this->getLibraryPathDirectoryFileId($directoryId, $filename);
+                    $this->logger->debug("Propagating file", [$fileId, $filename]);
                     if (empty($fileId)) {
                         $fileId = \Spieldose\Utils::uuidv4();
                     }
@@ -463,6 +474,8 @@ class Manager
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
                         ]
                     );
+                    $currentTimestamp = intval(microtime(true) * 1000);
+                    $this->logger->debug("Adding to ID3 scan queue", [$fileId, $currentTimestamp]);
                     $this->dbh->execute(
                         "
                             INSERT INTO QUEUE_FILE_ID3_SCAN
@@ -475,11 +488,12 @@ class Manager
                         ",
                         [
                             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", $currentTimestamp),
                         ]
                     );
                 }
             } else if (! empty($directoryId)) {
+                $this->logger->debug("No found directory files", [$totalFiles]);
                 // existent directory with no files => remove
                 $this->dbh->execute(
                     "

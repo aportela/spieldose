@@ -43,7 +43,7 @@ if (count($missingExtensions) > 0) {
                 $newLibraryPath = realpath($cmdLine->getParamValue("path"));
                 echo "Setting library path: " . $newLibraryPath . PHP_EOL;
                 if (file_exists($newLibraryPath)) {
-                    $libraryManager = new \Spieldose\Library\Manager($dbh);
+                    $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
                     if ($libraryManager->isPathContainedOnCurrentLibraryPaths($newLibraryPath)) {
                         echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                     } else {
@@ -63,7 +63,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("processID3Queue")) {
                 echo "Processing id3 queue...";
-                $libraryManager = new \Spieldose\Library\Manager($dbh);
+                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
                 $queuedItems = $libraryManager->getAllLibraryPathDirectoryFilesQueuedForID3();
                 $totalQueuedItems = count($queuedItems);
                 echo " " . $totalQueuedItems . " items found" . PHP_EOL;
@@ -98,6 +98,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
+                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
                 $libraryDirectoryFiles = $libraryManager->getAllLibraryPathDirectoryFiles();
                 $totalFiles = count($libraryDirectoryFiles);
                 echo " " . $totalFiles . " files found" . PHP_EOL;
