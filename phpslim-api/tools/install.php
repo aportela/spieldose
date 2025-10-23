@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
         if ($db->installSchema()) {
             echo "Database install success" . PHP_EOL;
             $logger->info("Database install success");
-            $currentVersion = $db->upgradeSchema();
+            $currentVersion = $db->upgradeSchema(false);
             if ($currentVersion !== -1) {
                 echo "Database upgraded with success" . PHP_EOL;
                 $logger->info("Database upgraded with success");
