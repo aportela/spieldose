@@ -8,21 +8,100 @@ class Scanner
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    private \Spieldose\ID3Wrapper $id3;
+    private \Spieldose\Library\ID3Wrapper $id3;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->id3 = new \Spieldose\ID3Wrapper();
+        $this->id3 = new \Spieldose\Library\ID3Wrapper();
     }
 
     public function __destruct() {}
+
+    /**
+     * scan custom library path
+     */
+    private function scanPath(string $pathId, string $path)
+    {
+        $path = realpath($path);
+        $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
+        foreach ($directories as $directory) {
+            $directory = realpath($directory);
+            $coverFilename = \Spieldose\Library\FileSystem::getCoverFilename($directory);
+            $stat = stat($directory);
+            $directoryId = $this->getDirectoryId($directory);
+            if (empty($directoryId)) {
+                $directoryId = \Spieldose\Utils::uuidv4();
+                $this->dbh->execute(
+                    " INSERT INTO DIRECTORY (id, library_path_id, path, mtime, cover_filename) VALUES (:id, :library_path_id, :path, :mtime, :cover_filename) ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($directory)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                        !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+                    ]
+                );
+            } else {
+                $this->dbh->execute(
+                    " UPDATE DIRECTORY SET mtime = :mtime, cover_filename = :cover_filename WHERE id = :id",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                        !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+                    ]
+                );
+            }
+            $files = \Spieldose\Library\FileSystem::getDirectoryFiles($directory);
+            foreach ($files as $file) {
+                $file = realpath($file);
+                $stat = stat($file);
+                $filename = basename($file);
+                $fileId = $this->getFileId($directoryId, $filename);
+                echo $fileId;
+                if (empty($fileId)) {
+                    $fileId = \Spieldose\Utils::uuidv4();
+                    $this->dbh->execute(
+                        " INSERT INTO FILE (id, directory_id, name, size, mtime) VALUES (:id, :directory_id, :name, :size, :mtime)  ",
+                        array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                        )
+                    );
+                } else {
+                    $this->dbh->execute(
+                        " UPDATE FILE SET size= :size, mtime = :mtime WHERE id = :id ",
+                        array(
+                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                        )
+                    );
+                }
+            }
+        }
+    }
+
+    public function scanFile(string $fileId, string $path)
+    {
+        $id3 = new \Spieldose\Library\ID3Wrapper();
+        $id3->analyze($path);
+    }
+    public function scanLibrary()
+    {
+        $libraryPath = new \Spieldose\Library\LibraryPath($this->dbh);
+        $libraryPath->getLibraryPaths();
+    }
 
     private function scanPath(string $path)
     {
         $coverFilename = (new \Spieldose\Library\FileSystem())->getCoverFilename($path);
     }
+
     private function saveDirectory(string $path): string
     {
         $coverFilename = (new \Spieldose\Library\FileSystem())->getCoverFilename($path);
@@ -190,7 +269,7 @@ class Scanner
     // TODO: scan all saved paths if null
 
     // TODO: make private
-    public function scan(?string $filePath = null): void
+    public function scan_old(?string $filePath = null): void
     {
         $this->logger->debug("Processing file: " . $filePath);
         if (!empty($filePath)) {
