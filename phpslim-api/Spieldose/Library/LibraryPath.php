@@ -102,6 +102,19 @@ class LibraryPath
         }
     }
 
+    /**
+     * @return array<mixed>
+     */
+    public function getLibraryPaths(): array
+    {
+        return (
+            $this->dbh->query(
+                " SELECT id, path FROM LIBRARY_PATH ORDER BY path ",
+                []
+            )
+        );
+    }
+
     private function getFileId(string $directoryId, string $name): ?string
     {
         $results = $this->dbh->query(
@@ -117,6 +130,21 @@ class LibraryPath
             return (null);
         }
     }
+
+    /**
+     * scan all library paths
+     */
+    public function scan()
+    {
+        $paths = $this->getLibraryPaths();
+        foreach ($paths as $path) {
+            $this->scanPath($path->id, $path->path);
+        }
+    }
+
+    /**
+     * scan custom library path
+     */
     public function scanPath(string $pathId, string $path)
     {
         $path = realpath($path);
@@ -179,5 +207,38 @@ class LibraryPath
                 }
             }
         }
+    }
+
+    public function scanFile(string $fileId, string $path)
+    {
+        $id3 = new \Spieldose\Library\ID3Wrapper();
+        $id3->analyze($path);
+    }
+
+    public function getLibraryFiles(?string $pathId = null): array
+    {
+        return (
+            $this->dbh->query(
+                "
+                    SELECT
+                        FILE.id, DIRECTORY.path, FILE.name
+                    FROM FILE
+                    INNER JOIN DIRECTORY ON DIRECTORY.ID = FILE.directory_id
+                    ORDER BY DIRECTORY.path, FILE.name
+                ",
+                [],
+                function ($rows) {
+                    array_map(
+                        function ($item) {
+                            $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;
+                            unset($item->name);
+                            unset($item->path);
+                            return $item;
+                        },
+                        $rows
+                    );
+                }
+            )
+        );
     }
 }
