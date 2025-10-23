@@ -27,6 +27,20 @@ class FileSystem
         return ($files);
     }
 
+    public static function getDirectoryFiles($path)
+    {
+        $path = realpath($path);
+        $files = glob($path . '/*');
+        $files = array_filter($files, function ($file) {
+            if (is_file($file) && in_array(mb_strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::VALID_FORMATS)) {
+                return (true);
+            } else {
+                return (false);
+            }
+        });
+        return ($files);
+    }
+
     /**
      * get directory names (recursive)
      *
