@@ -16,24 +16,16 @@ class ID3Wrapper
 
     public function __destruct() {}
 
-    // convert $str to UTF-8 string (if required)
-    private function toUTF8($str): ?string
-    {
-        if ($str != null && strlen($str) > 0) {
-            $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-            if ($encoding === 'UTF-8') {
-                return ($str);
-            } else {
-                return mb_convert_encoding($str, 'UTF-8', $encoding);
-            }
-        } else {
-            return (null);
-        }
-    }
 
     public function analyze(string $filePath)
     {
         $this->tagData = $this->getID3Obj->analyze($filePath);
+    }
+
+    public function hasTags(): bool
+    {
+        // TODO: eval all required tags
+        return ($this->tagData != null);
     }
 
     private function getTagFieldValue($id3_obj, $tag_field)
@@ -80,103 +72,73 @@ class ID3Wrapper
         }
     }
 
-    public function getTrackTitle(): string
+    // convert $str to UTF-8 string (if required)
+    private function toUTF8($str): ?string
     {
-        return (mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "title"), 'UTF-8', 'UTF-8'));
-    }
-
-    public function getTrackArtistName(): string
-    {
-        return (mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "artist"), 'UTF-8', 'UTF-8'));
-    }
-
-    public function getAlbumArtistName(): string
-    {
-        return (mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "band"), 'UTF-8', 'UTF-8'));
-    }
-
-    public function getAlbum(): string
-    {
-        return (mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "album"), 'UTF-8', 'UTF-8'));
-    }
-
-    public function getGenre(): string
-    {
-        return (mb_convert_encoding((string)$this->getTagFieldValue($this->tagData, "genre"), 'UTF-8', 'UTF-8'));
-    }
-
-    public function getTrackNumber(): string
-    {
-        $number = (string) $this->getTagFieldValue($this->tagData, "track_number");
-        if (strpos($number, "/") > 0) {
-            $fields = explode("/", $number);
-            return (intval($fields[0]) > 0 ? $fields[0] : "");
+        if (! empty($str)) {
+            $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+            if ($encoding === 'UTF-8') {
+                return ($str);
+            } else {
+                return mb_convert_encoding($str, 'UTF-8', $encoding);
+            }
         } else {
-            return (intval($number) > 0 ? $number : "");
+            return (null);
         }
     }
 
-    public function getDiscNumber(): string
+    public function getTag(\Spieldose\Library\ID3TAGType $tagType): mixed
     {
-        $number = (string) $this->getTagFieldValue($this->tagData, "part_of_a_set");
-        return (intval($number) > 0 ? $number : "");
-    }
-
-    public function getYear(): ?int
-    {
-        $year = (string) $this->getTagFieldValue($this->tagData, "year");
-        $year = intval((strlen($year) > 4) ? substr($year, 0, 4) : $year);
-        return ($year > 0 ? $year : null);
-    }
-
-    public function getPlaytimeSeconds(): int
-    {
-        return (intval(ceil((float)$this->getTagFieldValue($this->tagData, "playtime_seconds"))));
-    }
-
-    public function getPlaytimeString(): string
-    {
-        return ((string)$this->getTagFieldValue($this->tagData, "playtime_string"));
-    }
-
-    public function getBitRate(): int
-    {
-        return (intval($this->getTagFieldValue($this->tagData, "bitrate")));
-    }
-
-    public function getMimeType(): string
-    {
-        return ((string)$this->getTagFieldValue($this->tagData, "mime_type"));
-    }
-
-    public function getMusicBrainzArtistId(): string
-    {
-        return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id"));
-    }
-
-    public function getMusicBrainzAlbumId(): string
-    {
-        return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id"));
-    }
-
-    public function getMusicBrainzAlbumArtistId(): string
-    {
-        return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id"));
-    }
-
-    public function getMusicBrainzReleaseGroupId(): string
-    {
-        return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Group Id"));
-    }
-
-    public function getMusicBrainzReleaseTrackId(): string
-    {
-        return ((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id"));
-    }
-
-    public function isTagged(): bool
-    {
-        // TODO: eval all required tags
-        return ($this->tagData != null);
+        switch ($tagType) {
+            case \Spieldose\Library\ID3TAGType::TITLE:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "title")));
+            case \Spieldose\Library\ID3TAGType::TRACK_ARTIST_NAME:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "artist")));
+            case \Spieldose\Library\ID3TAGType::ALBUM_ARTIST_NAME:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "band")));
+            case \Spieldose\Library\ID3TAGType::ALBUM:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "album")));
+            case \Spieldose\Library\ID3TAGType::GENRE:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "genre")));
+            case \Spieldose\Library\ID3TAGType::TRACK_NUMBER:
+                $trackNumber = $this->toUTF8((string) $this->getTagFieldValue($this->tagData, "track_number"));
+                if ($trackNumber != null && mb_strpos($trackNumber, "/") > 0) {
+                    $fields = explode("/", $trackNumber);
+                    $trackNumber = intval($fields[0]);
+                    return ($trackNumber > 0 ? $trackNumber : null);
+                } else {
+                    $trackNumber = intval($trackNumber);
+                    return ($trackNumber > 0 ? $trackNumber : null);
+                }
+            case \Spieldose\Library\ID3TAGType::DISC_NUMBER:
+                $discNumber = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "part_of_a_set")));
+                return ($discNumber > 0 ? $discNumber : null);
+            case \Spieldose\Library\ID3TAGType::YEAR:
+                $year = (string) $this->getTagFieldValue($this->tagData, "year");
+                $year = intval((mb_strlen($year) > 4) ? mb_substr($year, 0, 4) : $year);
+                return ($year > 0 ? $year : null);
+            case \Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS:
+                $playTimeSeconds = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "playtime_seconds")));
+                return ($playTimeSeconds > 0 ? $playTimeSeconds : null);
+            case \Spieldose\Library\ID3TAGType::PLAYTIME_STRING:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "playtime_string")));
+            case \Spieldose\Library\ID3TAGType::BITRATE:
+                $bitrate = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "bitrate")));
+                return ($bitrate > 0 ? $bitrate : null);
+            case \Spieldose\Library\ID3TAGType::MIME_TYPE:
+                return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "mime_type")));
+            case \Spieldose\Library\ID3TAGType::MB_ARTIST_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id")));
+            case \Spieldose\Library\ID3TAGType::MB_ALBUM_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id")));
+            case \Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id")));
+            case \Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Group Id")));
+            case \Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id")));
+            default:
+                return (null);
+        }
     }
 }

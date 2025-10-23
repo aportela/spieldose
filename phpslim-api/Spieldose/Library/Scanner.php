@@ -28,97 +28,97 @@ class Scanner
             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $libraryPathDirectoryFileId)
         ];
         $this->logger->debug("File: ", [$path]);
-        if ($this->id3->isTagged()) {
-            $trackTitle = $this->id3->getTrackTitle();
+        if ($this->id3->hasTags()) {
+            $trackTitle = $this->id3->getTag(\Spieldose\Library\ID3TAGType::TITLE);
             if (!empty($trackTitle)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", $trackTitle);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":title");
             }
-            $trackArtist = $this->id3->getTrackArtistName();
+            $trackArtist = $this->id3->getTag(\Spieldose\Library\ID3TAGType::TRACK_ARTIST_NAME);
             if (!empty($trackArtist)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $trackArtist);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":artist");
             }
-            $albumArtist = $this->id3->getAlbumArtistName();
+            $albumArtist = $this->id3->getTag(\Spieldose\Library\ID3TAGType::ALBUM_ARTIST_NAME);
             if (!empty($albumArtist)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_artist", $albumArtist);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist");
             }
-            $trackYear = $this->id3->getYear();
+            $trackYear = $this->id3->getTag(\Spieldose\Library\ID3TAGType::YEAR);
             if (!empty($trackYear)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", intval($trackYear));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
             }
-            $trackNumber = $this->id3->getTrackNumber();
+            $trackNumber = $this->id3->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
             if (!empty($trackNumber)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":track_number", intval($trackNumber));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":track_number");
             }
-            $discNumber = $this->id3->getDiscNumber();
+            $discNumber = $this->id3->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
             if (!empty($discNumber)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":disc_number", intval($discNumber));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":disc_number");
             }
-            $playtimeSeconds = $this->id3->getPlaytimeSeconds();
+            $playtimeSeconds = $this->id3->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
             if (!empty($playtimeSeconds)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":playtime_seconds", intval($playtimeSeconds));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playtime_seconds");
             }
-            $artistMBId = $this->id3->getMusicBrainzArtistId();
+            $artistMBId = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
             // multiple mbids (divided by "/") not supported
             if (!empty($artistMBId) && strlen($artistMBId) == 36) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $artistMBId);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_artist_id");
             }
-            $albumArtistMBId = $this->id3->getMusicBrainzAlbumArtistId();
+            $albumArtistMBId = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);;
             // multiple mbids (divided by "/") not supported
             if (!empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_artist_id", $albumArtistMBId);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_artist_id");
             }
-            $trackAlbum = $this->id3->getAlbum();
+            $trackAlbum = $this->id3->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
             if (!empty($trackAlbum)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
             }
-            $albumMBId = $this->id3->getMusicBrainzAlbumId();
+            $albumMBId = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ID);
             // multiple mbids (divided by "/") not supported
             if (!empty($albumMBId) && strlen($albumMBId) == 36) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_id", $albumMBId);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_id");
             }
-            $releaseGroupMBId = $this->id3->getMusicBrainzReleaseGroupId();
+            $releaseGroupMBId = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
             // multiple mbids (divided by "/") not supported
             if (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_group_id", $releaseGroupMBId);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_group_id");
             }
-            $releaseTrackMBId = $this->id3->getMusicBrainzReleaseTrackId();
+            $releaseTrackMBId = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID);
             // multiple mbids (divided by "/") not supported
             if (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_track_id", $releaseTrackMBId);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_track_id");
             }
-            $genre = $this->id3->getGenre();
+            $genre = $this->id3->getTag(\Spieldose\Library\ID3TAGType::GENRE);
             if (!empty($genre)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":genre");
             }
-            $mime = $this->id3->getMimeType();
+            $mime = $this->id3->getTag(\Spieldose\Library\ID3TAGType::MIME_TYPE);
             if (!empty($mime)) {
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mime", $mime);
             } else {
