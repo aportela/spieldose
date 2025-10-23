@@ -285,23 +285,38 @@ class LibraryPath
                     }
                     $this->dbh->execute(
                         "
-                                INSERT INTO FILE
-                                    (id, directory_id, name, size, mtime)
-                                VALUES
-                                    (:id, :directory_id, :name, :size, :mtime)
-                                ON CONFLICT (id) DO
-                                UPDATE SET
-                                    directory_id = :directory_id,
-                                    name = :name,
-                                    size = :size,
-                                    mtime = :mtime
-                            ",
+                            INSERT INTO FILE
+                                (id, directory_id, name, size, mtime)
+                            VALUES
+                                (:id, :directory_id, :name, :size, :mtime)
+                            ON CONFLICT (id) DO
+                            UPDATE SET
+                                directory_id = :directory_id,
+                                name = :name,
+                                size = :size,
+                                mtime = :mtime
+                        ",
                         [
                             new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                        ]
+                    );
+                    $this->dbh->execute(
+                        "
+                            INSERT INTO QUEUE_FILE_ID3_SCAN
+                                (file_id, ctime)
+                            VALUES
+                                (:file_id, :current_timestamp)
+                            ON CONFLICT (file_id) DO
+                            UPDATE SET
+                                ctime = :current_timestamp
+                        ",
+                        [
+                            new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                         ]
                     );
                 }
