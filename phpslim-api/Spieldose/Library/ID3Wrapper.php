@@ -7,7 +7,7 @@ namespace Spieldose\Library;
 class ID3Wrapper
 {
     private \getID3 $getID3Obj;
-    public $tagData;
+    private $tagData;
 
     public function __construct()
     {
@@ -17,12 +17,12 @@ class ID3Wrapper
     public function __destruct() {}
 
 
-    public function analyze(string $filePath)
+    private function analyze(string $filePath)
     {
         $this->tagData = $this->getID3Obj->analyze($filePath);
     }
 
-    public function hasTags(): bool
+    private function hasTags(): bool
     {
         // TODO: eval all required tags
         return ($this->tagData != null);
@@ -87,7 +87,7 @@ class ID3Wrapper
         }
     }
 
-    public function getTag(\Spieldose\Library\ID3TAGType $tagType): mixed
+    private function getTag(\Spieldose\Library\ID3TAGType $tagType): mixed
     {
         switch ($tagType) {
             case \Spieldose\Library\ID3TAGType::TITLE:
@@ -139,6 +139,47 @@ class ID3Wrapper
                 return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id")));
             default:
                 return (null);
+        }
+    }
+
+    public function getTagsData(string $path): mixed
+    {
+        $this->analyze($path);
+        if ($this->hasTags()) {
+            $data = new \stdClass();
+            $data->trackTitle = $this->getTag(\Spieldose\Library\ID3TAGType::TITLE);
+            $data->trackArtist = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_ARTIST_NAME);
+            $data->albumArtist = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM_ARTIST_NAME);
+            $data->trackYear = $this->getTag(\Spieldose\Library\ID3TAGType::YEAR);
+            $data->trackNumber = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
+            $data->discNumber = $this->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
+            $data->playtimeSeconds = $this->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
+            $artistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
+            // multiple mbids (divided by "/") not supported
+            if (!empty($artistMBId) && strlen($artistMBId) == 36) {
+                $data->artistMBId = $artistMBId;
+            } else {
+                $data->artistMBId = null;
+            }
+            $albumArtistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);;
+            // multiple mbids (divided by "/") not supported
+            $data->albumArtistMBId = (!empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) ? $albumArtistMBId : null;
+            $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
+            $albumMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ID);
+            // multiple mbids (divided by "/") not supported
+            $data->albumMBId = (!empty($albumMBId) && strlen($albumMBId) == 36) ? $albumMBId : null;
+            $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
+            // multiple mbids (divided by "/") not supported
+            $data->releaseGroupMBId = (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) ? $releaseGroupMBId : null;
+            $releaseTrackMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID);
+            $data->releaseTrackMBId = (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) ? $releaseTrackMBId : null;
+            // multiple mbids (divided by "/") not supported
+            $genre = $this->getTag(\Spieldose\Library\ID3TAGType::GENRE);
+            $data->genre = !empty($genre) ? mb_strtolower($genre) : null;
+            $data->mime = $this->getTag(\Spieldose\Library\ID3TAGType::MIME_TYPE);
+            return ($data);
+        } else {
+            return (null);
         }
     }
 }

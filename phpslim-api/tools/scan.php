@@ -67,9 +67,31 @@ if (count($missingExtensions) > 0) {
                 $queuedItems = $libraryPath->getAllLibraryDirectoryFilesQueuedForID3();
                 $totalQueuedItems = count($queuedItems);
                 echo " " . $totalQueuedItems . " items found" . PHP_EOL;
-                $scanner = new \Spieldose\Library\Scanner($dbh, $logger);
+                $id3 = new \Spieldose\Library\ID3Wrapper();
                 for ($i = 0; $i < $totalQueuedItems; $i++) {
-                    $scanner->scanFile($queuedItems[$i]->id, $queuedItems[$i]->fullPath);
+                    $tagsData = $id3->getTagsData($queuedItems[$i]->fullPath);
+                    if ($tagsData != null) {
+                        $libraryPath->writeFileTags(
+                            $queuedItems[$i]->id,
+                            $tagsData->trackTitle,
+                            $tagsData->trackArtist,
+                            $tagsData->albumArtist,
+                            $tagsData->trackYear,
+                            $tagsData->trackNumber,
+                            $tagsData->discNumber,
+                            $tagsData->playtimeSeconds,
+                            $tagsData->artistMBId,
+                            $tagsData->albumArtistMBId,
+                            $tagsData->trackAlbum,
+                            $tagsData->albumMBId,
+                            $tagsData->releaseGroupMBId,
+                            $tagsData->releaseTrackMBId,
+                            $tagsData->genre,
+                            $tagsData->mime,
+                        );
+                    } else {
+                        $libraryPath->removeFileTags($queuedItems[$i]->id);
+                    }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
                 }
                 echo "ID3 queue processed" . PHP_EOL;
@@ -82,6 +104,7 @@ if (count($missingExtensions) > 0) {
                 $totalDeleted = 0;
                 for ($i = 0; $i < $totalFiles; $i++) {
                     if (! file_exists($libraryDirectoryFiles[$i]->fullPath)) {
+
                         $libraryPath->removeFile($libraryDirectoryFiles[$i]->id);
                         $totalDeleted++;
                     }
@@ -101,36 +124,8 @@ if (count($missingExtensions) > 0) {
             echo "Clean database (deleted/orphaned items):" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
         }
-        //print_r($scanner->getPaths());
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
         $logger->critical("Uncaught exception: " . $e->getMessage());
     }
-
-
-    //$scanner->addPath($musicPath);
-    /*
-                $logger->info("Scanning base path: " . $musicPath);
-
-                $files = \Spieldose\FileSystem::getRecursiveDirectoryFiles($musicPath);
-                $totalFiles = count($files);
-                echo "Total supported files on path: " . $totalFiles . PHP_EOL;
-                $logger->debug("Total supported files on path: " . $totalFiles);
-                if ($totalFiles > 0) {
-                    echo sprintf("Reading %d files from path: %s%s", $totalFiles, $musicPath, PHP_EOL);
-                    $failed = array();
-                    for ($i = 0; $i < $totalFiles; $i++) {
-                        $scanner->scan(($files[$i]));
-                        \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $files[$i]);
-                    }
-                }
-                echo "Fixing missing artist mbIds with existent data before scrap...";
-                $total = $scanner->fixMissingArtistMBIdsWithExistent();
-                if ($total > 0) {
-                    // TODO: bug -> always return 1 ???
-                    echo "total files fixed: " . $total . PHP_EOL;
-                } else {
-                    echo "no files fixed" . PHP_EOL;
-                }
-                    */
 }
