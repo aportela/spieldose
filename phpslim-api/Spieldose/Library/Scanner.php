@@ -8,7 +8,6 @@ class Scanner
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    private \Spieldose\Library\LibraryPath $libraryPath;
     private \Spieldose\Library\ID3Wrapper $id3;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
@@ -171,41 +170,6 @@ class Scanner
         }
     }
 
-    private function scanDirectory(string $libraryPathDirectoryId)
-    {
-        $lbDirectoryFiles = $this->libraryPath->getLibraryPathDirectoryFiles($libraryPathDirectoryId);
-        $this->logger->debug("Directory files: ", $lbDirectoryFiles);
-        foreach ($lbDirectoryFiles as $lbDirectoryFile) {
-            $this->scanFile($lbDirectoryFile->id, $lbDirectoryFile->fullPath);
-        }
-    }
-
-    private function scanLibraryPath(string $libraryPathId)
-    {
-        $lbDirectories = $this->libraryPath->getLibraryPathDirectories($libraryPathId);
-        $this->logger->debug("Directories: ", $lbDirectories);
-        foreach ($lbDirectories as $lbDirectory) {
-            $this->scanDirectory($lbDirectory->id);
-        }
-    }
-
-    /**
-     * scan library
-     */
-    public function scan(?string $libraryPathId = null)
-    {
-        if (! empty($libraryPathId)) {
-            $this->logger->debug("Library path: ", [$libraryPathId]);
-            $this->scanLibraryPath($libraryPathId);
-        } else {
-            $lbPaths = $this->libraryPath->getPaths();
-            $this->logger->debug("Library paths: ", $lbPaths);
-            foreach ($lbPaths as $lbPath) {
-                $this->scanLibraryPath($lbPath->id);
-            }
-        }
-    }
-
     /**
      * this "hack" is done for skipping some unnecesary musicbrainzscraps, on cases like this example:
      *  1.- You have one or more files with artist name tag FILLED and artist mbId FILLED
@@ -230,31 +194,5 @@ class Scanner
                 "
             )
         );
-    }
-
-    public function cleanUp(): void
-    {
-        $libraryDirectoryFiles = $this->libraryPath->getAllLibraryDirectoryFiles();
-
-        $totalResults = count($libraryDirectoryFiles);
-        if ($totalResults > 0) {
-            $this->logger->debug(sprintf("Validating %d files", $totalResults));
-            foreach ($libraryDirectoryFiles as $file) {
-                // file not found
-                if (!file_exists($file->fullPath)) {
-                    $this->logger->debug(sprintf("File id: %s - Path not found: %s", $file->id, $file->fullPath));
-                    // FILE_ID3_TAG will be deleted ON CASCADE
-                    $this->dbh->execute(
-                        "
-                            DELETE FROM FILE
-                            WHERE id = :id
-                        ",
-                        [
-                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $file->id)
-                        ]
-                    );
-                }
-            }
-        }
     }
 }
