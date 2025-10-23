@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\Scanner;
+namespace Spieldose\Library;
 
 class Scanner
 {
@@ -19,44 +19,19 @@ class Scanner
 
     public function __destruct() {}
 
-    public function addPath(string $path): string
+    private function scanPath(string $path)
     {
-        $this->dbh->execute(
-            " INSERT INTO SCANNER_DIRECTORY (id, path, ctime, mtime) VALUES (:id, :path, :current_timestamp, :current_timestamp) ON CONFLICT (path) DO UPDATE SET mtime = :current_timestamp ",
-            array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", \Spieldose\Utils::uuidv4()),
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000))
-            )
-        );
-        $directoryId = $this->dbh->query(
-            "SELECT id FROM SCANNER_DIRECTORY WHERE path = :path",
-            array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path)
-            )
-        )[0]->id;
-        return ($directoryId);
+        $coverFilename = (new \Spieldose\Library\FileSystem())->getCoverFilename($path);
     }
-
-    /**
-     * @return array<string>
-     */
-    public function getPaths(): array
-    {
-        $paths = [];
-        $results = $this->dbh->query("SELECT path FROM SCANNER_DIRECTORY ORDER BY path");
-        return ();
-    }
-
     private function saveDirectory(string $path): string
     {
-        $coverFilename = (new \Spieldose\Scanner\FileSystemCovers())->getCoverFilename($path);
+        $coverFilename = (new \Spieldose\Library\FileSystem())->getCoverFilename($path);
         $stat = stat($path);
         $this->dbh->exec(
             " INSERT INTO DIRECTORY (id, path, mtime, cover_filename) VALUES (:id, :path, :mtime, :cover_filename) ON CONFLICT (path) DO UPDATE SET mtime = :mtime, cover_filename = :cover_filename ",
             array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", (\Ramsey\Uuid\Uuid::uuid7())->toString()),
-                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
                 !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
             )
