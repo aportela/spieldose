@@ -21,7 +21,12 @@ class LibraryPath
     private function getPathId(string $path): ?string
     {
         $results = $this->dbh->query(
-            " SELECT id FROM LIBRARY_PATH WHERE path = :path ",
+            "
+                SELECT
+                    id
+                FROM LIBRARY_PATH
+                WHERE path = :path
+            ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
             ]
@@ -39,7 +44,18 @@ class LibraryPath
     public function isPathContainedOnCurrentPaths(string $path): bool
     {
         $path = realpath($path);
-        $results = $this->dbh->query(" SELECT path FROM LIBRARY_PATH ORDER BY path ");
+        $results = $this->dbh->query(
+            "
+                SELECT
+                    path
+                FROM LIBRARY_PATH
+                WHERE path <> :path
+                ORDER BY path
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+            ]
+        );
         foreach ($results as $result) {
             // TODO: str_starts_with works with unicode ?
             if (str_starts_with($path, $result->path)) {
@@ -68,7 +84,7 @@ class LibraryPath
                         (:id, :path, :current_timestamp, :mtime)
                     ON CONFLICT (id) DO
                     UPDATE SET
-                        mtime = :time;
+                        mtime = :mtime;
                 ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId),
@@ -89,7 +105,10 @@ class LibraryPath
         if (! empty($pathId)) {
             // DIRECTORY && FILE related rows are deleted on cascade
             $this->dbh->execute(
-                " DELETE FROM LIBRARY_PATH WHERE id = :id ",
+                "
+                    DELETE FROM LIBRARY_PATH
+                    WHERE id = :id
+                ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId)
                 ]
@@ -106,7 +125,16 @@ class LibraryPath
      */
     public function getPaths(): array
     {
-        return ($this->dbh->query(" SELECT id, path FROM LIBRARY_PATH ORDER BY path "));
+        return (
+            $this->dbh->query(
+                "
+                SELECT
+                    id, path
+                FROM LIBRARY_PATH
+                ORDER BY path
+            "
+            )
+        );
     }
 
     /**
@@ -116,7 +144,13 @@ class LibraryPath
     {
         return (
             $this->dbh->query(
-                " SELECT id, path FROM DIRECTORY WHERE library_path_id = :library_path_id ORDER BY path ",
+                "
+                    SELECT
+                        id, path
+                    FROM DIRECTORY
+                    WHERE library_path_id = :library_path_id
+                    ORDER BY path
+                ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $libraryPathId)
                 ]
@@ -127,7 +161,12 @@ class LibraryPath
     private function getDirectoryId(string $path): ?string
     {
         $results = $this->dbh->query(
-            " SELECT id FROM DIRECTORY WHERE path = :path ",
+            "
+                SELECT
+                    id
+                FROM DIRECTORY
+                WHERE path = :path
+            ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
             ]
@@ -146,7 +185,14 @@ class LibraryPath
     {
         return (
             $this->dbh->query(
-                " SELECT FILE.id, DIRECTORY.path, FILE.name FROM DIRECTORY INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id WHERE DIRECTORY.id = :directory_id ORDER BY path ",
+                "
+                    SELECT
+                        FILE.id, DIRECTORY.path, FILE.name
+                    FROM DIRECTORY
+                    INNER JOIN FILE ON FILE.directory_id = DIRECTORY.id
+                    WHERE DIRECTORY.id = :directory_id
+                    ORDER BY path
+                ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $libraryPathDirectoryId)
                 ],
@@ -168,7 +214,15 @@ class LibraryPath
     private function getFileId(string $directoryId, string $name): ?string
     {
         $results = $this->dbh->query(
-            " SELECT id FROM FILE WHERE directory_id = :directory_id AND name = :name ",
+            "
+                SELECT
+                    id
+                FROM FILE
+                WHERE
+                    directory_id = :directory_id
+                AND
+                    name = :name
+            ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
@@ -178,17 +232,6 @@ class LibraryPath
             return ($results[0]->id);
         } else {
             return (null);
-        }
-    }
-
-    /**
-     * scan all library paths
-     */
-    public function scanLibrary()
-    {
-        $paths = $this->getPaths();
-        foreach ($paths as $path) {
-            $this->scanPath($path->id, $path->path);
         }
     }
 
@@ -210,64 +253,81 @@ class LibraryPath
                 $stat = stat($directory);
                 if (empty($directoryId)) {
                     $directoryId = \Spieldose\Utils::uuidv4();
-                    $this->dbh->execute(
-                        " INSERT INTO DIRECTORY (id, library_path_id, path, mtime, cover_filename) VALUES (:id, :library_path_id, :path, :mtime, :cover_filename) ",
-                        [
-                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
-                            new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
-                            new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($directory)),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
-                            !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
-                        ]
-                    );
-                } else {
-                    $this->dbh->execute(
-                        " UPDATE DIRECTORY SET mtime = :mtime, cover_filename = :cover_filename WHERE id = :id",
-                        [
-                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
-                            !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
-                        ]
-                    );
                 }
+                $this->dbh->execute(
+                    "
+                        INSERT INTO DIRECTORY
+                            (id, library_path_id, path, mtime, cover_filename)
+                        VALUES
+                            (:id, :library_path_id, :path, :mtime, :cover_filename)
+                        ON CONFLICT (id) DO
+                        UPDATE SET
+                            library_path_id = :library_path_id,
+                            path = :path,
+                            mtime = :mtime,
+                            cover_filename = :cover_filename
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($directory)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                        !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+                    ]
+                );
                 foreach ($files as $file) {
                     $file = realpath($file);
                     $stat = stat($file);
                     $filename = basename($file);
                     $fileId = $this->getFileId($directoryId, $filename);
-                    echo $fileId;
                     if (empty($fileId)) {
                         $fileId = \Spieldose\Utils::uuidv4();
-                        $this->dbh->execute(
-                            " INSERT INTO FILE (id, directory_id, name, size, mtime) VALUES (:id, :directory_id, :name, :size, :mtime)  ",
-                            array(
-                                new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
-                                new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
-                                new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
-                                new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
-                                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
-                            )
-                        );
-                    } else {
-                        $this->dbh->execute(
-                            " UPDATE FILE SET size= :size, mtime = :mtime WHERE id = :id ",
-                            array(
-                                new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
-                                new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
-                                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
-                            )
-                        );
                     }
+                    $this->dbh->execute(
+                        "
+                                INSERT INTO FILE
+                                    (id, directory_id, name, size, mtime)
+                                VALUES
+                                    (:id, :directory_id, :name, :size, :mtime)
+                                ON CONFLICT (id) DO
+                                UPDATE SET
+                                    directory_id = :directory_id,
+                                    name = :name,
+                                    size = :size,
+                                    mtime = :mtime
+                            ",
+                        [
+                            new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                        ]
+                    );
                 }
             } else if (! empty($directoryId)) {
                 // existent directory with no files => remove
                 $this->dbh->execute(
-                    " DELETE FROM DIRECTORY WHERE id = :id ",
+                    "
+                        DELETE FROM DIRECTORY
+                        WHERE id = :id
+                    ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId)
                     ]
                 );
             }
+        }
+    }
+
+    /**
+     * scan all library paths
+     */
+    public function scanLibrary()
+    {
+        $paths = $this->getPaths();
+        foreach ($paths as $path) {
+            $this->scanPath($path->id, $path->path);
         }
     }
 
