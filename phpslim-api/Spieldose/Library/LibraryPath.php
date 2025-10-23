@@ -86,4 +86,42 @@ class LibraryPath
             return (false);
         }
     }
+
+    public function scanPath(string $pathId, string $path)
+    {
+        $path = realpath($path);
+        $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
+        foreach ($directories as $directory) {
+            $directory = realpath($directory);
+            $coverFilename = \Spieldose\Library\FileSystem::getCoverFilename($directory);
+            $stat = stat($directory);
+            $directoryId = \Spieldose\Utils::uuidv4();
+            $this->dbh->execute(
+                " INSERT INTO DIRECTORY (id, library_path_id, path, mtime, cover_filename) VALUES (:id, :library_path_id, :path, :mtime, :cover_filename) ON CONFLICT (library_path_id, path) DO UPDATE SET mtime = :mtime, cover_filename = :cover_filename ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
+                    !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+                ]
+            );
+            $files = \Spieldose\Library\FileSystem::getRecursiveDirectoryFiles($directory);
+            foreach ($files as $file) {
+                $file = realpath($file);
+                $stat = stat($file);
+                $fileId = \Spieldose\Utils::uuidv4();
+                $this->dbh->execute(
+                    " INSERT INTO FILE (id, directory_id, name, size, mtime) VALUES (:id, :directory_id, :name, :size, :mtime) ON CONFLICT (directory_id, name) DO UPDATE SET mtime = :mtime ",
+                    array(
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", $fileId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":name", basename($file)),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":size", filesize($file)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                    )
+                );
+            }
+        }
+    }
 }
