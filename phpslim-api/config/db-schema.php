@@ -26,6 +26,7 @@ return (array(
                 id CHAR(36) NOT NULL,
                 library_path_id CHAR(36) NOT NULL,
                 path VARCHAR(4096) NOT NULL UNIQUE,
+                ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 cover_filename VARCHAR(4096),
                 PRIMARY KEY (id),

@@ -426,7 +426,7 @@ class Manager
                 $this->dbh->execute(
                     "
                         INSERT INTO DIRECTORY
-                            (id, library_path_id, path, mtime, cover_filename)
+                            (id, library_path_id, path, ctime, mtime, cover_filename)
                         VALUES
                             (:id, :library_path_id, :path, :mtime, :cover_filename)
                         ON CONFLICT (id) DO
@@ -440,6 +440,7 @@ class Manager
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($directory)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", intval(microtime(true) * 1000)),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
                         !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
                     ]
