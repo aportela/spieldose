@@ -16,7 +16,7 @@ class FileSystem
      */
     public static function getRecursiveDirectoryFiles(string $path)
     {
-        $files = array();
+        $files = [];
         $rdi = new \RecursiveDirectoryIterator($path);
         foreach (new \RecursiveIteratorIterator($rdi) as $filename => $cur) {
             $extension = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -29,16 +29,19 @@ class FileSystem
 
     public static function getDirectoryFiles($path)
     {
-        $path = realpath($path);
-        $files = glob($path . '/*');
-        $files = array_filter($files, function ($file) {
-            if (is_file($file) && in_array(mb_strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::VALID_FORMATS)) {
-                return (true);
-            } else {
-                return (false);
-            }
-        });
-        return ($files);
+        return (
+            // remove empty elements
+            array_values(
+                // return only elements with supported formats
+                array_filter(glob(realpath($path) . '/*'), function ($file) {
+                    if (is_file($file) && in_array(mb_strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::VALID_FORMATS)) {
+                        return (true);
+                    } else {
+                        return (false);
+                    }
+                })
+            )
+        );
     }
 
     /**
@@ -49,7 +52,7 @@ class FileSystem
      */
     public static function getRecursiveDirectories(string $path): array
     {
-        $directories = array($path);
+        $directories = [$path];
         $rdi = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $path,
