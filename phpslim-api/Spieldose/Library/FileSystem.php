@@ -7,7 +7,7 @@ namespace Spieldose\Library;
 class FileSystem
 {
     public const VALID_FORMATS = array("mp3", "ogg");
-    private const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
+    public const VALID_COVER_FILENAMES_DEFAULT_PATTERN = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
     /**
      * get directory files (recursive)
