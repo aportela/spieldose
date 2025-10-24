@@ -124,6 +124,7 @@ if (count($missingExtensions) > 0) {
                             }
                         }
                     }
+                    /*
                     if (! empty($settings['lastFMAPIKey'])) {
                         $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
                         try {
@@ -132,6 +133,22 @@ if (count($missingExtensions) > 0) {
                         } catch (\Throwable $e) {
                         }
                     }
+                    */
+                    $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
+                    $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
+                    $artistWikiPages = ["https://en.wikipedia.org/wiki/Iron_Maiden"];
+                    print_r($artistWikiPages);
+                    if (count($artistWikiPages) > 0) {
+                        $wikipediaArtist->setURL($artistWikiPages[0]);
+                        try {
+                            $html = $wikipediaArtist->getHTML();
+                            if (! empty($html)) {
+                                $libraryManager->saveMBCacheArtist($mbArtist);
+                            }
+                        } catch (\Throwable $e) {
+                        }
+                    }
+                    die("FIN");
                 }
             }
             if ($cmdLine->hasParam("clean")) {
