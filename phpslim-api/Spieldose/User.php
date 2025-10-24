@@ -47,15 +47,15 @@ class User
     public function add(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $params = $this->validateAndPrepareParams();
-        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":created_on_timestamp", intval(microtime(true) * 1000));
-        $dbh->execute(" INSERT INTO USER (id, email, password_hash, created_on_timestamp, last_update_timestamp) VALUES(:id, :email, :password_hash, :created_on_timestamp, NULL) ", $params);
+        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
+        $dbh->execute(" INSERT INTO USER (id, email, password_hash, ctime, mtime) VALUES(:id, :email, :password_hash, :current_timestamp, NULL) ", $params);
     }
 
     public function update(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $params = $this->validateAndPrepareParams();
-        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":last_update_timestamp", intval(microtime(true) * 1000));
-        $dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash, last_update_timestamp = :last_update_timestamp WHERE id = :id ", $params);
+        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
+        $dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash, mtime = :current_timestamp WHERE id = :id ", $params);
         if (ini_get("session.use_cookies") && PHP_SAPI != 'cli') {
             \Spieldose\UserSession::set(\Spieldose\UserSession::getUserId(), $this->email);
         }

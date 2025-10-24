@@ -7,8 +7,8 @@ return (array(
                 id CHAR(36) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password_hash CHAR(60) NOT NULL,
-                created_on_timestamp INTEGER NOT NULL,
-                last_update_timestamp INTEGER,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
                 PRIMARY KEY (id)
             );
 
