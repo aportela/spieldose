@@ -245,16 +245,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "9248b715a46a2b2f4a5e040e3843e24361cf72dc"
+                "reference": "5cb25bd498ae16114e1b233672e805e590672d1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/9248b715a46a2b2f4a5e040e3843e24361cf72dc",
-                "reference": "9248b715a46a2b2f4a5e040e3843e24361cf72dc",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/5cb25bd498ae16114e1b233672e805e590672d1e",
+                "reference": "5cb25bd498ae16114e1b233672e805e590672d1e",
                 "shasum": ""
             },
             "require": {
@@ -287,9 +287,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.1.1"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.1.2"
             },
-            "time": "2025-10-24T19:35:42+00:00"
+            "time": "2025-10-24T22:27:12+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
