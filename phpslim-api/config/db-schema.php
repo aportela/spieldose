@@ -76,8 +76,34 @@ return (array(
                 data TEXT NOT NULL,
                 source VARCHAR(32) NOT NULL,
                 ctime INTEGER NOT NULL,
-                mtime INTEGER NOT NULL,
+                mtime INTEGER,
                 PRIMARY KEY (title, artist)
+            );
+
+            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ (
+                mbid CHAR(36) NOT NULL,
+                name VARCHAR(128) NOT NULL,
+                image VARCHAR(8192),
+                country CHAR(2),
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (mbid)
+            );
+
+            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ_GENRE (
+                artist_mbid CHAR(36) NOT NULL,
+                genre VARCHAR(64) NOT NULL,
+                PRIMARY KEY (artist_mbid, genre),
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (mbid) ON DELETE CASCADE
+            );
+
+            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP (
+                artist_mbid CHAR(36) NOT NULL,
+                relation_type_id VARCHAR(36) NOT NULL,
+                name VARCHAR(128) NOT NULL,
+                url VARCHAR(2048) NOT NULL,
+                PRIMARY KEY (artist_mbid, relation_type_id, url),
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (mbid) ON DELETE CASCADE
             );
         ',
     ),
@@ -310,33 +336,13 @@ return (array(
     ),
     19 => array(
         '
-            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `name` VARCHAR(128) NOT NULL,
-                `image` VARCHAR(8192),
-                `country` VARCHAR(2),
-                `ctime` INTEGER NOT NULL,
-                `mtime` INTEGER NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
+
         ',
         '
-            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ_GENRE` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `genre` VARCHAR(64) NOT NULL,
-                FOREIGN KEY(`artist_mbid`) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`),
-                PRIMARY KEY (`artist_mbid`, `genre`)
-            );
+
         ',
         '
-            CREATE TABLE `CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `relation_type_id` VARCHAR(36) NOT NULL,
-                `name` VARCHAR(128) NOT NULL,
-                `url` VARCHAR(2048) NOT NULL,
-                FOREIGN KEY(`artist_mbid`) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`),
-                PRIMARY KEY (`artist_mbid`, `relation_type_id`, `url`)
-            );
+
         ',
         '
             CREATE TABLE `CACHE_ARTIST_LASTFM` (
