@@ -617,20 +617,18 @@ class Manager
         $this->dbh->execute(
             "
                 INSERT INTO CACHE_ARTIST_MUSICBRAINZ
-                    (mbid, name, image, country, ctime, mtime)
+                    (mbid, name, country, ctime, mtime)
                 VALUES
-                    (:mbid, :name, :image, :country, :current_timestamp, NULL)
+                    (:mbid, :name, :country, :current_timestamp, NULL)
                 ON CONFLICT (mbid) DO
                     UPDATE SET
                         name = :name,
-                        image = :image,
                         country = :country,
                         mtime = :current_timestamp
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbCache->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $mbCache->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":image", ""),
                 new \aportela\DatabaseWrapper\Param\StringParam(":country", $mbCache->country),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]

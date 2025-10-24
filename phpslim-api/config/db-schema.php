@@ -83,7 +83,6 @@ return (array(
             CREATE TABLE CACHE_ARTIST_MUSICBRAINZ (
                 mbid CHAR(36) NOT NULL,
                 name VARCHAR(128) NOT NULL,
-                image VARCHAR(8192),
                 country CHAR(2),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
