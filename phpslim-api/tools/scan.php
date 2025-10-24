@@ -4,6 +4,8 @@ use DI\ContainerBuilder;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
+const SECONDS_BETWEEN_API_SCRAPS = 1;
+
 $containerBuilder = new ContainerBuilder();
 
 // Set up settings
@@ -37,7 +39,7 @@ if (count($missingExtensions) > 0) {
             // TODO
             //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("path:", "processID3Queue", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("path:", "processID3Queue", "clean", "scrapMB"));
         if ($cmdLine->hasOptions()) {
             if ($cmdLine->hasParam("path")) {
                 $newLibraryPath = realpath($cmdLine->getParamValue("path"));
@@ -94,7 +96,26 @@ if (count($missingExtensions) > 0) {
                     }
                     \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
                 }
+                $libraryManager->fixMissingArtistMBIdsWithExistent();
                 echo "ID3 queue processed" . PHP_EOL;
+            }
+            if ($cmdLine->hasParam("scrapMB")) {
+                echo "Scrapping Musicbrainz..." . PHP_EOL;
+                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
+                $sc = new \Spieldose\Scraper\Artist\Scraper();
+                $artistNames = $sc->getArtistNamesWithoutMusicBrainzId($dbh, true);
+                $totalArtistsNames = count($artistNames);
+                for ($i = 0; $i < $totalArtistsNames; $i++) {
+                    \Spieldose\Utils::showProgressBar($i + 1, $totalArtistsNames, 20, $artistNames[$i]);
+                    if ($i != 0) {
+                        sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
+                    }
+                    $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                    $mbDataResults = $mbArtist->search($artistNames[$i], 1);
+                    if (count($mbDataResults) == 1) {
+                        // save results
+                    }
+                }
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
