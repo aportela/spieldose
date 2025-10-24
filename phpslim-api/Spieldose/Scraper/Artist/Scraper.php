@@ -9,17 +9,21 @@ class Scraper
     public static function getArtistNamesWithoutMusicBrainzId(\aportela\DatabaseWrapper\DB $dbh, bool $randomize = false): array
     {
         $names = [];
-        $query = sprintf(
-            "
-                SELECT DISTINCT FIT.artist AS name
-                FROM FILE_ID3_TAG FIT
-                WHERE FIT.mb_artist_id IS NULL
-                AND FIT.artist IS NOT NULL
-                %s
-            ",
-            $randomize ? " ORDER BY RANDOM() " : null
+        $results = $dbh->query(
+            sprintf(
+                "
+                    SELECT
+                        DISTINCT FIT.artist AS name
+                    FROM FILE_ID3_TAG FIT
+                    WHERE
+                        FIT.mb_artist_id IS NULL
+                    AND
+                        FIT.artist IS NOT NULL
+                    %s
+                ",
+                $randomize ? " ORDER BY RANDOM() " : null
+            )
         );
-        $results = $dbh->query($query);
         foreach ($results as $result) {
             $names[] = $result->name;
         }
