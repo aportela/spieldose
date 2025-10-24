@@ -481,7 +481,7 @@ class Manager
                     $this->dbh->execute(
                         "
                             INSERT INTO QUEUE_FILE_ID3_SCAN
-                                (file_id, created_on_timestamp)
+                                (file_id, ctime)
                             VALUES
                                 (:file_id, :current_timestamp)
                             ON CONFLICT (file_id) DO
@@ -567,7 +567,7 @@ class Manager
                     FROM QUEUE_FILE_ID3_SCAN
                     INNER JOIN FILE ON QUEUE_FILE_ID3_SCAN.file_id = FILE.id
                     INNER JOIN DIRECTORY ON DIRECTORY.ID = FILE.directory_id
-                    ORDER BY QUEUE_FILE_ID3_SCAN.created_on_timestamp
+                    ORDER BY QUEUE_FILE_ID3_SCAN.ctime
                 ",
                 [],
                 function ($rows) {
