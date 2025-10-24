@@ -13,7 +13,7 @@ class Lyrics extends \aportela\ScraperLyrics\Lyrics
                 INSERT INTO LYRICS
                     (title, artist, data, source, ctime, mtime)
                 VALUES
-                    (:title, :artist, :data, :source, :current_timestamp, :current_timestamp)
+                    (:title, :artist, :data, :source, :current_timestamp, NULL)
                 ON CONFLICT (title, artist)
                 DO UPDATE SET
                     data = :data,
