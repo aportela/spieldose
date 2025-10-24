@@ -6,13 +6,11 @@ return (array(
             CREATE TABLE USER (
                 id CHAR(36) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
-                password_hash CHAR(60) NOT NULL,
+                password_hash VARCHAR(60) NOT NULL,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (id)
             );
-
-            CREATE INDEX idx_user_email ON USER (email);
 
             CREATE TABLE LIBRARY_PATH (
                 id CHAR(36) NOT NULL,
