@@ -113,7 +113,13 @@ if (count($missingExtensions) > 0) {
                     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $mbDataResults = $mbArtist->search($artistNames[$i], 1);
                     if (count($mbDataResults) == 1) {
-                        // save results
+                        // eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61 => This Special Purpose Artist should only be used if no artist of discographic relevance has been attributed to a piece of work.
+                        if ($mbDataResults[0]->mbId != "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61") {
+                            // save results
+                            sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
+                            $mbArtist->get($mbDataResults[0]->mbId);
+                            $libraryManager->saveMBCacheArtist($mbArtist);
+                        }
                     }
                 }
             }

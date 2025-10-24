@@ -610,4 +610,80 @@ class Manager
             )
         );
     }
+
+    public function saveMBCacheArtist(\aportela\MusicBrainzWrapper\Artist $mbCache)
+    {
+        $this->logger->debug("Saving MusicBrainz artist cache", [$mbCache->mbId, $mbCache->name]);
+        $this->dbh->execute(
+            "
+                INSERT INTO CACHE_ARTIST_MUSICBRAINZ
+                    (mbid, name, image, country, ctime, mtime)
+                VALUES
+                    (:mbid, :name, :image, :country, :current_timestamp, NULL)
+                ON CONFLICT (mbid) DO
+                    UPDATE SET
+                        name = :name,
+                        image = :image,
+                        country = :country,
+                        mtime = :current_timestamp
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbCache->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $mbCache->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":image", ""),
+                new \aportela\DatabaseWrapper\Param\StringParam(":country", $mbCache->country),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+            ]
+        );
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_GENRE
+                WHERE
+                    artist_mbid = :artist_mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbCache->mbId)
+            ]
+        );
+        foreach ($mbCache->genres as $genre) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_ARTIST_MUSICBRAINZ_GENRE
+                        (artist_mbid, genre)
+                    VALUES
+                        (:artist_mbid, :genre)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbCache->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre)
+                ]
+            );
+        }
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP
+                WHERE
+                    artist_mbid = :artist_mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbCache->mbId)
+            ]
+        );
+        foreach ($mbCache->relations as $relation) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP
+                        (artist_mbid, relation_type_id, name, url)
+                    VALUES
+                        (:artist_mbid, :relation_type_id, :name, :url)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $mbCache->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
+                ]
+            );
+        }
+    }
 }
