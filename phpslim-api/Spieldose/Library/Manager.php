@@ -456,7 +456,7 @@ class Manager
                     $this->dbh->execute(
                         "
                             INSERT INTO FILE
-                                (id, directory_id, name, size, mtime)
+                                (id, directory_id, name, size, ctime, mtime)
                             VALUES
                                 (:id, :directory_id, :name, :size, :mtime)
                             ON CONFLICT (id) DO
@@ -471,6 +471,7 @@ class Manager
                             new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", intval(microtime(true) * 1000)),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
                         ]
                     );

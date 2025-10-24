@@ -37,6 +37,7 @@ return (array(
                 directory_id CHAR(36) NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 size INTEGER NOT NULL,
+                ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (id),
                 FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id) ON DELETE CASCADE
