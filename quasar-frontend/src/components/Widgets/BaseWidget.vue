@@ -12,7 +12,7 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ t(title) }}</q-item-label>
-        <q-item-label caption>{{ t(caption) }}</q-item-label>
+        <q-item-label caption v-if="caption">{{ t(caption) }}</q-item-label>
       </q-item-section>
     </q-item>
     <q-separator />
