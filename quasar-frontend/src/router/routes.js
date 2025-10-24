@@ -24,7 +24,7 @@ const routes = [
       {
         name: "dashboard",
         path: "dashboard",
-        component: () => import("pages/DashboardPage.vue"),
+        component: () => import("pages/HomePage.vue"),
       },
       {
         name: "currentPlaylist",
