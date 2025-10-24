@@ -34,15 +34,10 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        //$scanner = new \Spieldose\Scanner\Scanner($dbh, $logger);
-        if (!empty($settings["albumCoverPathValidFilenames"])) {
-            // TODO
-            //$scanner->setValidCoverFilenames($settings["albumCoverPathValidFilenames"]);
-        }
-        $cmdLine = new \Spieldose\CmdLine("", array("path:", "processID3Queue", "clean", "scrapMB"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "clean", "scrapMB"));
         if ($cmdLine->hasOptions()) {
-            if ($cmdLine->hasParam("path")) {
-                $newLibraryPath = realpath($cmdLine->getParamValue("path"));
+            if ($cmdLine->hasParam("addLibraryPath")) {
+                $newLibraryPath = realpath($cmdLine->getParamValue("addLibraryPath"));
                 echo "Setting library path: " . $newLibraryPath . PHP_EOL;
                 if (file_exists($newLibraryPath)) {
                     $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
@@ -50,54 +45,37 @@ if (count($missingExtensions) > 0) {
                         echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                     } else {
                         $pathId = $libraryManager->addLibraryPath($newLibraryPath);
-                        echo "Scanning path..." . PHP_EOL;
-                        echo "- Id: " . $pathId . PHP_EOL;
-                        echo "- Path: " . $newLibraryPath . PHP_EOL;
-                        echo "- Propagating DIRECTORY & FILE tables... ";
-                        // fill DIRECTORY && FILE tables for this library path
-                        $libraryManager->scanLibraryPath($pathId, $newLibraryPath);
-                        echo "ok!" . PHP_EOL;
+                        echo "Starting library scanner:" . PHP_EOL;
+                        $libraryScanner = new \Spieldose\Library\Scanner\LibraryScanner($dbh, $logger);
+                        if (!empty($settings["albumCoverPathValidFilenames"])) {
+                            $libraryScanner->setValidCoverFilenamesPattern($settings["albumCoverPathValidFilenames"]);
+                        }
+                        $libraryScanner->scanLibraryPath(
+                            $pathId,
+                            $newLibraryPath,
+                            true,
+                            function ($directories, $total, $index) {
+                                echo "- Scanning directory " . $directories[$index] . PHP_EOL;
+                            },
+                            function ($currentDirectoryFiles, $total, $index) {
+                                \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $currentDirectoryFiles[$index]);
+                            }
+                        );
                     }
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
-                    //$logger->warning("Invalid music path / path not found");
+                    $logger->error("Invalid music path / path not found", [$newLibraryPath]);
                 }
             }
             if ($cmdLine->hasParam("processID3Queue")) {
-                echo "Processing id3 queue...";
-                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
-                $queuedItems = $libraryManager->getAllLibraryPathDirectoryFilesQueuedForID3();
-                $totalQueuedItems = count($queuedItems);
-                echo " " . $totalQueuedItems . " items found" . PHP_EOL;
-                $id3 = new \Spieldose\Library\ID3Wrapper();
-                for ($i = 0; $i < $totalQueuedItems; $i++) {
-                    $tagsData = $id3->getTagsData($queuedItems[$i]->fullPath);
-                    if ($tagsData != null) {
-                        $libraryManager->writeLibraryPathDirectoryFileTags(
-                            $queuedItems[$i]->id,
-                            $tagsData->trackTitle,
-                            $tagsData->trackArtist,
-                            $tagsData->albumArtist,
-                            $tagsData->trackYear,
-                            $tagsData->trackNumber,
-                            $tagsData->discNumber,
-                            $tagsData->playtimeSeconds,
-                            $tagsData->artistMBId,
-                            $tagsData->albumArtistMBId,
-                            $tagsData->trackAlbum,
-                            $tagsData->albumMBId,
-                            $tagsData->releaseGroupMBId,
-                            $tagsData->releaseTrackMBId,
-                            $tagsData->genre,
-                            $tagsData->mime,
-                        );
-                    } else {
-                        $libraryManager->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
-                    }
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalQueuedItems, 20, $queuedItems[$i]->fullPath);
-                }
-                $libraryManager->fixMissingArtistMBIdsWithExistent();
-                echo "ID3 queue processed" . PHP_EOL;
+                echo "Processing id3 queue:" . PHP_EOL;
+                $id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger);
+                $id3Scanner->processPendingQueue(
+                    function ($queuedItems, $total, $index) {
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $queuedItems[$index]->fullPath);
+                    },
+                );
+                $id3Scanner->fixMissingArtistMBIdsWithExistent();
             }
             if ($cmdLine->hasParam("scrapMB")) {
                 echo "Scrapping Musicbrainz..." . PHP_EOL;
@@ -113,8 +91,7 @@ if (count($missingExtensions) > 0) {
                     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $mbDataResults = $mbArtist->search($artistNames[$i], 1);
                     if (count($mbDataResults) == 1) {
-                        // eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61 => This Special Purpose Artist should only be used if no artist of discographic relevance has been attributed to a piece of work.
-                        if ($mbDataResults[0]->mbId != "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61") {
+                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
                             // save results
                             sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
                             try {
@@ -136,9 +113,8 @@ if (count($missingExtensions) > 0) {
                     */
                     $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
                     $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
-                    $artistWikiPages = ["https://en.wikipedia.org/wiki/Iron_Maiden"];
-                    print_r($artistWikiPages);
                     if (count($artistWikiPages) > 0) {
+                        print_r($artistWikiPages);
                         $wikipediaArtist->setURL($artistWikiPages[0]);
                         try {
                             $html = $wikipediaArtist->getHTML();
@@ -148,7 +124,6 @@ if (count($missingExtensions) > 0) {
                         } catch (\Throwable $e) {
                         }
                     }
-                    die("FIN");
                 }
             }
             if ($cmdLine->hasParam("clean")) {
