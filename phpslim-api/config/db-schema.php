@@ -70,16 +70,6 @@ return (array(
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             );
 
-            CREATE TABLE LYRICS (
-                title VARCHAR(512) NOT NULL,
-                artist VARCHAR(128) NOT NULL,
-                data TEXT NOT NULL,
-                source VARCHAR(32) NOT NULL,
-                ctime INTEGER NOT NULL,
-                mtime INTEGER,
-                PRIMARY KEY (title, artist)
-            );
-
             CREATE TABLE CACHE_ARTIST_MUSICBRAINZ (
                 mbid CHAR(36) NOT NULL,
                 name VARCHAR(128) NOT NULL,
@@ -131,99 +121,33 @@ return (array(
                 PRIMARY KEY (artist_hash, name),
                 FOREIGN KEY(artist_hash) REFERENCES CACHE_ARTIST_LASTFM (md5_hash) ON DELETE CASCADE
             );
+
+            CREATE TABLE CACHE_ARTIST_WIKIPEDIA (
+                artist_mbid CHAR(36) NOT NULL,
+                artist_name VARCHAR(128) NOT NULL,
+                language CHAR(2) NOT NULL,
+                html TEXT NOT NULL,
+                PRIMARY KEY (artist_mbid, artist_name, language),
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`) ON DELETE CASCADE
+            );
+
+            CREATE TABLE LYRICS (
+                title VARCHAR(512) NOT NULL,
+                artist VARCHAR(128) NOT NULL,
+                data TEXT NOT NULL,
+                source VARCHAR(32) NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (title, artist)
+            );
+
         ',
     ),
 ));
 /*
 return (array(
-    1 => array(
-        '
-        ',
-        '
-        ',
         '
 
-        ',
-        '
-            CREATE TABLE `MB_CACHE_ARTIST` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `name` VARCHAR(128) NOT NULL,
-                `image` VARCHAR(8192),
-                `json` TEXT NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
-        ',
-        '
-            CREATE TABLE `MB_CACHE_RELEASE` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `title` VARCHAR(512) NOT NULL,
-                `year` INTEGER,
-                `artist_mbid` VARCHAR(36),
-                `artist_name` VARCHAR(128),
-                `track_count` INTEGER,
-                `json` TEXT NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
-        ',
-        '
-            CREATE TABLE `MB_CACHE_TRACK` (
-                `mbid` VARCHAR(36) NOT NULL,
-                `track` VARCHAR(128) NOT NULL,
-                `artist_mbid` VARCHAR(36),
-                `artist_name` VARCHAR(128),
-                `json` TEXT NOT NULL,
-                PRIMARY KEY (`mbid`)
-            );
-        '
-    ),
-    2 => array(
-        '
-            CREATE TABLE `MB_CACHE_ARTIST_RELATION` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `relation_type_id` VARCHAR(36) NOT NULL,
-                `name` VARCHAR(128) NOT NULL,
-                `url` VARCHAR(2048) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `relation_type_id`),
-                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
-            );
-        '
-    ),
-    3 => array(
-        '
-            ALTER TABLE `MB_CACHE_ARTIST` ADD "country"	VARCHAR(36);
-        '
-    ),
-    4 => array(
-        '
-            CREATE TABLE `MB_CACHE_ARTIST_GENRE` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `genre` VARCHAR(64) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `genre`),
-                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
-            );
-        '
-    ),
-    5 => array(
-        '
-            CREATE TABLE `MB_CACHE_RELEASE_TRACK` (
-                `release_mbid` VARCHAR(36) NOT NULL,
-                `track_mbid` VARCHAR(36) NOT NULL,
-                `title` VARCHAR(512) NOT NULL,
-                `artist_mbid` VARCHAR(36),
-                `artist_name` VARCHAR(128),
-                `track_number` INTEGER,
-                PRIMARY KEY (`track_mbid`),
-                FOREIGN KEY(`release_mbid`) REFERENCES MB_CACHE_RELEASE (`mbid`)
-            );
-        ',
-    ),
-    6 => array(
-        '
-            DROP TABLE `MB_CACHE_TRACK`;
-        '
-    ),
-    7 => array(
-        '
             CREATE TABLE `MB_WIKIPEDIA_CACHE_ARTIST` (
                 `artist_mbid` VARCHAR(36) NOT NULL,
                 `language` VARCHAR(2) NOT NULL,
