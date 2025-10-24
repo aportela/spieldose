@@ -428,7 +428,7 @@ class Manager
                         INSERT INTO DIRECTORY
                             (id, library_path_id, path, ctime, mtime, cover_filename)
                         VALUES
-                            (:id, :library_path_id, :path, :mtime, :cover_filename)
+                            (:id, :library_path_id, :path, :current_timestamp, :mtime, :cover_filename)
                         ON CONFLICT (id) DO
                         UPDATE SET
                             library_path_id = :library_path_id,
@@ -440,7 +440,7 @@ class Manager
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $directoryId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $pathId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($directory)),
-                        new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", intval(microtime(true) * 1000)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
                         !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
                     ]
@@ -459,7 +459,7 @@ class Manager
                             INSERT INTO FILE
                                 (id, directory_id, name, size, ctime, mtime)
                             VALUES
-                                (:id, :directory_id, :name, :size, :mtime)
+                                (:id, :directory_id, :name, :size, :current_timestamp, :mtime)
                             ON CONFLICT (id) DO
                             UPDATE SET
                                 directory_id = :directory_id,
@@ -472,7 +472,7 @@ class Manager
                             new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $directoryId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", intval(microtime(true) * 1000)),
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                             new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
                         ]
                     );
