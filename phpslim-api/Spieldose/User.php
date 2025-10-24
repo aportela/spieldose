@@ -20,7 +20,7 @@ class User
 
     private function passwordHash(string $password = ""): string
     {
-        return (password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)));
+        return (password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]));
     }
 
     /**
@@ -47,15 +47,33 @@ class User
     public function add(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $params = $this->validateAndPrepareParams();
-        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
-        $dbh->execute(" INSERT INTO USER (id, email, password_hash, ctime, mtime) VALUES(:id, :email, :password_hash, :current_timestamp, NULL) ", $params);
+        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", intval(microtime(true) * 1000));
+        $dbh->execute(
+            "
+                INSERT INTO USER
+                    (id, email, password_hash, ctime, mtime)
+                VALUES
+                    (:id, :email, :password_hash, :ctime, NULL)
+            ",
+            $params
+        );
     }
 
     public function update(\aportela\DatabaseWrapper\DB $dbh): void
     {
         $params = $this->validateAndPrepareParams();
-        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
-        $dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash, mtime = :current_timestamp WHERE id = :id ", $params);
+        $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", intval(microtime(true) * 1000));
+        $dbh->execute(
+            "
+                UPDATE USER SET
+                    email = :email,
+                    password_hash = :password_hash,
+                    mtime = :mtime
+                WHERE
+                    id = :id
+            ",
+            $params
+        );
         if (ini_get("session.use_cookies") && PHP_SAPI != 'cli') {
             \Spieldose\UserSession::set(\Spieldose\UserSession::getUserId(), $this->email);
         }
@@ -67,14 +85,14 @@ class User
         if (!empty($this->id) && mb_strlen($this->id) == 36) {
             $results = $dbh->query(
                 "
-                        SELECT
-                            USER.id, USER.email, USER.password_hash AS passwordHash
-                        FROM USER
-                        WHERE USER.id = :id
-                    ",
-                array(
+                    SELECT
+                        USER.id, USER.email, USER.password_hash AS passwordHash
+                    FROM USER
+                    WHERE USER.id = :id
+                ",
+                [
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id))
-                )
+                ]
             );
         } elseif (!empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
             $results = $dbh->query(
@@ -84,9 +102,9 @@ class User
                     FROM USER
                         WHERE USER.email = :email
                     ",
-                array(
+                [
                     new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))
-                )
+                ]
             );
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id,email");
@@ -120,10 +138,10 @@ class User
                         USER.id
                     FROM USER
                         WHERE USER.email = :email
-                    ",
-                array(
+                ",
+                [
                     new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($email))
-                )
+                ]
             );
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id,email");
