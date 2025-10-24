@@ -486,7 +486,7 @@ class Manager
                                 (:file_id, :current_timestamp)
                             ON CONFLICT (file_id) DO
                             UPDATE SET
-                                created_on_timestamp = :current_timestamp
+                                ctime = :current_timestamp
                         ",
                         [
                             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
