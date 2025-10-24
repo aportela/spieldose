@@ -117,8 +117,19 @@ if (count($missingExtensions) > 0) {
                         if ($mbDataResults[0]->mbId != "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61") {
                             // save results
                             sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
-                            $mbArtist->get($mbDataResults[0]->mbId);
-                            $libraryManager->saveMBCacheArtist($mbArtist);
+                            try {
+                                $mbArtist->get($mbDataResults[0]->mbId);
+                                $libraryManager->saveMBCacheArtist($mbArtist);
+                            } catch (\Throwable $e) {
+                            }
+                        }
+                    }
+                    if (! empty($settings['lastFMAPIKey'])) {
+                        $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
+                        try {
+                            $lastFMArtist->get($mbArtist->name ?? $artistNames[$i]);
+                            $libraryManager->saveLastFMCacheArtist($lastFMArtist);
+                        } catch (\Throwable $e) {
                         }
                     }
                 }

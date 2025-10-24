@@ -684,4 +684,96 @@ class Manager
             );
         }
     }
+
+    public function saveLastFMCacheArtist(\aportela\LastFMWrapper\Artist $lastFMCache)
+    {
+        $imageURL = null;
+        try {
+            $imageURL = $lastFMCache->getImageFromArtistPageURL($lastFMCache->url);
+        } catch (\Throwable $e) {
+        }
+        $this->logger->debug("Saving lastFM artist cache", [$lastFMCache->mbId, $lastFMCache->name]);
+        $this->dbh->execute(
+            "
+                INSERT INTO CACHE_ARTIST_LASTFM
+                    (md5_hash, mbid, name, url, image, bio_summary, bio_content, ctime, mtime)
+                VALUES
+                    (:md5_hash, :mbid, :name, :url, :image, :bio_summary, :bio_content, :current_timestamp, NULL)
+                ON CONFLICT (md5_hash) DO
+                    UPDATE SET
+                        mbid = :mbid,
+                        url = :url,
+                        image = :image,
+                        bio_summary = :bio_summary,
+                        bio_content = :bio_content,
+                        mtime = :current_timestamp
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($lastFMCache->name)),
+                ! empty($lastFMCache->mbId) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $lastFMCache->mbId) :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":mbId"),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $lastFMCache->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":url", $lastFMCache->url),
+                ! empty($imageURL) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":image", $imageURL) :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":image"),
+                ! empty($lastFMCache->bio->summary) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", $lastFMCache->bio->summary) :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":bio_summary"),
+                ! empty($lastFMCache->bio->content) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", $lastFMCache->bio->content) :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":bio_content"),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+            ]
+        );
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_ARTIST_LASTFM_TAG
+                WHERE
+                    artist_hash = :artist_hash
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($lastFMCache->name))
+            ]
+        );
+        foreach ($lastFMCache->tags as $tag) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_ARTIST_LASTFM_TAG
+                        (artist_hash, tag)
+                    VALUES
+                        (:artist_hash, :tag)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($lastFMCache->name)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag)
+                ]
+            );
+        }
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_ARTIST_LASTFM_SIMILAR
+                WHERE
+                    artist_hash = :artist_hash
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($lastFMCache->name))
+            ]
+        );
+        foreach ($lastFMCache->similar as $similarArtist) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_ARTIST_LASTFM_SIMILAR
+                        (artist_hash, name)
+                    VALUES
+                        (:artist_hash, :name)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($lastFMCache->name)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $similarArtist->name),
+                ]
+            );
+        }
+    }
 }
