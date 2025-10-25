@@ -97,23 +97,6 @@ class MusicBrainzArtistScraper
         return ($mbIds);
     }
 
-    private function isCached(string $artistMBId)
-    {
-        $results = $this->dbh->execute(
-            "
-                SELECT
-                    COUNT(mbid) AS total
-                FROM CACHE_ARTIST_MUSICBRAINZ
-                WHERE
-                    mbid = :mbid
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $artistMBId),
-            ]
-        );
-        return ($results[0]->total == 1);
-    }
-
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
@@ -134,7 +117,10 @@ class MusicBrainzArtistScraper
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbArtist->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->mbArtist->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":country", $this->mbArtist->country),
+                ! empty($this->mbArtist->country) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":country", $this->mbArtist->country)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":country"),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
@@ -210,7 +196,9 @@ class MusicBrainzArtistScraper
                     }
                 }
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
-                $this->logger->warning("MusicBrainz artist name search returns no results", [$artistNames[$i], $e->getMessage()]);
+                $this->logger->notice("MusicBrainz artist name search returns no results", [$artistNames[$i], $e->getMessage()]);
+            } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+                $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$artistNames[$i], $e->getMessage()]);
             }
         }
         return (microtime(true) - $scanStartTime);
@@ -228,8 +216,12 @@ class MusicBrainzArtistScraper
             try {
                 $this->mbArtist->get($artistMbIds[$i]);
                 $this->saveMBCacheArtist();
+            } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+                $this->logger->warning("MusicBrainz artist id get not found", [$artistMbIds[$i], $e->getMessage()]);
+            } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+                $this->logger->warning("MusicBrainz API server (get artist) not reachable", [$artistMbIds[$i], $e->getMessage()]);
             } catch (\Throwable $e) {
-                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getMessage()]);
+                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getMessage(), $e->getPrevious()]);
             }
         }
         return (microtime(true) - $scanStartTime);
