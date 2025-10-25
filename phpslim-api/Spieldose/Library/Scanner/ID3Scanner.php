@@ -262,44 +262,51 @@ class ID3Scanner
         );
     }
 
-    public function processPendingQueue(?callable $queueItemScanCallback = null): float
+    public function processPendingQueue(?callable $queueItemScanCallback = null, ?callable $noQueueItemscallback = null): float
     {
         $this->logger->info("ID3Scanner::processPendingQueue");
         $scanStartTime = microtime(true);
         $queuedItems = $this->getPendingQueue();
         $totalQueuedItems = count($queuedItems);
-        $this->logger->debug("ID3Scanner::processPendingQueue - Total items: ", [$totalQueuedItems]);
-        for ($i = 0; $i < $totalQueuedItems; $i++) {
+        if ($totalQueuedItems == 0) {
+            $this->logger->debug("ID3Scanner::processPendingQueue - Queue is empty");
             if ($queueItemScanCallback != null) {
-                call_user_func($queueItemScanCallback, $queuedItems, $totalQueuedItems, $i);
+                call_user_func($noQueueItemscallback);
             }
-            $tagsData = $this->id3->getTagsData($queuedItems[$i]->fullPath);
-            if ($tagsData != null) {
-                $this->logger->debug("ID3Scanner::processPendingQueue - Saving id3 tags");
-                $this->writeLibraryPathDirectoryFileTags(
-                    $queuedItems[$i]->id,
-                    $tagsData->trackTitle,
-                    $tagsData->trackArtist,
-                    $tagsData->albumArtist,
-                    $tagsData->trackYear,
-                    $tagsData->trackNumber,
-                    $tagsData->discNumber,
-                    $tagsData->playtimeSeconds,
-                    $tagsData->artistMBId,
-                    $tagsData->albumArtistMBId,
-                    $tagsData->trackAlbum,
-                    $tagsData->albumMBId,
-                    $tagsData->releaseGroupMBId,
-                    $tagsData->releaseTrackMBId,
-                    $tagsData->genre,
-                    $tagsData->mime,
-                );
-                $this->dequeueFile($queuedItems[$i]->id);
-            } else {
-                $this->logger->debug("ID3Scanner::processPendingQueue - Removing id3 tags");
-                $this->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
-            }
-        };
+        } else {
+            $this->logger->debug("ID3Scanner::processPendingQueue - Total items: ", [$totalQueuedItems]);
+            for ($i = 0; $i < $totalQueuedItems; $i++) {
+                if ($queueItemScanCallback != null) {
+                    call_user_func($queueItemScanCallback, $queuedItems, $totalQueuedItems, $i);
+                }
+                $tagsData = $this->id3->getTagsData($queuedItems[$i]->fullPath);
+                if ($tagsData != null) {
+                    $this->logger->debug("ID3Scanner::processPendingQueue - Saving id3 tags");
+                    $this->writeLibraryPathDirectoryFileTags(
+                        $queuedItems[$i]->id,
+                        $tagsData->trackTitle,
+                        $tagsData->trackArtist,
+                        $tagsData->albumArtist,
+                        $tagsData->trackYear,
+                        $tagsData->trackNumber,
+                        $tagsData->discNumber,
+                        $tagsData->playtimeSeconds,
+                        $tagsData->artistMBId,
+                        $tagsData->albumArtistMBId,
+                        $tagsData->trackAlbum,
+                        $tagsData->albumMBId,
+                        $tagsData->releaseGroupMBId,
+                        $tagsData->releaseTrackMBId,
+                        $tagsData->genre,
+                        $tagsData->mime,
+                    );
+                    $this->dequeueFile($queuedItems[$i]->id);
+                } else {
+                    $this->logger->debug("ID3Scanner::processPendingQueue - Removing id3 tags");
+                    $this->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
+                }
+            };
+        }
         return (microtime(true) - $scanStartTime);
     }
 }
