@@ -13,6 +13,9 @@ class LibraryScanner
     private \Spieldose\Library\Scanner\ID3Scanner $id3Scanner;
     private ?string $validCoverFilenamesPattern;
 
+    private float $scanStartTime = 0;
+    private float $scanEndTime = 0;
+
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
         $this->dbh = $dbh;
@@ -31,18 +34,21 @@ class LibraryScanner
     /**
      * scan (fill DIRECTORY && FILE tables) all library paths
      */
-    public function scanLibrary(bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null)
+    public function scanLibrary(bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
+        $totalScanTime = 0;
         foreach ($this->libraryManager->getLibraryPaths() as $currentLibraryPath) {
-            $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $directoryScanCallback, $fileScanCallback);
+            $totalScanTime += $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $directoryScanCallback, $fileScanCallback);
         }
+        return ($totalScanTime);
     }
 
     /**
      * scan (fill DIRECTORY && FILE tables) custom library path
      */
-    public function scanLibraryPath(string $pathId, string $path, bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null)
+    public function scanLibraryPath(string $pathId, string $path, bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
+        $scanStartTime = microtime(true);
         $this->logger->notice("Scanning library path", [$pathId, $path]);
         $path = realpath($path);
         $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
@@ -138,5 +144,6 @@ class LibraryScanner
                 );
             }
         }
+        return (microtime(true) - $scanStartTime);
     }
 }

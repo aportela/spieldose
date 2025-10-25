@@ -34,8 +34,9 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "clean", "scrapMB"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "clean", "scrapMB" . "showProgressBar"));
         if ($cmdLine->hasOptions()) {
+            $showProgressBar = $cmdLine->hasParam("showProgressBar");
             if ($cmdLine->hasParam("addLibraryPath")) {
                 $newLibraryPath = realpath($cmdLine->getParamValue("addLibraryPath"));
                 echo "Setting library path: " . $newLibraryPath . PHP_EOL;
@@ -50,17 +51,28 @@ if (count($missingExtensions) > 0) {
                         if (!empty($settings["albumCoverPathValidFilenames"])) {
                             $libraryScanner->setValidCoverFilenamesPattern($settings["albumCoverPathValidFilenames"]);
                         }
-                        $libraryScanner->scanLibraryPath(
+                        $totalScanTime = $libraryScanner->scanLibraryPath(
                             $pathId,
                             $newLibraryPath,
                             true,
                             function ($directories, $total, $index) {
-                                echo "- Scanning directory " . $directories[$index] . PHP_EOL;
+                                echo sprintf("- Directory (%d/%d): %s%s", $index, $total, $directories[$index], PHP_EOL);
                             },
-                            function ($currentDirectoryFiles, $total, $index) {
-                                \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $currentDirectoryFiles[$index]);
+                            function ($currentDirectoryFiles, $total, $index) use ($showProgressBar) {
+                                if ($showProgressBar) {
+                                    \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $currentDirectoryFiles[$index]);
+                                } else {
+                                    if ($index == 0) {
+                                        echo sprintf(" - Scanning (%d) directory files: ", $total);
+                                    }
+                                    echo ".";
+                                    if ($index == $total - 1) {
+                                        echo PHP_EOL;
+                                    }
+                                }
                             }
                         );
+                        echo sprintf("Library scan finished (total scan time: %.2f seconds)%s", $totalScanTime, PHP_EOL);
                     }
                 } else {
                     echo "- ERROR: path not found on local filesystem" . PHP_EOL;
@@ -149,7 +161,7 @@ if (count($missingExtensions) > 0) {
         } else {
             echo "No required params found." . PHP_EOL;
             echo "Scan / update music path:" . PHP_EOL;
-            echo "\tphp " . $argv[0] . " --path <YOUR_MUSIC_PATH>" . PHP_EOL;
+            echo "\tphp " . $argv[0] . " --addLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
             echo "Clean database (deleted/orphaned items):" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
         }
