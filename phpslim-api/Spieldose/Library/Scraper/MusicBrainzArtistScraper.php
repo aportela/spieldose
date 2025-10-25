@@ -134,7 +134,10 @@ class MusicBrainzArtistScraper
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbArtist->mbId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->mbArtist->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":country", $this->mbArtist->country),
+                ! empty($this->mbArtist->country) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":country", $this->mbArtist->country)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":country"),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
@@ -211,6 +214,8 @@ class MusicBrainzArtistScraper
                 }
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz artist name search returns no results", [$artistNames[$i], $e->getMessage()]);
+            } catch (\Throwable $e) {
+                $this->logger->warning("MusicBrainz artist name search exception", [$artistNames[$i], $e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
             }
         }
         return (microtime(true) - $scanStartTime);
@@ -229,7 +234,7 @@ class MusicBrainzArtistScraper
                 $this->mbArtist->get($artistMbIds[$i]);
                 $this->saveMBCacheArtist();
             } catch (\Throwable $e) {
-                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getMessage()]);
+                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
             }
         }
         return (microtime(true) - $scanStartTime);
