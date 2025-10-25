@@ -78,30 +78,27 @@ if (count($missingExtensions) > 0) {
                 $id3Scanner->fixMissingArtistMBIdsWithExistent();
             }
             if ($cmdLine->hasParam("scrapMB")) {
-                echo "Scrapping Musicbrainz..." . PHP_EOL;
-                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
-                $sc = new \Spieldose\Scraper\Artist\Scraper();
-                $artistNames = $sc->getArtistNamesWithoutMusicBrainzId($dbh, true);
-                $totalArtistsNames = count($artistNames);
-                for ($i = 0; $i < $totalArtistsNames; $i++) {
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalArtistsNames, 20, $artistNames[$i]);
-                    if ($i != 0) {
-                        sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
-                    }
-                    $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                    $mbDataResults = $mbArtist->search($artistNames[$i], 1);
-                    if (count($mbDataResults) == 1) {
-                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
-                            // save results
-                            sleep(SECONDS_BETWEEN_API_SCRAPS); // wait between queries for prevent too much remote api requests in small amount of time and get banned
-                            try {
-                                $mbArtist->get($mbDataResults[0]->mbId);
-                                $libraryManager->saveMBCacheArtist($mbArtist);
-                            } catch (\Throwable $e) {
-                            }
+
+                echo "Musicbrainz Scrapper starting..." . PHP_EOL;
+                $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
+                $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
+                    function ($artistNames, $total, $index) {
+                        if ($index == 0) {
+                            echo "Scrapping orphaned artist names (without mbId)..." . PHP_EOL;
                         }
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $artistNames[$index]);
                     }
-                    /*
+                );
+                $mbArtistScanner->scrapMissingCache(
+                    function ($mbIds, $total, $index) {
+                        if ($index == 0) {
+                            echo "Scrapping missing MusicBrainz artist cache..." . PHP_EOL;
+                        }
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $mbIds[$index]);
+                    }
+                );
+
+                /*
                     if (! empty($settings['lastFMAPIKey'])) {
                         $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
                         try {
@@ -111,6 +108,7 @@ if (count($missingExtensions) > 0) {
                         }
                     }
                     */
+                /*
                     $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
                     $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
                     if (count($artistWikiPages) > 0) {
@@ -124,7 +122,7 @@ if (count($missingExtensions) > 0) {
                         } catch (\Throwable $e) {
                         }
                     }
-                }
+                        */
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
