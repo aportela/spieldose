@@ -32,7 +32,7 @@ class Utils
      * @params $total
      * @params $size
      */
-    public static function showProgressBar($done, $total, $size = 30, string $extraMessage = ""): void
+    public static function showProgressBar($done, $total, $size = 30, string $prependStr = "", string $appendStr = ""): void
     {
 
         static $start_time;
@@ -52,6 +52,8 @@ class Utils
         $bar = floor($perc * $size);
 
         $status_bar = "\33[2K\r[";
+        $status_bar = "[";
+
         $status_bar .= str_repeat("=", intval($bar));
         if ($bar < $size) {
             $status_bar .= ">";
@@ -77,17 +79,25 @@ class Utils
             $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . ")";
         }
 
-        if (!empty($extraMessage)) {
-            echo sprintf("%s [%s]", $status_bar, $extraMessage);
-        } else {
-            echo $status_bar;
+        $parts = ["\33[2K\r"];
+        if (!empty($prependStr)) {
+            $parts[] = $prependStr;
         }
+
+        $parts[] = sprintf("%s", $status_bar);
+
+        if (!empty($appendStr)) {
+            $parts[] = $appendStr;
+        }
+
+
+        echo implode(' ', $parts);
 
         flush();
 
         // when done, send a newline
         if ($done == $total) {
-            echo $status_bar . PHP_EOL;
+            echo implode(' ', $parts) . PHP_EOL;
         }
     }
 
