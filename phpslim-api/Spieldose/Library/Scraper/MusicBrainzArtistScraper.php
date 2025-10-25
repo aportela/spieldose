@@ -193,25 +193,32 @@ class MusicBrainzArtistScraper
     /**
      * scrap all id3 artist names without MusicBrainz artist id
      */
-    public function scrapArtistsWithoutMusicBrainzId(?callable $scrapItemCallback = null)
+    public function scrapArtistsWithoutMusicBrainzId(?callable $scrapItemCallback = null): float
     {
+        $scanStartTime = microtime(true);
         $artistNames = $this->getID3OrphanedMBIdArtistNames(true);
         $totalArtistsNames = count($artistNames);
         for ($i = 0; $i < $totalArtistsNames; $i++) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistNames, $totalArtistsNames, $i);
             }
-            $mbDataResults = $this->mbArtist->search($artistNames[$i], 1);
-            if (count($mbDataResults) == 1) {
-                if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
-                    $this->setID3OrphanedArtistNameMBId($artistNames[$i], $mbDataResults[0]->mbId);
+            try {
+                $mbDataResults = $this->mbArtist->search($artistNames[$i], 1);
+                if (count($mbDataResults) == 1) {
+                    if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                        $this->setID3OrphanedArtistNameMBId($artistNames[$i], $mbDataResults[0]->mbId);
+                    }
                 }
+            } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+                $this->logger->warning("MusicBrainz artist name search returns no results", [$artistNames[$i], $e->getMessage()]);
             }
         }
+        return (microtime(true) - $scanStartTime);
     }
 
-    public function scrapMissingCache(?callable $scrapItemCallback = null)
+    public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
+        $scanStartTime = microtime(true);
         $artistMbIds = $this->getMissingCacheArtistMBIds();
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
@@ -222,8 +229,9 @@ class MusicBrainzArtistScraper
                 $this->mbArtist->get($artistMbIds[$i]);
                 $this->saveMBCacheArtist();
             } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
+                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getMessage()]);
             }
         }
+        return (microtime(true) - $scanStartTime);
     }
 }
