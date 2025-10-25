@@ -41,7 +41,6 @@ class Utils
             return;
         }
 
-
         static $startTimestamp;
 
         if (empty($startTimestamp)) {
@@ -66,8 +65,7 @@ class Utils
         $estimatedTimestamp = round($rate * $left, 2);
         $elapsedTimestamp = $currentTimestamp - $startTimestamp;
 
-        // restart line cursor to begin
-        $parts = ["\33[2K\r"];
+        $parts = [];
 
         if (!empty($prependStr)) {
             $parts[] = $prependStr;
@@ -105,7 +103,8 @@ class Utils
             $parts[] = $appendStr;
         }
 
-        echo implode(" ", $parts);
+        // clear current line (ANSI ESC[2K) and restart cursor to line begin before appending progressbar
+        echo "\e[2K\r" . implode(" ", $parts);
         if ($done == $total) {
             echo PHP_EOL;
             $startTimestamp = null;
