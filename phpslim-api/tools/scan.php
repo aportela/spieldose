@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainz", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             if ($cmdLine->hasParam("addLibraryPath")) {
@@ -99,7 +99,7 @@ if (count($missingExtensions) > 0) {
                 $totalScanTime = $id3Scanner->processPendingQueue(
                     function ($queuedItems, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, $queuedItems[$index]->fullPath);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, "", "- Current file: {$queuedItems[$index]->fullPath}");
                         } else {
                             if ($index == 0) {
                                 echo sprintf(" - Processing (%d) queued items/s:", $total);
@@ -110,13 +110,18 @@ if (count($missingExtensions) > 0) {
                             }
                         }
                     },
+                    function () {
+                        echo " [!] Queue is empty" . PHP_EOL;
+                    }
                 );
                 echo sprintf("ID3 process queue finished (total process time: %.2f seconds)%s", $totalScanTime, PHP_EOL);
+            }
+            if ($cmdLine->hasParam("fixMusicBrainzArtistMBIds")) {
                 echo "Fixing missing MusicBrainz ids: ";
                 $id3Scanner->fixMissingArtistMBIdsWithExistent();
                 echo "ok!" . PHP_EOL;
             }
-            if ($cmdLine->hasParam("scrapMusicBrainz")) {
+            if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
                 echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
                 $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
@@ -135,7 +140,10 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("MusicBrainz artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+            }
+            if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
                 echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
+                $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
                 $totalScrapTime = $mbArtistScanner->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
