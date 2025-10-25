@@ -6,7 +6,6 @@ namespace Spieldose\Library\Scanner;
 
 class LibraryScanner
 {
-
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \Spieldose\Library\Manager $libraryManager;
@@ -36,8 +35,10 @@ class LibraryScanner
      */
     public function scanLibrary(bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
+        $this->logger->info("LibraryScanner::scanLibraryPath");
         $totalScanTime = 0;
         foreach ($this->libraryManager->getLibraryPaths() as $currentLibraryPath) {
+            $this->logger->debug("LibraryScanner::scanLibraryPath - Current path", [$currentLibraryPath->pathId, $currentLibraryPath->path]);
             $totalScanTime += $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $directoryScanCallback, $fileScanCallback);
         }
         return ($totalScanTime);
@@ -48,28 +49,30 @@ class LibraryScanner
      */
     public function scanLibraryPath(string $pathId, string $path, bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
+        $this->logger->info("LibraryScanner::scanLibraryPath");
         $scanStartTime = microtime(true);
-        $this->logger->notice("Scanning library path", [$pathId, $path]);
         $path = realpath($path);
         $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
         $totalDirectories = count($directories);
+        $this->logger->debug("ID3Scanner::processPendingQueue - Total directories: ", [$totalDirectories]);
         for ($d = 0; $d < $totalDirectories; $d++) {
             if ($directoryScanCallback != null) {
                 call_user_func($directoryScanCallback, $directories, $totalDirectories, $d);
             }
             $currentDirectory = realpath($directories[$d]);
             $currentDirectoryId = $this->libraryManager->getLibraryPathDirectoryId($currentDirectory);
-            $this->logger->debug("Propagating library path directory", [$currentDirectoryId, $currentDirectory]);
+            $this->logger->debug("ID3Scanner::processPendingQueue - Current directory: ", [$currentDirectoryId, $currentDirectory]);
             $currentDirectoryFiles = \Spieldose\Library\FileSystem::getDirectoryFiles($currentDirectory);
             $totalCurrentDirectoryFiles = count($currentDirectoryFiles);
+            $this->logger->debug("ID3Scanner::processPendingQueue - Total directory files: ", [$totalCurrentDirectoryFiles]);
             // only add directories with supported files
             if ($totalCurrentDirectoryFiles > 0) {
-                $this->logger->debug("Found files for directory", [$totalCurrentDirectoryFiles]);
                 $coverFilename = \Spieldose\Library\FileSystem::getCoverFilename($currentDirectory, $this->validCoverFilenamesPattern ?? \Spieldose\Library\FileSystem::VALID_COVER_FILENAMES_DEFAULT_PATTERN);
                 $stat = stat($currentDirectory);
                 if (empty($currentDirectoryId)) {
                     $currentDirectoryId = \Spieldose\Utils::uuidv4();
                 }
+                $this->logger->debug("ID3Scanner::processPendingQueue - Saving current directory: ", [$currentDirectoryId, $currentDirectory]);
                 $this->dbh->execute(
                     "
                         INSERT INTO DIRECTORY
@@ -104,6 +107,7 @@ class LibraryScanner
                     if (empty($fileId)) {
                         $fileId = \Spieldose\Utils::uuidv4();
                     }
+                    $this->logger->debug("ID3Scanner::processPendingQueue - Saving current file: ", [$fileId, $filename]);
                     $this->dbh->execute(
                         "
                             INSERT INTO FILE
@@ -130,9 +134,10 @@ class LibraryScanner
                         $this->id3Scanner->enqueueFile($fileId);
                     }
                 }
-            } else if (! empty($currentDirectoryId)) {
-                $this->logger->debug("No found directory files", [$totalCurrentDirectoryFiles]);
+            } elseif (! empty($currentDirectoryId)) {
                 // existent directory with no files => remove
+                // TODO: we need this to create the three view ????
+                $this->logger->warning("ID3Scanner::processPendingQueue - Removing empty directory: ", [$currentDirectoryId, $currentDirectory]);
                 $this->dbh->execute(
                     "
                         DELETE FROM DIRECTORY
