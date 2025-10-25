@@ -4,7 +4,7 @@ use DI\ContainerBuilder;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-const SECONDS_BETWEEN_API_SCRAPS = 1;
+define("PROGRESSBAR_LENGTH", 16);
 
 $containerBuilder = new ContainerBuilder();
 
@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "scrapMusicBrainz", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainz", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             if ($cmdLine->hasParam("addLibraryPath")) {
@@ -55,15 +55,19 @@ if (count($missingExtensions) > 0) {
                             $pathId,
                             $newLibraryPath,
                             true,
-                            function ($directories, $total, $index) {
-                                echo sprintf("- Directory (%d/%d): %s%s", $index, $total, $directories[$index], PHP_EOL);
+                            function ($directories, $total, $index) use ($showProgressBar) {
+                                if ($showProgressBar) {
+                                    echo sprintf(" - Directory %d/%d: %s%s", $index + 1, $total, $directories[$index], PHP_EOL);
+                                } else {
+                                    echo sprintf(" - Directory %d/%d: %s%s", $index + 1, $total, $directories[$index], PHP_EOL);
+                                }
                             },
                             function ($currentDirectoryFiles, $total, $index) use ($showProgressBar) {
                                 if ($showProgressBar) {
-                                    \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $currentDirectoryFiles[$index]);
+                                    \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Scanning %d directory file/s:", $total), "- Current file: " . basename($currentDirectoryFiles[$index]));
                                 } else {
                                     if ($index == 0) {
-                                        echo sprintf(" - Scanning (%d) directory file/s: ", $total);
+                                        echo sprintf(" - Scanning %d directory file/s: ", $total);
                                     }
                                     echo ".";
                                     if ($index == $total - 1) {
@@ -79,16 +83,26 @@ if (count($missingExtensions) > 0) {
                     $logger->error("Invalid music path / path not found", [$newLibraryPath]);
                 }
             }
+            if ($cmdLine->hasParam("removeLibraryPath")) {
+                $path = realpath($cmdLine->getParamValue("removeLibraryPath"));
+                echo "Removing library path: " . $path . PHP_EOL;
+                $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
+                if ($libraryManager->removeLibraryPath($path)) {
+                    echo " - Removed successfully" . PHP_EOL;
+                } else {
+                    echo " - Error removing library path (path not found)" . PHP_EOL;
+                }
+            }
             if ($cmdLine->hasParam("processID3Queue")) {
                 echo "Checking id3 queue:" . PHP_EOL;
                 $id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger);
                 $totalScanTime = $id3Scanner->processPendingQueue(
                     function ($queuedItems, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $queuedItems[$index]->fullPath);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, $queuedItems[$index]->fullPath);
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Processing (%d) queued items/s: ", $total);
+                                echo sprintf(" - Processing (%d) queued items/s:", $total);
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -108,10 +122,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
                     function ($artistNames, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, sprintf(" - Searching (%d) artist/s", $total), "- Artist name: " . $artistNames[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Searching (%d) artist/s", $total), "- Artist name: " . $artistNames[$index]);
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Searching (%d) artist/s: ", $total);
+                                echo sprintf(" - Searching %d artist/s: ", $total);
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -125,10 +139,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $mbArtistScanner->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, sprintf(" - Caching (%d) musicbrainz id/s", $total), "- Artist mbId: " . $mbIds[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) artist musicbrainz id/s", $total), "- Artist mbId: " . $mbIds[$index]);
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Caching (%d) musicbrainz id/s: ", $total);
+                                echo sprintf(" - Caching %d artist musicbrainz id/s: ", $total);
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -178,7 +192,7 @@ if (count($missingExtensions) > 0) {
                         $libraryManager->removeLibraryPathDirectoryFile($libraryDirectoryFiles[$i]->id);
                         $totalDeleted++;
                     }
-                    \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, 20, $libraryDirectoryFiles[$i]->fullPath);
+                    \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, PROGRESSBAR_LENGTH, $libraryDirectoryFiles[$i]->fullPath);
                 }
                 echo "Datatabase clean finished. ";
                 if ($totalDeleted > 0) {
