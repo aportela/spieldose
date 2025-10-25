@@ -20,6 +20,7 @@ $settings['paths']['vendor'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR 
 $settings['paths']['database'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'spieldose2.sqlite3';
 $settings['paths']['templates'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'templates';
 $settings['paths']['logs'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'logs';
+$settings['paths']['cache'] = $settings['paths']['root'] . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache';
 
 // Error Handling Middleware settings
 $settings['error'] = [
@@ -146,6 +147,10 @@ $settings['thumbnails'] = [
             ]
         ]
     ],
+];
+
+$settings["cache"] = [
+    "MusicBrainzCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "musicbrainz"
 ];
 
 $settings['common'] = [

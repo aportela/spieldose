@@ -68,4 +68,9 @@ if (count($missingExtensions) > 0) {
             $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
         }
     }
+    if (!file_exists($settings["cache"]["MusicBrainzCachePath"])) {
+        if (!mkdir($settings["cache"]["MusicBrainzCachePath"], 0750, true)) {
+            $logger->critical("Error creating MusicBrainz cache basePath: " . $settings["cache"]["MusicBrainzCachePath"]);
+        }
+    }
 }
