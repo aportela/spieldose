@@ -41,6 +41,7 @@ class Utils
             return;
         }
 
+
         static $startTimestamp;
 
         if (empty($startTimestamp)) {
@@ -107,6 +108,7 @@ class Utils
         echo implode(" ", $parts);
         if ($done == $total) {
             echo PHP_EOL;
+            $startTimestamp = null;
         }
         flush();
     }
