@@ -259,8 +259,9 @@ class ID3Scanner
         );
     }
 
-    public function processPendingQueue(?callable $queueItemScanCallback = null)
+    public function processPendingQueue(?callable $queueItemScanCallback = null): float
     {
+        $scanStartTime = microtime(true);
         $queuedItems = $this->getPendingQueue();
         $totalQueuedItems = count($queuedItems);
         for ($i = 0; $i < $totalQueuedItems; $i++) {
@@ -292,5 +293,6 @@ class ID3Scanner
                 $this->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
             }
         };
+        return (microtime(true) - $scanStartTime);
     }
 }
