@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "clean", "scrapMB" . "showProgressBar"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "processID3Queue", "scrapMusicBrainz", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             if ($cmdLine->hasParam("addLibraryPath")) {
@@ -63,7 +63,7 @@ if (count($missingExtensions) > 0) {
                                     \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $currentDirectoryFiles[$index]);
                                 } else {
                                     if ($index == 0) {
-                                        echo sprintf(" - Scanning (%d) directory files: ", $total);
+                                        echo sprintf(" - Scanning (%d) directory file/s: ", $total);
                                     }
                                     echo ".";
                                     if ($index == $total - 1) {
@@ -80,35 +80,64 @@ if (count($missingExtensions) > 0) {
                 }
             }
             if ($cmdLine->hasParam("processID3Queue")) {
-                echo "Processing id3 queue:" . PHP_EOL;
+                echo "Checking id3 queue:" . PHP_EOL;
                 $id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger);
-                $id3Scanner->processPendingQueue(
-                    function ($queuedItems, $total, $index) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $queuedItems[$index]->fullPath);
+                $totalScanTime = $id3Scanner->processPendingQueue(
+                    function ($queuedItems, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $queuedItems[$index]->fullPath);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Processing (%d) queued items/s: ", $total);
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
+                        }
                     },
                 );
+                echo sprintf("ID3 process queue finished (total process time: %.2f seconds)%s", $totalScanTime, PHP_EOL);
+                echo "Fixing missing MusicBrainz ids: ";
                 $id3Scanner->fixMissingArtistMBIdsWithExistent();
+                echo "ok!" . PHP_EOL;
             }
-            if ($cmdLine->hasParam("scrapMB")) {
-
-                echo "Musicbrainz Scrapper starting..." . PHP_EOL;
+            if ($cmdLine->hasParam("scrapMusicBrainz")) {
+                echo "Starting Musicbrainz artist search scrapper:" . PHP_EOL;
                 $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
-                $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
-                    function ($artistNames, $total, $index) {
-                        if ($index == 0) {
-                            echo "Scrapping orphaned artist names (without mbId)..." . PHP_EOL;
+                $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
+                    function ($artistNames, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $artistNames[$index]);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Processing (%d) musicbrainz artist/s: ", $total);
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
                         }
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $artistNames[$index]);
                     }
                 );
-                $mbArtistScanner->scrapMissingCache(
-                    function ($mbIds, $total, $index) {
-                        if ($index == 0) {
-                            echo "Scrapping missing MusicBrainz artist cache..." . PHP_EOL;
+                echo sprintf("MusicBrainz artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+                echo "Starting Musicbrainz artist data scrapper:" . PHP_EOL;
+                $totalScrapTime = $mbArtistScanner->scrapMissingCache(
+                    function ($mbIds, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $mbIds[$index]);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Processing (%d) musicbrainz id/s: ", $total);
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
                         }
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $mbIds[$index]);
                     }
                 );
+                echo sprintf("MusicBrainz artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
 
                 /*
                     if (! empty($settings['lastFMAPIKey'])) {
@@ -160,10 +189,12 @@ if (count($missingExtensions) > 0) {
             }
         } else {
             echo "No required params found." . PHP_EOL;
+            /*
             echo "Scan / update music path:" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --addLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
             echo "Clean database (deleted/orphaned items):" . PHP_EOL;
             echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
+            */
         }
     } catch (\Exception $e) {
         echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
