@@ -103,15 +103,15 @@ if (count($missingExtensions) > 0) {
                 echo "ok!" . PHP_EOL;
             }
             if ($cmdLine->hasParam("scrapMusicBrainz")) {
-                echo "Starting Musicbrainz artist search scrapper:" . PHP_EOL;
+                echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
                 $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
                     function ($artistNames, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $artistNames[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, sprintf(" - Searching (%d) artist/s", $total), "- Artist name: " . $artistNames[$index]);
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Processing (%d) musicbrainz artist/s: ", $total);
+                                echo sprintf(" - Searching (%d) artist/s: ", $total);
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -121,14 +121,14 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("MusicBrainz artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
-                echo "Starting Musicbrainz artist data scrapper:" . PHP_EOL;
+                echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
                 $totalScrapTime = $mbArtistScanner->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, $mbIds[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, 20, sprintf(" - Caching (%d) musicbrainz id/s", $total), "- Artist mbId: " . $mbIds[$index]);
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Processing (%d) musicbrainz id/s: ", $total);
+                                echo sprintf(" - Caching (%d) musicbrainz id/s: ", $total);
                             }
                             echo ".";
                             if ($index == $total - 1) {
