@@ -110,7 +110,6 @@ class ID3Wrapper
                     $trackNumber = intval($trackNumber);
                     return ($trackNumber > 0 ? $trackNumber : null);
                 }
-                // no break
             case \Spieldose\Library\ID3TAGType::DISC_NUMBER:
                 $discNumber = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "part_of_a_set")));
                 return ($discNumber > 0 ? $discNumber : null);
