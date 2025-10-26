@@ -20,7 +20,9 @@ class CmdLine
         $this->options = getopt($short, $long);
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     public function hasOptions(): bool
     {

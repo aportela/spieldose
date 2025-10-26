@@ -21,8 +21,8 @@ class ID3Scanner
 
     public function enqueueFile(string $fileId)
     {
+        $this->logger->debug("ID3Scanner::enqueueFile", [$fileId]);
         $currentTimestamp = intval(microtime(true) * 1000);
-        $this->logger->debug("Adding to ID3 scan queue", [$fileId, $currentTimestamp]);
         $this->dbh->execute(
             "
                 INSERT INTO QUEUE_FILE_ID3_SCAN
@@ -42,6 +42,7 @@ class ID3Scanner
 
     private function dequeueFile(string $fileId)
     {
+        $this->logger->debug("ID3Scanner::dequeueFile", [$fileId]);
         $this->dbh->execute(
             "
                 DELETE FROM QUEUE_FILE_ID3_SCAN
@@ -60,6 +61,7 @@ class ID3Scanner
      */
     private function getPendingQueue(): array
     {
+        $this->logger->debug("ID3Scanner::getPendingQueue");
         return (
             $this->dbh->query(
                 "
@@ -105,7 +107,7 @@ class ID3Scanner
         ?string $genre,
         ?string $mime,
     ) {
-        $this->logger->notice("Setting library path directory file tags", [$fileId]);
+        $this->logger->debug("ID3Scanner::writeLibraryPathDirectoryFileTags", [$fileId]);
         $params = [
             new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
         ];
@@ -215,7 +217,7 @@ class ID3Scanner
 
     private function removeLibraryPathDirectoryFileTags(string $fileId)
     {
-        $this->logger->notice("Removing library path directory file tags", [$fileId]);
+        $this->logger->debug("ID3Scanner::removeLibraryPathDirectoryFileTags", [$fileId]);
         $this->dbh->execute(
             "
                 DELETE FROM FILE_ID3_TAG
@@ -238,6 +240,7 @@ class ID3Scanner
      */
     public function fixMissingArtistMBIdsWithExistent(): int
     {
+        $this->logger->debug("ID3Scanner::fixMissingArtistMBIdsWithExistent");
         return (
             $this->dbh->exec(
                 "
@@ -259,40 +262,51 @@ class ID3Scanner
         );
     }
 
-    public function processPendingQueue(?callable $queueItemScanCallback = null): float
+    public function processPendingQueue(?callable $queueItemScanCallback = null, ?callable $noQueueItemscallback = null): float
     {
+        $this->logger->info("ID3Scanner::processPendingQueue");
         $scanStartTime = microtime(true);
         $queuedItems = $this->getPendingQueue();
         $totalQueuedItems = count($queuedItems);
-        for ($i = 0; $i < $totalQueuedItems; $i++) {
+        if ($totalQueuedItems == 0) {
+            $this->logger->debug("ID3Scanner::processPendingQueue - Queue is empty");
             if ($queueItemScanCallback != null) {
-                call_user_func($queueItemScanCallback, $queuedItems, $totalQueuedItems, $i);
+                call_user_func($noQueueItemscallback);
             }
-            $tagsData = $this->id3->getTagsData($queuedItems[$i]->fullPath);
-            if ($tagsData != null) {
-                $this->writeLibraryPathDirectoryFileTags(
-                    $queuedItems[$i]->id,
-                    $tagsData->trackTitle,
-                    $tagsData->trackArtist,
-                    $tagsData->albumArtist,
-                    $tagsData->trackYear,
-                    $tagsData->trackNumber,
-                    $tagsData->discNumber,
-                    $tagsData->playtimeSeconds,
-                    $tagsData->artistMBId,
-                    $tagsData->albumArtistMBId,
-                    $tagsData->trackAlbum,
-                    $tagsData->albumMBId,
-                    $tagsData->releaseGroupMBId,
-                    $tagsData->releaseTrackMBId,
-                    $tagsData->genre,
-                    $tagsData->mime,
-                );
-                $this->dequeueFile($queuedItems[$i]->id);
-            } else {
-                $this->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
-            }
-        };
+        } else {
+            $this->logger->debug("ID3Scanner::processPendingQueue - Total items: ", [$totalQueuedItems]);
+            for ($i = 0; $i < $totalQueuedItems; $i++) {
+                if ($queueItemScanCallback != null) {
+                    call_user_func($queueItemScanCallback, $queuedItems, $totalQueuedItems, $i);
+                }
+                $tagsData = $this->id3->getTagsData($queuedItems[$i]->fullPath);
+                if ($tagsData != null) {
+                    $this->logger->debug("ID3Scanner::processPendingQueue - Saving id3 tags");
+                    $this->writeLibraryPathDirectoryFileTags(
+                        $queuedItems[$i]->id,
+                        $tagsData->trackTitle,
+                        $tagsData->trackArtist,
+                        $tagsData->albumArtist,
+                        $tagsData->trackYear,
+                        $tagsData->trackNumber,
+                        $tagsData->discNumber,
+                        $tagsData->playtimeSeconds,
+                        $tagsData->artistMBId,
+                        $tagsData->albumArtistMBId,
+                        $tagsData->trackAlbum,
+                        $tagsData->albumMBId,
+                        $tagsData->releaseGroupMBId,
+                        $tagsData->releaseTrackMBId,
+                        $tagsData->genre,
+                        $tagsData->mime,
+                    );
+                    $this->dequeueFile($queuedItems[$i]->id);
+                } else {
+                    $this->logger->debug("ID3Scanner::processPendingQueue - Removing id3 tags");
+                    $this->removeLibraryPathDirectoryFileTags($queuedItems[$i]->id);
+                }
+            };
+        }
         return (microtime(true) - $scanStartTime);
     }
 }

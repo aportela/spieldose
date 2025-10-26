@@ -110,6 +110,7 @@ class ID3Wrapper
                     $trackNumber = intval($trackNumber);
                     return ($trackNumber > 0 ? $trackNumber : null);
                 }
+                // no break
             case \Spieldose\Library\ID3TAGType::DISC_NUMBER:
                 $discNumber = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "part_of_a_set")));
                 return ($discNumber > 0 ? $discNumber : null);
@@ -161,7 +162,7 @@ class ID3Wrapper
             } else {
                 $data->artistMBId = null;
             }
-            $albumArtistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);;
+            $albumArtistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
             // multiple mbids (divided by "/") not supported
             $data->albumArtistMBId = (!empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) ? $albumArtistMBId : null;
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);

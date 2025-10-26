@@ -31,64 +31,85 @@ class Utils
      * @params $done
      * @params $total
      * @params $size
+     * @params $prependStr
+     * @params $appendStr
      */
-    public static function showProgressBar($done, $total, $size = 30, string $extraMessage = ""): void
+    public static function showProgressBar(int $done, int $total, int $size = 30, string $prependStr = "", string $appendStr = ""): void
     {
-
-        static $start_time;
-
         // if we go over our bound, just ignore it
         if ($done > $total) {
             return;
         }
 
-        if (empty($start_time)) {
-            $start_time = time();
-        }
-        $now = time();
+        static $startTimestamp;
 
-        $perc = (float)($done / $total);
-
-        $bar = floor($perc * $size);
-
-        $status_bar = "\33[2K\r[";
-        $status_bar .= str_repeat("=", intval($bar));
-        if ($bar < $size) {
-            $status_bar .= ">";
-            $status_bar .= str_repeat(" ", intval($size - $bar));
-        } else {
-            $status_bar .= "=";
+        if (empty($startTimestamp)) {
+            $startTimestamp = microtime(true);
         }
 
-        $disp = number_format($perc * 100, 0);
+        $currentTimestamp = microtime(true);
 
-        $status_bar .= "] $disp%  $done/$total";
+        $percent = (float)($done / $total);
 
-        $rate = $done > 0 ? ($now - $start_time) / $done : 0;
+        $bar = (int) floor($percent * $size);
+        $bar = min($bar, $size);
+        $filled = str_repeat("=", $bar);
+        $empty = str_repeat(" ", $size - $bar);
+        $progressBar = "[" . $filled . ($bar < $size ? ">" : "=") . $empty . "]";
+
+        $currentPercent = number_format($percent * 100, 0);
+
+        $rate = $done > 0 ? ($currentTimestamp - $startTimestamp) / $done : 0;
         $left = $total - $done;
 
-        $eta = round($rate * $left, 2);
+        $estimatedTimestamp = round($rate * $left, 2);
+        $elapsedTimestamp = $currentTimestamp - $startTimestamp;
 
-        $elapsed = $now - $start_time;
+        $parts = [];
+
+        if (!empty($prependStr)) {
+            $parts[] = $prependStr;
+        }
+
+        $parts[] = $progressBar;
+        $parts[] = "{$currentPercent}%";
+        $parts[] = "[{$done}/{$total}]";
+
+        $formatElapsedTimestamp = function (float $seconds): string {
+            if ($seconds >= 3600) {
+                $value = $seconds / 3600;
+                $unit = "hour";
+            } elseif ($seconds >= 60) {
+                $value = $seconds / 60;
+                $unit = "minute";
+            } else {
+                $value = $seconds;
+                $unit = "second";
+            }
+            $value = round($value);
+            if ($value != 1) {
+                $unit .= "s";
+            }
+            return "{$value} {$unit}";
+        };
 
         if ($done != $total) {
-            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . " / " . sprintf("%d %s", ($eta > 3600 ? $eta / 3600 : ($eta > 60 ? $eta / 60 : $eta)), ($eta > 3600 ? "hours" : ($eta > 60 ? "minutes" : "seconds"))) . ")";
+            $parts[] = "[elapsed {$formatElapsedTimestamp($elapsedTimestamp)}, estimated {$formatElapsedTimestamp($estimatedTimestamp)}]";
         } else {
-            $status_bar .= " (" . sprintf("%d %s", ($elapsed > 3600 ? $elapsed / 3600 : ($elapsed > 60 ? $elapsed / 60 : $elapsed)), ($elapsed > 3600 ? "hours" : ($elapsed > 60 ? "minutes" : "seconds"))) . ")";
+            $parts[] = "[total {$formatElapsedTimestamp($elapsedTimestamp)}]";
         }
 
-        if (!empty($extraMessage)) {
-            echo sprintf("%s [%s]", $status_bar, $extraMessage);
-        } else {
-            echo $status_bar;
+        if (!empty($appendStr)) {
+            $parts[] = $appendStr;
         }
 
-        flush();
-
-        // when done, send a newline
+        // clear current line (ANSI ESC[2K) and restart cursor to line begin before appending progressbar
+        echo "\e[2K\r" . implode(" ", $parts);
         if ($done == $total) {
-            echo $status_bar . PHP_EOL;
+            echo PHP_EOL;
+            $startTimestamp = null;
         }
+        flush();
     }
 
     /**
