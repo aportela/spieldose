@@ -49,6 +49,7 @@ return (array(
                 album_artist VARCHAR(128),
                 album VARCHAR(128),
                 year INT,
+                original_year INT,
                 genre VARCHAR(128),
                 track_number INT,
                 disc_number INT,
@@ -56,8 +57,8 @@ return (array(
                 mime VARCHAR(127),
                 mb_artist_id CHAR(36),
                 mb_album_artist_id CHAR(36),
-                mb_album_id CHAR(36),
                 mb_release_group_id CHAR(36),
+                mb_release_id CHAR(36),
                 mb_release_track_id CHAR(36),
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE

@@ -117,6 +117,10 @@ class ID3Wrapper
                 $year = (string) $this->getTagFieldValue($this->tagData, "year");
                 $year = intval((mb_strlen($year) > 4) ? mb_substr($year, 0, 4) : $year);
                 return ($year > 0 ? $year : null);
+            case \Spieldose\Library\ID3TAGType::ORIGINAL_YEAR:
+                $originalYear = (string) $this->getTagFieldValue($this->tagData, "original_year");
+                $originalYear = intval((mb_strlen($originalYear) > 4) ? mb_substr($originalYear, 0, 4) : $originalYear);
+                return ($originalYear > 0 ? $originalYear : null);
             case \Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS:
                 $playTimeSeconds = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "playtime_seconds")));
                 return ($playTimeSeconds > 0 ? $playTimeSeconds : null);
@@ -129,12 +133,12 @@ class ID3Wrapper
                 return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "mime_type")));
             case \Spieldose\Library\ID3TAGType::MB_ARTIST_ID:
                 return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id")));
-            case \Spieldose\Library\ID3TAGType::MB_ALBUM_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id")));
             case \Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID:
                 return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id")));
             case \Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID:
                 return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Group Id")));
+            case \Spieldose\Library\ID3TAGType::MB_RELEASE_ID:
+                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id")));
             case \Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID:
                 return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id")));
             default:
@@ -151,6 +155,7 @@ class ID3Wrapper
             $data->trackArtist = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_ARTIST_NAME);
             $data->albumArtist = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM_ARTIST_NAME);
             $data->trackYear = $this->getTag(\Spieldose\Library\ID3TAGType::YEAR);
+            $data->trackOriginalYear = $this->getTag(\Spieldose\Library\ID3TAGType::ORIGINAL_YEAR);
             $data->trackNumber = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
             $data->discNumber = $this->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
             $data->playtimeSeconds = $this->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
@@ -165,12 +170,12 @@ class ID3Wrapper
             // multiple mbids (divided by "/") not supported
             $data->albumArtistMBId = (!empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) ? $albumArtistMBId : null;
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
-            $albumMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ID);
-            // multiple mbids (divided by "/") not supported
-            $data->albumMBId = (!empty($albumMBId) && strlen($albumMBId) == 36) ? $albumMBId : null;
             $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
             // multiple mbids (divided by "/") not supported
             $data->releaseGroupMBId = (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) ? $releaseGroupMBId : null;
+            $releaseMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_ID);
+            // multiple mbids (divided by "/") not supported
+            $data->releaseMBId = (!empty($releaseMBId) && strlen($releaseMBId) == 36) ? $releaseMBId : null;
             $releaseTrackMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID);
             $data->releaseTrackMBId = (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) ? $releaseTrackMBId : null;
             // multiple mbids (divided by "/") not supported
