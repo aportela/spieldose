@@ -245,16 +245,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "3.0.0",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "8131d923886d87e45ecf2dd8364d237908e2e535"
+                "reference": "eec185fe4502eb71c6f598cf6bff82cea961ddd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/8131d923886d87e45ecf2dd8364d237908e2e535",
-                "reference": "8131d923886d87e45ecf2dd8364d237908e2e535",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/eec185fe4502eb71c6f598cf6bff82cea961ddd1",
+                "reference": "eec185fe4502eb71c6f598cf6bff82cea961ddd1",
                 "shasum": ""
             },
             "require": {
@@ -287,9 +287,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.0.0"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.0.2"
             },
-            "time": "2025-10-28T13:42:10+00:00"
+            "time": "2025-10-28T15:33:07+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
@@ -5055,16 +5055,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.3.4",
+            "version": "v7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "2b9c5fafbac0399a20a2e82429e2bd735dcfb7db"
+                "reference": "cdb80fa5869653c83cfe1a9084a673b6daf57ea7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/2b9c5fafbac0399a20a2e82429e2bd735dcfb7db",
-                "reference": "2b9c5fafbac0399a20a2e82429e2bd735dcfb7db",
+                "url": "https://api.github.com/repos/symfony/console/zipball/cdb80fa5869653c83cfe1a9084a673b6daf57ea7",
+                "reference": "cdb80fa5869653c83cfe1a9084a673b6daf57ea7",
                 "shasum": ""
             },
             "require": {
@@ -5129,7 +5129,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.3.4"
+                "source": "https://github.com/symfony/console/tree/v7.3.5"
             },
             "funding": [
                 {
@@ -5149,7 +5149,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-22T15:31:00+00:00"
+            "time": "2025-10-14T15:46:26+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -5383,16 +5383,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v7.3.2",
+            "version": "v7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "2a6614966ba1074fa93dae0bc804227422df4dfe"
+                "reference": "9f696d2f1e340484b4683f7853b273abff94421f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/2a6614966ba1074fa93dae0bc804227422df4dfe",
-                "reference": "2a6614966ba1074fa93dae0bc804227422df4dfe",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/9f696d2f1e340484b4683f7853b273abff94421f",
+                "reference": "9f696d2f1e340484b4683f7853b273abff94421f",
                 "shasum": ""
             },
             "require": {
@@ -5427,7 +5427,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v7.3.2"
+                "source": "https://github.com/symfony/finder/tree/v7.3.5"
             },
             "funding": [
                 {
@@ -5447,7 +5447,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-15T13:41:35+00:00"
+            "time": "2025-10-15T18:45:57+00:00"
         },
         {
             "name": "symfony/options-resolver",
