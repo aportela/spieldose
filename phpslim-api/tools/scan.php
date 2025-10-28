@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             if ($cmdLine->hasParam("addLibraryPath")) {
@@ -143,8 +143,8 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
                 echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
-                $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
-                $totalScrapTime = $mbArtistScanner->scrapMissingCache(
+                $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
+                $totalScrapTime = $mbArtistScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
                             \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) artist musicbrainz id/s", $total), "- Artist mbId: " . $mbIds[$index]);
@@ -160,6 +160,52 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("MusicBrainz artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+
+                /*
+                    if (! empty($settings['lastFMAPIKey'])) {
+                        $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
+                        try {
+                            $lastFMArtist->get($mbArtist->name ?? $artistNames[$i]);
+                            $libraryManager->saveLastFMCacheArtist($lastFMArtist);
+                        } catch (\Throwable $e) {
+                        }
+                    }
+                    */
+                /*
+                    $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
+                    $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
+                    if (count($artistWikiPages) > 0) {
+                        print_r($artistWikiPages);
+                        $wikipediaArtist->setURL($artistWikiPages[0]);
+                        try {
+                            $html = $wikipediaArtist->getHTML();
+                            if (! empty($html)) {
+                                $libraryManager->saveMBCacheArtist($mbArtist);
+                            }
+                        } catch (\Throwable $e) {
+                        }
+                    }
+                        */
+            }
+            if ($cmdLine->hasParam("scrapMusicBrainzReleaseCache")) {
+                echo "Starting Musicbrainz Release Scrapper (Releases without MusicBrainz cache):" . PHP_EOL;
+                $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainzReleaseScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
+                $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
+                    function ($mbIds, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) release musicbrainz id/s", $total), "- Release mbId: " . $mbIds[$index]);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Caching %d release musicbrainz id/s: ", $total);
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
+                        }
+                    }
+                );
+                echo sprintf("MusicBrainz release data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
 
                 /*
                     if (! empty($settings['lastFMAPIKey'])) {
