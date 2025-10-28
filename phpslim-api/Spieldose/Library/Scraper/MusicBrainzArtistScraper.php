@@ -204,6 +204,37 @@ class MusicBrainzArtistScraper
         return (microtime(true) - $scanStartTime);
     }
 
+    public function replaceMbIdRedirect(string $oldMbId, string $newMbId)
+    {
+        $this->dbh->execute(
+            "
+                UPDATE FILE_ID3_TAG
+                SET
+                    mb_artist_id = :new_mbid
+                WHERE
+                    mb_artist_id = :old_mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":new_mbid", $newMbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId)
+            ]
+        );
+
+        $this->dbh->execute(
+            "
+                UPDATE FILE_ID3_TAG
+                SET
+                    mb_album_artist_id = :new_mbid
+                WHERE
+                    mb_album_artist_id = :old_mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":new_mbid", $newMbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId)
+            ]
+        );
+    }
+
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
         $scanStartTime = microtime(true);
@@ -215,6 +246,15 @@ class MusicBrainzArtistScraper
             }
             try {
                 $this->mbArtist->get($artistMbIds[$i]);
+                /**
+                 * sometimes we have a mbId but MusicBrainz API redirects to another mbId, we must
+                 * replace old mbId with new mbId on FILE_ID3_TAG table
+                 * https://musicbrainz.org/doc/MusicBrainz_Database/Schema%23Artist#MBID_redirects
+                 *
+                 */
+                if ($this->mbArtist->mbId != $artistMbIds[$i]) {
+                    $this->replaceMbIdRedirect($artistMbIds[$i], $this->mbArtist->mbId);
+                }
                 $this->saveMBCacheArtist();
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz artist id get not found", [$artistMbIds[$i], $e->getMessage()]);
