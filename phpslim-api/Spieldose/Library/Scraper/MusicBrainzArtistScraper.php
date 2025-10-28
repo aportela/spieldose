@@ -169,7 +169,7 @@ class MusicBrainzArtistScraper
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbArtist->mbId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->type),
                     new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
                 ]
             );

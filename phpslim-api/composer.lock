@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dfcbba14f83e200cef4f6b3cb7e2e3c6",
+    "content-hash": "7dd64c6c61a9ce82d44ce3ea90f4dd69",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -245,16 +245,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "2.1.5",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "8425eed9603add7e11b8e1d42673c5727deea183"
+                "reference": "8131d923886d87e45ecf2dd8364d237908e2e535"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/8425eed9603add7e11b8e1d42673c5727deea183",
-                "reference": "8425eed9603add7e11b8e1d42673c5727deea183",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/8131d923886d87e45ecf2dd8364d237908e2e535",
+                "reference": "8131d923886d87e45ecf2dd8364d237908e2e535",
                 "shasum": ""
             },
             "require": {
@@ -287,9 +287,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/2.1.5"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.0.0"
             },
-            "time": "2025-10-25T19:14:51+00:00"
+            "time": "2025-10-28T13:42:10+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
