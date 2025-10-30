@@ -87,7 +87,7 @@ class AlbumScraper
                         mtime = :current_timestamp
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($album->artist->name . $album->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $albumHash),
                 ! empty($album->mbId) ?
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $album->mbId)
                     :
