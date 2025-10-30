@@ -28,7 +28,7 @@ class ID3Wrapper
         return ($this->tagData != null);
     }
 
-    private function getTagFieldValue($id3_obj, $tag_field)
+    private function getTagFieldValue($id3_obj, $tag_field): mixed
     {
         $tag_value = null;
         if (isset($id3_obj[$tag_field])) {
@@ -56,9 +56,6 @@ class ID3Wrapper
                         break;
                 }
             }
-        }
-        if ($tag_value != null) {
-            //$tag_value = trim($this->toUTF8($tag_value));
         }
         return ($tag_value);
     }
