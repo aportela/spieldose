@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             $force = $cmdLine->hasParam("force");
@@ -125,7 +125,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
                 echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
-                $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
+                $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
                     function ($artistNames, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
@@ -182,32 +182,26 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("MusicBrainz release data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
-
-                /*
-                    if (! empty($settings['lastFMAPIKey'])) {
-                        $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
-                        try {
-                            $lastFMArtist->get($mbArtist->name ?? $artistNames[$i]);
-                            $libraryManager->saveLastFMCacheArtist($lastFMArtist);
-                        } catch (\Throwable $e) {
-                        }
-                    }
-                    */
-                /*
-                    $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
-                    $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
-                    if (count($artistWikiPages) > 0) {
-                        print_r($artistWikiPages);
-                        $wikipediaArtist->setURL($artistWikiPages[0]);
-                        try {
-                            $html = $wikipediaArtist->getHTML();
-                            if (! empty($html)) {
-                                $libraryManager->saveMBCacheArtist($mbArtist);
+            }
+            if ($cmdLine->hasParam("scrapLastFMArtistCache")) {
+                echo "Starting LastFM Artist Scrapper (Artists without LastFM cache):" . PHP_EOL;
+                $lastFMArtistScraper = new \Spieldose\Library\Scraper\LastFM\ArtistScraper($dbh, $logger, $settings["lastFMAPIKey"], $settings["cache"]["LastFMCachePath"], $force);
+                $totalScrapTime = $lastFMArtistScraper->scrapMissingCache(
+                    function ($names, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) artist lastfm name/s", $total), "- Artist name: " . $names[$index]);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Caching %d artist lastfm name/s: ", $total);
                             }
-                        } catch (\Throwable $e) {
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
                         }
                     }
-                        */
+                );
+                echo sprintf("LastFM artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
