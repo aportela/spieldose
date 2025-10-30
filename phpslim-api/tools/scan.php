@@ -191,7 +191,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzReleaseCache")) {
                 echo "Starting Musicbrainz Release Scrapper (Releases without MusicBrainz cache):" . PHP_EOL;
-                $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainzReleaseScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"]);
+                $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainzReleaseScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
                 $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
