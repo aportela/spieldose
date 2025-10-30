@@ -49,6 +49,11 @@ class ArtistScraper
                 FROM FILE_ID3_TAG
                 WHERE
                     FILE_ID3_TAG.artist IS NOT NULL
+                SELECT
+                    FILE_ID3_TAG.album_artist AS name
+                FROM FILE_ID3_TAG
+                WHERE
+                    FILE_ID3_TAG.album_artist IS NOT NULL
                 UNION
                 SELECT
                     CACHE_ARTIST_MUSICBRAINZ.name
@@ -64,7 +69,7 @@ class ArtistScraper
     /**
      * save LastFM artist cache (metadata/genres/relationships)
      */
-    private function saveMBCacheArtist(\aportela\LastFMWrapper\ParseHelpers\ArtistHelper $artist)
+    private function saveCache(\aportela\LastFMWrapper\ParseHelpers\ArtistHelper $artist)
     {
         $this->dbh->execute(
             "
@@ -170,7 +175,7 @@ class ArtistScraper
             }
             try {
                 $artist = $this->lastFMArtistAPI->get($artistLastFMNames[$i]);
-                $this->saveMBCacheArtist($artist);
+                $this->saveCache($artist);
             } catch (\aportela\LastFMWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("LastFM artist id get not found", [$artistLastFMNames[$i], $e->getMessage()]);
             } catch (\aportela\LastFMWrapper\Exception\RemoteAPIServerConnectionException $e) {
