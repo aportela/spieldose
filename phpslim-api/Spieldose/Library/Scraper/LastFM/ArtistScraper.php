@@ -68,7 +68,7 @@ class ArtistScraper
     {
         $this->dbh->execute(
             "
-                INSERT INTO CACHE_ARTIST_LASTFM
+                INSERT INTO CACHE_LASTFM_ARTIST
                     (md5_hash, mbid, name, url, image, bio_summary, bio_content, ctime, mtime)
                 VALUES
                     (:md5_hash, :mbid, :name, :url, :image, :bio_summary, :bio_content, :current_timestamp, NULL)
@@ -107,7 +107,7 @@ class ArtistScraper
         );
         $this->dbh->execute(
             "
-                DELETE FROM CACHE_ARTIST_LASTFM_TAG
+                DELETE FROM CACHE_LASTFM_ARTIST_TAG
                 WHERE
                     artist_hash = :artist_hash
             ",
@@ -118,7 +118,7 @@ class ArtistScraper
         foreach ($artist->tags as $tag) {
             $this->dbh->execute(
                 "
-                    INSERT INTO CACHE_ARTIST_LASTFM_TAG
+                    INSERT INTO CACHE_LASTFM_ARTIST_TAG
                         (artist_hash, tag)
                     VALUES
                         (:artist_hash, :tag)
@@ -131,7 +131,7 @@ class ArtistScraper
         }
         $this->dbh->execute(
             "
-                DELETE FROM CACHE_ARTIST_LASTFM_SIMILAR
+                DELETE FROM CACHE_LASTFM_ARTIST_SIMILAR
                 WHERE
                     artist_hash = :artist_hash
             ",
@@ -142,7 +142,7 @@ class ArtistScraper
         foreach ($artist->similar as $similarArtist) {
             $this->dbh->execute(
                 "
-                    INSERT INTO CACHE_ARTIST_LASTFM_SIMILAR
+                    INSERT INTO CACHE_LASTFM_ARTIST_SIMILAR
                         (artist_hash, name)
                     VALUES
                         (:artist_hash, :name)

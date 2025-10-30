@@ -96,7 +96,7 @@ return (array(
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (mbid) ON DELETE CASCADE
             );
 
-            CREATE TABLE CACHE_ARTIST_LASTFM (
+            CREATE TABLE CACHE_LASTFM_ARTIST (
                 md5_hash CHAR(32) NOT NULL,
                 mbid CHAR(36),
                 name VARCHAR(128) NOT NULL,
@@ -109,18 +109,18 @@ return (array(
                 PRIMARY KEY (md5_hash)
             );
 
-            CREATE TABLE CACHE_ARTIST_LASTFM_TAG (
+            CREATE TABLE CACHE_LASTFM_ARTIST_TAG (
                 artist_hash CHAR(32) NOT NULL,
                 tag VARCHAR(64) NOT NULL,
                 PRIMARY KEY (artist_hash, tag),
-                FOREIGN KEY(artist_hash) REFERENCES CACHE_ARTIST_LASTFM (md5_hash) ON DELETE CASCADE
+                FOREIGN KEY(artist_hash) REFERENCES CACHE_LASTFM_ARTIST (md5_hash) ON DELETE CASCADE
             );
 
-            CREATE TABLE CACHE_ARTIST_LASTFM_SIMILAR (
+            CREATE TABLE CACHE_LASTFM_ARTIST_SIMILAR (
                 artist_hash CHAR(32) NOT NULL,
                 name VARCHAR(128) NOT NULL,
                 PRIMARY KEY (artist_hash, name),
-                FOREIGN KEY(artist_hash) REFERENCES CACHE_ARTIST_LASTFM (md5_hash) ON DELETE CASCADE
+                FOREIGN KEY(artist_hash) REFERENCES CACHE_LASTFM_ARTIST (md5_hash) ON DELETE CASCADE
             );
 
             CREATE TABLE CACHE_ARTIST_WIKIPEDIA (
