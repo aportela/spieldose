@@ -8,13 +8,15 @@ class MusicBrainzArtistScraper
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    private \aportela\MusicBrainzWrapper\Artist $mbArtist;
+    private \aportela\MusicBrainzWrapper\Artist $musicBrainzArtistAPI;
+    private bool $refreshExistingCache = false;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, ?string $mbCachePath = null)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, ?string $mbCachePath = null, bool $refreshExistingCache = false)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, 1000, $mbCachePath);
+        $this->musicBrainzArtistAPI = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $mbCachePath, $refreshExistingCache);
+        $this->refreshExistingCache = $refreshExistingCache;
     }
 
     public function __destruct() {}
@@ -97,10 +99,30 @@ class MusicBrainzArtistScraper
         return ($mbIds);
     }
 
+    private function getAllArtistMBIds()
+    {
+        $mbIds = [];
+        $results = $this->dbh->query(
+            "
+                SELECT
+                    FILE_ID3_TAG.mb_artist_id AS mbid
+                FROM FILE_ID3_TAG
+                UNION
+                SELECT
+                    FILE_ID3_TAG.mb_album_artist_id AS mbid
+                FROM FILE_ID3_TAG
+            "
+        );
+        foreach ($results as $result) {
+            $mbIds[] = $result->mbid;
+        }
+        return ($mbIds);
+    }
+
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
-    private function saveMBCacheArtist()
+    private function saveMBCacheArtist(\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper $artist)
     {
         $this->dbh->execute(
             "
@@ -115,10 +137,10 @@ class MusicBrainzArtistScraper
                         mtime = :current_timestamp
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbArtist->mbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->mbArtist->name),
-                ! empty($this->mbArtist->country) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":country", $this->mbArtist->country)
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name),
+                ! empty($artist->country) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":country", $artist->country)
                     :
                     new \aportela\DatabaseWrapper\Param\NullParam(":country"),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
@@ -131,10 +153,10 @@ class MusicBrainzArtistScraper
                     artist_mbid = :artist_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbArtist->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId)
             ]
         );
-        foreach ($this->mbArtist->genres as $genre) {
+        foreach ($artist->genres as $genre) {
             $this->dbh->execute(
                 "
                     INSERT INTO CACHE_ARTIST_MUSICBRAINZ_GENRE
@@ -143,7 +165,7 @@ class MusicBrainzArtistScraper
                         (:artist_mbid, :genre)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbArtist->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre)
                 ]
             );
@@ -155,10 +177,10 @@ class MusicBrainzArtistScraper
                     artist_mbid = :artist_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbArtist->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId)
             ]
         );
-        foreach ($this->mbArtist->relations as $relation) {
+        foreach ($artist->relations as $relation) {
             $this->dbh->execute(
                 "
                     INSERT INTO CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP
@@ -167,7 +189,7 @@ class MusicBrainzArtistScraper
                         (:artist_mbid, :relation_type_id, :name, :url)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbArtist->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->type),
                     new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
@@ -189,7 +211,7 @@ class MusicBrainzArtistScraper
                 call_user_func($scrapItemCallback, $artistNames, $totalArtistsNames, $i);
             }
             try {
-                $mbDataResults = $this->mbArtist->search($artistNames[$i], 1);
+                $mbDataResults = $artist->search($artistNames[$i], 1);
                 if (count($mbDataResults) == 1) {
                     if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
                         $this->setID3OrphanedArtistNameMBId($artistNames[$i], $mbDataResults[0]->mbId);
@@ -238,24 +260,24 @@ class MusicBrainzArtistScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
         $scanStartTime = microtime(true);
-        $artistMbIds = $this->getMissingCacheArtistMBIds();
+        $artistMbIds = $this->refreshExistingCache ? $this->getAllArtistMBIds() : $this->getMissingCacheArtistMBIds();
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistMbIds, $totalArtistMbIds, $i);
             }
             try {
-                $this->mbArtist->get($artistMbIds[$i]);
+                $artist = $this->musicBrainzArtistAPI->get($artistMbIds[$i]);
                 /**
                  * sometimes we have a mbId but MusicBrainz API redirects to another mbId, we must
                  * replace old mbId with new mbId on FILE_ID3_TAG table
                  * https://musicbrainz.org/doc/MusicBrainz_Database/Schema%23Artist#MBID_redirects
                  *
                  */
-                if ($this->mbArtist->mbId != $artistMbIds[$i]) {
-                    $this->replaceMbIdRedirect($artistMbIds[$i], $this->mbArtist->mbId);
+                if ($artist->mbId != $artistMbIds[$i]) {
+                    $this->replaceMbIdRedirect($artistMbIds[$i], $artist->mbId);
                 }
-                $this->saveMBCacheArtist();
+                $this->saveMBCacheArtist($artist);
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz artist id get not found", [$artistMbIds[$i], $e->getMessage()]);
             } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
