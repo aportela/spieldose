@@ -21,7 +21,7 @@ class ArtistScraper
 
     public function __destruct() {}
 
-    private function getMissingCacheArtistLastFMNames()
+    private function getArtistNamesWithoutCache()
     {
         $names = [];
         $results = $this->dbh->query(
@@ -39,7 +39,7 @@ class ArtistScraper
         return ($names);
     }
 
-    private function getAllArtistLastFMNames()
+    private function getAllArtistNames()
     {
         $names = [];
         $results = $this->dbh->query(
@@ -74,6 +74,7 @@ class ArtistScraper
                     (:md5_hash, :mbid, :name, :url, :image, :bio_summary, :bio_content, :current_timestamp, NULL)
                 ON CONFLICT (md5_hash) DO
                     UPDATE SET
+                        mbid = :mbid,
                         name = :name,
                         url = :url,
                         image = :image,
@@ -83,7 +84,10 @@ class ArtistScraper
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($artist->name)),
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId),
+                ! empty($artist->mbId) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam(":mbid"),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name),
                 new \aportela\DatabaseWrapper\Param\StringParam(":url", $artist->url),
                 // TODO
@@ -158,7 +162,7 @@ class ArtistScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
         $scanStartTime = microtime(true);
-        $artistLastFMNames = $this->refreshExistingCache ? $this->getAllArtistLastFMNames() : $this->getMissingCacheArtistLastFMNames();
+        $artistLastFMNames = $this->refreshExistingCache ? $this->getAllArtistNames() : $this->getArtistNamesWithoutCache();
         $totalArtistLastFMNames = count($artistLastFMNames);
         for ($i = 0; $i < $totalArtistLastFMNames; $i++) {
             if ($scrapItemCallback != null) {
