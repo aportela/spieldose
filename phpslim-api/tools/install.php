@@ -73,4 +73,9 @@ if (count($missingExtensions) > 0) {
             $logger->critical("Error creating MusicBrainz cache basePath: " . $settings["cache"]["MusicBrainzCachePath"]);
         }
     }
+    if (!file_exists($settings["cache"]["LastFMCachePath"])) {
+        if (!mkdir($settings["cache"]["LastFMCachePath"], 0750, true)) {
+            $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LastFMCachePath"]);
+        }
+    }
 }
