@@ -77,20 +77,20 @@ class ArtistScraper
                 SELECT
                     FILE_ID3_TAG.mb_artist_id AS mbid
                 FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FILE_ID3_TAG.mb_artist_id
+                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_artist_id
                 WHERE
                     FILE_ID3_TAG.mb_artist_id IS NOT NULL
                 AND
-                    CACHE_ARTIST_MUSICBRAINZ.mbid IS NULL
+                    CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
                 UNION
                 SELECT
                     FILE_ID3_TAG.mb_album_artist_id AS mbid
                 FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FILE_ID3_TAG.mb_album_artist_id
+                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_album_artist_id
                 WHERE
                     FILE_ID3_TAG.mb_album_artist_id IS NOT NULL
                 AND
-                    CACHE_ARTIST_MUSICBRAINZ.mbid IS NULL
+                    CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
             "
         );
         foreach ($results as $result) {
@@ -126,7 +126,7 @@ class ArtistScraper
     {
         $this->dbh->execute(
             "
-                INSERT INTO CACHE_ARTIST_MUSICBRAINZ
+                INSERT INTO CACHE_MUSICBRAINZ_ARTIST
                     (mbid, name, country, ctime, mtime)
                 VALUES
                     (:mbid, :name, :country, :current_timestamp, NULL)
@@ -148,7 +148,7 @@ class ArtistScraper
         );
         $this->dbh->execute(
             "
-                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_GENRE
+                DELETE FROM CACHE_MUSICBRAINZ_ARTIST_GENRE
                 WHERE
                     artist_mbid = :artist_mbid
             ",
@@ -159,7 +159,7 @@ class ArtistScraper
         foreach ($artist->genres as $genre) {
             $this->dbh->execute(
                 "
-                    INSERT INTO CACHE_ARTIST_MUSICBRAINZ_GENRE
+                    INSERT INTO CACHE_MUSICBRAINZ_ARTIST_GENRE
                         (artist_mbid, genre)
                     VALUES
                         (:artist_mbid, :genre)
@@ -172,7 +172,7 @@ class ArtistScraper
         }
         $this->dbh->execute(
             "
-                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP
+                DELETE FROM CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP
                 WHERE
                     artist_mbid = :artist_mbid
             ",
@@ -183,7 +183,7 @@ class ArtistScraper
         foreach ($artist->relations as $relation) {
             $this->dbh->execute(
                 "
-                    INSERT INTO CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP
+                    INSERT INTO CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP
                         (artist_mbid, relation_type_id, name, url)
                     VALUES
                         (:artist_mbid, :relation_type_id, :name, :url)

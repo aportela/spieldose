@@ -30,11 +30,11 @@ class ReleaseScraper
                 SELECT DISTINCT
                     FILE_ID3_TAG.mb_release_id AS mbid
                 FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_RELEASE_MUSICBRAINZ ON CACHE_RELEASE_MUSICBRAINZ.mbid = FILE_ID3_TAG.mb_release_id
+                LEFT JOIN CACHE_MUSICBRAINZ_RELEASE ON CACHE_MUSICBRAINZ_RELEASE.mbid = FILE_ID3_TAG.mb_release_id
                 WHERE
                     FILE_ID3_TAG.mb_release_id IS NOT NULL
                 AND
-                    CACHE_RELEASE_MUSICBRAINZ.mbid IS NULL
+                    CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
             "
         );
         foreach ($results as $result) {
@@ -66,7 +66,7 @@ class ReleaseScraper
     {
         $this->dbh->execute(
             "
-                INSERT INTO CACHE_RELEASE_MUSICBRAINZ
+                INSERT INTO CACHE_MUSICBRAINZ_RELEASE
                     (mbid, title, year, ctime, mtime)
                 VALUES
                     (:mbid, :title, :year, :current_timestamp, NULL)
@@ -88,7 +88,7 @@ class ReleaseScraper
         );
         $this->dbh->execute(
             "
-                DELETE FROM CACHE_RELEASE_ARTIST_MUSICBRAINZ
+                DELETE FROM CACHE_MUSICBRAINZ_RELEASE_ARTIST
                 WHERE
                     release_mbid = :release_mbid
             ",
@@ -99,7 +99,7 @@ class ReleaseScraper
         foreach ($release->artistCredit as $releaseArtist) {
             $this->dbh->execute(
                 "
-                    INSERT INTO CACHE_RELEASE_ARTIST_MUSICBRAINZ
+                    INSERT INTO CACHE_MUSICBRAINZ_RELEASE_ARTIST
                         (release_mbid, artist_mbid)
                     VALUES
                         (:release_mbid, :artist_mbid)

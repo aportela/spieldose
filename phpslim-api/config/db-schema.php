@@ -71,7 +71,7 @@ return (array(
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             );
 
-            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ (
+            CREATE TABLE CACHE_MUSICBRAINZ_ARTIST (
                 mbid CHAR(36) NOT NULL,
                 name VARCHAR(128) NOT NULL,
                 country CHAR(2),
@@ -80,20 +80,36 @@ return (array(
                 PRIMARY KEY (mbid)
             );
 
-            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ_GENRE (
+            CREATE TABLE CACHE_MUSICBRAINZ_ARTIST_GENRE (
                 artist_mbid CHAR(36) NOT NULL,
                 genre VARCHAR(64) NOT NULL,
                 PRIMARY KEY (artist_mbid, genre),
-                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (mbid) ON DELETE CASCADE
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
             );
 
-            CREATE TABLE CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP (
+            CREATE TABLE CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP (
                 artist_mbid CHAR(36) NOT NULL,
                 relation_type_id VARCHAR(36) NOT NULL,
                 name VARCHAR(128) NOT NULL,
                 url VARCHAR(2048) NOT NULL,
                 PRIMARY KEY (artist_mbid, relation_type_id, url),
-                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (mbid) ON DELETE CASCADE
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
+            );
+
+            CREATE TABLE CACHE_MUSICBRAINZ_RELEASE (
+                mbid CHAR(36) NOT NULL,
+                title VARCHAR(128) NOT NULL,
+                year INT,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (mbid)
+            );
+
+            CREATE TABLE CACHE_MUSICBRAINZ_RELEASE_ARTIST (
+                release_mbid CHAR(36) NOT NULL,
+                artist_mbid CHAR(36) NOT NULL,
+                PRIMARY KEY (release_mbid, artist_mbid),
+                FOREIGN KEY(release_mbid) REFERENCES CACHE_MUSICBRAINZ_RELEASE (`mbid`) ON DELETE CASCADE
             );
 
             CREATE TABLE CACHE_LASTFM_ARTIST (
@@ -140,23 +156,7 @@ return (array(
                 language CHAR(2) NOT NULL,
                 html TEXT NOT NULL,
                 PRIMARY KEY (artist_mbid, artist_name, language),
-                FOREIGN KEY(artist_mbid) REFERENCES CACHE_ARTIST_MUSICBRAINZ (`mbid`) ON DELETE CASCADE
-            );
-
-            CREATE TABLE CACHE_RELEASE_MUSICBRAINZ (
-                mbid CHAR(36) NOT NULL,
-                title VARCHAR(128) NOT NULL,
-                year INT,
-                ctime INTEGER NOT NULL,
-                mtime INTEGER,
-                PRIMARY KEY (mbid)
-            );
-
-            CREATE TABLE CACHE_RELEASE_ARTIST_MUSICBRAINZ (
-                release_mbid CHAR(36) NOT NULL,
-                artist_mbid CHAR(36) NOT NULL,
-                PRIMARY KEY (release_mbid, artist_mbid),
-                FOREIGN KEY(release_mbid) REFERENCES CACHE_RELEASE_MUSICBRAINZ (`mbid`) ON DELETE CASCADE
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (`mbid`) ON DELETE CASCADE
             );
 
             CREATE TABLE LYRICS (

@@ -56,8 +56,8 @@ class ArtistScraper
                     FILE_ID3_TAG.album_artist IS NOT NULL
                 UNION
                 SELECT
-                    CACHE_ARTIST_MUSICBRAINZ.name
-                FROM CACHE_ARTIST_MUSICBRAINZ
+                    CACHE_MUSICBRAINZ_ARTIST.name
+                FROM CACHE_MUSICBRAINZ_ARTIST
             "
         );
         foreach ($results as $result) {

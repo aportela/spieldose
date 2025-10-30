@@ -39,7 +39,7 @@ class Scraper
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_artist_id IS NOT NULL
             AND NOT EXISTS
-                (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
+                (SELECT CAM.mbid FROM CACHE_MUSICBRAINZ_ARTIST CAM WHERE CAM.mbid = FIT.mb_artist_id)
 
             UNION
 
@@ -48,7 +48,7 @@ class Scraper
             FROM FILE_ID3_TAG FIT
             WHERE FIT.mb_album_artist_id IS NOT NULL
             AND NOT EXISTS
-                (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
+                (SELECT CAM.mbid FROM CACHE_MUSICBRAINZ_ARTIST CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
         " : "
             SELECT
                 mbid, name
@@ -58,7 +58,7 @@ class Scraper
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_artist_id IS NOT NULL
                 AND NOT EXISTS
-                    (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_artist_id)
+                    (SELECT CAM.mbid FROM CACHE_MUSICBRAINZ_ARTIST CAM WHERE CAM.mbid = FIT.mb_artist_id)
 
                 UNION
 
@@ -67,7 +67,7 @@ class Scraper
                 FROM FILE_ID3_TAG FIT
                 WHERE FIT.mb_album_artist_id IS NOT NULL
                 AND NOT EXISTS
-                    (SELECT CAM.mbid FROM CACHE_ARTIST_MUSICBRAINZ CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
+                    (SELECT CAM.mbid FROM CACHE_MUSICBRAINZ_ARTIST CAM WHERE CAM.mbid = FIT.mb_album_artist_id)
             ) TMP
             ORDER BY RANDOM()
         ";
@@ -88,9 +88,9 @@ class Scraper
             "
                 SELECT mbid, name
                 FROM (
-                    SELECT DISTINCT COALESCE(CACHE_ARTIST_MUSICBRAINZ.name, FIT.artist) AS name, FIT.mb_artist_id AS mbid
+                    SELECT DISTINCT COALESCE(CACHE_MUSICBRAINZ_ARTIST.name, FIT.artist) AS name, FIT.mb_artist_id AS mbid
                     FROM FILE_ID3_TAG FIT
-                    LEFT JOIN CACHE_ARTIST_MUSICBRAINZ ON CACHE_ARTIST_MUSICBRAINZ.mbid = FIT.mb_artist_id
+                    LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FIT.mb_artist_id
                     WHERE FIT.artist IS NOT NULL OR FIT.mb_artist_id IS NOT NULL
                 ) TMP_ARTISTS
                 WHERE NOT EXISTS
@@ -119,9 +119,9 @@ class Scraper
         $query = sprintf(
             "
                 SELECT DISTINCT CAM.mbid, CAM.name
-                FROM CACHE_ARTIST_MUSICBRAINZ CAM
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR1 ON CAMUR1.artist_mbid = CAM.mbid AND CAMUR1.relation_type_id = :wikipedia_relation_type_id
-                LEFT JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR2 ON CAMUR2.artist_mbid = CAM.mbid AND CAMUR2.relation_type_id = :wikidata_relation_type_id
+                FROM CACHE_MUSICBRAINZ_ARTIST CAM
+                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP CAMUR1 ON CAMUR1.artist_mbid = CAM.mbid AND CAMUR1.relation_type_id = :wikipedia_relation_type_id
+                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP CAMUR2 ON CAMUR2.artist_mbid = CAM.mbid AND CAMUR2.relation_type_id = :wikidata_relation_type_id
                 WHERE NOT EXISTS
                     (SELECT CAW.mbid FROM CACHE_ARTIST_WIKIPEDIA CAW WHERE CAW.mbid = CAM.mbid)
                 AND (
@@ -217,8 +217,8 @@ class Scraper
         );
         $query = "
             SELECT CAM.mbid, CAM.name, CAMUR.url
-            FROM CACHE_ARTIST_MUSICBRAINZ CAM
-            INNER JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR ON CAMUR.artist_mbid = CAM.mbid AND CAMUR.relation_type_id = :wikipedia_relation_type_id
+            FROM CACHE_MUSICBRAINZ_ARTIST CAM
+            INNER JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP CAMUR ON CAMUR.artist_mbid = CAM.mbid AND CAMUR.relation_type_id = :wikipedia_relation_type_id
             WHERE CAM.mbid = :mbid
             LIMIT 1
         ";
@@ -260,8 +260,8 @@ class Scraper
         );
         $query = "
             SELECT CAM.mbid, CAM.name, CAMUR.url
-            FROM CACHE_ARTIST_MUSICBRAINZ CAM
-            INNER JOIN CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP CAMUR ON CAMUR.artist_mbid = CAM.mbid AND CAMUR.relation_type_id = :wikidata_relation_type_id
+            FROM CACHE_MUSICBRAINZ_ARTIST CAM
+            INNER JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP CAMUR ON CAMUR.artist_mbid = CAM.mbid AND CAMUR.relation_type_id = :wikidata_relation_type_id
             WHERE CAM.mbid = :mbid
             LIMIT 1
         ";

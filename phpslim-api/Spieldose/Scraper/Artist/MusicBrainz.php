@@ -133,7 +133,7 @@ class MusicBrainz
         } else {
             $this->logger->debug(sprintf("[MusicBrainz] saving main cache for artist %s (mbId: %s)", $this->name, $this->mbId));
             $query = "
-                INSERT INTO CACHE_ARTIST_MUSICBRAINZ (mbid, name, image, country, ctime, mtime) VALUES (:mbid, :name, :image, :country, strftime('%s', 'now'), strftime('%s', 'now'))
+                INSERT INTO CACHE_MUSICBRAINZ_ARTIST (mbid, name, image, country, ctime, mtime) VALUES (:mbid, :name, :image, :country, strftime('%s', 'now'), strftime('%s', 'now'))
                     ON CONFLICT(mbid) DO
                 UPDATE SET name = :name, image = :image, country = :country, mtime = strftime('%s', 'now')
             ";
@@ -153,7 +153,7 @@ class MusicBrainz
             }
             $dbh->execute($query, $params);
             $query = "
-                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_GENRE WHERE artist_mbid = :artist_mbid
+                DELETE FROM CACHE_MUSICBRAINZ_ARTIST_GENRE WHERE artist_mbid = :artist_mbid
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId)
@@ -163,7 +163,7 @@ class MusicBrainz
                 $this->logger->debug(sprintf("[MusicBrainz] saving %d genres for artist %s (mbId: %s)", count($this->genres), $this->name, $this->mbId));
                 foreach ($this->genres as $genre) {
                     $query = "
-                        INSERT INTO CACHE_ARTIST_MUSICBRAINZ_GENRE (artist_mbid, genre) VALUES (:artist_mbid, :genre)
+                        INSERT INTO CACHE_MUSICBRAINZ_ARTIST_GENRE (artist_mbid, genre) VALUES (:artist_mbid, :genre)
                     ";
                     $params = array(
                         new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId),
@@ -173,7 +173,7 @@ class MusicBrainz
                 }
             }
             $query = "
-                DELETE FROM CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP WHERE artist_mbid = :artist_mbid
+                DELETE FROM CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :artist_mbid
             ";
             $params = array(
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $this->mbId)
@@ -185,7 +185,7 @@ class MusicBrainz
                 foreach ($this->relations as $relation) {
                     if (in_array($relation->typeId, $allowedRelations)) {
                         $query = "
-                            INSERT INTO CACHE_ARTIST_MUSICBRAINZ_URL_RELATIONSHIP (artist_mbid, relation_type_id, name, url) VALUES (:artist_mbid, :relation_type_id, :name, :url)
+                            INSERT INTO CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP (artist_mbid, relation_type_id, name, url) VALUES (:artist_mbid, :relation_type_id, :name, :url)
                                 ON CONFLICT(artist_mbid, relation_type_id, url) DO
                             UPDATE SET name = :name, url = :url
                         ";

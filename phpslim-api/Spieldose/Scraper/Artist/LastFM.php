@@ -89,7 +89,7 @@ class LastFM
         } else {
             if (empty($this->mbId)) {
                 $this->logger->debug(sprintf("[LastFM] guessing mbId for artist %s", $this->name));
-                $query = " SELECT mbid FROM CACHE_ARTIST_MUSICBRAINZ WHERE name = :name ";
+                $query = " SELECT mbid FROM CACHE_MUSICBRAINZ_ARTIST WHERE name = :name ";
                 $params = array(
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
                 );
