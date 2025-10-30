@@ -69,7 +69,7 @@ class ArtistScraper
         );
     }
 
-    private function getMissingCacheArtistMBIds()
+    private function getArtistMBIdsWithoutCache()
     {
         $mbIds = [];
         $results = $this->dbh->query(
@@ -122,7 +122,7 @@ class ArtistScraper
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
-    private function saveMBCacheArtist(\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper $artist)
+    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper $artist)
     {
         $this->dbh->execute(
             "
@@ -260,7 +260,7 @@ class ArtistScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
         $scanStartTime = microtime(true);
-        $artistMbIds = $this->refreshExistingCache ? $this->getAllArtistMBIds() : $this->getMissingCacheArtistMBIds();
+        $artistMbIds = $this->refreshExistingCache ? $this->getAllArtistMBIds() : $this->getArtistMBIdsWithoutCache();
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
             if ($scrapItemCallback != null) {
@@ -277,7 +277,7 @@ class ArtistScraper
                 if ($artist->mbId != $artistMbIds[$i]) {
                     $this->replaceMbIdRedirect($artistMbIds[$i], $artist->mbId);
                 }
-                $this->saveMBCacheArtist($artist);
+                $this->saveCache($artist);
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz artist id get not found", [$artistMbIds[$i], $e->getMessage()]);
             } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {

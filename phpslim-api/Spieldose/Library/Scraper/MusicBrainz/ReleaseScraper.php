@@ -22,7 +22,7 @@ class ReleaseScraper
     public function __destruct() {}
 
 
-    private function getMissingCacheReleaseMBIds()
+    private function getReleaseMBIdsWithoutCache()
     {
         $mbIds = [];
         $results = $this->dbh->query(
@@ -62,7 +62,7 @@ class ReleaseScraper
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
-    private function saveMBCacheRelease(\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper $release)
+    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper $release)
     {
         $this->dbh->execute(
             "
@@ -115,7 +115,7 @@ class ReleaseScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
     {
         $scanStartTime = microtime(true);
-        $releaseMBIds = $this->refreshExistingCache ? $this->getAllReleaseMBIds() : $this->getMissingCacheReleaseMBIds();
+        $releaseMBIds = $this->refreshExistingCache ? $this->getAllReleaseMBIds() : $this->getReleaseMBIdsWithoutCache();
         $totalReleaseMbIds = count($releaseMBIds);
         for ($i = 0; $i < $totalReleaseMbIds; $i++) {
             if ($scrapItemCallback != null) {
@@ -123,7 +123,7 @@ class ReleaseScraper
             }
             try {
                 $release = $this->musicBrainzReleaseAPI->get($releaseMBIds[$i]);
-                $this->saveMBCacheRelease($release);
+                $this->saveCache($release);
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz release id get not found", [$releaseMBIds[$i], $e->getMessage()]);
             } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
