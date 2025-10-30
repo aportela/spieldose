@@ -112,7 +112,7 @@ class ArtistScraper
                     artist_hash = :artist_hash
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($artist->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
             ]
         );
         foreach ($artist->tags as $tag) {
@@ -136,7 +136,7 @@ class ArtistScraper
                     artist_hash = :artist_hash
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($artist->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
             ]
         );
         foreach ($artist->similar as $similarArtist) {
@@ -148,7 +148,7 @@ class ArtistScraper
                         (:artist_hash, :name)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($artist->name)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $similarArtist->name)
                 ]
             );
