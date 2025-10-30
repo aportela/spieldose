@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose\Library\Scraper\MusicBrainz;
 
-class MusicBrainzArtistScraper
+class ArtistScraper
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
