@@ -145,6 +145,8 @@ return (array(
                 name VARCHAR(128) NOT NULL,
                 artist_name VARCHAR(128) NOT NULL,
                 url VARCHAR(2048) NOT NULL,
+                wiki_summary TEXT,
+                wiki_content TEXT,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (md5_hash)
