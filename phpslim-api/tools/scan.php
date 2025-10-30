@@ -120,7 +120,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("fixMusicBrainzArtistMBIds")) {
                 echo "Fixing missing MusicBrainz ids: ";
-                $id3Scanner->fixMissingArtistMBIdsWithExistent();
+                (new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger))->fixMissingArtistMBIdsWithExistent();
                 echo "ok!" . PHP_EOL;
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
