@@ -150,16 +150,16 @@
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "f2f461e21f86f38c20839b2258e769d9e6d7658c"
+                "reference": "833a5d1e2bb4f861ebd2f6bff8eb1db43bf915ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/f2f461e21f86f38c20839b2258e769d9e6d7658c",
-                "reference": "f2f461e21f86f38c20839b2258e769d9e6d7658c",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/833a5d1e2bb4f861ebd2f6bff8eb1db43bf915ce",
+                "reference": "833a5d1e2bb4f861ebd2f6bff8eb1db43bf915ce",
                 "shasum": ""
             },
             "require": {
@@ -192,9 +192,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.0.1"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.0.2"
             },
-            "time": "2025-10-30T10:24:53+00:00"
+            "time": "2025-10-30T14:46:08+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
@@ -245,16 +245,16 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "3b067d79141617d47ddad43570cae9770857c938"
+                "reference": "348c14bcf3c575768a3bd4ec690e14cf00396b5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/3b067d79141617d47ddad43570cae9770857c938",
-                "reference": "3b067d79141617d47ddad43570cae9770857c938",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/348c14bcf3c575768a3bd4ec690e14cf00396b5f",
+                "reference": "348c14bcf3c575768a3bd4ec690e14cf00396b5f",
                 "shasum": ""
             },
             "require": {
@@ -287,9 +287,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.1.1"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.1.2"
             },
-            "time": "2025-10-30T09:44:33+00:00"
+            "time": "2025-10-30T14:45:57+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
