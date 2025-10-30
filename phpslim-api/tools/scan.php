@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             $force = $cmdLine->hasParam("force");
@@ -202,6 +202,26 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("LastFM artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+            }
+            if ($cmdLine->hasParam("scrapLastFMAlbumCache")) {
+                echo "Starting LastFM Album Scrapper (Albums without LastFM cache):" . PHP_EOL;
+                $lastFMAlbumScraper = new \Spieldose\Library\Scraper\LastFM\AlbumScraper($dbh, $logger, $settings["lastFMAPIKey"], $settings["cache"]["LastFMCachePath"], $force);
+                $totalScrapTime = $lastFMAlbumScraper->scrapMissingCache(
+                    function ($titles, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) album lastfm titles/s", $total), "- Album title: " . $titles[$index]);
+                        } else {
+                            if ($index == 0) {
+                                echo sprintf(" - Caching %d album lastfm titles/s: ", $total);
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
+                        }
+                    }
+                );
+                echo sprintf("LastFM album data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";

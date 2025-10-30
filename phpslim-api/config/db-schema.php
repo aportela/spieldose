@@ -123,6 +123,17 @@ return (array(
                 FOREIGN KEY(artist_hash) REFERENCES CACHE_LASTFM_ARTIST (md5_hash) ON DELETE CASCADE
             );
 
+            CREATE TABLE CACHE_LASTFM_ALBUM (
+                md5_hash CHAR(32) NOT NULL,
+                mbid CHAR(36),
+                name VARCHAR(128) NOT NULL,
+                artist_name VARCHAR(128) NOT NULL,
+                url VARCHAR(2048) NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (md5_hash)
+            );
+
             CREATE TABLE CACHE_ARTIST_WIKIPEDIA (
                 artist_mbid CHAR(36) NOT NULL,
                 artist_name VARCHAR(128) NOT NULL,

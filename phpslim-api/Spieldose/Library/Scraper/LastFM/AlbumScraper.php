@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Spieldose\Library\Scraper\LastFM;
+
+class AlbumScraper
+{
+    private \aportela\DatabaseWrapper\DB $dbh;
+    private \Psr\Log\LoggerInterface $logger;
+    private \aportela\LastFMWrapper\Album $lastFMAlbumAPI;
+    private bool $refreshExistingCache = false;
+
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiKey, ?string $mbCachePath = null, bool $refreshExistingCache = false)
+    {
+        $this->dbh = $dbh;
+        $this->logger = $logger;
+        $this->lastFMAlbumAPI = new \aportela\LastFMWrapper\Album($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $mbCachePath, $refreshExistingCache);
+        $this->refreshExistingCache = $refreshExistingCache;
+    }
+
+    public function __destruct() {}
+
+    private function getMissingCacheAlbumsData()
+    {
+        $names = [];
+        $results = $this->dbh->query(
+            "
+                SELECT
+                    DISTINCT FILE_ID3_TAG.artist AS name
+                FROM FILE_ID3_TAG
+                WHERE
+                    FILE_ID3_TAG.artist IS NOT NULL
+            "
+        );
+        foreach ($results as $result) {
+            $names[] = $result->name;
+        }
+        return ($names);
+    }
+
+    private function getAllAlbumsData()
+    {
+        $names = [];
+        $results = $this->dbh->query(
+            // TODO: UNION MUSICBRAINZ EXISTING DATA
+            "
+                SELECT
+                    DISTINCT COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist) AS artist, FILE_ID3_TAG.album
+                FROM FILE_ID3_TAG
+                WHERE
+                    COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist) IS NOT NULL
+                AND
+                    FILE_ID3_TAG.album IS NOT NULL
+            "
+        );
+        foreach ($results as $result) {
+            $names[] = $result->name;
+        }
+        return ($names);
+    }
+
+    /**
+     * save LastFM album cache (metadata/tags/tracks)
+     */
+    private function saveMBCacheArtist(\aportela\LastFMWrapper\ParseHelpers\AlbumHelper $album)
+    {
+        $this->dbh->execute(
+            "
+                INSERT INTO CACHE_LASTFM_ALBUM
+                    (md5_hash, mbid, name, artist_name, url, ctime, mtime)
+                VALUES
+                    (:md5_hash, :mbid, :name, :artist_name, :url, :current_timestamp, NULL)
+                ON CONFLICT (md5_hash) DO
+                    UPDATE SET
+                        name = :name,
+                        mbid = :mbid,
+                        artist_name = :artist_name,
+                        url = :url,
+                        mtime = :current_timestamp
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($album->name)),
+                ! empty($album->mbId) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $album->mbId)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam("mbid"),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $album->artist->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":url", $album->url),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+            ]
+        );
+    }
+
+    public function scrapMissingCache(?callable $scrapItemCallback = null): float
+    {
+        $scanStartTime = microtime(true);
+        $albumsData = $this->refreshExistingCache ? $this->getAllAlbumsData() : $this->getMissingCacheAlbumsData();
+        $totalAlbumsData = count($albumsData);
+        for ($i = 0; $i < $totalAlbumsData; $i++) {
+            if ($scrapItemCallback != null) {
+                call_user_func($scrapItemCallback, $albumsData, $totalAlbumsData, $i);
+            }
+            try {
+                $artist = $this->lastFMAlbumAPI->get($albumsData[$i]->artist ?? "", $albumsData[$i]->album ?? "");
+                $this->saveMBCacheArtist($artist);
+            } catch (\aportela\LastFMWrapper\Exception\NotFoundException $e) {
+                $this->logger->warning("LastFM album id get not found", [$albumsData[$i], $e->getMessage()]);
+            } catch (\aportela\LastFMWrapper\Exception\RemoteAPIServerConnectionException $e) {
+                $this->logger->warning("LastFM API server (get album) not reachable", [$albumsData[$i], $e->getMessage()]);
+            } catch (\Throwable $e) {
+                $this->logger->warning("LastFM album id get error", [$albumsData[$i], $e->getMessage(), $e->getPrevious()]);
+            }
+        }
+        return (microtime(true) - $scanStartTime);
+    }
+}
