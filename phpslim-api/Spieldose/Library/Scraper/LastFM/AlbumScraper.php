@@ -68,6 +68,7 @@ class AlbumScraper
      */
     private function saveCache(\aportela\LastFMWrapper\ParseHelpers\AlbumHelper $album)
     {
+        $albumHash = md5($album->artist->name . $album->name);
         $this->dbh->execute(
             "
                 INSERT INTO CACHE_LASTFM_ALBUM
@@ -94,6 +95,30 @@ class AlbumScraper
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_LASTFM_ALBUM_TAG
+                WHERE
+                    album_hash = :album_hash
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":album_hash", $albumHash),
+            ]
+        );
+        foreach ($album->tags as $tag) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_LASTFM_ALBUM_TAG
+                        (album_hash, tag)
+                    VALUES
+                        (:album_hash, :tag)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":album_hash", $albumHash),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag)
+                ]
+            );
+        }
     }
 
     public function scrapMissingCache(?callable $scrapItemCallback = null): float

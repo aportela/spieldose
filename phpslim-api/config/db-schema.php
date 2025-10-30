@@ -150,6 +150,13 @@ return (array(
                 PRIMARY KEY (md5_hash)
             );
 
+            CREATE TABLE CACHE_LASTFM_ALBUM_TAG (
+                album_hash CHAR(32) NOT NULL,
+                tag VARCHAR(64) NOT NULL,
+                PRIMARY KEY (album_hash, tag),
+                FOREIGN KEY(album_hash) REFERENCES CACHE_LASTFM_ALBUM (md5_hash) ON DELETE CASCADE
+            );
+
             CREATE TABLE CACHE_ARTIST_WIKIPEDIA (
                 artist_mbid CHAR(36) NOT NULL,
                 artist_name VARCHAR(128) NOT NULL,
