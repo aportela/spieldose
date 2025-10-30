@@ -121,12 +121,12 @@ class LastFM
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":image");
             }
             if (!empty($this->bioSummary)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", trim($this->bioSummary));
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", mb_trim($this->bioSummary));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":bio_summary");
             }
             if (!empty($this->bioContent)) {
-                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", trim($this->bioContent));
+                $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", mb_trim($this->bioContent));
             } else {
                 $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":bio_content");
             }
