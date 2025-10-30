@@ -96,6 +96,22 @@ return (array(
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
             );
 
+            CREATE TABLE CACHE_MUSICBRAINZ_RECORDING (
+                mbid CHAR(36) NOT NULL,
+                title VARCHAR(128) NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (mbid)
+            );
+
+            CREATE TABLE CACHE_MUSICBRAINZ_RECORDING_ARTIST (
+                recording_mbid CHAR(36) NOT NULL,
+                artist_mbid CHAR(36) NOT NULL,
+                PRIMARY KEY (recording_mbid, artist_mbid),
+                FOREIGN KEY(recording_mbid) REFERENCES CACHE_MUSICBRAINZ_RECORDING (mbid) ON DELETE CASCADE,
+                FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
+            );
+
             CREATE TABLE CACHE_MUSICBRAINZ_RELEASE (
                 mbid CHAR(36) NOT NULL,
                 title VARCHAR(128) NOT NULL,
@@ -110,6 +126,28 @@ return (array(
                 artist_mbid CHAR(36) NOT NULL,
                 PRIMARY KEY (release_mbid, artist_mbid),
                 FOREIGN KEY(release_mbid) REFERENCES CACHE_MUSICBRAINZ_RELEASE (`mbid`) ON DELETE CASCADE
+            );
+
+            CREATE TABLE CACHE_MUSICBRAINZ_MEDIA (
+                mbid CHAR(36) NOT NULL,
+                release_mbid CHAR(36) NOT NULL,
+                position INTEGER,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (mbid),
+                FOREIGN KEY(release_mbid) REFERENCES CACHE_MUSICBRAINZ_RELEASE (`mbid`) ON DELETE CASCADE
+            );
+
+            CREATE TABLE CACHE_MUSICBRAINZ_TRACK (
+                mbid CHAR(36) NOT NULL,
+                media_mbid CHAR(36) NOT NULL,
+                recording_mbid CHAR(36) NOT NULL,
+                position INTEGER,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (mbid),
+                FOREIGN KEY(media_mbid) REFERENCES CACHE_MUSICBRAINZ_MEDIA (mbid) ON DELETE CASCADE,
+                FOREIGN KEY(recording_mbid) REFERENCES CACHE_MUSICBRAINZ_RECORDING (mbid) ON DELETE CASCADE
             );
 
             CREATE TABLE CACHE_LASTFM_ARTIST (

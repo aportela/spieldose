@@ -110,6 +110,111 @@ class ReleaseScraper
                 ]
             );
         }
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_MUSICBRAINZ_MEDIA
+                WHERE
+                    release_mbid = :release_mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId)
+            ]
+        );
+        foreach ($release->media as $media) {
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_MUSICBRAINZ_MEDIA
+                        (mbid, release_mbid, position, ctime, mtime)
+                    VALUES
+                        (:mbid, :release_mbid, :position, :current_timestamp, NULL)
+                    ON CONFLICT (mbid) DO
+                    UPDATE SET
+                        release_mbid = :release_mbid,
+                        position = :position,
+                        mtime = :current_timestamp
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $media->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $media->position),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                ]
+            );
+            foreach ($media->trackList as $track) {
+                $this->dbh->execute(
+                    "
+                        INSERT INTO CACHE_MUSICBRAINZ_RECORDING
+                            (mbid, title, ctime, mtime)
+                        VALUES
+                            (:mbid, :title, :current_timestamp, NULL)
+                        ON CONFLICT (mbid) DO
+                        UPDATE SET
+                            title = :title,
+                            mtime = :current_timestamp
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $track->recording->mbId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":title", $track->recording->title),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                    ]
+                );
+                $this->dbh->execute(
+                    "
+                        DELETE FROM CACHE_MUSICBRAINZ_RECORDING_ARTIST
+                        WHERE
+                            recording_mbid = :recording_mbid
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId)
+                    ]
+                );
+                foreach ($track->recording->artistCredit as $recordingArtist) {
+                    $this->dbh->execute(
+                        "
+                            INSERT INTO CACHE_MUSICBRAINZ_RECORDING_ARTIST
+                                (recording_mbid, artist_mbid)
+                            VALUES
+                                (:recording_mbid, :artist_mbid)
+                        ",
+                        [
+                            new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId),
+                            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $recordingArtist->mbId)
+                        ]
+                    );
+                }
+                $this->dbh->execute(
+                    "
+                        DELETE FROM CACHE_MUSICBRAINZ_TRACK
+                        WHERE
+                            media_mbid = :media_mbid
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":media_mbid", $media->mbId)
+                    ]
+                );
+                $this->dbh->execute(
+                    "
+                        INSERT INTO CACHE_MUSICBRAINZ_TRACK
+                            (mbid, media_mbid, recording_mbid, position, ctime, mtime)
+                        VALUES
+                            (:mbid, :media_mbid, :recording_mbid, :position, :current_timestamp, NULL)
+                        ON CONFLICT (mbid) DO
+                            UPDATE SET
+                                media_mbid = :media_mbid,
+                                recording_mbid = :recording_mbid,
+                                position = :position,
+                                mtime = :current_timestamp
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $track->mbId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":media_mbid", $media->mbId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":position", $track->position),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                    ]
+                );
+            }
+        }
     }
 
     public function scrapMissingCache(?callable $scrapItemCallback = null): float
