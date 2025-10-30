@@ -15,9 +15,7 @@ class Manager
         $this->logger = $logger;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     /**
      * checks for library path existence (returns path id || null)

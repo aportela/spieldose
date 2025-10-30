@@ -19,20 +19,33 @@ class ID3Scanner
 
     public function __destruct() {}
 
-    public function enqueueFile(string $fileId)
+    public function enqueueFile(string $fileId, bool $force)
     {
         $this->logger->debug("ID3Scanner::enqueueFile", [$fileId]);
         $currentTimestamp = intval(microtime(true) * 1000);
+        $whereCondition = "
+            WHERE
+                NOT EXISTS (
+                    SELECT
+                        1
+                    FROM FILE_ID3_TAG
+                    WHERE
+                        file_id = :file_id
+                )
+        ";
         $this->dbh->execute(
-            "
-                INSERT INTO QUEUE_FILE_ID3_SCAN
-                    (file_id, ctime)
-                VALUES
-                    (:file_id, :current_timestamp)
-                ON CONFLICT (file_id) DO
-                UPDATE SET
-                    ctime = :current_timestamp
-            ",
+            sprintf(
+                "
+                    INSERT INTO QUEUE_FILE_ID3_SCAN
+                        SELECT
+                            :file_id, :current_timestamp
+                    %s
+                    ON CONFLICT (file_id) DO
+                    UPDATE SET
+                        ctime = :current_timestamp
+                ",
+                ! $force ? $whereCondition : null
+            ),
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", $currentTimestamp),

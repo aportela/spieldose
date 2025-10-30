@@ -33,13 +33,13 @@ class LibraryScanner
     /**
      * scan (fill DIRECTORY && FILE tables) all library paths
      */
-    public function scanLibrary(bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
+    public function scanLibrary(bool $enqueueID3 = true, bool $force = false, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
         $this->logger->info("LibraryScanner::scanLibraryPath");
         $totalScanTime = 0;
         foreach ($this->libraryManager->getLibraryPaths() as $currentLibraryPath) {
             $this->logger->debug("LibraryScanner::scanLibraryPath - Current path", [$currentLibraryPath->pathId, $currentLibraryPath->path]);
-            $totalScanTime += $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $directoryScanCallback, $fileScanCallback);
+            $totalScanTime += $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $force, $directoryScanCallback, $fileScanCallback);
         }
         return ($totalScanTime);
     }
@@ -47,7 +47,7 @@ class LibraryScanner
     /**
      * scan (fill DIRECTORY && FILE tables) custom library path
      */
-    public function scanLibraryPath(string $pathId, string $path, bool $enqueueID3 = true, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
+    public function scanLibraryPath(string $pathId, string $path, bool $enqueueID3 = true, bool $force = false, ?callable $directoryScanCallback = null, ?callable $fileScanCallback = null): float
     {
         $this->logger->info("LibraryScanner::scanLibraryPath");
         $scanStartTime = microtime(true);
@@ -131,7 +131,7 @@ class LibraryScanner
                         ]
                     );
                     if ($enqueueID3) {
-                        $this->id3Scanner->enqueueFile($fileId);
+                        $this->id3Scanner->enqueueFile($fileId, $force);
                     }
                 }
             } elseif (! empty($currentDirectoryId)) {
