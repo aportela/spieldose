@@ -49,6 +49,7 @@ class ArtistScraper
                 FROM FILE_ID3_TAG
                 WHERE
                     FILE_ID3_TAG.artist IS NOT NULL
+                UNION
                 SELECT
                     FILE_ID3_TAG.album_artist AS name
                 FROM FILE_ID3_TAG
