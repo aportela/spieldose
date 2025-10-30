@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47dcbec9a7e47d3a5c7f947e5ef230b4",
+    "content-hash": "87ef494b679926b365bfc146071a807a",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -150,16 +150,16 @@
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "1.1.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "366c43bd07cd9f476cfdf87b9664cc1981f341d2"
+                "reference": "c784e5717913001688e63ca4cef2506eadeab216"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/366c43bd07cd9f476cfdf87b9664cc1981f341d2",
-                "reference": "366c43bd07cd9f476cfdf87b9664cc1981f341d2",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/c784e5717913001688e63ca4cef2506eadeab216",
+                "reference": "c784e5717913001688e63ca4cef2506eadeab216",
                 "shasum": ""
             },
             "require": {
@@ -192,9 +192,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/1.1.0"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.0.0"
             },
-            "time": "2025-10-10T13:11:03+00:00"
+            "time": "2025-10-29T23:20:15+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
