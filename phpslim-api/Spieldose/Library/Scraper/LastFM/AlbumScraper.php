@@ -27,7 +27,7 @@ class AlbumScraper
             $this->dbh->query(
                 "
                     SELECT
-                            DISTINCT COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist) AS artist, FILE_ID3_TAG.album
+                        DISTINCT COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist) AS artist, FILE_ID3_TAG.album
                     FROM FILE_ID3_TAG
                     WHERE
                         COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist) IS NOT NULL
@@ -127,6 +127,34 @@ class AlbumScraper
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":album_hash", $albumHash),
                     new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag)
+                ]
+            );
+        }
+        $this->dbh->execute(
+            "
+                DELETE FROM CACHE_LASTFM_ALBUM_TRACK
+                WHERE
+                    album_hash = :album_hash
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":album_hash", $albumHash),
+            ]
+        );
+        foreach ($album->tracks as $track) {
+            $trackHash = md5($albumHash . mb_strtolower(mb_trim($track->name)) . mb_strtolower(mb_trim($track->artist->name)));
+            $this->dbh->execute(
+                "
+                    INSERT INTO CACHE_LASTFM_ALBUM_TRACK
+                        (md5_hash, album_hash, name, artist_name, rank)
+                    VALUES
+                        (:md5_hash, :album_hash, :name, :artist_name, :rank)
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $trackHash),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":album_hash", $albumHash),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $track->name),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $track->artist->name),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":rank", $track->rank)
                 ]
             );
         }
