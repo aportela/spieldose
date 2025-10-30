@@ -37,8 +37,9 @@ class AlbumScraper
                         NOT EXISTS (
                             SELECT
                                 1
-                            FROM CACHE_LASTFM_ARTIST
-                            WHERE CACHE_LASTFM_ARTIST.name = COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist)
+                            FROM CACHE_LASTFM_ALBUM
+                            WHERE lower(trim(CACHE_LASTFM_ALBUM.name)) = lower(trim(FILE_ID3_TAG.album))
+                            AND lower(trim(CACHE_LASTFM_ALBUM.artist_name)) = lower(trim(COALESCE(FILE_ID3_TAG.album_artist, FILE_ID3_TAG.artist)))
                         )
                 "
             )
@@ -68,19 +69,21 @@ class AlbumScraper
      */
     private function saveCache(\aportela\LastFMWrapper\ParseHelpers\AlbumHelper $album)
     {
-        $albumHash = md5($album->artist->name . $album->name);
+        $albumHash = md5(mb_strtolower(mb_trim($album->artist->name)) . mb_strtolower(mb_trim($album->name)));
         $this->dbh->execute(
             "
                 INSERT INTO CACHE_LASTFM_ALBUM
-                    (md5_hash, mbid, name, artist_name, url, ctime, mtime)
+                    (md5_hash, mbid, name, artist_name, url, wiki_summary, wiki_content, ctime, mtime)
                 VALUES
-                    (:md5_hash, :mbid, :name, :artist_name, :url, :current_timestamp, NULL)
+                    (:md5_hash, :mbid, :name, :artist_name, :url, :wiki_summary, :wiki_content, :current_timestamp, NULL)
                 ON CONFLICT (md5_hash) DO
                     UPDATE SET
                         name = :name,
                         mbid = :mbid,
                         artist_name = :artist_name,
                         url = :url,
+                        wiki_summary = :wiki_summary,
+                        wiki_content = :wiki_content,
                         mtime = :current_timestamp
             ",
             [
@@ -92,6 +95,14 @@ class AlbumScraper
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $album->name),
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_name", $album->artist->name),
                 new \aportela\DatabaseWrapper\Param\StringParam(":url", $album->url),
+                ! empty($album->wiki->summary) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":wiki_summary", $album->wiki->summary)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam("wiki_summary"),
+                ! empty($album->wiki->content) ?
+                    new \aportela\DatabaseWrapper\Param\StringParam(":wiki_content", $album->wiki->content)
+                    :
+                    new \aportela\DatabaseWrapper\Param\NullParam("wiki_content"),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
