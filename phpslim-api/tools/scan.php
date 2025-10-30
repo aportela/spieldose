@@ -145,7 +145,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
                 echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
-                $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainz\MusicBrainzArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
                 $totalScrapTime = $mbArtistScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
@@ -162,36 +162,10 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("MusicBrainz artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
-
-                /*
-                    if (! empty($settings['lastFMAPIKey'])) {
-                        $lastFMArtist = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $settings['lastFMAPIKey']);
-                        try {
-                            $lastFMArtist->get($mbArtist->name ?? $artistNames[$i]);
-                            $libraryManager->saveLastFMCacheArtist($lastFMArtist);
-                        } catch (\Throwable $e) {
-                        }
-                    }
-                    */
-                /*
-                    $wikipediaArtist = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger);
-                    $artistWikiPages = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIPEDIA);
-                    if (count($artistWikiPages) > 0) {
-                        print_r($artistWikiPages);
-                        $wikipediaArtist->setURL($artistWikiPages[0]);
-                        try {
-                            $html = $wikipediaArtist->getHTML();
-                            if (! empty($html)) {
-                                $libraryManager->saveMBCacheArtist($mbArtist);
-                            }
-                        } catch (\Throwable $e) {
-                        }
-                    }
-                        */
             }
             if ($cmdLine->hasParam("scrapMusicBrainzReleaseCache")) {
                 echo "Starting Musicbrainz Release Scrapper (Releases without MusicBrainz cache):" . PHP_EOL;
-                $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainzReleaseScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainz\MusicBrainzReleaseScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
                 $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
