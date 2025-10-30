@@ -71,6 +71,7 @@ class ArtistScraper
      */
     private function saveCache(\aportela\LastFMWrapper\ParseHelpers\ArtistHelper $artist)
     {
+        $artistHash = md5($artist->name);
         $this->dbh->execute(
             "
                 INSERT INTO CACHE_LASTFM_ARTIST
@@ -88,7 +89,7 @@ class ArtistScraper
                         mtime = :current_timestamp
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($artist->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash),
                 ! empty($artist->mbId) ?
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId)
                     :
@@ -121,7 +122,7 @@ class ArtistScraper
                     artist_hash = :artist_hash
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
             ]
         );
         foreach ($artist->tags as $tag) {
@@ -133,7 +134,7 @@ class ArtistScraper
                         (:artist_hash, :tag)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
                     new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag)
                 ]
             );
@@ -145,7 +146,7 @@ class ArtistScraper
                     artist_hash = :artist_hash
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
             ]
         );
         foreach ($artist->similar as $similarArtist) {
@@ -157,7 +158,7 @@ class ArtistScraper
                         (:artist_hash, :name)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", md5($artist->name)),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $similarArtist->name)
                 ]
             );
