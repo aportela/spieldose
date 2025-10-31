@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba3f064362712b3181c08e264b8d27b3",
+    "content-hash": "b4f9b99788cbf48a8312b37a26c9f50e",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -150,20 +150,21 @@
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "fa9d95fde50c9663e14f675b9cf8ba1c603d0fea"
+                "reference": "6e12d2eb8909b154b48e09286018df69840a5024"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/fa9d95fde50c9663e14f675b9cf8ba1c603d0fea",
-                "reference": "fa9d95fde50c9663e14f675b9cf8ba1c603d0fea",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/6e12d2eb8909b154b48e09286018df69840a5024",
+                "reference": "6e12d2eb8909b154b48e09286018df69840a5024",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.1",
+                "aportela/simple-fs-cache": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
@@ -192,9 +193,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.1.0"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.2.0"
             },
-            "time": "2025-10-31T11:05:05+00:00"
+            "time": "2025-10-31T21:43:44+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
