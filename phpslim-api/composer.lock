@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "87ef494b679926b365bfc146071a807a",
+    "content-hash": "ba3f064362712b3181c08e264b8d27b3",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -150,16 +150,16 @@
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "2.0.6",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "3a3041567a7b6b92629fd2f9d1f8280ecf2bbad8"
+                "reference": "fa9d95fde50c9663e14f675b9cf8ba1c603d0fea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/3a3041567a7b6b92629fd2f9d1f8280ecf2bbad8",
-                "reference": "3a3041567a7b6b92629fd2f9d1f8280ecf2bbad8",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/fa9d95fde50c9663e14f675b9cf8ba1c603d0fea",
+                "reference": "fa9d95fde50c9663e14f675b9cf8ba1c603d0fea",
                 "shasum": ""
             },
             "require": {
@@ -192,9 +192,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.0.6"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.1.0"
             },
-            "time": "2025-10-30T22:47:20+00:00"
+            "time": "2025-10-31T11:05:05+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
@@ -245,20 +245,21 @@
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "3.1.4",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "e27b95599fc33395e2be0a721309714952fc241f"
+                "reference": "70a598327ea5ca169851cd09118a3cd71c0de48f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/e27b95599fc33395e2be0a721309714952fc241f",
-                "reference": "e27b95599fc33395e2be0a721309714952fc241f",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/70a598327ea5ca169851cd09118a3cd71c0de48f",
+                "reference": "70a598327ea5ca169851cd09118a3cd71c0de48f",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.1",
+                "aportela/simple-fs-cache": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
@@ -287,9 +288,9 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.1.4"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.2.0"
             },
-            "time": "2025-10-30T21:05:09+00:00"
+            "time": "2025-10-31T20:46:16+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
@@ -342,20 +343,21 @@
         },
         {
             "name": "aportela/scraper-lyrics",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/scraper-lyrics.git",
-                "reference": "b6fdb03213560e5bfbd18c6fafe30cdd8a5fbf3d"
+                "reference": "627873b79a08aaea42f6527e7d0487a6d44bd88d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/b6fdb03213560e5bfbd18c6fafe30cdd8a5fbf3d",
-                "reference": "b6fdb03213560e5bfbd18c6fafe30cdd8a5fbf3d",
+                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/627873b79a08aaea42f6527e7d0487a6d44bd88d",
+                "reference": "627873b79a08aaea42f6527e7d0487a6d44bd88d",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.1",
+                "aportela/simple-fs-cache": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
@@ -384,9 +386,56 @@
             "homepage": "https://github.com/aportela/scraper-lyrics",
             "support": {
                 "issues": "https://github.com/aportela/scraper-lyrics/issues",
-                "source": "https://github.com/aportela/scraper-lyrics/tree/1.1.0"
+                "source": "https://github.com/aportela/scraper-lyrics/tree/1.2.0"
             },
-            "time": "2025-10-13T13:37:09+00:00"
+            "time": "2025-10-31T21:38:39+00:00"
+        },
+        {
+            "name": "aportela/simple-fs-cache",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aportela/simple-fs-cache.git",
+                "reference": "8860a9774e4a264966c4a5226501e02bb621b06b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aportela/simple-fs-cache/zipball/8860a9774e4a264966c4a5226501e02bb621b06b",
+                "reference": "8860a9774e4a264966c4a5226501e02bb621b06b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4",
+                "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.88",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "aportela\\SimpleFSCache\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "alex",
+                    "email": "766f6964+github@gmail.com"
+                }
+            ],
+            "description": " Custom php filesystem cache",
+            "homepage": "https://github.com/aportela/simple-fs-cache",
+            "support": {
+                "issues": "https://github.com/aportela/simple-fs-cache/issues",
+                "source": "https://github.com/aportela/simple-fs-cache/tree/1.0.2"
+            },
+            "time": "2025-10-31T20:36:28+00:00"
         },
         {
             "name": "brick/math",
