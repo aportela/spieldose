@@ -211,7 +211,7 @@ class ArtistScraper
                 call_user_func($scrapItemCallback, $artistNames, $totalArtistsNames, $i);
             }
             try {
-                $mbDataResults = $artist->search($artistNames[$i], 1);
+                $mbDataResults = $this->musicBrainzArtistAPI->search($artistNames[$i], 1);
                 if (count($mbDataResults) == 1) {
                     if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
                         $this->setID3OrphanedArtistNameMBId($artistNames[$i], $mbDataResults[0]->mbId);
