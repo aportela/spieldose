@@ -97,14 +97,10 @@ class ArtistScraper
                     new \aportela\DatabaseWrapper\Param\NullParam(":mbid"),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name),
                 new \aportela\DatabaseWrapper\Param\StringParam(":url", $artist->url),
-                // TODO
-                /*
                 ! empty($artist->image) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":image", $artist->url)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":image", $artist->image)
                     :
                     new \aportela\DatabaseWrapper\Param\NullParam(":image"),
-                */
-                new \aportela\DatabaseWrapper\Param\NullParam(":image"),
                 ! empty($artist->bio->summary) ?
                     new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", $artist->bio->summary)
                     :
