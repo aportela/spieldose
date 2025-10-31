@@ -216,7 +216,7 @@ return (array(
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (`mbid`) ON DELETE CASCADE
             );
 
-            CREATE TABLE LYRICS (
+            CREATE TABLE CACHE_LYRICS (
                 title VARCHAR(512) NOT NULL,
                 artist VARCHAR(128) NOT NULL,
                 data TEXT NOT NULL,

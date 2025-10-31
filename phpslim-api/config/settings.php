@@ -151,7 +151,8 @@ $settings['thumbnails'] = [
 
 $settings["cache"] = [
     "MusicBrainzCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "musicbrainz",
-    "LastFMCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "lastfm"
+    "LastFMCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "lastfm",
+    "LyricsCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "lyrics",
 ];
 
 $settings['common'] = [

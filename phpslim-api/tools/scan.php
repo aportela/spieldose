@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapLyrics", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             $force = $cmdLine->hasParam("force");
@@ -222,6 +222,26 @@ if (count($missingExtensions) > 0) {
                     }
                 );
                 echo sprintf("LastFM album data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+            }
+            if ($cmdLine->hasParam("scrapLyrics")) {
+                echo "Starting Lyrics Scrapper (Lyrics without cache):" . PHP_EOL;
+                $lyricsScraper = new \Spieldose\Library\Scraper\Lyrics($dbh, $logger, $settings["cache"]["LyricsCachePath"], $force);
+                $totalScrapTime = $lyricsScraper->scrapMissingCache(
+                    function ($tracks, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) track/s",  "- Artist: {$tracks[$index]->artist} - Title: {$tracks[$index]->title}");
+                        } else {
+                            if ($index == 0) {
+                                echo " - Caching {$total} tracks/s: ";
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
+                        }
+                    }
+                );
+                echo sprintf("Lyrics track scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
             if ($cmdLine->hasParam("clean")) {
                 echo "Cleaning database...";
