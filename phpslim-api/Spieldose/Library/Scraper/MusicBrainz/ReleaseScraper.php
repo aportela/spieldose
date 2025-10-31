@@ -209,7 +209,7 @@ class ReleaseScraper
                         new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $track->mbId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":media_mbid", $media->mbId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":position", $track->position),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $track->position),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                     ]
                 );
