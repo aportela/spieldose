@@ -78,4 +78,9 @@ if (count($missingExtensions) > 0) {
             $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LastFMCachePath"]);
         }
     }
+    if (!file_exists($settings["cache"]["LyricsCachePath"])) {
+        if (!mkdir($settings["cache"]["LyricsCachePath"], 0750, true)) {
+            $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LyricsCachePath"]);
+        }
+    }
 }
