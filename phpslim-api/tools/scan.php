@@ -69,7 +69,7 @@ if (count($missingExtensions) > 0) {
                                     \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Scanning %d directory file/s:", $total), "- Current file: " . basename($currentDirectoryFiles[$index]));
                                 } else {
                                     if ($index == 0) {
-                                        echo sprintf(" - Scanning %d directory file/s: ", $total);
+                                        echo " - Scanning {$total} directory file/s: ";
                                     }
                                     echo ".";
                                     if ($index == $total - 1) {
@@ -104,7 +104,7 @@ if (count($missingExtensions) > 0) {
                             \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, "", "- Current file: {$queuedItems[$index]->fullPath}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Processing (%d) queued items/s:", $total);
+                                echo " - Processing ({$total}) queued items/s:";
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -129,10 +129,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
                     function ($artistNames, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Searching (%d) artist/s", $total), "- Artist name: " . $artistNames[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$artistNames[$index]}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Searching %d artist/s: ", $total);
+                                echo " - Searching {$total} artist/s: ";
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -149,10 +149,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $mbArtistScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) artist musicbrainz id/s", $total), "- Artist mbId: " . $mbIds[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist musicbrainz id/s", "- Artist mbId: {$mbIds[$index]}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Caching %d artist musicbrainz id/s: ", $total);
+                                echo " - Caching {$total} artist musicbrainz id/s: ";
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -169,10 +169,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) release musicbrainz id/s", $total), "- Release mbId: " . $mbIds[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) release musicbrainz id/s", "- Release mbId: {$mbIds[$index]}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Caching %d release musicbrainz id/s: ", $total);
+                                echo " - Caching {$total} release musicbrainz id/s: ";
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -189,10 +189,10 @@ if (count($missingExtensions) > 0) {
                 $totalScrapTime = $lastFMArtistScraper->scrapMissingCache(
                     function ($names, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) artist lastfm name/s", $total), "- Artist name: " . $names[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist lastfm name/s", "- Artist name: {$names[$index]}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Caching %d artist lastfm name/s: ", $total);
+                                echo " - Caching {$total} artist lastfm name/s: ";
                             }
                             echo ".";
                             if ($index == $total - 1) {
@@ -207,12 +207,12 @@ if (count($missingExtensions) > 0) {
                 echo "Starting LastFM Album Scrapper (Albums without LastFM cache):" . PHP_EOL;
                 $lastFMAlbumScraper = new \Spieldose\Library\Scraper\LastFM\AlbumScraper($dbh, $logger, $settings["lastFMAPIKey"], $settings["cache"]["LastFMCachePath"], $force);
                 $totalScrapTime = $lastFMAlbumScraper->scrapMissingCache(
-                    function ($titles, $total, $index) use ($showProgressBar) {
+                    function ($items, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Caching (%d) album lastfm titles/s", $total), "- Album title: " . $titles[$index]);
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) album lastfm item/s",  "- Album: {$items[$index]->album} - artist: {$items[$index]->artist}");
                         } else {
                             if ($index == 0) {
-                                echo sprintf(" - Caching %d album lastfm titles/s: ", $total);
+                                echo " - Caching {$total} album lastfm item/s: ";
                             }
                             echo ".";
                             if ($index == $total - 1) {
