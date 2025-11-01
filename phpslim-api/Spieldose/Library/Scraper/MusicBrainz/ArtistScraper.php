@@ -9,8 +9,6 @@ class ArtistScraper
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\MusicBrainzWrapper\Artist $musicBrainzArtistAPI;
-    // TODO
-    private bool $refreshExistingCache = false;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
@@ -257,10 +255,10 @@ class ArtistScraper
         );
     }
 
-    public function scrapMissingCache(?callable $scrapItemCallback = null): float
+    public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $artistMbIds = $this->refreshExistingCache ? $this->getAllArtistMBIds() : $this->getArtistMBIdsWithoutCache();
+        $artistMbIds = $force ? $this->getAllArtistMBIds() : $this->getArtistMBIdsWithoutCache();
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
             if ($scrapItemCallback != null) {

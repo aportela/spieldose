@@ -9,8 +9,6 @@ class ReleaseScraper
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\MusicBrainzWrapper\Release $musicBrainzReleaseAPI;
-    // TODO
-    private bool $refreshExistingCache = false;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
@@ -216,10 +214,10 @@ class ReleaseScraper
         }
     }
 
-    public function scrapMissingCache(?callable $scrapItemCallback = null): float
+    public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $releaseMBIds = $this->refreshExistingCache ? $this->getAllReleaseMBIds() : $this->getReleaseMBIdsWithoutCache();
+        $releaseMBIds = $force ? $this->getAllReleaseMBIds() : $this->getReleaseMBIdsWithoutCache();
         $totalReleaseMbIds = count($releaseMBIds);
         for ($i = 0; $i < $totalReleaseMbIds; $i++) {
             if ($scrapItemCallback != null) {

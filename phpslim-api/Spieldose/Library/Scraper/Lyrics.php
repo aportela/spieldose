@@ -9,8 +9,6 @@ class Lyrics
 
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    // TODO
-    private bool $refreshExistingCache = false;
     private \aportela\ScraperLyrics\Lyrics $lyrics;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
@@ -82,10 +80,10 @@ class Lyrics
         );
     }
 
-    public function scrapMissingCache(?callable $scrapItemCallback = null): float
+    public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $tracks = $this->refreshExistingCache ? $this->getAllTracks() : $this->getTracksWithoutCache();
+        $tracks = $force ? $this->getAllTracks() : $this->getTracksWithoutCache();
         $totalTracks = count($tracks);
         for ($i = 0; $i < $totalTracks; $i++) {
             if ($scrapItemCallback != null) {

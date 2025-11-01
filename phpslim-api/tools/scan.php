@@ -160,7 +160,8 @@ if (count($missingExtensions) > 0) {
                                 echo PHP_EOL;
                             }
                         }
-                    }
+                    },
+                    $force
                 );
                 echo sprintf("MusicBrainz artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
@@ -181,7 +182,8 @@ if (count($missingExtensions) > 0) {
                                 echo PHP_EOL;
                             }
                         }
-                    }
+                    },
+                    $force
                 );
                 echo sprintf("MusicBrainz release data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
@@ -202,7 +204,8 @@ if (count($missingExtensions) > 0) {
                                 echo PHP_EOL;
                             }
                         }
-                    }
+                    },
+                    $force
                 );
                 echo sprintf("LastFM artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
@@ -223,7 +226,8 @@ if (count($missingExtensions) > 0) {
                                 echo PHP_EOL;
                             }
                         }
-                    }
+                    },
+                    $force
                 );
                 echo sprintf("LastFM album data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
@@ -244,7 +248,8 @@ if (count($missingExtensions) > 0) {
                                 echo PHP_EOL;
                             }
                         }
-                    }
+                    },
+                    $force
                 );
                 echo sprintf("Lyrics track scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
