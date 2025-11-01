@@ -9,18 +9,17 @@ class ReleaseScraper
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\MusicBrainzWrapper\Release $musicBrainzReleaseAPI;
+    // TODO
     private bool $refreshExistingCache = false;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, ?string $mbCachePath = null, bool $refreshExistingCache = false)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $mbCachePath, $refreshExistingCache);
-        $this->refreshExistingCache = $refreshExistingCache;
+        $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, $cache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
     }
 
     public function __destruct() {}
-
 
     private function getReleaseMBIdsWithoutCache()
     {

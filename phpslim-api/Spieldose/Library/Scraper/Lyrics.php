@@ -9,16 +9,15 @@ class Lyrics
 
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
-    private \aportela\MusicBrainzWrapper\Artist $musicBrainzArtistAPI;
+    // TODO
     private bool $refreshExistingCache = false;
     private \aportela\ScraperLyrics\Lyrics $lyrics;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, ?string $mbCachePath = null, bool $refreshExistingCache = false)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->lyrics = new \aportela\ScraperLyrics\Lyrics($logger);
-        $this->refreshExistingCache = $refreshExistingCache;
+        $this->lyrics = new \aportela\ScraperLyrics\Lyrics($logger, $cache);
     }
 
     public function __destruct() {}

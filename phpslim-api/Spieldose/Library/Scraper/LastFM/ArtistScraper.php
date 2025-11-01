@@ -9,14 +9,14 @@ class ArtistScraper
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
     private \aportela\LastFMWrapper\Artist $lastFMArtistAPI;
+    // TODO
     private bool $refreshExistingCache = false;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiKey, ?string $mbCachePath = null, bool $refreshExistingCache = false)
+    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiKey, \aportela\SimpleFSCache\Cache $cache)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->lastFMArtistAPI = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $mbCachePath, $refreshExistingCache);
-        $this->refreshExistingCache = $refreshExistingCache;
+        $this->lastFMArtistAPI = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, $cache, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
     }
 
     public function __destruct() {}
