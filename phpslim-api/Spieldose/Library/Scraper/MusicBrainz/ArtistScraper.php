@@ -224,7 +224,7 @@ class ArtistScraper
         return (microtime(true) - $scanStartTime);
     }
 
-    public function replaceMbIdRedirect(string $oldMbId, string $newMbId)
+    private function replaceMbIdRedirect(string $oldMbId, string $newMbId)
     {
         $this->dbh->execute(
             "
