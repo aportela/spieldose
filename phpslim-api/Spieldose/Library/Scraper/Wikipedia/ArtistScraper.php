@@ -24,54 +24,29 @@ class ArtistScraper
     /**
      * @return array<\stdClass>
      */
-    private function getArtistsDataWithoutCache(): array
+    private function getArtistsData(bool $withoutCache = true): array
     {
         $data = [];
+        $withoutCacheWhereCondition = "
+            LEFT JOIN CACHE_ARTIST_WIKIPEDIA ON CACHE_ARTIST_WIKIPEDIA.artist_mbid = CACHE_MUSICBRAINZ_ARTIST.mbid
+            WHERE
+                CACHE_ARTIST_WIKIPEDIA.artist_mbid IS NULL
+        ";
         $results = $this->dbh->query(
-            "
-                SELECT
-                    CACHE_MUSICBRAINZ_ARTIST.mbid, CACHE_MUSICBRAINZ_ARTIST.name, CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.url
-                FROM CACHE_MUSICBRAINZ_ARTIST
-                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP ON
-                    CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.artist_mbid = CACHE_MUSICBRAINZ_ARTIST.mbid
-                    AND
-                    CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.relation_type_id = :relation_type_id
-                LEFT JOIN CACHE_ARTIST_WIKIPEDIA ON CACHE_ARTIST_WIKIPEDIA.artist_mbid = CACHE_MUSICBRAINZ_ARTIST.mbid
-                WHERE
-                    CACHE_ARTIST_WIKIPEDIA.artist_mbid IS NULL
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value)
-            ]
-        );
-        foreach ($results as $result) {
-            if (! empty($result->url)) {
-                $artist = new \stdClass();
-                $artist->mbId = $result->mbid;
-                $artist->name = $result->name;
-                $artist->WikidataURL = $result->url;
-                $data[] = $artist;
-            }
-        }
-        return ($data);
-    }
-
-    /**
-     * @return array<\stdClass>
-     */
-    private function getAllArtistsData(): array
-    {
-        $data = [];
-        $results = $this->dbh->query(
-            "
-                SELECT
-                    CACHE_MUSICBRAINZ_ARTIST.mbid, CACHE_MUSICBRAINZ_ARTIST.name, CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.url
-                FROM CACHE_MUSICBRAINZ_ARTIST
-                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP ON
-                    CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.artist_mbid = CACHE_MUSICBRAINZ_ARTIST.mbid
-                    AND
-                    CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.relation_type_id = :relation_type_id
-            ",
+            sprintf(
+                "
+                    SELECT
+                        CACHE_MUSICBRAINZ_ARTIST.mbid, CACHE_MUSICBRAINZ_ARTIST.name, CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.url
+                    FROM CACHE_MUSICBRAINZ_ARTIST
+                    LEFT JOIN CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP ON (
+                        CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.artist_mbid = CACHE_MUSICBRAINZ_ARTIST.mbid
+                        AND
+                        CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP.relation_type_id = :relation_type_id
+                    )
+                    %s
+                ",
+                $withoutCache ? $withoutCacheWhereCondition : null
+            ),
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value)
             ]
@@ -117,7 +92,7 @@ class ArtistScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $artistsData = $force ? $this->getAllArtistsData() : $this->getArtistsDataWithoutCache();
+        $artistsData = $this->getArtistsData(!$force);
         $totalArtistsData = count($artistsData);
         for ($i = 0; $i < $totalArtistsData; $i++) {
             if ($scrapItemCallback != null) {
