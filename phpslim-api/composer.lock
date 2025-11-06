@@ -200,16 +200,16 @@
         },
         {
             "name": "aportela/mediawiki-wrapper",
-            "version": "2.1.0",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/mediawiki-wrapper.git",
-                "reference": "2219753e3d712c6b75a13028b64c5d818eb14dab"
+                "reference": "a965afda2524135a00f6edcf4f8689916ae4ba77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/2219753e3d712c6b75a13028b64c5d818eb14dab",
-                "reference": "2219753e3d712c6b75a13028b64c5d818eb14dab",
+                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/a965afda2524135a00f6edcf4f8689916ae4ba77",
+                "reference": "a965afda2524135a00f6edcf4f8689916ae4ba77",
                 "shasum": ""
             },
             "require": {
@@ -244,9 +244,9 @@
             "homepage": "https://github.com/aportela/mediawiki-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/mediawiki-wrapper/issues",
-                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.1.0"
+                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.1.2"
             },
-            "time": "2025-11-05T17:30:06+00:00"
+            "time": "2025-11-06T14:08:05+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
