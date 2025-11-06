@@ -83,4 +83,9 @@ if (count($missingExtensions) > 0) {
             $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LyricsCachePath"]);
         }
     }
+    if (!file_exists($settings["cache"]["WikipediaCachePath"])) {
+        if (!mkdir($settings["cache"]["WikipediaCachePath"], 0750, true)) {
+            $logger->critical("Error creating Wikipedia cache basePath: " . $settings["cache"]["WikipediaCachePath"]);
+        }
+    }
 }
