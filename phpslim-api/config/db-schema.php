@@ -51,6 +51,15 @@ return (array(
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
             ) STRICT;
 
+            CREATE TABLE FILE_FAVORITE (
+                file_id TEXT NOT NULL CHECK(length(file_id) == 36),
+                user_id TEXT NOT NULL CHECK(length(user_id) == 36),
+                favorited INTEGER NOT NULL,
+                PRIMARY KEY(file_id, user_id),
+                FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE,
+                FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
+            ) STRICT;
+
             CREATE TABLE FILE_ID3_TAG (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 title TEXT CHECK(length(title) <= 128),
@@ -241,23 +250,6 @@ return (array(
     )
 ));
 /*
-return (array(
-        '
-            CREATE TABLE `FILE_PLAYCOUNT_STATS` (
-                `file_id` CHAR(36) NOT NULL,
-                `user_id` CHAR(36) NOT NULL,
-                `play_timestamp` INTEGER NOT NULL,
-                FOREIGN KEY(`file_id`) REFERENCES FILE(`id`),
-                FOREIGN KEY(`user_id`) REFERENCES USER(`id`),
-                PRIMARY KEY(`file_id`, `user_id`, `play_timestamp`)
-            );
-        '
-    ),
-    11 => array(
-        '
-            ALTER TABLE `FILE` ADD "added_timestamp" INTEGER NOT NULL DEFAULT 0;
-        '
-    ),
     12 => array(
         '
             CREATE TABLE `PLAYLIST` (
