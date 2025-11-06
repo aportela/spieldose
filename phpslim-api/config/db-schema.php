@@ -42,6 +42,15 @@ return (array(
                 FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id) ON DELETE CASCADE
             ) STRICT;
 
+            CREATE TABLE FILE_PLAYCOUNT_STATS (
+                file_id TEXT NOT NULL CHECK(length(file_id) == 36),
+                user_id TEXT NOT NULL CHECK(length(user_id) == 36),
+                play_timestamp INTEGER NOT NULL,
+                PRIMARY KEY(file_id, user_id, play_timestamp),
+                FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE,
+                FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
+            ) STRICT;
+
             CREATE TABLE FILE_ID3_TAG (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 title TEXT CHECK(length(title) <= 128),
@@ -233,43 +242,6 @@ return (array(
 ));
 /*
 return (array(
-        '
-
-            CREATE TABLE `MB_WIKIPEDIA_CACHE_ARTIST` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `language` VARCHAR(2) NOT NULL,
-                `html` TEXT NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `language`),
-                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
-            );
-        ',
-    ),
-    8 => array(
-        '
-            DROP TABLE `MB_CACHE_ARTIST_RELATION`;
-        ',
-        '
-            CREATE TABLE `MB_CACHE_ARTIST_URL_RELATIONSHIP` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `url_relationship_typeid` VARCHAR(36) NOT NULL,
-                `url_relationship_value` VARCHAR(4096) NOT NULL,
-                PRIMARY KEY (`artist_mbid`, `url_relationship_typeid`, `url_relationship_value`),
-                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
-            );
-        ',
-    ),
-    9 => array(
-        '
-            CREATE TABLE `MB_LASTFM_CACHE_ARTIST` (
-                `artist_mbid` VARCHAR(36) NOT NULL,
-                `bio_summary` TEXT NOT NULL,
-                `bio_content` TEXT NOT NULL,
-                PRIMARY KEY (`artist_mbid`),
-                FOREIGN KEY(`artist_mbid`) REFERENCES MB_CACHE_ARTIST (`mbid`)
-            );
-        ',
-    ),
-    10 => array(
         '
             CREATE TABLE `FILE_PLAYCOUNT_STATS` (
                 `file_id` CHAR(36) NOT NULL,
