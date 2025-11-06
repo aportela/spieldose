@@ -12,68 +12,63 @@ $containerBuilder->addDefinitions(__DIR__ . '../../config/container.php');
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
 
-echo "Spieldose setup" . PHP_EOL;
+echo "[-] Spieldose setup" . PHP_EOL;
 
 $logger = $container->get(\Spieldose\Logger\InstallerLogger::class);
-
-$logger->info("Spieldose setup started");
 
 $settings = $container->get('settings');
 
 $installer = new \Spieldose\Installer($logger, $container);
 
-echo "Checking php required extensions...";
+echo "[?] Checking php required extensions...";
 if ($installer->checkRequiredPHPExtensions()) {
-    echo " ok!" . PHP_EOL;
+    echo " success!" . PHP_EOL;
 } else {
     $missingPHPExtensions = $installer->getMissingPHPExtensions();
     echo " error! - missing extensions: " . implode(",", $missingPHPExtensions) . PHP_EOL;
-    $logger->error("Missing required PHP extensions", $missingPHPExtensions);
+    $logger->error("Missing php required extensions", $missingPHPExtensions);
     exit(1);
 }
 
-echo "Creating required paths...";
+echo "[?] Creating missing/required paths...";
 if ($installer->createMissingPaths()) {
-    echo " ok!" . PHP_EOL;
+    echo " success!" . PHP_EOL;
 } else {
     echo " error!" . PHP_EOL;
-    $logger->error("Error creating missing paths", $missingPHPExtensions);
+    $logger->error("Error creating missing/required paths");
     exit(1);
 }
 
 $db = $container->get(\aportela\DatabaseWrapper\DB::class);
 
-// check if the database is already installed (install scheme with version table already exists)
 if (!$db->isSchemaInstalled()) {
-    $logger->info("Schema not found, creating database");
+    echo "[?] Creating database base schema...";
     if ($db->installSchema()) {
-        echo "Database install success" . PHP_EOL;
+        echo " success!" . PHP_EOL;
     } else {
-        echo "Install error, verify logs";
-        $logger->critical("Database install error, verify logs");
+        echo " error!";
+        $logger->error("Error creating database base schema");
         exit(1);
     }
 } else {
-    echo "Database already installed" . PHP_EOL;
-    $logger->info("Database already installed");
+    echo "[!] Database already installed" . PHP_EOL;
+    $logger->notice("Database already installed");
 }
 
 $currentDBVersion = $db->getCurrentSchemaVersion();
 $lastDBVersionAvailable = $db->getUpgradeSchemaVersion();
-
 if ($currentDBVersion != $lastDBVersionAvailable) {
-    echo "Database upgrade required: {$currentDBVersion} => {$lastDBVersionAvailable}" . PHP_EOL;
+    echo "[?] Database upgrade required (current: {$currentDBVersion} => available: {$lastDBVersionAvailable})...";
     $currentVersion = $db->upgradeSchema(false);
     if ($currentVersion !== -1) {
-        echo "Database upgraded with success" . PHP_EOL;
-        $logger->info("Database upgraded with success");
+        echo " success!" . PHP_EOL;
     } else {
-        echo "Upgrade error, verify logs";
-        $logger->critical("Upgrade error, verify logs");
+        echo " error!";
+        $logger->error("Error upgrading database", [$currentDBVersion, $lastDBVersionAvailable]);
         exit(1);
     }
 } else {
-    echo "Database upgrade not required, you are on current version: {$lastDBVersionAvailable}" . PHP_EOL;
-    $logger->info("Database upgrade not required, you are on current version: {$lastDBVersionAvailable}");
+    echo "[!] Database already on last version ({$lastDBVersionAvailable})" . PHP_EOL;
+    $logger->notice("Database already on last version", [$lastDBVersionAvailable]);
 }
 exit(0);
