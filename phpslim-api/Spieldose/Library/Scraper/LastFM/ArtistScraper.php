@@ -14,7 +14,7 @@ class ArtistScraper
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->lastFMArtistAPI = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, $cache, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        $this->lastFMArtistAPI = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
     public function __destruct() {}

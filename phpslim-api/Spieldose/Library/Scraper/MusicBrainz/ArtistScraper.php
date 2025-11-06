@@ -14,7 +14,7 @@ class ArtistScraper
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->musicBrainzArtistAPI = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, $cache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        $this->musicBrainzArtistAPI = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
     public function __destruct() {}

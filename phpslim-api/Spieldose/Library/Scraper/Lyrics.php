@@ -91,12 +91,12 @@ class Lyrics
             }
             try {
                 if ($this->lyrics->scrap($tracks[$i]->title, $tracks[$i]->artist)) {
-                    $this->saveCache($this->lyrics->title, $this->lyrics->artist, $this->lyrics->lyrics, $this->lyrics->source);
+                    $this->saveCache($this->lyrics->getTitle(), $this->lyrics->getArtist(), $this->lyrics->getLyrics(), $this->lyrics->getSource());
+                } else {
+                    $this->logger->warning("Error getting lyrics", [$tracks[$i]->title, $tracks[$i]->artist]);
                 }
-            } catch (\aportela\ScraperLyrics\Exception\NotFoundException $e) {
-                $this->logger->warning("Lyrics not found", [$tracks[$i]->title, $tracks[$i]->artist, $e->getMessage()]);
             } catch (\Throwable $e) {
-                $this->logger->warning("Lyrics get error", [$tracks[$i]->title, $tracks[$i]->artist, $e->getMessage(), $e->getPrevious()]);
+                $this->logger->error("Lyrics get unhandled exception", [$tracks[$i]->title, $tracks[$i]->artist, $e->getMessage(), $e->getPrevious()]);
             }
         }
         return (microtime(true) - $scanStartTime);

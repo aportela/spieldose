@@ -14,7 +14,7 @@ class ReleaseScraper
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, $cache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
     public function __destruct() {}

@@ -14,7 +14,7 @@ class AlbumScraper
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
-        $this->lastFMAlbumAPI = new \aportela\LastFMWrapper\Album($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, $cache, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        $this->lastFMAlbumAPI = new \aportela\LastFMWrapper\Album($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
     public function __destruct() {}

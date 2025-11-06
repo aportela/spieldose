@@ -146,7 +146,8 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
                 echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
-                $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
                 $totalScrapTime = $mbArtistScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
                         if ($showProgressBar) {
