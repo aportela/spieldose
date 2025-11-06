@@ -34,7 +34,7 @@ if (count($missingExtensions) > 0) {
             echo "New database version available, an upgrade is required before continue." . PHP_EOL;
             exit;
         }
-        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapLyrics", "showProgressBar", "clean"));
+        $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
         if ($cmdLine->hasOptions()) {
             $showProgressBar = $cmdLine->hasParam("showProgressBar");
             $force = $cmdLine->hasParam("force");
@@ -231,6 +231,28 @@ if (count($missingExtensions) > 0) {
                     $force
                 );
                 echo sprintf("LastFM album data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+            }
+            if ($cmdLine->hasParam("scrapWikipediaArtistCache")) {
+                echo "Starting Wikipedia Artist Scrapper (Wikipedia artist page without cache):" . PHP_EOL;
+                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::HTML, $settings["cache"]["WikipediaCachePath"], $force);
+                $wikipediaScraper = new \Spieldose\Library\Scraper\Wikipedia\ArtistScraper($dbh, $logger, $cache);
+                $totalScrapTime = $wikipediaScraper->scrapMissingCache(
+                    function ($artists, $total, $index) use ($showProgressBar) {
+                        if ($showProgressBar) {
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist/s",  "- Artist: {$artists[$index]->name}");
+                        } else {
+                            if ($index == 0) {
+                                echo " - Caching {$total} artist/s: ";
+                            }
+                            echo ".";
+                            if ($index == $total - 1) {
+                                echo PHP_EOL;
+                            }
+                        }
+                    },
+                    $force
+                );
+                echo sprintf("Wikipedia artist scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
             }
             if ($cmdLine->hasParam("scrapLyrics")) {
                 echo "Starting Lyrics Scrapper (Lyrics without cache):" . PHP_EOL;
