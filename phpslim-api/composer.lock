@@ -103,16 +103,16 @@
         },
         {
             "name": "aportela/httprequest-wrapper",
-            "version": "2.1.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/httprequest-wrapper.git",
-                "reference": "6e9b7f4183ef9db674cacf7fa1b069b86dc107f1"
+                "reference": "47b79647e400a7181e72733a1873dcb59f7a4246"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/6e9b7f4183ef9db674cacf7fa1b069b86dc107f1",
-                "reference": "6e9b7f4183ef9db674cacf7fa1b069b86dc107f1",
+                "url": "https://api.github.com/repos/aportela/httprequest-wrapper/zipball/47b79647e400a7181e72733a1873dcb59f7a4246",
+                "reference": "47b79647e400a7181e72733a1873dcb59f7a4246",
                 "shasum": ""
             },
             "require": {
@@ -144,22 +144,22 @@
             "homepage": "https://github.com/aportela/httprequest-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/httprequest-wrapper/issues",
-                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.1.1"
+                "source": "https://github.com/aportela/httprequest-wrapper/tree/2.3.0"
             },
-            "time": "2025-10-25T15:46:21+00:00"
+            "time": "2025-11-03T09:10:03+00:00"
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "2.3.0",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "8f433bddfec96055c97f843d481fa3a46c92cf0c"
+                "reference": "0950f9be126a03fa16aeb8a99b1d960c3442e601"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/8f433bddfec96055c97f843d481fa3a46c92cf0c",
-                "reference": "8f433bddfec96055c97f843d481fa3a46c92cf0c",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/0950f9be126a03fa16aeb8a99b1d960c3442e601",
+                "reference": "0950f9be126a03fa16aeb8a99b1d960c3442e601",
                 "shasum": ""
             },
             "require": {
@@ -194,27 +194,27 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.3.0"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.3.3"
             },
-            "time": "2025-11-01T18:02:46+00:00"
+            "time": "2025-11-06T09:12:23+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/mediawiki-wrapper.git",
-                "reference": "7c63d86b3d1df6f06fe77318c53e90ea1c4e497a"
+                "reference": "2219753e3d712c6b75a13028b64c5d818eb14dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/7c63d86b3d1df6f06fe77318c53e90ea1c4e497a",
-                "reference": "7c63d86b3d1df6f06fe77318c53e90ea1c4e497a",
+                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/2219753e3d712c6b75a13028b64c5d818eb14dab",
+                "reference": "2219753e3d712c6b75a13028b64c5d818eb14dab",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^2.1",
-                "aportela/simple-fs-cache": "^1.0",
+                "aportela/httprequest-wrapper": "^2.3",
+                "aportela/simple-fs-cache": "^1.1",
                 "aportela/simple-throttle": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
@@ -244,9 +244,9 @@
             "homepage": "https://github.com/aportela/mediawiki-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/mediawiki-wrapper/issues",
-                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.0.0"
+                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.1.0"
             },
-            "time": "2025-11-01T21:03:53+00:00"
+            "time": "2025-11-05T17:30:06+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
@@ -300,20 +300,21 @@
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
-            "version": "2.1.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/remote-thumbnail-cache-wrapper.git",
-                "reference": "279eb39d1027e91ca2c5858b47cbe12e2a913e81"
+                "reference": "daba2245f7d5ac3ff570eed909b8ac9a9407e1f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/279eb39d1027e91ca2c5858b47cbe12e2a913e81",
-                "reference": "279eb39d1027e91ca2c5858b47cbe12e2a913e81",
+                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/daba2245f7d5ac3ff570eed909b8ac9a9407e1f2",
+                "reference": "daba2245f7d5ac3ff570eed909b8ac9a9407e1f2",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^2.1",
+                "aportela/httprequest-wrapper": "^2.3",
+                "aportela/simple-fs-cache": "^1.1",
                 "php": ">=8.4",
                 "psr/log": "^3.0",
                 "sybio/image-workshop": "^2.2"
@@ -343,27 +344,27 @@
             "homepage": "https://github.com/aportela/remote-thumbnail-cache-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/remote-thumbnail-cache-wrapper/issues",
-                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.1.0"
+                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.2.1"
             },
-            "time": "2025-10-09T19:52:35+00:00"
+            "time": "2025-11-03T20:33:00+00:00"
         },
         {
             "name": "aportela/scraper-lyrics",
-            "version": "1.2.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/scraper-lyrics.git",
-                "reference": "fd11ca8866cabe16462cea7737affbfa3f02de0a"
+                "reference": "1afb14e6da86baa777080483b317dbe0a4d9bc4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/fd11ca8866cabe16462cea7737affbfa3f02de0a",
-                "reference": "fd11ca8866cabe16462cea7737affbfa3f02de0a",
+                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/1afb14e6da86baa777080483b317dbe0a4d9bc4c",
+                "reference": "1afb14e6da86baa777080483b317dbe0a4d9bc4c",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^2.1",
-                "aportela/simple-fs-cache": "^1.0",
+                "aportela/httprequest-wrapper": "^2.3",
+                "aportela/simple-fs-cache": "^1.1",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
@@ -392,9 +393,9 @@
             "homepage": "https://github.com/aportela/scraper-lyrics",
             "support": {
                 "issues": "https://github.com/aportela/scraper-lyrics/issues",
-                "source": "https://github.com/aportela/scraper-lyrics/tree/1.2.1"
+                "source": "https://github.com/aportela/scraper-lyrics/tree/1.3.0"
             },
-            "time": "2025-11-01T09:30:50+00:00"
+            "time": "2025-11-03T20:14:35+00:00"
         },
         {
             "name": "aportela/simple-fs-cache",
@@ -1602,16 +1603,16 @@
         },
         {
             "name": "slim/psr7",
-            "version": "1.7.1",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim-Psr7.git",
-                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d"
+                "reference": "76e7e3b1cdfd583e9035c4c966c08e01e45ce959"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
-                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
+                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/76e7e3b1cdfd583e9035c4c966c08e01e45ce959",
+                "reference": "76e7e3b1cdfd583e9035c4c966c08e01e45ce959",
                 "shasum": ""
             },
             "require": {
@@ -1619,23 +1620,20 @@
                 "php": "^8.0",
                 "psr/http-factory": "^1.1",
                 "psr/http-message": "^1.0 || ^2.0",
-                "ralouphie/getallheaders": "^3.0",
-                "symfony/polyfill-php80": "^1.29"
+                "ralouphie/getallheaders": "^3.0"
             },
             "provide": {
                 "psr/http-factory-implementation": "^1.0",
                 "psr/http-message-implementation": "^1.0 || ^2.0"
             },
             "require-dev": {
-                "adriansuter/php-autoload-override": "^1.4",
+                "adriansuter/php-autoload-override": "^1.5|| ^2.0",
                 "ext-json": "*",
                 "http-interop/http-factory-tests": "^1.0 || ^2.0",
-                "php-http/psr7-integration-tests": "^1.4",
-                "phpspec/prophecy": "^1.19",
-                "phpspec/prophecy-phpunit": "^2.2",
+                "php-http/psr7-integration-tests": "^1.5",
                 "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^9.6 || ^10",
-                "squizlabs/php_codesniffer": "^3.10"
+                "squizlabs/php_codesniffer": "^3.13"
             },
             "type": "library",
             "autoload": {
@@ -1678,9 +1676,9 @@
             ],
             "support": {
                 "issues": "https://github.com/slimphp/Slim-Psr7/issues",
-                "source": "https://github.com/slimphp/Slim-Psr7/tree/1.7.1"
+                "source": "https://github.com/slimphp/Slim-Psr7/tree/1.8.0"
             },
-            "time": "2025-05-13T14:24:12+00:00"
+            "time": "2025-11-02T17:51:19+00:00"
         },
         {
             "name": "slim/slim",
@@ -2164,90 +2162,6 @@
                 }
             ],
             "time": "2024-12-23T08:48:59+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.33.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
-                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-01-02T08:10:11+00:00"
         },
         {
             "name": "symfony/polyfill-php81",
@@ -5788,6 +5702,90 @@
                 }
             ],
             "time": "2024-09-09T11:45:10+00:00"
+        },
+        {
+            "name": "symfony/polyfill-php80",
+            "version": "v1.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php80.git",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ion Bazan",
+                    "email": "ion.bazan@gmail.com"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-02T08:10:11+00:00"
         },
         {
             "name": "symfony/polyfill-php84",
