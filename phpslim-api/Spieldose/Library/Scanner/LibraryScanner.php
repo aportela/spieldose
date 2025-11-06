@@ -76,9 +76,9 @@ class LibraryScanner
                 $this->dbh->execute(
                     "
                         INSERT INTO DIRECTORY
-                            (id, library_path_id, path, ctime, mtime, cover_filename)
+                            (id, library_path_id, path, cover_filename, ctime, mtime)
                         VALUES
-                            (:id, :library_path_id, :path, :current_timestamp, :mtime, :cover_filename)
+                            (:id, :library_path_id, :path, :cover_filename, :current_timestamp, :mtime)
                         ON CONFLICT (id) DO
                         UPDATE SET
                             library_path_id = :library_path_id,

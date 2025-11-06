@@ -4,229 +4,229 @@ return (array(
     2 => array(
         '
             CREATE TABLE USER (
-                id CHAR(36) NOT NULL,
-                email VARCHAR(255) NOT NULL UNIQUE,
-                password_hash VARCHAR(60) NOT NULL,
+                id TEXT NOT NULL CHECK(length(id) == 36),
+                email TEXT NOT NULL UNIQUE CHECK(length(email) <= 255),
+                password_hash TEXT NOT NULL CHECK(length(password_hash) <= 60),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (id)
-            );
+            ) STRICT;
 
             CREATE TABLE LIBRARY_PATH (
-                id CHAR(36) NOT NULL,
-                path VARCHAR(4096) NOT NULL UNIQUE,
+                id TEXT NOT NULL CHECK(length(id) == 36),
+                path TEXT NOT NULL UNIQUE CHECK(length(path) <= 4096),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (`id`)
-            );
+            ) STRICT;
 
             CREATE TABLE DIRECTORY (
-                id CHAR(36) NOT NULL,
-                library_path_id CHAR(36) NOT NULL,
-                path VARCHAR(4096) NOT NULL UNIQUE,
+                id TEXT NOT NULL CHECK(length(id) == 36),
+                library_path_id TEXT NOT NULL CHECK(length(library_path_id) == 36),
+                path TEXT NOT NULL UNIQUE CHECK(length(path) <= 4096),
+                cover_filename TEXT CHECK(length(path) <= 4096),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
-                cover_filename VARCHAR(4096),
                 PRIMARY KEY (id),
                 FOREIGN KEY(library_path_id) REFERENCES LIBRARY_PATH(id) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE FILE (
-                id CHAR(36) NOT NULL,
-                directory_id CHAR(36) NOT NULL,
-                name VARCHAR(255) NOT NULL,
+                id TEXT NOT NULL CHECK(length(id) == 36),
+                directory_id TEXT NOT NULL CHECK(length(directory_id) == 36),
+                name TEXT NOT NULL CHECK(length(directory_id) <= 255),
                 size INTEGER NOT NULL,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (id),
                 FOREIGN KEY(directory_id) REFERENCES DIRECTORY(id) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE FILE_ID3_TAG (
-                file_id CHAR(36) NOT NULL,
-                title VARCHAR(128),
-                artist VARCHAR(128),
-                album_artist VARCHAR(128),
-                album VARCHAR(128),
+                file_id TEXT NOT NULL CHECK(length(file_id) == 36),
+                title TEXT CHECK(length(title) <= 128),
+                artist TEXT CHECK(length(artist) <= 128),
+                album_artist TEXT CHECK(length(album_artist) <= 128),
+                album TEXT CHECK(length(album) <= 128),
                 year INT,
                 original_year INT,
-                genre VARCHAR(128),
+                genre TEXT CHECK(length(genre) <= 128),
                 track_number INT,
                 disc_number INT,
                 playtime_seconds INT,
-                mime VARCHAR(127),
-                mb_artist_id CHAR(36),
-                mb_album_artist_id CHAR(36),
-                mb_release_group_id CHAR(36),
-                mb_release_id CHAR(36),
-                mb_release_track_id CHAR(36),
+                mime TEXT CHECK(length(mime) <= 128),
+                mb_artist_id TEXT CHECK(length(mb_artist_id) == 36),
+                mb_album_artist_id TEXT CHECK(length(mb_album_artist_id) == 36),
+                mb_release_group_id TEXT CHECK(length(mb_release_group_id) == 36),
+                mb_release_id TEXT CHECK(length(mb_release_id) == 36),
+                mb_release_track_id TEXT CHECK(length(mb_release_track_id) == 36),
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE QUEUE_FILE_ID3_SCAN (
-                file_id CHAR(36) NOT NULL,
+                file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 ctime INTEGER NOT NULL,
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_ARTIST (
-                mbid CHAR(36) NOT NULL,
-                name VARCHAR(128) NOT NULL,
-                country CHAR(2),
+                mbid TEXT NOT NULL CHECK(length(mbid) == 36),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                country TEXT CHECK(length(country) == 2),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid)
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_ARTIST_GENRE (
-                artist_mbid CHAR(36) NOT NULL,
-                genre VARCHAR(64) NOT NULL,
+                artist_mbid TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                genre TEXT NOT NULL CHECK(length(artist_mbid) <= 64),
                 PRIMARY KEY (artist_mbid, genre),
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP (
-                artist_mbid CHAR(36) NOT NULL,
-                relation_type_id VARCHAR(36) NOT NULL,
-                name VARCHAR(128) NOT NULL,
-                url VARCHAR(2048) NOT NULL,
+                artist_mbid TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                relation_type_id TEXT NOT NULL CHECK(length(relation_type_id) == 36),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                url TEXT NOT NULL CHECK(length(url) <= 2048),
                 PRIMARY KEY (artist_mbid, relation_type_id, url),
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_RECORDING (
-                mbid CHAR(36) NOT NULL,
-                title VARCHAR(128) NOT NULL,
+                mbid TEXT NOT NULL CHECK(length(mbid) == 36),
+                title TEXT NOT NULL CHECK(length(title) <= 128),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid)
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_RECORDING_ARTIST (
-                recording_mbid CHAR(36) NOT NULL,
-                artist_mbid CHAR(36) NOT NULL,
+                recording_mbid TEXT NOT NULL CHECK(length(recording_mbid) == 36),
+                artist_mbid TEXT NOT NULL CHECK(length(artist_mbid) == 36),
                 PRIMARY KEY (recording_mbid, artist_mbid),
                 FOREIGN KEY(recording_mbid) REFERENCES CACHE_MUSICBRAINZ_RECORDING (mbid) ON DELETE CASCADE,
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (mbid) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_RELEASE (
-                mbid CHAR(36) NOT NULL,
-                title VARCHAR(128) NOT NULL,
+                mbid TEXT NOT NULL CHECK(length(mbid) == 36),
+                title TEXT NOT NULL CHECK(length(title) <= 128),
                 year INT,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid)
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_RELEASE_ARTIST (
-                release_mbid CHAR(36) NOT NULL,
-                artist_mbid CHAR(36) NOT NULL,
+                release_mbid TEXT NOT NULL CHECK(length(release_mbid) == 36),
+                artist_mbid TEXT NOT NULL CHECK(length(artist_mbid) == 36),
                 PRIMARY KEY (release_mbid, artist_mbid),
                 FOREIGN KEY(release_mbid) REFERENCES CACHE_MUSICBRAINZ_RELEASE (`mbid`) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_MEDIA (
-                mbid CHAR(36) NOT NULL,
-                release_mbid CHAR(36) NOT NULL,
+                mbid TEXT NOT NULL CHECK(length(mbid) == 36),
+                release_mbid TEXT NOT NULL CHECK(length(release_mbid) == 36),
                 position INTEGER,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid),
                 FOREIGN KEY(release_mbid) REFERENCES CACHE_MUSICBRAINZ_RELEASE (`mbid`) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_MUSICBRAINZ_TRACK (
-                mbid CHAR(36) NOT NULL,
-                media_mbid CHAR(36) NOT NULL,
-                recording_mbid CHAR(36) NOT NULL,
+                mbid TEXT NOT NULL CHECK(length(mbid) == 36),
+                media_mbid TEXT NOT NULL CHECK(length(media_mbid) == 36),
+                recording_mbid TEXT NOT NULL CHECK(length(recording_mbid) == 36),
                 position INTEGER,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid),
                 FOREIGN KEY(media_mbid) REFERENCES CACHE_MUSICBRAINZ_MEDIA (mbid) ON DELETE CASCADE,
                 FOREIGN KEY(recording_mbid) REFERENCES CACHE_MUSICBRAINZ_RECORDING (mbid) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ARTIST (
-                md5_hash CHAR(32) NOT NULL,
-                mbid CHAR(36),
-                name VARCHAR(128) NOT NULL,
-                url VARCHAR(2048) NOT NULL,
-                image VARCHAR(8192),
+                md5_hash TEXT NOT NULL CHECK(length(md5_hash) == 32),
+                mbid TEXT CHECK(length(mbid) == 36),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                url TEXT NOT NULL CHECK(length(url) <= 2048),
+                image TEXT CHECK(length(image) <= 8192),
                 bio_summary TEXT,
                 bio_content TEXT,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (md5_hash)
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ARTIST_TAG (
-                artist_hash CHAR(32) NOT NULL,
-                tag VARCHAR(64) NOT NULL,
+                artist_hash TEXT NOT NULL CHECK(length(artist_hash) == 32),
+                tag TEXT NOT NULL CHECK(length(tag) <= 64),
                 PRIMARY KEY (artist_hash, tag),
                 FOREIGN KEY(artist_hash) REFERENCES CACHE_LASTFM_ARTIST (md5_hash) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ARTIST_SIMILAR (
-                artist_hash CHAR(32) NOT NULL,
-                name VARCHAR(128) NOT NULL,
+                artist_hash TEXT NOT NULL CHECK(length(artist_hash) == 32),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
                 PRIMARY KEY (artist_hash, name),
                 FOREIGN KEY(artist_hash) REFERENCES CACHE_LASTFM_ARTIST (md5_hash) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ALBUM (
-                md5_hash CHAR(32) NOT NULL,
-                mbid CHAR(36),
-                name VARCHAR(128) NOT NULL,
-                artist_name VARCHAR(128) NOT NULL,
-                url VARCHAR(2048) NOT NULL,
+                md5_hash TEXT NOT NULL CHECK(length(md5_hash) == 32),
+                mbid TEXT CHECK(length(mbid) == 36),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                artist_name TEXT NOT NULL CHECK(length(artist_name) <= 128),
+                url TEXT NOT NULL CHECK(length(url) <= 2048),
                 wiki_summary TEXT,
                 wiki_content TEXT,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (md5_hash)
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ALBUM_TAG (
-                album_hash CHAR(32) NOT NULL,
-                tag VARCHAR(64) NOT NULL,
+                album_hash TEXT NOT NULL CHECK(length(album_hash) == 32),
+                tag TEXT NOT NULL CHECK(length(tag) <= 64),
                 PRIMARY KEY (album_hash, tag),
                 FOREIGN KEY(album_hash) REFERENCES CACHE_LASTFM_ALBUM (md5_hash) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LASTFM_ALBUM_TRACK (
-                md5_hash CHAR(32) NOT NULL,
-                album_hash CHAR(32) NOT NULL,
-                name VARCHAR(128) NOT NULL,
-                artist_name VARCHAR(128) NOT NULL,
+                md5_hash TEXT NOT NULL CHECK(length(md5_hash) == 32),
+                album_hash TEXT NOT NULL CHECK(length(album_hash) == 32),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                artist_name TEXT NOT NULL CHECK(length(artist_name) <= 128),
                 rank INTEGER NOT NULL,
                 PRIMARY KEY (md5_hash),
                 FOREIGN KEY(album_hash) REFERENCES CACHE_LASTFM_ALBUM (md5_hash) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_ARTIST_WIKIPEDIA (
-                artist_mbid CHAR(36) NOT NULL,
-                artist_name VARCHAR(128) NOT NULL,
-                language CHAR(2) NOT NULL,
+                artist_mbid TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                artist_name TEXT NOT NULL CHECK(length(artist_name) <= 128),
+                language TEXT NOT NULL CHECK(length(language) == 2),
                 html TEXT NOT NULL,
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (artist_mbid, artist_name, language),
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (`mbid`) ON DELETE CASCADE
-            );
+            ) STRICT;
 
             CREATE TABLE CACHE_LYRICS (
-                title VARCHAR(512) NOT NULL,
-                artist VARCHAR(128) NOT NULL,
+                title TEXT NOT NULL CHECK(length(title) <= 512),
+                artist TEXT NOT NULL CHECK(length(artist) <= 128),
                 data TEXT NOT NULL,
-                source VARCHAR(32) NOT NULL,
+                source TEXT NOT NULL CHECK(length(source) <= 32),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (title, artist)
-            );
+            ) STRICT;
 
         ',
     )
