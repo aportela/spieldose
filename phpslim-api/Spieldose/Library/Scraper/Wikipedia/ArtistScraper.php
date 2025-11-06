@@ -17,6 +17,7 @@ class ArtistScraper
         $this->logger = $logger;
         $this->wikidataArtistAPI = new \aportela\MediaWikiWrapper\Wikidata\Item($logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
         $this->wikipediaArtistAPI = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        libxml_use_internal_errors(true);
     }
 
     public function __destruct() {}
@@ -89,6 +90,18 @@ class ArtistScraper
         );
     }
 
+    private function stripHTML(string $html): string|false
+    {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($html);
+        $links = $dom->getElementsByTagName("a");
+        foreach ($links as $link) {
+            $textNode = $dom->createTextNode($link->textContent);
+            $link->parentNode->replaceChild($textNode, $link);
+        }
+        return ($dom->saveHTML());
+    }
+
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
@@ -103,6 +116,7 @@ class ArtistScraper
                 if (isset($artistsData[$i]->WikidataURL) && ! empty($artistsData[$i]->WikidataURL)) {
                     $title = $this->wikidataArtistAPI->getWikipediaTitleFromURL($artistsData[$i]->WikidataURL);
                     $html = $this->wikipediaArtistAPI->getHTMLFromTitle($title, $language);
+                    //$html = $this->stripHTML($html);
                     $this->saveCache($artistsData[$i], $language, $html);
                 }
             } catch (\aportela\MediaWikiWrapper\Exception\NotFoundException $e) {
