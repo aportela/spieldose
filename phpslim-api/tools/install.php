@@ -20,72 +20,49 @@ $logger->info("Install started");
 
 $settings = $container->get('settings');
 
-$missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
-if (count($missingExtensions) > 0) {
-    $missingExtensionsStr = implode(", ", $missingExtensions);
-    echo "Error: missing php extension/s: " . $missingExtensionsStr . PHP_EOL;
-    $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
-} else {
-    $db = $container->get(\aportela\DatabaseWrapper\DB::class);
-    $success = true;
-    // check if the database is already installed (install scheme with version table already exists)
-    if (!$db->isSchemaInstalled()) {
-        $logger->info("Schema not found, creating database");
-        if ($db->installSchema()) {
-            echo "Database install success" . PHP_EOL;
-            $logger->info("Database install success");
-            $currentVersion = $db->upgradeSchema(false);
-            if ($currentVersion !== -1) {
-                echo "Database upgraded with success" . PHP_EOL;
-                $logger->info("Database upgraded with success");
-            } else {
-                echo "Upgrade error, verify logs";
-                $logger->critical("Upgrade error, verify logs");
-            }
-        } else {
-            echo "Install error, verify logs";
-            $logger->critical("Install error, verify logs");
-            $success = false;
-        }
-    } else {
-        echo "Database already installed" . PHP_EOL;
-        $logger->info("Database already installed");
-    }
+$installer = new \Spieldose\Installer($logger, $container);
 
-    echo "Creating thumbnail cache dirs" . PHP_EOL;
-    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
-        if (!mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
-            $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
-        }
-    }
-    if (!file_exists($settings['thumbnails']['albums']['basePath'])) {
-        if (!mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
-            $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
-        }
-    }
-    if (!file_exists($settings['thumbnails']['radioStations']['basePath'])) {
-        if (!mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
-            $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
-        }
-    }
-    if (!file_exists($settings["cache"]["MusicBrainzCachePath"])) {
-        if (!mkdir($settings["cache"]["MusicBrainzCachePath"], 0750, true)) {
-            $logger->critical("Error creating MusicBrainz cache basePath: " . $settings["cache"]["MusicBrainzCachePath"]);
-        }
-    }
-    if (!file_exists($settings["cache"]["LastFMCachePath"])) {
-        if (!mkdir($settings["cache"]["LastFMCachePath"], 0750, true)) {
-            $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LastFMCachePath"]);
-        }
-    }
-    if (!file_exists($settings["cache"]["LyricsCachePath"])) {
-        if (!mkdir($settings["cache"]["LyricsCachePath"], 0750, true)) {
-            $logger->critical("Error creating LastFM cache basePath: " . $settings["cache"]["LyricsCachePath"]);
-        }
-    }
-    if (!file_exists($settings["cache"]["WikipediaCachePath"])) {
-        if (!mkdir($settings["cache"]["WikipediaCachePath"], 0750, true)) {
-            $logger->critical("Error creating Wikipedia cache basePath: " . $settings["cache"]["WikipediaCachePath"]);
-        }
-    }
+echo "Checking php required extensions...";
+if ($installer->checkRequiredPHPExtensions()) {
+    echo " ok!" . PHP_EOL;
+} else {
+    echo " error! - missing extensions: " . implode(",", $installer->getMissingPHPExtensions()) . PHP_EOL;
+    exit(1);
 }
+
+echo "Creating required paths...";
+if ($installer->createRequiredMissingPaths()) {
+    echo " ok!" . PHP_EOL;
+} else {
+    echo " error!" . PHP_EOL;
+    exit(1);
+}
+
+$db = $container->get(\aportela\DatabaseWrapper\DB::class);
+
+// check if the database is already installed (install scheme with version table already exists)
+if (!$db->isSchemaInstalled()) {
+    $logger->info("Schema not found, creating database");
+    if ($db->installSchema()) {
+        echo "Database install success" . PHP_EOL;
+        $logger->info("Database install success");
+    } else {
+        echo "Install error, verify logs";
+        $logger->critical("Install error, verify logs");
+        exit(1);
+    }
+} else {
+    echo "Database already installed" . PHP_EOL;
+    $logger->info("Database already installed");
+}
+
+$currentVersion = $db->upgradeSchema(false);
+if ($currentVersion !== -1) {
+    echo "Database upgraded with success" . PHP_EOL;
+    $logger->info("Database upgraded with success");
+} else {
+    echo "Upgrade error, verify logs";
+    $logger->critical("Upgrade error, verify logs");
+    exit(1);
+}
+exit(0);
