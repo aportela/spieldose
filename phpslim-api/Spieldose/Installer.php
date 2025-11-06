@@ -33,7 +33,7 @@ class Installer
         }
     }
 
-    public function createRequiredMissingPaths(): bool
+    public function createMissingPaths(): bool
     {
         if (!file_exists($this->settings['thumbnails']['artists']['basePath'])) {
             if (!mkdir($this->settings['thumbnails']['artists']['basePath'], 0750, true)) {

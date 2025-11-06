@@ -230,6 +230,18 @@ return (array(
 
         ',
     ),
+    3 => array(
+        '
+        CREATE TABLE USER2 (
+                id CHAR(36) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password_hash VARCHAR(60) NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (id)
+            );
+        '
+    )
 ));
 /*
 return (array(
