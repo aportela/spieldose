@@ -212,6 +212,8 @@ return (array(
                 artist_name VARCHAR(128) NOT NULL,
                 language CHAR(2) NOT NULL,
                 html TEXT NOT NULL,
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
                 PRIMARY KEY (artist_mbid, artist_name, language),
                 FOREIGN KEY(artist_mbid) REFERENCES CACHE_MUSICBRAINZ_ARTIST (`mbid`) ON DELETE CASCADE
             );
