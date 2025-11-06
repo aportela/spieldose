@@ -221,7 +221,7 @@ return (array(
             CREATE TABLE CACHE_LYRICS (
                 title TEXT NOT NULL CHECK(length(title) <= 512),
                 artist TEXT NOT NULL CHECK(length(artist) <= 128),
-                data TEXT NOT NULL,
+                lyrics TEXT NOT NULL,
                 source TEXT NOT NULL CHECK(length(source) <= 32),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,

@@ -61,19 +61,19 @@ class Lyrics
         $this->dbh->execute(
             "
                 INSERT INTO CACHE_LYRICS
-                    (title, artist, data, source, ctime, mtime)
+                    (title, artist, lyrics, source, ctime, mtime)
                 VALUES
-                    (:title, :artist, :data, :source, :current_timestamp, NULL)
+                    (:title, :artist, :lyrics, :source, :current_timestamp, NULL)
                 ON CONFLICT (title, artist) DO
                     UPDATE SET
-                        data = :data,
+                        lyrics = :lyrics,
                         source = :source,
                         mtime = :current_timestamp
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":title", $title),
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artist),
-                new \aportela\DatabaseWrapper\Param\StringParam(":data", $lyrics),
+                new \aportela\DatabaseWrapper\Param\StringParam(":lyrics", $lyrics),
                 new \aportela\DatabaseWrapper\Param\StringParam(":source", $source),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
