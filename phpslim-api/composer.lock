@@ -399,16 +399,16 @@
         },
         {
             "name": "aportela/simple-fs-cache",
-            "version": "2.0.2",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/simple-fs-cache.git",
-                "reference": "0bbbde53025a56376ac0365ea1e6459a0b4c6803"
+                "reference": "e1f7349066aabcf1c4a281b53d91fd718f22e9f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/simple-fs-cache/zipball/0bbbde53025a56376ac0365ea1e6459a0b4c6803",
-                "reference": "0bbbde53025a56376ac0365ea1e6459a0b4c6803",
+                "url": "https://api.github.com/repos/aportela/simple-fs-cache/zipball/e1f7349066aabcf1c4a281b53d91fd718f22e9f8",
+                "reference": "e1f7349066aabcf1c4a281b53d91fd718f22e9f8",
                 "shasum": ""
             },
             "require": {
@@ -441,9 +441,9 @@
             "homepage": "https://github.com/aportela/simple-fs-cache",
             "support": {
                 "issues": "https://github.com/aportela/simple-fs-cache/issues",
-                "source": "https://github.com/aportela/simple-fs-cache/tree/2.0.2"
+                "source": "https://github.com/aportela/simple-fs-cache/tree/2.0.3"
             },
-            "time": "2025-11-08T09:14:09+00:00"
+            "time": "2025-11-08T21:49:48+00:00"
         },
         {
             "name": "aportela/simple-throttle",
