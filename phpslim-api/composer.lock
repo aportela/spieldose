@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e1dacab5641a5091c2ab48d9f12f5c89",
+    "content-hash": "225859135cfe12ec6e68c922af27b925",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
@@ -150,21 +150,21 @@
         },
         {
             "name": "aportela/lastfm-wrapper",
-            "version": "2.3.3",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/lastfm-wrapper.git",
-                "reference": "0950f9be126a03fa16aeb8a99b1d960c3442e601"
+                "reference": "3cc5065746e8eab60ce052f0d7245a8d0fbfce3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/0950f9be126a03fa16aeb8a99b1d960c3442e601",
-                "reference": "0950f9be126a03fa16aeb8a99b1d960c3442e601",
+                "url": "https://api.github.com/repos/aportela/lastfm-wrapper/zipball/3cc5065746e8eab60ce052f0d7245a8d0fbfce3d",
+                "reference": "3cc5065746e8eab60ce052f0d7245a8d0fbfce3d",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^2.1",
-                "aportela/simple-fs-cache": "^1.0",
+                "aportela/httprequest-wrapper": "^2.3",
+                "aportela/simple-fs-cache": "^2.0",
                 "aportela/simple-throttle": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
@@ -194,27 +194,27 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/lastfm-wrapper/issues",
-                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.3.3"
+                "source": "https://github.com/aportela/lastfm-wrapper/tree/2.4.0"
             },
-            "time": "2025-11-06T09:12:23+00:00"
+            "time": "2025-11-08T12:27:17+00:00"
         },
         {
             "name": "aportela/mediawiki-wrapper",
-            "version": "2.1.2",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/mediawiki-wrapper.git",
-                "reference": "a965afda2524135a00f6edcf4f8689916ae4ba77"
+                "reference": "616b629a2a88a87152a72b9a5ff2410df5911f2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/a965afda2524135a00f6edcf4f8689916ae4ba77",
-                "reference": "a965afda2524135a00f6edcf4f8689916ae4ba77",
+                "url": "https://api.github.com/repos/aportela/mediawiki-wrapper/zipball/616b629a2a88a87152a72b9a5ff2410df5911f2d",
+                "reference": "616b629a2a88a87152a72b9a5ff2410df5911f2d",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.3",
-                "aportela/simple-fs-cache": "^1.1",
+                "aportela/simple-fs-cache": "^2.0",
                 "aportela/simple-throttle": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
@@ -244,27 +244,27 @@
             "homepage": "https://github.com/aportela/mediawiki-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/mediawiki-wrapper/issues",
-                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.1.2"
+                "source": "https://github.com/aportela/mediawiki-wrapper/tree/2.2.0"
             },
-            "time": "2025-11-06T14:08:05+00:00"
+            "time": "2025-11-08T12:32:49+00:00"
         },
         {
             "name": "aportela/musicbrainz-wrapper",
-            "version": "3.3.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/musicbrainz-wrapper.git",
-                "reference": "82fd912ad5d3bbc02bac1285727558fde2e117a0"
+                "reference": "7a269f5454aac30672ecc885f1db85a4159336d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/82fd912ad5d3bbc02bac1285727558fde2e117a0",
-                "reference": "82fd912ad5d3bbc02bac1285727558fde2e117a0",
+                "url": "https://api.github.com/repos/aportela/musicbrainz-wrapper/zipball/7a269f5454aac30672ecc885f1db85a4159336d0",
+                "reference": "7a269f5454aac30672ecc885f1db85a4159336d0",
                 "shasum": ""
             },
             "require": {
-                "aportela/httprequest-wrapper": "^2.1",
-                "aportela/simple-fs-cache": "^1.0",
+                "aportela/httprequest-wrapper": "^2.3",
+                "aportela/simple-fs-cache": "^2.0",
                 "aportela/simple-throttle": "^1.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
@@ -294,27 +294,27 @@
             "homepage": "https://github.com/aportela/musicbrainz-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/musicbrainz-wrapper/issues",
-                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.3.0"
+                "source": "https://github.com/aportela/musicbrainz-wrapper/tree/3.4.0"
             },
-            "time": "2025-11-01T19:57:59+00:00"
+            "time": "2025-11-08T12:21:01+00:00"
         },
         {
             "name": "aportela/remote-thumbnail-cache-wrapper",
-            "version": "2.2.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/remote-thumbnail-cache-wrapper.git",
-                "reference": "daba2245f7d5ac3ff570eed909b8ac9a9407e1f2"
+                "reference": "248ddba45fde3bc4ffebdeffa6183969f24d571e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/daba2245f7d5ac3ff570eed909b8ac9a9407e1f2",
-                "reference": "daba2245f7d5ac3ff570eed909b8ac9a9407e1f2",
+                "url": "https://api.github.com/repos/aportela/remote-thumbnail-cache-wrapper/zipball/248ddba45fde3bc4ffebdeffa6183969f24d571e",
+                "reference": "248ddba45fde3bc4ffebdeffa6183969f24d571e",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.3",
-                "aportela/simple-fs-cache": "^1.1",
+                "aportela/simple-fs-cache": "^2.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0",
                 "sybio/image-workshop": "^2.2"
@@ -344,27 +344,27 @@
             "homepage": "https://github.com/aportela/remote-thumbnail-cache-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/remote-thumbnail-cache-wrapper/issues",
-                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.2.1"
+                "source": "https://github.com/aportela/remote-thumbnail-cache-wrapper/tree/2.3.0"
             },
-            "time": "2025-11-03T20:33:00+00:00"
+            "time": "2025-11-08T11:55:51+00:00"
         },
         {
             "name": "aportela/scraper-lyrics",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/scraper-lyrics.git",
-                "reference": "1afb14e6da86baa777080483b317dbe0a4d9bc4c"
+                "reference": "da228e3bef2b50df1bd53fb4b8bd79f784a9a5a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/1afb14e6da86baa777080483b317dbe0a4d9bc4c",
-                "reference": "1afb14e6da86baa777080483b317dbe0a4d9bc4c",
+                "url": "https://api.github.com/repos/aportela/scraper-lyrics/zipball/da228e3bef2b50df1bd53fb4b8bd79f784a9a5a5",
+                "reference": "da228e3bef2b50df1bd53fb4b8bd79f784a9a5a5",
                 "shasum": ""
             },
             "require": {
                 "aportela/httprequest-wrapper": "^2.3",
-                "aportela/simple-fs-cache": "^1.1",
+                "aportela/simple-fs-cache": "^2.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
@@ -393,27 +393,28 @@
             "homepage": "https://github.com/aportela/scraper-lyrics",
             "support": {
                 "issues": "https://github.com/aportela/scraper-lyrics/issues",
-                "source": "https://github.com/aportela/scraper-lyrics/tree/1.3.0"
+                "source": "https://github.com/aportela/scraper-lyrics/tree/1.4.0"
             },
-            "time": "2025-11-03T20:14:35+00:00"
+            "time": "2025-11-08T15:09:28+00:00"
         },
         {
             "name": "aportela/simple-fs-cache",
-            "version": "1.1.3",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/simple-fs-cache.git",
-                "reference": "df9c620e5576f2a9a42aaf1733c2ad493088f25c"
+                "reference": "0bbbde53025a56376ac0365ea1e6459a0b4c6803"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/simple-fs-cache/zipball/df9c620e5576f2a9a42aaf1733c2ad493088f25c",
-                "reference": "df9c620e5576f2a9a42aaf1733c2ad493088f25c",
+                "url": "https://api.github.com/repos/aportela/simple-fs-cache/zipball/0bbbde53025a56376ac0365ea1e6459a0b4c6803",
+                "reference": "0bbbde53025a56376ac0365ea1e6459a0b4c6803",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.4",
-                "psr/log": "^3.0"
+                "psr/log": "^3.0",
+                "psr/simple-cache": "^3.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.88",
@@ -440,9 +441,9 @@
             "homepage": "https://github.com/aportela/simple-fs-cache",
             "support": {
                 "issues": "https://github.com/aportela/simple-fs-cache/issues",
-                "source": "https://github.com/aportela/simple-fs-cache/tree/1.1.3"
+                "source": "https://github.com/aportela/simple-fs-cache/tree/2.0.2"
             },
-            "time": "2025-11-03T20:25:15+00:00"
+            "time": "2025-11-08T09:14:09+00:00"
         },
         {
             "name": "aportela/simple-throttle",
@@ -1402,6 +1403,57 @@
                 "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
             "time": "2024-09-11T13:17:53+00:00"
+        },
+        {
+            "name": "psr/simple-cache",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
+            },
+            "time": "2021-10-29T13:26:27+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -2720,16 +2772,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.89.1",
+            "version": "v3.89.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "f34967da2866ace090a2b447de1f357356474573"
+                "reference": "7569658f91e475ec93b99bd5964b059ad1336dcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/f34967da2866ace090a2b447de1f357356474573",
-                "reference": "f34967da2866ace090a2b447de1f357356474573",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/7569658f91e475ec93b99bd5964b059ad1336dcf",
+                "reference": "7569658f91e475ec93b99bd5964b059ad1336dcf",
                 "shasum": ""
             },
             "require": {
@@ -2765,7 +2817,7 @@
                 "justinrainbow/json-schema": "^6.5",
                 "keradus/cli-executor": "^2.2",
                 "mikey179/vfsstream": "^1.6.12",
-                "php-coveralls/php-coveralls": "^2.8",
+                "php-coveralls/php-coveralls": "^2.9",
                 "php-cs-fixer/phpunit-constraint-isidenticalstring": "^1.6",
                 "php-cs-fixer/phpunit-constraint-xmlmatchesxsd": "^1.6",
                 "phpunit/phpunit": "^9.6.25 || ^10.5.53 || ^11.5.34",
@@ -2811,7 +2863,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.89.1"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.89.2"
             },
             "funding": [
                 {
@@ -2819,7 +2871,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-24T12:05:10+00:00"
+            "time": "2025-11-06T21:12:50+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -5071,16 +5123,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.3.5",
+            "version": "v7.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "cdb80fa5869653c83cfe1a9084a673b6daf57ea7"
+                "reference": "c28ad91448f86c5f6d9d2c70f0cf68bf135f252a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/cdb80fa5869653c83cfe1a9084a673b6daf57ea7",
-                "reference": "cdb80fa5869653c83cfe1a9084a673b6daf57ea7",
+                "url": "https://api.github.com/repos/symfony/console/zipball/c28ad91448f86c5f6d9d2c70f0cf68bf135f252a",
+                "reference": "c28ad91448f86c5f6d9d2c70f0cf68bf135f252a",
                 "shasum": ""
             },
             "require": {
@@ -5145,7 +5197,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.3.5"
+                "source": "https://github.com/symfony/console/tree/v7.3.6"
             },
             "funding": [
                 {
@@ -5165,7 +5217,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-14T15:46:26+00:00"
+            "time": "2025-11-04T01:21:42+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -5329,16 +5381,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.3.2",
+            "version": "v7.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "edcbb768a186b5c3f25d0643159a787d3e63b7fd"
+                "reference": "e9bcfd7837928ab656276fe00464092cc9e1826a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/edcbb768a186b5c3f25d0643159a787d3e63b7fd",
-                "reference": "edcbb768a186b5c3f25d0643159a787d3e63b7fd",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/e9bcfd7837928ab656276fe00464092cc9e1826a",
+                "reference": "e9bcfd7837928ab656276fe00464092cc9e1826a",
                 "shasum": ""
             },
             "require": {
@@ -5375,7 +5427,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.3.2"
+                "source": "https://github.com/symfony/filesystem/tree/v7.3.6"
             },
             "funding": [
                 {
@@ -5395,7 +5447,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-07T08:17:47+00:00"
+            "time": "2025-11-05T09:52:27+00:00"
         },
         {
             "name": "symfony/finder",
@@ -5934,16 +5986,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v3.6.0",
+            "version": "v3.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4"
+                "reference": "45112560a3ba2d715666a509a0bc9521d10b6c43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/45112560a3ba2d715666a509a0bc9521d10b6c43",
+                "reference": "45112560a3ba2d715666a509a0bc9521d10b6c43",
                 "shasum": ""
             },
             "require": {
@@ -5997,7 +6049,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v3.6.0"
+                "source": "https://github.com/symfony/service-contracts/tree/v3.6.1"
             },
             "funding": [
                 {
@@ -6009,11 +6061,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-25T09:37:31+00:00"
+            "time": "2025-07-15T11:30:57+00:00"
         },
         {
             "name": "symfony/stopwatch",

@@ -125,7 +125,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
                 echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["MusicBrainzCachePath"], null, \aportela\SimpleFSCache\CacheFormat::JSON,);
                 $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
                 $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
                     function ($artistNames, $total, $index) use ($showProgressBar) {
@@ -146,7 +146,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
                 echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["MusicBrainzCachePath"], null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
                 $totalScrapTime = $mbArtistScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
@@ -168,7 +168,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapMusicBrainzReleaseCache")) {
                 echo "Starting Musicbrainz Release Scrapper (Releases without MusicBrainz cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["MusicBrainzCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["MusicBrainzCachePath"], null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainz\ReleaseScraper($dbh, $logger, $cache);
                 $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
                     function ($mbIds, $total, $index) use ($showProgressBar) {
@@ -190,7 +190,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapLastFMArtistCache")) {
                 echo "Starting LastFM Artist Scrapper (Artists without LastFM cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["LastFMCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["LastFMCachePath"], null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $lastFMArtistScraper = new \Spieldose\Library\Scraper\LastFM\ArtistScraper($dbh, $logger, $settings["lastFMAPIKey"], $cache);
                 $totalScrapTime = $lastFMArtistScraper->scrapMissingCache(
                     function ($names, $total, $index) use ($showProgressBar) {
@@ -212,7 +212,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapLastFMAlbumCache")) {
                 echo "Starting LastFM Album Scrapper (Albums without LastFM cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::JSON, $settings["cache"]["LastFMCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["LastFMCachePath"], null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $lastFMAlbumScraper = new \Spieldose\Library\Scraper\LastFM\AlbumScraper($dbh, $logger, $settings["lastFMAPIKey"], $cache);
                 $totalScrapTime = $lastFMAlbumScraper->scrapMissingCache(
                     function ($items, $total, $index) use ($showProgressBar) {
@@ -234,7 +234,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapWikipediaArtistCache")) {
                 echo "Starting Wikipedia Artist Scrapper (Wikipedia artist page without cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::HTML, $settings["cache"]["WikipediaCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["WikipediaCachePath"], null, \aportela\SimpleFSCache\CacheFormat::HTML);
                 $wikipediaScraper = new \Spieldose\Library\Scraper\Wikipedia\ArtistScraper($dbh, $logger, $cache);
                 $totalScrapTime = $wikipediaScraper->scrapMissingCache(
                     function ($artists, $total, $index) use ($showProgressBar) {
@@ -256,7 +256,7 @@ if (count($missingExtensions) > 0) {
             }
             if ($cmdLine->hasParam("scrapLyrics")) {
                 echo "Starting Lyrics Scrapper (Lyrics without cache):" . PHP_EOL;
-                $cache = new \aportela\SimpleFSCache\Cache($logger, \aportela\SimpleFSCache\CacheFormat::TXT, $settings["cache"]["LyricsCachePath"], $force);
+                $cache = new \aportela\SimpleFSCache\Cache($logger, $settings["cache"]["LyricsCachePath"], null, \aportela\SimpleFSCache\CacheFormat::TXT);
                 $lyricsScraper = new \Spieldose\Library\Scraper\Lyrics($dbh, $logger, $cache);
                 $totalScrapTime = $lyricsScraper->scrapMissingCache(
                     function ($tracks, $total, $index) use ($showProgressBar) {
