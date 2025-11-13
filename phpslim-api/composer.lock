@@ -4,31 +4,32 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e169e3391fcdeaa8b8c291af18c7414c",
+    "content-hash": "2b166b69826611ba560725561ff901c9",
     "packages": [
         {
             "name": "aportela/db-browser-wrapper",
-            "version": "1.1.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-browser-wrapper.git",
-                "reference": "86ea115def56223bccafab8b0eac9bbfa90ec342"
+                "reference": "04115e42d2878b36ec5f798b81da5aec697d8d40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/86ea115def56223bccafab8b0eac9bbfa90ec342",
-                "reference": "86ea115def56223bccafab8b0eac9bbfa90ec342",
+                "url": "https://api.github.com/repos/aportela/db-browser-wrapper/zipball/04115e42d2878b36ec5f798b81da5aec697d8d40",
+                "reference": "04115e42d2878b36ec5f798b81da5aec697d8d40",
                 "shasum": ""
             },
             "require": {
-                "aportela/db-wrapper": "^2.1",
+                "aportela/db-wrapper": "^3.0",
                 "php": ">=8.4",
                 "psr/log": "^3.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.88",
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^10.5"
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^2.2"
             },
             "type": "library",
             "autoload": {
@@ -50,22 +51,22 @@
             "homepage": "https://github.com/aportela/db-browser-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-browser-wrapper/issues",
-                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.1.1"
+                "source": "https://github.com/aportela/db-browser-wrapper/tree/1.3.0"
             },
-            "time": "2025-10-09T12:56:40+00:00"
+            "time": "2025-11-11T20:50:58+00:00"
         },
         {
             "name": "aportela/db-wrapper",
-            "version": "2.1.2",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aportela/db-wrapper.git",
-                "reference": "dd03ddf7f8b85744fdaad73ceab4d1f5bc33d8ba"
+                "reference": "e0321f70690e990332e77e4305624dfdd22d32c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/dd03ddf7f8b85744fdaad73ceab4d1f5bc33d8ba",
-                "reference": "dd03ddf7f8b85744fdaad73ceab4d1f5bc33d8ba",
+                "url": "https://api.github.com/repos/aportela/db-wrapper/zipball/e0321f70690e990332e77e4305624dfdd22d32c1",
+                "reference": "e0321f70690e990332e77e4305624dfdd22d32c1",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +76,8 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.88",
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^10.5"
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^2.2"
             },
             "type": "library",
             "autoload": {
@@ -97,9 +99,9 @@
             "homepage": "https://github.com/aportela/db-wrapper",
             "support": {
                 "issues": "https://github.com/aportela/db-wrapper/issues",
-                "source": "https://github.com/aportela/db-wrapper/tree/2.1.2"
+                "source": "https://github.com/aportela/db-wrapper/tree/3.0.0"
             },
-            "time": "2025-10-23T10:09:28+00:00"
+            "time": "2025-11-11T20:46:08+00:00"
         },
         {
             "name": "aportela/httprequest-wrapper",
