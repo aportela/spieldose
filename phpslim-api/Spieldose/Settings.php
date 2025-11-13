@@ -151,4 +151,13 @@ class Settings
             throw new \RuntimeException("Settings key (LastFMAPIKey) not found");
         }
     }
+
+    public function getAlbumCoverPathValidFilenamesPattern(): string
+    {
+        if (is_string($this->settings['albumCoverPathValidFilenamesPattern'])) {
+            return ($this->settings['albumCoverPathValidFilenamesPattern']);
+        } else {
+            throw new \RuntimeException("Settings key (albumCoverPathValidFilenamesPattern) not found");
+        }
+    }
 }

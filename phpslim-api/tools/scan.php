@@ -63,8 +63,10 @@ try {
                     $pathId = $libraryManager->addLibraryPath($newLibraryPath);
                     echo "Starting library scanner:" . PHP_EOL;
                     $libraryScanner = new \Spieldose\Library\Scanner\LibraryScanner($dbh, $logger);
-                    if (!empty($settings["albumCoverPathValidFilenames"])) {
-                        $libraryScanner->setValidCoverFilenamesPattern($settings["albumCoverPathValidFilenames"]);
+
+                    $albumCoverPathValidFilenamesPattern = $settings->getAlbumCoverPathValidFilenamesPattern();
+                    if (!empty($albumCoverPathValidFilenamesPattern)) {
+                        $libraryScanner->setValidCoverFilenamesPattern($albumCoverPathValidFilenamesPattern);
                     }
                     $totalScanTime = $libraryScanner->scanLibraryPath(
                         $pathId,

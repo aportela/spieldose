@@ -144,7 +144,7 @@ return [
             ],
         ]
     ],
-    'albumCoverPathValidFilenames' => '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}',
+    'albumCoverPathValidFilenamesPattern' => '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}',
     // LAST.FM API KEY: required for scraping data from last fm
     'LastFMAPIKey' => ""
     // TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
