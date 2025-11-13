@@ -15,10 +15,12 @@ $container = $containerBuilder->build();
 echo "[-] Spieldose setup" . PHP_EOL;
 
 $logger = $container->get(\Spieldose\Logger\InstallerLogger::class);
+if (! $logger instanceof \Spieldose\Logger\InstallerLogger) {
+    echo "[E] Error getting logger from container" . PHP_EOL;
+    exit(1);
+}
 
-$settings = $container->get('settings');
-
-$installer = new \Spieldose\Installer($logger, $container);
+$installer = new \Spieldose\Installer($logger);
 
 echo "[?] Checking php required extensions...";
 if ($installer->checkRequiredPHPExtensions()) {
@@ -30,16 +32,12 @@ if ($installer->checkRequiredPHPExtensions()) {
     exit(1);
 }
 
-echo "[?] Creating missing/required paths...";
-if ($installer->createMissingPaths()) {
-    echo " success!" . PHP_EOL;
-} else {
-    echo " error!" . PHP_EOL;
-    $logger->error("Error creating missing/required paths");
+$db = $container->get(\aportela\DatabaseWrapper\DB::class);
+if (! $db instanceof \aportela\DatabaseWrapper\DB) {
+    echo "[E] Error getting database handler from container" . PHP_EOL;
+    $logger->error("Error getting database handler from container");
     exit(1);
 }
-
-$db = $container->get(\aportela\DatabaseWrapper\DB::class);
 
 if (!$db->isSchemaInstalled()) {
     echo "[?] Creating database base schema...";
@@ -57,8 +55,8 @@ if (!$db->isSchemaInstalled()) {
 
 $currentDBVersion = $db->getCurrentSchemaVersion();
 $lastDBVersionAvailable = $db->getUpgradeSchemaVersion();
-if ($currentDBVersion != $lastDBVersionAvailable) {
-    echo "[?] Database upgrade required (current: {$currentDBVersion} => available: {$lastDBVersionAvailable})...";
+if ($currentDBVersion !== $lastDBVersionAvailable) {
+    echo sprintf('[?] Database upgrade required (current: %s => available: %s)...', $currentDBVersion, $lastDBVersionAvailable);
     $currentVersion = $db->upgradeSchema(false);
     if ($currentVersion !== -1) {
         echo " success!" . PHP_EOL;
@@ -68,7 +66,8 @@ if ($currentDBVersion != $lastDBVersionAvailable) {
         exit(1);
     }
 } else {
-    echo "[!] Database already on last version ({$lastDBVersionAvailable})" . PHP_EOL;
+    echo sprintf('[!] Database already on last version (%s)', $lastDBVersionAvailable) . PHP_EOL;
     $logger->notice("Database already on last version", [$lastDBVersionAvailable]);
 }
+
 exit(0);
