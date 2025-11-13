@@ -95,7 +95,11 @@ return [
                 'name' => 'Spieldose::Thumbnail'
             ],
         ]
-    ]
+    ],
+    'scraper' => [
+        'albumCoverPathValidFilenames' => '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}'
+    ],
+    'LastFMAPIKey' => ""
 ];
 
 /*
@@ -164,9 +168,9 @@ $settings["cache"] = [
 // TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
 //$settings['similarArtistsPreferredAlgorithmRelevance'] = ["lastFMSimilar", "lastFMTag", "musicbrainzGenre", "fileID3TagGenre"];
 
-$settings['albumCoverPathValidFilenames'] = '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}';
 
 
-$settings['lastFMAPIKey'] = ""; // LAST.FM API KEY: required for scraping data from last fm
+
+$settings['lastFMAPIKey'] = "40ede2a05c97a8a8055ee12f813a417d"; // LAST.FM API KEY: required for scraping data from last fm
 
 return $settings;

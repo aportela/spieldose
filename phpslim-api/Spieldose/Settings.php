@@ -142,4 +142,13 @@ class Settings
             throw new \RuntimeException("Settings key (paths->cache->{$entity}) not found");
         }
     }
+
+    public function getLastFMAPIKey(): string
+    {
+        if (is_string($this->settings['LastFMAPIKey'])) {
+            return ($this->settings['LastFMAPIKey']);
+        } else {
+            throw new \RuntimeException("Settings key (LastFMAPIKey) not found");
+        }
+    }
 }
