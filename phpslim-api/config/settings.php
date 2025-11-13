@@ -24,6 +24,54 @@ return [
             "LastFM" => $cachePath . DIRECTORY_SEPARATOR . "lastfm",
             "Wikipedia" => $cachePath . DIRECTORY_SEPARATOR . "wikipedia",
             "Lyrics" => $cachePath . DIRECTORY_SEPARATOR . "lyrics",
+            'thumbnails' => [
+                'artists' => [
+                    'basePath' => $cachePath . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'artists',
+                    'sizes' => [
+                        'small' => [
+                            'width' => 100,
+                            'height' => 100,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ],
+                        'normal' => [
+                            'width' => 400,
+                            'height' => 400,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ]
+                    ]
+                ],
+                'albums' => [
+                    'useLocalCovers' => true, // if true, always use local cover stored on file path (cover.jpg, font.jpg...) and not the remote musicbrainz from covert art archive
+                    'basePath' => $cachePath . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'albums',
+                    'sizes' => [
+                        'small' => [
+                            'width' => 100,
+                            'height' => 100,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ],
+                        'normal' => [
+                            'width' => 400,
+                            'height' => 400,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ]
+                    ]
+                ],
+                'radioStations' => [
+                    'basePath' => $cachePath . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'radiostations',
+                    'sizes' => [
+                        'small' => [
+                            'width' => 100,
+                            'height' => 100,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ],
+                        'normal' => [
+                            'width' => 400,
+                            'height' => 400,
+                            'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
+                        ]
+                    ]
+                ]
+            ]
         ]
     ],
     'db' => [
@@ -96,81 +144,9 @@ return [
             ],
         ]
     ],
-    'scraper' => [
-        'albumCoverPathValidFilenames' => '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}'
-    ],
+    'albumCoverPathValidFilenames' => '{cover,Cover,COVER,front,Front,FRONT}.{jpg,Jpg,JPG,jpeg,Jpeg,JPEG,png,Png,PNG}',
+    // LAST.FM API KEY: required for scraping data from last fm
     'LastFMAPIKey' => ""
+    // TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
+    // 'similarArtistsPreferredAlgorithmRelevance' => ["lastFMSimilar", "lastFMTag", "musicbrainzGenre", "fileID3TagGenre"];
 ];
-
-/*
-$settings['twig'] = [
-    'path' =>  $settings['paths']['templates'],
-    'options' =>  ['auto_reload' => true, 'cache' => $settings['environment'] == 'development' ? false : dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'twig_cache']
-];
-*/
-$settings['thumbnails'] = [
-    'artists' => [
-        'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'artists',
-        'sizes' => [
-            'small' => [
-                'width' => 100,
-                'height' => 100,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ],
-            'normal' => [
-                'width' => 400,
-                'height' => 400,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ]
-        ]
-    ],
-    'albums' => [
-        'useLocalCovers' => true, // if true, always use local cover stored on file path (cover.jpg, font.jpg...) and not the remote musicbrainz from covert art archive
-        'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'albums',
-        'sizes' => [
-            'small' => [
-                'width' => 100,
-                'height' => 100,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ],
-            'normal' => [
-                'width' => 400,
-                'height' => 400,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ]
-        ]
-    ],
-    'radioStations' => [
-        'basePath' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'radiostations',
-        'sizes' => [
-            'small' => [
-                'width' => 100,
-                'height' => 100,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ],
-            'normal' => [
-                'width' => 400,
-                'height' => 400,
-                'quality' => \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY
-            ]
-        ]
-    ],
-];
-
-$settings["cache"] = [
-    "MusicBrainzCachePath" => $cachePath . DIRECTORY_SEPARATOR . "musicbrainz",
-    "LastFMCachePath" => $cachePath . DIRECTORY_SEPARATOR . "lastfm",
-    "LyricsCachePath" => $cachePath . DIRECTORY_SEPARATOR . "lyrics",
-    "WikipediaCachePath" => $cachePath . DIRECTORY_SEPARATOR . "wikipedia"
-];
-
-
-// TODO: similar artists will be matched with this algorithm relevance order (based on cached data)
-//$settings['similarArtistsPreferredAlgorithmRelevance'] = ["lastFMSimilar", "lastFMTag", "musicbrainzGenre", "fileID3TagGenre"];
-
-
-
-
-$settings['lastFMAPIKey'] = "40ede2a05c97a8a8055ee12f813a417d"; // LAST.FM API KEY: required for scraping data from last fm
-
-return $settings;
