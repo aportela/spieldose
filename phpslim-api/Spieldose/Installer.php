@@ -55,31 +55,36 @@ class Installer
                 return (false);
             }
         }
-        if (!file_exists($this->settings["cache"]["MusicBrainzCachePath"])) {
-            if (!mkdir($this->settings["cache"]["MusicBrainzCachePath"], 0750, true)) {
-                $this->logger->critical("Error creating MusicBrainz cache basePath: " . $this->settings["cache"]["MusicBrainzCachePath"]);
+        */
+
+        $path = $this->settings->getCachePath("MusicBrainz");
+        if (!file_exists($path)) {
+            if (!mkdir($path, 0750, true)) {
+                $this->logger->critical("Error creating MusicBrainz cache basePath: " . $path);
                 return (false);
             }
         }
-        if (!file_exists($this->settings["cache"]["LastFMCachePath"])) {
-            if (!mkdir($this->settings["cache"]["LastFMCachePath"], 0750, true)) {
-                $this->logger->critical("Error creating LastFM cache basePath: " . $this->settings["cache"]["LastFMCachePath"]);
+        $path = $this->settings->getCachePath("LastFM");
+        if (!file_exists($path)) {
+            if (!mkdir($path, 0750, true)) {
+                $this->logger->critical("Error creating LastFM cache basePath: " . $path);
                 return (false);
             }
         }
-        if (!file_exists($this->settings["cache"]["LyricsCachePath"])) {
-            if (!mkdir($this->settings["cache"]["LyricsCachePath"], 0750, true)) {
-                $this->logger->critical("Error creating LastFM cache basePath: " . $this->settings["cache"]["LyricsCachePath"]);
+        $path = $this->settings->getCachePath("Wikipedia");
+        if (!file_exists($path)) {
+            if (!mkdir($path, 0750, true)) {
+                $this->logger->critical("Error creating Wikipedia cache basePath: " . $path);
                 return (false);
             }
         }
-        if (!file_exists($this->settings["cache"]["WikipediaCachePath"])) {
-            if (!mkdir($this->settings["cache"]["WikipediaCachePath"], 0750, true)) {
-                $this->logger->critical("Error creating Wikipedia cache basePath: " . $this->settings["cache"]["WikipediaCachePath"]);
+        $path = $this->settings->getCachePath("Lyrics");
+        if (!file_exists($path)) {
+            if (!mkdir($path, 0750, true)) {
+                $this->logger->critical("Error creating Lyrics cache basePath: " . $path);
                 return (false);
             }
         }
-            */
         return (true);
     }
 }

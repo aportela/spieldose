@@ -18,7 +18,13 @@ return [
         'passphrase' => '~!yK^I7AhbnuqY@J4*Lst[g+QD6a9N5URPB?%Gf`XF(]eMrvckSm$ECx,j;3H&dV'
     ],
     'paths' => [
-        'logs' => $logPath
+        'logs' => $logPath,
+        'cache' => [
+            "MusicBrainz" => $cachePath . DIRECTORY_SEPARATOR . "musicbrainz",
+            "LastFM" => $cachePath . DIRECTORY_SEPARATOR . "lastfm",
+            "Wikipedia" => $cachePath . DIRECTORY_SEPARATOR . "wikipedia",
+            "Lyrics" => $cachePath . DIRECTORY_SEPARATOR . "lyrics",
+        ]
     ],
     'db' => [
         //'driver' => 'sqlite',
@@ -148,10 +154,10 @@ $settings['thumbnails'] = [
 ];
 
 $settings["cache"] = [
-    "MusicBrainzCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "musicbrainz",
-    "LastFMCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "lastfm",
-    "LyricsCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "lyrics",
-    "WikipediaCachePath" => $settings['paths']['cache'] . DIRECTORY_SEPARATOR . "wikipedia"
+    "MusicBrainzCachePath" => $cachePath . DIRECTORY_SEPARATOR . "musicbrainz",
+    "LastFMCachePath" => $cachePath . DIRECTORY_SEPARATOR . "lastfm",
+    "LyricsCachePath" => $cachePath . DIRECTORY_SEPARATOR . "lyrics",
+    "WikipediaCachePath" => $cachePath . DIRECTORY_SEPARATOR . "wikipedia"
 ];
 
 

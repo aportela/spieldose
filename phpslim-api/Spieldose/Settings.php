@@ -131,4 +131,15 @@ class Settings
             throw new \RuntimeException("Settings key (db->upgradeSchemaPath) not found");
         }
     }
+
+    public function getCachePath(string $entity): string
+    {
+        if (
+            is_array($this->settings['paths']) && is_array($this->settings['paths']['cache']) && is_string($this->settings['paths']['cache'][$entity])
+        ) {
+            return ($this->settings['paths']['cache'][$entity]);
+        } else {
+            throw new \RuntimeException("Settings key (paths->cache->{$entity}) not found");
+        }
+    }
 }
