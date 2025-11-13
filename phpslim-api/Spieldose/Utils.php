@@ -13,11 +13,11 @@ class Utils
     {
         $json = json_encode($data);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \HomeDocs\Exception\JSONSerializerException(json_last_error_msg(), json_last_error());
+            throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg(), json_last_error());
         }
 
         if (! is_string($json)) {
-            throw new \HomeDocs\Exception\JSONSerializerException("Error serializing payload");
+            throw new \Spieldose\Exception\JSONSerializerException("Error serializing payload");
         }
 
         return ($json);
