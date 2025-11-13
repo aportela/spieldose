@@ -6,53 +6,73 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPAR
 
 $containerBuilder = new ContainerBuilder();
 
-// Set up settings
+// Set up container
 $containerBuilder->addDefinitions(__DIR__ . '../../config/container.php');
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
 
-echo "Spieldose account manager" . PHP_EOL;
-
+echo "[-] Spieldose account manager" . PHP_EOL;
 
 $logger = $container->get(\Spieldose\Logger\InstallerLogger::class);
+if (! $logger instanceof \Spieldose\Logger\InstallerLogger) {
+    echo "[E] Error getting logger from container" . PHP_EOL;
+    exit(1);
+}
 
-$logger->info("Scan started");
+$installer = new \Spieldose\Installer($logger);
 
-$settings = $container->get('settings');
-
-$missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
-if (count($missingExtensions) > 0) {
-    $missingExtensionsStr = implode(", ", $missingExtensions);
-    echo "Error: missing php extension/s: " . $missingExtensionsStr . PHP_EOL;
-    $logger->critical("Error: missing php extension/s: ", [$missingExtensionsStr]);
+echo "[?] Checking php required extensions...";
+if ($installer->checkRequiredPHPExtensions()) {
+    echo " success!" . PHP_EOL;
 } else {
-    $cmdLine = new \Spieldose\CmdLine("", array("email:", "password:", "name:"));
-    if ($cmdLine->hasParam("email") && $cmdLine->hasParam("password") && $cmdLine->hasParam("name")) {
-        echo "Setting account credentials..." . PHP_EOL;
-        $db = $container->get(\aportela\DatabaseWrapper\DB::class);
-        if ($db->getCurrentSchemaVersion() < $db->getUpgradeSchemaVersion()) {
-            echo "New database version available, an upgrade is required before continue." . PHP_EOL;
-            exit;
-        }
-        $found = false;
-        $u = new \Spieldose\User("", $cmdLine->getParamValue("email"), $cmdLine->getParamValue("password"), $cmdLine->getParamValue("name"));
-        try {
-            $u->get($db);
-            $found = true;
-        } catch (\Spieldose\Exception\NotFoundException $e) {
-        }
-        if ($found) {
-            echo "User found, updating password...";
-            $u->update($db);
-            echo "ok!" . PHP_EOL;
-        } else {
-            echo "User not found, creating account...";
-            $u->id = (\Ramsey\Uuid\Uuid::uuid7())->toString();
-            $u->add($db);
-            echo "ok!" . PHP_EOL;
-        }
+    $missingPHPExtensions = $installer->getMissingPHPExtensions();
+    echo " error! - missing extensions: " . implode(",", $missingPHPExtensions) . PHP_EOL;
+    $logger->error("Missing php required extensions", $missingPHPExtensions);
+    exit(1);
+}
+
+echo "[?] Checking params...";
+$cmdLine = new \Spieldose\CmdLine("", ["email:", "password:"]);
+if ($cmdLine->hasParam("email") && $cmdLine->hasParam("password")) {
+    $email = $cmdLine->getParamValue("email");
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo ' error! - invalid email param: ' . $email . PHP_EOL;
+        $logger->error("Invalid email param", [$email]);
+        exit(1);
     } else {
-        echo "No required params found: --email <email> --password <secret> --name <name>" . PHP_EOL;
+        echo " success!" . PHP_EOL;
     }
+
+    echo "[?] Setting account credentials...";
+    $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+    if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+        echo ' error! - can not get database handler from container' . PHP_EOL;
+        $logger->error("Error getting database handler from container");
+        exit(1);
+    }
+
+    $found = false;
+    $u = new \Spieldose\User("", $cmdLine->getParamValue("email"), $cmdLine->getParamValue("password"));
+    try {
+        $u->get($dbh);
+        $found = true;
+    } catch (\Spieldose\Exception\NotFoundException) {
+    }
+
+    if ($found) {
+        echo " user found, updating password...";
+        $u->update($dbh);
+        echo " success!" . PHP_EOL;
+    } else {
+        echo " user not found, creating account...";
+        $u->id = \Spieldose\Utils::uuidv4();
+        $u->add($dbh);
+        echo " success!" . PHP_EOL;
+    }
+
+    exit(0);
+} else {
+    echo " error! - No required params found: --email <email> --password <secret>" . PHP_EOL;
+    exit(1);
 }
