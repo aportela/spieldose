@@ -20,13 +20,13 @@ if (! $logger instanceof \Spieldose\Logger\InstallerLogger) {
     exit(1);
 }
 
-$installer = new \Spieldose\Installer($logger);
+$setup = new \Spieldose\Setup($logger);
 
 echo "[?] Checking php required extensions...";
-if ($installer->checkRequiredPHPExtensions()) {
+if ($setup->checkRequiredPHPExtensions()) {
     echo " success!" . PHP_EOL;
 } else {
-    $missingPHPExtensions = $installer->getMissingPHPExtensions();
+    $missingPHPExtensions = $setup->getMissingPHPExtensions();
     echo " error! - missing extensions: " . implode(",", $missingPHPExtensions) . PHP_EOL;
     $logger->error("Missing php required extensions", $missingPHPExtensions);
     exit(1);
@@ -71,7 +71,7 @@ if ($currentDBVersion !== $lastDBVersionAvailable) {
 }
 
 echo "[?] Checking required paths...";
-if ($installer->createMissingPaths()) {
+if ($setup->createMissingPaths()) {
     echo " success!" . PHP_EOL;
 } else {
     echo " error!";

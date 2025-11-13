@@ -22,13 +22,13 @@ $logger->info("Scan started");
 
 $settings = new \Spieldose\Settings();
 
-$installer = new \Spieldose\Installer($logger);
+$setup = new \Spieldose\Setup($logger);
 
 echo "[?] Checking php required extensions...";
-if ($installer->checkRequiredPHPExtensions()) {
+if ($setup->checkRequiredPHPExtensions()) {
     echo " success!" . PHP_EOL;
 } else {
-    $missingPHPExtensions = $installer->getMissingPHPExtensions();
+    $missingPHPExtensions = $setup->getMissingPHPExtensions();
     echo " error! - missing extensions: " . implode(",", $missingPHPExtensions) . PHP_EOL;
     $logger->error("Missing php required extensions", $missingPHPExtensions);
     exit(1);

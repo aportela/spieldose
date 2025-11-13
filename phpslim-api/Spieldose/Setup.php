@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class Installer
+class Setup
 {
     private \Spieldose\Settings $settings;
 
