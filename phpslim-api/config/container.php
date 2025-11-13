@@ -29,12 +29,14 @@ return [
         );
     },
 
+    /*
     // TODO: remove twig
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['twig'];
         $twig = \Slim\Views\Twig::create($settings['path'], $settings['options']);
         return $twig;
     },
+    */
 
     \aportela\DatabaseWrapper\DB::class => function (ContainerInterface $container): \aportela\DatabaseWrapper\DB {
         $dbSettings = new \Spieldose\Settings();
