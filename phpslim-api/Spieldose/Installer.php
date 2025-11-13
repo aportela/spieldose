@@ -1,31 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spieldose;
 
 class Installer
 {
-    public const ALGORITHM = 'HS256';
+    private \Spieldose\Settings $settings;
 
-    private \Psr\Log\LoggerInterface $logger;
-    private array $settings = [];
-
-    public function __construct(\Psr\Log\LoggerInterface $logger, \Psr\Container\ContainerInterface $container)
+    public function __construct(private readonly \Psr\Log\LoggerInterface $logger)
     {
-        $this->logger = $logger;
-        $this->settings = $container->get("settings");
+        // this is also required for some constructor operations (error_reporting/ini_set/date_default_timezone_set)
+        $this->settings = new \Spieldose\Settings();
     }
 
-    public function __destruct() {}
-
+    /**
+     * @return array<string>
+     */
     public function getMissingPHPExtensions(): array
     {
-        return (array_diff($this->settings["phpRequiredExtensions"], get_loaded_extensions()));
+        return (array_diff(\Spieldose\Settings::PHP_REQUIRED_EXTENSIONS, get_loaded_extensions()));
     }
 
     public function checkRequiredPHPExtensions(): bool
     {
         $missingExtensions = $this->getMissingPHPExtensions();
-        if (count($missingExtensions) > 0) {
+        if ($missingExtensions !== []) {
             $this->logger->critical("Error: missing php extension/s: ", $missingExtensions);
             return (false);
         } else {
@@ -35,6 +35,8 @@ class Installer
 
     public function createMissingPaths(): bool
     {
+        // TODO: new settings
+        /*
         if (!file_exists($this->settings['thumbnails']['artists']['basePath'])) {
             if (!mkdir($this->settings['thumbnails']['artists']['basePath'], 0750, true)) {
                 $this->logger->critical("Error creating artist thumbnail basePath: " . $this->settings['thumbnails']['artists']['basePath']);
@@ -77,6 +79,7 @@ class Installer
                 return (false);
             }
         }
+            */
         return (true);
     }
 }
