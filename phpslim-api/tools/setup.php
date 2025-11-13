@@ -70,4 +70,13 @@ if ($currentDBVersion !== $lastDBVersionAvailable) {
     $logger->notice("Database already on last version", [$lastDBVersionAvailable]);
 }
 
+echo "[?] Checking required paths...";
+if ($installer->createMissingPaths()) {
+    echo " success!" . PHP_EOL;
+} else {
+    echo " error!";
+    $logger->error("Error checking required paths");
+    exit(1);
+}
+
 exit(0);
