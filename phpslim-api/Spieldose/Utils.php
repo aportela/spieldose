@@ -26,18 +26,17 @@ class Utils
     /**
      * @return array<mixed>
      */
-    public static function getInitialState(\Psr\Container\ContainerInterface $container): array
+    public static function getInitialState(\Spieldose\Settings $settings): object
     {
-        $settings = $container->get('settings');
-        return ([
-            'allowSignUp' => $settings['common']['allowSignUp'],
-            'defaultResultsPage' => $settings['common']['defaultResultsPage'],
-            'environment' => $settings['environment'],
-            'session' => array(
+        return ((object)
+        [
+            'allowSignUp' => $settings->allowSignUp(),
+            'environment' => $settings->getEnvironment(),
+            'session' => [
                 'logged' => \Spieldose\UserSession::isLogged(),
                 'id' => \Spieldose\UserSession::getUserId(),
                 'email' => \Spieldose\UserSession::getEmail()
-            )
+            ]
         ]
         );
     }
