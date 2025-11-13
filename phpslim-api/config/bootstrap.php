@@ -16,10 +16,19 @@ $container = $containerBuilder->build();
 // Create App instance
 $app = $container->get(App::class);
 
-// Register routes
-(require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'routes.php')($app);
+/**
+ * Register routes
+ *
+ * @var callable $routesSetup
+ */
+$routesSetup = require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'routes.php';
+$routesSetup($app);
 
-// Register middleware
-(require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'middleware.php')($app);
+/**
+ * Register middleware
+ * @var callable $middlewareSetup
+ */
+$middlewareSetup = (require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'middleware.php');
+$middlewareSetup($app);
 
 return $app;
