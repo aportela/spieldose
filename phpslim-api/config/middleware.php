@@ -3,7 +3,7 @@
 use Slim\App;
 use Slim\Middleware\ErrorMiddleware;
 
-return function (App $app) {
+return function (App $app): void {
     // Parse json, form data and xml
     $app->addBodyParsingMiddleware();
 
