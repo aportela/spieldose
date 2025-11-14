@@ -1,1 +1,397 @@
-// app global css in SCSS form
+// custom style taken / inspired by https://github.com/bekaku/quasar-starter-template/blob/main/src/css/quasar.variables.scss
+@import 'utilities';
+
+@font-face {
+  font-family: "TwemojiMozilla";
+  src: local("TwemojiMozilla"), url("../assets/font/TwemojiMozilla.ttf") format("truetype");
+  font-weight: normal;
+}
+
+.input-emoji {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, "TwemojiMozilla";
+}
+
+.main-app-text-link-hover {
+  text-decoration: none !important;
+  color: $primary !important;
+}
+
+.main-app-text-link-hover:hover {
+  text-decoration: underline !important;
+}
+
+$separator-color: var(--color-zinc-200) !default;
+$separator-dark-color: var(--color-zinc-700) !default;
+
+// default background colors
+$default-light-primary-bg-color: var(--color-zinc-100);
+$default-dark-primary-bg-color: var(--color-zinc-800);
+
+$default-light-secondary-bg-color: var(--color-zinc-300);
+$default-dark-secondary-bg-color: var(--color-zinc-700);
+
+// default text colors
+$default-light-primary-text-color: var(--color-zinc-950);
+$default-dark-primary-text-color: var(--color-zinc-100);
+
+$default-light-secondary-text-color: var(--color-zinc-600);
+$default-dark-secondary-text-color: var(--color-zinc-300);
+
+$default-light-third-text-color: var(--color-zinc-400);
+$default-dark-third-text-color: var(--color-zinc-400);
+
+$default-widget-border-radius: 10px;
+
+$default-action-light-primary-color: white;
+$default-action-light-primary-bg-color: var(--q-primary);
+
+$default-action-dark-primary-color: white;
+$default-action-dark-primary-bg-color: var(--q-primary);
+
+$default-action-light-secondary-color: #000;
+$default-action-light-secondary-bg-color: var(--color-zinc-300);
+
+$default-action-dark-secondary-color: white;
+$default-action-dark-secondary-bg-color: var(--color-zinc-700);
+
+body {
+  ::selection {
+    background-color: var(--color-primary-600);
+    color: #fff;
+  }
+
+  .animation-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.body--light {
+  // default main color/background
+  background: $default-light-primary-bg-color !important;
+  color: $default-light-primary-text-color !important;
+
+
+  .action-primary {
+    background: $default-action-light-primary-bg-color;
+    color: $default-action-light-primary-color;
+  }
+
+  .action-secondary {
+    background: $default-action-light-secondary-bg-color;
+    color: $default-action-light-secondary-color;
+  }
+
+  .text-color-primary {
+    color: $default-light-primary-text-color !important;
+  }
+
+  .text-color-secondary {
+    color: $default-light-secondary-text-color !important;
+  }
+
+  // default (auth app) layout
+  .theme-default-q-layout {
+    background-color: var(--color-zinc-50);
+  }
+
+  // main layout header
+  .theme-default-q-header {
+    background-color: var(--color-zinc-100);
+    color: $default-light-primary-text-color;
+  }
+
+  // main layout (top) toolbar search button
+  .theme-default-q-toolbar .theme-default-q-btn {
+    color: $default-light-third-text-color;
+  }
+
+  // sidebar drawer
+  .theme-default-q-drawer {
+    background-color: var(--color-zinc-100);
+  }
+
+  // sidebar items
+  .theme-default-q-drawer .theme-default-q-item {
+    background-color: var(--color-zinc-200);
+    color: $default-light-primary-text-color;
+  }
+
+  .theme-default-q-drawer .theme-default-q-item-active {
+    background-color: var(--color-primary-600);
+    color: #fff;
+  }
+
+  .theme-default-q-expansion-item-header {
+    background-color: transparent !important;
+  }
+
+  .theme-default-q-expansion-item-header[aria-expanded="true"] {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .theme-default-q-expansion-item {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: $default-widget-border-radius;
+    background-color: $default-light-primary-bg-color !important;
+    overflow: hidden; // this fix :hover without border-radius
+  }
+
+  // q-chip component
+  .theme-default-q-chip {
+    color: #222;
+  }
+
+  // link inside q-chip component
+  .theme-default-q-chip a {
+    color: var(--color-zinc-950);
+  }
+
+  // q-avatar inside q-chip component
+  .theme-default-q-chip .theme-default-q-avatar {
+    background: #444;
+    color: #fff;
+  }
+
+  // TODO: CHANGE CLASSES
+  .q-card {
+    background: $default-light-primary-bg-color;
+  }
+
+  .q-item {
+    background: $default-light-secondary-bg-color ;
+  }
+
+  .q-field--outlined .q-field__control::before {
+    border: 1px solid $separator-color !important;
+    box-shadow:
+      0 0 #0000,
+      0 0 #0000,
+      0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+
+  .theme-default-q-banner {
+    border: 1px solid $separator-color !important;
+  }
+
+  .theme-default-q-banner-success {
+    background-color: #e5ffe4;
+  }
+
+  .theme-default-q-banner-error {
+    background-color: #ffabb8;
+  }
+
+  .theme-default-q-banner-warning {
+    background-color: #ffe0d0;
+  }
+
+  .theme-default-q-card-section-header {
+    background-color: var(--color-zinc-200);
+  }
+
+  .theme-default-q-pagination .q-btn {
+    background: $default-action-light-primary-bg-color !important;
+    color: $default-action-light-primary-color !important;
+    margin-left: 4px;
+    margin-right: 4px;
+    width: 4em;
+    display: block;
+    border-radius: 3px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  .theme-default-q-pagination .q-btn[aria-current="true"] {
+    background-color: #000 !important;
+    cursor: not-allowed;
+  }
+
+  .q-card-base-dialog {
+    background-color: $default-light-primary-bg-color !important;
+    color: $default-light-primary-text-color !important;
+  }
+
+  .q-dialog-header {
+    background: var(--color-zinc-200); // TODO: $default-light-secondary-bg-color ?
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .q-dialog-footer {
+    background: var(--color-zinc-200);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .border-bottom-except-last-item:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+.body--dark {
+  // default main color/background
+  background: $default-dark-primary-bg-color !important;
+  color: $default-dark-primary-text-color !important;
+
+  .action-primary {
+    background: $default-action-dark-primary-bg-color;
+    color: $default-action-dark-primary-color;
+  }
+
+  .action-secondary {
+    background: $default-action-dark-secondary-bg-color;
+    color: $default-action-dark-secondary-color;
+  }
+
+  .text-color-primary {
+    color: $default-dark-primary-text-color;
+  }
+
+  .text-color-secondary {
+    color: $default-dark-secondary-text-color !important;
+  }
+
+  // default (auth app) layout
+  .theme-default-q-layout {
+    background-color: var(--color-zinc-800);
+  }
+
+  // main layout header
+  .theme-default-q-header {
+    background-color: var(--color-zinc-900);
+    color: $default-dark-primary-text-color;
+  }
+
+  // main layout (top) toolbar search button
+  .theme-default-q-toolbar .theme-default-q-btn {
+    color: $default-dark-third-text-color;
+  }
+
+  // sidebar drawer
+  .theme-default-q-drawer {
+    background-color: var(--color-zinc-900);
+  }
+
+  .theme-default-q-drawer .theme-default-q-item-active {
+    background-color: var(--color-primary-600);
+    color: #fff;
+  }
+
+  .theme-default-q-expansion-item-header {
+    background-color: none;
+  }
+
+  .theme-default-q-expansion-item-header[aria-expanded="true"] {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .theme-default-q-expansion-item {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: $default-widget-border-radius;
+    background-color: $default-dark-primary-bg-color !important;
+    overflow: hidden; // this fix :hover without border-radius
+  }
+
+  // q-chip component
+  .theme-default-q-chip {
+    background: #ddd;
+    color: var(--color-zinc-950);
+  }
+
+  // link inside q-chip component
+  .theme-default-q-chip a {
+    color: var(--color-zinc-950);
+  }
+
+  // q-avatar inside q-chip component
+  .theme-default-q-chip .theme-default-q-avatar {
+    background: var(--color-zinc-400);
+    color: #333;
+  }
+
+  .q-card {
+    background: $default-dark-primary-bg-color;
+  }
+
+  .q-item {
+    background: $default-dark-secondary-bg-color;
+  }
+
+  .q-field--outlined .q-field__control::before {
+    box-shadow:
+      0 0 $elevation-dark-ambient,
+      0 0 $elevation-dark-ambient,
+      0 1px 2px 0 $elevation-dark-ambient !important;
+  }
+
+  .theme-default-q-banner {
+    border: 1px solid $separator-color !important;
+  }
+
+  .theme-default-q-banner-success {
+    background-color: #37754e;
+    color: white;
+  }
+
+  .theme-default-q-banner-error {
+    background-color: #dd7080;
+    color: white;
+  }
+
+  .theme-default-q-banner-warning {
+    background-color: #ffbb98;
+    color: white;
+  }
+
+  .theme-default-q-card-section-header {
+    background-color: var(--color-zinc-700);
+  }
+
+  .theme-default-q-pagination .q-btn {
+    background: $default-action-light-primary-bg-color !important;
+    color: $default-action-light-primary-color !important;
+  }
+
+  .theme-default-q-pagination .q-btn {
+    background: $default-action-light-primary-bg-color !important;
+    color: $default-action-light-primary-color !important;
+    margin-left: 4px;
+    margin-right: 4px;
+    width: 4em;
+    display: block;
+    border-radius: 3px;
+    box-shadow: 0 1px 5px rgba(255, 255, 255, 0.2), 0 2px 2px rgba(255, 255, 255, 0.14), 0 3px 1px -2px rgba(255, 255, 255, 0.12);
+  }
+
+  .theme-default-q-pagination .q-btn[aria-current="true"] {
+    background-color: #ddd !important;
+    color : var(--color-zinc-950) !important;
+    cursor: not-allowed;
+  }
+
+  .q-card-base-dialog {
+    background-color: $default-dark-primary-bg-color !important;
+    color: $default-dark-primary-text-color !important;
+  }
+
+  .q-dialog-header {
+    background-color: var(--color-zinc-700);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  }
+
+  .q-dialog-footer {
+    background-color: var(--color-zinc-700);
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+  }
+
+  .border-bottom-except-last-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
