@@ -176,6 +176,7 @@ return function (App $app) {
                 });
             });
 
+            /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                     $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
@@ -1431,6 +1432,8 @@ return function (App $app) {
                 $response->getBody()->write($payload);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            */
         }
     )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
