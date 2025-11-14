@@ -1,5 +1,6 @@
 import { boot } from "quasar/wrappers";
-import { useSessionStore } from "stores/session";
+
+import { useSessionStore } from "src/stores/session";
 
 const session = useSessionStore();
 
@@ -16,7 +17,7 @@ export default boot(({ app, router, store }) => {
 
     if (session.isLogged) {
       if (to.name === "login" || to.name === "register") {
-        next({ name: "dashboard" });
+        next({ name: "index" });
       } else {
         next();
       }
