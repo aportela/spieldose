@@ -84,19 +84,22 @@ return function (App $app) {
         '/api2',
         function (RouteCollectorProxy $group) use ($app) {
 
-            $initialState = \Spieldose\Utils::getInitialState($app->getContainer());
+            $container = $app->getContainer();
+            if (!$container instanceof \Psr\Container\ContainerInterface) {
+                throw new \RuntimeException("Error getting container");
+            }
 
-            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState) {
-                $payload = json_encode(
+            $settings = new \Spieldose\Settings();
+            $initialState = \Spieldose\Utils::getInitialState($settings);
+
+            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState): \Psr\Http\Message\MessageInterface {
+                $payload = \Spieldose\Utils::getJSONPayload(
                     [
                         'initialState' => $initialState
                     ]
                 );
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                }
                 $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
             });
 
             $group->group('/auth', function (RouteCollectorProxy $group) use ($app, $initialState) {
