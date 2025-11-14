@@ -2,12 +2,12 @@ import { useAxios } from "src/composables/useAxios";
 
 const { axios } = useAxios();
 
-const baseAPIPath = "/api2";
+const basePath = "/api2";
 
 export function useAPI() {
   const api = {
     common: {
-      initialState: () => axios.get(baseAPIPath + "/initial_state"),
+      initialState: () => axios.get(basePath + "/initial_state"),
     },
     auth: {
       login: function (email, password) {
@@ -15,26 +15,27 @@ export function useAPI() {
           email: email,
           password: password,
         };
-        return axios.post(baseAPIPath + "/auth/login", params);
+        return axios.post(basePath + "/auth/login", params);
       },
-      logout: () => axios.post(baseAPIPath + "/auth/logout"),
+      logout: () => axios.post(basePath + "/auth/logout"),
       register: function (id, email, password) {
         const params = {
           id: id,
           email: email,
           password: password,
         };
-        return axios.post(baseAPIPath + "/auth/register", params);
+        return axios.post(basePath + "/auth/register", params);
       },
     },
+    /*
     user: {
-      getProfile: () => axios.get(baseAPIPath + "/user/profile"),
+      getProfile: () => axios.get(basePath + "/user/profile"),
       updateProfile: function (email, password) {
         const params = {
           email: email,
           password: password,
         };
-        return axios.put(baseAPIPath + "/user/profile", params);
+        return axios.put(basePath + "/user/profile", params);
       },
     },
     globalSearch: {
@@ -58,7 +59,7 @@ export function useAPI() {
           },
           filter: filter || {},
         };
-        return axios.post(baseAPIPath + "/global_search", params);
+        return axios.post(basePath + "/global_search", params);
       },
     },
     artist: {
@@ -80,7 +81,7 @@ export function useAPI() {
             order: sortOrder,
           },
         };
-        return axios.post(baseAPIPath + "/artist/search", params);
+        return axios.post(basePath + "/artist/search", params);
       },
       get: function (mbId, name) {
         return axios.get(
@@ -103,7 +104,7 @@ export function useAPI() {
     },
     artistGenres: {
       get: function () {
-        return axios.get(baseAPIPath + "/artists_genres");
+        return axios.get(basePath + "/artists_genres");
       },
     },
     album: {
@@ -125,10 +126,10 @@ export function useAPI() {
             order: sortOrder,
           },
         };
-        return axios.post(baseAPIPath + "/album/search", params);
+        return axios.post(basePath + "/album/search", params);
       },
       getSmallRandomCovers: function (count = 32) {
-        return axios.get(baseAPIPath + "/album/small_random_covers/" + count, {});
+        return axios.get(basePath + "/album/small_random_covers/" + count, {});
       },
       get: function (mbId, title, artistMbId, artistName, year) {
         const params = {
@@ -143,7 +144,7 @@ export function useAPI() {
     },
     track: {
       get: function (id) {
-        return axios.get(baseAPIPath + "/track/" + id);
+        return axios.get(basePath + "/track/" + id);
       },
       search: function (
         filter,
@@ -165,21 +166,21 @@ export function useAPI() {
           },
           filter: filter || {},
         };
-        return axios.post(baseAPIPath + "/track/search", params);
+        return axios.post(basePath + "/track/search", params);
       },
       increasePlayCount: function (id) {
-        return axios.get(baseAPIPath + "/track/increase_play_count/" + id);
+        return axios.get(basePath + "/track/increase_play_count/" + id);
       },
       setFavorite: function (id) {
-        return axios.get(baseAPIPath + "/track/set_favorite/" + id);
+        return axios.get(basePath + "/track/set_favorite/" + id);
       },
       unSetFavorite: function (id) {
-        return axios.get(baseAPIPath + "/track/unset_favorite/" + id);
+        return axios.get(basePath + "/track/unset_favorite/" + id);
       },
     },
     path: {
       getTree: function () {
-        return axios.get(baseAPIPath + "/path/tree");
+        return axios.get(basePath + "/path/tree");
       },
     },
     metrics: {
@@ -189,7 +190,7 @@ export function useAPI() {
           sortField: sortField,
           count: count || 5,
         };
-        return axios.post(baseAPIPath + "/metrics/tracks", params);
+        return axios.post(basePath + "/metrics/tracks", params);
       },
       getArtists: function (filter, sortField, count) {
         const params = {
@@ -197,7 +198,7 @@ export function useAPI() {
           sortField: sortField,
           count: count || 5,
         };
-        return axios.post(baseAPIPath + "/metrics/artists", params);
+        return axios.post(basePath + "/metrics/artists", params);
       },
       getAlbums: function (filter, sortField, count) {
         const params = {
@@ -205,7 +206,7 @@ export function useAPI() {
           sortField: sortField,
           count: count || 5,
         };
-        return axios.post(baseAPIPath + "/metrics/albums", params);
+        return axios.post(basePath + "/metrics/albums", params);
       },
       getGenres: function (filter, sortField, count) {
         const params = {
@@ -213,19 +214,19 @@ export function useAPI() {
           sortField: sortField,
           count: count || 5,
         };
-        return axios.post(baseAPIPath + "/metrics/genres", params);
+        return axios.post(basePath + "/metrics/genres", params);
       },
       getDataRanges: function (filter) {
         const params = {
           filter: filter || {},
         };
-        return axios.post(baseAPIPath + "/metrics/date_range", params);
+        return axios.post(basePath + "/metrics/date_range", params);
       },
       getMetricsByUser: function (filter) {
         const params = {
           filter: filter || {},
         };
-        return axios.post(baseAPIPath + "/metrics/by_user", params);
+        return axios.post(basePath + "/metrics/by_user", params);
       },
     },
     playlist: {
@@ -247,7 +248,7 @@ export function useAPI() {
             order: sortOrder,
           },
         };
-        return axios.post(baseAPIPath + "/playlist/search", params);
+        return axios.post(basePath + "/playlist/search", params);
       },
       add: function (id, name, tracks, isPublic) {
         const params = {
@@ -258,7 +259,7 @@ export function useAPI() {
             public: isPublic || false,
           },
         };
-        return axios.post(baseAPIPath + "/playlist/add", params);
+        return axios.post(basePath + "/playlist/add", params);
       },
       update: function (id, name, tracks, isPublic) {
         const params = {
@@ -269,30 +270,30 @@ export function useAPI() {
             public: isPublic || false,
           },
         };
-        return axios.post(baseAPIPath + "/playlist/update", params);
+        return axios.post(basePath + "/playlist/update", params);
       },
       delete: function (id) {
-        return axios.delete(baseAPIPath + "/playlist/" + id);
+        return axios.delete(basePath + "/playlist/" + id);
       },
       get: function (id) {
-        return axios.get(baseAPIPath + "/playlist/" + id);
+        return axios.get(basePath + "/playlist/" + id);
       },
     },
     currentPlaylist: {
       get: function () {
-        return axios.get(baseAPIPath + "/current_playlist");
+        return axios.get(basePath + "/current_playlist");
       },
       setTracks: function (trackIds) {
         const params = {
           trackIds: trackIds || [],
         };
-        return axios.post(baseAPIPath + "/current_playlist/set_tracks", params);
+        return axios.post(basePath + "/current_playlist/set_tracks", params);
       },
       appendTracks: function (trackIds) {
         const params = {
           trackIds: trackIds || [],
         };
-        return axios.post(baseAPIPath + "/current_playlist/append_tracks", params);
+        return axios.post(basePath + "/current_playlist/append_tracks", params);
       },
       setAlbum: function (mbId, title, artistMBId, artistName, year) {
         const params = {
@@ -303,7 +304,7 @@ export function useAPI() {
             year: year || null,
           },
         };
-        return axios.post(baseAPIPath + "/current_playlist/set_tracks", params);
+        return axios.post(basePath + "/current_playlist/set_tracks", params);
       },
       appendAlbum: function (mbId, title, artistMBId, artistName, year) {
         const params = {
@@ -314,67 +315,67 @@ export function useAPI() {
             year: year || null,
           },
         };
-        return axios.post(baseAPIPath + "/current_playlist/append_tracks", params);
+        return axios.post(basePath + "/current_playlist/append_tracks", params);
       },
       setPlaylist: function (id) {
         const params = {
           playlistId: id || null,
         };
-        return axios.post(baseAPIPath + "/current_playlist/set_tracks", params);
+        return axios.post(basePath + "/current_playlist/set_tracks", params);
       },
       appendPlaylist: function (id) {
         const params = {
           playlistId: id || null,
         };
-        return axios.post(baseAPIPath + "/current_playlist/append_tracks", params);
+        return axios.post(basePath + "/current_playlist/append_tracks", params);
       },
       setRadioStation: function (id) {
         const params = {
           id: id || null,
         };
-        return axios.post(baseAPIPath + "/current_playlist/set_radiostation", params);
+        return axios.post(basePath + "/current_playlist/set_radiostation", params);
       },
       setPath: function (id) {
         const params = {
           pathId: id || null,
         };
-        return axios.post(baseAPIPath + "/current_playlist/set_tracks", params);
+        return axios.post(basePath + "/current_playlist/set_tracks", params);
       },
       getCurrentElement: function (shuffle) {
         const params = { shuffle: shuffle ? true : false };
-        return axios.get(baseAPIPath + "/current_playlist/current_element", { params });
+        return axios.get(basePath + "/current_playlist/current_element", { params });
       },
       skipToPreviousElement: function (shuffle) {
         const params = { shuffle: shuffle ? true : false };
-        return axios.get(baseAPIPath + "/current_playlist/previous_element", { params });
+        return axios.get(basePath + "/current_playlist/previous_element", { params });
       },
       skipToNextElement: function (shuffle) {
         const params = { shuffle: shuffle ? true : false };
-        return axios.get(baseAPIPath + "/current_playlist/next_element", { params });
+        return axios.get(basePath + "/current_playlist/next_element", { params });
       },
       skipToElementAtIndex: function (index) {
         const params = {
           index: index >= 0 ? index : -1,
         };
-        return axios.get(baseAPIPath + "/current_playlist/element_at_index", { params });
+        return axios.get(basePath + "/current_playlist/element_at_index", { params });
       },
       discover: function (count, shuffle) {
         const params = {
           count: count || 32,
           shuffle: shuffle ? true : false,
         };
-        return axios.post(baseAPIPath + "/current_playlist/discover_tracks", params);
+        return axios.post(basePath + "/current_playlist/discover_tracks", params);
       },
       randomize: function (shuffle) {
         const params = { shuffle: shuffle ? true : false };
-        return axios.get(baseAPIPath + "/current_playlist/sort/random", { params });
+        return axios.get(basePath + "/current_playlist/sort/random", { params });
       },
       resortByIndexes: function (indexes, shuffle) {
         const params = {
           indexes: indexes || [],
           shuffle: shuffle ? true : false,
         };
-        return axios.post(baseAPIPath + "/current_playlist/sort/indexes", params);
+        return axios.post(basePath + "/current_playlist/sort/indexes", params);
       },
       removeElementAtIndex: function (index, shuffle) {
         const params = {
@@ -382,7 +383,7 @@ export function useAPI() {
           shuffle: shuffle ? true : false,
         };
         return axios.post(
-          baseAPIPath + "/current_playlist/remove_element_at_index",
+          basePath + "/current_playlist/remove_element_at_index",
           params,
         );
       },
@@ -396,7 +397,7 @@ export function useAPI() {
           },
           filter: filter || {},
         };
-        return axios.post(baseAPIPath + "/radio_station/search", params);
+        return axios.post(basePath + "/radio_station/search", params);
       },
     },
     lyrics: {
@@ -410,7 +411,8 @@ export function useAPI() {
         );
       },
     },
+    */
   };
 
-  return { baseAPIPath, api };
+  return { basePath, api };
 }
