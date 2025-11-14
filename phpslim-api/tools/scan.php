@@ -325,13 +325,37 @@ try {
             }
         }
     } else {
-        echo "No required params found." . PHP_EOL;
-        /*
-            echo "Scan / update music path:" . PHP_EOL;
-            echo "\tphp " . $argv[0] . " --addLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
-            echo "Clean database (deleted/orphaned items):" . PHP_EOL;
-            echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
-            */
+        echo "[!] No required params found (can be combined)." . PHP_EOL;
+        echo "- Add / refresh music path:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --addLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
+        echo "- Remove music path:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --removeLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
+        echo "- Scan pending id3 tags:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --processID3Queue" . PHP_EOL;
+        echo "- Fix/Patch artists MBIds:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --fixMusicBrainzArtistMBIds" . PHP_EOL;
+        echo "- Search on MusicBrainz artists without MBId:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapMusicBrainzArtistNamesWithoutMBId" . PHP_EOL;
+        echo "- Get (pending) MusicBrainz artist cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapMusicBrainzArtistCache" . PHP_EOL;
+        echo "- Get (pending) MusicBrainz release (album) cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapMusicBrainzReleaseCache" . PHP_EOL;
+        echo "- Get (pending) LastFM artist cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapLastFMArtistCache" . PHP_EOL;
+        echo "- Get (pending) LastFM album cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapLastFMAlbumCache" . PHP_EOL;
+        echo "- Get (pending) Wikipedia artist cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapWikipediaArtistCache" . PHP_EOL;
+        echo "- Get (pending) Lyrics cache:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapLyrics" . PHP_EOL;
+        echo "Clean database (deleted/orphaned items):" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --clean" . PHP_EOL;
+
+        echo "[I] Optional params (combine with required params)" . PHP_EOL;
+        echo "- Show progress bar:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --showProgressBar <other params>" . PHP_EOL;
+        echo "- Force process again all items (not only pending):" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --force <other params>" . PHP_EOL;
     }
 } catch (\Exception $e) {
     echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
