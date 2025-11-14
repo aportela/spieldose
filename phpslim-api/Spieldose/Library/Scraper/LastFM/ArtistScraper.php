@@ -41,6 +41,13 @@ class ArtistScraper
                     FILE_ID3_TAG.album_artist IS NOT NULL
                 AND
                     CACHE_LASTFM_ARTIST.name IS NULL
+                UNION
+                SELECT
+                    CACHE_MUSICBRAINZ_ARTIST.name
+                FROM CACHE_MUSICBRAINZ_ARTIST
+                LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = CACHE_MUSICBRAINZ_ARTIST.name
+                WHERE
+                    CACHE_LASTFM_ARTIST.name IS NULL
             "
         );
         foreach ($results as $result) {
