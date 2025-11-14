@@ -1,55 +1,40 @@
 <template>
-  <q-layout view="hHh Lpr lff">
-    <q-header>
-      <q-toolbar class="bg-grey-3 text-black shadow-1">
-        <q-avatar square size="42px" class="q-mr-sm">
-          <img src="icons/favicon-96x96.png" />
-        </q-avatar>
-        <q-toolbar-title>Spieldose</q-toolbar-title>
-        <q-space />
+  <q-layout view="lHh lpR lFf" class="theme-default-q-layout">
+    <q-header height-hint="61.59" class="theme-default-q-header" bordered>
+      <q-toolbar class="theme-default-q-toolbar">
+        <q-btn flat dense round @click="visibleSidebar = !visibleSidebar;" aria-label="Toggle drawer" icon="menu"
+          v-show="!visibleSidebar" class="q-mr-md" />
+        <q-btn flat dense round @click="onToggleminiSidebarCurrentMode" aria-label="Toggle drawer"
+          :icon="miniSidebarCurrentMode ? 'arrow_forward_ios' : 'arrow_back_ios_new'" class="q-mr-md"
+          v-show="visibleSidebar">
+          <DesktopToolTip>{{ t(miniSidebarCurrentMode ? "Expand sidebar" : "Collapse sidebar") }}
+          </DesktopToolTip>
+        </q-btn>
+        <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
+          class="full-width no-caps theme-default-q-btn" @click.prevent="dialogs.fastSearch.visible = true">
+          <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
+          }}</DesktopToolTip>
+        </q-btn>
         <!--
-        <ToolbarSearch :disable="loading"></ToolbarSearch>
+        <FastSearchSelector dense class="full-width"></FastSearchSelector>
         -->
-        <!--
-        notice shrink property since we are placing it
-        as child of QToolbar
-        -->
-        <q-tabs shrink dense no-caps>
+        <q-btn-group flat class="q-ml-md">
+          <DarkModeButton dense />
+          <SwitchLanguageButton :short-labels="true" style="min-width: 9em" />
+          <GitHubButton dense :href="GITHUB_PROJECT_URL" />
           <!--
-          <q-route-tab v-for="link in links" :key="link.name" :to="{ name: link.linkRouteName }" :name="link.name"
-            :icon="link.icon" :label="$q.screen.gt.md ? t(link.text) : ''" :title="t(link.text)" no-caps inline-label
-            :disable="loading" />
-            -->
-          <!--
-          <q-btn-dropdown icon="language" auto-close stretch flat :label="selectedLocale.shortLabel" stack
-            :disable="loading">
-            <q-list dense style="min-width: 200px">
-              <q-item class="GL__menu-link-signed-in">
-                <q-item-section>
-                  <div>{{ t("Selected language") }}: <strong>{{ selectedLocale.label }}</strong></div>
-                </q-item-section>
-              </q-item>
-              <q-separator />
-              <q-item clickable :disable="selectedLocale.value == availableLocale.value" v-close-popup
-                v-for="availableLocale in availableLocales" :key="availableLocale.value"
-                @click="onSelectLocale(availableLocale, true)">
-                <q-item-section>
-                  <div>{{ availableLocale.label }}</div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <NotificationsButton dense no-caps></NotificationsButton>
           -->
-          <!--
-          <q-btn round dense flat stretch :icon="fabGithub" color="dark" no-caps
-            href="http://github.com/aportela/spieldose" target="_blank" :disable="loading" />
-            -->
-          <q-btn stretch icon="logout" :label="$q.screen.xl ? t('Signout') : ''" :title="t('Signout')" flat no-caps
-            stack @click="logout" :disable="loading" />
-        </q-tabs>
-
+        </q-btn-group>
       </q-toolbar>
     </q-header>
+    <SidebarDrawer v-model="visibleSidebar" :mini="miniSidebarCurrentMode"></SidebarDrawer>
+    <q-page-container>
+      <router-view class="q-pa-sm" />
+    </q-page-container>
+    <!-- main common dialogs block, this dialogs will be launched from ANY page so we declare here and manage with bus events -->
+    <ReAuthDialog v-if="dialogs.reauth.visible" @success="onSuccessReauth" @close="dialogs.reauth.visible = false" />
+    <!--
     <q-page-container class="bg-grey-3 q-mt-md">
       <q-page>
         <q-ajax-bar></q-ajax-bar>
@@ -66,40 +51,106 @@
     </q-page-container>
     <FullScreenVisualization v-if="showFullScreenVisualization">
     </FullScreenVisualization>
+    -->
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
 
-import { useRouter } from "vue-router";
-import { useAPI } from "src/composables/useAPI";
-import { useSessionStore } from "stores/session";
-import { useQuasar } from "quasar";
+import { ref, reactive, watch, computed, onMounted, onBeforeUnmount } from "vue";
+import { useQuasar, LocalStorage, uid } from "quasar";
 import { useI18n } from "vue-i18n";
-//import { i18n, defaultLocale } from "src/boot/i18n";
-import { default as leftSidebar } from "components/AppLeftSidebar.vue";
-import { default as ToolbarSearch } from "components/ToolbarSearch.vue";
-import { default as FullScreenVisualization } from "components/FullScreenVisualization.vue";
+
+import { useLocalStorage } from "src/composables/useLocalStorage"
+import { useSessionStore } from "src/stores/session";
 import { useBus } from "src/composables/useBus";
 
-import { fabGithub } from "@quasar/extras/fontawesome-v6";
-import { useSpieldoseStore } from "stores/spieldose";
-import { currentPlayListActions } from "src/boot/spieldose";
+
+import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue"
+//import { default as SearchDialog } from "src/components/Dialogs/SearchDialog.vue"
+import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
+import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"
+import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue"
+import { GITHUB_PROJECT_URL } from "src/constants"
+import { default as ReAuthDialog } from "src/components/Dialogs/ReAuthDialog.vue"
+
+import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
+//import { currentPlayListActions } from "src/boot/spieldose";
+
+const $q = useQuasar();
 
 const { t } = useI18n();
-const $q = useQuasar();
-const router = useRouter();
 
-const { api } = useAPI();
+const session = useSessionStore();
 
 const { bus } = useBus();
 
-const session = useSessionStore();
 if (!session.isLoaded) {
   session.load();
 }
 
+const dialogs = reactive({
+  reauth: {
+    visible: false
+  },
+});
+
+const reAuthEmitters = reactive([]);
+
+const onSuccessReauth = () => {
+  dialogs.reauth.visible = false;
+  bus.emit("reAuthSucess", ({ to: reAuthEmitters }))
+  reAuthEmitters.length = 0;
+};
+
+const lockminiSidebarCurrentModeMode = ref(false);
+
+const visibleSidebar = ref($q.screen.gt.sm);
+
+
+// toggle this for using current mini sidebar saved mode
+const saveMiniSidebarMode = true;
+
+const miniSidebarCurrentModeSavedMode = saveMiniSidebarMode ? LocalStorage.getItem("miniSidebarCurrentMode") : null;
+
+if (saveMiniSidebarMode && miniSidebarCurrentModeSavedMode != null) {
+  lockminiSidebarCurrentModeMode.value = true;
+}
+
+const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? miniSidebarCurrentModeSavedMode == true : $q.screen.md);
+
+const currentScreenSize = computed(() => $q.screen.name);
+
+watch(currentScreenSize, (newValue) => {
+  if (!lockminiSidebarCurrentModeMode.value) {
+    miniSidebarCurrentMode.value = $q.screen.lt.lg;
+  }
+});
+
+const searchButtonLabel = computed(() => $q.screen.gt.xs ? t('Search on Spieldose...') : '');
+
+const onToggleminiSidebarCurrentMode = (value) => {
+  miniSidebarCurrentMode.value = !miniSidebarCurrentMode.value;
+  lockminiSidebarCurrentModeMode.value = true;
+  if (saveMiniSidebarMode) {
+    LocalStorage.set("miniSidebarCurrentMode", miniSidebarCurrentMode.value);
+  }
+}
+
+onMounted(() => {
+  bus.on("reAuthRequired", (msg) => {
+    if (msg.emitter) {
+      reAuthEmitters.push(msg.emitter);
+    }
+    dialogs.reauth.visible = true;
+  });
+});
+
+onBeforeUnmount(() => {
+  bus.off("reAuthRequired");
+});
+
+/*
 const spieldoseStore = useSpieldoseStore();
 spieldoseStore.create();
 
@@ -122,6 +173,7 @@ const availableLocales = ref([
     value: 'gl-GL'
   }
 ]);
+*/
 //const defaultBrowserLocale = availableLocales.value.find((lang) => lang.value == defaultLocale);
 //const selectedLocale = ref(defaultBrowserLocale || availableLocales.value[0]);
 const links = [
@@ -183,6 +235,7 @@ const links = [
   }
 ];
 
+/*
 bus.on('showFullScreenVisualization', () => {
   showFullScreenVisualization.value = true;
 });
@@ -199,6 +252,7 @@ function onSelectLocale(locale, save) {
   }
 }
 
+*/
 function logout() {
   spieldoseStore.stop();
   api.auth
@@ -220,6 +274,7 @@ function logout() {
     });
 }
 
+/*
 loading.value = true;
 currentPlayListActions.restoreCurrentPlaylistElement().then((success) => {
   loading.value = false;
@@ -231,4 +286,5 @@ currentPlayListActions.restoreCurrentPlaylistElement().then((success) => {
     caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
   });
 });
+*/
 </script>
