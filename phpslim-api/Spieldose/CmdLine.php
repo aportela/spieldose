@@ -6,27 +6,24 @@ namespace Spieldose;
 
 class CmdLine
 {
-    private $options = array();
+    /**
+     * @var array<string, list<mixed>|false>
+     */
+    private array|false $options = [];
 
     /**
      * commandline constructor
      *
-     * @param $short string Each character in this string will be used as option characters and matched against options passed to the script starting with a single hyphen (-). For example, an option string "x" recognizes an option -x. Only a-z, A-Z and 0-9 are allowed.
-     * @param $long array An array of options. Each element in this array will be used as option strings and matched against options passed to the script starting with two hyphens (--). For example, an longopts element "opt" recognizes an option --opt.
+     * @param string $short Each character in this string will be used as option characters and matched against options passed to the script starting with a single hyphen (-). For example, an option string "x" recognizes an option -x. Only a-z, A-Z and 0-9 are allowed.
+     * @param array<string> $long An array of options. Each element in this array will be used as option strings and matched against options passed to the script starting with two hyphens (--). For example, an longopts element "opt" recognizes an option --opt.
      *
      */
     public function __construct(string $short, array $long)
     {
         $this->options = getopt($short, $long);
-    }
-
-    public function __destruct()
-    {
-    }
-
-    public function hasOptions(): bool
-    {
-        return (count($this->options) > 0);
+        if (! is_array($this->options)) {
+            throw new \RuntimeException("Failed to get commandline options");
+        }
     }
 
     /**
@@ -37,17 +34,26 @@ class CmdLine
      */
     public function hasParam(string $param): bool
     {
-        return (array_key_exists($param, $this->options));
+        return is_array($this->options) && array_key_exists($param, $this->options);
     }
 
     /**
      * Get commandline parameter value
-     *
-     * @param string $key the parameter name to obtain the key
-     *
      */
-    public function getParamValue(string $key): string
+    public function getParamValue(string $param): ?string
     {
-        return (isset($this->options[$key]) ? $this->options[$key] : null);
+        if (!is_array($this->options)) {
+            return null;
+        }
+
+        if (!array_key_exists($param, $this->options)) {
+            return null;
+        }
+
+        if (! is_array($this->options[$param])) {
+            return strval($this->options[$param]);
+        } else {
+            return (null);
+        }
     }
 }
