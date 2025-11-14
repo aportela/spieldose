@@ -27,8 +27,20 @@ class ArtistScraper
                 SELECT
                     DISTINCT FILE_ID3_TAG.artist AS name
                 FROM FILE_ID3_TAG
+                LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = FILE_ID3_TAG.artist
                 WHERE
                     FILE_ID3_TAG.artist IS NOT NULL
+                AND
+                    CACHE_LASTFM_ARTIST.name IS NULL
+                UNION
+                SELECT
+                    DISTINCT FILE_ID3_TAG.album_artist AS name
+                FROM FILE_ID3_TAG
+                LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = FILE_ID3_TAG.album_artist
+                WHERE
+                    FILE_ID3_TAG.album_artist IS NOT NULL
+                AND
+                    CACHE_LASTFM_ARTIST.name IS NULL
             "
         );
         foreach ($results as $result) {
