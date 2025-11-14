@@ -84,85 +84,95 @@ return function (App $app) {
         '/api2',
         function (RouteCollectorProxy $group) use ($app) {
 
-            $initialState = \Spieldose\Utils::getInitialState($app->getContainer());
+            $container = $app->getContainer();
+            if (!$container instanceof \Psr\Container\ContainerInterface) {
+                throw new \RuntimeException("Error getting container");
+            }
 
-            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState) {
-                $payload = json_encode(
+            $settings = new \Spieldose\Settings();
+            $initialState = \Spieldose\Utils::getInitialState($settings);
+
+            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState): \Psr\Http\Message\MessageInterface {
+                $payload = \Spieldose\Utils::getJSONPayload(
                     [
                         'initialState' => $initialState
                     ]
                 );
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                }
                 $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
             });
 
-            $group->group('/auth', function (RouteCollectorProxy $group) use ($app, $initialState) {
-                $group->post('/register', function (Request $request, Response $response, array $args) use ($app, $initialState) {
-                    $settings = $app->getContainer()->get('settings');
-                    if ($settings['common']['allowSignUp']) {
+            $group->group('/auth', function (RouteCollectorProxy $group) use ($container, $initialState, $settings) {
+                $group->post('/register', function (Request $request, Response $response, array $args) use ($container, $initialState, $settings) {
+                    if ($settings->allowSignUp()) {
                         $params = $request->getParsedBody();
-                        $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-                        if (\Spieldose\User::isEmailUsed($dbh, $params["email"] ?? "")) {
+                        if (! is_array($params)) {
+                            throw new \Spieldose\Exception\InvalidParamsException();
+                        }
+
+                        $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                        if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                            throw new \RuntimeException("Failed to create database handler from container");
+                        }
+
+                        if (\Spieldose\User::isEmailUsed($dbh, array_key_exists("email", $params) && is_string($params["email"]) ? $params["email"] : "")) {
                             throw new \Spieldose\Exception\AlreadyExistsException("email");
                         } else {
                             $user = new \Spieldose\User(
-                                $params["id"] ?? "",
-                                $params["email"] ?? "",
-                                $params["password"] ?? ""
+                                array_key_exists("id", $params) && is_string($params["id"]) ? $params["id"] : "",
+                                array_key_exists("email", $params) && is_string($params["email"]) ? $params["email"] : "",
+                                array_key_exists("password", $params) && is_string($params["password"]) ? $params["password"] : ""
                             );
                             $user->add($dbh);
-                            $payload = json_encode(
+                            $payload = \Spieldose\Utils::getJSONPayload(
                                 [
                                     'initialState' => $initialState
                                 ]
                             );
-                            if (json_last_error() != JSON_ERROR_NONE) {
-                                throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                            }
                             $response->getBody()->write($payload);
-                            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
                         }
                     } else {
                         throw new \Spieldose\Exception\AccessDeniedException("");
                     }
                 });
 
-                $group->post('/login', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/login', function (Request $request, Response $response, array $args) use ($container, $initialState) {
                     $params = $request->getParsedBody();
-                    $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+
+                    $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                    if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                        throw new \RuntimeException("Failed to create database handler from container");
+                    }
+
                     $user = new \Spieldose\User(
                         "",
-                        $params["email"] ?? "",
-                        $params["password"] ?? ""
+                        array_key_exists("email", $params) && is_string($params["email"]) ? $params["email"] : "",
+                        array_key_exists("password", $params) && is_string($params["password"]) ? $params["password"] : ""
                     );
                     $user->login($dbh);
-                    $payload = json_encode(
+
+                    $payload = \Spieldose\Utils::getJSONPayload(
                         [
                             'initialState' => $initialState
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                    }
                     $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
                 });
 
                 $group->post('/logout', function (Request $request, Response $response, array $args) use ($initialState) {
                     \Spieldose\User::logout();
-                    $payload = json_encode(
+                    $payload = \Spieldose\Utils::getJSONPayload(
                         [
                             'initialState' => $initialState
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                    }
                     $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
                 });
             });
 

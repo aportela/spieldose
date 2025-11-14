@@ -10,8 +10,8 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 {
     public static ?\Slim\App $app;
     public static \Psr\Container\ContainerInterface $container;
-    public static $settings = null;
-    public static ?\aportela\DatabaseWrapper\DB $dbh = null;
+    protected static \Spieldose\Settings $settings;
+    public static \aportela\DatabaseWrapper\DB $dbh;
 
     protected function createValidSession(): void
     {
@@ -28,18 +28,27 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     {
         $containerBuilder = new \DI\ContainerBuilder();
 
-        // Set up settings
-        $containerBuilder->addDefinitions(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'container.php');
+        // Set up container definitions
+        $containerBuilder->addDefinitions(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'container.php');
 
         // Build PHP-DI Container instance
         self::$container = $containerBuilder->build();
 
-        self::$settings = self::$container->get('settings');
+        self::$settings = new \Spieldose\Settings();
 
-        // Create App instance
-        self::$app = self::$container->get(\Slim\App::class);
+        $app = self::$container->get(\Slim\App::class);
+        if (! $app instanceof \Slim\App) {
+            throw new \RuntimeException("Failed to create App from container");
+        }
 
-        self::$dbh = self::$container->get(\aportela\DatabaseWrapper\DB::class);
+        self::$app = $app;
+
+        $dbh = self::$container->get(\aportela\DatabaseWrapper\DB::class);
+        if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+            throw new \RuntimeException("Failed to create database handler from container");
+        }
+
+        self::$dbh = $dbh;
     }
 
     /**
@@ -64,7 +73,6 @@ class BaseTest extends \PHPUnit\Framework\TestCase
      */
     public static function tearDownAfterClass(): void
     {
-        self::$dbh = null;
         self::$app = null;
     }
 }

@@ -8,7 +8,7 @@ use Slim\Middleware\ErrorMiddleware;
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 return [
-    App::class => function (ContainerInterface $container) {
+    App::class => function (ContainerInterface $container): \Slim\App {
         AppFactory::setContainer($container);
         return AppFactory::create();
     },
@@ -116,7 +116,7 @@ return [
         return (new \Spieldose\Logger\InstallerLogger($logger));
     },
 
-    \Spieldose\Logger\ScannerLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\ScannerLogger::class => function (ContainerInterface $container): \Spieldose\Logger\ScannerLogger {
         $settings = new \Spieldose\Settings();
 
         $logger = new \Monolog\Logger($settings->getLoggerChannelProperty("scanner", "name"));
@@ -130,7 +130,7 @@ return [
         return (new \Spieldose\Logger\ScannerLogger($logger));
     },
 
-    \Spieldose\Logger\ScraperLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\ScraperLogger::class => function (ContainerInterface $container): \Spieldose\Logger\ScraperLogger {
         $settings = new \Spieldose\Settings();
 
         $logger = new \Monolog\Logger($settings->getLoggerChannelProperty("scraper", "name"));
@@ -144,7 +144,7 @@ return [
         return (new \Spieldose\Logger\ScraperLogger($logger));
     },
 
-    \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container) {
+    \Spieldose\Logger\ThumbnailLogger::class => function (ContainerInterface $container): \Spieldose\Logger\ThumbnailLogger {
         $settings = new \Spieldose\Settings();
 
         $logger = new \Monolog\Logger($settings->getLoggerChannelProperty("thumbnail", "name"));

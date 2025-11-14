@@ -69,6 +69,7 @@ class Utils
 
         $bar = (int) floor($percent * $size);
         $bar = min($bar, $size);
+        
         $filled = str_repeat("=", $bar);
         $empty = str_repeat(" ", $size - $bar);
         $progressBar = "[" . $filled . ($bar < $size ? ">" : "=") . $empty . "]";
@@ -83,13 +84,13 @@ class Utils
 
         $parts = [];
 
-        if (!empty($prependStr)) {
+        if ($prependStr !== '' && $prependStr !== '0') {
             $parts[] = $prependStr;
         }
 
         $parts[] = $progressBar;
-        $parts[] = "{$currentPercent}%";
-        $parts[] = "[{$done}/{$total}]";
+        $parts[] = $currentPercent . '%';
+        $parts[] = sprintf('[%d/%d]', $done, $total);
 
         $formatElapsedTimestamp = function (float $seconds): string {
             if ($seconds >= 3600) {
@@ -102,29 +103,32 @@ class Utils
                 $value = $seconds;
                 $unit = "second";
             }
+            
             $value = round($value);
             if ($value != 1) {
                 $unit .= "s";
             }
-            return "{$value} {$unit}";
+            
+            return sprintf('%s %s', $value, $unit);
         };
 
-        if ($done != $total) {
-            $parts[] = "[elapsed {$formatElapsedTimestamp($elapsedTimestamp)}, estimated {$formatElapsedTimestamp($estimatedTimestamp)}]";
+        if ($done !== $total) {
+            $parts[] = sprintf('[elapsed %s, estimated %s]', $formatElapsedTimestamp($elapsedTimestamp), $formatElapsedTimestamp($estimatedTimestamp));
         } else {
-            $parts[] = "[total {$formatElapsedTimestamp($elapsedTimestamp)}]";
+            $parts[] = sprintf('[total %s]', $formatElapsedTimestamp($elapsedTimestamp));
         }
 
-        if (!empty($appendStr)) {
+        if ($appendStr !== '' && $appendStr !== '0') {
             $parts[] = $appendStr;
         }
 
         // clear current line (ANSI ESC[2K) and restart cursor to line begin before appending progressbar
         echo "\e[2K\r" . implode(" ", $parts);
-        if ($done == $total) {
+        if ($done === $total) {
             echo PHP_EOL;
             $startTimestamp = null;
         }
+        
         flush();
     }
 
@@ -146,8 +150,6 @@ class Utils
      *
      * @ref https://stackoverflow.com/a/31460273/2224584
      * @ref https://paragonie.com/b/JvICXzh_jhLyt4y3
-     *
-     * @return string
      */
     public static function uuidv4(): string
     {
@@ -165,13 +167,14 @@ class Utils
         $paragraphs = [];
         foreach (explode("\n", $text) as $paragraph) {
             if ($removeDuplicated) {
-                if (!empty($paragraph)) {
+                if ($paragraph !== '' && $paragraph !== '0') {
                     $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
                 }
             } else {
                 $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
             }
         }
+        
         return (implode(PHP_EOL, $paragraphs));
     }
 }
