@@ -26,6 +26,11 @@ class CmdLine
         }
     }
 
+    public function hasOptions(): bool
+    {
+        return (count($this->options) > 0);
+    }
+
     /**
      * Check for commandline parameter existence
      *
