@@ -10,9 +10,9 @@
           <DesktopToolTip v-if="iconToolTip">{{ t(iconToolTip) }}</DesktopToolTip>
         </q-icon>
       </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ t(title) }}</q-item-label>
-        <q-item-label caption v-if="caption">{{ t(caption) }}</q-item-label>
+      <q-item-section v-if="title || caption">
+        <q-item-label v-if="title">{{ t(title) }}</q-item-label>
+        <q-item-label v-if="caption" caption>{{ t(caption) }}</q-item-label>
       </q-item-section>
     </q-item>
     <q-separator />
