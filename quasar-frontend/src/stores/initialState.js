@@ -8,7 +8,6 @@ export const useInitialStateStore = defineStore("initialState", {
       session: {
         id: null,
         email: null,
-        name: null,
       },
     },
   }),
@@ -21,10 +20,8 @@ export const useInitialStateStore = defineStore("initialState", {
   actions: {
     set(initialState) {
       this.initialState.allowSignUp = initialState.allowSignUp;
-      this.initialState.maxUploadFileSize = initialState.maxUploadFileSize;
       this.initialState.session.id = initialState.session.id;
       this.initialState.session.email = initialState.session.email;
-      this.initialState.session.name = initialState.session.name;
       this.initialState.environment =
         initialState.environment == "production" ? "production" : "development";
     },
