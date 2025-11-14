@@ -39,10 +39,12 @@ if (! $db instanceof \aportela\DatabaseWrapper\DB) {
     exit(1);
 }
 
+$backupDatabaseRequired = true;
 if (!$db->isSchemaInstalled()) {
     echo "[?] Creating database base schema...";
     if ($db->installSchema()) {
         echo " success!" . PHP_EOL;
+        $backupDatabaseRequired = false;
     } else {
         echo " error!";
         $logger->error("Error creating database base schema");
@@ -57,7 +59,7 @@ $currentDBVersion = $db->getCurrentSchemaVersion();
 $lastDBVersionAvailable = $db->getUpgradeSchemaVersion();
 if ($currentDBVersion !== $lastDBVersionAvailable) {
     echo sprintf('[?] Database upgrade required (current: %s => available: %s)...', $currentDBVersion, $lastDBVersionAvailable);
-    $currentVersion = $db->upgradeSchema(true);
+    $currentVersion = $db->upgradeSchema($backupDatabaseRequired);
     if ($currentVersion !== -1) {
         echo " success!" . PHP_EOL;
     } else {
