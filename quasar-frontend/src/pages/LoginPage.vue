@@ -16,7 +16,7 @@ const router = useRouter();
 
 const onSuccessLogin = (apiResponseData) => {
   router.push({
-    name: "dashboard",
+    name: "index",
   });
 };
 
