@@ -90,6 +90,42 @@ class ArtistScraper
         );
     }
 
+    // TODO: OLD
+    private function stripWikipediaHTMLPage(string $html): string
+    {
+        // strip styles
+        //$pattern = '/\<(\w+)\s[^>]*?style=([\"|\']).*?\2\s?[^>]*?(\/?)>/';
+        //$html = preg_replace($pattern, "", $html);
+        libxml_use_internal_errors(true);
+        $doc = new \DomDocument();
+        if ($doc->loadHTML($html)) {
+            $xpath = new \DOMXPath($doc);
+            // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
+            $nodes = $xpath->query('//section');
+            if ($nodes != false) {
+                if ($nodes->count() > 0) {
+                    $html = null;
+                    foreach ($nodes as $node) {
+                        $html .= sprintf(
+                            "<section>%s</section>",
+                            implode(array_map(
+                                [$node->ownerDocument, "saveHTML"],
+                                iterator_to_array($node->childNodes)
+                            ))
+                        );
+                    }
+                    return ($html);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException("section");
+                }
+            } else {
+                throw new \Spieldose\Exception\NotFoundException("section");
+            }
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("html");
+        }
+    }
+
     private function stripHTML(string $html): string|false
     {
         $dom = new \DOMDocument();
