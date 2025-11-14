@@ -60,7 +60,7 @@ function onImageError(event) {
   event.target.src = defaultImage;
 }
 
-loadRandomAlbumImages();
+//loadRandomAlbumImages();
 
 </script>
 
