@@ -7,13 +7,13 @@ const { jwt } = useLocalStorage();
 export const useSessionStore = defineStore("session", {
   state: () => ({
     loaded: false,
-    jwt: null
+    jwt: null,
   }),
 
   getters: {
     isLoaded: (state) => state.loaded,
     isLogged: (state) => state.jwt != null,
-    getJWT: (state) => state.jwt
+    getJWT: (state) => state.jwt,
   },
   actions: {
     load() {
