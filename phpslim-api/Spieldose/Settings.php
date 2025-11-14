@@ -139,7 +139,7 @@ class Settings
         ) {
             return ($this->settings['paths']['cache'][$entity]);
         } else {
-            throw new \RuntimeException("Settings key (paths->cache->{$entity}) not found");
+            throw new \RuntimeException(sprintf('Settings key (paths->cache->%s) not found', $entity));
         }
     }
 
