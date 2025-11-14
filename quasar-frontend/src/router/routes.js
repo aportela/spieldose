@@ -18,13 +18,13 @@ const routes = [
   {
     path: "/",
     name: "root",
-    redirect: "/dashboard",
+    redirect: "/index",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
-        name: "dashboard",
-        path: "dashboard",
-        component: () => import("pages/HomePage.vue"),
+        name: "index",
+        path: "index",
+        component: () => import("pages/IndexPage.vue"),
       },
       {
         name: "currentPlaylist",
