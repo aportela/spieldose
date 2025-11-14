@@ -57,7 +57,7 @@ $currentDBVersion = $db->getCurrentSchemaVersion();
 $lastDBVersionAvailable = $db->getUpgradeSchemaVersion();
 if ($currentDBVersion !== $lastDBVersionAvailable) {
     echo sprintf('[?] Database upgrade required (current: %s => available: %s)...', $currentDBVersion, $lastDBVersionAvailable);
-    $currentVersion = $db->upgradeSchema(false);
+    $currentVersion = $db->upgradeSchema(true);
     if ($currentVersion !== -1) {
         echo " success!" . PHP_EOL;
     } else {
