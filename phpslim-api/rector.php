@@ -6,14 +6,19 @@ use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/Spieldose',
         __DIR__ . '/config',
+        __DIR__ . '/Spieldose',
         __DIR__ . '/public',
         __DIR__ . '/tools',
     ])
-    // uncomment to reach your current PHP version
-    // ->withPhpSets()
-    ->withComposerBased(phpunit: true)
-    ->withTypeCoverageLevel(0)
-    ->withDeadCodeLevel(0)
-    ->withCodeQualityLevel(0);
+    ->withPhpSets(php84: true)
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+        naming: true,
+        privatization: true,
+        typeDeclarations: true,
+        rectorPreset: true,
+    )
+    ->withComposerBased(phpunit: true);
