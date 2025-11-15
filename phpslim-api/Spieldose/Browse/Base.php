@@ -17,5 +17,5 @@ abstract class Base
 
     public function __destruct() {}
 
-    abstract public function browse(): array;
+    abstract public function browse(): \aportela\DatabaseBrowserWrapper\BrowserResults;
 }
