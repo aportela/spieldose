@@ -1,6 +1,8 @@
 <template>
-  <q-drawer v-bind="attrs" show-if-above bordered :width="240" :mini="mini" @click.capture="onDrawerClick"
+  <q-drawer v-bind="attrs" show-if-above bordered :width="430" :mini="mini" @click.capture="onDrawerClick"
     class="fit theme-default-q-drawer">
+    <PlayerWidget></PlayerWidget>
+    <!--
     <q-list>
       <q-item class="cursor-pointer non-selectable no-pointer-events rounded-borders q-ma-sm theme-default-q-item">
         <q-item-section avatar>
@@ -32,6 +34,7 @@
         </q-item-section>
       </q-item>
     </q-list>
+    -->
   </q-drawer>
 </template>
 
@@ -42,6 +45,8 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAPI } from "src/composables/useAPI";
 import { useSessionStore } from "src/stores/session";
+
+import { default as PlayerWidget } from "./Widgets/SidebarPlayer/PlayerWidget.vue";
 
 const props = defineProps({
   mini: {
