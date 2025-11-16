@@ -19,5 +19,5 @@ abstract class Base implements \Spieldose\Browse\IBrowse
 
     public function __destruct() {}
 
-    abstract public function browse(int $currentPage, int $resultsPage): \aportela\DatabaseBrowserWrapper\BrowserResults;
+    abstract public function browse(\aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults;
 }
