@@ -13,10 +13,12 @@
             @clear="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <!--
           <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
           </ArtistsGenreSelector>
-          -->
+        </div>
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <ArtistsTagSelector :disable="loading" :defaultTag="tag" @change="onTagChanged">
+          </ArtistsTagSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -44,6 +46,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/BrowserBase.vue";
 import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
+import { default as ArtistsTagSelector } from "components/ArtistsTagSelector.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
@@ -125,6 +128,10 @@ function onPaginationChanged(pageIndex) {
 
 function onNameChanged() {
   refreshURL(1, name.value, genre.value, sortField.value, sortOrder.value);
+}
+
+function onTagChanged(tag) {
+  refreshURL(1, name.value, tag, sortField.value, sortOrder.value);
 }
 
 function onGenreChanged(genre) {
