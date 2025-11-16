@@ -21,7 +21,8 @@
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
         -->
         <q-btn-group flat class="q-ml-md">
-          <q-btn stack v-for="item in menuItems" size="md" no-caps :icon="item.icon" :key="item.text">{{ item.text
+          <q-btn stack v-for="item in menuItems" size="md" no-caps :icon="item.icon" :key="item.text"
+            :to="item.routeName">{{ item.text
             }}</q-btn>
         </q-btn-group>
         <q-space></q-space>
