@@ -251,12 +251,12 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/musicbrainz', function (RouteCollectorProxy $group) use ($container, $initialState) {
+            $group->group('/common', function (RouteCollectorProxy $group) use ($container, $initialState) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/artists_genres', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/musicbrainz_artists_genres', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
@@ -269,14 +269,7 @@ return function (App $app) {
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
-            })->add(\Spieldose\Middleware\CheckAuth::class);
-
-            $group->group('/lastfm', function (RouteCollectorProxy $group) use ($container, $initialState) {
-                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
-                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
-                    throw new \RuntimeException("Failed to create database handler from container");
-                }
-                $group->get('/artists_tags', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/lastfm_artists_tags', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,

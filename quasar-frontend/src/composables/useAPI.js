@@ -83,8 +83,17 @@ export function useAPI() {
           },
         };
         return axios.post(basePath + "/browse/artist", params);
-      }
+      },
     },
+    common: {
+      getMusicBrainzArtistsGenres: function () {
+        return axios.get(basePath + "/common/musicbrainz_artists_genres");
+      },
+      getLastFMArtistsTags: function () {
+        return axios.get(basePath + "/common/lastfm_artists_tags");
+      },
+    },
+
     /*
 
  artist: {
@@ -125,11 +134,6 @@ export function useAPI() {
        encodeURIComponent(name || ""),
        {},
      );
-   },
- },
- artistGenres: {
-   get: function () {
-     return axios.get(basePath + "/artists_genres");
    },
  },
  album: {

@@ -27,7 +27,7 @@ const loading = ref(false);
 
 function getAvailableGenres() {
   loading.value = true;
-  api.artistGenres.get().then((success) => {
+  api.common.getMusicBrainzArtistsGenres().then((success) => {
     availableGenres = success.data.genres;
     filteredGenres.value = availableGenres;
     loading.value = false;
