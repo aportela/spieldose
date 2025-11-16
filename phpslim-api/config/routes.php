@@ -589,7 +589,8 @@ return function (App $app) {
                 }
             });
 
-            $group->post('/artist/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            */
+            $group->post('/artist/search', function (Request $request, Response $response, array $args) use ($container, $initialState) {
                 $params = $request->getParsedBody();
                 $filter = new \aportela\DatabaseBrowserWrapper\Filter(
                     array(
@@ -607,16 +608,31 @@ return function (App $app) {
                     ]
                 );
                 $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $a = new \Spieldose\Browse\Artist($dbh, new \Psr\Log\NullLogger(""));
+
+                /*
                 $data = \Spieldose\Entities\Artist::search(
                     $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
                     $filter,
                     $sort,
                     $pager
                 );
+                */
+                $data = $a->browse($pager);
                 $payload = json_encode(
                     [
                         'initialState' => $initialState,
-                        "data" => $data
+                        "data" => [
+                            "pager" => [
+                                "totalPages" => $data->pager->getTotalPages(),
+                                "totalResults" => $data->pager->getTotalResults()
+                            ],
+                            "items" => $data->items
+                        ]
                     ]
                 );
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -626,6 +642,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            /*
             $group->get('/artist_overview', function (Request $request, Response $response, array $args) use ($app, $initialState) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);

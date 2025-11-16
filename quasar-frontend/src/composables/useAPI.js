@@ -62,6 +62,7 @@ export function useAPI() {
         return axios.post(basePath + "/global_search", params);
       },
     },
+    */
     artist: {
       search: function (
         filter,
@@ -83,6 +84,7 @@ export function useAPI() {
         };
         return axios.post(basePath + "/artist/search", params);
       },
+      /*
       get: function (mbId, name) {
         return axios.get(
           "api2/artist?mbId=" +
@@ -101,7 +103,9 @@ export function useAPI() {
           {},
         );
       },
+      */
     },
+    /*
     artistGenres: {
       get: function () {
         return axios.get(basePath + "/artists_genres");

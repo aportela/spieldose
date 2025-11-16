@@ -13,8 +13,10 @@
             @clear="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
+          <!--
           <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
           </ArtistsGenreSelector>
+          -->
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
