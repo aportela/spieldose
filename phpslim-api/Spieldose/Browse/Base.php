@@ -10,6 +10,11 @@ abstract class Base implements \Spieldose\Browse\IBrowse
 
     protected \aportela\DatabaseWrapper\DB $dbh;
     protected \Psr\Log\LoggerInterface $logger;
+    private array $fieldDefinitions;
+    private array $fieldCountDefinition;
+    private \aportela\DatabaseBrowserWrapper\Sort $sort;
+    private \aportela\DatabaseBrowserWrapper\Filter $filter;
+    private \aportela\DatabaseBrowserWrapper\Browser $browser;
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
     {
