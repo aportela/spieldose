@@ -176,32 +176,61 @@ return function (App $app) {
                 });
             });
 
-            $group->group('/browse', function (RouteCollectorProxy $group) use ($container, $initialState, $settings) {
+            $group->group('/browse', function (RouteCollectorProxy $group) use ($container, $initialState) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
+
+                function getPagerFromParams(array $params = []): \aportela\DatabaseBrowserWrapper\Pager
+                {
+                    $currentPageIndex = 1;
+                    $resultsPage = \Spieldose\Browse\Base::DEFAULT_RESULTS_PAGE;
+                    if (array_key_exists("pager", $params)) {
+                        if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["currentPageIndex"])) {
+                            $currentPageIndex = intval($params["pager"]["currentPageIndex"]);
+                        }
+                        if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["resultsPage"])) {
+                            $resultsPage = intval($params["pager"]["resultsPage"]);
+                        }
+                    }
+                    return (new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPageIndex, $resultsPage));
+                };
+
+                function getSortFromParams(array $params = [], string $defaultSortField, \aportela\DatabaseBrowserWrapper\Order $defaultSortOrder, bool $caseInsensitive): \aportela\DatabaseBrowserWrapper\Sort
+                {
+                    $sortItem = null;
+                    if (array_key_exists("sort", $params)) {
+                        $sortItem = new \aportela\DatabaseBrowserWrapper\SortItem(
+                            array_key_exists("field", $params["sort"]) && is_string($params["sort"]["field"]) ? $params["sort"]["field"] : $defaultSortField,
+                            array_key_exists("order", $params["sort"]) && is_string($params["sort"]["order"]) && in_array($params["sort"]["order"], ["ASC", "DESC"]) ? \aportela\DatabaseBrowserWrapper\Order::from($params["sort"]["order"]) : $defaultSortOrder,
+                            $caseInsensitive
+                        );
+                    } else {
+                        $sortItem = new \aportela\DatabaseBrowserWrapper\SortItem(
+                            $defaultSortField,
+                            $defaultSortOrder,
+                            $caseInsensitive
+                        );
+                    }
+                    return (new \aportela\DatabaseBrowserWrapper\Sort([$sortItem]));
+                };
+
+                function getFilterFromParams(array $params = []): \aportela\DatabaseBrowserWrapper\Filter
+                {
+                    return (new \aportela\DatabaseBrowserWrapper\Filter(array_key_exists("filter", $params) && is_array($params["filter"]) ? $params["filter"] : []));
+                }
+
                 $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $params = $request->getParsedBody();
-                    $filter = new \aportela\DatabaseBrowserWrapper\Filter(
-                        array(
-                            "name" => $params["filter"]["name"] ?? null,
-                            "genre" => $params["filter"]["genre"] ?? null
-                        )
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+                    $data = (new \Spieldose\Browse\Artist($dbh))->browse(
+                        getPagerFromParams($params),
+                        getFilterFromParams($params),
+                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
                     );
-                    $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                        [
-                            new \aportela\DatabaseBrowserWrapper\SortItem(
-                                (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
-                                (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                                true
-                            )
-                        ]
-                    );
-                    $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                    $browseArtists = new \Spieldose\Browse\Artist($dbh, new \Psr\Log\NullLogger(""));
-
-                    $data = $browseArtists->browse($pager);
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
