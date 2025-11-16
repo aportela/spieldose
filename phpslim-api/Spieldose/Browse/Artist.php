@@ -15,7 +15,7 @@ class Artist extends \Spieldose\Browse\Base
             "name" => "TMP.name",
             "mbId" => "TMP.mbId",
             "image" => "TMP.image",
-            "totalTracks" => "TMP.totalTracks"
+            "totalTracks" => "COALESCE(TOTAL_TRACKS.total, 0)"
         ];
         $this->fieldCountDefinition = [
             "total" => "COUNT(TMP.name)"
@@ -52,21 +52,19 @@ class Artist extends \Spieldose\Browse\Base
             sprintf(
                 "
                     SELECT %%s FROM (
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG.mb_artist_id AS mbId, CACHE_LASTFM_ARTIST.image, 0 AS totalTracks
+                        SELECT DISTINCT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG.mb_artist_id AS mbId, CACHE_LASTFM_ARTIST.image, 0 AS totalTracks
                         FROM FILE_ID3_TAG
                         LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_artist_id
                         LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist)
                         WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) IS NOT NULL
-
-                        UNION
-
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name, FILE_ID3_TAG.mb_album_artist_id AS mbId, CACHE_LASTFM_ARTIST.image, 0 AS totalTracks
-                        FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_album_artist_id
-                        LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist)
-                        WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) IS NOT NULL
-
                     ) TMP
+                    LEFT JOIN (
+                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, COUNT(*) AS total
+                        FROM FILE_ID3_TAG
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_artist_id
+                        GROUP BY 1
+                        HAVING coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) NOT NULL
+                    ) TOTAL_TRACKS ON TOTAL_TRACKS.name = TMP.name
                     %s
                     %%s
                     %%s
@@ -78,17 +76,10 @@ class Artist extends \Spieldose\Browse\Base
             sprintf(
                 "
                     SELECT %%s FROM (
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name
+                        SELECT DISTINCT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name
                         FROM FILE_ID3_TAG
                         LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_artist_id
                         WHERE FILE_ID3_TAG.artist IS NOT NULL
-
-                        UNION
-
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name
-                        FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_album_artist_id
-                        WHERE FILE_ID3_TAG.album_artist IS NOT NULL
                     ) TMP
                     %s
                 ",
