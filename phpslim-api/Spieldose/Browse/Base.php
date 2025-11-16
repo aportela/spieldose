@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose\Browse;
 
-abstract class Base
+abstract class Base implements \Spieldose\Browse\IBrowse
 {
     protected \aportela\DatabaseWrapper\DB $dbh;
     protected \Psr\Log\LoggerInterface $logger;
