@@ -6,5 +6,5 @@ namespace Spieldose\Browse;
 
 interface IBrowse
 {
-    public function browse(): \aportela\DatabaseBrowserWrapper\BrowserResults;
+    public function browse(int $currentPage, int $resultsPage): \aportela\DatabaseBrowserWrapper\BrowserResults;
 }

@@ -6,6 +6,8 @@ namespace Spieldose\Browse;
 
 abstract class Base implements \Spieldose\Browse\IBrowse
 {
+    public const int DEFAULT_RESULTS_PAGE = 32;
+
     protected \aportela\DatabaseWrapper\DB $dbh;
     protected \Psr\Log\LoggerInterface $logger;
 
@@ -17,5 +19,5 @@ abstract class Base implements \Spieldose\Browse\IBrowse
 
     public function __destruct() {}
 
-    abstract public function browse(): \aportela\DatabaseBrowserWrapper\BrowserResults;
+    abstract public function browse(int $currentPage, int $resultsPage): \aportela\DatabaseBrowserWrapper\BrowserResults;
 }

@@ -6,7 +6,7 @@ namespace Spieldose\Browse;
 
 class Artist extends \Spieldose\Browse\Base
 {
-    public function browse(): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public function browse(int $currentPage, int $resultsPage): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $fieldDefinitions = [
             "name" => "TMP.name",
@@ -18,7 +18,7 @@ class Artist extends \Spieldose\Browse\Base
         $fieldCountDefinition = [
             "total" => "COUNT(TMP.name)"
         ];
-        $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 32);
+        $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPage, $resultsPage);
         $sort = new \aportela\DatabaseBrowserWrapper\Sort([
             match ("") {
                 default => new \aportela\DatabaseBrowserWrapper\SortItem("TMP.name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
