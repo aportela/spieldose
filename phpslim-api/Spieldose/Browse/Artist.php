@@ -20,7 +20,7 @@ class Artist extends \Spieldose\Browse\Base
         ];
         $sort = new \aportela\DatabaseBrowserWrapper\Sort([
             match ("") {
-                default => new \aportela\DatabaseBrowserWrapper\SortItem("TMP.name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                default => new \aportela\DatabaseBrowserWrapper\SortItem("name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
             }
         ]);
         $filter = new \aportela\DatabaseBrowserWrapper\Filter([]);
