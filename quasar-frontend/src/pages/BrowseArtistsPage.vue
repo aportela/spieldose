@@ -142,7 +142,7 @@ function onSortOrderChanged(sortOrder) {
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  api.artist.search({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+  api.browse.artist({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
     artists.value = success.data.data.items;
     totalPages.value = success.data.data.pager.totalPages;
     totalResults.value = success.data.data.pager.totalResults;

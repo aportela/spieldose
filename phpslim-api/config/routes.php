@@ -176,6 +176,52 @@ return function (App $app) {
                 });
             });
 
+            $group->group('/browse', function (RouteCollectorProxy $group) use ($container, $initialState, $settings) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $params = $request->getParsedBody();
+                    $filter = new \aportela\DatabaseBrowserWrapper\Filter(
+                        array(
+                            "name" => $params["filter"]["name"] ?? null,
+                            "genre" => $params["filter"]["genre"] ?? null
+                        )
+                    );
+                    $sort = new \aportela\DatabaseBrowserWrapper\Sort(
+                        [
+                            new \aportela\DatabaseBrowserWrapper\SortItem(
+                                (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
+                                (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
+                                true
+                            )
+                        ]
+                    );
+                    $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
+                    $browseArtists = new \Spieldose\Browse\Artist($dbh, new \Psr\Log\NullLogger(""));
+
+                    $data = $browseArtists->browse($pager);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "data" => [
+                                "pager" => [
+                                    "totalPages" => $data->pager->getTotalPages(),
+                                    "totalResults" => $data->pager->getTotalResults()
+                                ],
+                                "items" => $data->items
+                            ]
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                })->add(\Spieldose\Middleware\CheckAuth::class);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
@@ -590,57 +636,7 @@ return function (App $app) {
             });
 
             */
-            $group->post('/artist/search', function (Request $request, Response $response, array $args) use ($container, $initialState) {
-                $params = $request->getParsedBody();
-                $filter = new \aportela\DatabaseBrowserWrapper\Filter(
-                    array(
-                        "name" => $params["filter"]["name"] ?? null,
-                        "genre" => $params["filter"]["genre"] ?? null
-                    )
-                );
-                $sort = new \aportela\DatabaseBrowserWrapper\Sort(
-                    [
-                        new \aportela\DatabaseBrowserWrapper\SortItem(
-                            (isset($params["sort"]) && isset($params["sort"]["field"]) && !empty($params["sort"]["field"])) ? $params["sort"]["field"] : "name",
-                            (isset($params["sort"]) && isset($params["sort"]["order"]) && $params["sort"]["order"] == "DESC") ? \aportela\DatabaseBrowserWrapper\Order::DESC : \aportela\DatabaseBrowserWrapper\Order::ASC,
-                            true
-                        )
-                    ]
-                );
-                $pager = new \aportela\DatabaseBrowserWrapper\Pager(true, $params["pager"]["currentPageIndex"] ?? 1, $params["pager"]["resultsPage"]);
-                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
-                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
-                    throw new \RuntimeException("Failed to create database handler from container");
-                }
-                $a = new \Spieldose\Browse\Artist($dbh, new \Psr\Log\NullLogger(""));
 
-                /*
-                $data = \Spieldose\Entities\Artist::search(
-                    $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class),
-                    $filter,
-                    $sort,
-                    $pager
-                );
-                */
-                $data = $a->browse($pager);
-                $payload = json_encode(
-                    [
-                        'initialState' => $initialState,
-                        "data" => [
-                            "pager" => [
-                                "totalPages" => $data->pager->getTotalPages(),
-                                "totalResults" => $data->pager->getTotalResults()
-                            ],
-                            "items" => $data->items
-                        ]
-                    ]
-                );
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                }
-                $response->getBody()->write($payload);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-            })->add(\Spieldose\Middleware\CheckAuth::class);
 
             /*
             $group->get('/artist_overview', function (Request $request, Response $response, array $args) use ($app, $initialState) {
