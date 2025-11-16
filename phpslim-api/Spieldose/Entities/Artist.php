@@ -764,4 +764,26 @@ class Artist extends \Spieldose\Entities\Entity
         );
         $this->tracks = \Spieldose\Entities\Track::search($this->dbh, $filter, $sort, $pager)->items;
     }
+
+    public static function getArtistsTags(\aportela\DatabaseWrapper\DB $dbh)
+    {
+        $tags = [];
+        foreach ($dbh->query("SELECT DISTINCT tag FROM CACHE_LASTFM_ARTIST_TAG ORDER BY tag") as $result) {
+            if (property_exists($result, "tag") && is_string($result->tag)) {
+                $tags[] = $result->tag;
+            }
+        }
+        return ($tags);
+    }
+
+    public static function getArtistsGenres(\aportela\DatabaseWrapper\DB $dbh)
+    {
+        $genres = [];
+        foreach ($dbh->query("SELECT DISTINCT genre FROM CACHE_MUSICBRAINZ_ARTIST_GENRE ORDER BY genre") as $result) {
+            if (property_exists($result, "genre") && is_string($result->genre)) {
+                $genres[] = $result->genre;
+            }
+        }
+        return ($genres);
+    }
 }

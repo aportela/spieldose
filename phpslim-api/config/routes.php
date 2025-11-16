@@ -248,7 +248,47 @@ return function (App $app) {
                     }
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-                })->add(\Spieldose\Middleware\CheckAuth::class);
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->group('/musicbrainz', function (RouteCollectorProxy $group) use ($container, $initialState) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $group->get('/artists_genres', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "genres" => \Spieldose\Entities\Artist::getArtistsGenres($dbh)
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->group('/lastfm', function (RouteCollectorProxy $group) use ($container, $initialState) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $group->get('/artists_tags', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "tags" => \Spieldose\Entities\Artist::getArtistsTags($dbh)
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             /*
