@@ -1,5 +1,6 @@
 <template>
-  <CommonSelector :options="options" :label="t('Genre')" :disable="loading" :use-autocomplete="true" @change="onChange">
+  <CommonSelector :options="options" :label="t('Genre')" :disable="loading" :use-autocomplete="true" @change="onChange"
+    :default-value="defaultGenre">
   </CommonSelector>
 </template>
 
