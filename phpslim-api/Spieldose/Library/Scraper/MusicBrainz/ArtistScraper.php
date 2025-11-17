@@ -104,6 +104,22 @@ class ArtistScraper
         return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
     }
 
+    public function hasCache(string $mbId): bool
+    {
+        $results = $this->dbh->query(
+            "
+                SELECT
+                    COUNT(mbid) AS total
+                FROM CACHE_MUSICBRAINZ_ARTIST
+                WHERE mbid = :mbid
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $mbId),
+            ]
+        );
+        return (intval($results[0]->total) === 1);
+    }
+
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
@@ -242,6 +258,31 @@ class ArtistScraper
         );
     }
 
+    public function scrap(string $mbId): bool
+    {
+        try {
+            $artist = $this->musicBrainzArtistAPI->get($mbId);
+            /**
+             * sometimes we have a mbId but MusicBrainz API redirects to another mbId, we must
+             * replace old mbId with new mbId on FILE_ID3_TAG table
+             * https://musicbrainz.org/doc/MusicBrainz_Database/Schema%23Artist#MBID_redirects
+             *
+             */
+            if ($artist->mbId != $mbId) {
+                $this->replaceMbIdRedirect($mbId, $artist->mbId);
+            }
+            $this->saveCache($artist);
+            return (true);
+        } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+            $this->logger->warning("MusicBrainz artist id get not found", [$mbId, $e->getMessage()]);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->logger->warning("MusicBrainz API server (get artist) not reachable", [$mbId, $e->getMessage()]);
+        } catch (\Throwable $e) {
+            $this->logger->warning("MusicBrainz artist id get error", [$mbId, $e->getMessage(), $e->getPrevious()]);
+        }
+        return (false);
+    }
+
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
@@ -251,25 +292,7 @@ class ArtistScraper
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistMbIds, $totalArtistMbIds, $i);
             }
-            try {
-                $artist = $this->musicBrainzArtistAPI->get($artistMbIds[$i]);
-                /**
-                 * sometimes we have a mbId but MusicBrainz API redirects to another mbId, we must
-                 * replace old mbId with new mbId on FILE_ID3_TAG table
-                 * https://musicbrainz.org/doc/MusicBrainz_Database/Schema%23Artist#MBID_redirects
-                 *
-                 */
-                if ($artist->mbId != $artistMbIds[$i]) {
-                    $this->replaceMbIdRedirect($artistMbIds[$i], $artist->mbId);
-                }
-                $this->saveCache($artist);
-            } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
-                $this->logger->warning("MusicBrainz artist id get not found", [$artistMbIds[$i], $e->getMessage()]);
-            } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
-                $this->logger->warning("MusicBrainz API server (get artist) not reachable", [$artistMbIds[$i], $e->getMessage()]);
-            } catch (\Throwable $e) {
-                $this->logger->warning("MusicBrainz artist id get error", [$artistMbIds[$i], $e->getMessage(), $e->getPrevious()]);
-            }
+            $this->scrap($artistMbIds[$i]);
         }
         return (microtime(true) - $scanStartTime);
     }
