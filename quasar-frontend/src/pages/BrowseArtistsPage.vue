@@ -27,6 +27,10 @@
           </SortOrderSelector>
         </div>
       </div>
+      <div>
+        <MusicBrainzArtistGenreCloudWidget></MusicBrainzArtistGenreCloudWidget>
+        <LastFMArtistTagCloudWidget></LastFMArtistTagCloudWidget>
+      </div>
     </template>
     <template #items>
       <ArtistAvatarLink v-for="artist in artists" :key="artist.hash" v-memo="[lastChangesTimestamp]" :mbId="artist.mbId"
@@ -49,6 +53,8 @@ import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as ArtistAvatarLink } from "components/ArtistAvatarLink.vue";
+import { default as MusicBrainzArtistGenreCloudWidget } from "src/components/Widgets/MusicBrainzArtistGenreCloudWidget.vue";
+import { default as LastFMArtistTagCloudWidget } from "src/components/Widgets/LastFMArtistTagCloudWidget.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();

@@ -267,11 +267,11 @@ return function (App $app) {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/musicbrainz_artists_genres', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
-                            "genres" => \Spieldose\Entities\Artist::getArtistsGenres($dbh)
+                            "items" => \Spieldose\Entities\Artist::getMusicBrainzArtistGenreCloud($dbh)
                         ]
                     );
                     if (json_last_error() != JSON_ERROR_NONE) {
@@ -280,11 +280,11 @@ return function (App $app) {
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
-                $group->get('/lastfm_artists_tags', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/lastfm_artist_tag_cloud', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
-                            "tags" => \Spieldose\Entities\Artist::getArtistsTags($dbh)
+                            "items" => \Spieldose\Entities\Artist::getLastFMArtistTagCloud($dbh)
                         ]
                     );
                     if (json_last_error() != JSON_ERROR_NONE) {

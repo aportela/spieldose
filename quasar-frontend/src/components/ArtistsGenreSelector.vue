@@ -25,10 +25,10 @@ const genre = ref(props.defaultGenre || null);
 const filteredGenres = ref([]);
 const loading = ref(false);
 
-function getAvailableGenres() {
+function onRefresh() {
   loading.value = true;
-  api.common.getMusicBrainzArtistsGenres().then((success) => {
-    availableGenres = success.data.genres;
+  api.cloud.getMusicBrainzArtistGenreCloud().then((success) => {
+    availableGenres = success.data.genres.map((item) => item.name);
     filteredGenres.value = availableGenres;
     loading.value = false;
   }).catch((error) => {
@@ -56,6 +56,6 @@ function onChangeGenre(selectedGenre) {
   emit("change", selectedGenre);
 }
 
-getAvailableGenres();
+//onRefresh();
 
 </script>

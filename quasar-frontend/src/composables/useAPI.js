@@ -89,12 +89,12 @@ export function useAPI() {
         return axios.post(basePath + "/browse/artist", params);
       },
     },
-    common: {
-      getMusicBrainzArtistsGenres: function () {
-        return axios.get(basePath + "/common/musicbrainz_artists_genres");
+    cloud: {
+      getMusicBrainzArtistGenreCloud: function () {
+        return axios.get(basePath + "/common/musicbrainz_artist_genre_cloud");
       },
-      getLastFMArtistsTags: function () {
-        return axios.get(basePath + "/common/lastfm_artists_tags");
+      getLastFMArtistTagCloud: function () {
+        return axios.get(basePath + "/common/lastfm_artist_tag_cloud");
       },
     },
 

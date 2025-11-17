@@ -765,25 +765,40 @@ class Artist extends \Spieldose\Entities\Entity
         $this->tracks = \Spieldose\Entities\Track::search($this->dbh, $filter, $sort, $pager)->items;
     }
 
-    public static function getArtistsTags(\aportela\DatabaseWrapper\DB $dbh)
+    public static function getLastFMArtistTagCloud(\aportela\DatabaseWrapper\DB $dbh)
     {
-        $tags = [];
-        foreach ($dbh->query("SELECT DISTINCT tag FROM CACHE_LASTFM_ARTIST_TAG ORDER BY tag") as $result) {
-            if (property_exists($result, "tag") && is_string($result->tag)) {
-                $tags[] = $result->tag;
-            }
-        }
-        return ($tags);
+        return ($dbh->query(
+            "
+                SELECT
+                    CACHE_LASTFM_ARTIST_TAG.tag AS name, COUNT(CACHE_LASTFM_ARTIST_TAG.tag) AS total
+                FROM CACHE_LASTFM_ARTIST_TAG
+                GROUP BY CACHE_LASTFM_ARTIST_TAG.tag
+                ORDER BY CACHE_LASTFM_ARTIST_TAG.tag
+            "
+        ));
     }
 
-    public static function getArtistsGenres(\aportela\DatabaseWrapper\DB $dbh)
+    public static function getMusicBrainzArtistGenreCloud(\aportela\DatabaseWrapper\DB $dbh)
     {
-        $genres = [];
-        foreach ($dbh->query("SELECT DISTINCT genre FROM CACHE_MUSICBRAINZ_ARTIST_GENRE ORDER BY genre") as $result) {
-            if (property_exists($result, "genre") && is_string($result->genre)) {
-                $genres[] = $result->genre;
-            }
-        }
-        return ($genres);
+        $afterBrowseFunction = function ($rows): void {
+            array_map(
+                function ($item) {
+                    if (property_exists($item, "total") && is_numeric($item->total)) {
+                        $item->total = intval($item->total);
+                    }
+                    return ($item);
+                },
+                $rows
+            );
+        };
+        return ($dbh->query(
+            "
+                SELECT
+                    CACHE_MUSICBRAINZ_ARTIST_GENRE.genre AS name, COUNT(CACHE_MUSICBRAINZ_ARTIST_GENRE.genre) AS total
+                FROM CACHE_MUSICBRAINZ_ARTIST_GENRE
+                GROUP BY CACHE_MUSICBRAINZ_ARTIST_GENRE.genre
+                ORDER BY CACHE_MUSICBRAINZ_ARTIST_GENRE.genre
+            "
+        ));
     }
 }

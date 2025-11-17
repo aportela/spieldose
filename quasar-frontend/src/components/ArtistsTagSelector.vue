@@ -27,7 +27,7 @@ const loading = ref(false);
 
 function getAvailableTags() {
   loading.value = true;
-  api.common.getLastFMArtistsTags().then((success) => {
+  api.cloud.getLastFMArtistTagCloud().then((success) => {
     availableTags = success.data.tags;
     filteredTags.value = availableTags;
     loading.value = false;
