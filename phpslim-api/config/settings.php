@@ -24,6 +24,7 @@ return [
             "LastFM" => $cachePath . DIRECTORY_SEPARATOR . "lastfm",
             "Wikipedia" => $cachePath . DIRECTORY_SEPARATOR . "wikipedia",
             "Lyrics" => $cachePath . DIRECTORY_SEPARATOR . "lyrics",
+            "Thumbnails" => $cachePath . DIRECTORY_SEPARATOR . "thumbnails",
             'thumbnails' => [
                 'artists' => [
                     'basePath' => $cachePath . DIRECTORY_SEPARATOR . 'thumbnails' . DIRECTORY_SEPARATOR . 'artists',
