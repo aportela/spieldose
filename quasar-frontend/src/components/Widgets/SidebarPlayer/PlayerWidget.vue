@@ -7,8 +7,9 @@
       :track="{ title: 'Nightcall', album: { title: 'OutRun', artist: { name: 'Kavinsky' } }, artist: { name: 'Kavinsky' } }"
       :radio-station="null">
     </SidebarPlayerTrackInfo>
-    <SidebarPlayerMainControls :player-status="playing"></SidebarPlayerMainControls>
-    <SidebarPlayerSeekControl :current-element-time-data="{ currentTime: 20, duration: 187 }"></SidebarPlayerSeekControl>
+    <SidebarPlayerMainControls :player-status="'playing'"></SidebarPlayerMainControls>
+    <SidebarPlayerSeekControl :current-element-time-data="{ currentTime: 20, duration: 187 }">
+    </SidebarPlayerSeekControl>
   </q-card>
 </template>
 
