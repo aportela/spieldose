@@ -22,41 +22,24 @@ class ReleaseScraper
 
     public function __destruct() {}
 
-    private function getReleaseMBIdsWithoutCache()
+    private function getAllReleaseMBIds(bool $ignoreCache)
     {
-        $mbIds = [];
-        $results = $this->dbh->query(
-            "
-                SELECT DISTINCT
-                    FILE_ID3_TAG.mb_release_id AS mbid
-                FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_MUSICBRAINZ_RELEASE ON CACHE_MUSICBRAINZ_RELEASE.mbid = FILE_ID3_TAG.mb_release_id
-                WHERE
-                    FILE_ID3_TAG.mb_release_id IS NOT NULL
-                AND
-                    CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
-            "
-        );
-        foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
-        }
-        return ($mbIds);
-    }
-
-    private function getAllReleaseMBIds()
-    {
-        $mbIds = [];
-        $results = $this->dbh->query(
-            "
-                SELECT DISTINCT
-                    FILE_ID3_TAG.mb_release_id AS mbid
-                FROM FILE_ID3_TAG
-            "
-        );
-        foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
-        }
-        return ($mbIds);
+        $allReleaseMBIdsQuery = "
+            SELECT DISTINCT
+                FILE_ID3_TAG.mb_release_id AS mbid
+            FROM FILE_ID3_TAG
+        ";
+        $notCachedReleaseMBIdsQuery = "
+            SELECT DISTINCT
+                FILE_ID3_TAG.mb_release_id AS mbid
+            FROM FILE_ID3_TAG
+            LEFT JOIN CACHE_MUSICBRAINZ_RELEASE ON CACHE_MUSICBRAINZ_RELEASE.mbid = FILE_ID3_TAG.mb_release_id
+            WHERE
+                FILE_ID3_TAG.mb_release_id IS NOT NULL
+            AND
+                CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
+        ";
+        return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allReleaseMBIdsQuery : $notCachedReleaseMBIdsQuery)));
     }
 
     /**
@@ -235,7 +218,7 @@ class ReleaseScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $releaseMBIds = $force ? $this->getAllReleaseMBIds() : $this->getReleaseMBIdsWithoutCache();
+        $releaseMBIds =  $this->getAllReleaseMBIds($force);
         $totalReleaseMbIds = count($releaseMBIds);
         for ($i = 0; $i < $totalReleaseMbIds; $i++) {
             if ($scrapItemCallback != null) {
