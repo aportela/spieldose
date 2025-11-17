@@ -29,7 +29,7 @@
       </div>
     </template>
     <template #items>
-      <ArtistAvatarLink v-for="artist in artists" :key="artist.hash" v-memo="[lastChangesTimestamp]" :mbId="artist.mbId"
+      <ArtistAvatarLink v-for="artist in artists" :key="artist._id" v-memo="[lastChangesTimestamp]" :mbId="artist.mbId"
         :name="artist.name" :image="artist.image" :totalTracks="artist.totalTracks"></ArtistAvatarLink>
     </template>
   </BrowserBase>
@@ -40,7 +40,7 @@
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
-import { useQuasar } from "quasar";
+import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/Containers/BrowserBase.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
@@ -112,11 +112,24 @@ router.beforeEach(async (to, from) => {
   }
 });
 
-function refreshURL(pageIndex, name, genre, sortField, sortOrder) {
+function refreshURL(pageIndex, name, genre, tag, sortField, sortOrder) {
   const query = Object.assign({}, route.query || {});
   query.page = pageIndex || 1;
-  query.name = name || null;
-  query.genre = genre || null;
+  if (name) {
+    query.name = name;
+  } else {
+    delete query.name;
+  }
+  if (genre) {
+    query.genre = genre;
+  } else {
+    delete query.genre;
+  }
+  if (tag) {
+    query.tag = tag;
+  } else {
+    delete query.tag;
+  }
   query.sortField = sortField || "name";
   query.sortOrder = sortOrder || "ASC";
   router.push({
@@ -126,7 +139,7 @@ function refreshURL(pageIndex, name, genre, sortField, sortOrder) {
 }
 
 function onPaginationChanged(pageIndex) {
-  refreshURL(pageIndex, name.value, genre.value, sortField.value, sortOrder.value);
+  refreshURL(pageIndex, name.value, genre.value, tag.value, sortField.value, sortOrder.value);
 }
 
 function onNameChanged() {
@@ -134,29 +147,32 @@ function onNameChanged() {
   refreshURL(1, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
-function onTagChanged(tag) {
+function onTagChanged(newTag) {
   skipCount.value = false;
-  refreshURL(1, name.value, tag, sortField.value, sortOrder.value);
+  tag.value = newTag;
+  refreshURL(1, name.value, genre.value, tag.value, sortField.value, sortOrder.value);
 }
 
-function onGenreChanged(genre) {
+function onGenreChanged(newGenre) {
   skipCount.value = false;
-  refreshURL(1, name.value, genre, sortField.value, sortOrder.value);
+  genre.value = newGenre;
+  refreshURL(1, name.value, genre.value, tag.value, sortField.value, sortOrder.value);
 }
 
 function onSortFieldChanged(sortField) {
-  refreshURL(currentPageIndex.value, name.value, genre.value, sortField, sortOrder.value);
+  refreshURL(currentPageIndex.value, name.value, genre.value, tag.value, sortField, sortOrder.value);
 }
 
 function onSortOrderChanged(sortOrder) {
-  refreshURL(currentPageIndex.value, name.value, genre.value, sortField.value, sortOrder);
+  refreshURL(currentPageIndex.value, name.value, genre.value, tag.value, sortField.value, sortOrder);
 }
 
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  api.browse.artist({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
-    artists.value = success.data.data.items;
+  api.browse.artist({ genre: genre.value || null, tag: tag.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
+    // create unique id (name can not be used because there are some items with same name but different mbId, like Alice Cooper (artist) && Alice Cooper (band))
+    artists.value = success.data.data.items.map((item) => { item._id = uid(); return (item); });
     if (success.data.data.pager) {
       totalPages.value = success.data.data.pager.totalPages;
       totalResults.value = success.data.data.pager.totalResults;
