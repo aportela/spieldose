@@ -256,4 +256,7 @@ export default {
   // custom selectors
   "Search on": "Search on",
   "Title & Artist": "Title & Artist",
+
+
+  "Tag": "Tag"
 };

@@ -266,4 +266,6 @@ export default {
   // custom selectors
   "Search on": "Buscar en",
   "Title & Artist": "Título y artista",
+
+  "Tag": "Etiqueta"
 };
