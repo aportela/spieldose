@@ -62,7 +62,7 @@ return (array(
 
             CREATE TABLE FILE_ID3_TAG (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
-                title TEXT CHECK(length(title) <= 128),
+                title TEXT CHECK(length(title) <= 256),
                 artist TEXT CHECK(length(artist) <= 128),
                 album_artist TEXT CHECK(length(album_artist) <= 128),
                 album TEXT CHECK(length(album) <= 128),
@@ -116,7 +116,7 @@ return (array(
 
             CREATE TABLE CACHE_MUSICBRAINZ_RECORDING (
                 mbid TEXT NOT NULL CHECK(length(mbid) == 36),
-                title TEXT NOT NULL CHECK(length(title) <= 128),
+                title TEXT NOT NULL CHECK(length(title) <= 256),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (mbid)
@@ -237,7 +237,7 @@ return (array(
             ) STRICT;
 
             CREATE TABLE CACHE_LYRICS (
-                title TEXT NOT NULL CHECK(length(title) <= 512),
+                title TEXT NOT NULL CHECK(length(title) <= 256),
                 artist TEXT NOT NULL CHECK(length(artist) <= 128),
                 lyrics TEXT NOT NULL,
                 source TEXT NOT NULL CHECK(length(source) <= 32),
