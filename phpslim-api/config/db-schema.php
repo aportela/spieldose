@@ -246,11 +246,10 @@ return (array(
                 PRIMARY KEY (title, artist)
             ) STRICT;
 
-
             CREATE TABLE PLAYLIST (
-                id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
-                name TEXT NOT NULL CHECK(length(artist) <= 128),
-                user_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                id TEXT NOT NULL CHECK(length(id) == 36),
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                user_id TEXT NOT NULL CHECK(length(user_id) == 36),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER,
                 PRIMARY KEY (id),
@@ -258,8 +257,8 @@ return (array(
             ) STRICT;
 
             CREATE TABLE PLAYLIST_FILE (
-                playlist_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
-                file_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                playlist_id TEXT NOT NULL CHECK(length(playlist_id) == 36),
+                file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 file_index INTEGER NOT NULL,
                 PRIMARY KEY (playlist_id, file_id, file_index),
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
