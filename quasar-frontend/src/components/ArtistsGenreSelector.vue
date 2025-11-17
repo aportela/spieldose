@@ -1,13 +1,13 @@
 <template>
-  <q-select outlined dense v-model="genre" :options="filteredGenres" options-dense :label="t('Genre')"
+  <q-select outlined dense v-model="genre" :options="filteredItems" options-dense :label="t('Genre')"
     :disable="loading || disable" emit-value filled clearable=""
     :hint="!genre ? t('Minimum 3 characters to trigger autocomplete') : null" use-input input-debounce="0"
-    @filter="onFilterGenres" @update:model-value="onChangeGenre">
+    @filter="onFilter" @update:model-value="onChangeGenre">
   </q-select>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -20,16 +20,16 @@ const $q = useQuasar();
 
 const { api } = useAPI();
 
-let availableGenres = [];
+let availableItems = [];
 const genre = ref(props.defaultGenre || null);
-const filteredGenres = ref([]);
+const filteredItems = ref([]);
 const loading = ref(false);
 
 function onRefresh() {
   loading.value = true;
   api.cloud.getMusicBrainzArtistGenreCloud().then((success) => {
-    availableGenres = success.data.genres.map((item) => item.name);
-    filteredGenres.value = availableGenres;
+    availableItems = success.data.items.map((item) => item.name);
+    filteredItems.value = availableItems;
     loading.value = false;
   }).catch((error) => {
     $q.notify({
@@ -41,14 +41,14 @@ function onRefresh() {
   });
 }
 
-function onFilterGenres(val, update, abort) {
+function onFilter(val, update, abort) {
   if (val.length < 3) {
     abort();
     return;
   }
   update(() => {
     const needle = val.toLowerCase();
-    filteredGenres.value = availableGenres.filter(genre => genre.toLowerCase().indexOf(needle) > -1);
+    filteredItems.value = availableItems.filter(genre => genre.toLowerCase().indexOf(needle) > -1);
   });
 }
 
@@ -56,6 +56,8 @@ function onChangeGenre(selectedGenre) {
   emit("change", selectedGenre);
 }
 
-//onRefresh();
+onMounted(() => {
+  onRefresh();
+});
 
 </script>
