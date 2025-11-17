@@ -46,7 +46,7 @@ return (array(
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 user_id TEXT NOT NULL CHECK(length(user_id) == 36),
                 ptime INTEGER NOT NULL,
-                PRIMARY KEY(file_id, user_id, play_timestamp),
+                PRIMARY KEY(file_id, user_id, ptime),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE,
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
             ) STRICT;
