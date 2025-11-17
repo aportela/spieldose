@@ -20,27 +20,41 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 
 const emit = defineEmits(['paginationChanged']);
 
 const props = defineProps({
-  disable: Boolean,
-  currentPageIndex: Number,
-  totalPages: Number,
-  totalResults: Number
+  disable: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  currentPageIndex: {
+    type: Number,
+    required: false,
+    default: 1
+  },
+  totalPages: {
+    type: Number,
+    required: false,
+    default: 0
+  },
+  totalResults: {
+    type: Number,
+    required: false,
+    default: 0
+  }
 });
 
-const currentPageIndex = computed(() => props.currentPageIndex || 1);
+const currentPage = ref(props.currentPageIndex);
 
-const currentPage = ref(currentPageIndex.value);
-
-watch(currentPageIndex, (newValue) => {
+watch(props.currentPageIndex, (newValue) => {
   currentPage.value = newValue;
 });
 
-function onPaginationChanged(page) {
-  emit("paginationChanged", page)
+function onPaginationChanged(pageIndex) {
+  emit("paginationChanged", pageIndex)
 }
 
 </script>
