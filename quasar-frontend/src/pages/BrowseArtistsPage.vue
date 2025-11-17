@@ -61,6 +61,7 @@ const { api } = useAPI();
 const autoFocusRef = ref(null);
 const name = ref(route.query.name || null);
 const genre = ref(route.query.genre || null);
+const tag = ref(route.query.tag || null);
 const sortFieldOptions = [
   {
     label: "Sort by artist name",
