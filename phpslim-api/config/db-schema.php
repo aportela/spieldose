@@ -257,7 +257,7 @@ return (array(
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
             ) STRICT;
 
-            CREATE TABLE `PLAYLIST_FILE` (
+            CREATE TABLE PLAYLIST_FILE (
                 playlist_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
                 file_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
                 file_index INTEGER NOT NULL,
