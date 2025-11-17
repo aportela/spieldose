@@ -264,7 +264,7 @@ return (array(
                 PRIMARY KEY (playlist_id, file_id, file_index),
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
-            );
+            ) STRICT;
         ',
     )
 ));
