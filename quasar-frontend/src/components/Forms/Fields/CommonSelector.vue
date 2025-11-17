@@ -63,7 +63,7 @@ const props = defineProps({
 
 const emit = defineEmits(['change']);
 
-const model = ref(null);
+const model = ref(props.defaultValue || null);
 
 const filteredOptions = reactive([...props.options]);
 
