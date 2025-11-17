@@ -70,7 +70,6 @@ const onRefresh = () => {
       .then((successResponse) => {
         tags.length = 0;
         tags.push(...successResponse.data.items);
-        console.log(tags);
         state.loading = false;
       })
       .catch((errorResponse) => {
