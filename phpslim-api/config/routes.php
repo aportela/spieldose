@@ -297,37 +297,49 @@ return function (App $app) {
 
             $group->get('/remote_thumbnail', function (Request $request, Response $response, array $args) use ($settings) {
                 $queryParams = $request->getQueryParams();
-                if (isset($queryParams["url"]) && !empty($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL)) {
-                    //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
-                    $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+                if (! is_array($queryParams)) {
+                    throw new \Spieldose\Exception\InvalidParamsException();
+                }
+                if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
+                    throw new \Spieldose\Exception\InvalidParamsException("width");
+                }
+                if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
+                    throw new \Spieldose\Exception\InvalidParamsException("height");
+                }
+                if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
+                    throw new \Spieldose\Exception\InvalidParamsException("quality");
+                }
+                if (! (array_key_exists("url", $queryParams) && is_string($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL))) {
+                    throw new \Spieldose\Exception\InvalidParamsException("url");
+                }
 
-                    $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
-                        $logger,
-                        $settings->getCachePath("Thumbnails"),
-                        new \aportela\RemoteThumbnailCacheWrapper\Source\URLSource($queryParams["url"]),
-                        90,
-                        200,
-                        200
-                    );
-                    $path = $thumbnail->get();
-                    if (is_string($path) && file_exists($path)) {
-                        $filesize = filesize($path);
-                        $f = fopen($path, 'r');
-                        fseek($f, 0);
-                        $data = fread($f, $filesize);
-                        fclose($f);
-                        $response->getBody()->write($data);
-                        return $response
-                            ->withHeader('Content-Type', 'image/jpeg')
-                            ->withHeader('Content-Length', (string) $filesize)
-                            ->withHeader('ETag', sha1($queryParams["url"] . $path . $filesize))
-                            ->withHeader('Cache-Control', 'max-age=86400')
-                            ->withStatus(200);
-                    } else {
-                        throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for url: ' . $queryParams["url"]);
-                    }
+                //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+
+                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
+                    $logger,
+                    $settings->getCachePath("Thumbnails"),
+                    new \aportela\RemoteThumbnailCacheWrapper\Source\URLSource($queryParams["url"]),
+                    intval($queryParams["quality"]),
+                    intval($queryParams["width"]),
+                    intval($queryParams["height"])
+                );
+                $path = $thumbnail->get();
+                if (is_string($path) && file_exists($path)) {
+                    $filesize = filesize($path);
+                    $f = fopen($path, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    $response->getBody()->write($data);
+                    return $response
+                        ->withHeader('Content-Type', 'image/jpeg')
+                        ->withHeader('Content-Length', (string) $filesize)
+                        ->withHeader('ETag', sha1($queryParams["url"] . $path . $filesize))
+                        ->withHeader('Cache-Control', 'max-age=86400')
+                        ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty url param');
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for url: ' . $queryParams["url"]);
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 

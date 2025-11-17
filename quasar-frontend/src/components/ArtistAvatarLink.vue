@@ -31,13 +31,17 @@ import { computed } from "vue";
 
 import { useI18n } from "vue-i18n";
 
+import { useThumbnail } from "src/composables/useThumbnail";
+
 const { t } = useI18n();
+
+const { getSmallURL } = useThumbnail();
 
 const props = defineProps(['mbId', 'name', 'image', 'totalTracks']);
 
 const ThumbnailImage = computed(() => {
   if (props.image) {
-    return ("/api2/remote_thumbnail?url=" + encodeURIComponent(props.image));
+    return (getSmallURL(props.image));
   } else {
     return ('#');
   }
