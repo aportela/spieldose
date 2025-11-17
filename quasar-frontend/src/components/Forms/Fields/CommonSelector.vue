@@ -1,7 +1,8 @@
 <template>
-  <q-select outlined dense v-model="model" :options="filteredItems" options-dense :label="label" :disable="disable"
-    emit-value filled clearable :hint="!model ? t('Minimum 3 characters to trigger autocomplete') : null" use-input
-    input-debounce="0" @filter="onFilter" @update:model-value="onChange">
+  <q-select :outlined="outlined" :dense="dense" v-model="model" :options="filteredItems" :options-dense="dense"
+    :label="label" :disable="disable" emit-value :filled="filled" :clearable="clearable"
+    :hint="!model ? t('Minimum 3 characters to trigger autocomplete') : null" use-input input-debounce="0"
+    @filter="onFilter" @update:model-value="onChange">
   </q-select>
 </template>
 
@@ -11,6 +12,26 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
 const props = defineProps({
+  dense: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  outlined: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  filled: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  clearable: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
   disable: {
     type: Boolean,
     required: false,
