@@ -1,5 +1,6 @@
 <template>
-  <CommonSelector :options="options" :label="t('Tag')" :disable="loading" :use-autocomplete="true" @change="onChange">
+  <CommonSelector :options="options" :label="t('Tag')" :disable="loading" :use-autocomplete="true" @change="onChange"
+    :default-value="defaultTag">
   </CommonSelector>
 </template>
 
@@ -11,7 +12,7 @@ import { useI18n } from "vue-i18n";
 
 import { default as CommonSelector } from "./CommonSelector.vue";
 
-const props = defineProps(['disable', 'defaultGenre']);
+const props = defineProps(['disable', 'defaultTag']);
 const emit = defineEmits(['change']);
 
 const { t } = useI18n();
