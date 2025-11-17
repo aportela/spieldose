@@ -1,8 +1,12 @@
 <template>
-  <q-select :outlined="outlined" :dense="dense" v-model="model" :options="filteredOptions" :options-dense="dense"
+  <q-select v-if="useAutocomplete" :outlined="outlined" :dense="dense" v-model="model" :options="filteredOptions"
+    :options-dense="dense" :label="label" :disable="disable" map-options emit-value :filled="filled"
+    :clearable="clearable" :hint="!model && useAutocomplete ? t('Minimum 3 characters to trigger autocomplete') : null"
+    :use-input="!model" input-debounce="100" @filter="onFilter" @update:model-value="onChange">
+  </q-select>
+  <q-select v-else :outlined="outlined" :dense="dense" v-model="model" :options="options" :options-dense="dense"
     :label="label" :disable="disable" map-options emit-value :filled="filled" :clearable="clearable"
-    :hint="!model ? t('Minimum 3 characters to trigger autocomplete') : null" :use-input="useAutocomplete"
-    input-debounce="100" @filter="onFilter" @update:model-value="onChange">
+    @update:model-value="onChange">
   </q-select>
 </template>
 
@@ -53,7 +57,7 @@ const props = defineProps({
   useAutocomplete: {
     type: Boolean,
     required: false,
-    default: true
+    default: false
   },
 });
 
