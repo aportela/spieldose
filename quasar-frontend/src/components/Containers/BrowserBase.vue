@@ -60,9 +60,11 @@ const props = defineProps({
 
 const currentPage = ref(props.currentPageIndex);
 
-watch(props.currentPageIndex, (newValue) => {
+
+watch(() => props.currentPageIndex, (newValue) => {
   currentPage.value = newValue;
 });
+
 
 function onPaginationChanged(pageIndex) {
   emit("paginationChanged", pageIndex)
