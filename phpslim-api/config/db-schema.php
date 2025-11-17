@@ -45,7 +45,7 @@ return (array(
             CREATE TABLE FILE_PLAYCOUNT_STATS (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 user_id TEXT NOT NULL CHECK(length(user_id) == 36),
-                play_timestamp INTEGER NOT NULL,
+                ptime INTEGER NOT NULL,
                 PRIMARY KEY(file_id, user_id, play_timestamp),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE,
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
@@ -54,7 +54,7 @@ return (array(
             CREATE TABLE FILE_FAVORITE (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 user_id TEXT NOT NULL CHECK(length(user_id) == 36),
-                favorited INTEGER NOT NULL,
+                ftime INTEGER NOT NULL,
                 PRIMARY KEY(file_id, user_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE,
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
@@ -246,6 +246,25 @@ return (array(
                 PRIMARY KEY (title, artist)
             ) STRICT;
 
+
+            CREATE TABLE PLAYLIST (
+                id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                name TEXT NOT NULL CHECK(length(artist) <= 128),
+                user_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                ctime INTEGER NOT NULL,
+                mtime INTEGER,
+                PRIMARY KEY (id),
+                FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
+            ) STRICT;
+
+            CREATE TABLE `PLAYLIST_FILE` (
+                playlist_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                file_id TEXT NOT NULL CHECK(length(artist_mbid) == 36),
+                file_index INTEGER NOT NULL,
+                PRIMARY KEY (playlist_id, file_id, file_index),
+                FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
+                FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
+            );
         ',
     )
 ));
