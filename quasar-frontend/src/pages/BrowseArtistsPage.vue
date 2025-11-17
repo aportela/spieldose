@@ -1,9 +1,7 @@
 <template>
   <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
-    :totalResults="totalResults" @paginationChanged="onPaginationChanged">
-    <template #breadcrumb>
-      <q-breadcrumbs-el icon="person" :label="t('Browse artists')" />
-    </template>
+    :totalResults="totalResults" @paginationChanged="onPaginationChanged" current-bread-crumb-icon="person"
+    :current-bread-crumb-label="t('Browse artists')">
     <template #filter>
       <div class="row q-gutter-xs q-mb-md">
         <div class="col">

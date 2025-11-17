@@ -2,7 +2,10 @@
   <q-card class="q-pa-lg">
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <slot name="breadcrumb"></slot>
+      <slot name="current-breadcrumb">
+        <q-breadcrumbs-el v-if="currentBreadCrumbIcon && currentBreadCrumbLabel" :icon="currentBreadCrumbIcon"
+          :label="currentBreadCrumbLabel" />
+      </slot>
     </q-breadcrumbs>
     <q-card-section>
       <slot name="filter"></slot>
@@ -44,6 +47,14 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  currentBreadCrumbIcon: {
+    type: String,
+    required: true
+  },
+  currentBreadCrumbLabel: {
+    type: String,
+    required: true
   }
 });
 

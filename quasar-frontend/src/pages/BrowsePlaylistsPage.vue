@@ -1,7 +1,7 @@
 <template>
   <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
     :totalResults="totalResults" @paginationChanged="onPaginationChanged">
-    <template #breadcrumb>
+    <template #current-breadcrumb>
       <q-breadcrumbs-el icon="person" :label="t('Browse playlists')" />
     </template>
     <template #filter>
