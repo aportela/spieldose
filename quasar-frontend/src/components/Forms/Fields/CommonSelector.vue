@@ -1,8 +1,8 @@
 <template>
-  <q-select :outlined="outlined" :dense="dense" v-model="model" :options="filteredItems" :options-dense="dense"
-    :label="label" :disable="disable" emit-value :filled="filled" :clearable="clearable"
-    :hint="!model ? t('Minimum 3 characters to trigger autocomplete') : null" use-input input-debounce="0"
-    @filter="onFilter" @update:model-value="onChange">
+  <q-select :outlined="outlined" :dense="dense" v-model="model" :options="filteredOptions" :options-dense="dense"
+    :label="label" :disable="disable" map-options emit-value :filled="filled" :clearable="clearable"
+    :hint="!model ? t('Minimum 3 characters to trigger autocomplete') : null" :use-input="useAutocomplete"
+    input-debounce="100" @filter="onFilter" @update:model-value="onChange">
   </q-select>
 </template>
 
@@ -46,26 +46,32 @@ const props = defineProps({
     type: String,
     required: true
   },
-  items: {
+  options: {
     type: Array,
     required: true
-  }
+  },
+  useAutocomplete: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
 });
 
 const emit = defineEmits(['change']);
 
-const model = ref(props.defaultValue);
+const model = ref(null);
 
-const filteredItems = reactive(props.items);
+const filteredOptions = reactive([...props.options]);
 
 function onFilter(val, update, abort) {
-  if (val.length < 3) {
+  if (!props.useAutocomplete || val.length < 3) {
     abort();
     return;
   }
   update(() => {
     const needle = val.toLowerCase();
-    filteredItems = props.items.filter(item => item.toLowerCase().indexOf(needle) > -1);
+    filteredOptions.length = 0;
+    filteredOptions.push(...props.options.filter(item => item.label.toLowerCase().includes(needle)));
   });
 }
 
