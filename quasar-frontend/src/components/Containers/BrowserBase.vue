@@ -2,7 +2,7 @@
   <q-card class="q-pa-lg">
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <slot name="breacrumb"></slot>
+      <slot name="breadcrumb"></slot>
     </q-breadcrumbs>
     <q-card-section>
       <slot name="filter"></slot>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch} from "vue";
+import { ref, computed, watch } from "vue";
 
 const emit = defineEmits(['paginationChanged']);
 
@@ -35,7 +35,7 @@ const currentPageIndex = computed(() => props.currentPageIndex || 1);
 
 const currentPage = ref(currentPageIndex.value);
 
-watch (currentPageIndex, (newValue) => {
+watch(currentPageIndex, (newValue) => {
   currentPage.value = newValue;
 });
 

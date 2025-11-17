@@ -1,7 +1,7 @@
 <template>
   <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
     :totalResults="totalResults" @paginationChanged="onPaginationChanged">
-    <template #breacrumb>
+    <template #breadcrumb>
       <q-breadcrumbs-el icon="person" :label="t('Browse playlists')" />
     </template>
     <template #filter>
@@ -61,7 +61,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { default as BrowserBase } from "components/BrowserBase.vue";
+import { default as BrowserBase } from "components/Containers/BrowserBase.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
