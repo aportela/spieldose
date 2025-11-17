@@ -67,11 +67,22 @@ class ArtistScraper
         );
     }
 
-    private function getArtistMBIdsWithoutCache()
+    private function getAllArtistMBIds(bool $ignoreCache)
     {
-        $mbIds = [];
-        $results = $this->dbh->query(
-            "
+        $allArtistMBIdsQuery = "
+                SELECT
+                    FILE_ID3_TAG.mb_artist_id AS mbid
+                FROM FILE_ID3_TAG
+                WHERE
+                    FILE_ID3_TAG.mb_artist_id IS NOT NULL
+                UNION
+                SELECT
+                    FILE_ID3_TAG.mb_album_artist_id AS mbid
+                FROM FILE_ID3_TAG
+                WHERE
+                    FILE_ID3_TAG.mb_album_artist_id IS NOT NULL
+            ";
+        $notCachedArtistMBIdsQuery = "
                 SELECT
                     FILE_ID3_TAG.mb_artist_id AS mbid
                 FROM FILE_ID3_TAG
@@ -89,32 +100,8 @@ class ArtistScraper
                     FILE_ID3_TAG.mb_album_artist_id IS NOT NULL
                 AND
                     CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
-            "
-        );
-        foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
-        }
-        return ($mbIds);
-    }
-
-    private function getAllArtistMBIds()
-    {
-        $mbIds = [];
-        $results = $this->dbh->query(
-            "
-                SELECT
-                    FILE_ID3_TAG.mb_artist_id AS mbid
-                FROM FILE_ID3_TAG
-                UNION
-                SELECT
-                    FILE_ID3_TAG.mb_album_artist_id AS mbid
-                FROM FILE_ID3_TAG
-            "
-        );
-        foreach ($results as $result) {
-            $mbIds[] = $result->mbid;
-        }
-        return ($mbIds);
+            ";
+        return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
     }
 
     /**
@@ -258,7 +245,7 @@ class ArtistScraper
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
         $scanStartTime = microtime(true);
-        $artistMbIds = $force ? $this->getAllArtistMBIds() : $this->getArtistMBIdsWithoutCache();
+        $artistMbIds = $this->getAllArtistMBIds($force);
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
             if ($scrapItemCallback != null) {
