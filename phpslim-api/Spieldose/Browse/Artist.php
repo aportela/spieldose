@@ -6,7 +6,7 @@ namespace Spieldose\Browse;
 
 class Artist extends \Spieldose\Browse\Base
 {
-    public function browse(\aportela\DatabaseBrowserWrapper\Pager $pager, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public function browse(\aportela\DatabaseBrowserWrapper\Pager $pager, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, bool $skipCount = false): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         $this->pager = $pager;
         $this->filter = $filter;
@@ -86,6 +86,6 @@ class Artist extends \Spieldose\Browse\Base
                 $whereCondition
             )
         );
-        return ($browser->launch($query, $countQuery, false));
+        return ($browser->launch($query, $countQuery, $skipCount));
     }
 }

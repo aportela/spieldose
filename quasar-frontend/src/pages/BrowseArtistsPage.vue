@@ -77,6 +77,10 @@ const sortFieldOptions = [
 const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "name");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
+
+
+const skipCount = ref(false);
+
 const loading = ref(false);
 const artists = ref([]);
 const lastChangesTimestamp = ref(0);
@@ -127,14 +131,17 @@ function onPaginationChanged(pageIndex) {
 }
 
 function onNameChanged() {
+  skipCount.value = false;
   refreshURL(1, name.value, genre.value, sortField.value, sortOrder.value);
 }
 
 function onTagChanged(tag) {
+  skipCount.value = false;
   refreshURL(1, name.value, tag, sortField.value, sortOrder.value);
 }
 
 function onGenreChanged(genre) {
+  skipCount.value = false;
   refreshURL(1, name.value, genre, sortField.value, sortOrder.value);
 }
 
@@ -149,11 +156,14 @@ function onSortOrderChanged(sortOrder) {
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  api.browse.artist({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
+  api.browse.artist({ genre: genre.value || null, name: name.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
     artists.value = success.data.data.items;
-    totalPages.value = success.data.data.pager.totalPages;
-    totalResults.value = success.data.data.pager.totalResults;
-    warningNoItems.value = success.data.data.pager.totalResults < 1;
+    if (success.data.data.pager) {
+      totalPages.value = success.data.data.pager.totalPages;
+      totalResults.value = success.data.data.pager.totalResults;
+      warningNoItems.value = success.data.data.pager.totalResults < 1;
+      skipCount.value = true;
+    }
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {

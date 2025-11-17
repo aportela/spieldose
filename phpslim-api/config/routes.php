@@ -221,26 +221,37 @@ return function (App $app) {
                     return (new \aportela\DatabaseBrowserWrapper\Filter(array_key_exists("filter", $params) && is_array($params["filter"]) ? $params["filter"] : []));
                 }
 
+                function skipCountParamFound(array $params): bool
+                {
+                    return (array_key_exists("skipCount", $params));
+                }
+
                 $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
+                    $skipCount = skipCountParamFound($params);
                     $data = (new \Spieldose\Browse\Artist($dbh))->browse(
                         getPagerFromParams($params),
                         getFilterFromParams($params),
-                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                        $skipCount
                     );
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
-                            "data" => [
-                                "pager" => [
-                                    "totalPages" => $data->pager->getTotalPages(),
-                                    "totalResults" => $data->pager->getTotalResults()
-                                ],
-                                "items" => $data->items
-                            ]
+                            "data" => ! $skipCount ?
+                                [
+                                    "pager" => [
+                                        "totalPages" => $data->pager->getTotalPages(),
+                                        "totalResults" => $data->pager->getTotalResults()
+                                    ],
+                                    "items" => $data->items
+                                ] :
+                                [
+                                    "items" => $data->items
+                                ]
                         ]
                     );
                     if (json_last_error() != JSON_ERROR_NONE) {

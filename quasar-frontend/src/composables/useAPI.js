@@ -70,8 +70,9 @@ export function useAPI() {
         resultsPage,
         sortField,
         sortOrder,
+        skipCount,
       ) {
-        const params = {
+        let params = {
           filter: filter || {},
           pager: {
             currentPageIndex: currentPageIndex,
@@ -82,6 +83,9 @@ export function useAPI() {
             order: sortOrder,
           },
         };
+        if (skipCount) {
+          params.skipCount = true;
+        }
         return axios.post(basePath + "/browse/artist", params);
       },
     },
