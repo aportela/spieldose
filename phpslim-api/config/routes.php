@@ -295,6 +295,42 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/remote_thumbnail', function (Request $request, Response $response, array $args) use ($settings) {
+                $queryParams = $request->getQueryParams();
+                if (isset($queryParams["url"]) && !empty($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL)) {
+                    //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                    $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+
+                    $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
+                        $logger,
+                        $settings->getCachePath("Thumbnails"),
+                        new \aportela\RemoteThumbnailCacheWrapper\Source\URLSource($queryParams["url"]),
+                        90,
+                        200,
+                        200
+                    );
+                    $path = $thumbnail->get();
+                    if (is_string($path) && file_exists($path)) {
+                        $filesize = filesize($path);
+                        $f = fopen($path, 'r');
+                        fseek($f, 0);
+                        $data = fread($f, $filesize);
+                        fclose($f);
+                        $response->getBody()->write($data);
+                        return $response
+                            ->withHeader('Content-Type', 'image/jpeg')
+                            ->withHeader('Content-Length', (string) $filesize)
+                            ->withHeader('ETag', sha1($queryParams["url"] . $path . $filesize))
+                            ->withHeader('Cache-Control', 'max-age=86400')
+                            ->withStatus(200);
+                    } else {
+                        throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for url: ' . $queryParams["url"]);
+                    }
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('Invalid / empty url param');
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {

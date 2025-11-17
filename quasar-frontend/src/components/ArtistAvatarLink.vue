@@ -1,6 +1,6 @@
 <template>
   <router-link :to="{ name: 'artist', params: { name: name }, query: { mbid: mbId, tab: 'overview' } }">
-    <q-img img-class="sp-artist-image-filter" :src="image || '#'" width="250px" height="250px" fit="cover">
+    <q-img img-class="sp-artist-image-filter" :src="ThumbnailImage" width="250px" height="250px" fit="cover">
       <div class="absolute-bottom text-subtitle1 text-center">
         {{ name }}
         <p class="text-caption q-mb-none">{{ totalTracks }} {{ t(totalTracks > 1 ? "tracks" : "track") }}</p>
@@ -27,12 +27,21 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
 const props = defineProps(['mbId', 'name', 'image', 'totalTracks']);
 
+const ThumbnailImage = computed(() => {
+  if (props.image) {
+    return ("/api2/remote_thumbnail?url=" + encodeURIComponent(props.image));
+  } else {
+    return ('#');
+  }
+});
 </script>
 
 <style lang="css">
