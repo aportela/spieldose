@@ -11,12 +11,12 @@
             @clear="onNameChanged" ref="autoFocusRef"></CustomInputSearch>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <ArtistsGenreSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
-          </ArtistsGenreSelector>
+          <MusicBrainzArtistGenreCloudSelector :disable="loading" :defaultGenre="genre" @change="onGenreChanged">
+          </MusicBrainzArtistGenreCloudSelector>
         </div>
         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-4">
-          <ArtistsTagSelector :disable="loading" :defaultTag="tag" @change="onTagChanged">
-          </ArtistsTagSelector>
+          <LastFMArtistTagCloudSelector :disable="loading" :defaultTag="tag" @change="onTagChanged">
+          </LastFMArtistTagCloudSelector>
         </div>
         <div class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-4">
           <CustomSelector :disable="loading" label="Sort field" :options="sortFieldOptions" v-model="sortField"
@@ -26,10 +26,6 @@
           <SortOrderSelector :disable="loading" v-model="sortOrder" @update:modelValue="onSortOrderChanged">
           </SortOrderSelector>
         </div>
-      </div>
-      <div>
-        <MusicBrainzArtistGenreCloudWidget></MusicBrainzArtistGenreCloudWidget>
-        <LastFMArtistTagCloudWidget></LastFMArtistTagCloudWidget>
       </div>
     </template>
     <template #items>
@@ -47,14 +43,12 @@ import { useAPI } from "src/composables/useAPI";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/Containers/BrowserBase.vue";
-import { default as ArtistsGenreSelector } from "components/ArtistsGenreSelector.vue";
-import { default as ArtistsTagSelector } from "components/ArtistsTagSelector.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as ArtistAvatarLink } from "components/ArtistAvatarLink.vue";
-import { default as MusicBrainzArtistGenreCloudWidget } from "src/components/Widgets/MusicBrainzArtistGenreCloudWidget.vue";
-import { default as LastFMArtistTagCloudWidget } from "src/components/Widgets/LastFMArtistTagCloudWidget.vue";
+import { default as MusicBrainzArtistGenreCloudSelector } from "src/components/Forms/Fields/MusicBrainzArtistGenreCloudSelector.vue";
+import { default as LastFMArtistTagCloudSelector } from "src/components/Forms/Fields/LastFMArtistTagCloudSelector.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
