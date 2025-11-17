@@ -8,12 +8,15 @@ class ReleaseScraper
 {
     private \aportela\DatabaseWrapper\DB $dbh;
     private \Psr\Log\LoggerInterface $logger;
+    private \aportela\SimpleFSCache\Cache $cache;
     private \aportela\MusicBrainzWrapper\Release $musicBrainzReleaseAPI;
+
 
     public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
         $this->dbh = $dbh;
         $this->logger = $logger;
+        $this->cache = $cache;
         $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
@@ -165,7 +168,22 @@ class ReleaseScraper
                         new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId)
                     ]
                 );
+
+                $artistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($this->dbh, $this->logger, $this->cache);
+                $cachedArtistMbIds = [];
                 foreach ($track->recording->artistCredit as $recordingArtist) {
+                    if (! in_array($recordingArtist->mbId, $cachedArtistMbIds)) {
+                        $isCached = $artistScraper->hasCache($recordingArtist->mbId);
+                        if (! $isCached) {
+                            if ($artistScraper->scrap($recordingArtist->mbId)) {
+                                $cachedArtistMbIds[] = $recordingArtist->mbId;
+                            } else {
+                                // TODO
+                            }
+                        } else {
+                            $cachedArtistMbIds[] = $recordingArtist->mbId;
+                        }
+                    }
                     $this->dbh->execute(
                         "
                             INSERT INTO CACHE_MUSICBRAINZ_RECORDING_ARTIST
