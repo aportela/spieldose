@@ -49,6 +49,6 @@
     "fix": "vendor/bin/php-cs-fixer fix Spieldose",
     "stan": "vendor/bin/phpstan analyse -c phpstan.neon --memory-limit 1G",
     "rector": "vendor/bin/rector process",
-    "start": "php -S 127.0.0.1:8081 -t public public/cliserver.php"
+    "serve": "php -S 127.0.0.1:8081 -t public public/cliserver.php"
   }
 }
