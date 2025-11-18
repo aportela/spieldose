@@ -41,7 +41,9 @@ class Artist extends \Spieldose\Browse\Base
             $afterBrowse
         );
         $queryConditions = [];
-        $params = [];
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":various_artists_mbid", "89ad4ac3-39f7-470e-963a-56509c546377")
+        ];
         if ($filter->hasParam("name") && is_string($filter->getParamValue("name"))) {
             $queryConditions[] = sprintf(" TMP.name LIKE %s ", ":name");
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name",  "%" . $filter->getParamValue("name") . "%");
@@ -53,33 +55,42 @@ class Artist extends \Spieldose\Browse\Base
             sprintf(
                 "
                     SELECT %%s FROM (
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG.artist_mbid AS mbId
+                        SELECT
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid AS mbId
                         FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.artist_mbid
-                        WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) IS NOT NULL
+                        LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_ARTIST.file_id = FILE_ID3_TAG.file_id
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid
+                        WHERE
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) IS NOT NULL
 
                         UNION
 
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name, FILE_ID3_TAG.album_artist_mbid AS mbId
+                        SELECT
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name, FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid AS mbId
                         FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.album_artist_mbid
-                        WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) IS NOT NULL
+                        LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.file_id = FILE_ID3_TAG.file_id
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid
+                        WHERE
+                            FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid <> :various_artists_mbid
+                        AND
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) IS NOT NULL
 
                         UNION
 
-                        SELECT CACHE_MUSICBRAINZ_ARTIST.name AS name, FILE_ID3_TAG.artist_mbid AS mbId
+                        SELECT
+                            CACHE_MUSICBRAINZ_ARTIST.name AS name, CACHE_MUSICBRAINZ_ARTIST.mbid AS mbId
                         FROM FILE_ID3_TAG
                         INNER JOIN CACHE_MUSICBRAINZ_TRACK ON CACHE_MUSICBRAINZ_TRACK.mbid = FILE_ID3_TAG.release_track_mbid
                         INNER JOIN CACHE_MUSICBRAINZ_RECORDING ON CACHE_MUSICBRAINZ_RECORDING.mbid = CACHE_MUSICBRAINZ_TRACK.recording_mbid
-                        LEFT JOIN CACHE_MUSICBRAINZ_RECORDING_ARTIST ON CACHE_MUSICBRAINZ_RECORDING_ARTIST.recording_mbid = CACHE_MUSICBRAINZ_RECORDING.mbid
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = CACHE_MUSICBRAINZ_RECORDING_ARTIST.artist_mbid
-                        WHERE CACHE_MUSICBRAINZ_ARTIST.name IS NOT NULL
+                        INNER JOIN CACHE_MUSICBRAINZ_RECORDING_ARTIST ON CACHE_MUSICBRAINZ_RECORDING_ARTIST.recording_mbid = CACHE_MUSICBRAINZ_RECORDING.mbid
+                        INNER JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = CACHE_MUSICBRAINZ_RECORDING_ARTIST.artist_mbid
                     ) TMP
                     LEFT JOIN CACHE_LASTFM_ARTIST ON CACHE_LASTFM_ARTIST.name = TMP.name
                     LEFT JOIN (
                         SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, COUNT(*) AS total
                         FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.artist_mbid
+                        LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_ARTIST.file_id = FILE_ID3_TAG.file_id
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid
                         GROUP BY 1
                         HAVING coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) NOT NULL
                     ) TOTAL_TRACKS ON TOTAL_TRACKS.name = TMP.name
@@ -94,27 +105,35 @@ class Artist extends \Spieldose\Browse\Base
             sprintf(
                 "
                     SELECT %%s FROM (
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG.artist_mbid AS mbId
+                        SELECT
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) AS name, FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid AS mbId
                         FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.artist_mbid
-                        WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) IS NOT NULL
+                        LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_ARTIST.file_id = FILE_ID3_TAG.file_id
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid
+                        WHERE
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.artist) IS NOT NULL
 
                         UNION
 
-                        SELECT coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name, FILE_ID3_TAG.album_artist_mbid AS mbId
+                        SELECT
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) AS name, FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid AS mbId
                         FROM FILE_ID3_TAG
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.album_artist_mbid
-                        WHERE coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) IS NOT NULL
+                        LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.file_id = FILE_ID3_TAG.file_id
+                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid
+                        WHERE
+                            FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid <> :various_artists_mbid
+                        AND
+                            coalesce(CACHE_MUSICBRAINZ_ARTIST.name, FILE_ID3_TAG.album_artist) IS NOT NULL
 
                         UNION
 
-                        SELECT CACHE_MUSICBRAINZ_ARTIST.name AS name, FILE_ID3_TAG.artist_mbid AS mbId
+                        SELECT
+                            CACHE_MUSICBRAINZ_ARTIST.name AS name, CACHE_MUSICBRAINZ_ARTIST.mbid AS mbId
                         FROM FILE_ID3_TAG
                         INNER JOIN CACHE_MUSICBRAINZ_TRACK ON CACHE_MUSICBRAINZ_TRACK.mbid = FILE_ID3_TAG.release_track_mbid
                         INNER JOIN CACHE_MUSICBRAINZ_RECORDING ON CACHE_MUSICBRAINZ_RECORDING.mbid = CACHE_MUSICBRAINZ_TRACK.recording_mbid
-                        LEFT JOIN CACHE_MUSICBRAINZ_RECORDING_ARTIST ON CACHE_MUSICBRAINZ_RECORDING_ARTIST.recording_mbid = CACHE_MUSICBRAINZ_RECORDING.mbid
-                        LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = CACHE_MUSICBRAINZ_RECORDING_ARTIST.artist_mbid
-                        WHERE CACHE_MUSICBRAINZ_ARTIST.name IS NOT NULL
+                        INNER JOIN CACHE_MUSICBRAINZ_RECORDING_ARTIST ON CACHE_MUSICBRAINZ_RECORDING_ARTIST.recording_mbid = CACHE_MUSICBRAINZ_RECORDING.mbid
+                        INNER JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = CACHE_MUSICBRAINZ_RECORDING_ARTIST.artist_mbid
                     ) TMP
                     %s
                 ",
