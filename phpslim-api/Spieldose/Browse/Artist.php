@@ -50,7 +50,6 @@ class Artist extends \Spieldose\Browse\Base
         }
         $whereCondition = $queryConditions !== [] ? " WHERE " .  implode(" AND ", $queryConditions) : "";
         $browser->addDBQueryParams($params);
-        // TODO: add CACHE_MUSICBRAINZ_RECORDING_ARTIST
         $query = $browser->buildQuery(
             sprintf(
                 "
