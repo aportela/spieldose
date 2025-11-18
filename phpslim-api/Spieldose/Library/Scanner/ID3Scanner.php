@@ -239,6 +239,7 @@ class ID3Scanner
                         (file_id, artist_mbid)
                     VALUES
                         (:file_id, :artist_mbid)
+                    ON CONFLICT (file_id, artist_mbid) DO NOTHING
                 ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
@@ -265,6 +266,7 @@ class ID3Scanner
                         (file_id, artist_mbid)
                     VALUES
                         (:file_id, :artist_mbid)
+                    ON CONFLICT (file_id, artist_mbid) DO NOTHING
                 ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
