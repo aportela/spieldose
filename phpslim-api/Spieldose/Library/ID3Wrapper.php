@@ -176,7 +176,7 @@ class ID3Wrapper
             $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
             if (! empty($tag)) {
                 if (mb_strlen($tag) == 36) {
-                    $data->albumArtistMBIds = [$tag];
+                    $data->releaseArtistMBIds = [$tag];
                 } else if (mb_strlen($tag) > 36 && mb_strpos($tag, "/") > 0) {
                     $mbIds = explode("/", $tag);
                     foreach ($mbIds as $mbId) {
@@ -188,7 +188,7 @@ class ID3Wrapper
                     }
                 }
             } else {
-                $data->albumArtistMBIds = [];
+                $data->releaseArtistMBIds = [];
             }
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
             $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);

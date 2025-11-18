@@ -112,8 +112,8 @@ class ID3Scanner
         ?int $trackNumber,
         ?int $discNumber,
         ?int $playtimeSeconds,
-        ?string $artistMBId,
-        ?string $albumArtistMBId,
+        ?array $artistMBIds,
+        ?array $releaseArtistMbIds,
         ?string $trackAlbum,
         ?string $releaseGroupMBId,
         ?string $releaseMBId,
@@ -165,16 +165,6 @@ class ID3Scanner
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playtime_seconds");
         }
-        if (!empty($artistMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMBId);
-        } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":artist_mbid");
-        }
-        if (!empty($albumArtistMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_artist_mbid", $albumArtistMBId);
-        } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist_mbid");
-        }
         if (!empty($trackAlbum)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
         } else {
@@ -208,8 +198,8 @@ class ID3Scanner
         $this->dbh->execute(
             "
                 INSERT INTO FILE_ID3_TAG
-                    (file_id, title, artist, album_artist, album, year, original_year, track_number, disc_number, playtime_seconds, artist_mbid, album_artist_mbid, release_group_mbid, release_mbid, release_track_mbid, genre, mime)
-                VALUES (:file_id, :title, :artist, :album_artist, :album, :year, :original_year, :track_number, :disc_number, :playtime_seconds, :artist_mbid, :album_artist_mbid, :release_group_mbid, :release_mbid, :release_track_mbid, :genre, :mime)
+                    (file_id, title, artist, album_artist, album, year, original_year, track_number, disc_number, playtime_seconds, release_group_mbid, release_mbid, release_track_mbid, genre, mime)
+                VALUES (:file_id, :title, :artist, :album_artist, :album, :year, :original_year, :track_number, :disc_number, :playtime_seconds, :release_group_mbid, :release_mbid, :release_track_mbid, :genre, :mime)
                 ON CONFLICT (file_id) DO
                 UPDATE
                     SET
@@ -222,8 +212,6 @@ class ID3Scanner
                         track_number = :track_number,
                         disc_number = :disc_number,
                         playtime_seconds = :playtime_seconds,
-                        artist_mbid = :artist_mbid,
-                        album_artist_mbid = :album_artist_mbid,
                         release_group_mbid = :release_group_mbid,
                         release_mbid = :release_mbid,
                         release_track_mbid = :release_track_mbid,
@@ -233,6 +221,58 @@ class ID3Scanner
             ",
             $params
         );
+
+        $this->dbh->execute(
+            "
+                DELETE FROM FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+                WHERE file_id = :file_id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+            ]
+        );
+        if (is_array($artistMBIds)) {
+            foreach ($artistMBIds as $artistMbId) {
+                $this->dbh->execute(
+                    "
+                    INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+                        (file_id, artist_mbid)
+                    VALUES
+                        (:file_id, :artist_mbid)
+                ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMbId)
+                    ]
+                );
+            }
+        }
+
+        $this->dbh->execute(
+            "
+                DELETE FROM FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
+                WHERE file_id = :file_id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+            ]
+        );
+        if (is_array($releaseArtistMbIds)) {
+            foreach ($releaseArtistMbIds as $releaseArtistMbId) {
+                $this->dbh->execute(
+                    "
+                    INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
+                        (file_id, artist_mbid)
+                    VALUES
+                        (:file_id, :artist_mbid)
+                ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $releaseArtistMbId)
+                    ]
+                );
+            }
+        }
     }
 
     private function removeLibraryPathDirectoryFileTags(string $fileId)
@@ -312,8 +352,8 @@ class ID3Scanner
                         $tagsData->trackNumber,
                         $tagsData->discNumber,
                         $tagsData->playtimeSeconds,
-                        $tagsData->artistMBId,
-                        $tagsData->albumArtistMBId,
+                        $tagsData->artistMBIds,
+                        $tagsData->releaseArtistMBIds,
                         $tagsData->trackAlbum,
                         $tagsData->releaseGroupMBId,
                         $tagsData->releaseMBId,
