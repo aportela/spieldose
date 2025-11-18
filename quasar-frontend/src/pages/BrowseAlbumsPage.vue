@@ -1,6 +1,7 @@
 <template>
   <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
-    :totalResults="totalResults" @paginationChanged="onPaginationChanged">
+    :totalResults="totalResults" @paginationChanged="onPaginationChanged" current-bread-crumb-icon="album"
+    :current-bread-crumb-label="t('Browse albums')">
     <template #current-breadcrumb>
       <q-breadcrumbs-el icon="person" :label="t('Browse albums')" />
     </template>
@@ -27,7 +28,7 @@
       </div>
     </template>
     <template #items>
-      <AnimatedAlbumCover v-for="album in albums" :key="album.hash" v-memo="[lastChangesTimestamp]" :image="album.image"
+      <AnimatedAlbumCover v-for="album in albums" :key="album._id" v-memo="[lastChangesTimestamp]" :image="album.image"
         :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
         :year="album.year" @play="onPlayAlbum(album)" @enqueue="onEnqueueAlbum(album)">
       </AnimatedAlbumCover>
@@ -40,7 +41,7 @@
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
-import { useQuasar } from "quasar";
+import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { default as BrowserBase } from "components/Containers/BrowserBase.vue";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
@@ -48,6 +49,7 @@ import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { albumActions } from "src/boot/spieldose";
+import { useThumbnail } from "src/composables/useThumbnail";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -77,6 +79,9 @@ const searchOnOptions = [
 
 const searchOn = ref(searchOnOptions[0].value);
 
+
+const { getSmallURL } = useThumbnail();
+
 const sortFieldOptions = [
   {
     label: "Title",
@@ -95,6 +100,9 @@ const sortFieldOptions = [
 const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "title");
 const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
 const warningNoItems = ref(false);
+
+const skipCount = ref(false);
+
 const loading = ref(false);
 const albums = ref([]);
 const lastChangesTimestamp = ref(0);
@@ -176,19 +184,14 @@ function onSortOrderChanged(sortOrder) {
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  const filter = {
-    title: searchOn.value == 'title' ? text.value : null,
-    albumArtistName: searchOn.value == 'albumArtistName' ? text.value : null,
-    text: searchOn.value == 'all' ? text.value : null,
-  };
-  api.album.search(filter, currentPageIndex.value, 32, sortField.value, sortOrder.value).then((success) => {
-    albums.value = success.data.data.items.map((item) => {
-      item.image = item.covers.small;
-      return (item);
-    });
-    totalPages.value = success.data.data.pager.totalPages;
-    totalResults.value = success.data.data.pager.totalResults;
-    warningNoItems.value = success.data.data.pager.totalResults < 1;
+  api.browse.album({ title: text.value || null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
+    albums.value = success.data.data.items.map((item) => { item._id = uid(); item.artist = { mbId: null, name: null }; item.image = getSmallURL(`https://coverartarchive.org/release/${item.mbId}/front-250`); return (item); });
+    if (success.data.data.pager) {
+      totalPages.value = success.data.data.pager.totalPages;
+      totalResults.value = success.data.data.pager.totalResults;
+      warningNoItems.value = success.data.data.pager.totalResults < 1;
+      skipCount.value = true;
+    }
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
     nextTick(() => {

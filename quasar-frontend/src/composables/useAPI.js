@@ -88,6 +88,30 @@ export function useAPI() {
         }
         return axios.post(basePath + "/browse/artist", params);
       },
+      album: function (
+        filter,
+        currentPageIndex,
+        resultsPage,
+        sortField,
+        sortOrder,
+        skipCount,
+      ) {
+        let params = {
+          filter: filter || {},
+          pager: {
+            currentPageIndex: currentPageIndex,
+            resultsPage: resultsPage,
+          },
+          sort: {
+            field: sortField,
+            order: sortOrder,
+          },
+        };
+        if (skipCount) {
+          params.skipCount = true;
+        }
+        return axios.post(basePath + "/browse/album", params);
+      },
     },
     cloud: {
       getMusicBrainzArtistGenreCloud: function () {
