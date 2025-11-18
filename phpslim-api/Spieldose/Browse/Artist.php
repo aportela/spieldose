@@ -42,7 +42,7 @@ class Artist extends \Spieldose\Browse\Base
         );
         $queryConditions = [];
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":various_artists_mbid", "89ad4ac3-39f7-470e-963a-56509c546377")
+            new \aportela\DatabaseWrapper\Param\StringParam(":various_artists_mbid", \aportela\MusicBrainzWrapper\Artist::VARIOUS_ARTISTS_MB_ID)
         ];
         if ($filter->hasParam("name") && is_string($filter->getParamValue("name"))) {
             $queryConditions[] = sprintf(" TMP.name LIKE %s ", ":name");
