@@ -22,7 +22,7 @@ class Artist extends \Spieldose\Browse\Base
         ];
         $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $data) {
             array_map(
-                function (object $item) {
+                function (object $item): object {
                     if (property_exists($item, "totalTracks") && is_numeric($item->totalTracks)) {
                         $item->totalTracks = intval($item->totalTracks);
                     }
