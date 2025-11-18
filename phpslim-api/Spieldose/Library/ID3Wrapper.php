@@ -156,6 +156,7 @@ class ID3Wrapper
             $data->trackNumber = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
             $data->discNumber = $this->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
             $data->playtimeSeconds = $this->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
+            $data->artistMBIds = [];
             $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
             if (! empty($tag)) {
                 if (mb_strlen($tag) == 36) {
@@ -170,9 +171,8 @@ class ID3Wrapper
                         }
                     }
                 }
-            } else {
-                $data->artistMBIds = [];
             }
+            $data->releaseArtistMBIds = [];
             $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
             if (! empty($tag)) {
                 if (mb_strlen($tag) == 36) {
@@ -187,8 +187,6 @@ class ID3Wrapper
                         }
                     }
                 }
-            } else {
-                $data->releaseArtistMBIds = [];
             }
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
             $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
