@@ -73,11 +73,11 @@ return (array(
                 disc_number INT,
                 playtime_seconds INT,
                 mime TEXT CHECK(length(mime) <= 128),
-                mb_artist_id TEXT CHECK(length(mb_artist_id) == 36),
-                mb_album_artist_id TEXT CHECK(length(mb_album_artist_id) == 36),
-                mb_release_group_id TEXT CHECK(length(mb_release_group_id) == 36),
-                mb_release_id TEXT CHECK(length(mb_release_id) == 36),
-                mb_release_track_id TEXT CHECK(length(mb_release_track_id) == 36),
+                artist_mbid TEXT CHECK(length(artist_mbid) == 36),
+                album_artist_mbid TEXT CHECK(length(album_artist_mbid) == 36),
+                release_group_mbid TEXT CHECK(length(release_group_mbid) == 36),
+                release_mbid TEXT CHECK(length(release_mbid) == 36),
+                release_track_mbid TEXT CHECK(length(release_track_mbid) == 36),
                 PRIMARY KEY (file_id),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             ) STRICT;

@@ -166,14 +166,14 @@ class ID3Scanner
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playtime_seconds");
         }
         if (!empty($artistMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $artistMBId);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMBId);
         } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_artist_id");
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":artist_mbid");
         }
         if (!empty($albumArtistMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_artist_id", $albumArtistMBId);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_artist_mbid", $albumArtistMBId);
         } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_album_artist_id");
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist_mbid");
         }
         if (!empty($trackAlbum)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
@@ -181,19 +181,19 @@ class ID3Scanner
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
         }
         if (!empty($releaseGroupMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_group_id", $releaseGroupMBId);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_group_mbid", $releaseGroupMBId);
         } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_group_id");
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_group_mbid");
         }
         if (!empty($releaseMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_id", $releaseMBId);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseMBId);
         } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_id");
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_mbid");
         }
         if (!empty($releaseTrackMBId)) {
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_release_track_id", $releaseTrackMBId);
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_track_mbid", $releaseTrackMBId);
         } else {
-            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mb_release_track_id");
+            $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_track_mbid");
         }
         if (!empty($genre)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", mb_strtolower($genre));
@@ -208,8 +208,8 @@ class ID3Scanner
         $this->dbh->execute(
             "
                 INSERT INTO FILE_ID3_TAG
-                    (file_id, title, artist, album_artist, album, year, original_year, track_number, disc_number, playtime_seconds, mb_artist_id, mb_album_artist_id, mb_release_group_id, mb_release_id, mb_release_track_id, genre, mime)
-                VALUES (:file_id, :title, :artist, :album_artist, :album, :year, :original_year, :track_number, :disc_number, :playtime_seconds, :mb_artist_id, :mb_album_artist_id, :mb_release_group_id, :mb_release_id, :mb_release_track_id, :genre, :mime)
+                    (file_id, title, artist, album_artist, album, year, original_year, track_number, disc_number, playtime_seconds, artist_mbid, album_artist_mbid, release_group_mbid, release_mbid, release_track_mbid, genre, mime)
+                VALUES (:file_id, :title, :artist, :album_artist, :album, :year, :original_year, :track_number, :disc_number, :playtime_seconds, :artist_mbid, :album_artist_mbid, :release_group_mbid, :release_mbid, :release_track_mbid, :genre, :mime)
                 ON CONFLICT (file_id) DO
                 UPDATE
                     SET
@@ -222,11 +222,11 @@ class ID3Scanner
                         track_number = :track_number,
                         disc_number = :disc_number,
                         playtime_seconds = :playtime_seconds,
-                        mb_artist_id = :mb_artist_id,
-                        mb_album_artist_id = :mb_album_artist_id,
-                        mb_release_group_id = :mb_release_group_id,
-                        mb_release_id = :mb_release_id,
-                        mb_release_track_id = :mb_release_track_id,
+                        artist_mbid = :artist_mbid,
+                        album_artist_mbid = :album_artist_mbid,
+                        release_group_mbid = :release_group_mbid,
+                        release_mbid = :release_mbid,
+                        release_track_mbid = :release_track_mbid,
                         genre = :genre,
                         mime = :mime
                 ;
@@ -264,17 +264,17 @@ class ID3Scanner
         return (
             $this->dbh->exec(
                 "
-                    UPDATE FILE_ID3_TAG SET mb_artist_id = (
-                        SELECT FIT.mb_artist_id
+                    UPDATE FILE_ID3_TAG SET artist_mbid = (
+                        SELECT FIT.artist_mbid
                         FROM FILE_ID3_TAG FIT
                         WHERE
                             FIT.artist = FILE_ID3_TAG.artist
                         AND
-                            FIT.mb_artist_id IS NOT NULL
+                            FIT.artist_mbid IS NOT NULL
                         LIMIT 1
                     )
                     WHERE
-                        mb_artist_id IS NULL
+                        artist_mbid IS NULL
                     AND
                         artist IS NOT NULL
                 "
