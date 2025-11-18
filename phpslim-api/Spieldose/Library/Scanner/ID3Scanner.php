@@ -290,38 +290,6 @@ class ID3Scanner
         );
     }
 
-    /**
-     * this "hack" is done for skipping some unnecesary musicbrainzscraps, on cases like this example:
-     *  1.- You have one or more files with artist name tag FILLED and artist mbId FILLED
-     *  2.- You have one or more files with artist name tag FILLED and artist mbId NOT FILLED
-     *
-     *  Without this, you run normally scraper and files of 2 will be searched from name/s and if we found a mbId will be saved
-     *  With this, we update database to match all files of 2 with the mbId of 1 (skip unnecesary scraps)
-     */
-    public function fixMissingArtistMBIdsWithExistent(): int
-    {
-        $this->logger->debug("ID3Scanner::fixMissingArtistMBIdsWithExistent");
-        return (
-            $this->dbh->exec(
-                "
-                    UPDATE FILE_ID3_TAG SET artist_mbid = (
-                        SELECT FIT.artist_mbid
-                        FROM FILE_ID3_TAG FIT
-                        WHERE
-                            FIT.artist = FILE_ID3_TAG.artist
-                        AND
-                            FIT.artist_mbid IS NOT NULL
-                        LIMIT 1
-                    )
-                    WHERE
-                        artist_mbid IS NULL
-                    AND
-                        artist IS NOT NULL
-                "
-            )
-        );
-    }
-
     public function processPendingQueue(?callable $queueItemScanCallback = null, ?callable $noQueueItemscallback = null): float
     {
         $this->logger->info("ID3Scanner::processPendingQueue");

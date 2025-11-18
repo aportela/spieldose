@@ -47,7 +47,7 @@ try {
         echo "New database version available, an upgrade is required before continue." . PHP_EOL;
         exit;
     }
-    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
+    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
     if ($cmdLine->hasOptions()) {
         $showProgressBar = $cmdLine->hasParam("showProgressBar");
         $force = $cmdLine->hasParam("force");
@@ -133,12 +133,6 @@ try {
                 }
             );
             echo sprintf("ID3 process queue finished (total process time: %.2f seconds)%s", $totalScanTime, PHP_EOL);
-        }
-        if ($cmdLine->hasParam("fixMusicBrainzArtistMBIds")) {
-            echo "Fixing missing MusicBrainz ids: ";
-            // TODO
-            //(new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger))->fixMissingArtistMBIdsWithExistent();
-            echo "ok!" . PHP_EOL;
         }
         if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
             echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
@@ -354,8 +348,6 @@ try {
         echo "\tphp " . $argv[0] . " --removeLibraryPath <YOUR_MUSIC_PATH>" . PHP_EOL;
         echo "- Scan pending id3 tags:" . PHP_EOL;
         echo "\tphp " . $argv[0] . " --processID3Queue" . PHP_EOL;
-        echo "- Fix/Patch artists MBIds:" . PHP_EOL;
-        echo "\tphp " . $argv[0] . " --fixMusicBrainzArtistMBIds" . PHP_EOL;
         echo "- Search on MusicBrainz artists without MBId:" . PHP_EOL;
         echo "\tphp " . $argv[0] . " --scrapMusicBrainzArtistNamesWithoutMBId" . PHP_EOL;
         echo "- Search on MusicBrainz release artists without MBId:" . PHP_EOL;
