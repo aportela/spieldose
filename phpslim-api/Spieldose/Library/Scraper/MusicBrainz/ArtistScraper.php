@@ -22,47 +22,43 @@ class ArtistScraper
     /**
      * returns all ID3 entries with artist name but without MusicBrainz artist id
      */
-    private function getID3OrphanedMBIdArtistNames(bool $randomize = false): array
+    private function getID3OrphanedArtistMBIdData(bool $randomize = false): array
     {
-        $names = [];
-        $results = $this->dbh->query(
+        return ($this->dbh->query(
             sprintf(
                 "
                     SELECT
-                        DISTINCT FIT.artist AS name
-                    FROM FILE_ID3_TAG FIT
+                        FILE_ID3_TAG.file_id AS fileId, FILE_ID3_TAG.artist AS artistName
+                    FROM FILE_ID3_TAG
+                    LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_ARTIST.file_id = FILE_ID3_TAG.file_id
                     WHERE
-                        FIT.mb_artist_id IS NULL
+                        FILE_ID3_TAG.artist IS NOT NULL
                     AND
-                        FIT.artist IS NOT NULL
+                        FILE_ID3_TAG_MUSICBRAINZ_ARTIST.file_id IS NULL
                     %s
                 ",
                 $randomize ? " ORDER BY RANDOM() " : null
             )
-        );
-        foreach ($results as $result) {
-            $names[] = $result->name;
-        }
-        return ($names);
+        ));
     }
 
     /**
-     * set ID3 MusicBrainz artist id for artist name with empty artistMBId
+     * set ID3 MusicBrainz artist id for artist name on files with missing artist MBId
      */
-    private function setID3OrphanedArtistNameMBId(string $artistName, string $artistMBId)
+    private function setID3OrphanedArtistMBIdData(string $fileId, string $artistMBId)
     {
         $this->dbh->execute(
             "
-                UPDATE FILE_ID3_TAG SET
-                    mb_artist_id = :mb_artist_id
-                WHERE
-                    artist = :artist
-                AND
-                    mb_artist_id IS NULL
+                INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+                    (file_id, artist_mbid)
+                VALUES
+                    (:file_id, :artist_mbid)
+
+                ON CONFLICT (file_id, artist_mbid) DO NOTHING
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":mb_artist_id", $artistMBId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist", $artistName),
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMBId),
             ]
         );
     }
@@ -204,27 +200,33 @@ class ArtistScraper
      */
     public function scrapArtistsWithoutMusicBrainzId(?callable $scrapItemCallback = null): float
     {
-        $scanStartTime = microtime(true);
-        $artistNames = $this->getID3OrphanedMBIdArtistNames(true);
-        $totalArtistsNames = count($artistNames);
-        for ($i = 0; $i < $totalArtistsNames; $i++) {
+        $scrapStartTime = microtime(true);
+        $missingElements = $this->getID3OrphanedArtistMBIdData(false);
+        $totalElements = count($missingElements);
+        $cachedElements = [];
+        for ($i = 0; $i < $totalElements; $i++) {
             if ($scrapItemCallback != null) {
-                call_user_func($scrapItemCallback, $artistNames, $totalArtistsNames, $i);
+                call_user_func($scrapItemCallback, $missingElements, $totalElements, $i);
             }
             try {
-                $mbDataResults = $this->musicBrainzArtistAPI->search($artistNames[$i], 1);
-                if (count($mbDataResults) == 1) {
-                    if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
-                        $this->setID3OrphanedArtistNameMBId($artistNames[$i], $mbDataResults[0]->mbId);
+                if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
+                    $mbDataResults = $this->musicBrainzArtistAPI->search($missingElements[$i]->artistName, 1);
+                    if (count($mbDataResults) == 1) {
+                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                            $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
+                            $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
+                        }
                     }
+                } else {
+                    $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $cachedElements[$missingElements[$i]->artistName]);
                 }
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
-                $this->logger->notice("MusicBrainz artist name search returns no results", [$artistNames[$i], $e->getMessage()]);
+                $this->logger->notice("MusicBrainz artist name search returns no results", [$missingElements[$i], $e->getMessage()]);
             } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
-                $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$artistNames[$i], $e->getMessage()]);
+                $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$missingElements[$i], $e->getMessage()]);
             }
         }
-        return (microtime(true) - $scanStartTime);
+        return (microtime(true) - $scrapStartTime);
     }
 
     private function replaceMbIdRedirect(string $oldMbId, string $newMbId)
@@ -285,7 +287,7 @@ class ArtistScraper
 
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
     {
-        $scanStartTime = microtime(true);
+        $scrapStartTime = microtime(true);
         $artistMbIds = $this->getAllArtistMBIds($force);
         $totalArtistMbIds = count($artistMbIds);
         for ($i = 0; $i < $totalArtistMbIds; $i++) {
@@ -294,6 +296,6 @@ class ArtistScraper
             }
             $this->scrap($artistMbIds[$i]);
         }
-        return (microtime(true) - $scanStartTime);
+        return (microtime(true) - $scrapStartTime);
     }
 }

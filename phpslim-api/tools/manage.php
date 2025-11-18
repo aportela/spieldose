@@ -144,9 +144,9 @@ try {
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON,);
             $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
             $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
-                function ($artistNames, $total, $index) use ($showProgressBar) {
+                function ($items, $total, $index) use ($showProgressBar) {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$artistNames[$index]}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$items[$index]->artistName}");
                     } else {
                         if ($index == 0) {
                             echo " - Searching {$total} artist/s: ";
