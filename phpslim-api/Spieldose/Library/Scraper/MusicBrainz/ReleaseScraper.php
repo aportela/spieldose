@@ -26,16 +26,16 @@ class ReleaseScraper
     {
         $allReleaseMBIdsQuery = "
             SELECT DISTINCT
-                FILE_ID3_TAG.mb_release_id AS mbid
+                FILE_ID3_TAG.release_mbid AS mbid
             FROM FILE_ID3_TAG
         ";
         $notCachedReleaseMBIdsQuery = "
             SELECT DISTINCT
-                FILE_ID3_TAG.mb_release_id AS mbid
+                FILE_ID3_TAG.release_mbid AS mbid
             FROM FILE_ID3_TAG
-            LEFT JOIN CACHE_MUSICBRAINZ_RELEASE ON CACHE_MUSICBRAINZ_RELEASE.mbid = FILE_ID3_TAG.mb_release_id
+            LEFT JOIN CACHE_MUSICBRAINZ_RELEASE ON CACHE_MUSICBRAINZ_RELEASE.mbid = FILE_ID3_TAG.release_mbid
             WHERE
-                FILE_ID3_TAG.mb_release_id IS NOT NULL
+                FILE_ID3_TAG.release_mbid IS NOT NULL
             AND
                 CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
         ";
