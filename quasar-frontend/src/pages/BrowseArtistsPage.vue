@@ -27,6 +27,7 @@
           </SortOrderSelector>
         </div>
       </div>
+      <div>Total artists: {{ totalResults || 0 }}</div>
     </template>
     <template #items>
       <ArtistAvatarLink v-for="artist in artists" :key="artist._id" v-memo="[lastChangesTimestamp]" :mbId="artist.mbId"
