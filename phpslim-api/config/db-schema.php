@@ -83,14 +83,14 @@ return (array(
             CREATE TABLE FILE_ID3_TAG_MUSICBRAINZ_ARTIST (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 artist_mbid TEXT CHECK(length(artist_mbid) == 36),
-                PRIMARY KEY (file_id),
+                PRIMARY KEY (file_id, artist_mbid),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             ) STRICT;
 
             CREATE TABLE FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST (
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
                 artist_mbid TEXT CHECK(length(artist_mbid) == 36),
-                PRIMARY KEY (file_id),
+                PRIMARY KEY (file_id, artist_mbid),
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             ) STRICT;
 
