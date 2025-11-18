@@ -110,36 +110,28 @@ class ArtistScraper
     private function getAllArtistMBIds(bool $ignoreCache)
     {
         $allArtistMBIdsQuery = "
-                SELECT
-                    FILE_ID3_TAG.mb_artist_id AS mbid
-                FROM FILE_ID3_TAG
-                WHERE
-                    FILE_ID3_TAG.mb_artist_id IS NOT NULL
-                UNION
-                SELECT
-                    FILE_ID3_TAG.mb_album_artist_id AS mbid
-                FROM FILE_ID3_TAG
-                WHERE
-                    FILE_ID3_TAG.mb_album_artist_id IS NOT NULL
-            ";
+            SELECT
+                FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid AS mbid
+            FROM FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+            UNION
+            SELECT
+                FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid AS mbid
+            FROM FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
+        ";
         $notCachedArtistMBIdsQuery = "
-                SELECT
-                    FILE_ID3_TAG.mb_artist_id AS mbid
-                FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_artist_id
-                WHERE
-                    FILE_ID3_TAG.mb_artist_id IS NOT NULL
-                AND
-                    CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
-                UNION
-                SELECT
-                    FILE_ID3_TAG.mb_album_artist_id AS mbid
-                FROM FILE_ID3_TAG
-                LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG.mb_album_artist_id
-                WHERE
-                    FILE_ID3_TAG.mb_album_artist_id IS NOT NULL
-                AND
-                    CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
+            SELECT
+                FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid AS mbid
+            FROM FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+            LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_ARTIST.artist_mbid
+            WHERE
+                CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
+            UNION
+            SELECT
+                FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid AS mbid
+            FROM FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
+            LEFT JOIN CACHE_MUSICBRAINZ_ARTIST ON CACHE_MUSICBRAINZ_ARTIST.mbid = FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.artist_mbid
+            WHERE
+                CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
             ";
         return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
     }
