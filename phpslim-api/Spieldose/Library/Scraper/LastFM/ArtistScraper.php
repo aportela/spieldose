@@ -84,6 +84,22 @@ class ArtistScraper
         return ($names);
     }
 
+    public function hasCache(string $name): bool
+    {
+        $results = $this->dbh->query(
+            "
+                SELECT
+                    COUNT(md5_hash) AS total
+                FROM CACHE_LASTFM_ARTIST
+                WHERE md5_hash = :md5_hash
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $this->lastFMArtistAPI->getHash($name)),
+            ]
+        );
+        return (intval($results[0]->total) === 1);
+    }
+
     /**
      * save LastFM artist cache (metadata/genres/relationships)
      */
