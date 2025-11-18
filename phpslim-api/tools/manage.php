@@ -47,7 +47,7 @@ try {
         echo "New database version available, an upgrade is required before continue." . PHP_EOL;
         exit;
     }
-    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
+    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "fixMusicBrainzArtistMBIds", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
     if ($cmdLine->hasOptions()) {
         $showProgressBar = $cmdLine->hasParam("showProgressBar");
         $force = $cmdLine->hasParam("force");
@@ -136,7 +136,8 @@ try {
         }
         if ($cmdLine->hasParam("fixMusicBrainzArtistMBIds")) {
             echo "Fixing missing MusicBrainz ids: ";
-            (new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger))->fixMissingArtistMBIdsWithExistent();
+            // TODO
+            //(new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger))->fixMissingArtistMBIdsWithExistent();
             echo "ok!" . PHP_EOL;
         }
         if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
@@ -159,6 +160,27 @@ try {
                 }
             );
             echo sprintf("MusicBrainz artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
+        }
+        if ($cmdLine->hasParam("scrapMusicBrainzReleaseArtistNamesWithoutMBId")) {
+            echo "Starting Musicbrainz Release Artist Scrapper (Searching release artists with name && without mbId):" . PHP_EOL;
+            $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON,);
+            $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
+            $totalScrapTime = $mbArtistScanner->scrapReleaseArtistsWithoutMusicBrainzId(
+                function ($items, $total, $index) use ($showProgressBar) {
+                    if ($showProgressBar) {
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$items[$index]->artistName}");
+                    } else {
+                        if ($index == 0) {
+                            echo " - Searching {$total} artist/s: ";
+                        }
+                        echo ".";
+                        if ($index == $total - 1) {
+                            echo PHP_EOL;
+                        }
+                    }
+                }
+            );
+            echo sprintf("MusicBrainz release artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
         if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
             echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
@@ -336,6 +358,8 @@ try {
         echo "\tphp " . $argv[0] . " --fixMusicBrainzArtistMBIds" . PHP_EOL;
         echo "- Search on MusicBrainz artists without MBId:" . PHP_EOL;
         echo "\tphp " . $argv[0] . " --scrapMusicBrainzArtistNamesWithoutMBId" . PHP_EOL;
+        echo "- Search on MusicBrainz release artists without MBId:" . PHP_EOL;
+        echo "\tphp " . $argv[0] . " --scrapMusicBrainzReleaseArtistNamesWithoutMBId" . PHP_EOL;
         echo "- Get (pending) MusicBrainz artist cache:" . PHP_EOL;
         echo "\tphp " . $argv[0] . " --scrapMusicBrainzArtistCache" . PHP_EOL;
         echo "- Get (pending) MusicBrainz release (album) cache:" . PHP_EOL;

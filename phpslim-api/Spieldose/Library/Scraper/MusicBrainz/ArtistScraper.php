@@ -43,6 +43,29 @@ class ArtistScraper
     }
 
     /**
+     * returns all ID3 entries with release artist name but without MusicBrainz artist id
+     */
+    private function getID3OrphanedReleaseArtistMBIdData(bool $randomize = false): array
+    {
+        return ($this->dbh->query(
+            sprintf(
+                "
+                    SELECT
+                        FILE_ID3_TAG.file_id AS fileId, FILE_ID3_TAG.album_artist AS artistName
+                    FROM FILE_ID3_TAG
+                    LEFT JOIN FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST ON FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.file_id = FILE_ID3_TAG.file_id
+                    WHERE
+                        FILE_ID3_TAG.album_artist IS NOT NULL
+                    AND
+                        FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST.file_id IS NULL
+                    %s
+                ",
+                $randomize ? " ORDER BY RANDOM() " : null
+            )
+        ));
+    }
+
+    /**
      * set ID3 MusicBrainz artist id for artist name on files with missing artist MBId
      */
     private function setID3OrphanedArtistMBIdData(string $fileId, string $artistMBId)
@@ -50,6 +73,27 @@ class ArtistScraper
         $this->dbh->execute(
             "
                 INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_ARTIST
+                    (file_id, artist_mbid)
+                VALUES
+                    (:file_id, :artist_mbid)
+
+                ON CONFLICT (file_id, artist_mbid) DO NOTHING
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMBId),
+            ]
+        );
+    }
+
+    /**
+     * set ID3 MusicBrainz artist id for release artist name on files with missing artist MBId
+     */
+    private function setID3OrphanedReleaseArtistMBIdData(string $fileId, string $artistMBId)
+    {
+        $this->dbh->execute(
+            "
+                INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
                     (file_id, artist_mbid)
                 VALUES
                     (:file_id, :artist_mbid)
@@ -219,6 +263,40 @@ class ArtistScraper
                     }
                 } else {
                     $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $cachedElements[$missingElements[$i]->artistName]);
+                }
+            } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
+                $this->logger->notice("MusicBrainz artist name search returns no results", [$missingElements[$i], $e->getMessage()]);
+            } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+                $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$missingElements[$i], $e->getMessage()]);
+            }
+        }
+        return (microtime(true) - $scrapStartTime);
+    }
+
+    /**
+     * scrap all id3 release artist names without MusicBrainz artist id
+     */
+    public function scrapReleaseArtistsWithoutMusicBrainzId(?callable $scrapItemCallback = null): float
+    {
+        $scrapStartTime = microtime(true);
+        $missingElements = $this->getID3OrphanedReleaseArtistMBIdData(false);
+        $totalElements = count($missingElements);
+        $cachedElements = [];
+        for ($i = 0; $i < $totalElements; $i++) {
+            if ($scrapItemCallback != null) {
+                call_user_func($scrapItemCallback, $missingElements, $totalElements, $i);
+            }
+            try {
+                if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
+                    $mbDataResults = $this->musicBrainzArtistAPI->search($missingElements[$i]->artistName, 1);
+                    if (count($mbDataResults) == 1) {
+                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                            $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
+                            $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
+                        }
+                    }
+                } else {
+                    $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $cachedElements[$missingElements[$i]->artistName]);
                 }
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->notice("MusicBrainz artist name search returns no results", [$missingElements[$i], $e->getMessage()]);
