@@ -156,25 +156,49 @@ class ID3Wrapper
             $data->trackNumber = $this->getTag(\Spieldose\Library\ID3TAGType::TRACK_NUMBER);
             $data->discNumber = $this->getTag(\Spieldose\Library\ID3TAGType::DISC_NUMBER);
             $data->playtimeSeconds = $this->getTag(\Spieldose\Library\ID3TAGType::PLAYTIME_SECONDS);
-            $artistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
-            // multiple mbids (divided by "/") not supported
-            if (!empty($artistMBId) && strlen($artistMBId) == 36) {
-                $data->artistMBId = $artistMBId;
+            $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
+            if (! empty($tag)) {
+                if (mb_strlen($tag) == 36) {
+                    $data->artistMBIds = [$tag];
+                } else if (mb_strlen($tag) > 36 && mb_strpos($tag, "/") > 0) {
+                    $mbIds = explode("/", $tag);
+                    foreach ($mbIds as $mbId) {
+                        if (mb_strlen($mbId) == 36) {
+                            $data->artistMBIds[] = $mbId;
+                        } else {
+                            // TODO
+                        }
+                    }
+                }
             } else {
-                $data->artistMBId = null;
+                $data->artistMBIds = [];
             }
-            $albumArtistMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
-            // multiple mbids (divided by "/") not supported
-            $data->albumArtistMBId = (!empty($albumArtistMBId) && strlen($albumArtistMBId) == 36) ? $albumArtistMBId : null;
+            $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
+            if (! empty($tag)) {
+                if (mb_strlen($tag) == 36) {
+                    $data->albumArtistMBIds = [$tag];
+                } else if (mb_strlen($tag) > 36 && mb_strpos($tag, "/") > 0) {
+                    $mbIds = explode("/", $tag);
+                    foreach ($mbIds as $mbId) {
+                        if (mb_strlen($mbId) == 36) {
+                            $data->artistMBIds[] = $mbId;
+                        } else {
+                            // TODO
+                        }
+                    }
+                }
+            } else {
+                $data->albumArtistMBIds = [];
+            }
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
             $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
             // multiple mbids (divided by "/") not supported
-            $data->releaseGroupMBId = (!empty($releaseGroupMBId) && strlen($releaseGroupMBId) == 36) ? $releaseGroupMBId : null;
+            $data->releaseGroupMBId = (!empty($releaseGroupMBId) && mb_strlen($releaseGroupMBId) == 36) ? $releaseGroupMBId : null;
             $releaseMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_ID);
             // multiple mbids (divided by "/") not supported
-            $data->releaseMBId = (!empty($releaseMBId) && strlen($releaseMBId) == 36) ? $releaseMBId : null;
+            $data->releaseMBId = (!empty($releaseMBId) && mb_strlen($releaseMBId) == 36) ? $releaseMBId : null;
             $releaseTrackMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID);
-            $data->releaseTrackMBId = (!empty($releaseTrackMBId) && strlen($releaseTrackMBId) == 36) ? $releaseTrackMBId : null;
+            $data->releaseTrackMBId = (!empty($releaseTrackMBId) && mb_strlen($releaseTrackMBId) == 36) ? $releaseTrackMBId : null;
             // multiple mbids (divided by "/") not supported
             $genre = $this->getTag(\Spieldose\Library\ID3TAGType::GENRE);
             $data->genre = !empty($genre) ? mb_strtolower($genre) : null;
