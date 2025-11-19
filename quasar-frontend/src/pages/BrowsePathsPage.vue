@@ -8,6 +8,7 @@
       <CustomInputSearch :disable="loading" hint="Search paths with specified condition" placeholder="Text condition"
         v-model="filter" @update:modelValue="onFilterChanged"></CustomInputSearch>
 
+      <!--
       <q-btn-group v-if="!loading && directories && directories.length > 0" class="q-my-md">
         <q-btn size="sm" label="expand all" @click="onExpandAll" />
         <q-btn size="sm" label="collapse all" @click="onCollapseAll" />
@@ -24,14 +25,72 @@
           </div>
           <span v-else>{{ prop.node.name }}</span>
         </template>
-      </q-tree>
+</q-tree>
+-->
+      <q-splitter v-model="splitterModel" style="height: 100%">
+
+        <template v-slot:before>
+          <div class="q-pa-md">
+            <div class="q-pa-md q-gutter-sm">
+              <q-tree ref="treeRef" :nodes="pathTree" node-key="id" label-key="label2" accordion no-transition
+                :filter="filter" />
+            </div>
+          </div>
+        </template>
+        <template v-slot:after>
+          <q-tab-panels v-model="selected" animated transition-prev="jump-up" transition-next="jump-up">
+            <q-tab-panel name="Relax Hotel">
+              <div class="text-h4 q-mb-md">Welcome</div>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+            </q-tab-panel>
+
+            <q-tab-panel name="Food">
+              <div class="text-h4 q-mb-md">Food</div>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+            </q-tab-panel>
+
+            <q-tab-panel name="Room service">
+              <div class="text-h4 q-mb-md">Room service</div>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+            </q-tab-panel>
+
+            <q-tab-panel name="Room view">
+              <div class="text-h4 q-mb-md">Room view</div>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
+                quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla
+                ullam. In, libero.</p>
+            </q-tab-panel>
+          </q-tab-panels>
+        </template>
+      </q-splitter>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
 
-import { ref, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
 import { uid, useQuasar } from "quasar";
@@ -57,6 +116,7 @@ const directories = ref([]);
 
 const paths = ref([]);
 
+
 const filter = ref('');
 const selected = ref(null);
 
@@ -71,28 +131,17 @@ const currentPageIndex = ref(parseInt(route.query.page || 1));
 
 const lastChangesTimestamp = ref(0);
 
-function getTree() {
-  noPathsFound.value = false;
-  loading.value = true;
-  api.path.getTree().then((success) => {
-    directories.value = success.data.items;
-    loading.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error loading paths"),
-      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-    });
-    loading.value = false;
-  });
-}
+const splitterModel = ref(50);
+
+
+const pathTree = ref([]);
+
 
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
   api.browse.path({}, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
-    // create unique id
-    paths.value = success.data.data.items.map((item) => { item._id = uid(); return (item); });
+    paths.value = success.data.data.items;
     if (success.data.data.pager) {
       totalPages.value = success.data.data.pager.totalPages;
       totalResults.value = success.data.data.pager.totalResults;
@@ -101,25 +150,45 @@ function browse() {
     }
     loading.value = false;
     lastChangesTimestamp.value = Date.now();
-    const arbol = {};
+
     paths.value.forEach(item => {
-      const partes = item.name.split('\\').filter(Boolean);
-      let nodoActual = arbol;
-      partes.forEach((parte, index) => {
-        // Si no existe la parte, la creamos
-        if (!nodoActual[parte]) {
-          nodoActual[parte] = { _id: uid(), name: parte, children: {} };
+      const subDirectories = item.name.split('\\').filter(Boolean);
+      let currentTreeNode = pathTree.value;
+
+      subDirectories.forEach((subDirectory, index) => {
+        let foundNode = currentTreeNode.find(node => node.label === subDirectory);
+
+        if (!foundNode) {
+          foundNode = {
+            _id: uid(),
+            path: item.name,
+            name: subDirectory,
+            label: subDirectory,
+            label2: subDirectory + " (" + item.totalFiles + " track/s)",
+            id: item.id,
+            totalFiles: 0,
+            children: []
+          };
+          currentTreeNode.push(foundNode);
         }
-        // Mover al siguiente nivel del árbol
-        nodoActual = nodoActual[parte].children;
-        // Si estamos en la última parte (el álbum), asignamos los datos
-        if (index === partes.length - 1) {
-          nodoActual['id'] = item.id;
-          nodoActual['totalFiles'] = item.totalFiles;
+
+        currentTreeNode = foundNode.children;
+
+        if (index === subDirectories.length - 1) {
+          /*
+          foundNode.children.push({
+            label: subDirectory,
+            id: item.id,
+            totalFiles: item.totalFiles,
+            //children: []
+          });
+          */
         }
       });
     });
-    console.log(arbol);
+    nextTick(() => {
+      treeRef.value?.expandAll();
+    });
 
     /*
     nextTick(() => {
@@ -193,7 +262,7 @@ function onTreeNodeSelected(nodeHash) {
 }
 
 function onExpandAll() {
-  treeRef.value.expandAll();
+  treeRef.value?.expandAll();
 }
 
 function onCollapseAll() {
