@@ -303,7 +303,7 @@ return function (App $app) {
                     }
                     $skipCount = skipCountParamFound($params);
                     $data = (new \Spieldose\Browse\Path($dbh))->browse(
-                        getPagerFromParams($params),
+                        new \aportela\DatabaseBrowserWrapper\Pager(false),
                         getFilterFromParams($params),
                         getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
                         $skipCount
