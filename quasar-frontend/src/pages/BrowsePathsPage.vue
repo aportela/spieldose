@@ -5,31 +5,22 @@
       <q-breadcrumbs-el icon="person" :label="t('Browse paths')" />
     </q-breadcrumbs>
     <q-card-section>
-      <CustomInputSearch :disable="loading" hint="Search paths with specified condition" placeholder="Text condition"
-        v-model="filter" @update:modelValue="onFilterChanged"></CustomInputSearch>
 
-      <!--
-      <q-btn-group v-if="!loading && directories && directories.length > 0" class="q-my-md">
-        <q-btn size="sm" label="expand all" @click="onExpandAll" />
-        <q-btn size="sm" label="collapse all" @click="onCollapseAll" />
-      </q-btn-group>
-
-      <q-tree ref="treeRef" v-if="!loading" :nodes="directories" v-model:selected="selected" node-key="hash"
-        label-key="name" children-key="children" no-transition @update:selected="onTreeNodeSelected"
-        :default-expand-all="true" selected-color="pink" :filter="filter"
-        :no-results-label="t('No matching paths found')" :no-nodes-label="t('No paths found')">
-        <template v-slot:default-header="prop">
-          <div v-if="prop.node.totalFiles > 0">
-            <q-icon name="play_arrow" /> {{ prop.node.name }} <span v-if="prop.node.totalFiles > 0">({{
-              prop.node.totalFiles }} total tracks)</span>
-          </div>
-          <span v-else>{{ prop.node.name }}</span>
-        </template>
-</q-tree>
--->
       <q-splitter v-model="splitterModel" style="height: 100%">
 
         <template v-slot:before>
+          <div class="row q-pa-sm q-col-gutter-lg">
+            <div class="col-6">
+              <CustomInputSearch :disable="loading" hint="Search paths with specified condition"
+                placeholder="Text condition" v-model="filter" @update:modelValue="onFilterChanged"></CustomInputSearch>
+            </div>
+            <div class="col-6">
+              <q-btn-group spread>
+                <q-btn size="md" outline label="Expand all" @click="onExpandAll"></q-btn>
+                <q-btn size="md" outline label="Collapse all" @click="onCollapseAll"></q-btn>
+              </q-btn-group>
+            </div>
+          </div>
           <div class="q-pa-md">
             <div class="q-pa-md q-gutter-sm">
               <q-tree ref="treeRef" :nodes="pathTree" node-key="id" label-key="label2" accordion no-transition
