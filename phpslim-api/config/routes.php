@@ -296,32 +296,33 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/path', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
-                    $params = $request->getParsedBody();
-                    if (! is_array($params)) {
-                        throw new \Spieldose\Exception\InvalidParamsException();
+                $group->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    if (empty($args['id'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException("id");
                     }
-                    $skipCount = skipCountParamFound($params);
-                    $data = (new \Spieldose\Browse\Path($dbh))->browse(
-                        new \aportela\DatabaseBrowserWrapper\Pager(false),
-                        getFilterFromParams($params),
-                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
-                        $skipCount
-                    );
+                    $tree = (new \Spieldose\Browse\Path($dbh))->getTree($args['id']);
                     $payload = json_encode(
                         [
                             'initialState' => $initialState,
-                            "data" => ! $skipCount ?
-                                [
-                                    "pager" => [
-                                        "totalPages" => $data->pager->getTotalPages(),
-                                        "totalResults" => $data->pager->getTotalResults()
-                                    ],
-                                    "items" => $data->items
-                                ] :
-                                [
-                                    "items" => $data->items
-                                ]
+                            "data" => [
+                                "tree" => $tree
+                            ]
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $group->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "data" => [
+                                "items" => (new \Spieldose\Browse\Path($dbh))->getLibraries()
+                            ]
                         ]
                     );
                     if (json_last_error() != JSON_ERROR_NONE) {

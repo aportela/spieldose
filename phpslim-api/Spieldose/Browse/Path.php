@@ -61,4 +61,73 @@ class Path extends \Spieldose\Browse\Base
         );
         return ($browser->launch($query, "", true));
     }
+
+    public function getLibraries(): array
+    {
+        return ($this->dbh->query(
+            "
+                SELECT
+                    LIBRARY_PATH.id, LIBRARY_PATH.name
+                FROM LIBRARY_PATH
+                ORDER BY LIBRARY_PATH.name
+            "
+        ));
+    }
+
+    public function getTree(string $libraryId)
+    {
+        $afterQueryFunction = function ($rows): void {
+            array_map(
+                function ($item) {
+                    if (property_exists($item, "totalFiles")) {
+                        $item->totalFiles = intval($item->totalFiles);
+                    }
+                    return ($item);
+                },
+                $rows
+            );
+        };
+        $results = $this->dbh->query(
+            "
+                    SELECT
+                        :directory_separator || REPLACE(DIRECTORY.path, LIBRARY_PATH.path, LIBRARY_PATH.name || :directory_separator) AS label, DIRECTORY.id AS id, COUNT(FILE.id) AS totalFiles
+                    FROM DIRECTORY
+                    LEFT JOIN LIBRARY_PATH ON LIBRARY_PATH.id = DIRECTORY.library_path_id
+                    LEFT JOIN FILE ON FILE.directory_id = DIRECTORY.id
+                    WHERE LIBRARY_PATH.id = :id
+                    GROUP BY 1
+                    ORDER BY DIRECTORY.path
+                ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $libraryId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
+            ],
+            $afterQueryFunction
+        );
+        $tree = [];
+        foreach ($results as $item) {
+            $subDirectories = array_filter(explode(DIRECTORY_SEPARATOR, $item->label));
+            $currentTreeNode = &$tree;
+            foreach ($subDirectories as $index => $subDirectory) {
+                $foundNode = null;
+                foreach ($currentTreeNode as $node) {
+                    if ($node->label === $subDirectory) {
+                        $foundNode = $node;
+                        break;
+                    }
+                }
+                if (!$foundNode) {
+                    $foundNode = (object)[
+                        'label' => $subDirectory,
+                        'id' => $item->id,
+                        'totalFiles' => $item->totalFiles,
+                        'children' => []
+                    ];
+                    $currentTreeNode[] = $foundNode;
+                }
+                $currentTreeNode = &$foundNode->children;
+            }
+        }
+        return ($tree);
+    }
 }
