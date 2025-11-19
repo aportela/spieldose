@@ -47,7 +47,7 @@ try {
         echo "New database version available, an upgrade is required before continue." . PHP_EOL;
         exit;
     }
-    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
+    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "libraryPathName:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
     if ($cmdLine->hasOptions()) {
         $showProgressBar = $cmdLine->hasParam("showProgressBar");
         $force = $cmdLine->hasParam("force");
@@ -60,7 +60,8 @@ try {
                 if ($libraryManager->isPathContainedOnCurrentLibraryPaths($newLibraryPath)) {
                     echo "\tERROR: path is contained on existing library path" . PHP_EOL;
                 } else {
-                    $pathId = $libraryManager->addLibraryPath($newLibraryPath);
+                    $libraryName = $cmdLine->hasParam("libraryPathName") ? $cmdLine->getParamValue("libraryPathName") : $newLibraryPath;
+                    $pathId = $libraryManager->addLibraryPath($newLibraryPath, $libraryName);
                     echo "Starting library scanner:" . PHP_EOL;
                     $libraryScanner = new \Spieldose\Library\Scanner\LibraryScanner($dbh, $logger);
 

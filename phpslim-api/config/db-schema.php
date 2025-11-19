@@ -15,6 +15,7 @@ return (array(
             CREATE TABLE LIBRARY_PATH (
                 id TEXT NOT NULL CHECK(length(id) == 36),
                 path TEXT NOT NULL UNIQUE CHECK(length(path) <= 4096),
+                name TEXT NOT NULL UNIQUE CHECK(length(path) <= 128),
                 ctime INTEGER NOT NULL,
                 mtime INTEGER NOT NULL,
                 PRIMARY KEY (`id`)

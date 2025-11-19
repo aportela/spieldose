@@ -70,28 +70,33 @@ class Manager
     /**
      * add / update library path
      */
-    public function addLibraryPath(string $path): string
+    public function addLibraryPath(string $path, string $name): string
     {
         $path = realpath($path);
         $pathId = $this->getLibraryPathId($path);
         if (empty($pathId)) {
             $pathId = \Spieldose\Utils::uuidv4();
         }
+        if (mb_strlen($name) > 128) {
+            throw new \InvalidArgumentException("max name length (128) exceed");
+        }
         $stat = stat($path);
         $this->logger->info("Setting library path", [$pathId, $path]);
         $this->dbh->execute(
             "
                     INSERT INTO LIBRARY_PATH
-                        (id, path, ctime, mtime)
+                        (id, path, name, ctime, mtime)
                     VALUES
-                        (:id, :path, :current_timestamp, :mtime)
+                        (:id, :path, :name, :current_timestamp, :mtime)
                     ON CONFLICT (id) DO
                     UPDATE SET
+                        name = :name,
                         mtime = :mtime;
                 ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
             ]
