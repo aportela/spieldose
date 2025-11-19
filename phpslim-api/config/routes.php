@@ -414,6 +414,76 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->group('/file', function (RouteCollectorProxy $group) use ($container, $initialState) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $group->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    if (!empty($args['id'])) {
+                        $file = new \Spieldose\Entities\File($args["id"]);
+                        $file->get($dbh);
+                        $payload = json_encode(
+                            [
+                                'initialState' => $initialState,
+                                "file" => $file
+                            ]
+                        );
+                        if (json_last_error() != JSON_ERROR_NONE) {
+                            throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                        }
+                        $response->getBody()->write($payload);
+                        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                    } else {
+                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                    }
+                });
+
+                $group->get('/{action:raw|download}/{id}', function (Request $request, Response $response, array $args) {
+                    $action = $args['action'];
+                    if (!empty($args['id'])) {
+                        $file = new \Spieldose\File($this, $args['id']);
+                        $file->get();
+                        if (file_exists($file->path)) {
+                            $length = $file->length;
+                            // https://stackoverflow.com/a/157447
+                            $partialContent = false;
+                            $offset = 0;
+                            if (isset($_SERVER['HTTP_RANGE'])) {
+                                // if the HTTP_RANGE header is set we're dealing with partial content
+                                $partialContent = true;
+                                // find the requested range
+                                // this might be too simplistic, apparently the client can request
+                                // multiple ranges, which can become pretty complex, so ignore it for now
+                                preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                                $offset = intval($matches[1]);
+                                $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
+                            }
+                            $response->getBody()->write($file->getData($offset, $length));
+                            if ($partialContent) {
+                                // output the right headers for partial content
+                                return $response->withStatus(206)
+
+                                    ->withHeader('Content-Type', $file->mime ? $file->mime : 'application/octet-stream')
+                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename($file->path) . '"')
+                                    ->withHeader('Content-Length', $file->length)
+                                    ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
+                                    ->withHeader('Accept-Ranges', 'bytes');
+                            } else {
+                                return $response->withStatus(200)
+                                    ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
+                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename($file->path) . '"')
+                                    ->withHeader('Content-Length', $file->length)
+                                    ->withHeader('Accept-Ranges', 'bytes');
+                            }
+                        } else {
+                            throw new \Spieldose\Exception\NotFoundException('id');
+                        }
+                    } else {
+                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                    }
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
