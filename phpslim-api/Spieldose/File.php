@@ -22,9 +22,7 @@ class File
         }
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function get()
     {
@@ -35,7 +33,7 @@ class File
                     FILE_ID3_TAG.mime AS mime
                 FROM FILE
                 INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
-                INNER JOIN FILE_ID3_TAG ON FILE_ID3_TAG.id = FILE.id
+                INNER JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 WHERE FILE.id = :id
              ",
             array(
