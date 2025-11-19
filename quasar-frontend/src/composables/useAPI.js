@@ -112,29 +112,11 @@ export function useAPI() {
         }
         return axios.post(basePath + "/browse/album", params);
       },
-      path: function (
-        filter,
-        currentPageIndex,
-        resultsPage,
-        sortField,
-        sortOrder,
-        skipCount,
-      ) {
-        let params = {
-          filter: filter || {},
-          pager: {
-            currentPageIndex: currentPageIndex,
-            resultsPage: resultsPage,
-          },
-          sort: {
-            field: sortField,
-            order: sortOrder,
-          },
-        };
-        if (skipCount) {
-          params.skipCount = true;
-        }
-        return axios.post(basePath + "/browse/path", params);
+      path: function (libraryId) {
+        return axios.post(basePath + "/browse/path/" + libraryId);
+      },
+      libraries: function () {
+        return axios.get(basePath + "/browse/libraries");
       },
     },
     cloud: {

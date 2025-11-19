@@ -9,6 +9,7 @@
       <q-splitter v-model="splitterModel" style="height: 100%">
 
         <template v-slot:before>
+          <LibrarySelector @change="onChangeLibrary"></LibrarySelector>
           <div class="row q-pa-sm q-col-gutter-lg">
             <div class="col-6">
               <CustomInputSearch :disable="loading" hint="Search paths with specified condition"
@@ -23,8 +24,15 @@
           </div>
           <div class="q-pa-md">
             <div class="q-pa-md q-gutter-sm">
-              <q-tree ref="treeRef" :nodes="pathTree" node-key="id" label-key="label2" accordion no-transition
-                :filter="filter" />
+              <q-tree ref="treeRef" :nodes="pathTree" node-key="id" label-key="label" accordion no-transition
+                :filter="filter">
+                <template v-slot:default-header="prop">
+                  <div class="row items-center cursor-pointer">
+                    {{ prop.node.label }} <span class="q-ml-sm text-weight-bolder" v-if="prop.node.totalFiles > 0">
+                      ({{ prop.node.totalFiles }} total files)</span>
+                  </div>
+                </template>
+              </q-tree>
             </div>
           </div>
         </template>
@@ -88,6 +96,7 @@ import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { pathActions } from "src/boot/spieldose";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
+import { default as LibrarySelector } from "components/Forms/Fields/LibrarySelector.vue";
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -128,59 +137,15 @@ const splitterModel = ref(50);
 const pathTree = ref([]);
 
 
-function browse() {
+function browse(libraryId) {
   warningNoItems.value = false;
   loading.value = true;
-  api.browse.path({}, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
-    paths.value = success.data.data.items;
-    if (success.data.data.pager) {
-      totalPages.value = success.data.data.pager.totalPages;
-      totalResults.value = success.data.data.pager.totalResults;
-      warningNoItems.value = success.data.data.pager.totalResults < 1;
-      skipCount.value = true;
-    }
+  api.browse.path(libraryId).then((success) => {
+    pathTree.value = success.data.data.tree;
     loading.value = false;
-    lastChangesTimestamp.value = Date.now();
-
-    paths.value.forEach(item => {
-      const subDirectories = item.name.split('\\').filter(Boolean);
-      let currentTreeNode = pathTree.value;
-
-      subDirectories.forEach((subDirectory, index) => {
-        let foundNode = currentTreeNode.find(node => node.label === subDirectory);
-
-        if (!foundNode) {
-          foundNode = {
-            _id: uid(),
-            path: item.name,
-            name: subDirectory,
-            label: subDirectory,
-            label2: subDirectory + " (" + item.totalFiles + " track/s)",
-            id: item.id,
-            totalFiles: 0,
-            children: []
-          };
-          currentTreeNode.push(foundNode);
-        }
-
-        currentTreeNode = foundNode.children;
-
-        if (index === subDirectories.length - 1) {
-          /*
-          foundNode.children.push({
-            label: subDirectory,
-            id: item.id,
-            totalFiles: item.totalFiles,
-            //children: []
-          });
-          */
-        }
-      });
-    });
     nextTick(() => {
       treeRef.value?.expandAll();
     });
-
     /*
     nextTick(() => {
       if (autoFocusRef.value) {
@@ -267,10 +232,17 @@ function onFilterChanged(v) {
   }
 }
 
+const onChangeLibrary = (libraryId) => {
+  if (libraryId) {
+    browse(libraryId);
+  } else {
+    pathTree.value = [];
+  }
+};
 //getTree();
 
 onMounted(() => {
-  browse();
+  //browse();
 });
 
 </script>
