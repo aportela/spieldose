@@ -14,11 +14,9 @@ class Path extends \Spieldose\Browse\Base
         $this->fieldDefinitions = [
             "id" => "DIRECTORY.id",
             "name" => "DIRECTORY.path",
-            "totalFiles" => "COALESCE(TOTAL_FILES.total, 0)"
+            "totalFiles" => "COUNT(FILE.id)"
         ];
-        $this->fieldCountDefinition = [
-            "total" => "DIRECTORY.id"
-        ];
+        $this->fieldCountDefinition = [];
         $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $data) {
             array_map(
                 function (object $item): object {
@@ -61,16 +59,6 @@ class Path extends \Spieldose\Browse\Base
                 $whereCondition
             )
         );
-        $countQuery = $browser->buildQueryCount(
-            sprintf(
-                "
-                    SELECT %%s
-                    FROM DIRECTORY
-                    %s
-                ",
-                $whereCondition
-            )
-        );
-        return ($browser->launch($query, $countQuery, $skipCount));
+        return ($browser->launch($query, "", true));
     }
 }
