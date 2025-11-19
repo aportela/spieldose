@@ -295,6 +295,41 @@ return function (App $app) {
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
+
+                $group->post('/path', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $params = $request->getParsedBody();
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+                    $skipCount = skipCountParamFound($params);
+                    $data = (new \Spieldose\Browse\Path($dbh))->browse(
+                        getPagerFromParams($params),
+                        getFilterFromParams($params),
+                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                        $skipCount
+                    );
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "data" => ! $skipCount ?
+                                [
+                                    "pager" => [
+                                        "totalPages" => $data->pager->getTotalPages(),
+                                        "totalResults" => $data->pager->getTotalResults()
+                                    ],
+                                    "items" => $data->items
+                                ] :
+                                [
+                                    "items" => $data->items
+                                ]
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->group('/common', function (RouteCollectorProxy $group) use ($container, $initialState) {
