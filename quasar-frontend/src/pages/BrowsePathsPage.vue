@@ -31,9 +31,10 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
-import { useQuasar } from "quasar";
+import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { pathActions } from "src/boot/spieldose";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
@@ -41,17 +42,34 @@ import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 const $q = useQuasar();
 const { t } = useI18n();
 
+const route = useRoute();
+
 const { api } = useAPI();
+
+const skipCount = ref(false);
+
+const warningNoItems = ref(false);
 
 const treeRef = ref(null);
 const noPathsFound = ref(false);
 const loading = ref(false);
 const directories = ref([]);
 
+const paths = ref([]);
+
 const filter = ref('');
 const selected = ref(null);
 
 const isExpanded = ref(true);
+
+const sortField = ref(route.query.sortField == "totalTracks" ? "totalTracks" : "name");
+const sortOrder = ref(route.query.sortOrder == "DESC" ? "DESC" : "ASC");
+
+const totalPages = ref(0);
+const totalResults = ref(0);
+const currentPageIndex = ref(parseInt(route.query.page || 1));
+
+const lastChangesTimestamp = ref(0);
 
 function getTree() {
   noPathsFound.value = false;
@@ -66,6 +84,61 @@ function getTree() {
       caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
     });
     loading.value = false;
+  });
+}
+
+function browse() {
+  warningNoItems.value = false;
+  loading.value = true;
+  api.browse.path({}, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
+    // create unique id
+    paths.value = success.data.data.items.map((item) => { item._id = uid(); return (item); });
+    if (success.data.data.pager) {
+      totalPages.value = success.data.data.pager.totalPages;
+      totalResults.value = success.data.data.pager.totalResults;
+      warningNoItems.value = success.data.data.pager.totalResults < 1;
+      skipCount.value = true;
+    }
+    loading.value = false;
+    lastChangesTimestamp.value = Date.now();
+    const arbol = {};
+    paths.value.forEach(item => {
+      const partes = item.name.split('\\').filter(Boolean);
+      let nodoActual = arbol;
+      partes.forEach((parte, index) => {
+        // Si no existe la parte, la creamos
+        if (!nodoActual[parte]) {
+          nodoActual[parte] = { _id: uid(), name: parte, children: {} };
+        }
+        // Mover al siguiente nivel del árbol
+        nodoActual = nodoActual[parte].children;
+        // Si estamos en la última parte (el álbum), asignamos los datos
+        if (index === partes.length - 1) {
+          nodoActual['id'] = item.id;
+          nodoActual['totalFiles'] = item.totalFiles;
+        }
+      });
+    });
+    console.log(arbol);
+
+    /*
+    nextTick(() => {
+      if (autoFocusRef.value) {
+        autoFocusRef.value.focus();
+      }
+    });
+    */
+  }).catch((error) => {
+    paths.value = [];
+    totalPages.value = 0;
+    totalResults.value = 0;
+    $q.notify({
+      type: "negative",
+      message: t("API Error: error loading artists"),
+      caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+    });
+    loading.value = false;
+    lastChangesTimestamp.value = Date.now();
   });
 }
 
@@ -134,6 +207,10 @@ function onFilterChanged(v) {
   }
 }
 
-getTree();
+//getTree();
+
+onMounted(() => {
+  browse();
+});
 
 </script>
