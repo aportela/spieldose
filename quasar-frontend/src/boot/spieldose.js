@@ -1,9 +1,17 @@
+import { boot } from "quasar/wrappers";
 import { useSpieldoseStore } from "stores/spieldose";
-import { useAPI } from "src/composables/useAPI";
-import { spieldoseEvents } from "boot/events";
+//import { useAPI } from "src/composables/useAPI";
+//import { spieldoseEvents } from "boot/events";
 
 const spieldoseStore = useSpieldoseStore();
 
+// "async" is optional;
+// more info on params: https://v2.quasar.dev/quasar-cli/boot-files
+export default boot(async (/* { app, router, ... } */) => {
+  spieldoseStore.create();
+});
+
+/*
 const { api } = useAPI();
 
 const trackActions = {
@@ -438,3 +446,4 @@ export {
   currentPlayListActions,
   pathActions,
 };
+*/
