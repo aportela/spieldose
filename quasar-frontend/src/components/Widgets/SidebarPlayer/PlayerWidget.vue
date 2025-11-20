@@ -36,6 +36,7 @@ const { getMediumURL } = useThumbnail();
 const imageUrl = ref("images/vinyl.png");
 
 const refresh = () => {
+  imageUrl.value = null;
   api.file.getRandom().then((successResponse) => {
     playerStore.setAudioSource("/api2/file/raw/" + successResponse.data.file.id);
     if (playerStore.hasPreviousUserInteractions) {
@@ -43,10 +44,17 @@ const refresh = () => {
     }
     if (successResponse.data.file.trackInfo.album.mbId) {
       playerStore.setTmpTrack(successResponse.data.file.trackInfo);
-      imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-500`);
+      if (successResponse.data.file.trackInfo.image) {
+        imageUrl.value = successResponse.data.file.trackInfo.image;
+      } else if (successResponse.data.file.trackInfo.album.mbId) {
+        imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-500`);
+      } else {
+        imageUrl.value = null;
+
+      }
       //imageUrl.value = "https://m.media-amazon.com/images/I/715kGo2MwhL._SL1200_.jpg";
     } else {
-      imageUrl.value = "images/vinyl.png";
+      imageUrl.value = null;
     }
   })
     .catch((errorResponse) => {
