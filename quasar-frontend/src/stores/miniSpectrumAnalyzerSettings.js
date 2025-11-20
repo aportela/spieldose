@@ -8,6 +8,7 @@ const {
   playerMiniAnalyzerFPS,
   playerMiniAnalyzerBarSpace,
   playerMiniAnalyzerHeight,
+  playerMiniAnalyzerChannelLayout,
 } = useLocalStorage();
 
 export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
@@ -19,6 +20,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       fps: playerMiniAnalyzerFPS.get() ?? 30,
       barSpace: playerMiniAnalyzerBarSpace.get() ?? 0.2,
       height: playerMiniAnalyzerHeight.get() ?? 40,
+      channelLayout: playerMiniAnalyzerChannelLayout.get() ?? "single",
     }),
 
     getters: {
@@ -27,6 +29,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       currentFPS: (state) => state.fps,
       currentBarSpace: (state) => state.barSpace,
       currentHeight: (state) => state.height,
+      currentChannelLayout: (state) => state.channelLayout,
     },
     actions: {
       setVisibility(visible) {
@@ -74,6 +77,22 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
           console.error(
             "Mini Spectrum Analyzer settings = setHeight() => invalid height",
             height,
+          );
+        }
+      },
+      setChannelLayout(channelLayout) {
+        if (
+          channelLayout === "single" ||
+          channelLayout === "dual-combined" ||
+          channelLayout === "dual-horizontal" ||
+          channelLayout === "dual-vertical"
+        ) {
+          this.channelLayout = channelLayout;
+          playerMiniAnalyzerChannelLayout.set(channelLayout);
+        } else {
+          console.error(
+            "Mini Spectrum Analyzer settings = setChannelLayout() => invalid channel layout",
+            channelLayout,
           );
         }
       },
