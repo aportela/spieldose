@@ -185,6 +185,42 @@ export function useLocalStorage() {
     },
   };
 
+  const playerMiniAnalyzerShowPeaks = {
+    get() {
+      return get("playerMiniAnalyzerShowPeaks", true);
+    },
+    set(value) {
+      set("playerMiniAnalyzerShowPeaks", !!value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerShowPeaks");
+    },
+  };
+
+  const playerMiniAnalyzerLedBars = {
+    get() {
+      return get("playerMiniAnalyzerLedBars", true);
+    },
+    set(value) {
+      set("playerMiniAnalyzerLedBars", !!value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerLedBars");
+    },
+  };
+
+  const playerMiniAnalyzerTrueLeds = {
+    get() {
+      return get("playerMiniAnalyzerTrueLeds", true);
+    },
+    set(value) {
+      set("playerMiniAnalyzerTrueLeds", !!value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerTrueLeds");
+    },
+  };
+
   return {
     jwt,
     email,
@@ -199,5 +235,8 @@ export function useLocalStorage() {
     playerMiniAnalyzerBarSpace,
     playerMiniAnalyzerHeight,
     playerMiniAnalyzerChannelLayout,
+    playerMiniAnalyzerShowPeaks,
+    playerMiniAnalyzerLedBars,
+    playerMiniAnalyzerTrueLeds,
   };
 }

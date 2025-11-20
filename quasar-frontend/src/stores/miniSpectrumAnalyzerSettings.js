@@ -9,6 +9,9 @@ const {
   playerMiniAnalyzerBarSpace,
   playerMiniAnalyzerHeight,
   playerMiniAnalyzerChannelLayout,
+  playerMiniAnalyzerShowPeaks,
+  playerMiniAnalyzerLedBars,
+  playerMiniAnalyzerTrueLeds,
 } = useLocalStorage();
 
 export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
@@ -21,6 +24,9 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       barSpace: playerMiniAnalyzerBarSpace.get() ?? 0.2,
       height: playerMiniAnalyzerHeight.get() ?? 40,
       channelLayout: playerMiniAnalyzerChannelLayout.get() ?? "single",
+      peaks: playerMiniAnalyzerShowPeaks.get() ?? true,
+      ledBars: playerMiniAnalyzerLedBars.get() ?? true,
+      trueLeds: playerMiniAnalyzerTrueLeds.get() ?? false,
     }),
 
     getters: {
@@ -30,6 +36,9 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       currentBarSpace: (state) => state.barSpace,
       currentHeight: (state) => state.height,
       currentChannelLayout: (state) => state.channelLayout,
+      showPeaks: (state) => state.peaks,
+      ledBarsActive: (state) => state.ledBars,
+      trueLedsActive: (state) => state.trueLeds,
     },
     actions: {
       setVisibility(visible) {
@@ -39,7 +48,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       setMode(mode) {
         if (mode > 0 && mode < 9) {
           this.mode = mode;
-          playerMiniAnalyzerMode.set(mode);
+          playerMiniAnalyzerMode.set(this.mode);
         } else {
           console.error(
             "Mini Spectrum Analyzer settings = setMode() => invalid mode",
@@ -50,7 +59,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       setFPS(fps) {
         if (fps >= 0 && fps <= 144) {
           this.fps = fps;
-          playerMiniAnalyzerFPS.set(fps);
+          playerMiniAnalyzerFPS.set(this.fps);
         } else {
           console.error(
             "Mini Spectrum Analyzer settings = setFPS() => invalid fps",
@@ -61,7 +70,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       setBarSpace(space) {
         if (space >= 0 && space <= 1) {
           this.barSpace = space;
-          playerMiniAnalyzerBarSpace.set(space);
+          playerMiniAnalyzerBarSpace.set(this.barSpace);
         } else {
           console.error(
             "Mini Spectrum Analyzer settings = setBarSpace() => invalid space",
@@ -72,7 +81,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       setHeight(height) {
         if (height > 0) {
           this.height = height;
-          playerMiniAnalyzerHeight.set(height);
+          playerMiniAnalyzerHeight.set(this.height);
         } else {
           console.error(
             "Mini Spectrum Analyzer settings = setHeight() => invalid height",
@@ -88,13 +97,25 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
           channelLayout === "dual-vertical"
         ) {
           this.channelLayout = channelLayout;
-          playerMiniAnalyzerChannelLayout.set(channelLayout);
+          playerMiniAnalyzerChannelLayout.set(this.channelLayout);
         } else {
           console.error(
             "Mini Spectrum Analyzer settings = setChannelLayout() => invalid channel layout",
             channelLayout,
           );
         }
+      },
+      setPeaksVisibility(visible) {
+        this.peaks = !!visible;
+        playerMiniAnalyzerShowPeaks.set(this.peaks);
+      },
+      setLedBars(active) {
+        this.ledBars = !!active;
+        playerMiniAnalyzerLedBars.set(this.ledBars);
+      },
+      setTrueLeds(active) {
+        this.trueLeds = !!active;
+        playerMiniAnalyzerTrueLeds.set(this.trueLeds);
       },
     },
   },

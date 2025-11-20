@@ -24,6 +24,12 @@
               <q-toggle v-model="showMiniSpectrumAnalyzer" label="show mini spectrum analyzer"
                 @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
             </p>
+            <p>
+              <q-toggle v-model="showPeaks" label="show peaks" @update:model-value="onChangeShowPeaks" />
+              <q-toggle v-model="ledBars" label="led bars" @update:model-value="onChangeLedBars" />
+              <q-toggle v-model="trueLeds" label="true leds" :disable="!ledBars"
+                @update:model-value="onChangeTrueLeds" />
+            </p>
             <p class="q-mt-lg"><q-slider label label-always :label-value="'Height: ' + height + 'px'" v-model="height"
                 :min="30" :max="180" :step="1" v-on:update:model-value="onChangeHeight" /></p>
             <p><q-btn-toggle size="md" v-model="channelLayout" v-on:update:model-value="onChangeChannelLayout"
@@ -80,6 +86,12 @@ const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
 
 const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettings.visible);
 
+const showPeaks = ref(miniSpectrumAnalyzerSettings.showPeaks);
+
+const ledBars = ref(miniSpectrumAnalyzerSettings.ledBarsActive);
+
+const trueLeds = ref(miniSpectrumAnalyzerSettings.trueLedsActive);
+
 const channelLayout = ref(miniSpectrumAnalyzerSettings.currentChannelLayout);
 
 const fps = ref(miniSpectrumAnalyzerSettings.currentFPS);
@@ -92,6 +104,18 @@ const height = ref(miniSpectrumAnalyzerSettings.height);
 
 watch(() => miniSpectrumAnalyzerSettings.visible, (newValue) => {
   showMiniSpectrumAnalyzer.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.showPeaks, (newValue) => {
+  showPeaks.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.ledBarsActive, (newValue) => {
+  ledBars.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.trueLedsActive, (newValue) => {
+  trueLeds.value = newValue;
 });
 
 watch(() => miniSpectrumAnalyzerSettings.currentFPS, (newValue) => {
@@ -137,6 +161,19 @@ const onChangeHeight = (height) => {
 const onChangeChannelLayout = (layout) => {
   miniSpectrumAnalyzerSettings.setChannelLayout(layout);
 }
+
+const onChangeShowPeaks = (visible) => {
+  miniSpectrumAnalyzerSettings.setPeaksVisibility(visible);
+};
+
+const onChangeLedBars = (active) => {
+  miniSpectrumAnalyzerSettings.setLedBars(active);
+};
+
+const onChangeTrueLeds = (active) => {
+  miniSpectrumAnalyzerSettings.setTrueLeds(active);
+};
+
 
 </script>
 

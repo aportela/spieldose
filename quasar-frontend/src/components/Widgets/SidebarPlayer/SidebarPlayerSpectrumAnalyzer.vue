@@ -23,10 +23,10 @@ const defaultAnalyzerOptions = {
   start: false,
   maxFPS: miniSpectrumAnalyzerSettingsStore.currentFPS,
   mode: miniSpectrumAnalyzerSettingsStore.currentMode,
-  ledBars: true,
-  showPeaks: true,
-  trueLeds: false,
-  barSpace: 0.2,
+  ledBars: miniSpectrumAnalyzerSettingsStore.ledBarsActive,
+  showPeaks: miniSpectrumAnalyzerSettingsStore.showPeaks,
+  trueLeds: miniSpectrumAnalyzerSettingsStore.trueLedsActive,
+  barSpace: miniSpectrumAnalyzerSettingsStore.currentBarSpace,
   showScaleX: false,
   showScaleY: false,
   channelLayout: miniSpectrumAnalyzerSettingsStore.currentChannelLayout,
@@ -76,6 +76,24 @@ watch(() => miniSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
 watch(() => miniSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) => {
   if (analyzer.value) {
     analyzer.value.setOptions({ channelLayout: newValue });
+  }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ showPeaks: newValue });
+  }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ ledBars: newValue });
+  }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ trueLeds: newValue });
   }
 });
 
