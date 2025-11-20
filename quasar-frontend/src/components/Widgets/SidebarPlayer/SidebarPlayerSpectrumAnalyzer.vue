@@ -4,33 +4,39 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
-import { useSpieldoseStore } from "stores/spieldose";
+import { usePlayerStore } from "src/stores/player";
+import { useLocalStorage } from "src/composables/useLocalStorage";
 
 const props = defineProps({
-  create: Boolean,
-  active: Boolean,
   mode: Number
 });
 
-const emit = defineEmits(['change']);
+//const emit = defineEmits(['change']);
 
 const { t } = useI18n();
-const spieldoseStore = useSpieldoseStore();
-const currentMode = ref(props.mode || 7);
+
+const playerStore = usePlayerStore();
+
+const localStorage = useLocalStorage();
+
+const currentMode = ref(localStorage.playerMiniAnalyzerMode.get());
 const analyzer = ref(null);
 
-const create = computed(() => { return (props.create); });
-const active = computed(() => { return (props.active || false) });
+const active = ref(true); // computed(() => { return (props.active || false) });
 
-watch(create, (newValue, oldValue) => {
+
+/*
+watch(playerStore.hasPreviousUserInteractions, (newValue, oldValue) => {
   if (!oldValue && newValue && !analyzer.value) {
     createAnalyzer(props.active);
   }
 });
 
+*/
+/*
 watch(active, (newValue) => {
   if (analyzer.value) {
     if (newValue) {
@@ -40,10 +46,11 @@ watch(active, (newValue) => {
     }
   }
 });
+*/
 
 function createAnalyzer(start) {
   const defaultOptions = {
-    source: spieldoseStore.getAudioInstance,
+    source: playerStore.audioInstance,
     start: false,
     width: 400,
     height: 40,
@@ -79,7 +86,7 @@ function createAnalyzer(start) {
   }
   analyzer.value.registerGradient('default-spieldose', gradientOptions);
   analyzer.value.gradient = 'default-spieldose';
-  spieldoseStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
+  playerStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
   if (start) {
     analyzer.value.start();
   }
@@ -92,13 +99,13 @@ function togglecurrentMode() {
   if (analyzer.value) {
     analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10 });
   }
-  emit('change', { mode: currentMode.value });
+  localStorage.playerMiniAnalyzerMode.set(currentMode.value)
 }
 
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  if (props.create) {
-    createAnalyzer(props.active);
+  if (playerStore.hasPreviousUserInteractions) {
+    createAnalyzer(active.value);
   }
 });
 
