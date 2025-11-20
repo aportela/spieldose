@@ -1,12 +1,14 @@
 <template>
 
   <q-card>
+    <!--
     <div class="contenedor"></div>
+    -->
     <SidebarPlayerAlbumCover :normalImage="imageUrl" :smallImage="imageUrl"
       :animation="playerStore.sidebarTopArtAnimated" :animated="playerStore.isPlaying"
       @change="playerStore.toggleSidebarTopArtAnimationMode()">
     </SidebarPlayerAlbumCover>
-    <SidebarPlayerSpectrumAnalyzer />
+    <SidebarPlayerSpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
     <SidebarPlayerVolumeControl />
     <SidebarPlayerTrackInfo />
     <SidebarPlayerMainControls @changeTrack="refresh" />
@@ -15,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 
 import { default as SidebarPlayerAlbumCover } from "./SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerSpectrumAnalyzer } from "./SidebarPlayerSpectrumAnalyzer.vue";
@@ -26,15 +28,19 @@ import { default as SidebarPlayerSeekControl } from './SidebarPlayerSeekControl.
 
 import { useAPI } from 'src/composables/useAPI';
 import { usePlayerStore } from 'src/stores/player';
+import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+
 import { useThumbnail } from "src/composables/useThumbnail";
 
 const playerStore = usePlayerStore();
+const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
 
 const { api } = useAPI();
 
 const { getMediumURL } = useThumbnail();
 
 const imageUrl = ref("images/vinyl.png");
+
 
 const refresh = () => {
   imageUrl.value = null;
