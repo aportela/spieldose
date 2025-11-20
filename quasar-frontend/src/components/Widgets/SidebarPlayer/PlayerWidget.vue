@@ -38,6 +38,9 @@ const imageUrl = ref("images/vinyl.png");
 const refresh = () => {
   api.file.getRandom().then((successResponse) => {
     playerStore.setAudioSource("/api2/file/raw/" + successResponse.data.file.id);
+    if (playerStore.hasPreviousUserInteractions) {
+      playerStore.play(true);
+    }
     if (successResponse.data.file.trackInfo.album.mbId) {
       playerStore.setTmpTrack(successResponse.data.file.trackInfo);
       imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-500`);
