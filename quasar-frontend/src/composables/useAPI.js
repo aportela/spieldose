@@ -27,6 +27,16 @@ export function useAPI() {
         return axios.post(basePath + "/auth/register", params);
       },
     },
+    user: {
+      getProfile: () => axios.get(basePath + "/user/profile"),
+      updateProfile: function (email, password) {
+        const params = {
+          email: email,
+          password: password,
+        };
+        return axios.put(basePath + "/user/profile", params);
+      },
+    },
     file: {
       getRandom: function () {
         return axios.get(basePath + "/file/rnd");
