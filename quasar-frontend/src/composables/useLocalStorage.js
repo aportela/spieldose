@@ -221,6 +221,18 @@ export function useLocalStorage() {
     },
   };
 
+  const playerMiniAnalyzerGradient = {
+    get() {
+      return get("playerMiniAnalyzerGradient", "spieldose");
+    },
+    set(value) {
+      set("playerMiniAnalyzerGradient", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerGradient");
+    },
+  };
+
   return {
     jwt,
     email,
@@ -238,5 +250,6 @@ export function useLocalStorage() {
     playerMiniAnalyzerShowPeaks,
     playerMiniAnalyzerLedBars,
     playerMiniAnalyzerTrueLeds,
+    playerMiniAnalyzerGradient,
   };
 }

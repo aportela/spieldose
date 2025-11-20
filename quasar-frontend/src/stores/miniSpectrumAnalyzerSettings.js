@@ -12,6 +12,7 @@ const {
   playerMiniAnalyzerShowPeaks,
   playerMiniAnalyzerLedBars,
   playerMiniAnalyzerTrueLeds,
+  playerMiniAnalyzerGradient,
 } = useLocalStorage();
 
 export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
@@ -27,6 +28,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       peaks: playerMiniAnalyzerShowPeaks.get() ?? true,
       ledBars: playerMiniAnalyzerLedBars.get() ?? true,
       trueLeds: playerMiniAnalyzerTrueLeds.get() ?? false,
+      gradient: playerMiniAnalyzerGradient.get() ?? "spieldose",
     }),
 
     getters: {
@@ -39,6 +41,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       showPeaks: (state) => state.peaks,
       ledBarsActive: (state) => state.ledBars,
       trueLedsActive: (state) => state.trueLeds,
+      currentGradient: (state) => state.gradient,
     },
     actions: {
       setVisibility(visible) {
@@ -116,6 +119,17 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       setTrueLeds(active) {
         this.trueLeds = !!active;
         playerMiniAnalyzerTrueLeds.set(this.trueLeds);
+      },
+      setGradient(gradient) {
+        if (gradient) {
+          this.gradient = gradient;
+          playerMiniAnalyzerGradient.set(this.gradient);
+        } else {
+          console.error(
+            "Mini Spectrum Analyzer settings = setGradient() => invalid gradient",
+            gradient,
+          );
+        }
       },
     },
   },

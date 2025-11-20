@@ -32,6 +32,15 @@
             </p>
             <p class="q-mt-lg"><q-slider label label-always :label-value="'Height: ' + height + 'px'" v-model="height"
                 :min="30" :max="180" :step="1" v-on:update:model-value="onChangeHeight" /></p>
+            <p><q-btn-toggle size="md" v-model="gradient" v-on:update:model-value="onChangeGradient"
+                toggle-color="primary" no-caps :options="[
+                  { label: 'spieldose', value: 'spieldose' },
+                  { label: 'classic', value: 'classic' },
+                  { label: 'orangered', value: 'orangered' },
+                  { label: 'prism', value: 'prism' },
+                  { label: 'rainbow', value: 'rainbow' },
+                  { label: 'steelblue', value: 'steelblue' },
+                ]" /></p>
             <p><q-btn-toggle size="md" v-model="channelLayout" v-on:update:model-value="onChangeChannelLayout"
                 toggle-color="primary" no-caps :options="[
                   { label: 'Single channel', value: 'single' },
@@ -102,6 +111,8 @@ const barSpace = ref(miniSpectrumAnalyzerSettings.currentBarSpace);
 
 const height = ref(miniSpectrumAnalyzerSettings.height);
 
+const gradient = ref(miniSpectrumAnalyzerSettings.currentGradient);
+
 watch(() => miniSpectrumAnalyzerSettings.visible, (newValue) => {
   showMiniSpectrumAnalyzer.value = newValue;
 });
@@ -138,6 +149,10 @@ watch(() => miniSpectrumAnalyzerSettings.channelLayout, (newValue) => {
   channelLayout.value = newValue;
 });
 
+watch(() => miniSpectrumAnalyzerSettings.gradient, (newValue) => {
+  gradient.value = newValue;
+});
+
 const onChangeShowMiniSpectrumAnalyzer = (visible) => {
   miniSpectrumAnalyzerSettings.setVisibility(visible);
 };
@@ -160,6 +175,10 @@ const onChangeHeight = (height) => {
 
 const onChangeChannelLayout = (layout) => {
   miniSpectrumAnalyzerSettings.setChannelLayout(layout);
+}
+
+const onChangeGradient = (gradient) => {
+  miniSpectrumAnalyzerSettings.setGradient(gradient);
 }
 
 const onChangeShowPeaks = (visible) => {

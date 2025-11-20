@@ -79,6 +79,12 @@ watch(() => miniSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) =
   }
 });
 
+watch(() => miniSpectrumAnalyzerSettingsStore.currentGradient, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ gradient: newValue });
+  }
+});
+
 watch(() => miniSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
   if (analyzer.value) {
     analyzer.value.setOptions({ showPeaks: newValue });
@@ -122,8 +128,8 @@ const createAudioMotionAnalyzer = (defaultOptions, start) => {
         { color: '#e399a3', level: 0.2 }
       ]
     }
-    analyzer.value.registerGradient('default-spieldose', gradientOptions);
-    analyzer.value.gradient = 'default-spieldose';
+    analyzer.value.registerGradient('spieldose', gradientOptions);
+    analyzer.value.gradient = miniSpectrumAnalyzerSettingsStore.currentGradient;
     playerStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
     if (start) {
       analyzer.value.start();
