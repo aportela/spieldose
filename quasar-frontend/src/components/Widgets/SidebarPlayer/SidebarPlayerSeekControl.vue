@@ -57,9 +57,7 @@ watch(position, (newValue) => {
 const currentTime = ref(0);
 
 function onSeek() {
-  if (position.value >= 0 && position.value < 1) {
-    playerStore.setCurrentTime(playerStore.duration * position.value);
-  }
+  playerStore.setCurrentTime(currentTime.value * playerStore.duration);
 };
 
 function formatSecondsAsTime(secs, format) {
