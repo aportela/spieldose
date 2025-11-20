@@ -1,0 +1,428 @@
+import { defineStore } from "pinia";
+
+
+/**
+ * https://stackoverflow.com/a/6274381
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export const usePlayerStore = defineStore("player", {
+  state: () => ({
+    data: {
+      audio: null,
+      audioMotionAnalyzerSource: null,
+      fullScreenVisualizationSettings: null,
+      player: {
+        userInteracted: false,
+        volume: 1,
+        status: "stopped",
+        muted: false,
+        repeatMode: "none",
+        shuffle: false,
+        sideBarTopArt: {
+          mode: "normal",
+        },
+        sidebarAudioMotionAnalyzer: {
+          visible: true,
+          mode: 7,
+        },
+      },
+      currentPlaylistIndex: 0,
+      playlists: [
+        {
+          id: null,
+          name: null,
+          owner: {
+            id: null,
+            name: null,
+          },
+          public: false,
+          lastChangeTimestamp: null,
+          currentElementIndex: -1,
+          elements: [],
+          shuffleIndexes: [], // stores a random elements shuffle indexes (for using when shuffle mode is on rather than sequential indexes like 1,2,3,4....n)
+          currentRadioStation: null,
+        },
+      ],
+      currentPlaylist: {
+        lastChangeTimestamp: null,
+        totalTracks: 0,
+        currentTrackIndex: -1,
+        currentTrackShuffledIndex: -1,
+        currentElement: {
+          track: null,
+          radioStation: null,
+        },
+        playlist: null,
+      },
+    },
+  }),
+  getters: {
+    getAudioInstance: (state) => state.data.audio,
+    hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
+    getAudioMotionAnalyzerSource: (state) =>
+      state.data.audioMotionAnalyzerSource,
+    getFullScreenVisualizationSettings: (state) =>
+      state.data.fullScreenVisualizationSettings,
+    isSidebarAudioMotionAnalyzerVisible: (state) =>
+      state.data.player.sidebarAudioMotionAnalyzer.visible,
+    getSidebarAudioMotionAnalyzerMode: (state) =>
+      state.data.player.sidebarAudioMotionAnalyzer.mode,
+    hasSidebarTopArtAnimationMode: (state) =>
+      state.data.player.sideBarTopArt.mode == "animation",
+    getPlayerStatus: (state) => state.data.player.status,
+    isMuted: (state) => state.data.player.muted,
+    isPlaying: (state) => state.data.player.status == "playing",
+    isStopped: (state) => state.data.player.status == "stopped",
+    isPaused: (state) => state.data.player.status == "paused",
+    getVolume: (state) => state.data.player.volume,
+    getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
+    getRepeatMode: (state) => state.data.player.repeatMode,
+    getShuffle: (state) => state.data.player.shuffle,
+    currentPlaylistElementCount: (state) =>
+      state.data.currentPlaylist.totalTracks,
+    hasCurrentPlaylistElements(state) {
+      return this.currentPlaylistElementCount > 0;
+    },
+    getCurrentPlaylist: (state) => state.data.playlists[0],
+    getCurrentPlaylistIndex: (state) =>
+      state.data.currentPlaylist.currentTrackIndex,
+    getCurrentPlaylistShuffledIndex: (state) =>
+      state.data.currentPlaylist.currentTrackShuffledIndex,
+    getShuffleCurrentPlaylistIndex: (state) =>
+      state.data.currentPlaylist.currentTrackIndex,
+    getCurrentPlaylistLastChangedTimestamp: (state) =>
+      state.data.currentPlaylist.lastChangeTimestamp,
+    isCurrentPlaylistElementATrack(state) {
+      return state.data.currentPlaylist.currentElement.track != null;
+    },
+    hasCurrentPlaylistARadioStation: (state) =>
+      state.data.currentPlaylist.currentElement.radioStation != null,
+    getCurrentPlaylistElement(state) {
+      return state.data.currentPlaylist.currentElement;
+    },
+    getCurrentPlaylistElementURL(state) {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.url;
+      } else if (this.hasCurrentPlaylistARadioStation) {
+        // TODO
+        return state.data.currentPlaylist.currentElement.radioStation
+          .directStream;
+      } else {
+        return null;
+      }
+    },
+    getCurrentPlaylistTrackId(state) {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.id;
+      } else {
+        return null;
+      }
+    },
+    getCurrentPlaylistElementNormalImage(state) {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.covers.normal;
+      } else if (this.hasCurrentPlaylistARadioStation) {
+        return state.data.currentPlaylist.currentElement.radioStation.images
+          .normal;
+      } else {
+        return null;
+      }
+    },
+    getCurrentPlaylistElementSmallImage(state) {
+      if (this.isCurrentPlaylistElementATrack) {
+        return state.data.currentPlaylist.currentElement.track.covers.small;
+      } else if (this.hasCurrentPlaylistARadioStation) {
+        return state.data.currentPlaylist.currentElement.radioStation.images
+          .small;
+      } else {
+        return null;
+      }
+    },
+    getCurrentPlaylistLinkedPlaylist(state) {
+      return state.data.currentPlaylist.playlist;
+    },
+    allowSkipPrevious: (state) =>
+      state.data.currentPlaylist.totalTracks > 0 &&
+      state.data.currentPlaylist.currentTrackIndex > 0,
+    allowSkipNext: (state) =>
+      state.data.currentPlaylist.totalTracks > 0 &&
+      state.data.currentPlaylist.currentTrackIndex <
+      state.data.currentPlaylist.totalTracks - 1,
+  },
+  actions: {
+    create: function (src) {
+      if (this.data.audio == null) {
+        if (src !== undefined) {
+          this.data.audio = new Audio(src);
+        } else {
+          this.data.audio = new Audio();
+        }
+        this.data.audio.autoplay = false;
+        // required for radio stations streams
+        this.data.audio.crossOrigin = "anonymous";
+      } else {
+        this.data.audio.src = null;
+        // required for radio stations streams
+        this.data.audio.crossOrigin = "anonymous";
+      }
+      this.restoreFullScreenVisualizationSettings();
+      this.restorePlayerSettings(this.hasPreviousUserInteractions);
+    },
+    setAudioSource(src) {
+      if (src !== undefined && src) {
+        if (this.data.audio) {
+          this.data.audio.src = src;
+        }
+        if (this.hasPreviousUserInteractions && !this.isPlaying) {
+          this.play(true);
+        }
+      }
+    },
+    setAudioMotionAnalyzerSource: function (source) {
+      this.data.audioMotionAnalyzerSource = source;
+    },
+    toggleSidebarAudioMotionAnalyzer: function () {
+      this.data.player.sidebarAudioMotionAnalyzer.visible =
+        !this.data.player.sidebarAudioMotionAnalyzer.visible;
+      this.savePlayerSettings();
+    },
+    setSidebarAudioMotionAnalyzerMode: function (mode) {
+      this.data.player.sidebarAudioMotionAnalyzer.mode = mode;
+      this.savePlayerSettings();
+    },
+    toggleSidebarTopArtAnimationMode: function () {
+      if (this.data.player.sideBarTopArt.mode == "animation") {
+        this.data.player.sideBarTopArt.mode = "normal";
+      } else {
+        this.data.player.sideBarTopArt.mode = "animation";
+      }
+      this.savePlayerSettings();
+    },
+    interact: function () {
+      this.data.player.userInteracted = true;
+    },
+    savePlayerSettings: function () {
+      // TODO: BASIL
+      //const basil = useBasil(localStorageBasilOptions);
+      //basil.set("playerSettings", this.data.player);
+    },
+    restorePlayerSettings: function (userInteracted) {
+      // TODO: BASIL
+      /*
+      const basil = useBasil(localStorageBasilOptions);
+      const playerSettings = basil.get("playerSettings");
+      if (playerSettings) {
+        this.data.player = playerSettings;
+        this.data.player.status = "stopped";
+        this.data.player.userInteracted =
+          userInteracted !== undefined ? userInteracted == true : false;
+        if (this.data.audio) {
+          this.data.audio.volume = this.data.player.volume;
+          this.data.audio.muted = this.data.player.muted;
+        }
+      } else {
+        if (this.data.audio) {
+          this.data.audio.volume = this.data.player.volume;
+          this.data.audio.muted = this.data.player.muted;
+        }
+      }
+        */
+    },
+    setVolume: function (volume) {
+      if (volume >= 0 && volume <= 1) {
+        this.data.player.volume = volume;
+        if (this.data.audio) {
+          this.data.audio.volume = volume;
+        }
+        this.savePlayerSettings();
+      }
+    },
+    toggleMute: function () {
+      this.data.player.muted = !this.data.player.muted;
+      if (this.data.audio) {
+        this.data.audio.muted = this.data.player.muted;
+      }
+      this.savePlayerSettings();
+    },
+    setCurrentTime: function (time) {
+      if (this.data.audio) {
+        this.data.audio.currentTime = time;
+      }
+    },
+    play: function (ignoreStatus) {
+      if (this.hasPreviousUserInteractions) {
+        if (ignoreStatus) {
+          if (this.data.audio) {
+            this.data.audio
+              .play()
+              .then(() => (this.data.player.status = "playing"))
+              .catch((error) => {
+                // TODO: show error ?
+              });
+          }
+        } else {
+          if (this.isPlaying) {
+            if (this.data.audio) {
+              this.data.audio.pause();
+            }
+            this.data.player.status = "paused";
+          } else if (this.isPaused) {
+            if (this.data.audio) {
+              this.data.audio
+                .play()
+                .then(() => (this.data.player.status = "playing"))
+                .catch((error) => {
+                  // TODO: show error ?
+                });
+            }
+            this.data.player.status = "playing";
+          } else {
+            // TODO: required ?
+            //audio.load();
+            if (this.data.audio) {
+              this.data.audio
+                .play()
+                .then(() => (this.data.player.status = "playing"))
+                .catch((error) => {
+                  // TODO: show error ?
+                });
+            }
+            this.data.player.status = "playing";
+          }
+        }
+      } else {
+        console.error("play error: no previous user interactions");
+      }
+    },
+    pause: function () {
+      if (this.isPlaying) {
+        if (this.data.audio) {
+          this.data.audio.pause();
+        }
+        this.data.player.status = "paused";
+      }
+    },
+    resume: function () {
+      if (this.isPaused) {
+        if (this.data.audio) {
+          this.data.audio
+            .play()
+            .then(() => (this.data.player.status = "playing"))
+            .catch((error) => {
+              // TODO: show error ?
+            });
+        }
+        this.data.player.status = "playing";
+      }
+    },
+    stop: function () {
+      if (!this.isStopped) {
+        if (this.data.audio) {
+          this.data.audio.pause();
+          this.data.audio.currentTime = 0;
+        }
+        this.data.player.status = "stopped";
+      }
+    },
+    toggleRepeatMode: function () {
+      switch (this.data.player.repeatMode) {
+        case "none":
+          this.data.player.repeatMode = "track";
+          // TODO: launch event
+          break;
+        case "track":
+          this.data.player.repeatMode = "playlist";
+          // TODO: launch event
+          break;
+        case "playlist":
+          this.data.player.repeatMode = "none";
+          // TODO: launch event
+          break;
+      }
+      this.savePlayerSettings();
+    },
+    toggleShuffeMode: function () {
+      if (this.data.player.shuffle) {
+        this.data.currentPlaylist.currentTrackIndex =
+          this.data.currentPlaylist.currentTrackShuffledIndex;
+      } else {
+        this.data.currentPlaylist.currentTrackShuffledIndex =
+          this.data.currentPlaylist.currentTrackIndex;
+      }
+      this.data.player.shuffle = !this.data.player.shuffle;
+      this.savePlayerSettings();
+    },
+    toggleFavoriteOnCurrentTrack: function (timestamp) {
+      if (this.isCurrentPlaylistElementATrack) {
+        this.data.currentPlaylist.currentElement.track.favorited = timestamp;
+      }
+    },
+    setCurrentPlaylist: function (
+      currentTrackIndex,
+      currentTrackShuffledIndex,
+      totalTracks,
+      track,
+      radioStation,
+      playlist,
+    ) {
+      const oldURL = this.getCurrentPlaylistElementURL;
+      this.data.currentPlaylist.currentTrackIndex = currentTrackIndex;
+      this.data.currentPlaylist.currentTrackShuffledIndex =
+        currentTrackShuffledIndex;
+      this.data.currentPlaylist.totalTracks = totalTracks;
+      this.data.currentPlaylist.currentElement.track = track;
+      this.data.currentPlaylist.currentElement.radioStation = radioStation;
+      this.data.currentPlaylist.playlist = playlist;
+      this.data.currentPlaylist.lastChangeTimestamp = Date.now();
+      if (this.getCurrentPlaylistElementURL) {
+        if (oldURL != this.getCurrentPlaylistElementURL)
+          this.setAudioSource(this.getCurrentPlaylistElementURL);
+        if (this.hasPreviousUserInteractions) {
+          this.play(true);
+        }
+      } else if (!this.isStopped) {
+        this.stop();
+      }
+    },
+    restoreFullScreenVisualizationSettings: function () {
+      // TODO: BASIL
+      /*
+      const basil = useBasil(localStorageBasilOptions);
+      const fullScreenVisualizationSettings = basil.get(
+        "fullScreenVisualizationSettings",
+      );
+      if (fullScreenVisualizationSettings) {
+        try {
+          this.data.fullScreenVisualizationSettings = JSON.parse(
+            fullScreenVisualizationSettings,
+          );
+        } catch (e) {
+          // console.error("error");
+        }
+      }
+        */
+    },
+    saveFullScreenVisualizationSettings(settings) {
+      this.data.fullScreenVisualizationSettings = settings;
+      // TODO: BASIL
+      /*
+      const basil = useBasil(localStorageBasilOptions);
+      basil.set(
+        "fullScreenVisualizationSettings",
+        this.data.fullScreenVisualizationSettings
+          ? JSON.stringify(this.data.fullScreenVisualizationSettings)
+          : null,
+      );
+      */
+    },
+  },
+});
