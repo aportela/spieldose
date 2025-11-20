@@ -241,7 +241,6 @@ export const usePlayerStore = defineStore("player", {
       } else {
         this.data.player.sideBarTopArt.mode = "animation";
       }
-      console.log(this.data.player.sideBarTopArt.mode);
       //this.savePlayerSettings();
     },
     interact: function () {
