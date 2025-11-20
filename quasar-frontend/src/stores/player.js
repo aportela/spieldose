@@ -21,7 +21,7 @@ export const usePlayerStore = defineStore("player", {
   state: () => ({
     data: {
       audio: null,
-      //audioMotionAnalyzerSource: null,
+      audioMotionAnalyzerSource: null,
       //fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
@@ -73,7 +73,7 @@ export const usePlayerStore = defineStore("player", {
     },
   }),
   getters: {
-    getAudioInstance: (state) => state.data.audio,
+    audioInstance: (state) => state.data.audio,
     hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
     /*
     getAudioMotionAnalyzerSource: (state) =>
@@ -93,6 +93,7 @@ export const usePlayerStore = defineStore("player", {
     isStopped: (state) => state.data.player.status == "stopped",
     isPaused: (state) => state.data.player.status == "paused",
     volume: (state) => state.data.player.volume,
+    duration: (state) => (state.data.audio ? state.data.audio.duration : 0),
     /*
     getVolume: (state) => state.data.player.volume,
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
@@ -204,7 +205,6 @@ export const usePlayerStore = defineStore("player", {
         }
       }
     },
-    /*
     setAudioMotionAnalyzerSource: function (source) {
       this.data.audioMotionAnalyzerSource = source;
     },
@@ -217,6 +217,8 @@ export const usePlayerStore = defineStore("player", {
       this.data.player.sidebarAudioMotionAnalyzer.mode = mode;
       this.savePlayerSettings();
     },
+    /*
+
     toggleSidebarTopArtAnimationMode: function () {
       if (this.data.player.sideBarTopArt.mode == "animation") {
         this.data.player.sideBarTopArt.mode = "normal";
@@ -258,13 +260,11 @@ export const usePlayerStore = defineStore("player", {
       this.interact();
       //this.savePlayerSettings();
     },
-    /*
     setCurrentTime: function (time) {
       if (this.data.audio) {
         this.data.audio.currentTime = time;
       }
     },
-    */
     play: function (ignoreStatus) {
       if (this.hasPreviousUserInteractions) {
         if (ignoreStatus) {
