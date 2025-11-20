@@ -1,113 +1,121 @@
 <template>
   <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
-    :title="t('Toggle analyzer octave bands number')" @click="togglecurrentMode"></div>
+    :title="t('Toggle analyzer octave bands number')" @click="onToggleCurrentMode"></div>
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
-import { useLocalStorage } from "src/composables/useLocalStorage";
-
-const props = defineProps({
-  mode: Number
-});
-
-//const emit = defineEmits(['change']);
+import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 
 const { t } = useI18n();
 
 const playerStore = usePlayerStore();
+const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
 
-const localStorage = useLocalStorage();
-
-const currentMode = ref(localStorage.playerMiniAnalyzerMode.get());
 const analyzer = ref(null);
 
-const active = ref(true); // computed(() => { return (props.active || false) });
+const defaultAnalyzerOptions = {
+  source: playerStore.audioInstance,
+  start: false,
+  maxFPS: miniSpectrumAnalyzerSettingsStore.currentFPS,
+  mode: miniSpectrumAnalyzerSettingsStore.currentMode,
+  ledBars: true,
+  showPeaks: true,
+  trueLeds: false,
+  barSpace: 0.2,
+  showScaleX: false,
+  showScaleY: false,
+  channelLayout: 'single',
+  colorcurrentMode: 'gradient',
+  splitGradient: false,
+  bgAlpha: 1,
+  overlay: true,
+  showBgColor: true
+};
 
-
-const hasPreviousUserInteractions = computed(() => playerStore.hasPreviousUserInteractions);
-
-watch(hasPreviousUserInteractions, (newValue, oldValue) => {
-  if (!oldValue && newValue && !analyzer.value) {
-    createAnalyzer(true);
-  }
-});
-
-
-/*
-watch(active, (newValue) => {
-  if (analyzer.value) {
+watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
+  if (!analyzer.value) {
+    if (newValue) {
+      createAudioMotionAnalyzer(defaultAnalyzerOptions, true);
+    }
+  } else {
     if (newValue) {
       analyzer.value.start();
-    } else {
-      analyzer.value.stop();
     }
   }
 });
-*/
 
-function createAnalyzer(start) {
-  const defaultOptions = {
-    source: playerStore.audioInstance,
-    start: false,
-    //width: 430,
-    //height: 40,
-    maxFPS: 60,
-    mode: currentMode.value,
-    ledBars: true,
-    showPeaks: true,
-    trueLeds: false,
-    barSpace: 0.2,
-    showScaleX: false,
-    showScaleY: false,
-    channelLayout: 'single',
-    colorcurrentMode: 'gradient',
-    splitGradient: false,
-    bgAlpha: 1,
-    overlay: true,
-    showBgColor: true
-  };
-  analyzer.value = new AudioMotionAnalyzer(
-    document.getElementById('spieldose-sidebar-analyzer-container'),
-    defaultOptions
-  );
-  const gradientOptions = {
-    bgColor: '#fff',
-    dir: 'v',
-    colorStops: [
-      { color: '#d30320', level: 0.9 },
-      { color: '#d72c43', level: 0.8 },
-      { color: '#db5063', level: 0.6 },
-      { color: '#de6b7b', level: 0.4 },
-      { color: '#e399a3', level: 0.2 }
-    ]
+watch(() => miniSpectrumAnalyzerSettingsStore.currentMode, (newValue) => {
+  if (analyzer.value && newValue >= 0 && newValue <= 144) {
+    analyzer.value.setOptions({ mode: newValue, barSpace: miniSpectrumAnalyzerSettingsStore.currentBarSpace });
   }
-  analyzer.value.registerGradient('default-spieldose', gradientOptions);
-  analyzer.value.gradient = 'default-spieldose';
-  playerStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
-  if (start) {
-    analyzer.value.start();
-  }
-}
+});
 
-function togglecurrentMode() {
-  if (++currentMode.value > 8) {
-    currentMode.value = 1;
+watch(() => miniSpectrumAnalyzerSettingsStore.currentBarSpace, (newValue) => {
+  if (analyzer.value && newValue >= 0 && newValue <= 1) {
+    analyzer.value.setOptions({ mode: miniSpectrumAnalyzerSettingsStore.currentMode, barSpace: newValue });
   }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
+  if (analyzer.value && newValue >= 0 && newValue <= 144) {
+    analyzer.value.setOptions({ maxFPS: newValue });
+  }
+});
+
+const onToggleCurrentMode = () => {
+  let mode = miniSpectrumAnalyzerSettingsStore.currentMode;
+  if (++mode > 8) {
+    mode = 1;
+  }
+  miniSpectrumAnalyzerSettingsStore.setMode(mode);
+};
+
+const createAudioMotionAnalyzer = (defaultOptions, start) => {
+  if (!analyzer.value) {
+    analyzer.value = new AudioMotionAnalyzer(
+      document.getElementById('spieldose-sidebar-analyzer-container'),
+      defaultOptions
+    );
+    const gradientOptions = {
+      bgColor: '#fff',
+      dir: 'v',
+      colorStops: [
+        { color: '#d30320', level: 0.9 },
+        { color: '#d72c43', level: 0.8 },
+        { color: '#db5063', level: 0.6 },
+        { color: '#de6b7b', level: 0.4 },
+        { color: '#e399a3', level: 0.2 }
+      ]
+    }
+    analyzer.value.registerGradient('default-spieldose', gradientOptions);
+    analyzer.value.gradient = 'default-spieldose';
+    playerStore.setAudioMotionAnalyzerSource(analyzer.value.connectedSources[0]);
+    if (start) {
+      analyzer.value.start();
+    }
+  }
+};
+
+const destroyAudioMotionAnalyzer = () => {
   if (analyzer.value) {
-    analyzer.value.setOptions({ mode: currentMode.value, barSpace: (9 - currentMode.value) / 10 });
+    analyzer.value.stop();
+    // TODO: stops audio
+    //analyzer.value.destroy();
   }
-  localStorage.playerMiniAnalyzerMode.set(currentMode.value)
-}
+};
 
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  if (playerStore.hasPreviousUserInteractions) {
-    createAnalyzer(active.value);
-  }
+  createAudioMotionAnalyzer(defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
+});
+
+
+onBeforeUnmount(() => {
+  destroyAudioMotionAnalyzer();
 });
 
 </script>
