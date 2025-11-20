@@ -39,7 +39,8 @@ const refresh = () => {
   api.file.getRandom().then((successResponse) => {
     playerStore.setAudioSource("/api2/file/raw/" + successResponse.data.file.id);
     if (successResponse.data.file.trackInfo.album.mbId) {
-      imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-250`);
+      playerStore.setTmpTrack(successResponse.data.file.trackInfo);
+      //imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-250`);
       imageUrl.value = "https://m.media-amazon.com/images/I/715kGo2MwhL._SL1200_.jpg";
     } else {
       imageUrl.value = "images/vinyl.png";

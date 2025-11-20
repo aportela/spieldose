@@ -3,7 +3,9 @@
     <p class="text-center text-weight-bolder ellipsis text-pink" :title="track.title || '&nbsp;'">{{
       track.title || null }}</p>
     <p class="text-center ellipsis" :title="track.album.title || null">
-      <router-link style="text-decoration: none;" :to="{ name: 'album', params: { title: track.album.title }, query: { mbId: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year }}" v-if="track.album.title">{{ track.album.title }}</router-link>
+      <router-link style="text-decoration: none;"
+        :to="{ name: 'album', params: { title: track.album.title }, query: { mbId: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year } }"
+        v-if="track.album.title">{{ track.album.title }}</router-link>
       <span v-else>&nbsp;</span>
     </p>
     <p class="text-center ellipsis">
@@ -20,14 +22,13 @@
       <q-btn-group outline>
         <q-btn outline size="sm" icon="playlist_play" label="playlist" :disable="!radioStation.playlist"
           :href="radioStation.playlist" target="_new" />
-        <q-btn outline size="sm" icon="play_arrow" label="direct stream"
-          :disable="!radioStation.directStream" :href="radioStation.directStream"
-          target="_new" />
+        <q-btn outline size="sm" icon="play_arrow" label="direct stream" :disable="!radioStation.directStream"
+          :href="radioStation.directStream" target="_new" />
       </q-btn-group>
     </p>
     <p class="text-center ellipsis">
-      <a v-if="radioStation.url" :href="radioStation.url" target="_blank"
-        style="text-decoration: none;">{{ radioStation.url }}</a>
+      <a v-if="radioStation.url" :href="radioStation.url" target="_blank" style="text-decoration: none;">{{
+        radioStation.url }}</a>
       <span>&nbsp;</span>
     </p>
   </div>
@@ -40,14 +41,20 @@
 
 <script setup>
 
-import { computed } from "vue";
+import { ref, computed } from "vue";
+import { usePlayerStore } from 'src/stores/player';
 
+const playerStore = usePlayerStore();
+
+playerStore.tmpTrack
 const props = defineProps({
-  track: Object,
-  radioStation: Object
+  //track: Object,
+  //radioStation: Object
 });
 
-const isTrack = computed(() => props.track != null);
-const isRadioStation = computed(() => props.radioStation != null);
+const track = computed(() => playerStore.tmpTrack);
+
+const isTrack = ref(true); // computed(() => props.track != null);
+const isRadioStation = ref(false); // computed(() => props.radioStation != null);
 
 </script>

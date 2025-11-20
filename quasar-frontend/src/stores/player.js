@@ -40,6 +40,22 @@ export const usePlayerStore = defineStore("player", {
         },
         */
       },
+      tmpTrack: {
+        title: null,
+        artist: {
+          mbId: null,
+          name: null,
+        },
+        album: {
+          mbId: null,
+          name: null,
+          year: null,
+          artist: {
+            mbId: null,
+            name: null,
+          }
+        }
+      }
       /*
       currentPlaylistIndex: 0,
       playlists: [
@@ -176,6 +192,7 @@ export const usePlayerStore = defineStore("player", {
       state.data.currentPlaylist.totalTracks - 1,
       */
       true,
+    tmpTrack: (state) => state.data.tmpTrack,
   },
   actions: {
     create: function (src) {
@@ -410,5 +427,8 @@ export const usePlayerStore = defineStore("player", {
       // TODO: BASIL
     },
     */
+    setTmpTrack(track) {
+      this.data.tmpTrack = track;
+    }
   },
 });
