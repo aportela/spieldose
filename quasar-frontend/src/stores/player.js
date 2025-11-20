@@ -3,7 +3,6 @@ import { useLocalStorage } from "src/composables/useLocalStorage";
 
 const localStorage = useLocalStorage();
 
-
 /**
  * https://stackoverflow.com/a/6274381
  * Shuffles array in place. ES6 version
@@ -53,9 +52,9 @@ export const usePlayerStore = defineStore("player", {
           artist: {
             mbId: null,
             name: null,
-          }
-        }
-      }
+          },
+        },
+      },
       /*
       currentPlaylistIndex: 0,
       playlists: [
@@ -179,13 +178,11 @@ export const usePlayerStore = defineStore("player", {
       return state.data.currentPlaylist.playlist;
     },
     */
-    allowSkipPrevious: (state) =>
-      true
-      /*
+    allowSkipPrevious: (state) => true,
+    /*
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex > 0
-      */,
-    allowSkipNext: (state) =>
+      */ allowSkipNext: (state) =>
       /*
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
@@ -432,6 +429,6 @@ export const usePlayerStore = defineStore("player", {
     */
     setTmpTrack(track) {
       this.data.tmpTrack = track;
-    }
+    },
   },
 });
