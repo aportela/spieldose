@@ -17,19 +17,38 @@
 
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, reactive, watch, computed } from "vue";
+import { usePlayerStore } from "src/stores/player";
+
+const playerStore = usePlayerStore();
+
+const currentElementTimeData = reactive({
+  duration: 0,
+  currentTime: 0,
+  currentProgress: 0,
+  position: 0,
+});
+
+const audioElement = ref(playerStore.audioInstance);
+
+audioElement.value.addEventListener('timeupdate', (event) => {
+  currentElementTimeData.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
+  currentElementTimeData.duration = Math.floor(audioElement.value.duration);
+  currentElementTimeData.currentTime = Math.floor(audioElement.value.currentTime);
+  if (!isNaN(currentElementTimeData.currentProgress)) {
+    currentElementTimeData.position = Number(currentElementTimeData.currentProgress.toFixed(2));
+  } else {
+    currentElementTimeData.position = 0;
+  }
+});
 
 const props = defineProps({
   disabled: Boolean,
-  currentElementTimeData: Object
 });
-
-const emit = defineEmits(['seek']);
 
 const position = computed(() => {
-  return (props.currentElementTimeData.position);
+  return (currentElementTimeData.position);
 });
-
 
 watch(position, (newValue) => {
   currentTime.value = parseFloat(newValue);
@@ -38,7 +57,9 @@ watch(position, (newValue) => {
 const currentTime = ref(0);
 
 function onSeek() {
-  emit('seek', currentTime.value);
+  if (position.value >= 0 && position.value < 1) {
+    playerStore.setCurrentTime(playerStore.duration * position.value);
+  }
 };
 
 function formatSecondsAsTime(secs, format) {
