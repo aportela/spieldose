@@ -94,7 +94,7 @@ import { useRoute } from "vue-router";
 import { useAPI } from "src/composables/useAPI";
 import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { pathActions } from "src/boot/spieldose";
+//import { pathActions } from "src/boot/spieldose";
 import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as LibrarySelector } from "components/Forms/Fields/LibrarySelector.vue";
 

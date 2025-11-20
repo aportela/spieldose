@@ -18,7 +18,7 @@
 <script setup>
 
 import { useI18n } from "vue-i18n";
-import { trackActions } from "../boot/spieldose";
+//import { trackActions } from "../boot/spieldose";
 
 const { t } = useI18n();
 

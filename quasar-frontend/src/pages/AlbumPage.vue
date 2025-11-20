@@ -78,7 +78,7 @@ import { useI18n } from "vue-i18n";
 import { useQuasar, date } from "quasar";
 import { useSpieldoseStore } from "stores/spieldose";
 import { useAPI } from "src/composables/useAPI";
-import { albumActions, trackActions } from "src/boot/spieldose";
+//import { albumActions, trackActions } from "src/boot/spieldose";
 
 
 const { t } = useI18n();
@@ -221,6 +221,7 @@ function onPlayAlbum() {
 }
 
 function onEnqueueAlbum() {
+
   albumActions.enqueue(
     album.value.mbId || null,
     album.value.title || null,

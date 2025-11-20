@@ -66,7 +66,7 @@ import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as BrowsePlaylistItem } from "components/BrowsePlaylistItem.vue"
-import { playListActions } from "boot/spieldose";
+//import { playListActions } from "boot/spieldose";
 import { useSpieldoseStore } from "stores/spieldose";
 import { spieldoseEventNames } from "boot/events";
 

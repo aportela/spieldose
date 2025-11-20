@@ -51,7 +51,7 @@ import { default as SidebarPlayerTrackDetailsModal } from "components/SidebarPla
 import { spieldoseEventNames } from "boot/events";
 
 import { useSpieldoseStore } from "stores/spieldose";
-import { trackActions, currentPlayListActions } from "../boot/spieldose";
+//import { trackActions, currentPlayListActions } from "../boot/spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();

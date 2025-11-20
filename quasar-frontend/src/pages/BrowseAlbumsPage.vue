@@ -48,7 +48,7 @@ import { default as CustomInputSearch } from "components/CustomInputSearch.vue";
 import { default as CustomSelector } from "components/CustomSelector.vue";
 import { default as SortOrderSelector } from "components/SortOrderSelector.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
-import { albumActions } from "src/boot/spieldose";
+//import { albumActions } from "src/boot/spieldose";
 import { useThumbnail } from "src/composables/useThumbnail";
 
 const $q = useQuasar();

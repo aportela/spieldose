@@ -399,7 +399,7 @@ import { default as ArtistGenreChip } from "components/ArtistGenreChip.vue";
 import { default as AnimatedAlbumCover } from "components/AnimatedAlbumCover.vue";
 import { default as WikipediaPage } from "components/WikipediaPage.vue";
 
-import { trackActions, albumActions } from "boot/spieldose";
+//import { trackActions, albumActions } from "boot/spieldose";
 
 import { spieldoseEventNames } from "boot/events";
 import { useSpieldoseStore } from "stores/spieldose";

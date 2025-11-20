@@ -44,7 +44,7 @@
             <div class="absolute-bottom text-subtitle1 text-center">
               <p class="q-mt-none">{{ radioStation.name }}</p>
               <q-chip size="md" icon="tag" truncate-chip-labels2 v-for="tag in radioStation.tags" :key="tag">{{ tag
-              }}</q-chip>
+                }}</q-chip>
             </div>
             <template v-slot:loading>
               <div class="absolute-full flex flex-center bg-grey-3 text-dark">
@@ -80,7 +80,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useSpieldoseStore } from "stores/spieldose";
 
-import { radioStationActions } from "src/boot/spieldose";
+//import { radioStationActions } from "src/boot / spieldose";
 
 const $q = useQuasar();
 const { t } = useI18n();
