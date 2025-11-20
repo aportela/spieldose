@@ -89,11 +89,24 @@ export function useLocalStorage() {
     },
   };
 
+  const playerVolume = {
+    get() {
+      return get("playerVolume", 1);
+    },
+    set(value) {
+      set("playerVolume", value);
+    },
+    remove() {
+      remove("playerVolume");
+    }
+  };
+
   return {
     jwt,
     email,
     darkMode,
     locale,
     showToolTips,
+    playerVolume,
   };
 }
