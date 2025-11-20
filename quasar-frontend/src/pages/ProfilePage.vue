@@ -25,7 +25,14 @@
                 @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
             </p>
             <p class="q-mt-lg"><q-slider label label-always :label-value="'Height: ' + height + 'px'" v-model="height"
-                :min="30" :max="180" :step="10" v-on:update:model-value="onChangeHeight" /></p>
+                :min="30" :max="180" :step="1" v-on:update:model-value="onChangeHeight" /></p>
+            <p><q-btn-toggle size="md" v-model="channelLayout" v-on:update:model-value="onChangeChannelLayout"
+                toggle-color="primary" no-caps :options="[
+                  { label: 'Single channel', value: 'single' },
+                  { label: 'Dual channel (overlay)', value: 'dual-combined' },
+                  { label: 'Dual channel (side by side)', value: 'dual-horizontal' },
+                  { label: 'Dual channel (top/bottom)', value: 'dual-vertical' },
+                ]" /></p>
             <p><q-btn-toggle size="md" v-model="fps" v-on:update:model-value="onChangeFPS" toggle-color="primary"
                 no-caps :options="[
                   { label: '10fps', value: 10 },
@@ -62,7 +69,7 @@
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import { useLocalStorage } from "src/composables/useLocalStorage";
+
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
@@ -72,6 +79,8 @@ const { t } = useI18n();
 const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
 
 const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettings.visible);
+
+const channelLayout = ref(miniSpectrumAnalyzerSettings.currentChannelLayout);
 
 const fps = ref(miniSpectrumAnalyzerSettings.currentFPS);
 
@@ -101,6 +110,10 @@ watch(() => miniSpectrumAnalyzerSettings.height, (newValue) => {
   height.value = newValue;
 });
 
+watch(() => miniSpectrumAnalyzerSettings.channelLayout, (newValue) => {
+  channelLayout.value = newValue;
+});
+
 const onChangeShowMiniSpectrumAnalyzer = (visible) => {
   miniSpectrumAnalyzerSettings.setVisibility(visible);
 };
@@ -120,6 +133,10 @@ const onChangeBarSpace = (space) => {
 const onChangeHeight = (height) => {
   miniSpectrumAnalyzerSettings.setHeight(height);
 };
+
+const onChangeChannelLayout = (layout) => {
+  miniSpectrumAnalyzerSettings.setChannelLayout(layout);
+}
 
 </script>
 
