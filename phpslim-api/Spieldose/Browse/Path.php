@@ -130,4 +130,25 @@ class Path extends \Spieldose\Browse\Base
         }
         return ($tree);
     }
+
+    public function getPathCoverLocalPath(string $pathId): ?string
+    {
+        $results = $this->dbh->query(
+            "
+                    SELECT
+                        DIRECTORY.path, DIRECTORY.cover_filename
+                    FROM DIRECTORY
+                    WHERE
+                        DIRECTORY.id = :id
+                ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId)
+            ]
+        );
+        if (count($results) == 1 && ! empty($results[0]->cover_filename)) {
+            return ($results[0]->path . DIRECTORY_SEPARATOR . $results[0]->cover_filename);
+        } else {
+            return (null);
+        }
+    }
 }
