@@ -98,7 +98,7 @@ export function useLocalStorage() {
     },
     remove() {
       remove("playerVolume");
-    }
+    },
   };
 
   const playerMuted = {
@@ -110,7 +110,7 @@ export function useLocalStorage() {
     },
     remove() {
       remove("playerMuted");
-    }
+    },
   };
 
   const showMiniSpectrumAnalyzer = {
@@ -122,7 +122,7 @@ export function useLocalStorage() {
     },
     remove() {
       remove("showMiniSpectrumAnalyzer");
-    }
+    },
   };
 
   const playerMiniAnalyzerMode = {
@@ -134,7 +134,43 @@ export function useLocalStorage() {
     },
     remove() {
       remove("playerMiniAnalyzerMode");
-    }
+    },
+  };
+
+  const playerMiniAnalyzerFPS = {
+    get() {
+      return get("playerMiniAnalyzerFPS", 30);
+    },
+    set(value) {
+      set("playerMiniAnalyzerFPS", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerFPS");
+    },
+  };
+
+  const playerMiniAnalyzerBarSpace = {
+    get() {
+      return get("playerMiniAnalyzerBarSpace", 0.2);
+    },
+    set(value) {
+      set("playerMiniAnalyzerBarSpace", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerBarSpace");
+    },
+  };
+
+  const playerMiniAnalyzerHeight = {
+    get() {
+      return get("playerMiniAnalyzerHeight", 40);
+    },
+    set(value) {
+      set("playerMiniAnalyzerHeight", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerHeight");
+    },
   };
 
   return {
@@ -147,5 +183,8 @@ export function useLocalStorage() {
     playerMuted,
     showMiniSpectrumAnalyzer,
     playerMiniAnalyzerMode,
+    playerMiniAnalyzerFPS,
+    playerMiniAnalyzerBarSpace,
+    playerMiniAnalyzerHeight,
   };
 }
