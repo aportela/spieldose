@@ -29,7 +29,7 @@ const defaultAnalyzerOptions = {
   barSpace: 0.2,
   showScaleX: false,
   showScaleY: false,
-  channelLayout: 'single',
+  channelLayout: miniSpectrumAnalyzerSettingsStore.currentChannelLayout,
   colorcurrentMode: 'gradient',
   splitGradient: false,
   bgAlpha: 1,
@@ -70,6 +70,12 @@ watch(() => miniSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
 watch(() => miniSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
   if (analyzer.value && newValue > 0) {
     analyzer.value.setOptions({ height: newValue });
+  }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ channelLayout: newValue });
   }
 });
 
