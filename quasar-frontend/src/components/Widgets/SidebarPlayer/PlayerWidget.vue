@@ -1,6 +1,7 @@
 <template>
 
   <q-card>
+    <div class="contenedor"></div>
     <SidebarPlayerAlbumCover :normalImage="imageUrl" :smallImage="imageUrl"
       :animation="playerStore.sidebarTopArtAnimated" :animated="playerStore.isPlaying"
       @change="playerStore.toggleSidebarTopArtAnimationMode()">
@@ -67,3 +68,27 @@ onMounted(() => {
 });
 
 </script>
+
+<style>
+.contenedor {
+  z-index: 200;
+  width: 200px;
+  height: 20px;
+  background: linear-gradient(135deg, #dcdcdc 20%, #a9a9a9 50%, #dcdcdc 80%);
+  position: relative;
+  left: 400px;
+  top: 10px;
+  animation: rotar 5s infinite;
+  transform-origin: left center;
+}
+
+@keyframes rotar {
+  0% {
+    transform: rotate(90deg);
+  }
+
+  100% {
+    transform: rotate(100deg);
+  }
+}
+</style>
