@@ -26,9 +26,10 @@ class File
         $results = $dbh->query(
             "
                 SELECT
-                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year
+                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename
                 FROM FILE
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
+                LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
                 WHERE FILE.id = :id
             ",
             [
@@ -53,6 +54,11 @@ class File
             $this->trackInfo->album->artist = new \stdClass();
             $this->trackInfo->album->artist->mbId = null;
             $this->trackInfo->album->artist->name = $results[0]->artist;
+            if (! empty($results[0]->cover_filename)) {
+                $this->trackInfo->image = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $results[0]->directoryPathId;
+            } else {
+                $this->trackInfo->image = null;
+            }
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
         }
