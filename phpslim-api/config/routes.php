@@ -414,6 +414,62 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/local_thumbnail', function (Request $request, Response $response, array $args) use ($settings, $container) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $queryParams = $request->getQueryParams();
+                if (! is_array($queryParams)) {
+                    throw new \Spieldose\Exception\InvalidParamsException();
+                }
+                if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
+                    throw new \Spieldose\Exception\InvalidParamsException("width");
+                }
+                if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
+                    throw new \Spieldose\Exception\InvalidParamsException("height");
+                }
+                if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
+                    throw new \Spieldose\Exception\InvalidParamsException("quality");
+                }
+                if (! (array_key_exists("pathId", $queryParams) && is_string($queryParams["pathId"]))) {
+                    throw new \Spieldose\Exception\InvalidParamsException("pathId");
+                }
+
+                //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
+                $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
+
+                $localCoverPath = (new \Spieldose\Browse\Path($dbh))->getPathCoverLocalPath($queryParams["pathId"]);
+                if (empty($localCoverPath)) {
+                    throw new \Spieldose\Exception\NotFoundException("");
+                }
+                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
+                    $logger,
+                    $settings->getCachePath("Thumbnails"),
+                    new \aportela\RemoteThumbnailCacheWrapper\Source\LocalFilenameResource($localCoverPath),
+                    intval($queryParams["quality"]),
+                    intval($queryParams["width"]),
+                    intval($queryParams["height"])
+                );
+                $path = $thumbnail->get();
+                if (is_string($path) && file_exists($path)) {
+                    $filesize = filesize($path);
+                    $f = fopen($path, 'r');
+                    fseek($f, 0);
+                    $data = fread($f, $filesize);
+                    fclose($f);
+                    $response->getBody()->write($data);
+                    return $response
+                        ->withHeader('Content-Type', 'image/jpeg')
+                        ->withHeader('Content-Length', (string) $filesize)
+                        ->withHeader('ETag', sha1($queryParams["pathId"] . $path . $filesize))
+                        ->withHeader('Cache-Control', 'max-age=86400')
+                        ->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for url: ' . $queryParams["url"]);
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->group('/file', function (RouteCollectorProxy $group) use ($container, $initialState) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
