@@ -16,12 +16,40 @@
       <div class="col-lg-4 col-xl-4 col-12 flex">
         <q-card class="full-width">
           <q-item class="theme-default-q-card-section-header">
-            Settings
+            Mini Spectrum Analyzer Settings
           </q-item>
           <q-separator />
           <q-card-section>
-            <q-toggle v-model="showMiniSpectrumAnalyzer" label="show mini spectrum analyzer"
-              @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
+            <p>
+              <q-toggle v-model="showMiniSpectrumAnalyzer" label="show mini spectrum analyzer"
+                @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
+            </p>
+            <p class="q-mt-lg"><q-slider label label-always :label-value="'Height: ' + height + 'px'" v-model="height"
+                :min="30" :max="180" :step="10" v-on:update:model-value="onChangeHeight" /></p>
+            <p><q-btn-toggle size="md" v-model="fps" v-on:update:model-value="onChangeFPS" toggle-color="primary"
+                no-caps :options="[
+                  { label: '10fps', value: 10 },
+                  { label: '15fps', value: 15 },
+                  { label: '30fps', value: 30 },
+                  { label: '60fps', value: 60 },
+                  { label: '90fps', value: 90 },
+                  { label: '120fps', value: 120 },
+                  { label: '144fps', value: 144 },
+                  { label: 'unlimited fps', value: 0 },
+                ]" /></p>
+            <p><q-btn-toggle size="md" v-model="mode" v-on:update:model-value="onChangeMode" toggle-color="primary"
+                no-caps :options="[
+                  { label: '240 bands', value: 1 },
+                  { label: '120 bands', value: 2 },
+                  { label: '80 bands', value: 3 },
+                  { label: '60 bands', value: 4 },
+                  { label: '40 bands', value: 5 },
+                  { label: '30 bands', value: 6 },
+                  { label: '20 bands', value: 7 },
+                  { label: '10 bands', value: 8 },
+                ]" /></p>
+            <p class="q-mt-xl"><q-slider label label-always :label-value="'Bar space: ' + barSpace" v-model="barSpace"
+                :min="0.0" :max="1.0" :step="0.01" v-on:update:model-value="onChangeBarSpace" /></p>
           </q-card-section>
         </q-card>
       </div>
@@ -31,19 +59,66 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { useLocalStorage } from "src/composables/useLocalStorage";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 
+import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+
 const { t } = useI18n();
 
-const localStorage = useLocalStorage();
-const showMiniSpectrumAnalyzer = ref(localStorage.showMiniSpectrumAnalyzer.get());
+const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
+
+const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettings.visible);
+
+const fps = ref(miniSpectrumAnalyzerSettings.currentFPS);
+
+const mode = ref(miniSpectrumAnalyzerSettings.currentMode);
+
+const barSpace = ref(miniSpectrumAnalyzerSettings.currentBarSpace);
+
+const height = ref(miniSpectrumAnalyzerSettings.height);
+
+watch(() => miniSpectrumAnalyzerSettings.visible, (newValue) => {
+  showMiniSpectrumAnalyzer.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.currentFPS, (newValue) => {
+  fps.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.currentMode, (newValue,) => {
+  mode.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.currentBarSpace, (newValue) => {
+  barSpace.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.height, (newValue) => {
+  height.value = newValue;
+});
 
 const onChangeShowMiniSpectrumAnalyzer = (visible) => {
-  localStorage.showMiniSpectrumAnalyzer.set(visible);
+  miniSpectrumAnalyzerSettings.setVisibility(visible);
+};
+
+const onChangeFPS = (fps) => {
+  miniSpectrumAnalyzerSettings.setFPS(fps);
+}
+
+const onChangeMode = (mode) => {
+  miniSpectrumAnalyzerSettings.setMode(mode);
+};
+
+const onChangeBarSpace = (space) => {
+  miniSpectrumAnalyzerSettings.setBarSpace(space);
+}
+
+const onChangeHeight = (height) => {
+  miniSpectrumAnalyzerSettings.setHeight(height);
 };
 
 </script>
