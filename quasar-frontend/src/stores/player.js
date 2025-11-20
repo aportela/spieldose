@@ -30,10 +30,10 @@ export const usePlayerStore = defineStore("player", {
         muted: false,
         repeatMode: "none",
         shuffle: false,
-        /*
         sideBarTopArt: {
           mode: "normal",
         },
+        /*
         sidebarAudioMotionAnalyzer: {
           visible: true,
           mode: 7,
@@ -84,9 +84,9 @@ export const usePlayerStore = defineStore("player", {
       state.data.player.sidebarAudioMotionAnalyzer.visible,
     getSidebarAudioMotionAnalyzerMode: (state) =>
       state.data.player.sidebarAudioMotionAnalyzer.mode,
-    hasSidebarTopArtAnimationMode: (state) =>
-      state.data.player.sideBarTopArt.mode == "animation",
     */
+    sidebarTopArtAnimated: (state) =>
+      state.data.player.sideBarTopArt.mode == "animation",
     status: (state) => state.data.player.status,
     isMuted: (state) => state.data.player.muted,
     isPlaying: (state) => state.data.player.status == "playing",
@@ -217,17 +217,15 @@ export const usePlayerStore = defineStore("player", {
       this.data.player.sidebarAudioMotionAnalyzer.mode = mode;
       this.savePlayerSettings();
     },
-    /*
-
     toggleSidebarTopArtAnimationMode: function () {
       if (this.data.player.sideBarTopArt.mode == "animation") {
         this.data.player.sideBarTopArt.mode = "normal";
       } else {
         this.data.player.sideBarTopArt.mode = "animation";
       }
-      this.savePlayerSettings();
+      console.log(this.data.player.sideBarTopArt.mode);
+      //this.savePlayerSettings();
     },
-    */
     interact: function () {
       this.data.player.userInteracted = true;
     },
