@@ -7,6 +7,7 @@ const {
   playerMiniAnalyzerMode,
   playerMiniAnalyzerFPS,
   playerMiniAnalyzerBarSpace,
+  playerMiniAnalyzerHeight,
 } = useLocalStorage();
 
 export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
@@ -17,6 +18,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       mode: playerMiniAnalyzerMode.get() ?? 7,
       fps: playerMiniAnalyzerFPS.get() ?? 30,
       barSpace: playerMiniAnalyzerBarSpace.get() ?? 0.2,
+      height: playerMiniAnalyzerHeight.get() ?? 40,
     }),
 
     getters: {
@@ -24,6 +26,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       currentMode: (state) => state.mode,
       currentFPS: (state) => state.fps,
       currentBarSpace: (state) => state.barSpace,
+      currentHeight: (state) => state.height,
     },
     actions: {
       setVisibility(visible) {
@@ -60,6 +63,17 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
           console.error(
             "Mini Spectrum Analyzer settings = setBarSpace() => invalid space",
             space,
+          );
+        }
+      },
+      setHeight(height) {
+        if (height > 0) {
+          this.height = height;
+          playerMiniAnalyzerHeight.set(height);
+        } else {
+          console.error(
+            "Mini Spectrum Analyzer settings = setHeight() => invalid height",
+            height,
           );
         }
       },
