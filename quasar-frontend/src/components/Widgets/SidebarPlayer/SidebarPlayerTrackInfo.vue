@@ -1,17 +1,21 @@
 <template>
   <div class="q-px-md" style="max-width: 400px;" v-if="isTrack">
-    <p class="text-center text-weight-bolder ellipsis text-pink" :title="track.title || '&nbsp;'">{{
+    <p class="text-center text-weight-bolder ellipsis text-pink q-my-none" :title="track.title || '&nbsp;'">{{
       track.title || null }}</p>
-    <p class="text-center ellipsis" :title="track.album.title || null">
-      <router-link style="text-decoration: none;"
-        :to="{ name: 'album', params: { title: track.album.title }, query: { mbId: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year } }"
-        v-if="track.album.title">{{ track.album.title }}</router-link>
-      <span v-else>&nbsp;</span>
-    </p>
     <p class="text-center ellipsis">
       <router-link v-if="track.artist.name" style="text-decoration: none;"
         :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }"
-        :title="track.artist.name">{{ track.artist.name }}</router-link>
+        :title="track.artist.name">by {{ track.artist.name }}</router-link>
+      <span v-else>&nbsp;</span>
+    </p>
+
+    <p class="text-center ellipsis" :title="track.album.title || null">
+      <router-link style="text-decoration: none;"
+        :to="{ name: 'album', params: { title: track.album.title }, query: { mbId: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year } }"
+        v-if="track.album.title">{{ track.album.title }}
+        <br /><span v-if="track.album.artist.name">by {{ track.album.artist.name }}</span>
+        <br /><span v-if="track.album.year">({{ track.album.year }})</span>
+      </router-link>
       <span v-else>&nbsp;</span>
     </p>
   </div>
