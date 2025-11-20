@@ -173,6 +173,18 @@ export function useLocalStorage() {
     },
   };
 
+  const playerMiniAnalyzerChannelLayout = {
+    get() {
+      return get("playerMiniAnalyzerChannelLayout", "single");
+    },
+    set(value) {
+      set("playerMiniAnalyzerChannelLayout", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerChannelLayout");
+    },
+  };
+
   return {
     jwt,
     email,
@@ -186,5 +198,6 @@ export function useLocalStorage() {
     playerMiniAnalyzerFPS,
     playerMiniAnalyzerBarSpace,
     playerMiniAnalyzerHeight,
+    playerMiniAnalyzerChannelLayout,
   };
 }
