@@ -27,6 +27,11 @@ export function useAPI() {
         return axios.post(basePath + "/auth/register", params);
       },
     },
+    file: {
+      getRandom: function () {
+        return axios.get(basePath + "/file/rnd");
+      },
+    },
     /*
     user: {
       getProfile: () => axios.get(basePath + "/user/profile"),
