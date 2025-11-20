@@ -207,6 +207,7 @@ export const usePlayerStore = defineStore("player", {
         this.data.audio.src = null;
       }
       this.setVolume(localStorage.playerVolume.get());
+      this.setMute(localStorage.playerMuted.get());
       // required for radio stations streams
       //this.data.audio.crossOrigin = "anonymous";
       //this.restoreFullScreenVisualizationSettings();
@@ -263,8 +264,12 @@ export const usePlayerStore = defineStore("player", {
           this.data.audio.volume = volume;
         }
         localStorage.playerVolume.set(volume);
-        this.interact();
-        //this.savePlayerSettings();
+      }
+    },
+    setMute: function (isMuted) {
+      this.data.player.muted = isMuted;
+      if (this.data.audio) {
+        this.data.audio.muted = this.data.player.muted;
       }
     },
     toggleMute: function () {
@@ -272,8 +277,7 @@ export const usePlayerStore = defineStore("player", {
       if (this.data.audio) {
         this.data.audio.muted = this.data.player.muted;
       }
-      this.interact();
-      //this.savePlayerSettings();
+      localStorage.playerMuted.set(this.data.player.muted);
     },
     setCurrentTime: function (time) {
       if (this.data.audio) {

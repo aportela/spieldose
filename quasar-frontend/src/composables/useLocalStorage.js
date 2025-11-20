@@ -101,6 +101,18 @@ export function useLocalStorage() {
     }
   };
 
+  const playerMuted = {
+    get() {
+      return get("playerMuted", false);
+    },
+    set(value) {
+      set("playerMuted", !!value);
+    },
+    remove() {
+      remove("playerMuted");
+    }
+  };
+
   const playerMiniAnalyzerMode = {
     get() {
       return get("playerMiniAnalyzerMode", 7);
@@ -120,6 +132,7 @@ export function useLocalStorage() {
     locale,
     showToolTips,
     playerVolume,
+    playerMuted,
     playerMiniAnalyzerMode,
   };
 }
