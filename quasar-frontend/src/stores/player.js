@@ -1,4 +1,7 @@
 import { defineStore } from "pinia";
+import { useLocalStorage } from "src/composables/useLocalStorage";
+
+const localStorage = useLocalStorage();
 
 
 /**
@@ -83,12 +86,13 @@ export const usePlayerStore = defineStore("player", {
       state.data.player.sidebarAudioMotionAnalyzer.mode,
     hasSidebarTopArtAnimationMode: (state) =>
       state.data.player.sideBarTopArt.mode == "animation",
-    getPlayerStatus: (state) => state.data.player.status,
     */
+    status: (state) => state.data.player.status,
     isMuted: (state) => state.data.player.muted,
     isPlaying: (state) => state.data.player.status == "playing",
     isStopped: (state) => state.data.player.status == "stopped",
     isPaused: (state) => state.data.player.status == "paused",
+    volume: (state) => state.data.player.volume,
     /*
     getVolume: (state) => state.data.player.volume,
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
@@ -157,36 +161,41 @@ export const usePlayerStore = defineStore("player", {
     getCurrentPlaylistLinkedPlaylist(state) {
       return state.data.currentPlaylist.playlist;
     },
+    */
     allowSkipPrevious: (state) =>
+      false
+      /*
       state.data.currentPlaylist.totalTracks > 0 &&
-      state.data.currentPlaylist.currentTrackIndex > 0,
+      state.data.currentPlaylist.currentTrackIndex > 0
+      */,
     allowSkipNext: (state) =>
+      /*
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
       state.data.currentPlaylist.totalTracks - 1,
       */
+      false,
   },
   actions: {
     create: function (src) {
-      if (this.data.audio == null) {
-        if (src !== undefined) {
+      if (this.data.audio === null) {
+        if (src) {
           this.data.audio = new Audio(src);
         } else {
           this.data.audio = new Audio();
         }
         this.data.audio.autoplay = false;
-        // required for radio stations streams
-        this.data.audio.crossOrigin = "anonymous";
       } else {
         this.data.audio.src = null;
-        // required for radio stations streams
-        this.data.audio.crossOrigin = "anonymous";
       }
+      this.setVolume(localStorage.playerVolume.get());
+      // required for radio stations streams
+      //this.data.audio.crossOrigin = "anonymous";
       //this.restoreFullScreenVisualizationSettings();
       //this.restorePlayerSettings(this.hasPreviousUserInteractions);
     },
     setAudioSource(src) {
-      if (src !== undefined && src) {
+      if (src) {
         if (this.data.audio) {
           this.data.audio.src = src;
         }
@@ -216,9 +225,11 @@ export const usePlayerStore = defineStore("player", {
       }
       this.savePlayerSettings();
     },
+    */
     interact: function () {
       this.data.player.userInteracted = true;
     },
+    /*
     savePlayerSettings: function () {
       // TODO: BASIL
       //const basil = useBasil(localStorageBasilOptions);
@@ -227,13 +238,16 @@ export const usePlayerStore = defineStore("player", {
     restorePlayerSettings: function (userInteracted) {
       // TODO: BASIL
     },
+    */
     setVolume: function (volume) {
       if (volume >= 0 && volume <= 1) {
         this.data.player.volume = volume;
         if (this.data.audio) {
           this.data.audio.volume = volume;
         }
-        this.savePlayerSettings();
+        localStorage.playerVolume.set(volume);
+        this.interact();
+        //this.savePlayerSettings();
       }
     },
     toggleMute: function () {
@@ -241,8 +255,10 @@ export const usePlayerStore = defineStore("player", {
       if (this.data.audio) {
         this.data.audio.muted = this.data.player.muted;
       }
-      this.savePlayerSettings();
+      this.interact();
+      //this.savePlayerSettings();
     },
+    /*
     setCurrentTime: function (time) {
       if (this.data.audio) {
         this.data.audio.currentTime = time;
@@ -295,6 +311,7 @@ export const usePlayerStore = defineStore("player", {
       }
     },
     pause: function () {
+      this.interact();
       if (this.isPlaying) {
         if (this.data.audio) {
           this.data.audio.pause();
@@ -303,6 +320,7 @@ export const usePlayerStore = defineStore("player", {
       }
     },
     resume: function () {
+      this.interact();
       if (this.isPaused) {
         if (this.data.audio) {
           this.data.audio
@@ -316,6 +334,7 @@ export const usePlayerStore = defineStore("player", {
       }
     },
     stop: function () {
+      this.interact();
       if (!this.isStopped) {
         if (this.data.audio) {
           this.data.audio.pause();
