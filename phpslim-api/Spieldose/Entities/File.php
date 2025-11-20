@@ -26,7 +26,7 @@ class File
         $results = $dbh->query(
             "
                 SELECT
-                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year
+                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year
                 FROM FILE
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 WHERE FILE.id = :id
@@ -44,7 +44,9 @@ class File
             $this->trackInfo->playTimeSeconds = $results[0]->playtime_seconds;
             $this->trackInfo->title = $results[0]->title;
             $this->trackInfo->artist = $results[0]->artist;
-            $this->trackInfo->album = $results[0]->album;
+            $this->trackInfo->album = new \stdClass();
+            $this->trackInfo->album->mbId = $results[0]->release_mbid;
+            $this->trackInfo->album->title = $results[0]->album;
             $this->trackInfo->year = intval($results[0]->year);
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
