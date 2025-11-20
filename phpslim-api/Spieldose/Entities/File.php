@@ -49,10 +49,10 @@ class File
             $this->trackInfo->album = new \stdClass();
             $this->trackInfo->album->mbId = $results[0]->release_mbid;
             $this->trackInfo->album->title = $results[0]->album;
+            $this->trackInfo->album->year = intval($results[0]->year);
             $this->trackInfo->album->artist = new \stdClass();
             $this->trackInfo->album->artist->mbId = null;
             $this->trackInfo->album->artist->name = $results[0]->artist;
-            $this->trackInfo->year = intval($results[0]->year);
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
         }
