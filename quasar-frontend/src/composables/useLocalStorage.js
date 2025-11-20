@@ -101,6 +101,18 @@ export function useLocalStorage() {
     }
   };
 
+  const playerMiniAnalyzerMode = {
+    get() {
+      return get("playerMiniAnalyzerMode", 7);
+    },
+    set(value) {
+      set("playerMiniAnalyzerMode", value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerMode");
+    }
+  };
+
   return {
     jwt,
     email,
@@ -108,5 +120,6 @@ export function useLocalStorage() {
     locale,
     showToolTips,
     playerVolume,
+    playerMiniAnalyzerMode,
   };
 }
