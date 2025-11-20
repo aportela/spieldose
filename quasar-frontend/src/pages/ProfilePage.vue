@@ -13,17 +13,38 @@
       <div class="col-lg-4 col-xl-4 col-12 flex">
         <UpdateProfileForm></UpdateProfileForm>
       </div>
+      <div class="col-lg-4 col-xl-4 col-12 flex">
+        <q-card class="full-width">
+          <q-item class="theme-default-q-card-section-header">
+            Settings
+          </q-item>
+          <q-separator />
+          <q-card-section>
+            <q-toggle v-model="showMiniSpectrumAnalyzer" label="show mini spectrum analyzer"
+              @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
 
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import { useLocalStorage } from "src/composables/useLocalStorage";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 
 const { t } = useI18n();
+
+const localStorage = useLocalStorage();
+const showMiniSpectrumAnalyzer = ref(localStorage.showMiniSpectrumAnalyzer.get());
+
+const onChangeShowMiniSpectrumAnalyzer = (visible) => {
+  localStorage.showMiniSpectrumAnalyzer.set(visible);
+};
 
 </script>
 

@@ -113,6 +113,18 @@ export function useLocalStorage() {
     }
   };
 
+  const showMiniSpectrumAnalyzer = {
+    get() {
+      return get("showMiniSpectrumAnalyzer", true);
+    },
+    set(value) {
+      set("showMiniSpectrumAnalyzer", !!value);
+    },
+    remove() {
+      remove("showMiniSpectrumAnalyzer");
+    }
+  };
+
   const playerMiniAnalyzerMode = {
     get() {
       return get("playerMiniAnalyzerMode", 7);
@@ -133,6 +145,7 @@ export function useLocalStorage() {
     showToolTips,
     playerVolume,
     playerMuted,
+    showMiniSpectrumAnalyzer,
     playerMiniAnalyzerMode,
   };
 }
