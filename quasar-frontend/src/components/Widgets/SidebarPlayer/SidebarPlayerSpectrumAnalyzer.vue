@@ -1,5 +1,6 @@
 <template>
   <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
+    :style="{ height: miniSpectrumAnalyzerSettingsStore.currentHeight + 'px' }"
     :title="t('Toggle analyzer octave bands number')" @click="onToggleCurrentMode"></div>
 </template>
 
@@ -66,6 +67,12 @@ watch(() => miniSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
   }
 });
 
+watch(() => miniSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
+  if (analyzer.value && newValue > 0) {
+    analyzer.value.setOptions({ height: newValue });
+  }
+});
+
 const onToggleCurrentMode = () => {
   let mode = miniSpectrumAnalyzerSettingsStore.currentMode;
   if (++mode > 8) {
@@ -123,6 +130,6 @@ onBeforeUnmount(() => {
 <style lang="css">
 div#spieldose-sidebar-analyzer-container {
   width: 100%;
-  height: 40px;
+  /* height: 40px; */
 }
 </style>
