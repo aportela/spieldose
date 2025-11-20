@@ -49,4 +49,20 @@ class File
             throw new \Spieldose\Exception\NotFoundException("id");
         }
     }
+
+    /**
+     * temporal method
+     */
+    public function rnd(\aportela\DatabaseWrapper\DB $dbh)
+    {
+        $results = $dbh->query(
+            "
+                SELECT
+                    FILE.id
+                FROM FILE
+                ORDER BY RANDOM()
+            "
+        );
+        $this->id = $results[0]->id;
+    }
 }

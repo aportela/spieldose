@@ -483,6 +483,23 @@ return function (App $app) {
                         throw new \Spieldose\Exception\InvalidParamsException('id');
                     }
                 });
+
+                $group->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $file = new \Spieldose\Entities\File("");
+                    $file->rnd($dbh);
+                    $file->get($dbh);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "file" => $file
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
             })->add(\Spieldose\Middleware\CheckAuth::class);
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
