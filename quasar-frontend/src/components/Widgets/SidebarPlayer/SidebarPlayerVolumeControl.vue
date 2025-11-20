@@ -3,7 +3,7 @@
     <q-item>
       <q-item-section side>
         <q-icon class="cursor-pointer" :name="volumeIcon" @click.stop="onToggleMute"
-          :class="{ 'text-pink': isMuted }" />
+          :class="{ 'text-pink': playerStore.isMuted }" />
       </q-item-section>
       <q-item-section>
         <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'"
@@ -18,19 +18,18 @@
 
 <script setup>
 
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
+import { useLocalStorage } from "src/composables/useLocalStorage";
+import { usePlayerStore } from 'src/stores/player';
 
-const props = defineProps({
-  defaultValue: Number,
-  isMuted: Boolean
-});
+const localStorage = useLocalStorage();
 
-const emit = defineEmits(['volumeChange', 'toggleMute']);
+const playerStore = usePlayerStore();
 
-const volume = ref(props.defaultValue || 1);
+const volume = ref(playerStore.volume);
 
 const volumeIcon = computed(() => {
-  if (volume.value == 0 || props.isMuted) {
+  if (volume.value == 0 || playerStore.isMuted) {
     return ('volume_off');
   } else if (volume.value < 0.4) {
     return ('volume_mute');
@@ -46,11 +45,15 @@ const volumePercentValue = computed(() => {
 });
 
 function onToggleMute() {
-  emit('toggleMute');
+  playerStore.interact();
+  playerStore.toggleMute();
+
 }
 
 function setVolume(volume) {
-  emit('volumeChange', volume);
+  playerStore.interact();
+  playerStore.setVolume(volume);
+
 }
 
 </script>
