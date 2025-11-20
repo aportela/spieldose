@@ -4,7 +4,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
@@ -28,14 +28,15 @@ const analyzer = ref(null);
 const active = ref(true); // computed(() => { return (props.active || false) });
 
 
-/*
-watch(playerStore.hasPreviousUserInteractions, (newValue, oldValue) => {
+const hasPreviousUserInteractions = computed(() => playerStore.hasPreviousUserInteractions);
+
+watch(hasPreviousUserInteractions, (newValue, oldValue) => {
   if (!oldValue && newValue && !analyzer.value) {
-    createAnalyzer(props.active);
+    createAnalyzer(true);
   }
 });
 
-*/
+
 /*
 watch(active, (newValue) => {
   if (analyzer.value) {
@@ -52,9 +53,9 @@ function createAnalyzer(start) {
   const defaultOptions = {
     source: playerStore.audioInstance,
     start: false,
-    width: 400,
-    height: 40,
-    maxFPS: 30,
+    //width: 430,
+    //height: 40,
+    maxFPS: 60,
     mode: currentMode.value,
     ledBars: true,
     showPeaks: true,
@@ -113,7 +114,7 @@ onMounted(() => {
 
 <style lang="css">
 div#spieldose-sidebar-analyzer-container {
-  width: 400px;
+  width: 100%;
   height: 40px;
 }
 </style>
