@@ -18,8 +18,8 @@ export const usePlayerStore = defineStore("player", {
   state: () => ({
     data: {
       audio: null,
-      audioMotionAnalyzerSource: null,
-      fullScreenVisualizationSettings: null,
+      //audioMotionAnalyzerSource: null,
+      //fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
         volume: 1,
@@ -27,6 +27,7 @@ export const usePlayerStore = defineStore("player", {
         muted: false,
         repeatMode: "none",
         shuffle: false,
+        /*
         sideBarTopArt: {
           mode: "normal",
         },
@@ -34,7 +35,9 @@ export const usePlayerStore = defineStore("player", {
           visible: true,
           mode: 7,
         },
+        */
       },
+      /*
       currentPlaylistIndex: 0,
       playlists: [
         {
@@ -63,11 +66,13 @@ export const usePlayerStore = defineStore("player", {
         },
         playlist: null,
       },
+      */
     },
   }),
   getters: {
     getAudioInstance: (state) => state.data.audio,
     hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
+    /*
     getAudioMotionAnalyzerSource: (state) =>
       state.data.audioMotionAnalyzerSource,
     getFullScreenVisualizationSettings: (state) =>
@@ -79,10 +84,12 @@ export const usePlayerStore = defineStore("player", {
     hasSidebarTopArtAnimationMode: (state) =>
       state.data.player.sideBarTopArt.mode == "animation",
     getPlayerStatus: (state) => state.data.player.status,
+    */
     isMuted: (state) => state.data.player.muted,
     isPlaying: (state) => state.data.player.status == "playing",
     isStopped: (state) => state.data.player.status == "stopped",
     isPaused: (state) => state.data.player.status == "paused",
+    /*
     getVolume: (state) => state.data.player.volume,
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
     getRepeatMode: (state) => state.data.player.repeatMode,
@@ -157,6 +164,7 @@ export const usePlayerStore = defineStore("player", {
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex <
       state.data.currentPlaylist.totalTracks - 1,
+      */
   },
   actions: {
     create: function (src) {
@@ -174,8 +182,8 @@ export const usePlayerStore = defineStore("player", {
         // required for radio stations streams
         this.data.audio.crossOrigin = "anonymous";
       }
-      this.restoreFullScreenVisualizationSettings();
-      this.restorePlayerSettings(this.hasPreviousUserInteractions);
+      //this.restoreFullScreenVisualizationSettings();
+      //this.restorePlayerSettings(this.hasPreviousUserInteractions);
     },
     setAudioSource(src) {
       if (src !== undefined && src) {
@@ -187,6 +195,7 @@ export const usePlayerStore = defineStore("player", {
         }
       }
     },
+    /*
     setAudioMotionAnalyzerSource: function (source) {
       this.data.audioMotionAnalyzerSource = source;
     },
@@ -217,25 +226,6 @@ export const usePlayerStore = defineStore("player", {
     },
     restorePlayerSettings: function (userInteracted) {
       // TODO: BASIL
-      /*
-      const basil = useBasil(localStorageBasilOptions);
-      const playerSettings = basil.get("playerSettings");
-      if (playerSettings) {
-        this.data.player = playerSettings;
-        this.data.player.status = "stopped";
-        this.data.player.userInteracted =
-          userInteracted !== undefined ? userInteracted == true : false;
-        if (this.data.audio) {
-          this.data.audio.volume = this.data.player.volume;
-          this.data.audio.muted = this.data.player.muted;
-        }
-      } else {
-        if (this.data.audio) {
-          this.data.audio.volume = this.data.player.volume;
-          this.data.audio.muted = this.data.player.muted;
-        }
-      }
-        */
     },
     setVolume: function (volume) {
       if (volume >= 0 && volume <= 1) {
@@ -258,6 +248,7 @@ export const usePlayerStore = defineStore("player", {
         this.data.audio.currentTime = time;
       }
     },
+    */
     play: function (ignoreStatus) {
       if (this.hasPreviousUserInteractions) {
         if (ignoreStatus) {
@@ -333,6 +324,7 @@ export const usePlayerStore = defineStore("player", {
         this.data.player.status = "stopped";
       }
     },
+    /*
     toggleRepeatMode: function () {
       switch (this.data.player.repeatMode) {
         case "none":
@@ -395,34 +387,11 @@ export const usePlayerStore = defineStore("player", {
     },
     restoreFullScreenVisualizationSettings: function () {
       // TODO: BASIL
-      /*
-      const basil = useBasil(localStorageBasilOptions);
-      const fullScreenVisualizationSettings = basil.get(
-        "fullScreenVisualizationSettings",
-      );
-      if (fullScreenVisualizationSettings) {
-        try {
-          this.data.fullScreenVisualizationSettings = JSON.parse(
-            fullScreenVisualizationSettings,
-          );
-        } catch (e) {
-          // console.error("error");
-        }
-      }
-        */
     },
     saveFullScreenVisualizationSettings(settings) {
       this.data.fullScreenVisualizationSettings = settings;
       // TODO: BASIL
-      /*
-      const basil = useBasil(localStorageBasilOptions);
-      basil.set(
-        "fullScreenVisualizationSettings",
-        this.data.fullScreenVisualizationSettings
-          ? JSON.stringify(this.data.fullScreenVisualizationSettings)
-          : null,
-      );
-      */
     },
+    */
   },
 });
