@@ -72,12 +72,12 @@ onMounted(() => {
 <style>
 .contenedor {
   z-index: 200;
-  width: 200px;
+  width: 300px;
   height: 20px;
   background: linear-gradient(135deg, #dcdcdc 20%, #a9a9a9 50%, #dcdcdc 80%);
   position: relative;
-  left: 400px;
-  top: 10px;
+  left: 390px;
+  top: 20px;
   animation: rotar 5s infinite;
   transform-origin: left center;
 }
@@ -88,7 +88,7 @@ onMounted(() => {
   }
 
   100% {
-    transform: rotate(100deg);
+    transform: rotate(120deg);
   }
 }
 </style>
