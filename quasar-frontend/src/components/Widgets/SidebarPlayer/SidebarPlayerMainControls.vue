@@ -19,6 +19,8 @@
 import { computed } from "vue";
 import { usePlayerStore } from 'src/stores/player';
 
+const emit = defineEmits(['changeTrack']);
+
 const props = defineProps({
   disabled: {
     type: Boolean,
@@ -41,11 +43,13 @@ function onTogglePlayPauseResume() {
 
 function onSkipPrevious() {
   playerStore.interact();
+  emit('changeTrack');
   // TODO
 }
 
 function onSkipNext() {
   playerStore.interact();
+  emit('changeTrack');
   // TODO
 }
 

@@ -8,7 +8,7 @@
     <SidebarPlayerSpectrumAnalyzer />
     <SidebarPlayerVolumeControl />
     <SidebarPlayerTrackInfo />
-    <SidebarPlayerMainControls />
+    <SidebarPlayerMainControls @changeTrack="refresh" />
     <SidebarPlayerSeekControl />
   </q-card>
 </template>
@@ -41,7 +41,6 @@ const refresh = () => {
     if (successResponse.data.file.trackInfo.album.mbId) {
       imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-250`);
       imageUrl.value = "https://m.media-amazon.com/images/I/715kGo2MwhL._SL1200_.jpg";
-      console.log(imageUrl.value);
     } else {
       imageUrl.value = "images/vinyl.png";
     }

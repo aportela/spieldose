@@ -164,7 +164,7 @@ export const usePlayerStore = defineStore("player", {
     },
     */
     allowSkipPrevious: (state) =>
-      false
+      true
       /*
       state.data.currentPlaylist.totalTracks > 0 &&
       state.data.currentPlaylist.currentTrackIndex > 0
@@ -175,7 +175,7 @@ export const usePlayerStore = defineStore("player", {
       state.data.currentPlaylist.currentTrackIndex <
       state.data.currentPlaylist.totalTracks - 1,
       */
-      false,
+      true,
   },
   actions: {
     create: function (src) {
