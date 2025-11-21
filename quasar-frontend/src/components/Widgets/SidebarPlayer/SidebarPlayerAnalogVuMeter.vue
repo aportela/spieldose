@@ -1,5 +1,11 @@
 <template>
-  <canvas id="vu-meter" style="width: 100%; height: 200px; background: url('images/vu-meter.png') no-repeat"></canvas>
+  <div
+    style="position: relative; width: 100%; height: 200px; background-color: #c87f2c; background2: url('images/vu-meter.png') no-repeat">
+    <span
+      style="display: block; position: absolute; bottom: 30px;width: 100%;text-align: center;font-size: 50px; font-weight: bold; color: #472a0f;">VU</span>
+
+    <canvas id="vu-meter" style="width: 100%; height: 200px;"></canvas>
+  </div>
 </template>
 
 <script setup>
@@ -151,7 +157,7 @@ onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
   createAudioMotionAnalyzer(defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
   createVumeter();
-  drawCanvas(mapEnergyToAngle(0));
+  drawCanvas(mapEnergyToAngle(0.5));
 });
 
 
