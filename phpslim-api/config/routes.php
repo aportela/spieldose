@@ -176,6 +176,66 @@ return function (App $app) {
                 });
             });
 
+            $group->group('/user', function (RouteCollectorProxy $routeCollectorProxy) use ($container, $initialState): void {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+
+                $routeCollectorProxy->get('/profile', function (Request $request, Response $response, array $args) use ($dbh, $initialState): \Psr\Http\Message\MessageInterface {
+                    $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
+                    $user->get($dbh);
+                    unset($user->password);
+                    unset($user->passwordHash);
+                    $payload = \Spieldose\Utils::getJSONPayload(
+                        [
+                            'initialState' => $initialState,
+                            'data' => $user
+                        ]
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                });
+
+                $routeCollectorProxy->put('/profile', function (Request $request, Response $response, array $args) use ($dbh, $initialState): \Psr\Http\Message\MessageInterface {
+                    $params = $request->getParsedBody();
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+
+                    if (! (array_key_exists("email", $params) && is_string($params["email"]))) {
+                        throw new \Spieldose\Exception\InvalidParamsException("email");
+                    }
+
+                    $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
+                    $user->get($dbh);
+                    if ($params["email"] !== \Spieldose\UserSession::getEmail()) {
+                        $tmpUser = new \Spieldose\User(
+                            "",
+                            $params["email"]
+                        );
+                        if ($tmpUser->exists($dbh)) {
+                            throw new \Spieldose\Exception\AlreadyExistsException("email");
+                        }
+                    }
+
+                    $user->email = $params["email"];
+                    $user->password = array_key_exists("password", $params) && is_string($params["password"]) ? $params["password"] : "";
+                    $user->update($dbh);
+                    unset($user->password);
+                    unset($user->passwordHash);
+                    $payload = \Spieldose\Utils::getJSONPayload(
+                        [
+                            'initialState' => $initialState,
+                            'data' => $user
+                        ]
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+
             $group->group('/browse', function (RouteCollectorProxy $group) use ($container, $initialState) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {

@@ -25,15 +25,18 @@
                 @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
             </p>
             <p>
-              <q-toggle v-model="showPeaks" label="show peaks" @update:model-value="onChangeShowPeaks" />
-              <q-toggle v-model="ledBars" label="led bars" @update:model-value="onChangeLedBars" />
-              <q-toggle v-model="trueLeds" label="true leds" :disable="!ledBars"
+              <q-toggle v-model="showPeaks" :disable="!showMiniSpectrumAnalyzer" label="show peaks"
+                @update:model-value="onChangeShowPeaks" />
+              <q-toggle v-model="ledBars" :disable="!showMiniSpectrumAnalyzer" label="led bars"
+                @update:model-value="onChangeLedBars" />
+              <q-toggle v-model="trueLeds" :disable="!showMiniSpectrumAnalyzer || !ledBars" label="true leds"
                 @update:model-value="onChangeTrueLeds" />
             </p>
-            <p class="q-mt-lg"><q-slider label label-always :label-value="'Height: ' + height + 'px'" v-model="height"
-                :min="30" :max="180" :step="1" v-on:update:model-value="onChangeHeight" /></p>
-            <p><q-btn-toggle size="md" v-model="gradient" v-on:update:model-value="onChangeGradient"
-                toggle-color="primary" no-caps :options="[
+            <p class="q-mt-lg"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
+                :label-value="'Height: ' + height + 'px'" v-model="height" :min="30" :max="180" :step="1"
+                v-on:update:model-value="onChangeHeight" /></p>
+            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="gradient"
+                v-on:update:model-value="onChangeGradient" toggle-color="primary" no-caps :options="[
                   { label: 'spieldose', value: 'spieldose' },
                   { label: 'classic', value: 'classic' },
                   { label: 'orangered', value: 'orangered' },
@@ -41,15 +44,15 @@
                   { label: 'rainbow', value: 'rainbow' },
                   { label: 'steelblue', value: 'steelblue' },
                 ]" /></p>
-            <p><q-btn-toggle size="md" v-model="channelLayout" v-on:update:model-value="onChangeChannelLayout"
-                toggle-color="primary" no-caps :options="[
+            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="channelLayout"
+                v-on:update:model-value="onChangeChannelLayout" toggle-color="primary" no-caps :options="[
                   { label: 'Single channel', value: 'single' },
                   { label: 'Dual channel (overlay)', value: 'dual-combined' },
                   { label: 'Dual channel (side by side)', value: 'dual-horizontal' },
                   { label: 'Dual channel (top/bottom)', value: 'dual-vertical' },
                 ]" /></p>
-            <p><q-btn-toggle size="md" v-model="fps" v-on:update:model-value="onChangeFPS" toggle-color="primary"
-                no-caps :options="[
+            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="fps"
+                v-on:update:model-value="onChangeFPS" toggle-color="primary" no-caps :options="[
                   { label: '10fps', value: 10 },
                   { label: '15fps', value: 15 },
                   { label: '30fps', value: 30 },
@@ -59,8 +62,8 @@
                   { label: '144fps', value: 144 },
                   { label: 'unlimited fps', value: 0 },
                 ]" /></p>
-            <p><q-btn-toggle size="md" v-model="mode" v-on:update:model-value="onChangeMode" toggle-color="primary"
-                no-caps :options="[
+            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="mode"
+                v-on:update:model-value="onChangeMode" toggle-color="primary" no-caps :options="[
                   { label: '240 bands', value: 1 },
                   { label: '120 bands', value: 2 },
                   { label: '80 bands', value: 3 },
@@ -70,8 +73,9 @@
                   { label: '20 bands', value: 7 },
                   { label: '10 bands', value: 8 },
                 ]" /></p>
-            <p class="q-mt-xl"><q-slider label label-always :label-value="'Bar space: ' + barSpace" v-model="barSpace"
-                :min="0.0" :max="1.0" :step="0.01" v-on:update:model-value="onChangeBarSpace" /></p>
+            <p class="q-mt-xl"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
+                :label-value="'Bar space: ' + barSpace" v-model="barSpace" :min="0.0" :max="1.0" :step="0.01"
+                v-on:update:model-value="onChangeBarSpace" /></p>
           </q-card-section>
         </q-card>
       </div>
