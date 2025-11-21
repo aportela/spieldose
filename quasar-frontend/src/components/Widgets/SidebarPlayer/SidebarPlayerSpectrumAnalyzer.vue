@@ -135,15 +135,11 @@ const createAudioMotionAnalyzer = (defaultOptions, start) => {
     analyzer.value.registerGradient('spieldose', gradientOptions);
     analyzer.value.gradient = miniSpectrumAnalyzerSettingsStore.currentGradient;
     if (!audioMotionAnalyzerStore.hasOtherRuningInstances) {
-      console.log("no habia otras");
       audioMotionAnalyzerStore.instance();
-    } else {
-      console.log("si habia otras");
     }
     if (start) {
       analyzer.value.start();
     }
-
   }
 };
 
@@ -160,7 +156,6 @@ onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
   createAudioMotionAnalyzer(defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
 });
-
 
 onBeforeUnmount(() => {
   destroyAudioMotionAnalyzer();
