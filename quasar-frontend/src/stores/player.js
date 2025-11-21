@@ -89,16 +89,6 @@ export const usePlayerStore = defineStore("player", {
   getters: {
     audioInstance: (state) => state.data.audio,
     hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
-    /*
-    getAudioMotionAnalyzerSource: (state) =>
-      state.data.audioMotionAnalyzerSource,
-    getFullScreenVisualizationSettings: (state) =>
-      state.data.fullScreenVisualizationSettings,
-    isSidebarAudioMotionAnalyzerVisible: (state) =>
-      state.data.player.sidebarAudioMotionAnalyzer.visible,
-    getSidebarAudioMotionAnalyzerMode: (state) =>
-      state.data.player.sidebarAudioMotionAnalyzer.mode,
-    */
     sidebarTopArtAnimated: (state) =>
       state.data.player.sideBarTopArt.mode == "animation",
     status: (state) => state.data.player.status,
