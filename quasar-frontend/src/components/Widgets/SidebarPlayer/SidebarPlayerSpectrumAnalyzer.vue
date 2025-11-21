@@ -1,4 +1,5 @@
 <template>
+  <canvas id="vu-meter" style="width: 100%; height: 200px"></canvas>
   <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
     :style="{ height: miniSpectrumAnalyzerSettingsStore.currentHeight + 'px' }"
     :title="t('Toggle analyzer octave bands number')" @click="onToggleCurrentMode"></div>
@@ -45,6 +46,7 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
   } else {
     if (newValue) {
       analyzer.value.start();
+      updateVU();
     }
   }
 });
@@ -145,9 +147,74 @@ const destroyAudioMotionAnalyzer = () => {
   }
 };
 
+function getRMS(values) {
+  /*
+  let sumSquares = 0;
+  for (let i = 0; i < values.length; i++) {
+    sumSquares += values[i] * values[i];
+  }
+  return Math.sqrt(sumSquares / values.length);
+  */
+}
+
+let canvas = null;
+let ctx = null;
+let rect = null;
+let img = null;
+function createVumeter() {
+  canvas = document.getElementById('vu-meter');
+  ctx = canvas.getContext('2d');
+  img = new Image();
+  img.src = "images/vu-meter.png";
+}
+
+let displayedEnergy = 0;
+function smoothEnergy(target) {
+  displayedEnergy += (target - displayedEnergy) * 0.1; // factor de suavizado
+  return displayedEnergy;
+}
+
+
+function drawNeedle(angle) {
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height - 10;
+  const radius = 100;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.translate(centerX, centerY);
+  ctx.rotate((angle * Math.PI) / 180);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, -radius + 3);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#222';
+  ctx.stroke();
+  ctx.restore();
+}
+function mapEnergyToAngle(energy) {
+  const minAngle = -65;
+  const maxAngle = +90;
+  return minAngle + (maxAngle - minAngle) * energy;
+}
+
+function updateVU() {
+  const energy = smoothEnergy(analyzer.value.getEnergy());
+
+  const angle = mapEnergyToAngle(energy);
+  drawNeedle(angle);
+
+  requestAnimationFrame(updateVU);
+}
+
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
   createAudioMotionAnalyzer(defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
+  createVumeter();
 });
 
 
