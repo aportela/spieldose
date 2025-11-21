@@ -8,6 +8,7 @@
       :animation="playerStore.sidebarTopArtAnimated" :animated="playerStore.isPlaying"
       @change="playerStore.toggleSidebarTopArtAnimationMode()">
     </SidebarPlayerAlbumCover>
+    <SidebarPlayerAnalogVuMeter></SidebarPlayerAnalogVuMeter>
     <SidebarPlayerSpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
     <SidebarPlayerVolumeControl />
     <SidebarPlayerTrackInfo />
@@ -21,6 +22,7 @@ import { ref, watch, onMounted } from "vue";
 
 import { default as SidebarPlayerAlbumCover } from "./SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerSpectrumAnalyzer } from "./SidebarPlayerSpectrumAnalyzer.vue";
+import { default as SidebarPlayerAnalogVuMeter } from "./SidebarPlayerAnalogVuMeter.vue";
 import { default as SidebarPlayerVolumeControl } from './SidebarPlayerVolumeControl.vue';
 import { default as SidebarPlayerTrackInfo } from './SidebarPlayerTrackInfo.vue';
 import { default as SidebarPlayerMainControls } from './SidebarPlayerMainControls.vue';
