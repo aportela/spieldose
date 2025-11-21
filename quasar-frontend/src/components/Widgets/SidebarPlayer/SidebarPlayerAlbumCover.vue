@@ -7,8 +7,8 @@
   </div>
   <div id="spieldose-sidebar-fullcover-container" class="cursor-pointer" v-else @click="toggleMode"
     :title="t('Toggle art animation')">
-    <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" width="400px"
-      height="400px" spinner-color="pink" />
+    <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
+      width="100%" spinner-color="pink" />
     <q-img v-else src="images/vinyl.png" alt="Vinyl" width="400px" height="400px" spinner-color="pink" />
   </div>
 </template>
