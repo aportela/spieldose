@@ -1,6 +1,6 @@
 <template>
 
-  <q-card>
+  <q-card class="overflow-hidden">
     <!--
     <div class="contenedor"></div>
     -->
@@ -8,7 +8,11 @@
       :animation="playerStore.sidebarTopArtAnimated" :animated="playerStore.isPlaying"
       @change="playerStore.toggleSidebarTopArtAnimationMode()">
     </SidebarPlayerAlbumCover>
-    <SidebarPlayerAnalogVuMeter></SidebarPlayerAnalogVuMeter>
+    <!--
+    <div style="width: 100%; height: 200px;">
+      <SidebarPlayerAnalogVuMeter></SidebarPlayerAnalogVuMeter>
+    </div>
+    -->
     <SidebarPlayerSpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
     <SidebarPlayerVolumeControl />
     <SidebarPlayerTrackInfo />
