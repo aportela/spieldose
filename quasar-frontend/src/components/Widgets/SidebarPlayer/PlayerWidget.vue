@@ -49,7 +49,6 @@ const { getMediumURL } = useThumbnail();
 
 const imageUrl = ref("images/vinyl.png");
 
-
 const refresh = () => {
   imageUrl.value = null;
   api.file.getRandom().then((successResponse) => {
@@ -69,10 +68,6 @@ const refresh = () => {
       successResponse.data.file.trackInfo.album.artist.mbId,
       successResponse.data.file.trackInfo.image
     );
-    playerStore.setAudioSource("/api2/file/raw/" + successResponse.data.file.id);
-    if (playerStore.hasPreviousUserInteractions) {
-      playerStore.play(true);
-    }
 
     if (successResponse.data.file.trackInfo.album.mbId) {
       playerStore.setTmpTrack(successResponse.data.file.trackInfo);
