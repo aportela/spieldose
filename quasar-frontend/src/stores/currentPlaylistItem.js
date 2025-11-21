@@ -1,11 +1,17 @@
 import { defineStore } from "pinia";
 
+import { useFormatDates } from "src/composables/useFormatDates";
+
+const { currentTimestamp } = useFormatDates();
+
 export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
   state: () => ({
     file: null,
     stream: null,
+    lastTimestamp: currentTimestamp(),
   }),
   getters: {
+    t: (state) => state.timestamp,
     isTrack: (state) => state.file !== null,
     isRadioStation: (state) => state.file !== null,
     track: (state) => state.file,
@@ -28,6 +34,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       albumArtistMBId = null,
       image,
     ) {
+      this.lastTimestamp = currentTimestamp();
       this.stream = null;
       this.file = {
         id: fileId,
@@ -56,6 +63,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
     },
     // TODO
     setRadioStation(id = null, name = null, url = null, image = null) {
+      this.lastTimestamp = currentTimestamp();
       this.file = null;
       this.stream = {
         id: id,
