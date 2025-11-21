@@ -1,20 +1,41 @@
 import { defineStore } from "pinia";
 
-import { useFormatDates } from "src/composables/useFormatDates";
-
-const { currentTimestamp } = useFormatDates();
+import { date } from "quasar";
 
 export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
   state: () => ({
     file: null,
     stream: null,
-    lastTimestamp: currentTimestamp(),
+    lastTimestamp: 0,
   }),
   getters: {
     t: (state) => state.timestamp,
     isTrack: (state) => state.file !== null,
     isRadioStation: (state) => state.file !== null,
-    track: (state) => state.file,
+    trackFileId: (state) => (state.file !== null ? state.file.id : null),
+    trackFileName: (state) => (state.file !== null ? state.file.name : null),
+    trackFileSize: (state) => (state.file !== null ? state.file.size : 0),
+    trackMimeType: (state) => (state.file !== null ? state.file.mime : null),
+    trackPlayTimeSeconds: (state) =>
+      state.file !== null ? state.file.trackInfo.playTimeSeconds : null,
+    trackTitle: (state) =>
+      state.file !== null ? state.file.trackInfo.title : null,
+    trackArtistName: (state) =>
+      state.file !== null ? state.file.trackInfo.artist.name : null,
+    trackArtistMBId: (state) =>
+      state.file !== null ? state.file.trackInfo.artist.mbId : null,
+    trackAlbumTitle: (state) =>
+      state.file !== null ? state.file.trackInfo.album.title : null,
+    trackAlbumMBId: (state) =>
+      state.file !== null ? state.file.trackInfo.album.mbId : null,
+    trackAlbumYear: (state) =>
+      state.file !== null ? state.file.trackInfo.album.year : null,
+    trackAlbumArtistName: (state) =>
+      state.file !== null ? state.file.trackInfo.album.artist.name : null,
+    trackAlbumArtistMBId: (state) =>
+      state.file !== null ? state.file.trackInfo.album.artist.mbId : null,
+    trackImage: (state) =>
+      state.file !== null ? state.file.trackInfo.image : null,
     radioStation: (state) => state.stream,
   },
   actions: {
@@ -34,7 +55,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       albumArtistMBId = null,
       image,
     ) {
-      this.lastTimestamp = currentTimestamp();
+      this.lastTimestamp = Number(date.formatDate(new Date(), "x"));
       this.stream = null;
       this.file = {
         id: fileId,
@@ -63,7 +84,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
     },
     // TODO
     setRadioStation(id = null, name = null, url = null, image = null) {
-      this.lastTimestamp = currentTimestamp();
+      this.lastTimestamp = Number(date.formatDate(new Date(), "x"));
       this.file = null;
       this.stream = {
         id: id,

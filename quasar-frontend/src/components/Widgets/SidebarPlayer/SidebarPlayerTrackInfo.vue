@@ -1,25 +1,30 @@
 <template>
-  <div class="q-px-md" style="max-width: 400px;" v-if="isTrack">
-    <p class="text-center text-weight-bolder ellipsis text-pink q-my-none" :title="track.title || '&nbsp;'">{{
-      track.title || null }}</p>
+  <div class="q-px-md" style="max-width: 400px;" v-if="currentPlaylistItemStore.isTrack">
+    <p class="text-center text-weight-bolder ellipsis text-pink q-my-none"
+      :title="currentPlaylistItemStore.trackTitle || '&nbsp;'">{{
+        currentPlaylistItemStore.trackTitle || '&nbsp;' }}</p>
     <p class="text-center ellipsis">
-      <router-link v-if="track.artist.name" style="text-decoration: none;"
-        :to="{ name: 'artist', params: { name: track.artist.name }, query: { mbid: track.artist.mbId, tab: 'overview' } }"
-        :title="track.artist.name">by {{ track.artist.name }}</router-link>
+      <router-link v-if="currentPlaylistItemStore.trackArtistName" style="text-decoration: none;"
+        :to="{ name: 'artist', params: { name: currentPlaylistItemStore.trackArtistName }, query: { mbid: currentPlaylistItemStore.trackArtistMBId, tab: 'overview' } }"
+        :title="currentPlaylistItemStore.trackArtistName">by {{ currentPlaylistItemStore.trackArtistName
+        }}</router-link>
       <span v-else>&nbsp;</span>
     </p>
 
-    <p class="text-center ellipsis" :title="track.album.title || null">
+    <p class="text-center ellipsis" :title="currentPlaylistItemStore.trackAlbumTitle">
       <router-link style="text-decoration: none;"
-        :to="{ name: 'album', params: { title: track.album.title }, query: { mbId: track.album.mbId, artistName: track.album.artist.name, artistMBId: track.album.artist.mbId, year: track.album.year } }"
-        v-if="track.album.title">{{ track.album.title }}
-        <br /><span v-if="track.album.artist.name">by {{ track.album.artist.name }}</span>
-        <br /><span v-if="track.album.year">({{ track.album.year }})</span>
+        :to="{ name: 'album', params: { title: currentPlaylistItemStore.trackAlbumTitle }, query: { mbId: currentPlaylistItemStore.trackAlbumMBId, artistName: currentPlaylistItemStore.trackAlbumArtistName, artistMBId: currentPlaylistItemStore.trackAlbumArtistMBId, year: currentPlaylistItemStore.trackAlbumYear } }"
+        v-if="currentPlaylistItemStore.trackAlbumTitle">{{ currentPlaylistItemStore.trackAlbumTitle }}
+        <br /><span v-if="currentPlaylistItemStore.trackAlbumArtistName">by {{
+          currentPlaylistItemStore.trackAlbumArtistName }}</span>
+        <br /><span v-if="currentPlaylistItemStore.trackAlbumYear">({{ currentPlaylistItemStore.trackAlbumYear
+        }})</span>
       </router-link>
       <span v-else>&nbsp;</span>
     </p>
   </div>
-  <div class="q-px-md" style="max-width: 400px;" v-else-if="isRadioStation">
+  <div class="q-px-md" style="max-width: 400px;" v-else-if="currentPlaylistItemStore.isRadioStation">
+    <!--
     <p class="text-center text-weight-bolder ellipsis text-pink" :title="radioStation.name">
       {{ radioStation.name || "&nbsp;" }}</p>
     <p class="text-center">
@@ -35,8 +40,10 @@
         radioStation.url }}</a>
       <span>&nbsp;</span>
     </p>
+    -->
   </div>
   <div v-else>
+    TODO
     <p class="text-weight-bolder">&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
@@ -45,20 +52,8 @@
 
 <script setup>
 
-import { ref, computed } from "vue";
-import { usePlayerStore } from 'src/stores/player';
+import { useCurrentPlaylistItemStore } from 'src/stores/currentPlaylistItem';
 
-const playerStore = usePlayerStore();
-
-playerStore.tmpTrack
-const props = defineProps({
-  //track: Object,
-  //radioStation: Object
-});
-
-const track = computed(() => playerStore.tmpTrack);
-
-const isTrack = ref(true); // computed(() => props.track != null);
-const isRadioStation = ref(false); // computed(() => props.radioStation != null);
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
 </script>
