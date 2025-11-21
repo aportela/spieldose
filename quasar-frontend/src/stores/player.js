@@ -20,7 +20,6 @@ export const usePlayerStore = defineStore("player", {
   state: () => ({
     data: {
       audio: null,
-      audioMotionAnalyzerSource: null,
       //fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
@@ -219,9 +218,6 @@ export const usePlayerStore = defineStore("player", {
           this.play(true);
         }
       }
-    },
-    setAudioMotionAnalyzerSource: function (source) {
-      this.data.audioMotionAnalyzerSource = source;
     },
     toggleSidebarAudioMotionAnalyzer: function () {
       this.data.player.sidebarAudioMotionAnalyzer.visible =
