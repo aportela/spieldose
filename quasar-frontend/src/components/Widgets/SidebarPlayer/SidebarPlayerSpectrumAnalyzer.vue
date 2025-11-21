@@ -25,6 +25,7 @@ const defaultAnalyzerOptions = {
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
+  loRes: miniSpectrumAnalyzerSettingsStore.isLoResActive,
   maxFPS: miniSpectrumAnalyzerSettingsStore.currentFPS,
   mode: miniSpectrumAnalyzerSettingsStore.currentMode,
   ledBars: miniSpectrumAnalyzerSettingsStore.ledBarsActive,
@@ -54,7 +55,7 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
 });
 
 watch(() => miniSpectrumAnalyzerSettingsStore.currentMode, (newValue) => {
-  if (analyzer.value && newValue >= 0 && newValue <= 144) {
+  if (analyzer.value && (newValue == 10 || (newValue >= 0 && newValue <= 8))) {
     analyzer.value.setOptions({ mode: newValue, barSpace: miniSpectrumAnalyzerSettingsStore.currentBarSpace });
   }
 });
@@ -104,6 +105,12 @@ watch(() => miniSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
 watch(() => miniSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
   if (analyzer.value) {
     analyzer.value.setOptions({ trueLeds: newValue });
+  }
+});
+
+watch(() => miniSpectrumAnalyzerSettingsStore.isLoResActive, (newValue) => {
+  if (analyzer.value) {
+    analyzer.value.setOptions({ loRes: newValue });
   }
 });
 
@@ -167,5 +174,10 @@ onBeforeUnmount(() => {
 div#spieldose-sidebar-analyzer-container {
   width: 100%;
   /* height: 40px; */
+}
+
+canvas {
+  display: block;
+  width: 100%;
 }
 </style>

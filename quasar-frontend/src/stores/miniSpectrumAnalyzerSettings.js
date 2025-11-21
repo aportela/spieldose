@@ -13,6 +13,7 @@ const {
   playerMiniAnalyzerLedBars,
   playerMiniAnalyzerTrueLeds,
   playerMiniAnalyzerGradient,
+  playerMiniAnalyzerLoRes,
 } = useLocalStorage();
 
 export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
@@ -29,6 +30,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       ledBars: playerMiniAnalyzerLedBars.get() ?? true,
       trueLeds: playerMiniAnalyzerTrueLeds.get() ?? false,
       gradient: playerMiniAnalyzerGradient.get() ?? "spieldose",
+      loRes: playerMiniAnalyzerLoRes.get() ?? false,
     }),
 
     getters: {
@@ -42,6 +44,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       ledBarsActive: (state) => state.ledBars,
       trueLedsActive: (state) => state.trueLeds,
       currentGradient: (state) => state.gradient,
+      isLoResActive: (state) => state.loRes
     },
     actions: {
       setVisibility(visible) {
@@ -49,7 +52,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
         showMiniSpectrumAnalyzer.set(this.visible);
       },
       setMode(mode) {
-        if (mode > 0 && mode < 9) {
+        if (mode == 10 || (mode >= 0 && mode < 9)) {
           this.mode = mode;
           playerMiniAnalyzerMode.set(this.mode);
         } else {
@@ -130,6 +133,10 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
             gradient,
           );
         }
+      },
+      setLoRes(active) {
+        this.loRes = !!active;
+        playerMiniAnalyzerLoRes.set(this.loRes);
       },
     },
   },

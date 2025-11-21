@@ -21,8 +21,10 @@
           <q-separator />
           <q-card-section>
             <p>
-              <q-toggle v-model="showMiniSpectrumAnalyzer" label="show mini spectrum analyzer"
+              <q-toggle v-model="showMiniSpectrumAnalyzer" label="visible"
                 @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
+              <q-toggle v-model="loRes" :disable="!showMiniSpectrumAnalyzer" label="Low resolution"
+                @update:model-value="onChangeLoRes" />
             </p>
             <p>
               <q-toggle v-model="showPeaks" :disable="!showMiniSpectrumAnalyzer" label="show peaks"
@@ -31,6 +33,7 @@
                 @update:model-value="onChangeLedBars" />
               <q-toggle v-model="trueLeds" :disable="!showMiniSpectrumAnalyzer || !ledBars" label="true leds"
                 @update:model-value="onChangeTrueLeds" />
+
             </p>
             <p class="q-mt-lg"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
                 :label-value="'Height: ' + height + 'px'" v-model="height" :min="30" :max="180" :step="1"
@@ -64,6 +67,7 @@
                 ]" /></p>
             <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="mode"
                 v-on:update:model-value="onChangeMode" toggle-color="primary" no-caps :options="[
+                  { label: 'all', value: 0 },
                   { label: '240 bands', value: 1 },
                   { label: '120 bands', value: 2 },
                   { label: '80 bands', value: 3 },
@@ -72,6 +76,7 @@
                   { label: '30 bands', value: 6 },
                   { label: '20 bands', value: 7 },
                   { label: '10 bands', value: 8 },
+                  { label: 'line/area graph', value: 10 },
                 ]" /></p>
             <p class="q-mt-xl"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
                 :label-value="'Bar space: ' + barSpace" v-model="barSpace" :min="0.0" :max="1.0" :step="0.01"
@@ -105,6 +110,8 @@ const ledBars = ref(miniSpectrumAnalyzerSettings.ledBarsActive);
 
 const trueLeds = ref(miniSpectrumAnalyzerSettings.trueLedsActive);
 
+const loRes = ref(miniSpectrumAnalyzerSettings.isLoResActive);
+
 const channelLayout = ref(miniSpectrumAnalyzerSettings.currentChannelLayout);
 
 const fps = ref(miniSpectrumAnalyzerSettings.currentFPS);
@@ -131,6 +138,10 @@ watch(() => miniSpectrumAnalyzerSettings.ledBarsActive, (newValue) => {
 
 watch(() => miniSpectrumAnalyzerSettings.trueLedsActive, (newValue) => {
   trueLeds.value = newValue;
+});
+
+watch(() => miniSpectrumAnalyzerSettings.isLoResActive, (newValue) => {
+  loRes.value = newValue;
 });
 
 watch(() => miniSpectrumAnalyzerSettings.currentFPS, (newValue) => {
@@ -197,6 +208,9 @@ const onChangeTrueLeds = (active) => {
   miniSpectrumAnalyzerSettings.setTrueLeds(active);
 };
 
+const onChangeLoRes = (active) => {
+  miniSpectrumAnalyzerSettings.setLoRes(active);
+}
 
 </script>
 

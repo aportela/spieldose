@@ -233,6 +233,18 @@ export function useLocalStorage() {
     },
   };
 
+  const playerMiniAnalyzerLoRes = {
+    get() {
+      return get("playerMiniAnalyzerLoRes", false);
+    },
+    set(value) {
+      set("playerMiniAnalyzerLoRes", !!value);
+    },
+    remove() {
+      remove("playerMiniAnalyzerLoRes");
+    },
+  };
+
   return {
     jwt,
     email,
@@ -251,5 +263,6 @@ export function useLocalStorage() {
     playerMiniAnalyzerLedBars,
     playerMiniAnalyzerTrueLeds,
     playerMiniAnalyzerGradient,
+    playerMiniAnalyzerLoRes,
   };
 }
