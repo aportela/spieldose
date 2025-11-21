@@ -173,17 +173,11 @@ div#analog-vu-meter-container {
 
 .vu-scale {
   width: 100%;
-  /*
-  height: 160px;
-  */
   height: 100%;
   position: absolute;
   top: 0px;
   left: 50%;
   transform: translateX(-50%);
-  /*
-  margin: 50px auto;
-  */
   overflow: hidden;
 }
 
@@ -206,7 +200,7 @@ div#analog-vu-meter-container {
   border-right: none;
   border-bottom: none;
   */
-  border: 5px solid #222;
+  border: 2px solid #222;
   /*
   border-radius: 320px 320px 0 0;
   */
@@ -221,13 +215,10 @@ div#analog-vu-meter-container {
 .mark {
   position: absolute;
   left: 50%;
-  top: 10%;
-  transform-origin: 50% 180px;
+  top: 18%;
+  transform-origin: 50% 1300%;
   text-align: center;
   font-family: Arial, sans-serif;
-  /*
-  color: #f4c77a;
-  */
   color: #222;
 }
 
@@ -238,54 +229,49 @@ div#analog-vu-meter-container {
   width: 2px;
   height: 16px;
   background: #222;
-  /*
-  margin: 0 auto 4px auto;
-  */
 }
 
 /* range label */
 .mark span {
   position: absolute;
-  top: -24px;
+  top: -25px;
+  left: -4px;
   display: block;
-  /*
-  transform: rotate(calc(var(--angle) * -1));
-  */
   font-weight: bold;
 }
 
 .m-20 {
-  --angle: -60deg;
+  --angle: -51deg;
   transform: rotate(var(--angle));
 }
 
 .m-10 {
-  --angle: -52deg;
+  --angle: -43deg;
   transform: rotate(var(--angle));
 }
 
 .m-7 {
-  --angle: -44deg;
+  --angle: -34deg;
   transform: rotate(var(--angle));
 }
 
 .m-5 {
-  --angle: -37deg;
+  --angle: -26deg;
   transform: rotate(var(--angle));
 }
 
 .m-3 {
-  --angle: -29deg;
+  --angle: -19deg;
   transform: rotate(var(--angle));
 }
 
 .m-2 {
-  --angle: -20deg;
+  --angle: -12deg;
   transform: rotate(var(--angle));
 }
 
 .m-1 {
-  --angle: -10deg;
+  --angle: -6deg;
   transform: rotate(var(--angle));
 }
 
@@ -295,19 +281,19 @@ div#analog-vu-meter-container {
 }
 
 .m1 {
-  --angle: 20deg;
+  --angle: 17deg;
   transform: rotate(var(--angle));
   color: rgb(241, 10, 10);
 }
 
 .m2 {
-  --angle: 40deg;
+  --angle: 34deg;
   transform: rotate(var(--angle));
   color: rgb(241, 10, 10);
 }
 
 .m3 {
-  --angle: 60deg;
+  --angle: 51deg;
   transform: rotate(var(--angle));
   color: rgb(241, 10, 10);
 }
