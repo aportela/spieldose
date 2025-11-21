@@ -9,7 +9,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
     lastTimestamp: 0,
   }),
   getters: {
-    t: (state) => state.timestamp,
+    t: (state) => state.lastTimestamp,
     isTrack: (state) => state.file !== null,
     isRadioStation: (state) => state.file !== null,
     trackFileId: (state) => (state.file !== null ? state.file.id : null),
@@ -36,7 +36,6 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       state.file !== null ? state.file.trackInfo.album.artist.mbId : null,
     trackImage: (state) =>
       state.file !== null ? state.file.trackInfo.image : null,
-    radioStation: (state) => state.stream,
   },
   actions: {
     setTrack(
