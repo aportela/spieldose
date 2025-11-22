@@ -18,8 +18,7 @@
 
 import { computed } from "vue";
 import { usePlayerStore } from 'src/stores/player';
-
-const emit = defineEmits(['changeTrack']);
+import { usePlaylistActions } from "src/composables/usePlaylistActions";
 
 const props = defineProps({
   disabled: {
@@ -31,9 +30,9 @@ const props = defineProps({
 
 const playerStore = usePlayerStore();
 
+const { skipPrevious, skipNext } = usePlaylistActions();
 
 const playPauseResumeClass = computed(() => playerStore.status == 'playing' || playerStore.status == 'paused' ? 'text-pink-6' : '');
-
 const playPauseResumeIcon = computed(() => playerStore.status == 'paused' ? 'pause' : 'play_arrow');
 
 function onTogglePlayPauseResume() {
@@ -43,14 +42,14 @@ function onTogglePlayPauseResume() {
 
 function onSkipPrevious() {
   playerStore.interact();
-  emit('changeTrack');
   // TODO
+  skipPrevious();
 }
 
 function onSkipNext() {
   playerStore.interact();
-  emit('changeTrack');
   // TODO
+  skipNext();
 }
 
 </script>
