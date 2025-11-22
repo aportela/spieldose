@@ -54,10 +54,17 @@ class File
             $this->trackInfo->album->artist = new \stdClass();
             $this->trackInfo->album->artist->mbId = null;
             $this->trackInfo->album->artist->name = $results[0]->artist;
+            $this->trackInfo->imageURL = new \stdClass();
             if (! empty($results[0]->cover_filename)) {
-                $this->trackInfo->image = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $results[0]->directoryPathId;
+                $this->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $results[0]->directoryPathId;
+                $this->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $results[0]->directoryPathId;
+            } else if (! empty($results[0]->release_mbid)) {
+                $coverUrl = "https://coverartarchive.org/release/{$results[0]->release_mbid}/front-500";
+                $this->trackInfo->imageURL->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
+                $this->trackInfo->imageURL->normal = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
             } else {
-                $this->trackInfo->image = null;
+                $this->trackInfo->imageURL->small = null;
+                $this->trackInfo->imageURL->normal = null;
             }
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
