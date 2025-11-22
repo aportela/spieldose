@@ -11,7 +11,11 @@
           @click="onPlay"></q-icon>
         <span class="clear: both;"></span>
       </div>
-      <img class="vinyl no-cover" src="images/vinyl-medium.png" v-if="loaded || errors" />
+      <!--
+        vinyl svg credits:
+        https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
+      -->
+      <img class="vinyl no-cover" src="images/Vinyl_record.svg" v-if="loaded || errors" />
     </div>
     <div class="album-info">
       <p class="album-name" v-if="title" :title="title">
