@@ -4,10 +4,7 @@
     <!--
     <div class="contenedor"></div>
     -->
-    <SidebarPlayerAlbumCover :normalImage="imageUrl" :smallImage="imageUrl"
-      :animation="playerStore.sidebarTopArtAnimated" :animated="playerStore.isPlaying"
-      @change="playerStore.toggleSidebarTopArtAnimationMode()">
-    </SidebarPlayerAlbumCover>
+    <SidebarPlayerAlbumCover />
     <!--
     <div style="width: 100%; height: 200px;">
       <SidebarPlayerAnalogVuMeter></SidebarPlayerAnalogVuMeter>
@@ -66,23 +63,10 @@ const refresh = () => {
       successResponse.data.file.trackInfo.album.year,
       successResponse.data.file.trackInfo.album.artist.name,
       successResponse.data.file.trackInfo.album.artist.mbId,
-      successResponse.data.file.trackInfo.image
+      successResponse.data.file.trackInfo.imageURL.small,
+      successResponse.data.file.trackInfo.imageURL.normal,
     );
 
-    if (successResponse.data.file.trackInfo.album.mbId) {
-      playerStore.setTmpTrack(successResponse.data.file.trackInfo);
-      if (successResponse.data.file.trackInfo.image) {
-        imageUrl.value = successResponse.data.file.trackInfo.image;
-      } else if (successResponse.data.file.trackInfo.album.mbId) {
-        imageUrl.value = getMediumURL(`https://coverartarchive.org/release/${successResponse.data.file.trackInfo.album.mbId}/front-500`);
-      } else {
-        imageUrl.value = null;
-
-      }
-      //imageUrl.value = "https://m.media-amazon.com/images/I/715kGo2MwhL._SL1200_.jpg";
-    } else {
-      imageUrl.value = null;
-    }
   })
     .catch((errorResponse) => {
       console.error(errorResponse);
