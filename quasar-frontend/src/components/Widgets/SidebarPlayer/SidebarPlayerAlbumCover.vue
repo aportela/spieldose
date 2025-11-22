@@ -1,6 +1,6 @@
 <template>
   <div v-if="playerStore.currentVinylAnimation == 'rotate'" @click="toggleAnimation"
-    class="cursor-pointer overflow-hidden relative-position"
+    id="spieldose-sidebar-vinyl-container" class="cursor-pointer overflow-hidden relative-position full-width"
     style="background: url(images/vinyl.png) no-repeat; background-size: cover;"
     :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
     :title="t('Toggle art animation')">
@@ -49,7 +49,7 @@ const toggleAnimation = () => {
 </script>
 
 <style lang="css">
-div#spieldose-sidebar-vinyl-container2 {
+div#spieldose-sidebar-vinyl-container {
   aspect-ratio: 1;
 }
 
