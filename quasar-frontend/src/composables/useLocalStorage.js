@@ -245,6 +245,18 @@ export function useLocalStorage() {
     },
   };
 
+  const playerVinylAnimation = {
+    get() {
+      return get("playerVinylAnimation", null);
+    },
+    set(value) {
+      set("playerVinylAnimation", value);
+    },
+    remove() {
+      remove("playerVinylAnimation");
+    },
+  };
+
   return {
     jwt,
     email,
@@ -264,5 +276,6 @@ export function useLocalStorage() {
     playerMiniAnalyzerTrueLeds,
     playerMiniAnalyzerGradient,
     playerMiniAnalyzerLoRes,
+    playerVinylAnimation,
   };
 }
