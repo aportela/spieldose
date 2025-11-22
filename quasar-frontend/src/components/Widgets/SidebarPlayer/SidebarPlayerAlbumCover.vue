@@ -1,7 +1,11 @@
 <template>
+  <!--
+  vinyl svg credits:
+  https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
+  -->
   <div v-if="playerStore.currentVinylAnimation == 'rotate'" @click="toggleAnimation"
     id="spieldose-sidebar-vinyl-container" class="cursor-pointer overflow-hidden relative-position full-width"
-    style="background: url(images/vinyl.png) no-repeat; background-size: cover;"
+    style="background: url(images/Vinyl_record.svg) no-repeat; background-size: cover;"
     :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
     :title="t('Toggle art animation')">
     <q-img v-if="images.small" :src="images.small" @error="images.small = null" :ratio="1" img-class="vinyl_mini_cover"
@@ -10,7 +14,7 @@
   <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
       width="100%" spinner-color="pink" />
-    <q-img v-else src="images/vinyl.png" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
+    <q-img v-else src="images/Vinyl_record.svg" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
   </div>
 </template>
 
@@ -54,13 +58,13 @@ div#spieldose-sidebar-vinyl-container {
 }
 
 img.vinyl_mini_cover {
-  width: 30%;
-  height: 30%;
+  width: 27%;
+  height: 27%;
   position: absolute;
-  left: 50.5%;
-  top: 50.5%;
+  left: 50%;
+  top: 50%;
   transform: translateX(-50%) translateY(-50%);
-  border: 1px solid #454545;
+  border: 0px solid #454545;
   border-radius: 100%;
 }
 
