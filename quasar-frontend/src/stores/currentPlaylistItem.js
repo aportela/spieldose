@@ -34,8 +34,10 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       state.file !== null ? state.file.trackInfo.album.artist.name : null,
     trackAlbumArtistMBId: (state) =>
       state.file !== null ? state.file.trackInfo.album.artist.mbId : null,
-    trackImage: (state) =>
-      state.file !== null ? state.file.trackInfo.image : null,
+    trackImageSmall: (state) =>
+      state.file !== null ? state.file.trackInfo.image.small : null,
+    trackImageNormal: (state) =>
+      state.file !== null ? state.file.trackInfo.image.normal : null,
   },
   actions: {
     setTrack(
@@ -52,7 +54,8 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       albumYear = null,
       albumArtistName = null,
       albumArtistMBId = null,
-      image,
+      imageSmall = null,
+      imageNormal = null,
     ) {
       this.lastTimestamp = Number(date.formatDate(new Date(), "x"));
       this.stream = null;
@@ -77,7 +80,10 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
               mbId: albumArtistMBId,
             },
           },
-          image: image,
+          image: {
+            small: imageSmall,
+            normal: imageNormal,
+          },
         },
       };
     },
