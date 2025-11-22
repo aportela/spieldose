@@ -1,5 +1,4 @@
 import { useAPI } from "src/composables/useAPI";
-import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
@@ -34,14 +33,14 @@ const randomTrack = () => {
 };
 
 export function usePlaylistActions() {
-  const skipPrevious = () => {
+  const skipToPreviousItem = () => {
     console.log("TODO: skip previous");
     randomTrack();
   };
-  const skipNext = () => {
+  const skipToNextItem = () => {
     console.log("TODO: skip next");
     randomTrack();
   };
 
-  return { randomTrack, skipPrevious, skipNext };
+  return { randomTrack, skipToPreviousItem, skipToNextItem };
 }
