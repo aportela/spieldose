@@ -38,22 +38,7 @@ export const usePlayerStore = defineStore("player", {
         },
         */
       },
-      tmpTrack: {
-        title: null,
-        artist: {
-          mbId: null,
-          name: null,
-        },
-        album: {
-          mbId: null,
-          name: null,
-          year: null,
-          artist: {
-            mbId: null,
-            name: null,
-          },
-        },
-      },
+      vinylAnimation: localStorage.playerVinylAnimation.get() ?? null,
       /*
       currentPlaylistIndex: 0,
       playlists: [
@@ -98,6 +83,7 @@ export const usePlayerStore = defineStore("player", {
     isPaused: (state) => state.data.player.status == "paused",
     volume: (state) => state.data.player.volume,
     duration: (state) => (state.data.audio ? state.data.audio.duration : 0),
+    currentVinylAnimation: (state) => state.data.vinylAnimation,
     /*
     getVolume: (state) => state.data.player.volume,
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
@@ -178,7 +164,6 @@ export const usePlayerStore = defineStore("player", {
       state.data.currentPlaylist.totalTracks - 1,
       */
       true,
-    tmpTrack: (state) => state.data.tmpTrack,
   },
   actions: {
     create: function (src) {
@@ -413,8 +398,9 @@ export const usePlayerStore = defineStore("player", {
       // TODO: BASIL
     },
     */
-    setTmpTrack(track) {
-      this.data.tmpTrack = track;
+    setCurrentVinylAnimation(animation) {
+      this.data.vinylAnimation = animation;
+      localStorage.playerVinylAnimation.set(this.data.vinylAnimation);
     },
   },
 });
