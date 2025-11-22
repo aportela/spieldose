@@ -9,7 +9,7 @@
     :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
     :title="t('Toggle art animation')">
     <q-img v-if="images.small" :src="images.small" @error="images.small = null" :ratio="1" img-class="vinyl_mini_cover"
-      no-spinner></q-img>
+      spinner-color="pink"></q-img>
   </div>
   <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
@@ -35,11 +35,21 @@ const images = ref({
 });
 
 watch(() => currentPlaylistItemStore.trackImageSmall, (newValue) => {
-  images.value.small = newValue;
+  images.value.small = null;
+  if (newValue) {
+    nextTick(() => {
+      images.value.small = newValue
+    });
+  }
 });
 
 watch(() => currentPlaylistItemStore.trackImageNormal, (newValue) => {
-  images.value.normal = newValue;
+  images.value.normal = null;
+  if (newValue) {
+    nextTick(() => {
+      images.value.normal = newValue
+    });
+  }
 });
 
 const toggleAnimation = () => {
