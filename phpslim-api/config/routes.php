@@ -617,6 +617,45 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->group('/track', function (RouteCollectorProxy $group) use ($container, $initialState) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $group->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $track = new \Spieldose\Entities\Track($args["id"]);
+                    $track->toggleFavorite($dbh, true);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "favorited" => $track->favorited
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $group->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                    $track = new \Spieldose\Entities\Track($args["id"]);
+                    $track->toggleFavorite($dbh, false);
+                    $payload = json_encode(
+                        [
+                            'initialState' => $initialState,
+                            "favorited" => null // TODO: false ???
+                        ]
+                    );
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {

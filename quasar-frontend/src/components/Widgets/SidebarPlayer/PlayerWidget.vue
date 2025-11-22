@@ -11,6 +11,7 @@
     <SidebarPlayerTrackInfo />
     <SidebarPlayerMainControls />
     <SidebarPlayerSeekControl />
+    <SidebarPlayerTrackActions />
   </q-card>
 </template>
 
@@ -22,6 +23,8 @@ import { default as SidebarPlayerVolumeControl } from './SidebarPlayerVolumeCont
 import { default as SidebarPlayerTrackInfo } from './SidebarPlayerTrackInfo.vue';
 import { default as SidebarPlayerMainControls } from './SidebarPlayerMainControls.vue';
 import { default as SidebarPlayerSeekControl } from './SidebarPlayerSeekControl.vue';
+import { default as SidebarPlayerTrackActions } from "./SidebarPlayerTrackActions.vue";
+
 
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 

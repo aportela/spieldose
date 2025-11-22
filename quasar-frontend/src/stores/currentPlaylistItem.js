@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
+import { useTrackActions } from "src/composables/useTrackActions";
 
 import { date } from "quasar";
 
+const { setFavoriteTrack, unsetFavoriteTrack } = useTrackActions();
 export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
   state: () => ({
     file: null,
@@ -38,6 +40,10 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       state.file !== null ? state.file.trackInfo.image.small : null,
     trackImageNormal: (state) =>
       state.file !== null ? state.file.trackInfo.image.normal : null,
+    trackDownloadURL: (state) =>
+      state.file !== null ? `/api2/file/download/${state.file.id}` : null,
+    trackFavorited: (state) =>
+      state.file !== null ? state.file.trackInfo.favorited : null,
   },
   actions: {
     setTrack(
@@ -56,6 +62,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
       albumArtistMBId = null,
       imageSmall = null,
       imageNormal = null,
+      favorited = null,
     ) {
       this.lastTimestamp = Number(date.formatDate(new Date(), "x"));
       this.stream = null;
@@ -84,6 +91,7 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
             small: imageSmall,
             normal: imageNormal,
           },
+          favorited: favorited,
         },
       };
     },
@@ -97,6 +105,29 @@ export const useCurrentPlaylistItemStore = defineStore("currentPlaylistItem", {
         url: url,
         image: image,
       };
+    },
+    async toggleFavoriteTrack() {
+      if (this.isTrack) {
+        if (this.trackFavorited === null) {
+          try {
+            this.file.trackInfo.favorited = await setFavoriteTrack(
+              this.file.id,
+            );
+          } catch (e) {
+            // TODO
+          }
+        } else {
+          try {
+            this.file.trackInfo.favorited = await unsetFavoriteTrack(
+              this.file.id,
+            );
+          } catch (e) {
+            // TODO
+          }
+        }
+      } else {
+        console.error("only tracks can set the favorite flag");
+      }
     },
   },
 });

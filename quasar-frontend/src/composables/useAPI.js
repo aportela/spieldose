@@ -220,7 +220,9 @@ export function useAPI() {
      return axios.get("api2/album", { params });
    },
  },
- track: {
+ */
+    track: {
+      /*
    get: function (id) {
      return axios.get(basePath + "/track/" + id);
    },
@@ -249,13 +251,15 @@ export function useAPI() {
    increasePlayCount: function (id) {
      return axios.get(basePath + "/track/increase_play_count/" + id);
    },
-   setFavorite: function (id) {
-     return axios.get(basePath + "/track/set_favorite/" + id);
-   },
-   unSetFavorite: function (id) {
-     return axios.get(basePath + "/track/unset_favorite/" + id);
-   },
- },
+   */
+      setFavorite: function (id) {
+        return axios.get(basePath + `/track/${id}/set_favorite`);
+      },
+      unSetFavorite: function (id) {
+        return axios.get(basePath + `/track/${id}/unset_favorite`);
+      },
+    },
+    /*
  path: {
    getTree: function () {
      return axios.get(basePath + "/path/tree");

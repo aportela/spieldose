@@ -53,9 +53,7 @@ class Track extends \Spieldose\Entities\Entity
         $this->favorited = $favorited;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     public function get(\aportela\DatabaseWrapper\DB $dbh): void
     {
@@ -332,20 +330,27 @@ class Track extends \Spieldose\Entities\Entity
     {
         if (!empty($this->id)) {
             $query = null;
+            $params = array(
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+            );
             if ($flag) {
-                $query = " INSERT INTO FILE_FAVORITE (file_id, user_id, favorited) VALUES (:file_id, :user_id, strftime('%s', 'now')) ON CONFLICT (file_id, user_id) DO UPDATE SET favorited = strftime('%s', 'now') ";
+                $query = " INSERT INTO FILE_FAVORITE (file_id, user_id, ftime) VALUES (:file_id, :user_id, :current_timestamp) ON CONFLICT (file_id, user_id) DO UPDATE SET ftime = :current_timestamp ";
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
             } else {
                 $query = " DELETE FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
             }
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-            );
             $dbh->execute($query, $params);
             if ($flag) {
-                $query = " SELECT favorited FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
-                $data = $dbh->query($query, $params);
-                $this->favorited = count($data) == 1 ? $data[0]->favorited : null;
+                $query = " SELECT ftime FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
+                $data = $dbh->query(
+                    $query,
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+                    ]
+                );
+                $this->favorited = count($data) == 1 ? intval($data[0]->ftime) : null;
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");

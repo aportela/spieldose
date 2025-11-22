@@ -25,6 +25,7 @@ const randomTrack = () => {
         successResponse.data.file.trackInfo.album.artist.mbId,
         successResponse.data.file.trackInfo.imageURL.small,
         successResponse.data.file.trackInfo.imageURL.normal,
+        successResponse.data.file.trackInfo.favorited,
       );
     })
     .catch((errorResponse) => {
