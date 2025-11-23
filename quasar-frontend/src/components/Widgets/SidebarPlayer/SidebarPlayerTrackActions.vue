@@ -4,9 +4,10 @@
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon
           name="bar_chart" :color="miniSpectrumAnalyzerSettings.isVisible ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle shuffle"><q-icon name="shuffle"
-          :color="shuffle ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
-          :name="repeatModeIcon" :color="repeatMode && repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
+          :color="playerStore.shuffleMode ? 'pink' : ''" @click="playerStore.toggleShuffeMode"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel"
+        @click="playerStore.toggleRepeatMode"><q-icon :name="repeatModeIcon"
+          :color="playerStore.repeatMode && playerStore.repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle favorite track"
         @click="onToggleFavorite"><q-icon name="favorite"
           :color="currentPlaylistItemStore.trackFavorited ? 'pink' : ''"></q-icon></q-btn>
@@ -32,20 +33,29 @@ import { useBus } from "src/composables/useBus";
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 
 import { useCurrentPlaylistItemStore } from 'src/stores/currentPlaylistItem';
+import { usePlayerStore } from "src/stores/player";
 
 const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
+const playerStore = usePlayerStore();
 
 const { bus } = useBus();
 
 const { t } = useI18n();
 
+const props = defineProps({
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
+  }
+});
+
 const repeatModeIcon = computed(() => {
-  let icon = 'replay';
-  /*
-  switch (props.repeatMode) {
+  let icon = null;
+  switch (playerStore.repeatMode) {
     case 'track':
       icon = 'music_note';
       break;
@@ -56,14 +66,12 @@ const repeatModeIcon = computed(() => {
       icon = 'replay';
       break;
   }
-      */
   return (icon);
 });
 
 const repeatModeLabel = computed(() => {
-  let label = 'Repeat mode: none';
-  /*
-  switch (props.repeatMode) {
+  let label = null;
+  switch (playerStore.repeatMode) {
     case 'track':
       label = 'Repeat mode: track';
       break;
@@ -74,7 +82,6 @@ const repeatModeLabel = computed(() => {
       label = 'Repeat mode: none';
       break;
   }
-      */
   return (label);
 });
 

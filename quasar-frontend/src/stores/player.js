@@ -90,6 +90,8 @@ export const usePlayerStore = defineStore("player", {
     volume: (state) => state.data.player.volume,
     duration: (state) => (state.data.audio ? state.data.audio.duration : 0),
     currentVinylAnimation: (state) => state.data.vinylAnimation,
+    shuffleMode: (state) => state.data.player.shuffle,
+    repeatMode: (state) => state.data.player.repeatMode,
     /*
     getVolume: (state) => state.data.player.volume,
     getDuration: (state) => (state.data.audio ? state.data.audio.duration : 0),
@@ -354,7 +356,6 @@ export const usePlayerStore = defineStore("player", {
         this.data.player.status = "stopped";
       }
     },
-    /*
     toggleRepeatMode: function () {
       switch (this.data.player.repeatMode) {
         case "none":
@@ -370,9 +371,11 @@ export const usePlayerStore = defineStore("player", {
           // TODO: launch event
           break;
       }
-      this.savePlayerSettings();
+      // TODO
+      //this.savePlayerSettings();
     },
     toggleShuffeMode: function () {
+      /*
       if (this.data.player.shuffle) {
         this.data.currentPlaylist.currentTrackIndex =
           this.data.currentPlaylist.currentTrackShuffledIndex;
@@ -380,9 +383,12 @@ export const usePlayerStore = defineStore("player", {
         this.data.currentPlaylist.currentTrackShuffledIndex =
           this.data.currentPlaylist.currentTrackIndex;
       }
+          */
       this.data.player.shuffle = !this.data.player.shuffle;
-      this.savePlayerSettings();
+      // TODO
+      //this.savePlayerSettings();
     },
+    /*
     toggleFavoriteOnCurrentTrack: function (timestamp) {
       if (this.isCurrentPlaylistElementATrack) {
         this.data.currentPlaylist.currentElement.track.favorited = timestamp;
