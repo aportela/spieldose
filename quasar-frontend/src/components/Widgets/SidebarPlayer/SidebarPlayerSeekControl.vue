@@ -6,7 +6,7 @@
       </q-item-section>
       <q-item-section>
         <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="playerStore.audioDuration" :step="1" label
-          :label-value="audioCurrentTimeLabel" @change="onSeek" @update:model-value="playerStore.seek" />
+          :label-value="audioCurrentTimeLabel" @update:model-value="playerStore.seek" />
       </q-item-section>
       <q-item-section side>{{ audioDurationLabel }}</q-item-section>
     </q-item>
@@ -21,7 +21,11 @@ import { usePlayerStore } from "src/stores/player";
 const playerStore = usePlayerStore();
 
 const props = defineProps({
-  disabled: Boolean,
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
+  }
 });
 
 const audioCurrentTimeLabel = computed(() => formatSecondsAsTime(Math.floor(playerStore.audioCurrentTime)));
