@@ -20,6 +20,8 @@ export const usePlayerStore = defineStore("player", {
   state: () => ({
     data: {
       audio: null,
+      audioCurrentTime: 0,
+      audioDuration: 0,
       //fullScreenVisualizationSettings: null,
       player: {
         userInteracted: false,
@@ -73,6 +75,10 @@ export const usePlayerStore = defineStore("player", {
   }),
   getters: {
     audioInstance: (state) => state.data.audio,
+    audioCurrentTime: (state) =>
+      state.data.audio !== null ? state.data.audioCurrentTime : 0,
+    audioDuration: (state) =>
+      state.data.audio !== null ? state.data.audioDuration : 0,
     hasPreviousUserInteractions: (state) => state.data.player.userInteracted,
     sidebarTopArtAnimated: (state) =>
       state.data.player.sideBarTopArt.mode == "animation",
@@ -183,6 +189,25 @@ export const usePlayerStore = defineStore("player", {
       //this.data.audio.crossOrigin = "anonymous";
       //this.restoreFullScreenVisualizationSettings();
       //this.restorePlayerSettings(this.hasPreviousUserInteractions);
+      this.data.audio.addEventListener("ended", (event) => {
+        this.onAudioEndEvent(event);
+      });
+      this.data.audio.addEventListener("error", (event) => {
+        this.onAudioErrorEvent(event);
+      });
+      this.data.audio.addEventListener("timeupdate", (event) => {
+        this.data.audioCurrentTime = !isNaN(this.data.audio.currentTime)
+          ? this.data.audio.currentTime
+          : 0;
+        this.data.audioDuration = !isNaN(this.data.audio.duration)
+          ? this.data.audio.duration
+          : 0;
+      });
+    },
+    destroy: function () {
+      if (this.data.audio !== null) {
+        // remove events
+      }
     },
     setAudioSource(src) {
       if (src) {
@@ -246,8 +271,8 @@ export const usePlayerStore = defineStore("player", {
       }
       localStorage.playerMuted.set(this.data.player.muted);
     },
-    setCurrentTime: function (time) {
-      if (this.data.audio) {
+    seek: function (time) {
+      if (this.data.audio && time > 0 && time <= this.audioDuration) {
         this.data.audio.currentTime = time;
       }
     },
@@ -401,6 +426,15 @@ export const usePlayerStore = defineStore("player", {
     setCurrentVinylAnimation(animation) {
       this.data.vinylAnimation = animation;
       localStorage.playerVinylAnimation.set(this.data.vinylAnimation);
+    },
+    onAudioEndEvent: function (event) {
+      this.stop();
+    },
+    onAudioErrorEvent: function (event) {
+      console.error("Audio loading error", event);
+    },
+    onAudioTimeUpdateEvent: function (event) {
+      console.log(this.audioInstance.currentTime, this.audioInstance.duration);
     },
   },
 });

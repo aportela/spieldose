@@ -2,63 +2,36 @@
   <q-list>
     <q-item>
       <q-item-section side>
-        {{ formatSecondsAsTime(currentElementTimeData.currentTime) }}
+        {{ audioCurrentTimeLabel }}
       </q-item-section>
       <q-item-section>
-        <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="1" :step="0.01" label
-          :label-value="formatSecondsAsTime(currentElementTimeData.currentTime)" @change="onSeek" />
+        <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="playerStore.audioDuration" :step="1" label
+          :label-value="audioCurrentTimeLabel" @change="onSeek" @update:model-value="playerStore.seek" />
       </q-item-section>
-      <q-item-section side>
-        {{ formatSecondsAsTime(currentElementTimeData.duration) }}
-      </q-item-section>
+      <q-item-section side>{{ audioDurationLabel }}</q-item-section>
     </q-item>
   </q-list>
 </template>
 
 
 <script setup>
-import { ref, reactive, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import { usePlayerStore } from "src/stores/player";
 
 const playerStore = usePlayerStore();
-
-const currentElementTimeData = reactive({
-  duration: 0,
-  currentTime: 0,
-  currentProgress: 0,
-  position: 0,
-});
-
-const audioElement = ref(playerStore.audioInstance);
-
-audioElement.value.addEventListener('timeupdate', (event) => {
-  currentElementTimeData.currentProgress = audioElement.value.currentTime / audioElement.value.duration;
-  currentElementTimeData.duration = Math.floor(audioElement.value.duration);
-  currentElementTimeData.currentTime = Math.floor(audioElement.value.currentTime);
-  if (!isNaN(currentElementTimeData.currentProgress)) {
-    currentElementTimeData.position = Number(currentElementTimeData.currentProgress.toFixed(2));
-  } else {
-    currentElementTimeData.position = 0;
-  }
-});
 
 const props = defineProps({
   disabled: Boolean,
 });
 
-const position = computed(() => {
-  return (currentElementTimeData.position);
+const audioCurrentTimeLabel = computed(() => formatSecondsAsTime(Math.floor(playerStore.audioCurrentTime)));
+const audioDurationLabel = computed(() => formatSecondsAsTime(Math.floor(playerStore.audioDuration)));
+
+const currentTime = ref(Math.floor(playerStore.audioCurrentTime));
+
+watch(() => playerStore.audioCurrentTime, (newValue) => {
+  currentTime.value = Math.floor(playerStore.audioCurrentTime);
 });
-
-watch(position, (newValue) => {
-  currentTime.value = parseFloat(newValue);
-});
-
-const currentTime = ref(0);
-
-function onSeek() {
-  playerStore.setCurrentTime(currentTime.value * playerStore.duration);
-};
 
 function formatSecondsAsTime(secs, format) {
   if (secs && Number.isInteger(secs) && secs > 0) {
