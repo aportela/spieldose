@@ -54,7 +54,7 @@
       <q-btn-group flat square>
         <DarkModeButton />
         <SwitchLanguageButton />
-        <GitHubButton label="@2025 HomeDocs" :href="GITHUB_PROJECT_URL" />
+        <GitHubButton label="@2025 Spieldose" :href="GITHUB_PROJECT_URL" />
       </q-btn-group>
     </q-card-section>
   </form>

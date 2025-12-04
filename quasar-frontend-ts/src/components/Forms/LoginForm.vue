@@ -8,10 +8,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-          }}</h4>
+        }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-          }}
+        }}
         </div>
       </slot>
     </q-card-section>
@@ -55,7 +55,7 @@
         <q-btn-group flat square>
           <DarkModeButton />
           <SwitchLanguageButton />
-          <GitHubButton label="@2025 HomeDocs" :href="GITHUB_PROJECT_URL" />
+          <GitHubButton label="@2025 Spieldose" :href="GITHUB_PROJECT_URL" />
         </q-btn-group>
       </q-card-section>
     </div>
