@@ -37,18 +37,24 @@ const images = ref({
 watch(() => currentPlaylistItemStore.trackImageSmall, (newValue) => {
   images.value.small = null;
   if (newValue) {
-    (() => {
-      images.value.small = newValue
-    });
+    nextTick()
+      .then(() => {
+        images.value.small = newValue
+      }).catch((e) => {
+        console.error(e);
+      });
   }
 });
 
 watch(() => currentPlaylistItemStore.trackImageNormal, (newValue) => {
   images.value.normal = null;
   if (newValue) {
-    nextTick(() => {
-      images.value.normal = newValue
-    });
+    nextTick()
+      .then(() => {
+        images.value.normal = newValue
+      }).catch((e) => {
+        console.error(e);
+      });
   }
 });
 
