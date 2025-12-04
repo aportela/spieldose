@@ -70,7 +70,7 @@ class User
             $params
         );
         if (ini_get("session.use_cookies") && PHP_SAPI !== 'cli' && is_string($this->email)) {
-            \Spieldose\UserSession::set(\Spieldose\UserSession::getUserId(), $this->email);
+            \Spieldose\UserSession::setEmail($this->email);
         }
     }
 
@@ -86,7 +86,7 @@ class User
                     WHERE USER.id = :id
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id))
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", mb_strtolower($this->id)),
                 ]
             );
         } elseif (!in_array($this->email, [null, '', '0'], true) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
@@ -98,7 +98,7 @@ class User
                         WHERE USER.email = :email
                     ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email))
+                    new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($this->email)),
                 ]
             );
         } else {
@@ -136,7 +136,7 @@ class User
                         WHERE USER.email = :email
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($email))
+                    new \aportela\DatabaseWrapper\Param\StringParam(":email", mb_strtolower($email)),
                 ]
             );
         } else {
@@ -152,7 +152,7 @@ class User
             $this->get($db);
             if (password_verify((string) $this->password, (string) $this->passwordHash)) {
                 if (is_string($this->id) && is_string($this->email)) {
-                    \Spieldose\UserSession::set($this->id, $this->email);
+                    \Spieldose\UserSession::init($this->id, $this->email);
                 }
 
                 return (true);
