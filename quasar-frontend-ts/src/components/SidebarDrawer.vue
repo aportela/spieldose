@@ -73,14 +73,7 @@ interface MenuItem {
 
 };
 const menuItems: MenuItem[] = [
-  { icon: 'home', text: "Index", routeName: 'index' },
-
-  {
-    icon: 'analytics',
-    text: 'Dashboard',
-    routeName: 'dashboard'
-  },
-
+  { icon: 'home', text: "Home", routeName: 'index' },
   {
     icon: 'queue_music',
     text: 'Current playlist',
