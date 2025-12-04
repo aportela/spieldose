@@ -1,6 +1,7 @@
 <template>
   <q-page>
     <q-card class="q-pa-md" flat>
+      <CSSAnimatedAudioEqualizer />
       <LoginForm @success="onSuccessLogin" />
     </q-card>
   </q-page>
@@ -8,6 +9,7 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { default as CSSAnimatedAudioEqualizer } from "src/components/Other/CSSAnimatedAudioEqualizer.vue";
 import { default as LoginForm } from "src/components/Forms/LoginForm.vue";
 
 const router = useRouter();
