@@ -17,4 +17,7 @@ export default {
   "Sign up": "Sign up",
   "Already have an account ?": "Already have an account ?",
   "Click here to sign in": "Click here to sign in",
+
+  "Field is required": "Field is required",
+  "Show password": "Show password",
 };
