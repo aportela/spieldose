@@ -55,8 +55,9 @@ const loadRandomAlbumImages = (): void => {
   */
 };
 
-const onImageError = (event) => {
-  event.target.src = defaultImage;
+const onImageError = (event: Event) => {
+  const imgElement = event.target as HTMLImageElement;
+  imgElement.src = defaultImage;
 };
 
 onMounted(() => {
