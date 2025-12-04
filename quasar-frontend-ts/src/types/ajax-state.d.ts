@@ -14,4 +14,4 @@ const defaultAjaxState: AjaxState = {
   ajaxAPIErrorDetails: null,
 };
 
-export { type AjaxState, defaultAjaxState };
+export { AjaxState, defaultAjaxState };
