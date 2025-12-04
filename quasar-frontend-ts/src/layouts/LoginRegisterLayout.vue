@@ -1,4 +1,5 @@
 <template>
+  <!--
   <q-layout>
     <div class="row">
       <div class="col-12 col-lg-8 col-md-12 col-sm-12 slogan-background-image-cover flex flex-center">
@@ -14,12 +15,26 @@
       </div>
     </div>
   </q-layout>
+  -->
+  <q-layout>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+        <q-page-container>
+          <router-view />
+        </q-page-container>
+      </div>
+      <div class="col-md-6 col-lg-8 col-xl-9 gt-sm">
+        <TileAlbumImages></TileAlbumImages>
+      </div>
+    </div>
+  </q-layout>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
+//import { useI18n } from "vue-i18n";
+import { default as TileAlbumImages } from "components/Other/TileAlbumImages.vue";
 
-const { t } = useI18n();
+//const { t } = useI18n();
 </script>
 
 <style lang="css" scoped>
