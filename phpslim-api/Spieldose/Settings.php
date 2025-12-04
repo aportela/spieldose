@@ -71,6 +71,24 @@ class Settings
         }
     }
 
+    public function getAccessTokenExpirationTimeInSeconds(): int
+    {
+        if (is_array($this->settings['jwt']) && is_numeric($this->settings['jwt']['accessTokenExpirationTimeInSeconds'])) {
+            return (intval($this->settings['jwt']['accessTokenExpirationTimeInSeconds']));
+        } else {
+            throw new \RuntimeException("Settings key (jwt->accessTokenExpirationTimeInSeconds) not found");
+        }
+    }
+
+    public function getRefreshTokenExpirationTimeInSeconds(): int
+    {
+        if (is_array($this->settings['jwt']) && is_numeric($this->settings['jwt']['refreshTokenExpirationTimeInSeconds'])) {
+            return (intval($this->settings['jwt']['refreshTokenExpirationTimeInSeconds']));
+        } else {
+            throw new \RuntimeException("Settings key (jwt->refreshTokenExpirationTimeInSeconds) not found");
+        }
+    }
+
     public function getErrorBooleanKey(string $key): bool
     {
         if (is_array($this->settings['error']) && is_bool($this->settings['error'][$key])) {
