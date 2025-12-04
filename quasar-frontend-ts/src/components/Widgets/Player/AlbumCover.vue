@@ -5,7 +5,7 @@
   -->
   <div v-if="playerStore.currentVinylAnimation == 'rotate'" @click="toggleAnimation"
     id="spieldose-sidebar-vinyl-container" class="cursor-pointer overflow-hidden relative-position full-width"
-    style="background: url(images/Vinyl_record.svg) no-repeat; background-size: cover;"
+    style="background: url(vectors/Vinyl_record.svg) no-repeat; background-size: cover;"
     :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
     :title="t('Toggle art animation')">
     <q-img v-if="images.small" :src="images.small" @error="images.small = null" :ratio="1" img-class="vinyl_mini_cover"
