@@ -1,7 +1,7 @@
 <?php
 
-return (array(
-    2 => array(
+return ([
+    2 => [
         '
             CREATE TABLE USER (
                 id TEXT NOT NULL CHECK(length(id) == 36),
@@ -278,8 +278,8 @@ return (array(
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             ) STRICT;
         ',
-    )
-));
+    ]
+]);
 /*
     12 => array(
         '

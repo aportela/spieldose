@@ -6,20 +6,19 @@ namespace Spieldose\Library;
 
 class ID3Wrapper
 {
-    private \getID3 $getID3Obj;
+    private readonly \getID3 $getID3;
+
     private $tagData;
 
     public function __construct()
     {
-        $this->getID3Obj = new \getID3();
+        $this->getID3 = new \getID3();
     }
 
-    public function __destruct() {}
 
-
-    private function analyze(string $filePath)
+    private function analyze(string $filePath): void
     {
-        $this->tagData = $this->getID3Obj->analyze($filePath);
+        $this->tagData = $this->getID3->analyze($filePath);
     }
 
     private function hasTags(): bool
@@ -28,20 +27,20 @@ class ID3Wrapper
         return ($this->tagData != null);
     }
 
-    private function getTagFieldValue($id3_obj, $tag_field): mixed
+    private function getTagFieldValue(array $id3_obj, string $tag_field): mixed
     {
         $tag_value = null;
         if (isset($id3_obj[$tag_field])) {
-            $tag_value = html_entity_decode((string)$id3_obj[$tag_field]);
+            $tag_value = html_entity_decode((string) $id3_obj[$tag_field]);
         } elseif (isset($id3_obj['tags_html'][$tag_field][0])) {
-            $tag_value = html_entity_decode((string)$id3_obj['tags_html'][$tag_field][0]);
+            $tag_value = html_entity_decode((string) $id3_obj['tags_html'][$tag_field][0]);
         } elseif (isset($id3_obj['tags_html']['id3v2'][$tag_field][0])) {
-            $tag_value = html_entity_decode((string)$id3_obj['tags_html']['id3v2'][$tag_field][0]);
+            $tag_value = html_entity_decode((string) $id3_obj['tags_html']['id3v2'][$tag_field][0]);
         } elseif (isset($id3_obj['tags_html']['id3v1'][$tag_field][0])) {
-            $tag_value = html_entity_decode((string)$id3_obj['tags_html']['id3v1'][$tag_field][0]);
+            $tag_value = html_entity_decode((string) $id3_obj['tags_html']['id3v1'][$tag_field][0]);
         } elseif (isset($id3_obj['tags_html']['vorbiscomment'])) {
             if (isset($id3_obj['tags_html']['vorbiscomment'][$tag_field][0])) {
-                $tag_value = html_entity_decode((string)$id3_obj['tags_html']['vorbiscomment'][$tag_field][0]);
+                $tag_value = html_entity_decode((string) $id3_obj['tags_html']['vorbiscomment'][$tag_field][0]);
             } else {
                 // try to guess not matched tags
                 $tag = null;
@@ -50,6 +49,7 @@ class ID3Wrapper
                         if (isset($id3_obj['tags_html']['vorbiscomment']['date'][0])) {
                             $tag_value = $id3_obj['tags_html']['vorbiscomment']['date'][0];
                         }
+
                         break;
                     default:
                         $tag_value = null;
@@ -57,10 +57,11 @@ class ID3Wrapper
                 }
             }
         }
+
         return ($tag_value);
     }
 
-    private function getMusicBrainzContainerData($id3_obj, $tag_field)
+    private function getMusicBrainzContainerData(array $id3_obj, string $tag_field)
     {
         if (isset($id3_obj['tags_html']['id3v2']) && isset($id3_obj['tags_html']['id3v2']["text"]) && isset($id3_obj['tags_html']['id3v2']["text"][$tag_field])) {
             return ($id3_obj['tags_html']['id3v2']["text"][$tag_field]);
@@ -70,9 +71,9 @@ class ID3Wrapper
     }
 
     // convert $str to UTF-8 string (if required)
-    private function toUTF8($str): ?string
+    private function toUTF8(string $str): ?string
     {
-        if (! empty($str)) {
+        if ($str !== '' && $str !== '0') {
             $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
             if ($encoding === 'UTF-8') {
                 return ($str);
@@ -84,9 +85,9 @@ class ID3Wrapper
         }
     }
 
-    private function getTag(\Spieldose\Library\ID3TAGType $tagType): mixed
+    private function getTag(\Spieldose\Library\ID3TAGType $id3TAGType): mixed
     {
-        switch ($tagType) {
+        switch ($id3TAGType) {
             case \Spieldose\Library\ID3TAGType::TITLE:
                 return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "title")));
             case \Spieldose\Library\ID3TAGType::TRACK_ARTIST_NAME:
@@ -107,6 +108,7 @@ class ID3Wrapper
                     $trackNumber = intval($trackNumber);
                     return ($trackNumber > 0 ? $trackNumber : null);
                 }
+                // no break
             case \Spieldose\Library\ID3TAGType::DISC_NUMBER:
                 $discNumber = intval($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "part_of_a_set")));
                 return ($discNumber > 0 ? $discNumber : null);
@@ -129,15 +131,15 @@ class ID3Wrapper
             case \Spieldose\Library\ID3TAGType::MIME_TYPE:
                 return ($this->toUTF8((string) $this->getTagFieldValue($this->tagData, "mime_type")));
             case \Spieldose\Library\ID3TAGType::MB_ARTIST_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id")));
+                return ($this->toUTF8((string) $this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Artist Id")));
             case \Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id")));
+                return ($this->toUTF8((string) $this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Artist Id")));
             case \Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Group Id")));
+                return ($this->toUTF8((string) $this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Group Id")));
             case \Spieldose\Library\ID3TAGType::MB_RELEASE_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id")));
+                return ($this->toUTF8((string) $this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Album Id")));
             case \Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID:
-                return ($this->toUTF8((string)$this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id")));
+                return ($this->toUTF8((string) $this->getMusicBrainzContainerData($this->tagData, "MusicBrainz Release Track Id")));
             default:
                 return (null);
         }
@@ -159,12 +161,12 @@ class ID3Wrapper
             $data->artistMBIds = [];
             $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ARTIST_ID);
             if (! empty($tag)) {
-                if (mb_strlen($tag) == 36) {
+                if (mb_strlen((string) $tag) === 36) {
                     $data->artistMBIds = [$tag];
-                } else if (mb_strlen($tag) > 36 && mb_strpos($tag, "/") > 0) {
-                    $mbIds = explode("/", $tag);
+                } elseif (mb_strlen((string) $tag) > 36 && mb_strpos((string) $tag, "/") > 0) {
+                    $mbIds = explode("/", (string) $tag);
                     foreach ($mbIds as $mbId) {
-                        if (mb_strlen($mbId) == 36) {
+                        if (mb_strlen($mbId) === 36) {
                             $data->artistMBIds[] = $mbId;
                         } else {
                             // TODO
@@ -172,15 +174,16 @@ class ID3Wrapper
                     }
                 }
             }
+
             $data->releaseArtistMBIds = [];
             $tag = $this->getTag(\Spieldose\Library\ID3TAGType::MB_ALBUM_ARTIST_ID);
             if (! empty($tag)) {
-                if (mb_strlen($tag) == 36) {
+                if (mb_strlen((string) $tag) === 36) {
                     $data->releaseArtistMBIds = [$tag];
-                } else if (mb_strlen($tag) > 36 && mb_strpos($tag, "/") > 0) {
-                    $mbIds = explode("/", $tag);
+                } elseif (mb_strlen((string) $tag) > 36 && mb_strpos((string) $tag, "/") > 0) {
+                    $mbIds = explode("/", (string) $tag);
                     foreach ($mbIds as $mbId) {
-                        if (mb_strlen($mbId) == 36) {
+                        if (mb_strlen($mbId) === 36) {
                             $data->artistMBIds[] = $mbId;
                         } else {
                             // TODO
@@ -188,18 +191,19 @@ class ID3Wrapper
                     }
                 }
             }
+
             $data->trackAlbum = $this->getTag(\Spieldose\Library\ID3TAGType::ALBUM);
             $releaseGroupMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_GROUP_ID);
             // multiple mbids (divided by "/") not supported
-            $data->releaseGroupMBId = (!empty($releaseGroupMBId) && mb_strlen($releaseGroupMBId) == 36) ? $releaseGroupMBId : null;
+            $data->releaseGroupMBId = (!empty($releaseGroupMBId) && mb_strlen((string) $releaseGroupMBId) === 36) ? $releaseGroupMBId : null;
             $releaseMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_ID);
             // multiple mbids (divided by "/") not supported
-            $data->releaseMBId = (!empty($releaseMBId) && mb_strlen($releaseMBId) == 36) ? $releaseMBId : null;
+            $data->releaseMBId = (!empty($releaseMBId) && mb_strlen((string) $releaseMBId) === 36) ? $releaseMBId : null;
             $releaseTrackMBId = $this->getTag(\Spieldose\Library\ID3TAGType::MB_RELEASE_TRACK_ID);
-            $data->releaseTrackMBId = (!empty($releaseTrackMBId) && mb_strlen($releaseTrackMBId) == 36) ? $releaseTrackMBId : null;
+            $data->releaseTrackMBId = (!empty($releaseTrackMBId) && mb_strlen((string) $releaseTrackMBId) === 36) ? $releaseTrackMBId : null;
             // multiple mbids (divided by "/") not supported
             $genre = $this->getTag(\Spieldose\Library\ID3TAGType::GENRE);
-            $data->genre = !empty($genre) ? mb_strtolower($genre) : null;
+            $data->genre = empty($genre) ? null : mb_strtolower((string) $genre);
             $data->mime = $this->getTag(\Spieldose\Library\ID3TAGType::MIME_TYPE);
             return ($data);
         } else {

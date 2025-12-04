@@ -6,23 +6,15 @@ namespace Spieldose\Library\Scraper\MusicBrainz;
 
 class ReleaseScraper
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \aportela\SimpleFSCache\Cache $cache;
-    private \aportela\MusicBrainzWrapper\Release $musicBrainzReleaseAPI;
+    private readonly \aportela\MusicBrainzWrapper\Release $release;
 
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger, private readonly \aportela\SimpleFSCache\Cache $cache)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->cache = $cache;
-        $this->musicBrainzReleaseAPI = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        $this->release = new \aportela\MusicBrainzWrapper\Release($this->logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $this->cache);
     }
 
-    public function __destruct() {}
-
-    private function getAllReleaseMBIds(bool $ignoreCache)
+    private function getAllReleaseMBIds(bool $ignoreCache): array
     {
         $allReleaseMBIdsQuery = "
             SELECT DISTINCT
@@ -39,15 +31,15 @@ class ReleaseScraper
             AND
                 CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
         ";
-        return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allReleaseMBIdsQuery : $notCachedReleaseMBIdsQuery)));
+        return (array_map(fn($result) => $result->mbid, $this->db->query($ignoreCache ? $allReleaseMBIdsQuery : $notCachedReleaseMBIdsQuery)));
     }
 
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
-    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper $release)
+    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper $releaseHelper): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO CACHE_MUSICBRAINZ_RELEASE
                     (mbid, title, year, ctime, mtime)
@@ -60,27 +52,26 @@ class ReleaseScraper
                         mtime = :current_timestamp
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $release->mbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":title", $release->title),
-                $release->year != null ?
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $release->year)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":year"),
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $releaseHelper->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":title", $releaseHelper->title),
+                $releaseHelper->year != null
+                    ? new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $releaseHelper->year)
+                    : new \aportela\DatabaseWrapper\Param\NullParam(":year"),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM CACHE_MUSICBRAINZ_RELEASE_ARTIST
                 WHERE
                     release_mbid = :release_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseHelper->mbId),
             ]
         );
-        foreach ($release->artistCredit as $releaseArtist) {
-            $this->dbh->execute(
+        foreach ($releaseHelper->artistCredit as $releaseArtist) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_MUSICBRAINZ_RELEASE_ARTIST
                         (release_mbid, artist_mbid)
@@ -88,23 +79,24 @@ class ReleaseScraper
                         (:release_mbid, :artist_mbid)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $releaseArtist->mbId)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseHelper->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $releaseArtist->mbId),
                 ]
             );
         }
-        $this->dbh->execute(
+
+        $this->db->execute(
             "
                 DELETE FROM CACHE_MUSICBRAINZ_MEDIA
                 WHERE
                     release_mbid = :release_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseHelper->mbId),
             ]
         );
-        foreach ($release->media as $media) {
-            $this->dbh->execute(
+        foreach ($releaseHelper->media as $media) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_MUSICBRAINZ_MEDIA
                         (mbid, release_mbid, position, ctime, mtime)
@@ -118,13 +110,13 @@ class ReleaseScraper
                 ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $media->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $release->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseHelper->mbId),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":position", $media->position),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                 ]
             );
             foreach ($media->trackList as $track) {
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                         INSERT INTO CACHE_MUSICBRAINZ_RECORDING
                             (mbid, title, ctime, mtime)
@@ -141,18 +133,18 @@ class ReleaseScraper
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                     ]
                 );
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                         DELETE FROM CACHE_MUSICBRAINZ_RECORDING_ARTIST
                         WHERE
                             recording_mbid = :recording_mbid
                     ",
                     [
-                        new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId),
                     ]
                 );
 
-                $artistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($this->dbh, $this->logger, $this->cache);
+                $artistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($this->db, $this->logger, $this->cache);
                 $cachedArtistMbIds = [];
                 foreach ($track->recording->artistCredit as $recordingArtist) {
                     if (! in_array($recordingArtist->mbId, $cachedArtistMbIds)) {
@@ -167,7 +159,8 @@ class ReleaseScraper
                             $cachedArtistMbIds[] = $recordingArtist->mbId;
                         }
                     }
-                    $this->dbh->execute(
+
+                    $this->db->execute(
                         "
                             INSERT INTO CACHE_MUSICBRAINZ_RECORDING_ARTIST
                                 (recording_mbid, artist_mbid)
@@ -176,21 +169,22 @@ class ReleaseScraper
                         ",
                         [
                             new \aportela\DatabaseWrapper\Param\StringParam(":recording_mbid", $track->recording->mbId),
-                            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $recordingArtist->mbId)
+                            new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $recordingArtist->mbId),
                         ]
                     );
                 }
-                $this->dbh->execute(
+
+                $this->db->execute(
                     "
                         DELETE FROM CACHE_MUSICBRAINZ_TRACK
                         WHERE
                             media_mbid = :media_mbid
                     ",
                     [
-                        new \aportela\DatabaseWrapper\Param\StringParam(":media_mbid", $media->mbId)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":media_mbid", $media->mbId),
                     ]
                 );
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                         INSERT INTO CACHE_MUSICBRAINZ_TRACK
                             (mbid, media_mbid, recording_mbid, position, ctime, mtime)
@@ -220,12 +214,13 @@ class ReleaseScraper
         $scanStartTime = microtime(true);
         $releaseMBIds =  $this->getAllReleaseMBIds($force);
         $totalReleaseMbIds = count($releaseMBIds);
-        for ($i = 0; $i < $totalReleaseMbIds; $i++) {
+        for ($i = 0; $i < $totalReleaseMbIds; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $releaseMBIds, $totalReleaseMbIds, $i);
             }
+
             try {
-                $release = $this->musicBrainzReleaseAPI->get($releaseMBIds[$i]);
+                $release = $this->release->get($releaseMBIds[$i]);
                 $this->saveCache($release);
             } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("MusicBrainz release id get not found", [$releaseMBIds[$i], $e->getMessage()]);
@@ -235,6 +230,7 @@ class ReleaseScraper
                 $this->logger->warning("MusicBrainz release id get error", [$releaseMBIds[$i], $e->getMessage(), $e->getPrevious()]);
             }
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

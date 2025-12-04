@@ -6,16 +6,14 @@ namespace Spieldose\Entities;
 
 class Entity
 {
-    protected $dbh = null;
-    public $mbId = null;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, string $mbId = "")
+    /**
+     * @var string
+     */
+    public $mbId;
+
+    public function __construct(protected \aportela\DatabaseWrapper\DB $dbh, string $mbId = "")
     {
-        $this->dbh = $dbh;
         $this->mbId = $mbId;
-    }
-
-    public function __destruct()
-    {
     }
 }

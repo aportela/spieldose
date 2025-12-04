@@ -6,24 +6,17 @@ namespace Spieldose\Library\Scraper;
 
 class Lyrics
 {
+    private readonly \aportela\ScraperLyrics\Lyrics $lyrics;
 
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \aportela\ScraperLyrics\Lyrics $lyrics;
-
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->lyrics = new \aportela\ScraperLyrics\Lyrics($logger, $cache);
+        $this->lyrics = new \aportela\ScraperLyrics\Lyrics($this->logger, $cache);
     }
-
-    public function __destruct() {}
 
     private function getAllTracks(): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 // TODO: UNION MUSICBRAINZ EXISTING DATA
                 "
                     SELECT
@@ -41,7 +34,7 @@ class Lyrics
     private function getTracksWithoutCache(): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 // TODO: UNION MUSICBRAINZ EXISTING DATA
                 "
                     SELECT
@@ -56,9 +49,9 @@ class Lyrics
         );
     }
 
-    private function saveCache(string $title, string $artist, string $lyrics, string $source)
+    private function saveCache(string $title, string $artist, string $lyrics, string $source): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO CACHE_LYRICS
                     (title, artist, lyrics, source, ctime, mtime)
@@ -85,10 +78,11 @@ class Lyrics
         $scanStartTime = microtime(true);
         $tracks = $force ? $this->getAllTracks() : $this->getTracksWithoutCache();
         $totalTracks = count($tracks);
-        for ($i = 0; $i < $totalTracks; $i++) {
+        for ($i = 0; $i < $totalTracks; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $tracks, $totalTracks, $i);
             }
+
             try {
                 if ($this->lyrics->scrap($tracks[$i]->title, $tracks[$i]->artist)) {
                     $this->saveCache($this->lyrics->getTitle(), $this->lyrics->getArtist(), $this->lyrics->getLyrics(), $this->lyrics->getSource());
@@ -99,6 +93,7 @@ class Lyrics
                 $this->logger->error("Lyrics get unhandled exception", [$tracks[$i]->title, $tracks[$i]->artist, $e->getMessage(), $e->getPrevious()]);
             }
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

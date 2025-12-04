@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 use Slim\App;
 use Slim\Http\Environment;
@@ -17,31 +17,26 @@ use Slim\Http\Uri;
 /**
  * http://lzakrzewski.com/2016/02/integration-testing-with-slim/
  */
-class APITest extends \PHPUnit\Framework\TestCase
+final class APITest extends \PHPUnit\Framework\TestCase
 {
+    public $app;
     private $response;
 
     /**
      * Called once just like normal constructor
      */
-    public static function setUpBeforeClass(): void
-    {
-    }
+    public static function setUpBeforeClass(): void {}
 
     /**
      * Clean up the whole test class
      */
-    public static function tearDownAfterClass(): void
-    {
-    }
+    public static function tearDownAfterClass(): void {}
 
     /**
      * Initialize the test case
      * Called for every defined test
      */
-    protected function setUp(): void
-    {
-    }
+    protected function setUp(): void {}
 
     /**
      * Clean up the test case, called for every defined test
@@ -51,17 +46,17 @@ class APITest extends \PHPUnit\Framework\TestCase
         $this->response = null;
     }
 
-    public function assertThatResponseHasStatus(int $expectedStatus)
+    public function assertThatResponseHasStatus(int $expectedStatus): void
     {
         $this->assertEquals($expectedStatus, $this->response->getStatusCode());
     }
 
-    public function assertThatResponseHasContentType(string $expectedContentType)
+    public function assertThatResponseHasContentType(string $expectedContentType): void
     {
         $this->assertContains($expectedContentType, $this->response->getHeader('Content-Type'));
     }
 
-    public function getJsonResponseBody()
+    public function getJsonResponseBody(): mixed
     {
         return json_decode((string) $this->response->getBody(), true);
     }
@@ -72,7 +67,7 @@ class APITest extends \PHPUnit\Framework\TestCase
             'REQUEST_URI' => $url,
             'REQUEST_METHOD' => $method,
             'SERVER_NAME' => 'localhost',
-            'CONTENT_TYPE' => 'application/json'
+            'CONTENT_TYPE' => 'application/json',
         ]);
 
         $parts = explode('?', $url);
@@ -87,19 +82,20 @@ class APITest extends \PHPUnit\Framework\TestCase
 
         $serverParams = $env->all();
 
-        $body = new RequestBody();
-        $body->write(json_encode($requestParameters));
+        $requestBody = new RequestBody();
+        $requestBody->write(json_encode($requestParameters));
 
-        $request = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
+        $request = new Request($method, $uri, $headers, $cookies, $serverParams, $requestBody);
 
         return $request->withHeader('Content-Type', 'application/json');
     }
 
-    public function request(string $method, string $url, array $requestParameters = [])
+    public function request(string $method, string $url, array $requestParameters = []): void
     {
         $request = $this->prepareRequest($method, $url, $requestParameters);
-        $this->app = (new \Spieldose\App())->get();
+        $this->app = new \Spieldose\App()->get();
         $app = $this->app;
+
         $this->response = $app($request, new Response());
     }
 

@@ -36,7 +36,7 @@ class APIExceptionCatcher
             'type' => $throwable::class,
             'message' => $throwable->getMessage(),
             'file' => $throwable->getFile(),
-            'line' => $throwable->getLine()
+            'line' => $throwable->getLine(),
         ];
         $parent = $throwable->getPrevious();
         if ($parent instanceof \Throwable) {
@@ -44,13 +44,13 @@ class APIExceptionCatcher
                 'type' => $parent::class,
                 'message' => $parent->getMessage(),
                 'file' => $parent->getFile(),
-                'line' => $parent->getLine()
+                'line' => $parent->getLine(),
             ];
         }
 
         $payload = json_encode([
             'exception' => $exception,
-            'status' => 500
+            'status' => 500,
         ]);
         if (is_string($payload)) {
             $response->getBody()->write($payload);

@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace Spieldose\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-class BaseTest extends \PHPUnit\Framework\TestCase
+final class BaseTest extends \PHPUnit\Framework\TestCase
 {
     public static ?\Slim\App $app;
-    public static \Psr\Container\ContainerInterface $container;
-    protected static \Spieldose\Settings $settings;
-    public static \aportela\DatabaseWrapper\DB $dbh;
 
-    protected function createValidSession(): void
-    {
-        $id = \Spieldose\Utils::uuidv4();
-        $u = new \Spieldose\User($id, $id . "@server.com", "secret");
-        $u->add(self::$dbh);
-        \Spieldose\UserSession::set($id, $id . "@server.com");
-    }
+    public static \Psr\Container\ContainerInterface $container;
+
+    private static \Spieldose\Settings $settings;
+
+    public static \aportela\DatabaseWrapper\DB $dbh;
 
     /**
      * Called once just like normal constructor

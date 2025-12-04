@@ -8,11 +8,8 @@ use Stringable;
 
 class BaseLogger implements \Psr\Log\LoggerInterface
 {
-    private \Psr\Log\LoggerInterface $logger;
-
-    public function __construct(\Psr\Log\LoggerInterface $logger)
+    public function __construct(private readonly \Psr\Log\LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function emergency(string|Stringable $message, array $context = []): void

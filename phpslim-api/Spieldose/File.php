@@ -7,9 +7,13 @@ namespace Spieldose;
 class File
 {
     private $dbh;
+
     public $id;
+
     public $path;
+
     public $mime;
+
     public $length;
 
     public function __construct($container, string $id = "")
@@ -22,9 +26,7 @@ class File
         }
     }
 
-    public function __destruct() {}
-
-    public function get()
+    public function get(): void
     {
         $results = $this->dbh->query(
             "
@@ -36,12 +38,12 @@ class File
                 INNER JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 WHERE FILE.id = :id
              ",
-            array(
+            [
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
-            )
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+            ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $this->path = $results[0]->path;
             $this->mime = $results[0]->mime;
             $this->length = filesize($this->path);
@@ -50,7 +52,7 @@ class File
         }
     }
 
-    public function getData(int $offset, int $length)
+    public function getData(int $offset, int $length): string|false
     {
         if (!empty($this->path)) {
             $file = fopen($this->path, 'r');

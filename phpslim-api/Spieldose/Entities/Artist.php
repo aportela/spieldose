@@ -6,17 +6,28 @@ namespace Spieldose\Entities;
 
 class Artist extends \Spieldose\Entities\Entity
 {
-    public $name = null;
-    public $image = null;
+    public $name;
+
+    public $image;
+
     public $relations = [];
-    public $bio = null;
-    public $popularAlbum = null;
-    public $latestAlbum = null;
+
+    public $bio;
+
+    public $popularAlbum;
+
+    public $latestAlbum;
+
     public $topTracks = [];
+
     public $topAlbums = [];
+
     public $appearsOnAlbums = [];
+
     public $similar = [];
+
     public $genres = [];
+
     public $tracks = [];
 
     /*
@@ -31,14 +42,14 @@ class Artist extends \Spieldose\Entities\Entity
     }
     */
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $db, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         // TODO: ignore ids like "/"
-        $params = array();
-        $filterConditions = array();
+        $params = [];
+        $filterConditions = [];
         $name = $filter->getParamValue("name") ?? "";
         if (!empty($name)) {
-            $words = explode(" ", trim($name));
+            $words = explode(" ", trim((string) $name));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
                 $filterConditions[] = sprintf(" artist_name LIKE %s", $paramName);
@@ -47,27 +58,30 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $filterConditions[] = " artist_name IS NOT NULL ";
         }
+
         $genre = $filter->getParamValue("genre") ?? "";
         if (!empty($genre)) {
             $filterConditions[] = " EXISTS (SELECT CACHE_MUSICBRAINZ_ARTIST_GENRE.genre FROM CACHE_MUSICBRAINZ_ARTIST_GENRE WHERE CACHE_MUSICBRAINZ_ARTIST_GENRE.artist_mbid = FIT.mb_artist_id AND CACHE_MUSICBRAINZ_ARTIST_GENRE.genre = :genre) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre);
         }
+
         $fieldDefinitions = [
             "mbId" => "artist_mbid",
             "name" => "artist_name",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_MUSICBRAINZ_ARTIST.image)",
-            "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) "
+            "totalTracks" => " COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, TOTAL_TRACKS_BY_ARTIST_NAME.total, 0) ",
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(artist_name) "
+            "totalResults" => " COUNT(artist_name) ",
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data): void {
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->image)) {
-                        $result->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($result->image));
+                        $result->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode((string) $result->image));
                     }
+
                     // create a unique hash for this element, this is done because artist name && artist musicbrainz are not both mandatory and can not be used as key on vue v-for
                     $result->hash = md5($result->mbId . $result->name);
                     return ($result);
@@ -75,7 +89,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $data->items
             );
         };
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, $filter, $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
@@ -110,10 +124,10 @@ class Artist extends \Spieldose\Entities\Entity
                 %s
             ",
             $browser->getQueryFields(),
-            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
+            $filterConditions !== [] ? " AND " . implode(" AND ", $filterConditions) : null,
             $browser->isSortedBy("name") ? " ORDER BY 1 " . $browser->getSortOrder("name") : null,
-            !$browser->isSortedBy("totalTracks") ? $pager->getQueryLimit() : null,
-            !$browser->isSortedBy("name") ? $browser->getQuerySort() : null,
+            $browser->isSortedBy("totalTracks") ? null : $pager->getQueryLimit(),
+            $browser->isSortedBy("name") ? null : $browser->getQuerySort(),
             $browser->isSortedBy("totalTracks") ? $pager->getQueryLimit() : null,
         );
         $queryCount = sprintf(
@@ -129,27 +143,26 @@ class Artist extends \Spieldose\Entities\Entity
                 ) TMP_ARTISTS
             ",
             $browser->getQueryCountFields(),
-            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null
+            $filterConditions !== [] ? " AND " . implode(" AND ", $filterConditions) : null
         );
-        $data = $browser->launch($query, $queryCount);
-        return ($data);
+        return ($browser->launch($query, $queryCount));
     }
 
     private function getMBIdFromName(string $name): ?string
     {
         $query = " SELECT mbid FROM CACHE_MUSICBRAINZ_ARTIST WHERE name = :name ";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $name)
-        );
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
+        ];
         $results = $this->dbh->query($query, $params);
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             return ($results[0]->mbid);
         } else {
             return (null);
         }
     }
 
-    private function getTopTracks(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    private function getTopTracks(\aportela\DatabaseWrapper\DB $db, array $filter): array
     {
         $trackFields = [
             "id " => "FIT.id",
@@ -165,7 +178,7 @@ class Artist extends \Spieldose\Entities\Entity
             "trackNumber" => "FIT.track_number",
             "coverPathId" => "D.id",
             "playCount" => "COALESCE(TMP_COUNT.total, 0)",
-            "favorited" => "FF.favorited"
+            "favorited" => "FF.favorited",
         ];
 
         $fields = [];
@@ -174,7 +187,7 @@ class Artist extends \Spieldose\Entities\Entity
         }
 
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
         ];
 
         $filterConditions = [];
@@ -209,11 +222,11 @@ class Artist extends \Spieldose\Entities\Entity
                 LIMIT 10
             ",
             implode(", ", $fields),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null
         );
 
         $topTracks = [];
-        foreach ($dbh->query($query, $params) as $result) {
+        foreach ($db->query($query, $params) as $result) {
             $track = (array) new \Spieldose\Entities\Track(
                 $result->id,
                 $result->mbId,
@@ -232,16 +245,17 @@ class Artist extends \Spieldose\Entities\Entity
             $track["playCount"] = $result->playCount;
             $topTracks[] = $track;
         }
+
         return ($topTracks);
     }
 
-    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $dbh, array $filter, int $limitCount = 32): array
+    private function getSimilarArtists(\aportela\DatabaseWrapper\DB $db, array $filter, int $limitCount = 32): array
     {
         $artistFields = [
             "mbId" => "artist_mbid",
             "name" => "artist_name",
             "image" => "COALESCE(CACHE_ARTIST_LASTFM.image, CACHE_MUSICBRAINZ_ARTIST.image)",
-            "totalTracks" => "(COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, 0) + COALESCE(TOTAL_TRACKS_BY_ARTIST_NAME.total, 0))"
+            "totalTracks" => "(COALESCE(TOTAL_TRACKS_BY_ARTIST_MBID.total, 0) + COALESCE(TOTAL_TRACKS_BY_ARTIST_NAME.total, 0))",
         ];
 
         $fields = [];
@@ -250,7 +264,7 @@ class Artist extends \Spieldose\Entities\Entity
         }
 
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($filter["mbId"] . $filter["name"]))
+            new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", md5($filter["mbId"] . $filter["name"])),
         ];
 
         $filterConditions = [
@@ -262,7 +276,7 @@ class Artist extends \Spieldose\Entities\Entity
                     WHERE CALS.artist_hash = :md5_hash
                     AND CALS.name = artist_name
                 )
-            "
+            ",
         ];
 
         $query = sprintf(
@@ -293,17 +307,17 @@ class Artist extends \Spieldose\Entities\Entity
                 ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name AND TMP_ARTISTS.artist_mbid IS NULL
             ",
             implode(", ", $fields),
-            count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
+            $filterConditions !== [] ? " AND " . implode(" AND ", $filterConditions) : null,
             $limitCount
         );
 
-        $similarArtists = $dbh->query($query, $params);
+        $similarArtists = $db->query($query, $params);
         $totalSimilarArtists = count($similarArtists);
 
         // no similar by last.fm, try by musicbrainz genres
         if ($totalSimilarArtists < $limitCount && !empty($filter["mbId"])) {
             $params = [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $filter["mbId"])
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $filter["mbId"]),
             ];
             $filterConditions = [
                 "
@@ -314,7 +328,7 @@ class Artist extends \Spieldose\Entities\Entity
                         WHERE CAMG1.artist_mbid = FIT.mb_artist_id
                         AND CAMG2.artist_mbid = :artist_mbid
                     )
-                "
+                ",
             ];
 
             $query = sprintf(
@@ -345,20 +359,22 @@ class Artist extends \Spieldose\Entities\Entity
                     ) AS TOTAL_TRACKS_BY_ARTIST_NAME ON TOTAL_TRACKS_BY_ARTIST_NAME.artistName = TMP_ARTISTS.artist_name AND TMP_ARTISTS.artist_mbid IS NULL
                 ",
                 implode(", ", $fields),
-                count($filterConditions) > 0 ? " AND " . implode(" AND ", $filterConditions) : null,
+                $filterConditions !== [] ? " AND " . implode(" AND ", $filterConditions) : null,
                 $limitCount - $totalSimilarArtists
             );
-            $musicBrainzSimilarArtists = $dbh->query($query, $params);
+            $musicBrainzSimilarArtists = $db->query($query, $params);
             $similarArtists = array_merge($similarArtists, $musicBrainzSimilarArtists);
         }
 
-        foreach ($similarArtists as $artist) {
-            if (!empty($artist->image)) {
-                $artist->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode($artist->image));
+        foreach ($similarArtists as $similarArtist) {
+            if (!empty($similarArtist->image)) {
+                $similarArtist->image = sprintf(\Spieldose\API::REMOTE_ARTIST_URL_SMALL_THUMBNAIL, urlencode((string) $similarArtist->image));
             }
+
             // create a unique hash for this element, this is done because artist name && artist musicbrainz are not both mandatory and can not be used as key on vue v-for
-            $artist->hash = md5($artist->mbId . $artist->name);
+            $similarArtist->hash = md5($similarArtist->mbId . $similarArtist->name);
         }
+
         return ($similarArtists);
     }
 
@@ -376,26 +392,27 @@ class Artist extends \Spieldose\Entities\Entity
                 LEFT JOIN CACHE_ARTIST_LASTFM ON CACHE_ARTIST_LASTFM.name = CACHE_MUSICBRAINZ_ARTIST.name
                 WHERE CACHE_MUSICBRAINZ_ARTIST.mbid = :mbid
             ";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-        );
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+        ];
         $results = $this->dbh->query($query, $params);
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $this->name = $results[0]->name;
             $this->image = $results[0]->image;
             if (!empty($this->image)) {
                 // TODO: use API URL
-                $this->image = sprintf("api2/thumbnail/normal/remote/artist/?url=%s", urlencode($this->image));
+                $this->image = sprintf("api2/thumbnail/normal/remote/artist/?url=%s", urlencode((string) $this->image));
             }
+
             $this->bio = (object) [
                 "source" => $results[0]->bio_source,
                 "summary" => $results[0]->bio_summary,
-                "content" => $results[0]->bio_content
+                "content" => $results[0]->bio_content,
             ];
             $query = " SELECT relation_type_id, url FROM CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP WHERE artist_mbid = :mbid ORDER BY name COLLATE NOCASE";
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $results = $this->dbh->query($query, $params);
             if (count($results) > 0) {
                 foreach ($results as $result) {
@@ -404,10 +421,11 @@ class Artist extends \Spieldose\Entities\Entity
             } else {
                 $this->relations = [];
             }
+
             $query = " SELECT DISTINCT genre FROM CACHE_MUSICBRAINZ_ARTIST_GENRE WHERE artist_mbid = :mbid ORDER BY genre";
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $results = $this->dbh->query($query, $params);
             if (count($results) > 0) {
                 foreach ($results as $result) {
@@ -416,6 +434,7 @@ class Artist extends \Spieldose\Entities\Entity
             } else {
                 $this->genres = [];
             }
+
             $query = "
                     SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
                     FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
@@ -424,16 +443,16 @@ class Artist extends \Spieldose\Entities\Entity
                     ORDER BY RANDOM()
                     LIMIT 1
                 ";
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $results = $this->dbh->query($query, $params);
             $this->popularAlbum = (object) [
                 'title' => null,
                 'year' => null,
-                'image' => null
+                'image' => null,
             ];
-            if (count($results) == 1) {
+            if (count($results) === 1) {
                 $this->popularAlbum->title = $results[0]->album;
                 $this->popularAlbum->year = $results[0]->year;
                 if ($useLocalCovers && !empty($results[0]->coverPathId)) {
@@ -444,6 +463,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->popularAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
                 }
             }
+
             $query = "
                     SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
                     FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
@@ -452,16 +472,16 @@ class Artist extends \Spieldose\Entities\Entity
                     ORDER BY FIT.year DESC
                     LIMIT 1
                 ";
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $results = $this->dbh->query($query, $params);
             $this->latestAlbum = (object) [
                 'title' => null,
                 'year' => null,
-                'image' => null
+                'image' => null,
             ];
-            if (count($results) == 1) {
+            if (count($results) === 1) {
                 $this->latestAlbum->title = $results[0]->album;
                 $this->latestAlbum->year = $results[0]->year;
                 if ($useLocalCovers && !empty($results[0]->coverPathId)) {
@@ -472,6 +492,7 @@ class Artist extends \Spieldose\Entities\Entity
                     $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
                 }
             }
+
             $trackFields = [
                 "id " => "FIT.id",
                 "mbId" => "FIT.mb_release_track_id",
@@ -484,13 +505,12 @@ class Artist extends \Spieldose\Entities\Entity
                 "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
                 "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
                 "trackNumber" => "FIT.track_number",
-                "coverPathId" => "D.id"
+                "coverPathId" => "D.id",
             ];
 
             $this->topTracks = $this->getTopTracks($this->dbh, ["mbId" => $this->mbId, "name" => null]);
 
-            $query = sprintf(
-                "
+            $query = "
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
@@ -505,11 +525,10 @@ class Artist extends \Spieldose\Entities\Entity
                         WHERE COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) = :mbid
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
-                    "
-            );
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+                    ";
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $this->topAlbums = $this->dbh->query($query, $params);
             foreach ($this->topAlbums as $album) {
                 $album->artist = new \stdClass();
@@ -518,27 +537,28 @@ class Artist extends \Spieldose\Entities\Entity
                 if ($useLocalCovers && !empty($album->coverPathId)) {
                     $album->covers = [
                         "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
-                        "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+                        "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId),
                     ];
                 } elseif (!empty($album->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                     $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     $album->covers = [
                         "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
-                        "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                        "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url),
                     ];
                 } else {
                     $album->covers = [
                         "small" => null,
-                        "normal" => null
+                        "normal" => null,
                     ];
                 }
+
                 unset($album->artistMbId);
                 unset($album->artistName);
                 unset($album->coverPathId);
             }
-            $query = sprintf(
-                "
+
+            $query = "
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
@@ -554,38 +574,39 @@ class Artist extends \Spieldose\Entities\Entity
                         AND COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id) <> :mbid
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
-                    "
-            );
-            $params = array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId)
-            );
+                    ";
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $this->mbId),
+            ];
             $this->appearsOnAlbums = $this->dbh->query($query, $params);
-            foreach ($this->appearsOnAlbums as $album) {
-                $album->artist = new \stdClass();
-                $album->artist->mbId = $album->artistMBId;
-                $album->artist->name = $album->artistName;
-                if ($useLocalCovers && !empty($album->coverPathId)) {
-                    $album->covers = [
-                        "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
-                        "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+            foreach ($this->appearsOnAlbums as $appearOnAlbum) {
+                $appearOnAlbum->artist = new \stdClass();
+                $appearOnAlbum->artist->mbId = $appearOnAlbum->artistMBId;
+                $appearOnAlbum->artist->name = $appearOnAlbum->artistName;
+                if ($useLocalCovers && !empty($appearOnAlbum->coverPathId)) {
+                    $appearOnAlbum->covers = [
+                        "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $appearOnAlbum->coverPathId),
+                        "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $appearOnAlbum->coverPathId),
                     ];
-                } elseif (!empty($album->mbId)) {
+                } elseif (!empty($appearOnAlbum->mbId)) {
                     $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                    $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
-                    $album->covers = [
+                    $url = $cover->getReleaseImageURL($appearOnAlbum->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                    $appearOnAlbum->covers = [
                         "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
-                        "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                        "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url),
                     ];
                 } else {
-                    $album->covers = [
+                    $appearOnAlbum->covers = [
                         "small" => null,
-                        "normal" => null
+                        "normal" => null,
                     ];
                 }
-                unset($album->artistMbId);
-                unset($album->artistName);
-                unset($album->coverPathId);
+
+                unset($appearOnAlbum->artistMbId);
+                unset($appearOnAlbum->artistName);
+                unset($appearOnAlbum->coverPathId);
             }
+
             $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => $this->name]);
             return (true);
         } else {
@@ -600,7 +621,7 @@ class Artist extends \Spieldose\Entities\Entity
         $this->bio = (object) [
             "source" => null,
             "summary" => null,
-            "content" => null
+            "content" => null,
         ];
         $query = "
                 SELECT DISTINCT FIT.album, FIT.mb_album_id AS mbId, FIT.year, D.id AS coverPathId
@@ -609,16 +630,16 @@ class Artist extends \Spieldose\Entities\Entity
                 WHERE FIT.artist = :name AND FIT.album IS NOT NULL
                 ORDER BY RANDOM()
                 LIMIT 1";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
-        );
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+        ];
         $results = $this->dbh->query($query, $params);
         $this->popularAlbum = (object) [
             'title' => null,
             'year' => null,
-            'image' => null
+            'image' => null,
         ];
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $this->popularAlbum->title = $results[0]->album;
             $this->popularAlbum->year = $results[0]->year;
             if ($useLocalCovers && !empty($results[0]->coverPathId)) {
@@ -631,6 +652,7 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             throw new \Spieldose\Exception\NotFoundException("artistName");
         }
+
         $query = "
                 SELECT DISTINCT FIT.album, FIT.mb_album_id, FIT.year, D.id AS coverPathId
                 FROM FILE_ID3_TAG FIT INNER JOIN FILE F ON F.ID = FIT.id
@@ -638,16 +660,16 @@ class Artist extends \Spieldose\Entities\Entity
                 WHERE FIT.artist = :name AND FIT.album IS NOT NULL
                 ORDER BY FIT.year DESC
                 LIMIT 1";
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
-        );
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+        ];
         $results = $this->dbh->query($query, $params);
         $this->latestAlbum = (object) [
             'title' => null,
             'year' => null,
-            'image' => null
+            'image' => null,
         ];
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $this->latestAlbum->title = $results[0]->album;
             $this->latestAlbum->year = $results[0]->year;
             if ($useLocalCovers && !empty($results[0]->coverPathId)) {
@@ -658,6 +680,7 @@ class Artist extends \Spieldose\Entities\Entity
                 $this->latestAlbum->image = sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url);
             }
         }
+
         $trackFields = [
             "id " => "FIT.id",
             "mbId" => "FIT.mb_release_track_id",
@@ -670,20 +693,20 @@ class Artist extends \Spieldose\Entities\Entity
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
-            "coverPathId" => "D.id"
+            "coverPathId" => "D.id",
         ];
 
         $fields = [];
         foreach ($trackFields as $key => $value) {
             $fields[] = $value . " AS " . $key;
         }
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
-        );
+
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+        ];
 
         $this->topTracks = $this->getTopTracks($this->dbh, ["mbId" => null, "name" => $this->name]);
-        $query = sprintf(
-            "
+        $query = "
                         SELECT DISTINCT
                             FIT.mb_album_id AS mbId,
                             COALESCE(MB_CACHE_RELEASE.title, FIT.album) AS title,
@@ -698,38 +721,39 @@ class Artist extends \Spieldose\Entities\Entity
                         WHERE FIT.artist = :name
                         GROUP BY FIT.mb_album_id
                         ORDER BY COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))
-                    "
-        );
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name)
-        );
+                    ";
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+        ];
         $this->topAlbums = $this->dbh->query($query, $params);
-        foreach ($this->topAlbums as $album) {
-            $album->artist = new \stdClass();
-            $album->artist->mbId = $album->artistMBId;
-            $album->artist->name = $album->artistName;
-            if ($useLocalCovers && !empty($album->coverPathId)) {
-                $album->covers = [
-                    "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $album->coverPathId),
-                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $album->coverPathId)
+        foreach ($this->topAlbums as $topAlbum) {
+            $topAlbum->artist = new \stdClass();
+            $topAlbum->artist->mbId = $topAlbum->artistMBId;
+            $topAlbum->artist->name = $topAlbum->artistName;
+            if ($useLocalCovers && !empty($topAlbum->coverPathId)) {
+                $topAlbum->covers = [
+                    "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $topAlbum->coverPathId),
+                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $topAlbum->coverPathId),
                 ];
-            } elseif (!empty($album->mbId)) {
+            } elseif (!empty($topAlbum->mbId)) {
                 $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                $url = $cover->getReleaseImageURL($album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
-                $album->covers = [
+                $url = $cover->getReleaseImageURL($topAlbum->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                $topAlbum->covers = [
                     "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, $url),
-                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url)
+                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, $url),
                 ];
             } else {
-                $album->covers = [
+                $topAlbum->covers = [
                     "small" => null,
-                    "normal" => null
+                    "normal" => null,
                 ];
             }
-            unset($album->artistMbId);
-            unset($album->artistName);
-            unset($album->coverPathId);
+
+            unset($topAlbum->artistMbId);
+            unset($topAlbum->artistName);
+            unset($topAlbum->coverPathId);
         }
+
         $this->similar = $this->getSimilarArtists($this->dbh, ["mbId" => $this->mbId, "name" => $this->name]);
         return (true);
     }
@@ -743,6 +767,7 @@ class Artist extends \Spieldose\Entities\Entity
                 throw new \Spieldose\Exception\InvalidParamsException("mbId,name");
             }
         }
+
         if (!empty($this->mbId)) {
             if (!$this->getFromMusicBrainzCache($useLocalCovers)) {
                 $this->getFromNoCache($useLocalCovers);
@@ -750,24 +775,24 @@ class Artist extends \Spieldose\Entities\Entity
         } else {
             $this->getFromNoCache($useLocalCovers);
         }
+
         $sort = new \aportela\DatabaseBrowserWrapper\Sort(
             [
                 new \aportela\DatabaseBrowserWrapper\SortItem("year", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
-                new \aportela\DatabaseBrowserWrapper\SortItem("releaseTitle", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                new \aportela\DatabaseBrowserWrapper\SortItem("releaseTitle", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
             ]
         );
         $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
-        $data = array();
-        $filter = array(
+        $filter = [
             "artistMBId" => $this->mbId,
             "artistName" => $this->name,
-        );
+        ];
         $this->tracks = \Spieldose\Entities\Track::search($this->dbh, $filter, $sort, $pager)->items;
     }
 
-    public static function getLastFMArtistTagCloud(\aportela\DatabaseWrapper\DB $dbh)
+    public static function getLastFMArtistTagCloud(\aportela\DatabaseWrapper\DB $db): array
     {
-        return ($dbh->query(
+        return ($db->query(
             "
                 SELECT
                     CACHE_LASTFM_ARTIST_TAG.tag AS name, COUNT(CACHE_LASTFM_ARTIST_TAG.tag) AS total
@@ -778,20 +803,9 @@ class Artist extends \Spieldose\Entities\Entity
         ));
     }
 
-    public static function getMusicBrainzArtistGenreCloud(\aportela\DatabaseWrapper\DB $dbh)
+    public static function getMusicBrainzArtistGenreCloud(\aportela\DatabaseWrapper\DB $db): array
     {
-        $afterBrowseFunction = function ($rows): void {
-            array_map(
-                function ($item) {
-                    if (property_exists($item, "total") && is_numeric($item->total)) {
-                        $item->total = intval($item->total);
-                    }
-                    return ($item);
-                },
-                $rows
-            );
-        };
-        return ($dbh->query(
+        return ($db->query(
             "
                 SELECT
                     CACHE_MUSICBRAINZ_ARTIST_GENRE.genre AS name, COUNT(CACHE_MUSICBRAINZ_ARTIST_GENRE.genre) AS total

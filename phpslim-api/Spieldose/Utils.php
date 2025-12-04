@@ -28,7 +28,7 @@ class Utils
         return ((object)
         [
             'allowSignUp' => $settings->allowSignUp(),
-            'environment' => $settings->getEnvironment()
+            'environment' => $settings->getEnvironment(),
         ]
         );
     }
@@ -57,7 +57,7 @@ class Utils
 
         $currentTimestamp = microtime(true);
 
-        $percent = (float)($done / $total);
+        $percent = (float) ($done / $total);
 
         $bar = (int) floor($percent * $size);
         $bar = min($bar, $size);
@@ -150,7 +150,7 @@ class Utils
             bin2hex(random_bytes(2)),
             bin2hex(chr((ord(random_bytes(1)) & 0x0F) | 0x40)) . bin2hex(random_bytes(1)),
             bin2hex(chr((ord(random_bytes(1)) & 0x3F) | 0x80)) . bin2hex(random_bytes(1)),
-            bin2hex(random_bytes(6))
+            bin2hex(random_bytes(6)),
         ]);
     }
 

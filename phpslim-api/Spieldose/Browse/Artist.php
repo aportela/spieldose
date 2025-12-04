@@ -15,20 +15,21 @@ class Artist extends \Spieldose\Browse\Base
             "name" => "TMP.name",
             "mbId" => "TMP.mbId",
             "image" => "CACHE_LASTFM_ARTIST.image",
-            "totalTracks" => "COALESCE(TOTAL_TRACKS.total, 0)"
+            "totalTracks" => "COALESCE(TOTAL_TRACKS.total, 0)",
         ];
         $this->fieldCountDefinition = [
-            "total" => "COUNT(TMP.name)"
+            "total" => "COUNT(TMP.name)",
         ];
-        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $data) {
+        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $browserResults): void {
             array_map(
                 function (object $item): object {
                     if (property_exists($item, "totalTracks") && is_numeric($item->totalTracks)) {
                         $item->totalTracks = intval($item->totalTracks);
                     }
+
                     return ($item);
                 },
-                $data->items
+                $browserResults->items
             );
         };
         $browser = new \aportela\DatabaseBrowserWrapper\Browser(
@@ -42,13 +43,14 @@ class Artist extends \Spieldose\Browse\Base
         );
         $queryConditions = [];
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":various_artists_mbid", \aportela\MusicBrainzWrapper\Artist::VARIOUS_ARTISTS_MB_ID)
+            new \aportela\DatabaseWrapper\Param\StringParam(":various_artists_mbid", \aportela\MusicBrainzWrapper\Artist::VARIOUS_ARTISTS_MB_ID),
         ];
         if ($filter->hasParam("name") && is_string($filter->getParamValue("name"))) {
             $queryConditions[] = sprintf(" TMP.name LIKE %s ", ":name");
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name",  "%" . $filter->getParamValue("name") . "%");
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter->getParamValue("name") . "%");
         }
-        $whereCondition = $queryConditions !== [] ? " WHERE " .  implode(" AND ", $queryConditions) : "";
+
+        $whereCondition = $queryConditions !== [] ? " WHERE " . implode(" AND ", $queryConditions) : "";
         $browser->addDBQueryParams($params);
         $query = $browser->buildQuery(
             sprintf(

@@ -6,23 +6,16 @@ namespace Spieldose\Library;
 
 class Manager
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
     }
-
-    public function __destruct() {}
 
     /**
      * checks for library path existence (returns path id || null)
      */
     private function getLibraryPathId(string $path): ?string
     {
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     id
@@ -33,7 +26,7 @@ class Manager
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
             ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             return ($results[0]->id);
         } else {
             return (null);
@@ -46,7 +39,7 @@ class Manager
     public function isPathContainedOnCurrentLibraryPaths(string $path): bool
     {
         $path = realpath($path);
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     path
@@ -60,10 +53,11 @@ class Manager
         );
         foreach ($results as $result) {
             // TODO: str_starts_with works with unicode ?
-            if (str_starts_with($path, $result->path)) {
+            if (str_starts_with($path, (string) $result->path)) {
                 return (true);
             }
         }
+
         return (false);
     }
 
@@ -74,15 +68,17 @@ class Manager
     {
         $path = realpath($path);
         $pathId = $this->getLibraryPathId($path);
-        if (empty($pathId)) {
+        if (in_array($pathId, [null, '', '0'], true)) {
             $pathId = \Spieldose\Utils::uuidv4();
         }
+
         if (mb_strlen($name) > 128) {
             throw new \InvalidArgumentException("max name length (128) exceed");
         }
+
         $stat = stat($path);
         $this->logger->info("Setting library path", [$pathId, $path]);
-        $this->dbh->execute(
+        $this->db->execute(
             "
                     INSERT INTO LIBRARY_PATH
                         (id, path, name, ctime, mtime)
@@ -98,7 +94,7 @@ class Manager
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
             ]
         );
         return ($pathId);
@@ -110,16 +106,16 @@ class Manager
     public function removeLibraryPath(string $path): bool
     {
         $pathId = $this->getLibraryPathId($path);
-        if (! empty($pathId)) {
+        if (!in_array($pathId, [null, '', '0'], true)) {
             $this->logger->info("Removing library path", [$pathId, $path]);
             // DIRECTORY && FILE related rows are deleted on cascade
-            $this->dbh->execute(
+            $this->db->execute(
                 "
                     DELETE FROM LIBRARY_PATH
                     WHERE id = :id
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId),
                 ]
             );
             return (true);
@@ -135,7 +131,7 @@ class Manager
     public function getLibraryPaths(): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 "
                 SELECT
                     id, path
@@ -152,7 +148,7 @@ class Manager
     public function getLibraryPathDirectories(string $libraryPathId): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 "
                     SELECT
                         id, path
@@ -161,7 +157,7 @@ class Manager
                     ORDER BY path
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $libraryPathId)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":library_path_id", $libraryPathId),
                 ]
             )
         );
@@ -169,7 +165,7 @@ class Manager
 
     public function getLibraryPathDirectoryId(string $path): ?string
     {
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     id
@@ -180,7 +176,7 @@ class Manager
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($path)),
             ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             return ($results[0]->id);
         } else {
             return (null);
@@ -193,7 +189,7 @@ class Manager
     public function getLibraryPathDirectoryFiles(string $libraryPathDirectoryId): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 "
                     SELECT
                         FILE.id, DIRECTORY.path, FILE.name
@@ -203,9 +199,9 @@ class Manager
                     ORDER BY path
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $libraryPathDirectoryId)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":directory_id", $libraryPathDirectoryId),
                 ],
-                function ($rows) {
+                function ($rows): void {
                     array_map(
                         function ($item) {
                             $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;
@@ -222,7 +218,7 @@ class Manager
 
     public function getLibraryPathDirectoryFileId(string $directoryId, string $name): ?string
     {
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     id
@@ -237,23 +233,23 @@ class Manager
                 new \aportela\DatabaseWrapper\Param\StringParam(":name", $name),
             ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             return ($results[0]->id);
         } else {
             return (null);
         }
     }
 
-    public function removeLibraryPathDirectoryFile(string $id)
+    public function removeLibraryPathDirectoryFile(string $id): void
     {
         $this->logger->notice("Removing library path directory file", [$id]);
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM FILE
                 WHERE id = :id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id),
             ]
         );
     }
@@ -262,7 +258,7 @@ class Manager
     /**
      * scan all library paths
      */
-    public function scanLibrary()
+    public function scanLibrary(): void
     {
         $this->logger->notice("Scanning full library");
         $paths = $this->getLibraryPaths();
@@ -278,7 +274,7 @@ class Manager
     public function getAllLibraryPathDirectoryFiles(): array
     {
         return (
-            $this->dbh->query(
+            $this->db->query(
                 "
                     SELECT
                         FILE.id, DIRECTORY.path, FILE.name
@@ -287,7 +283,7 @@ class Manager
                     ORDER BY DIRECTORY.path, FILE.name
                 ",
                 [],
-                function ($rows) {
+                function ($rows): void {
                     array_map(
                         function ($item) {
                             $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;

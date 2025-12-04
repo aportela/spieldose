@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
-return function (App $app) {
+return function (App $app): void {
     $app->get('/', function (Request $request, Response $response, array $args) use ($app) {
         $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
         if (!$dbh->isSchemaInstalled()) {
@@ -20,25 +20,22 @@ return function (App $app) {
                 $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
                 if (count($missingExtensions) < 1) {
                     $pathErrors = [];
-                    if (!file_exists($settings['thumbnails']['artists']['basePath'])) {
-                        if (!@mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
-                            $pathErrors[] = $settings['thumbnails']['artists']['basePath'];
-                            $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
-                        }
+                    if (!file_exists($settings['thumbnails']['artists']['basePath']) && !@mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
+                        $pathErrors[] = $settings['thumbnails']['artists']['basePath'];
+                        $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
                     }
-                    if (!file_exists($settings['thumbnails']['albums']['basePath'])) {
-                        if (!@mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
-                            $pathErrors[] = $settings['thumbnails']['albums']['basePath'];
-                            $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
-                        }
+                    
+                    if (!file_exists($settings['thumbnails']['albums']['basePath']) && !@mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
+                        $pathErrors[] = $settings['thumbnails']['albums']['basePath'];
+                        $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
                     }
-                    if (!file_exists($settings['thumbnails']['radioStations']['basePath'])) {
-                        if (!@mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
-                            $pathErrors[] = $settings['thumbnails']['radioStations']['basePath'];
-                            $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
-                        }
+                    
+                    if (!file_exists($settings['thumbnails']['radioStations']['basePath']) && !@mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
+                        $pathErrors[] = $settings['thumbnails']['radioStations']['basePath'];
+                        $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
                     }
-                    if (count($pathErrors) == 0) {
+                    
+                    if ($pathErrors === []) {
                         $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                         try {
                             if ($dbh->installSchema()) {
@@ -51,14 +48,14 @@ return function (App $app) {
                             }
                         } catch (\Throwable $e) {
                             $installerException = [
-                                'type' => get_class($e),
+                                'type' => $e::class,
                                 'message' => $e->getMessage(),
                                 'file' => $e->getLine(),
                                 'line' => $e->getFile()
                             ];
                             $parent = $e->getPrevious();
-                            if ($parent) {
-                                $installerException['parent'] = ['type' => get_class($parent), 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
+                            if ($parent instanceof \Throwable) {
+                                $installerException['parent'] = ['type' => $parent::class, 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
                             }
                         } finally {
                         }
@@ -67,12 +64,14 @@ return function (App $app) {
                     $logger->critical("Error: missing php extension/s: ", implode(", ", $missingExtensions));
                 }
             }
+            
             $dbh->close();
             if (!$installOK && file_exists($settings['paths']['database'])) {
                 unlink($settings['paths']['database']);
             }
+            
             return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
-        } else if ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
+        } elseif ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
             return $this->get('Twig')->render($response, 'index-upgrade.html.twig', ["launched" => false, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => null, "pathErrors" => $pathErrors ?? []]);
         } else {
             $dbh->close();
@@ -82,7 +81,7 @@ return function (App $app) {
 
     $app->group(
         '/api2',
-        function (RouteCollectorProxy $group) use ($app) {
+        function (RouteCollectorProxy $group) use ($app): void {
 
             $container = $app->getContainer();
             if (!$container instanceof \Psr\Container\ContainerInterface) {
@@ -323,7 +322,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/browse', function (RouteCollectorProxy $group) use ($container) {
+            $group->group('/browse', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
@@ -337,14 +336,16 @@ return function (App $app) {
                         if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["currentPageIndex"])) {
                             $currentPageIndex = intval($params["pager"]["currentPageIndex"]);
                         }
+                        
                         if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["resultsPage"])) {
                             $resultsPage = intval($params["pager"]["resultsPage"]);
                         }
                     }
+                    
                     return (new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPageIndex, $resultsPage));
                 };
 
-                function getSortFromParams(array $params = [], string $defaultSortField, \aportela\DatabaseBrowserWrapper\Order $defaultSortOrder, bool $caseInsensitive): \aportela\DatabaseBrowserWrapper\Sort
+                function getSortFromParams(array $params = [], string $defaultSortField = '', ?\aportela\DatabaseBrowserWrapper\Order $defaultSortOrder = null, bool $caseInsensitive = false): \aportela\DatabaseBrowserWrapper\Sort
                 {
                     $sortItem = null;
                     if (array_key_exists("sort", $params)) {
@@ -360,6 +361,7 @@ return function (App $app) {
                             $caseInsensitive
                         );
                     }
+                    
                     return (new \aportela\DatabaseBrowserWrapper\Sort([$sortItem]));
                 };
 
@@ -373,13 +375,14 @@ return function (App $app) {
                     return (array_key_exists("skipCount", $params));
                 }
 
-                $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->post('/artist', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
+                    
                     $skipCount = skipCountParamFound($params);
-                    $data = (new \Spieldose\Browse\Artist($dbh))->browse(
+                    $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
                         getPagerFromParams($params),
                         getFilterFromParams($params),
                         getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
@@ -387,33 +390,35 @@ return function (App $app) {
                     );
                     $payload = json_encode(
                         [
-                            "data" => ! $skipCount ?
+                            "data" => $skipCount ?
                                 [
-                                    "pager" => [
-                                        "totalPages" => $data->pager->getTotalPages(),
-                                        "totalResults" => $data->pager->getTotalResults()
-                                    ],
-                                    "items" => $data->items
+                                    "items" => $browserResults->items
                                 ] :
                                 [
-                                    "items" => $data->items
+                                    "pager" => [
+                                        "totalPages" => $browserResults->pager->getTotalPages(),
+                                        "totalResults" => $browserResults->pager->getTotalResults()
+                                    ],
+                                    "items" => $browserResults->items
                                 ]
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/album', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->post('/album', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
+                    
                     $skipCount = skipCountParamFound($params);
-                    $data = (new \Spieldose\Browse\Album($dbh))->browse(
+                    $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
                         getPagerFromParams($params),
                         getFilterFromParams($params),
                         getSortFromParams($params, "title", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
@@ -421,31 +426,33 @@ return function (App $app) {
                     );
                     $payload = json_encode(
                         [
-                            "data" => ! $skipCount ?
+                            "data" => $skipCount ?
                                 [
-                                    "pager" => [
-                                        "totalPages" => $data->pager->getTotalPages(),
-                                        "totalResults" => $data->pager->getTotalResults()
-                                    ],
-                                    "items" => $data->items
+                                    "items" => $browserResults->items
                                 ] :
                                 [
-                                    "items" => $data->items
+                                    "pager" => [
+                                        "totalPages" => $browserResults->pager->getTotalPages(),
+                                        "totalResults" => $browserResults->pager->getTotalResults()
+                                    ],
+                                    "items" => $browserResults->items
                                 ]
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
                     if (empty($args['id'])) {
                         throw new \Spieldose\Exception\InvalidParamsException("id");
                     }
-                    $tree = (new \Spieldose\Browse\Path($dbh))->getTree($args['id']);
+                    
+                    $tree = new \Spieldose\Browse\Path($dbh)->getTree($args['id']);
                     $payload = json_encode(
                         [
                             "data" => [
@@ -453,55 +460,60 @@ return function (App $app) {
                             ]
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
                             "data" => [
-                                "items" => (new \Spieldose\Browse\Path($dbh))->getLibraries()
+                                "items" => new \Spieldose\Browse\Path($dbh)->getLibraries()
                             ]
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/common', function (RouteCollectorProxy $group) use ($container) {
+            $group->group('/common', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
+                
+                $routeCollectorProxy->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
                             "items" => \Spieldose\Entities\Artist::getMusicBrainzArtistGenreCloud($dbh)
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
-                $group->get('/lastfm_artist_tag_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->get('/lastfm_artist_tag_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
                             "items" => \Spieldose\Entities\Artist::getLastFMArtistTagCloud($dbh)
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -512,15 +524,19 @@ return function (App $app) {
                 if (! is_array($queryParams)) {
                     throw new \Spieldose\Exception\InvalidParamsException();
                 }
+                
                 if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("width");
                 }
+                
                 if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("height");
                 }
+                
                 if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
                     throw new \Spieldose\Exception\InvalidParamsException("quality");
                 }
+                
                 if (! (array_key_exists("url", $queryParams) && is_string($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL))) {
                     throw new \Spieldose\Exception\InvalidParamsException("url");
                 }
@@ -560,19 +576,24 @@ return function (App $app) {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
+                
                 $queryParams = $request->getQueryParams();
                 if (! is_array($queryParams)) {
                     throw new \Spieldose\Exception\InvalidParamsException();
                 }
+                
                 if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("width");
                 }
+                
                 if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("height");
                 }
+                
                 if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
                     throw new \Spieldose\Exception\InvalidParamsException("quality");
                 }
+                
                 if (! (array_key_exists("pathId", $queryParams) && is_string($queryParams["pathId"]))) {
                     throw new \Spieldose\Exception\InvalidParamsException("pathId");
                 }
@@ -580,10 +601,11 @@ return function (App $app) {
                 //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
 
-                $localCoverPath = (new \Spieldose\Browse\Path($dbh))->getPathCoverLocalPath($queryParams["pathId"]);
-                if (empty($localCoverPath)) {
+                $localCoverPath = new \Spieldose\Browse\Path($dbh)->getPathCoverLocalPath($queryParams["pathId"]);
+                if (in_array($localCoverPath, [null, '', '0'], true)) {
                     throw new \Spieldose\Exception\NotFoundException("");
                 }
+                
                 $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
                     $logger,
                     $settings->getCachePath("Thumbnails"),
@@ -611,12 +633,13 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/file', function (RouteCollectorProxy $group) use ($container) {
+            $group->group('/file', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
+                
+                $routeCollectorProxy->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
                     if (!empty($args['id'])) {
                         $file = new \Spieldose\Entities\File($args["id"]);
                         $file->get($dbh);
@@ -625,9 +648,10 @@ return function (App $app) {
                                 "file" => $file
                             ]
                         );
-                        if (json_last_error() != JSON_ERROR_NONE) {
+                        if (json_last_error() !== JSON_ERROR_NONE) {
                             throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                         }
+                        
                         $response->getBody()->write($payload);
                         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                     } else {
@@ -635,7 +659,7 @@ return function (App $app) {
                     }
                 });
 
-                $group->get('/{action:raw|download}/{id}', function (Request $request, Response $response, array $args) {
+                $routeCollectorProxy->get('/{action:raw|download}/{id}', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface {
                     $action = $args['action'];
                     if (!empty($args['id'])) {
                         $file = new \Spieldose\File($this, $args['id']);
@@ -651,24 +675,25 @@ return function (App $app) {
                                 // find the requested range
                                 // this might be too simplistic, apparently the client can request
                                 // multiple ranges, which can become pretty complex, so ignore it for now
-                                preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
+                                preg_match('/bytes=(\d+)-(\d+)?/', (string) $_SERVER['HTTP_RANGE'], $matches);
                                 $offset = intval($matches[1]);
                                 $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
                             }
+                            
                             $response->getBody()->write($file->getData($offset, $length));
                             if ($partialContent) {
                                 // output the right headers for partial content
                                 return $response->withStatus(206)
 
-                                    ->withHeader('Content-Type', $file->mime ? $file->mime : 'application/octet-stream')
-                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename($file->path) . '"')
+                                    ->withHeader('Content-Type', $file->mime ?: 'application/octet-stream')
+                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
                                     ->withHeader('Content-Length', $file->length)
                                     ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
                                     ->withHeader('Accept-Ranges', 'bytes');
                             } else {
                                 return $response->withStatus(200)
-                                    ->withHeader('Content-Type', $file->mime ? $file->mime : "application/octet-stream")
-                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename($file->path) . '"')
+                                    ->withHeader('Content-Type', $file->mime ?: "application/octet-stream")
+                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
                                     ->withHeader('Content-Length', $file->length)
                                     ->withHeader('Accept-Ranges', 'bytes');
                             }
@@ -680,54 +705,61 @@ return function (App $app) {
                     }
                 });
 
-                $group->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh) {
                     $file = new \Spieldose\Entities\File("");
                     $file->rnd($dbh);
                     $file->get($dbh);
+                    
                     $payload = json_encode(
                         [
                             "file" => $file
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/track', function (RouteCollectorProxy $group) use ($container) {
+            $group->group('/track', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
+                
+                $routeCollectorProxy->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, true);
+                    
                     $payload = json_encode(
                         [
                             "favorited" => $track->favorited
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, false);
+                    
                     $payload = json_encode(
                         [
                             "favorited" => null // TODO: false ???
                         ]
                     );
-                    if (json_last_error() != JSON_ERROR_NONE) {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
+                    
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });

@@ -17,12 +17,12 @@ class Metrics
     LIMIT 500;
     */
 
-    public static function searchTracks(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
+    public static function searchTracks(\aportela\DatabaseWrapper\DB $db, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage)
-        );
-        $filterConditions = array();
+        $params = [
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage),
+        ];
+        $filterConditions = [];
         $fieldDefinitions = [
             "id " => "FIT.id",
             "mbId" => "FIT.mb_release_track_id",
@@ -35,15 +35,15 @@ class Metrics
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
-            "coverPathId" => "D.id"
+            "coverPathId" => "D.id",
         ];
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(FIT.id)"
+            "totalResults" => " COUNT(FIT.id)",
         ];
 
-        $afterBrowseFunction = function ($data) use ($sort) {
+        $afterBrowseFunction = function ($data) use ($sort): void {
             $data->items = array_map(
-                function ($result) use ($sort) {
+                function ($result) use ($sort): \stdClass {
                     $newResult = new \stdClass();
                     $newResult->track = new \Spieldose\Entities\Track(
                         $result->id,
@@ -70,13 +70,14 @@ class Metrics
                             $newResult->lastPlayTimestamp = $result->lastPlayTimestamp;
                             break;
                     }
+
                     return ($newResult);
                 },
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
@@ -84,11 +85,13 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, TMP_FILE_PLAYCOUNT_STATS.playCount
@@ -107,7 +110,7 @@ class Metrics
                         LEFT JOIN MB_CACHE_RELEASE ON MB_CACHE_RELEASE.mbid = FIT.mb_album_id
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -125,7 +128,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -134,6 +137,7 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -148,49 +152,52 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
         }
+
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "", true);
-        return ($data->items);
+
+        $browserResults = $browser->launch($query, "", true);
+        return ($browserResults->items);
     }
 
-    public static function searchArtists(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
+    public static function searchArtists(\aportela\DatabaseWrapper\DB $db, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage)
-        );
-        $filterConditions = array();
+        $params = [
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage),
+        ];
+        $filterConditions = [];
         $fieldDefinitions = [
             "name" => "COALESCE(MB_CACHE_ARTIST.name, FIT.artist)",
-            "image" => "MB_CACHE_ARTIST.image"
+            "image" => "MB_CACHE_ARTIST.image",
         ];
 
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(1)"
+            "totalResults" => " COUNT(1)",
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data): void {
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->musicBrainzAlbumId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $result->covertArtArchiveURL = $coverArtArchive->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $result->covertArtArchiveURL = null;
                     }
+
                     return ($result);
                 },
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
@@ -198,11 +205,13 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -216,7 +225,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -235,7 +244,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -244,6 +253,7 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -259,52 +269,55 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
         }
+
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "", true);
-        return ($data->items);
+
+        $browserResults = $browser->launch($query, "", true);
+        return ($browserResults->items);
     }
 
-    public static function searchAlbums(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
+    public static function searchAlbums(\aportela\DatabaseWrapper\DB $db, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage)
-        );
-        $filterConditions = array();
+        $params = [
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage),
+        ];
+        $filterConditions = [];
         $fieldDefinitions = [
             "title" => "COALESCE(MB_CACHE_RELEASE.title, FIT.album)",
             "mbId" => "FIT.mb_album_id",
             "albumArtistName" => "COALESCE(MB_CACHE_RELEASE.artist_name, FIT.album_artist)",
             "albumArtistMBId" => "COALESCE(MB_CACHE_RELEASE.artist_mbid, FIT.mb_album_artist_id)",
-            "year" => "COALESCE(MB_CACHE_RELEASE.year, FIT.year)"
+            "year" => "COALESCE(MB_CACHE_RELEASE.year, FIT.year)",
         ];
 
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(1)"
+            "totalResults" => " COUNT(1)",
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data): void {
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->musicBrainzAlbumId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $result->covertArtArchiveURL = $coverArtArchive->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $result->covertArtArchiveURL = null;
                     }
+
                     return ($result);
                 },
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
@@ -312,11 +325,13 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -330,7 +345,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -349,7 +364,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -358,6 +373,7 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, FPS.play_timestamp AS lastPlayTimestamp
@@ -373,48 +389,51 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
         }
+
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "", true);
-        return ($data->items);
+
+        $browserResults = $browser->launch($query, "", true);
+        return ($browserResults->items);
     }
 
-    public static function searchGenres(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
+    public static function searchGenres(\aportela\DatabaseWrapper\DB $db, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): array
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage)
-        );
-        $filterConditions = array();
+        $params = [
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $pager->resultsPage),
+        ];
+        $filterConditions = [];
         $fieldDefinitions = [
             "name" => "FIT.genre",
         ];
 
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(1)"
+            "totalResults" => " COUNT(1)",
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data): void {
             $data->items = array_map(
                 function ($result) {
                     if (!empty($result->musicBrainzAlbumId)) {
-                        $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
-                        $result->covertArtArchiveURL = $cover->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
+                        $coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                        $result->covertArtArchiveURL = $coverArtArchive->getReleaseImageURL($result->musicBrainzAlbumId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL);
                     } else {
                         $result->covertArtArchiveURL = null;
                     }
+
                     return ($result);
                 },
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         $query = null;
         switch ($sort->items[0]->field) {
             case "playCount":
@@ -422,11 +441,13 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
                     $filterConditions[] = " strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]);
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]);
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, COUNT(*) AS playCount
@@ -439,7 +460,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -457,7 +478,7 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
@@ -466,6 +487,7 @@ class Metrics
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $filterConditions[] = " FPS.user_id = :user_id ";
                 }
+
                 $query = sprintf(
                     "
                         SELECT %s, MAX(FPS.play_timestamp) AS lastPlayTimestamp
@@ -480,76 +502,70 @@ class Metrics
                         LIMIT :count
                     ",
                     $browser->getQueryFields(),
-                    count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                    $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                     $sort->items[0]->order->value
                 );
                 break;
         }
+
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
-        $data = $browser->launch($query, "", true);
-        return ($data->items);
+
+        $browserResults = $browser->launch($query, "", true);
+        return ($browserResults->items);
     }
 
-    public static function searchPlaysByDateRange(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    public static function searchPlaysByDateRange(\aportela\DatabaseWrapper\DB $db, array $filter): array
     {
         $format = null;
         if (isset($filter["dateRange"])) {
-            switch ($filter["dateRange"]) {
-                case "hour":
-                    $format = "%H";
-                    break;
-                case "weekday":
-                    $format = "%w";
-                    break;
-                case "month":
-                    $format = "%m";
-                    break;
-                case "year":
-                    $format = "%Y";
-                    break;
-                case "fullDate":
-                    $format = "%Y%m%d";
-                    break;
-                default:
-                    throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
-                    break;
-            }
+            $format = match ($filter["dateRange"]) {
+                "hour" => "%H",
+                "weekday" => "%w",
+                "month" => "%m",
+                "year" => "%Y",
+                "fullDate" => "%Y%m%d",
+                default => throw new \Spieldose\Exception\InvalidParamsException(("dateRange")),
+            };
         } else {
             throw new \Spieldose\Exception\InvalidParamsException(("dateRange"));
         }
+
         $params = [];
         $whereConditions = [];
         if (!(isset($filter["global"]) && $filter["global"])) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
             $whereConditions[] = " FPS.user_id = :user_id ";
         }
+
         if (isset($filter["trackId"]) && !empty($filter["trackId"])) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $filter["trackId"]);
             $whereConditions[] = " FPS.file_id = :file_id ";
         }
+
         $query = sprintf('
             SELECT strftime("%s", datetime(FPS.play_timestamp, "unixepoch"), "localtime") AS %s, COUNT(*) AS total
             FROM FILE_PLAYCOUNT_STATS FPS
             %s
             GROUP BY 1
             ORDER BY 1
-        ', $format, $filter["dateRange"], count($whereConditions) > 0 ? " WHERE " . implode(" AND ", $whereConditions) : null);
-        return ($dbh->query($query, $params));
+        ', $format, $filter["dateRange"], $whereConditions !== [] ? " WHERE " . implode(" AND ", $whereConditions) : null);
+        return ($db->query($query, $params));
     }
 
-    public static function searchPlaysByUser(\aportela\DatabaseWrapper\DB $dbh, array $filter): array
+    public static function searchPlaysByUser(\aportela\DatabaseWrapper\DB $db, array $filter): array
     {
         $params = [];
         $whereCondition = null;
         if (isset($filter["fromDate"]) && !empty($filter["fromDate"]) && isset($filter["toDate"]) && !empty($filter["toDate"])) {
             $whereCondition = " WHERE strftime('%Y%m%d', datetime(FPS.play_timestamp, 'unixepoch')) BETWEEN :fromDate AND :toDate ";
-            $params = array(
+            $params = [
                 new \aportela\DatabaseWrapper\Param\StringParam(":fromDate", $filter["fromDate"]),
-                new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"])
-            );
+                new \aportela\DatabaseWrapper\Param\StringParam(":toDate", $filter["toDate"]),
+            ];
         }
+
         $query = sprintf('
             SELECT U.name, COUNT(*) AS total
             FROM FILE_PLAYCOUNT_STATS FPS
@@ -558,6 +574,6 @@ class Metrics
             GROUP BY FPS.user_id
             ORDER BY 1
         ', $whereCondition);
-        return ($dbh->query($query, $params));
+        return ($db->query($query, $params));
     }
 }

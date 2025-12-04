@@ -27,6 +27,7 @@ class JWT
                 if ($expiresAt > 0) {
                     $jwtPayload['exp'] = $expiresAt;
                 }
+
                 return (\Firebase\JWT\JWT::encode(
                     $jwtPayload,
                     $this->passphrase,

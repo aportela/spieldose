@@ -6,25 +6,19 @@ namespace Spieldose\Library\Scraper\MusicBrainz;
 
 class ArtistScraper
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \aportela\MusicBrainzWrapper\Artist $musicBrainzArtistAPI;
+    private readonly \aportela\MusicBrainzWrapper\Artist $artist;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->musicBrainzArtistAPI = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        $this->artist = new \aportela\MusicBrainzWrapper\Artist($this->logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
-
-    public function __destruct() {}
 
     /**
      * returns all ID3 entries with artist name but without MusicBrainz artist id
      */
     private function getID3OrphanedArtistMBIdData(bool $randomize = false): array
     {
-        return ($this->dbh->query(
+        return ($this->db->query(
             sprintf(
                 "
                     SELECT
@@ -47,7 +41,7 @@ class ArtistScraper
      */
     private function getID3OrphanedReleaseArtistMBIdData(bool $randomize = false): array
     {
-        return ($this->dbh->query(
+        return ($this->db->query(
             sprintf(
                 "
                     SELECT
@@ -68,9 +62,9 @@ class ArtistScraper
     /**
      * set ID3 MusicBrainz artist id for artist name on files with missing artist MBId
      */
-    private function setID3OrphanedArtistMBIdData(string $fileId, string $artistMBId)
+    private function setID3OrphanedArtistMBIdData(string $fileId, string $artistMBId): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_ARTIST
                     (file_id, artist_mbid)
@@ -89,9 +83,9 @@ class ArtistScraper
     /**
      * set ID3 MusicBrainz artist id for release artist name on files with missing artist MBId
      */
-    private function setID3OrphanedReleaseArtistMBIdData(string $fileId, string $artistMBId)
+    private function setID3OrphanedReleaseArtistMBIdData(string $fileId, string $artistMBId): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
                     (file_id, artist_mbid)
@@ -107,7 +101,7 @@ class ArtistScraper
         );
     }
 
-    private function getAllArtistMBIds(bool $ignoreCache)
+    private function getAllArtistMBIds(bool $ignoreCache): array
     {
         $allArtistMBIdsQuery = "
             SELECT
@@ -133,12 +127,12 @@ class ArtistScraper
             WHERE
                 CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
             ";
-        return (array_map(fn($result) => $result->mbid, $this->dbh->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
+        return (array_map(fn($result) => $result->mbid, $this->db->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
     }
 
     public function hasCache(string $mbId): bool
     {
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     COUNT(mbid) AS total
@@ -155,9 +149,9 @@ class ArtistScraper
     /**
      * save MusicBrainz artist cache (metadata/genres/relationships)
      */
-    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper $artist)
+    private function saveCache(\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper $artistHelper): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO CACHE_MUSICBRAINZ_ARTIST
                     (mbid, name, country, ctime, mtime)
@@ -170,27 +164,26 @@ class ArtistScraper
                         mtime = :current_timestamp
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name),
-                ! empty($artist->country) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":country", $artist->country)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":country"),
+                new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artistHelper->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $artistHelper->name),
+                in_array($artistHelper->country, [null, '', '0'], true)
+                    ? new \aportela\DatabaseWrapper\Param\NullParam(":country")
+                    : new \aportela\DatabaseWrapper\Param\StringParam(":country", $artistHelper->country),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM CACHE_MUSICBRAINZ_ARTIST_GENRE
                 WHERE
                     artist_mbid = :artist_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistHelper->mbId),
             ]
         );
-        foreach ($artist->genres as $genre) {
-            $this->dbh->execute(
+        foreach ($artistHelper->genres as $genre) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_MUSICBRAINZ_ARTIST_GENRE
                         (artist_mbid, genre)
@@ -198,23 +191,24 @@ class ArtistScraper
                         (:artist_mbid, :genre)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistHelper->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":genre", $genre),
                 ]
             );
         }
-        $this->dbh->execute(
+
+        $this->db->execute(
             "
                 DELETE FROM CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP
                 WHERE
                     artist_mbid = :artist_mbid
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistHelper->mbId),
             ]
         );
-        foreach ($artist->relations as $relation) {
-            $this->dbh->execute(
+        foreach ($artistHelper->relations as $relation) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_MUSICBRAINZ_ARTIST_URL_RELATIONSHIP
                         (artist_mbid, relation_type_id, name, url)
@@ -222,10 +216,10 @@ class ArtistScraper
                         (:artist_mbid, :relation_type_id, :name, :url)
                 ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artist->mbId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistHelper->mbId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", $relation->typeId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $relation->type),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":url", $relation->url),
                 ]
             );
         }
@@ -240,18 +234,17 @@ class ArtistScraper
         $missingElements = $this->getID3OrphanedArtistMBIdData(false);
         $totalElements = count($missingElements);
         $cachedElements = [];
-        for ($i = 0; $i < $totalElements; $i++) {
+        for ($i = 0; $i < $totalElements; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $missingElements, $totalElements, $i);
             }
+
             try {
                 if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
-                    $mbDataResults = $this->musicBrainzArtistAPI->search($missingElements[$i]->artistName, 1);
-                    if (count($mbDataResults) == 1) {
-                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
-                            $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
-                            $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
-                        }
+                    $mbDataResults = $this->artist->search($missingElements[$i]->artistName, 1);
+                    if (count($mbDataResults) == 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                        $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
+                        $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
                     }
                 } else {
                     $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $cachedElements[$missingElements[$i]->artistName]);
@@ -262,6 +255,7 @@ class ArtistScraper
                 $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$missingElements[$i], $e->getMessage()]);
             }
         }
+
         return (microtime(true) - $scrapStartTime);
     }
 
@@ -274,18 +268,17 @@ class ArtistScraper
         $missingElements = $this->getID3OrphanedReleaseArtistMBIdData(false);
         $totalElements = count($missingElements);
         $cachedElements = [];
-        for ($i = 0; $i < $totalElements; $i++) {
+        for ($i = 0; $i < $totalElements; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $missingElements, $totalElements, $i);
             }
+
             try {
                 if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
-                    $mbDataResults = $this->musicBrainzArtistAPI->search($missingElements[$i]->artistName, 1);
-                    if (count($mbDataResults) == 1) {
-                        if ($mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
-                            $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
-                            $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
-                        }
+                    $mbDataResults = $this->artist->search($missingElements[$i]->artistName, 1);
+                    if (count($mbDataResults) == 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                        $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
+                        $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
                     }
                 } else {
                     $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $cachedElements[$missingElements[$i]->artistName]);
@@ -296,12 +289,13 @@ class ArtistScraper
                 $this->logger->warning("MusicBrainz API server (search artist) not reachable", [$missingElements[$i], $e->getMessage()]);
             }
         }
+
         return (microtime(true) - $scrapStartTime);
     }
 
-    private function replaceMbIdRedirect(string $oldMbId, string $newMbId)
+    private function replaceMbIdRedirect(string $oldMbId, string $newMbId): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 UPDATE FILE_ID3_TAG
                 SET
@@ -311,11 +305,11 @@ class ArtistScraper
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":new_mbid", $newMbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId),
             ]
         );
 
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 UPDATE FILE_ID3_TAG
                 SET
@@ -325,7 +319,7 @@ class ArtistScraper
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":new_mbid", $newMbId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":old_mbid", $oldMbId),
             ]
         );
     }
@@ -333,7 +327,7 @@ class ArtistScraper
     public function scrap(string $mbId): bool
     {
         try {
-            $artist = $this->musicBrainzArtistAPI->get($mbId);
+            $artist = $this->artist->get($mbId);
             /**
              * sometimes we have a mbId but MusicBrainz API redirects to another mbId, we must
              * replace old mbId with new mbId on FILE_ID3_TAG table
@@ -343,6 +337,7 @@ class ArtistScraper
             if ($artist->mbId != $mbId) {
                 $this->replaceMbIdRedirect($mbId, $artist->mbId);
             }
+
             $this->saveCache($artist);
             return (true);
         } catch (\aportela\MusicBrainzWrapper\Exception\NotFoundException $e) {
@@ -352,6 +347,7 @@ class ArtistScraper
         } catch (\Throwable $e) {
             $this->logger->warning("MusicBrainz artist id get error", [$mbId, $e->getMessage(), $e->getPrevious()]);
         }
+
         return (false);
     }
 
@@ -360,12 +356,14 @@ class ArtistScraper
         $scrapStartTime = microtime(true);
         $artistMbIds = $this->getAllArtistMBIds($force);
         $totalArtistMbIds = count($artistMbIds);
-        for ($i = 0; $i < $totalArtistMbIds; $i++) {
+        for ($i = 0; $i < $totalArtistMbIds; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistMbIds, $totalArtistMbIds, $i);
             }
+
             $this->scrap($artistMbIds[$i]);
         }
+
         return (microtime(true) - $scrapStartTime);
     }
 }

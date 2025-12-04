@@ -6,9 +6,13 @@ namespace Spieldose;
 
 class Lyrics extends \aportela\ScraperLyrics\Lyrics
 {
-    private function save(\aportela\DatabaseWrapper\DB $dbh): void
+    public $title;
+    public $artist;
+    public $lyrics;
+    public $source;
+    private function save(\aportela\DatabaseWrapper\DB $db): void
     {
-        $dbh->execute(
+        $db->execute(
             "
                 INSERT INTO LYRICS
                     (title, artist, data, source, ctime, mtime)
@@ -25,19 +29,19 @@ class Lyrics extends \aportela\ScraperLyrics\Lyrics
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->artist),
                 new \aportela\DatabaseWrapper\Param\StringParam(":data", $this->lyrics),
                 new \aportela\DatabaseWrapper\Param\StringParam(":source", $this->source),
-                new \aportela\DatabaseWrapper\Param\StringParam(":current_timestamp", intval(microtime(true) * 1000))
+                new \aportela\DatabaseWrapper\Param\StringParam(":current_timestamp", intval(microtime(true) * 1000)),
 
             ]
         );
     }
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh, string $title, string $artist): bool
+    public function get(\aportela\DatabaseWrapper\DB $db, string $title, string $artist): bool
     {
         $this->title = $this->parseTitle($title);
         $this->artist = $this->parseArtist($artist);
-        if (!empty($this->title)) {
-            if (!empty($this->artist)) {
-                $results = $dbh->query(
+        if ($this->title !== '' && $this->title !== '0') {
+            if ($this->artist !== '' && $this->artist !== '0') {
+                $results = $db->query(
                     "
                         SELECT
                             data, source
@@ -47,20 +51,18 @@ class Lyrics extends \aportela\ScraperLyrics\Lyrics
                     ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":title", $this->title),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->artist)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist", $this->artist),
                     ]
                 );
-                if (count($results) == 1) {
+                if (count($results) === 1) {
                     $this->lyrics = $results[0]->data;
                     $this->source = $results[0]->source;
                     return (true);
+                } elseif ($this->scrap($this->title, $this->artist)) {
+                    $this->save($db);
+                    return (true);
                 } else {
-                    if ($this->scrap($this->title, $this->artist)) {
-                        $this->save($dbh);
-                        return (true);
-                    } else {
-                        return (false);
-                    }
+                    return (false);
                 }
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("artist");

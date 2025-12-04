@@ -6,23 +6,20 @@ namespace Spieldose\Library\Scraper\LastFM;
 
 class ArtistScraper
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \aportela\LastFMWrapper\Artist $lastFMArtistAPI;
+    private readonly \aportela\LastFMWrapper\Artist $artist;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, string $apiKey, \aportela\SimpleFSCache\Cache $cache)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger, string $apiKey, \aportela\SimpleFSCache\Cache $cache)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->lastFMArtistAPI = new \aportela\LastFMWrapper\Artist($logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        $this->artist = new \aportela\LastFMWrapper\Artist($this->logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
-    public function __destruct() {}
-
-    private function getArtistNamesWithoutCache()
+    /**
+     * @return mixed[]
+     */
+    private function getArtistNamesWithoutCache(): array
     {
         $names = [];
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     DISTINCT FILE_ID3_TAG.artist AS name
@@ -53,13 +50,17 @@ class ArtistScraper
         foreach ($results as $result) {
             $names[] = $result->name;
         }
+
         return ($names);
     }
 
-    private function getAllArtistNames()
+    /**
+     * @return mixed[]
+     */
+    private function getAllArtistNames(): array
     {
         $names = [];
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     FILE_ID3_TAG.artist AS name
@@ -81,12 +82,13 @@ class ArtistScraper
         foreach ($results as $result) {
             $names[] = $result->name;
         }
+
         return ($names);
     }
 
     public function hasCache(string $name): bool
     {
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             "
                 SELECT
                     COUNT(md5_hash) AS total
@@ -94,7 +96,7 @@ class ArtistScraper
                 WHERE md5_hash = :md5_hash
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $this->lastFMArtistAPI->getHash($name)),
+                new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $this->artist->getHash($name)),
             ]
         );
         return (intval($results[0]->total) === 1);
@@ -103,10 +105,10 @@ class ArtistScraper
     /**
      * save LastFM artist cache (metadata/genres/relationships)
      */
-    private function saveCache(\aportela\LastFMWrapper\ParseHelpers\ArtistHelper $artist)
+    private function saveCache(\aportela\LastFMWrapper\ParseHelpers\ArtistHelper $artistHelper): void
     {
-        $artistHash = md5($artist->name);
-        $this->dbh->execute(
+        $artistHash = md5((string) $artistHelper->name);
+        $this->db->execute(
             "
                 INSERT INTO CACHE_LASTFM_ARTIST
                     (md5_hash, mbid, name, url, image, bio_summary, bio_content, ctime, mtime)
@@ -124,28 +126,24 @@ class ArtistScraper
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":md5_hash", $artistHash),
-                ! empty($artist->mbId) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artist->mbId)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":mbid"),
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $artist->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":url", $artist->url),
-                ! empty($artist->image) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":image", $artist->image)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":image"),
-                ! empty($artist->bio->summary) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", $artist->bio->summary)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":bio_summary"),
-                ! empty($artist->bio->content) ?
-                    new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", $artist->bio->content)
-                    :
-                    new \aportela\DatabaseWrapper\Param\NullParam(":bio_content"),
+                in_array($artistHelper->mbId, [null, '', '0'], true)
+                    ? new \aportela\DatabaseWrapper\Param\NullParam(":mbid")
+                    : new \aportela\DatabaseWrapper\Param\StringParam(":mbid", $artistHelper->mbId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $artistHelper->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":url", $artistHelper->url),
+                in_array($artistHelper->image, [null, '', '0'], true)
+                    ? new \aportela\DatabaseWrapper\Param\NullParam(":image")
+                    : new \aportela\DatabaseWrapper\Param\StringParam(":image", $artistHelper->image),
+                empty($artistHelper->bio->summary)
+                    ? new \aportela\DatabaseWrapper\Param\NullParam(":bio_summary")
+                    : new \aportela\DatabaseWrapper\Param\StringParam(":bio_summary", $artistHelper->bio->summary),
+                empty($artistHelper->bio->content)
+                    ? new \aportela\DatabaseWrapper\Param\NullParam(":bio_content")
+                    : new \aportela\DatabaseWrapper\Param\StringParam(":bio_content", $artistHelper->bio->content),
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
             ]
         );
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM CACHE_LASTFM_ARTIST_TAG
                 WHERE
@@ -155,8 +153,8 @@ class ArtistScraper
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
             ]
         );
-        foreach ($artist->tags as $tag) {
-            $this->dbh->execute(
+        foreach ($artistHelper->tags as $tag) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_LASTFM_ARTIST_TAG
                         (artist_hash, tag)
@@ -165,11 +163,12 @@ class ArtistScraper
                 ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":tag", $tag),
                 ]
             );
         }
-        $this->dbh->execute(
+
+        $this->db->execute(
             "
                 DELETE FROM CACHE_LASTFM_ARTIST_SIMILAR
                 WHERE
@@ -179,8 +178,8 @@ class ArtistScraper
                 new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
             ]
         );
-        foreach ($artist->similar as $similarArtist) {
-            $this->dbh->execute(
+        foreach ($artistHelper->similar as $similarArtist) {
+            $this->db->execute(
                 "
                     INSERT INTO CACHE_LASTFM_ARTIST_SIMILAR
                         (artist_hash, name)
@@ -189,7 +188,7 @@ class ArtistScraper
                 ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":artist_hash", $artistHash),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $similarArtist->name)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $similarArtist->name),
                 ]
             );
         }
@@ -200,12 +199,13 @@ class ArtistScraper
         $scanStartTime = microtime(true);
         $artistLastFMNames = $force ? $this->getAllArtistNames() : $this->getArtistNamesWithoutCache();
         $totalArtistLastFMNames = count($artistLastFMNames);
-        for ($i = 0; $i < $totalArtistLastFMNames; $i++) {
+        for ($i = 0; $i < $totalArtistLastFMNames; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistLastFMNames, $totalArtistLastFMNames, $i);
             }
+
             try {
-                $artist = $this->lastFMArtistAPI->get($artistLastFMNames[$i]);
+                $artist = $this->artist->get($artistLastFMNames[$i]);
                 $this->saveCache($artist);
             } catch (\aportela\LastFMWrapper\Exception\NotFoundException $e) {
                 $this->logger->warning("LastFM artist id get not found", [$artistLastFMNames[$i], $e->getMessage()]);
@@ -215,6 +215,7 @@ class ArtistScraper
                 $this->logger->warning("LastFM artist id get error", [$artistLastFMNames[$i], $e->getMessage(), $e->getPrevious()]);
             }
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

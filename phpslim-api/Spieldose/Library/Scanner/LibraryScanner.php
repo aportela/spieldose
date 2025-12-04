@@ -6,26 +6,19 @@ namespace Spieldose\Library\Scanner;
 
 class LibraryScanner
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \Spieldose\Library\Manager $libraryManager;
-    private \Spieldose\Library\Scanner\ID3Scanner $id3Scanner;
-    private ?string $validCoverFilenamesPattern;
+    private readonly \Spieldose\Library\Manager $libraryManager;
 
-    private float $scanStartTime = 0;
-    private float $scanEndTime = 0;
+    private readonly \Spieldose\Library\Scanner\ID3Scanner $id3Scanner;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
+    private ?string $validCoverFilenamesPattern = null;
+
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
-        $this->id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger);
+        $this->libraryManager = new \Spieldose\Library\Manager($this->db, $this->logger);
+        $this->id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($this->db, $this->logger);
     }
 
-    public function __destruct() {}
-
-    public function setValidCoverFilenamesPattern(string $pattern)
+    public function setValidCoverFilenamesPattern(string $pattern): void
     {
         $this->validCoverFilenamesPattern = $pattern;
     }
@@ -41,6 +34,7 @@ class LibraryScanner
             $this->logger->debug("LibraryScanner::scanLibraryPath - Current path", [$currentLibraryPath->pathId, $currentLibraryPath->path]);
             $totalScanTime += $this->scanLibraryPath($currentLibraryPath->pathId, $currentLibraryPath->path, $enqueueID3, $force, $directoryScanCallback, $fileScanCallback);
         }
+
         return ($totalScanTime);
     }
 
@@ -55,10 +49,11 @@ class LibraryScanner
         $directories = \Spieldose\Library\FileSystem::getRecursiveDirectories($path);
         $totalDirectories = count($directories);
         $this->logger->debug("ID3Scanner::processPendingQueue - Total directories: ", [$totalDirectories]);
-        for ($d = 0; $d < $totalDirectories; $d++) {
+        for ($d = 0; $d < $totalDirectories; ++$d) {
             if ($directoryScanCallback != null) {
                 call_user_func($directoryScanCallback, $directories, $totalDirectories, $d);
             }
+
             $currentDirectory = realpath($directories[$d]);
             $currentDirectoryId = $this->libraryManager->getLibraryPathDirectoryId($currentDirectory);
             $this->logger->debug("ID3Scanner::processPendingQueue - Current directory: ", [$currentDirectoryId, $currentDirectory]);
@@ -68,11 +63,12 @@ class LibraryScanner
             // only add directories with supported files
             $coverFilename = \Spieldose\Library\FileSystem::getCoverFilename($currentDirectory, $this->validCoverFilenamesPattern ?? \Spieldose\Library\FileSystem::VALID_COVER_FILENAMES_DEFAULT_PATTERN);
             $stat = stat($currentDirectory);
-            if (empty($currentDirectoryId)) {
+            if (in_array($currentDirectoryId, [null, '', '0'], true)) {
                 $currentDirectoryId = \Spieldose\Utils::uuidv4();
             }
+
             $this->logger->debug("ID3Scanner::processPendingQueue - Saving current directory: ", [$currentDirectoryId, $currentDirectory]);
-            $this->dbh->execute(
+            $this->db->execute(
                 "
                         INSERT INTO DIRECTORY
                             (id, library_path_id, path, cover_filename, ctime, mtime)
@@ -91,23 +87,25 @@ class LibraryScanner
                     new \aportela\DatabaseWrapper\Param\StringParam(":path", realpath($currentDirectory)),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                     new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
-                    !empty($coverFilename) ? new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename) : new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename")
+                    in_array($coverFilename, [null, '', '0'], true) ? new \aportela\DatabaseWrapper\Param\NullParam(":cover_filename") : new \aportela\DatabaseWrapper\Param\StringParam(":cover_filename", $coverFilename),
                 ]
             );
-            for ($f = 0; $f < $totalCurrentDirectoryFiles; $f++) {
+            for ($f = 0; $f < $totalCurrentDirectoryFiles; ++$f) {
                 if ($fileScanCallback != null) {
                     call_user_func($fileScanCallback, $currentDirectoryFiles, $totalCurrentDirectoryFiles, $f);
                 }
+
                 $file = realpath($currentDirectoryFiles[$f]);
                 $stat = stat($file);
                 $filename = basename($file);
                 $fileId = $this->libraryManager->getLibraryPathDirectoryFileId($currentDirectoryId, $filename);
                 $this->logger->debug("Propagating file", [$fileId, $filename]);
-                if (empty($fileId)) {
+                if (in_array($fileId, [null, '', '0'], true)) {
                     $fileId = \Spieldose\Utils::uuidv4();
                 }
+
                 $this->logger->debug("ID3Scanner::processPendingQueue - Saving current file: ", [$fileId, $filename]);
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                             INSERT INTO FILE
                                 (id, directory_id, name, size, ctime, mtime)
@@ -126,7 +124,7 @@ class LibraryScanner
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", $filename),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":size", filesize($file)),
                         new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
-                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime'])
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", $stat['mtime']),
                     ]
                 );
                 if ($enqueueID3) {
@@ -134,6 +132,7 @@ class LibraryScanner
                 }
             }
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

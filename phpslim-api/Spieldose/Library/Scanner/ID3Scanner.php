@@ -6,20 +6,14 @@ namespace Spieldose\Library\Scanner;
 
 class ID3Scanner
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \Spieldose\Library\ID3Wrapper $id3;
+    private readonly \Spieldose\Library\ID3Wrapper $id3Wrapper;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger)
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->id3 = new \Spieldose\Library\ID3Wrapper();
+        $this->id3Wrapper = new \Spieldose\Library\ID3Wrapper();
     }
 
-    public function __destruct() {}
-
-    public function enqueueFile(string $fileId, bool $force)
+    public function enqueueFile(string $fileId, bool $force): void
     {
         $this->logger->debug("ID3Scanner::enqueueFile", [$fileId]);
         $currentTimestamp = intval(microtime(true) * 1000);
@@ -33,7 +27,7 @@ class ID3Scanner
                         file_id = :file_id
                 )
         ";
-        $this->dbh->execute(
+        $this->db->execute(
             sprintf(
                 "
                     INSERT INTO QUEUE_FILE_ID3_SCAN
@@ -44,7 +38,7 @@ class ID3Scanner
                     UPDATE SET
                         ctime = :current_timestamp
                 ",
-                ! $force ? $whereCondition : null
+                $force ? null : $whereCondition
             ),
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
@@ -53,17 +47,17 @@ class ID3Scanner
         );
     }
 
-    private function dequeueFile(string $fileId)
+    private function dequeueFile(string $fileId): void
     {
         $this->logger->debug("ID3Scanner::dequeueFile", [$fileId]);
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM QUEUE_FILE_ID3_SCAN
                 WHERE
                     file_id = :file_id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
             ]
         );
     }
@@ -76,7 +70,7 @@ class ID3Scanner
     {
         $this->logger->debug("ID3Scanner::getPendingQueue");
         return (
-            $this->dbh->query(
+            $this->db->query(
                 "
                     SELECT
                         FILE.id, DIRECTORY.path, FILE.name
@@ -87,7 +81,7 @@ class ID3Scanner
                         QUEUE_FILE_ID3_SCAN.ctime
                 ",
                 [],
-                function ($rows) {
+                function ($rows): void {
                     array_map(
                         function ($item) {
                             $item->fullPath = $item->path . DIRECTORY_SEPARATOR . $item->name;
@@ -120,82 +114,96 @@ class ID3Scanner
         ?string $releaseTrackMBId,
         ?string $genre,
         ?string $mime,
-    ) {
+    ): void {
         $this->logger->debug("ID3Scanner::writeLibraryPathDirectoryFileTags", [$fileId]);
         $params = [
-            new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+            new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
         ];
-        if (!empty($trackTitle)) {
+        if (!in_array($trackTitle, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", $trackTitle);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":title");
         }
-        if (!empty($trackArtist)) {
+
+        if (!in_array($trackArtist, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":artist", $trackArtist);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":artist");
         }
-        if (!empty($albumArtist)) {
+
+        if (!in_array($albumArtist, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_artist", $albumArtist);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album_artist");
         }
+
         if ($trackYear != null) {
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $trackYear);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":year");
         }
+
         if ($trackOriginalYear != null) {
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":original_year", $trackOriginalYear);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":original_year");
         }
+
         if ($trackNumber != null) {
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":track_number", $trackNumber);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":track_number");
         }
+
         if ($discNumber != null) {
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":disc_number", $discNumber);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":disc_number");
         }
+
         if ($playtimeSeconds != null) {
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":playtime_seconds", $playtimeSeconds);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":playtime_seconds");
         }
-        if (!empty($trackAlbum)) {
+
+        if (!in_array($trackAlbum, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album", $trackAlbum);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":album");
         }
-        if (!empty($releaseGroupMBId)) {
+
+        if (!in_array($releaseGroupMBId, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_group_mbid", $releaseGroupMBId);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_group_mbid");
         }
-        if (!empty($releaseMBId)) {
+
+        if (!in_array($releaseMBId, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_mbid", $releaseMBId);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_mbid");
         }
-        if (!empty($releaseTrackMBId)) {
+
+        if (!in_array($releaseTrackMBId, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":release_track_mbid", $releaseTrackMBId);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":release_track_mbid");
         }
-        if (!empty($genre)) {
+
+        if (!in_array($genre, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":genre", mb_strtolower($genre));
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":genre");
         }
-        if (!empty($mime)) {
+
+        if (!in_array($mime, [null, '', '0'], true)) {
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mime", $mime);
         } else {
             $params[] = new \aportela\DatabaseWrapper\Param\NullParam(":mime");
         }
-        $this->dbh->execute(
+
+        $this->db->execute(
             "
                 INSERT INTO FILE_ID3_TAG
                     (file_id, title, artist, album_artist, album, year, original_year, track_number, disc_number, playtime_seconds, release_group_mbid, release_mbid, release_track_mbid, genre, mime)
@@ -222,18 +230,18 @@ class ID3Scanner
             $params
         );
 
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM FILE_ID3_TAG_MUSICBRAINZ_ARTIST
                 WHERE file_id = :file_id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
             ]
         );
         if (is_array($artistMBIds)) {
             foreach ($artistMBIds as $artistMbId) {
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                     INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_ARTIST
                         (file_id, artist_mbid)
@@ -243,24 +251,24 @@ class ID3Scanner
                 ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMbId)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $artistMbId),
                     ]
                 );
             }
         }
 
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
                 WHERE file_id = :file_id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
             ]
         );
         if (is_array($releaseArtistMbIds)) {
             foreach ($releaseArtistMbIds as $releaseArtistMbId) {
-                $this->dbh->execute(
+                $this->db->execute(
                     "
                     INSERT INTO FILE_ID3_TAG_MUSICBRAINZ_RELEASE_ARTIST
                         (file_id, artist_mbid)
@@ -270,24 +278,24 @@ class ID3Scanner
                 ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $releaseArtistMbId)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":artist_mbid", $releaseArtistMbId),
                     ]
                 );
             }
         }
     }
 
-    private function removeLibraryPathDirectoryFileTags(string $fileId)
+    private function removeLibraryPathDirectoryFileTags(string $fileId): void
     {
         $this->logger->debug("ID3Scanner::removeLibraryPathDirectoryFileTags", [$fileId]);
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 DELETE FROM FILE_ID3_TAG
                 WHERE
                     file_id = :file_id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
             ]
         );
     }
@@ -298,18 +306,19 @@ class ID3Scanner
         $scanStartTime = microtime(true);
         $queuedItems = $this->getPendingQueue();
         $totalQueuedItems = count($queuedItems);
-        if ($totalQueuedItems == 0) {
+        if ($totalQueuedItems === 0) {
             $this->logger->debug("ID3Scanner::processPendingQueue - Queue is empty");
             if ($queueItemScanCallback != null) {
                 call_user_func($noQueueItemscallback);
             }
         } else {
             $this->logger->debug("ID3Scanner::processPendingQueue - Total items: ", [$totalQueuedItems]);
-            for ($i = 0; $i < $totalQueuedItems; $i++) {
+            for ($i = 0; $i < $totalQueuedItems; ++$i) {
                 if ($queueItemScanCallback != null) {
                     call_user_func($queueItemScanCallback, $queuedItems, $totalQueuedItems, $i);
                 }
-                $tagsData = $this->id3->getTagsData($queuedItems[$i]->fullPath);
+
+                $tagsData = $this->id3Wrapper->getTagsData($queuedItems[$i]->fullPath);
                 if ($tagsData != null) {
                     $this->logger->debug("ID3Scanner::processPendingQueue - Saving id3 tags");
                     $this->writeLibraryPathDirectoryFileTags(
@@ -338,6 +347,7 @@ class ID3Scanner
                 }
             };
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

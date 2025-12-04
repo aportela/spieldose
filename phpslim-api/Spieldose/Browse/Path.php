@@ -14,18 +14,19 @@ class Path extends \Spieldose\Browse\Base
         $this->fieldDefinitions = [
             "id" => "DIRECTORY.id",
             "name" => "DIRECTORY.path",
-            "totalFiles" => "COUNT(FILE.id)"
+            "totalFiles" => "COUNT(FILE.id)",
         ];
         $this->fieldCountDefinition = [];
-        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $data) {
+        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $browserResults): void {
             array_map(
                 function (object $item): object {
                     if (property_exists($item, "totalTracks") && is_numeric($item->totalTracks)) {
                         $item->totalTracks = intval($item->totalTracks);
                     }
+
                     return ($item);
                 },
-                $data->items
+                $browserResults->items
             );
         };
         $browser = new \aportela\DatabaseBrowserWrapper\Browser(
@@ -41,9 +42,10 @@ class Path extends \Spieldose\Browse\Base
         $params = [];
         if ($filter->hasParam("name") && is_string($filter->getParamValue("name"))) {
             $queryConditions[] = sprintf(" DIRECTORY.path LIKE %s ", ":name");
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name",  "%" . $filter->getParamValue("name") . "%");
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":name", "%" . $filter->getParamValue("name") . "%");
         }
-        $whereCondition = $queryConditions !== [] ? " WHERE " .  implode(" AND ", $queryConditions) : "";
+
+        $whereCondition = $queryConditions !== [] ? " WHERE " . implode(" AND ", $queryConditions) : "";
         $browser->addDBQueryParams($params);
         $query = $browser->buildQuery(
             sprintf(
@@ -74,7 +76,7 @@ class Path extends \Spieldose\Browse\Base
         ));
     }
 
-    public function getTree(string $libraryId)
+    public function getTree(string $libraryId): array
     {
         $afterQueryFunction = function ($rows): void {
             array_map(
@@ -82,6 +84,7 @@ class Path extends \Spieldose\Browse\Base
                     if (property_exists($item, "totalFiles")) {
                         $item->totalFiles = intval($item->totalFiles);
                     }
+
                     return ($item);
                 },
                 $rows
@@ -100,15 +103,15 @@ class Path extends \Spieldose\Browse\Base
                 ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $libraryId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR)
+                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
             ],
             $afterQueryFunction
         );
         $tree = [];
-        foreach ($results as $item) {
-            $subDirectories = array_filter(explode(DIRECTORY_SEPARATOR, $item->label));
+        foreach ($results as $result) {
+            $subDirectories = array_filter(explode(DIRECTORY_SEPARATOR, (string) $result->label));
             $currentTreeNode = &$tree;
-            foreach ($subDirectories as $index => $subDirectory) {
+            foreach ($subDirectories as $subDirectory) {
                 $foundNode = null;
                 foreach ($currentTreeNode as $node) {
                     if ($node->label === $subDirectory) {
@@ -116,18 +119,19 @@ class Path extends \Spieldose\Browse\Base
                         break;
                     }
                 }
-                if (!$foundNode) {
-                    $foundNode = (object)[
-                        'label' => $subDirectory,
-                        'id' => $item->id,
-                        'totalFiles' => $item->totalFiles,
-                        'children' => []
-                    ];
-                    $currentTreeNode[] = $foundNode;
-                }
+
+                $foundNode = (object) [
+                    'label' => $subDirectory,
+                    'id' => $result->id,
+                    'totalFiles' => $result->totalFiles,
+                    'children' => [],
+                ];
+                $currentTreeNode[] = $foundNode;
+
                 $currentTreeNode = &$foundNode->children;
             }
         }
+
         return ($tree);
     }
 
@@ -142,10 +146,10 @@ class Path extends \Spieldose\Browse\Base
                         DIRECTORY.id = :id
                 ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId)
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $pathId),
             ]
         );
-        if (count($results) == 1 && ! empty($results[0]->cover_filename)) {
+        if (count($results) === 1 && ! empty($results[0]->cover_filename)) {
             return ($results[0]->path . DIRECTORY_SEPARATOR . $results[0]->cover_filename);
         } else {
             return (null);

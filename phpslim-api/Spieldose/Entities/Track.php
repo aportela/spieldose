@@ -6,25 +6,22 @@ namespace Spieldose\Entities;
 
 class Track extends \Spieldose\Entities\Entity
 {
-    public string $id;
     public ?string $url;
-    public ?string $title;
     public object $artist;
-    public object $album;
-    public ?int $trackNumber;
-    public array $covers;
-    public ?int $favorited; // TODO: change to boolean
-    public ?string $lyrics;
 
-    public function __construct(string $id, ?string $mbId = null, ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, ?int $trackNumber = null, ?string $coverPathId = null, ?int $favorited = null)
+    public object $album;
+    public array $covers;
+     // TODO: change to boolean
+    public ?string $lyrics = null;
+
+    public function __construct(public string $id, ?string $mbId = null, public ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, public ?int $trackNumber = null, ?string $coverPathId = null, public ?int $favorited = null)
     {
-        $this->id = $id;
-        $this->url = sprintf(\Spieldose\API::FILE_URL, $id);
+        $this->url = sprintf(\Spieldose\API::FILE_URL, $this->id);
         $this->mbId = $mbId;
-        $this->title = $title;
         $this->artist = new \stdClass();
         $this->artist->mbId = $artistMBId;
         $this->artist->name = $artistName;
+
         $this->album = new \stdClass();
         $this->album->mbId = $albumMBId;
         $this->album->title = $albumTitle;
@@ -32,30 +29,28 @@ class Track extends \Spieldose\Entities\Entity
         $this->album->artist = new \stdClass();
         $this->album->artist->mbId = $albumArtistMBId;
         $this->album->artist->name = $albumArtistName;
-        $this->trackNumber = $trackNumber;
-        if (!empty($coverPathId)) {
+        if (!in_array($coverPathId, [null, '', '0'], true)) {
             $this->covers = [
                 "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $coverPathId),
-                "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $coverPathId)
+                "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $coverPathId),
             ];
-        } elseif (!empty($this->album->mbId)) {
-            $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+        } elseif (!in_array($this->album->mbId, [null, '', '0'], true)) {
+            $coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
             $this->covers = [
-                "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
-                "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($coverArtArchive->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($coverArtArchive->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
             ];
         } else {
             $this->covers = [
                 "small" => null,
-                "normal" => null
+                "normal" => null,
             ];
         }
-        $this->favorited = $favorited;
     }
 
     public function __destruct() {}
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh): void
+    public function get(\aportela\DatabaseWrapper\DB $db): void
     {
         $fieldDefinitions = [
             "id " => "FIT.id",
@@ -70,12 +65,13 @@ class Track extends \Spieldose\Entities\Entity
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
             "coverPathId" => "D.id",
-            "favorited" => "FF.favorited"
+            "favorited" => "FF.favorited",
         ];
         $fields = [];
         foreach ($fieldDefinitions as $alias => $field) {
             $fields[] = sprintf("%s as %s", $field, $alias);
         }
+
         $query = sprintf(
             "
                 SELECT
@@ -88,14 +84,14 @@ class Track extends \Spieldose\Entities\Entity
                 LEFT JOIN FILE_FAVORITE FF ON FF.file_id = FIT.id AND FF.user_id = :user_id
                 WHERE F.id = :id
             ",
-            count($fields) > 0 ? implode(", ", $fields) : null
+            $fields !== [] ? implode(", ", $fields) : null
         );
-        $params = array(
+        $params = [
             new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-        );
-        $results = $dbh->query($query, $params);
-        if (count($results) == 1) {
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+        ];
+        $results = $db->query($query, $params);
+        if (count($results) === 1) {
             $this->id = $results[0]->id;
             $this->url = sprintf(\Spieldose\API::FILE_URL, $this->id);
             $this->mbId = $results[0]->mbId;
@@ -114,27 +110,28 @@ class Track extends \Spieldose\Entities\Entity
             if (!empty($results[0]->coverPathId)) {
                 $this->covers = [
                     "small" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_SMALL_THUMBNAIL, $results[0]->coverPathId),
-                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $results[0]->coverPathId)
+                    "normal" => sprintf(\Spieldose\API::LOCAL_COVER_PATH_NORMAL_THUMBNAIL, $results[0]->coverPathId),
                 ];
             } elseif (!empty($this->album->mbId)) {
-                $cover = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
+                $coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(new \Psr\Log\NullLogger(""), \aportela\MusicBrainzWrapper\APIFormat::JSON);
                 $this->covers = [
-                    "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
-                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($cover->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                    "small" => sprintf(\Spieldose\API::REMOTE_COVER_URL_SMALL_THUMBNAIL, urlencode($coverArtArchive->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
+                    "normal" => sprintf(\Spieldose\API::REMOTE_COVER_URL_NORMAL_THUMBNAIL, urlencode($coverArtArchive->getReleaseImageURL($this->album->mbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType::FRONT, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::NORMAL))),
                 ];
             } else {
                 $this->covers = [
                     "small" => null,
-                    "normal" => null
+                    "normal" => null,
                 ];
             }
+
             $this->favorited = $results[0]->favorited;
-            if (!empty($this->title) && !empty($this->artist->name)) {
+            if (!in_array($this->title, [null, '', '0'], true) && !empty($this->artist->name)) {
                 // TODO: custom logger
                 $lyrics = new \Spieldose\Lyrics(new \Psr\Log\NullLogger());
                 try {
-                    $this->lyrics = $lyrics->get($dbh, $this->title, $this->artist->name) ? $lyrics->lyrics : null;
-                } catch (\Throwable $e) {
+                    $this->lyrics = $lyrics->get($db, $this->title, $this->artist->name) ? $lyrics->lyrics : null;
+                } catch (\Throwable) {
                     // TODO: register error ?
                 }
             } else {
@@ -145,46 +142,51 @@ class Track extends \Spieldose\Entities\Entity
         }
     }
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $db, array $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $params = array(
-            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-        );
-        $filterConditions = array();
-        $leftJoins = array();
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+        ];
+        $filterConditions = [];
+        $leftJoins = [];
         if (isset($filter["title"]) && !empty($filter["title"])) {
-            $words = explode(" ", trim($filter["title"]));
+            $words = explode(" ", trim((string) $filter["title"]));
             foreach ($words as $word) {
                 $paramName = ":title_" . uniqid();
                 $filterConditions[] = sprintf(" FIT.title LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
+
         if (isset($filter["artistMBId"]) && !empty($filter["artistMBId"])) {
             $paramName = ":artistMBId";
             $filterConditions[] = sprintf(" FIT.mb_artist_id = %s", $paramName);
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, $filter["artistMBId"]);
         }
+
         if (isset($filter["artistName"]) && !empty($filter["artistName"])) {
-            $words = explode(" ", trim($filter["artistName"]));
+            $words = explode(" ", trim((string) $filter["artistName"]));
             foreach ($words as $word) {
                 $paramName = ":artistname_" . uniqid();
                 $filterConditions[] = sprintf(" COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s", $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
+
         if (isset($filter["text"]) && !empty($filter["text"])) {
-            $words = explode(" ", trim($filter["text"]));
+            $words = explode(" ", trim((string) $filter["text"]));
             foreach ($words as $word) {
                 $paramName = ":text_" . uniqid();
                 $filterConditions[] = sprintf(" (FIT.title LIKE %s OR COALESCE(MB_CACHE_ARTIST.name, FIT.artist) LIKE %s OR COALESCE(MB_CACHE_RELEASE.title, FIT.album) LIKE %s) ", $paramName, $paramName, $paramName);
                 $params[] = new \aportela\DatabaseWrapper\Param\StringParam($paramName, "%" . trim($word) . "%");
             }
         }
+
         if (isset($filter["path"]) && !empty($filter["path"])) {
             $filterConditions[] = " EXISTS (SELECT DIRECTORY.id FROM FILE INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id WHERE FILE.id = F.id AND DIRECTORY.id = :path) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path", $filter["path"]);
         }
+
         if (isset($filter["playlistId"]) && !empty($filter["playlistId"])) {
             if ($filter["playlistId"] == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
                 $filterConditions[] = " EXISTS ( SELECT * FROM FILE_FAVORITE WHERE FILE_FAVORITE.user_id = :user_id AND FILE_FAVORITE.file_id = F.id ) ";
@@ -194,23 +196,28 @@ class Track extends \Spieldose\Entities\Entity
                 $leftJoins[] = " INNER JOIN PLAYLIST_TRACK ON PLAYLIST_TRACK.playlist_id = :playlist_id AND PLAYLIST_TRACK.track_id = F.id ";
             }
         }
+
         if (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
             $filterConditions[] = " EXISTS (SELECT CPT.playlist_id FROM CURRENT_PLAYLIST_TRACK CPT WHERE CPT.playlist_id = :currentPlaylistId AND CPT.track_id = F.id) ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":currentPlaylistId", $filter["currentPlaylistId"]);
             $leftJoins[] = " INNER JOIN CURRENT_PLAYLIST_TRACK ON CURRENT_PLAYLIST_TRACK.playlist_id = :currentPlaylistId AND CURRENT_PLAYLIST_TRACK.track_id = F.id ";
         }
+
         if (isset($filter["albumMbId"]) && !empty($filter["albumMbId"])) {
             $filterConditions[] = " FIT.mb_album_id = :mb_album_id ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":mb_album_id", $filter["albumMbId"]);
         }
+
         if (isset($filter["albumTitle"]) && !empty($filter["albumTitle"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.title, FIT.album) = :album_title ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":album_title", $filter["albumTitle"]);
         }
+
         if (isset($filter["year"]) && !empty($filter["year"])) {
             $filterConditions[] = " COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT)) = :year ";
             $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":year", $filter["year"]);
         }
+
         $fieldDefinitions = [
             "id " => "FIT.id",
             "mbId" => "FIT.mb_release_track_id",
@@ -224,9 +231,9 @@ class Track extends \Spieldose\Entities\Entity
             "year" => "COALESCE(MB_CACHE_RELEASE.year, CAST(FIT.year AS INT))",
             "trackNumber" => "FIT.track_number",
             "coverPathId" => "D.id",
-            "favorited" => "FF.favorited"
+            "favorited" => "FF.favorited",
         ];
-        if ((isset($filter["path"]) && !empty($filter["path"])) || (count($sort->items) == 1 && get_class($sort->items[0]) == "aportela\DatabaseBrowserWrapper\SortItem" && $sort->items[0]->field == "filename")) {
+        if ((isset($filter["path"]) && !empty($filter["path"])) || (count($sort->items) === 1 && $sort->items[0]::class == "aportela\DatabaseBrowserWrapper\SortItem" && $sort->items[0]->field === "filename")) {
             $fieldDefinitions["filename"] = "F.name";
         }
 
@@ -239,35 +246,33 @@ class Track extends \Spieldose\Entities\Entity
         } elseif (isset($filter["currentPlaylistId"]) && !empty($filter["currentPlaylistId"])) {
             $fieldDefinitions["currentPlaylistTrackIndex"] = "CURRENT_PLAYLIST_TRACK.track_index";
         }
+
         $fieldCountDefinition = [
-            "totalResults" => " COUNT(FIT.id)"
+            "totalResults" => " COUNT(FIT.id)",
         ];
 
-        $afterBrowseFunction = function ($data) {
+        $afterBrowseFunction = function ($data): void {
             $data->items = array_map(
-                function ($result) {
-                    $result = new \Spieldose\Entities\Track(
-                        $result->id,
-                        $result->mbId,
-                        $result->title,
-                        $result->artistMBId,
-                        $result->artistName,
-                        $result->releaseMBId,
-                        $result->releaseTitle,
-                        $result->albumArtistMBId,
-                        $result->albumArtistName,
-                        $result->year,
-                        $result->trackNumber,
-                        $result->coverPathId,
-                        $result->favorited
-                    );
-                    return ($result);
-                },
+                fn($result): \Spieldose\Entities\Track => new \Spieldose\Entities\Track(
+                    $result->id,
+                    $result->mbId,
+                    $result->title,
+                    $result->artistMBId,
+                    $result->artistName,
+                    $result->releaseMBId,
+                    $result->releaseTitle,
+                    $result->albumArtistMBId,
+                    $result->albumArtistName,
+                    $result->year,
+                    $result->trackNumber,
+                    $result->coverPathId,
+                    $result->favorited
+                ),
                 $data->items
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
@@ -288,8 +293,8 @@ class Track extends \Spieldose\Entities\Entity
                 %s
             ",
             $browser->getQueryFields(),
-            count($leftJoins) > 0 ? implode(PHP_EOL, $leftJoins) : null,
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+            $leftJoins !== [] ? implode(PHP_EOL, $leftJoins) : null,
+            $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
             $browser->getQuerySort(),
             $pager->getQueryLimit()
         );
@@ -306,72 +311,76 @@ class Track extends \Spieldose\Entities\Entity
                 %s
             ",
             $browser->getQueryCountFields(),
-            count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+            $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null
         );
-        $data = $browser->launch($query, $queryCount);
-        return ($data);
+        return ($browser->launch($query, $queryCount));
     }
 
-    public function increasePlayCount(\aportela\DatabaseWrapper\DB $dbh)
+    public function increasePlayCount(\aportela\DatabaseWrapper\DB $db): void
     {
-        if (!empty($this->id)) {
+        if ($this->id !== '' && $this->id !== '0') {
             $query = " INSERT OR IGNORE INTO FILE_PLAYCOUNT_STATS (file_id, user_id, play_timestamp) VALUES (:file_id, :user_id, strftime('%s', 'now')) ";
-            $params = array(
+            $params = [
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-            );
-            $dbh->execute($query, $params);
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+            ];
+            $db->execute($query, $params);
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
         }
     }
 
-    public function toggleFavorite(\aportela\DatabaseWrapper\DB $dbh, bool $flag)
+    public function toggleFavorite(\aportela\DatabaseWrapper\DB $db, bool $flag): void
     {
-        if (!empty($this->id)) {
+        if ($this->id !== '' && $this->id !== '0') {
             $query = null;
-            $params = array(
+            $params = [
                 new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
-            );
+            ];
             if ($flag) {
                 $query = " INSERT INTO FILE_FAVORITE (file_id, user_id, ftime) VALUES (:file_id, :user_id, :current_timestamp) ON CONFLICT (file_id, user_id) DO UPDATE SET ftime = :current_timestamp ";
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
             } else {
                 $query = " DELETE FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
             }
-            $dbh->execute($query, $params);
+
+            $db->execute($query, $params);
             if ($flag) {
                 $query = " SELECT ftime FROM FILE_FAVORITE WHERE file_id = :file_id AND user_id = :user_id ";
-                $data = $dbh->query(
+                $data = $db->query(
                     $query,
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $this->id),
                         new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
                     ]
                 );
-                $this->favorited = count($data) == 1 ? intval($data[0]->ftime) : null;
+                $this->favorited = count($data) === 1 ? intval($data[0]->ftime) : null;
             }
         } else {
             throw new \Spieldose\Exception\InvalidParamsException("id");
         }
     }
 
-    public static function getRandomTrackIds(\aportela\DatabaseWrapper\DB $dbh, int $count = 32)
+    /**
+     * @return mixed[]
+     */
+    public static function getRandomTrackIds(\aportela\DatabaseWrapper\DB $db, int $count = 32): array
     {
         $query = " SELECT F.id FROM FILE F ORDER BY RANDOM() LIMIT :count ";
         $params = [
-            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count)
+            new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count),
         ];
-        $results = $dbh->query($query, $params);
+        $results = $db->query($query, $params);
         $ids = [];
         foreach ($results as $result) {
             $ids[] = $result->id;
         }
+
         return ($ids);
     }
 
-    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
+    public static function getLocalThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, string $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300): ?string
     {
         $results = $db->query(
             "
@@ -381,20 +390,20 @@ class Track extends \Spieldose\Entities\Entity
                 INNER JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
                 WHERE FILE.id = :id
             ",
-            array(
+            [
                 new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
-            )
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id),
+            ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             // TODO: get from settings
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
             if (!empty($results[0]->localCoverPath) && file_exists(($results[0]->localCoverPath))) {
-                $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
-                $thumbnail->setDimensions($width, $height);
-                $thumbnail->setQuality($quality);
-                if ($thumbnail->getFromLocalFilesystem($results[0]->localCoverPath)) {
-                    return ($thumbnail->path);
+                $jpegThumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
+                $jpegThumbnail->setDimensions($width, $height);
+                $jpegThumbnail->setQuality($quality);
+                if ($jpegThumbnail->getFromLocalFilesystem($results[0]->localCoverPath)) {
+                    return ($jpegThumbnail->path);
                 } else {
                     return (null);
                 }
@@ -406,7 +415,7 @@ class Track extends \Spieldose\Entities\Entity
         }
     }
 
-    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300)
+    public static function getRemoteThumbnail(\aportela\DatabaseWrapper\DB $db, \Psr\Log\LoggerInterface $logger, string $id, int $quality = \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail::DEFAULT_IMAGE_QUALITY, int $width = 300, int $height = 300): ?string
     {
         $results = $db->query(
             "
@@ -416,15 +425,15 @@ class Track extends \Spieldose\Entities\Entity
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.id = FILE.id
                 WHERE FILE.ID = :id
             ",
-            array(
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id)
-            )
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $id),
+            ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $localPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails";
-            $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
-            $thumbnail->setDimensions($width, $height);
-            $thumbnail->setQuality($quality);
+            $jpegThumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail($logger, $localPath);
+            $jpegThumbnail->setDimensions($width, $height);
+            $jpegThumbnail->setQuality($quality);
             $url = null;
             if ($width < 250) {
                 $url = sprintf("https://coverartarchive.org/release/%s/front-250", $results[0]->musicBrainzAlbumId);
@@ -433,8 +442,9 @@ class Track extends \Spieldose\Entities\Entity
             } else {
                 $url = sprintf("https://coverartarchive.org/release/%s/front", $results[0]->musicBrainzAlbumId);
             }
-            if ($thumbnail->getFromRemoteURL($url)) {
-                return ($thumbnail->path);
+
+            if ($jpegThumbnail->getFromRemoteURL($url)) {
+                return ($jpegThumbnail->path);
             } else {
                 return (null);
             }

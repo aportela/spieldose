@@ -6,17 +6,14 @@ namespace Spieldose\Library\Scraper\Wikipedia;
 
 class ArtistScraper
 {
-    private \aportela\DatabaseWrapper\DB $dbh;
-    private \Psr\Log\LoggerInterface $logger;
-    private \aportela\MediaWikiWrapper\Wikidata\Item $wikidataArtistAPI;
-    private \aportela\MediaWikiWrapper\Wikipedia\Page $wikipediaArtistAPI;
+    private readonly \aportela\MediaWikiWrapper\Wikidata\Item $item;
 
-    public function __construct(\aportela\DatabaseWrapper\DB $dbh, \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
+    private readonly \aportela\MediaWikiWrapper\Wikipedia\Page $page;
+
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger, \aportela\SimpleFSCache\Cache $cache)
     {
-        $this->dbh = $dbh;
-        $this->logger = $logger;
-        $this->wikidataArtistAPI = new \aportela\MediaWikiWrapper\Wikidata\Item($logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
-        $this->wikipediaArtistAPI = new \aportela\MediaWikiWrapper\Wikipedia\Page($logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        $this->item = new \aportela\MediaWikiWrapper\Wikidata\Item($this->logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
+        $this->page = new \aportela\MediaWikiWrapper\Wikipedia\Page($this->logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, $cache);
         libxml_use_internal_errors(true);
     }
 
@@ -33,7 +30,7 @@ class ArtistScraper
             WHERE
                 CACHE_ARTIST_WIKIPEDIA.artist_mbid IS NULL
         ";
-        $results = $this->dbh->query(
+        $results = $this->db->query(
             sprintf(
                 "
                     SELECT
@@ -49,7 +46,7 @@ class ArtistScraper
                 $withoutCache ? $withoutCacheWhereCondition : null
             ),
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value)
+                new \aportela\DatabaseWrapper\Param\StringParam(":relation_type_id", \aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_WIKIDATA->value),
             ]
         );
         foreach ($results as $result) {
@@ -61,15 +58,16 @@ class ArtistScraper
                 $data[] = $artist;
             }
         }
+
         return ($data);
     }
 
     /**
      * save Wikipedia artist cache (html page)
      */
-    private function saveCache(\stdClass $artist, \aportela\MediaWikiWrapper\Language $language, string $html)
+    private function saveCache(\stdClass $artist, \aportela\MediaWikiWrapper\Language $language, string $html): void
     {
-        $this->dbh->execute(
+        $this->db->execute(
             "
                 INSERT INTO CACHE_ARTIST_WIKIPEDIA
                     (artist_mbid, artist_name, language, html, ctime, mtime)
@@ -97,23 +95,24 @@ class ArtistScraper
         //$pattern = '/\<(\w+)\s[^>]*?style=([\"|\']).*?\2\s?[^>]*?(\/?)>/';
         //$html = preg_replace($pattern, "", $html);
         libxml_use_internal_errors(true);
-        $doc = new \DomDocument();
-        if ($doc->loadHTML($html)) {
-            $xpath = new \DOMXPath($doc);
+        $domDocument = new \DomDocument();
+        if ($domDocument->loadHTML($html)) {
+            $domxPath = new \DOMXPath($domDocument);
             // lyric paragraphs are contained on a <div jsname="WbKHeb"> with <span> childs
-            $nodes = $xpath->query('//section');
+            $nodes = $domxPath->query('//section');
             if ($nodes != false) {
                 if ($nodes->count() > 0) {
                     $html = null;
                     foreach ($nodes as $node) {
                         $html .= sprintf(
                             "<section>%s</section>",
-                            implode(array_map(
+                            implode('', array_map(
                                 [$node->ownerDocument, "saveHTML"],
                                 iterator_to_array($node->childNodes)
                             ))
                         );
                     }
+
                     return ($html);
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("section");
@@ -128,14 +127,16 @@ class ArtistScraper
 
     private function stripHTML(string $html): string|false
     {
-        $dom = new \DOMDocument();
-        $dom->loadHTML($html);
-        $links = $dom->getElementsByTagName("a");
-        foreach ($links as $link) {
-            $textNode = $dom->createTextNode($link->textContent);
+        $domDocument = new \DOMDocument();
+        $domDocument->loadHTML($html);
+
+        $domNodeList = $domDocument->getElementsByTagName("a");
+        foreach ($domNodeList as $link) {
+            $textNode = $domDocument->createTextNode($link->textContent);
             $link->parentNode->replaceChild($textNode, $link);
         }
-        return ($dom->saveHTML());
+
+        return ($domDocument->saveHTML());
     }
 
     public function scrapMissingCache(?callable $scrapItemCallback = null, bool $force = false): float
@@ -143,15 +144,16 @@ class ArtistScraper
         $scanStartTime = microtime(true);
         $artistsData = $this->getArtistsData(!$force);
         $totalArtistsData = count($artistsData);
-        for ($i = 0; $i < $totalArtistsData; $i++) {
+        for ($i = 0; $i < $totalArtistsData; ++$i) {
             if ($scrapItemCallback != null) {
                 call_user_func($scrapItemCallback, $artistsData, $totalArtistsData, $i);
             }
+
             try {
                 $language = \aportela\MediaWikiWrapper\Language::ENGLISH;
                 if (isset($artistsData[$i]->WikidataURL) && ! empty($artistsData[$i]->WikidataURL)) {
-                    $title = $this->wikidataArtistAPI->getWikipediaTitleFromURL($artistsData[$i]->WikidataURL);
-                    $html = $this->wikipediaArtistAPI->getHTMLFromTitle($title, $language);
+                    $title = $this->item->getWikipediaTitleFromURL($artistsData[$i]->WikidataURL);
+                    $html = $this->page->getHTMLFromTitle($title, $language);
                     //$html = $this->stripHTML($html);
                     $this->saveCache($artistsData[$i], $language, $html);
                 }
@@ -162,9 +164,9 @@ class ArtistScraper
             } catch (\Throwable $e) {
                 print_r($e);
                 exit;
-                $this->logger->warning("Wikipedia artist scrap error", [$artistsData[$i], $e->getMessage(), $e->getPrevious()]);
             }
         }
+
         return (microtime(true) - $scanStartTime);
     }
 }

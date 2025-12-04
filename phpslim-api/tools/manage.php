@@ -47,7 +47,8 @@ try {
         echo "New database version available, an upgrade is required before continue." . PHP_EOL;
         exit;
     }
-    $cmdLine = new \Spieldose\CmdLine("", array("force", "addLibraryPath:", "libraryPathName:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"));
+    
+    $cmdLine = new \Spieldose\CmdLine("", ["force", "addLibraryPath:", "libraryPathName:", "removeLibraryPath:", "processID3Queue", "scrapMusicBrainzArtistNamesWithoutMBId", "scrapMusicBrainzReleaseArtistNamesWithoutMBId", "scrapMusicBrainzArtistCache", "scrapMusicBrainzReleaseCache", "scrapLastFMArtistCache", "scrapLastFMAlbumCache", "scrapWikipediaArtistCache", "scrapLyrics", "showProgressBar", "clean"]);
     if ($cmdLine->hasOptions()) {
         $showProgressBar = $cmdLine->hasParam("showProgressBar");
         $force = $cmdLine->hasParam("force");
@@ -66,28 +67,26 @@ try {
                     $libraryScanner = new \Spieldose\Library\Scanner\LibraryScanner($dbh, $logger);
 
                     $albumCoverPathValidFilenamesPattern = $settings->getAlbumCoverPathValidFilenamesPattern();
-                    if (!empty($albumCoverPathValidFilenamesPattern)) {
+                    if ($albumCoverPathValidFilenamesPattern !== '' && $albumCoverPathValidFilenamesPattern !== '0') {
                         $libraryScanner->setValidCoverFilenamesPattern($albumCoverPathValidFilenamesPattern);
                     }
+                    
                     $totalScanTime = $libraryScanner->scanLibraryPath(
                         $pathId,
                         $newLibraryPath,
                         true,
                         $force,
-                        function ($directories, $total, $index) use ($showProgressBar) {
-                            if ($showProgressBar) {
-                                echo sprintf(" - Directory %d/%d: %s%s", $index + 1, $total, $directories[$index], PHP_EOL);
-                            } else {
-                                echo sprintf(" - Directory %d/%d: %s%s", $index + 1, $total, $directories[$index], PHP_EOL);
-                            }
+                        function (array $directories, $total, $index): void {
+                            echo sprintf(" - Directory %d/%d: %s%s", $index + 1, $total, $directories[$index], PHP_EOL);
                         },
-                        function ($currentDirectoryFiles, $total, $index) use ($showProgressBar) {
+                        function (array $currentDirectoryFiles, $total, $index) use ($showProgressBar): void {
                             if ($showProgressBar) {
-                                \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Scanning %d directory file/s:", $total), "- Current file: " . basename($currentDirectoryFiles[$index]));
+                                \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(" - Scanning %d directory file/s:", $total), "- Current file: " . basename((string) $currentDirectoryFiles[$index]));
                             } else {
                                 if ($index == 0) {
-                                    echo " - Scanning {$total} directory file/s: ";
+                                    echo sprintf(' - Scanning %s directory file/s: ', $total);
                                 }
+                                
                                 echo ".";
                                 if ($index == $total - 1) {
                                     echo PHP_EOL;
@@ -102,6 +101,7 @@ try {
                 $logger->error("Invalid music path / path not found", [$newLibraryPath]);
             }
         }
+        
         if ($cmdLine->hasParam("removeLibraryPath")) {
             $path = realpath($cmdLine->getParamValue("removeLibraryPath"));
             echo "Removing library path: " . $path . PHP_EOL;
@@ -112,41 +112,45 @@ try {
                 echo " - Error removing library path (path not found)" . PHP_EOL;
             }
         }
+        
         if ($cmdLine->hasParam("processID3Queue")) {
             echo "Checking id3 queue:" . PHP_EOL;
             $id3Scanner = new \Spieldose\Library\Scanner\ID3Scanner($dbh, $logger);
             $totalScanTime = $id3Scanner->processPendingQueue(
-                function ($queuedItems, $total, $index) use ($showProgressBar) {
+                function (array $queuedItems, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, "", "- Current file: {$queuedItems[$index]->fullPath}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, "", '- Current file: ' . $queuedItems[$index]->fullPath);
                     } else {
                         if ($index == 0) {
-                            echo " - Processing ({$total}) queued items/s:";
+                            echo sprintf(' - Processing (%s) queued items/s:', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
                         }
                     }
                 },
-                function () {
+                function (): void {
                     echo " [!] Queue is empty" . PHP_EOL;
                 }
             );
             echo sprintf("ID3 process queue finished (total process time: %.2f seconds)%s", $totalScanTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapMusicBrainzArtistNamesWithoutMBId")) {
             echo "Starting Musicbrainz Artist Scrapper (Searching artists with name && without mbId):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON,);
             $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
             $totalScrapTime = $mbArtistScanner->scrapArtistsWithoutMusicBrainzId(
-                function ($items, $total, $index) use ($showProgressBar) {
+                function (array $items, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$items[$index]->artistName}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Searching (%s) artist/s', $total), '- Artist name: ' . $items[$index]->artistName);
                     } else {
                         if ($index == 0) {
-                            echo " - Searching {$total} artist/s: ";
+                            echo sprintf(' - Searching %s artist/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -156,18 +160,20 @@ try {
             );
             echo sprintf("MusicBrainz artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapMusicBrainzReleaseArtistNamesWithoutMBId")) {
             echo "Starting Musicbrainz Release Artist Scrapper (Searching release artists with name && without mbId):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON,);
             $mbArtistScanner = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
             $totalScrapTime = $mbArtistScanner->scrapReleaseArtistsWithoutMusicBrainzId(
-                function ($items, $total, $index) use ($showProgressBar) {
+                function (array $items, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Searching ({$total}) artist/s", "- Artist name: {$items[$index]->artistName}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Searching (%s) artist/s', $total), '- Artist name: ' . $items[$index]->artistName);
                     } else {
                         if ($index == 0) {
-                            echo " - Searching {$total} artist/s: ";
+                            echo sprintf(' - Searching %s artist/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -177,18 +183,20 @@ try {
             );
             echo sprintf("MusicBrainz release artist search scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapMusicBrainzArtistCache")) {
             echo "Starting Musicbrainz Artist Scrapper (Artists without MusicBrainz cache):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON);
             $mbArtistScraper = new \Spieldose\Library\Scraper\MusicBrainz\ArtistScraper($dbh, $logger, $cache);
             $totalScrapTime = $mbArtistScraper->scrapMissingCache(
-                function ($mbIds, $total, $index) use ($showProgressBar) {
+                function (array $mbIds, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist musicbrainz id/s", "- Artist mbId: {$mbIds[$index]}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) artist musicbrainz id/s', $total), '- Artist mbId: ' . $mbIds[$index]);
                     } else {
                         if ($index == 0) {
-                            echo " - Caching {$total} artist musicbrainz id/s: ";
+                            echo sprintf(' - Caching %s artist musicbrainz id/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -199,18 +207,20 @@ try {
             );
             echo sprintf("MusicBrainz artist data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapMusicBrainzReleaseCache")) {
             echo "Starting Musicbrainz Release Scrapper (Releases without MusicBrainz cache):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("MusicBrainz"), null, \aportela\SimpleFSCache\CacheFormat::JSON);
             $mbReleaseScraper = new \Spieldose\Library\Scraper\MusicBrainz\ReleaseScraper($dbh, $logger, $cache);
             $totalScrapTime = $mbReleaseScraper->scrapMissingCache(
-                function ($mbIds, $total, $index) use ($showProgressBar) {
+                function (array $mbIds, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) release musicbrainz id/s", "- Release mbId: {$mbIds[$index]}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) release musicbrainz id/s', $total), '- Release mbId: ' . $mbIds[$index]);
                     } else {
                         if ($index == 0) {
-                            echo " - Caching {$total} release musicbrainz id/s: ";
+                            echo sprintf(' - Caching %s release musicbrainz id/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -221,20 +231,22 @@ try {
             );
             echo sprintf("MusicBrainz release data scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapLastFMArtistCache")) {
             echo "Starting LastFM Artist Scrapper (Artists without LastFM cache):" . PHP_EOL;
             $lastFMAPIKey = $settings->getLastFMAPIKey();
-            if (! empty($lastFMAPIKey)) {
+            if ($lastFMAPIKey !== '' && $lastFMAPIKey !== '0') {
                 $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("LastFM"), null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $lastFMArtistScraper = new \Spieldose\Library\Scraper\LastFM\ArtistScraper($dbh, $logger, $lastFMAPIKey, $cache);
                 $totalScrapTime = $lastFMArtistScraper->scrapMissingCache(
-                    function ($names, $total, $index) use ($showProgressBar) {
+                    function (array $names, $total, $index) use ($showProgressBar): void {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist lastfm name/s", "- Artist name: {$names[$index]}");
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) artist lastfm name/s', $total), '- Artist name: ' . $names[$index]);
                         } else {
                             if ($index == 0) {
-                                echo " - Caching {$total} artist lastfm name/s: ";
+                                echo sprintf(' - Caching %s artist lastfm name/s: ', $total);
                             }
+                            
                             echo ".";
                             if ($index == $total - 1) {
                                 echo PHP_EOL;
@@ -248,20 +260,22 @@ try {
                 echo "ERROR - Missing LastFM API KEY " . PHP_EOL;
             }
         }
+        
         if ($cmdLine->hasParam("scrapLastFMAlbumCache")) {
             echo "Starting LastFM Album Scrapper (Albums without LastFM cache):" . PHP_EOL;
             $lastFMAPIKey = $settings->getLastFMAPIKey();
-            if (! empty($lastFMAPIKey)) {
+            if ($lastFMAPIKey !== '' && $lastFMAPIKey !== '0') {
                 $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("LastFM"), null, \aportela\SimpleFSCache\CacheFormat::JSON);
                 $lastFMAlbumScraper = new \Spieldose\Library\Scraper\LastFM\AlbumScraper($dbh, $logger, $lastFMAPIKey, $cache);
                 $totalScrapTime = $lastFMAlbumScraper->scrapMissingCache(
-                    function ($items, $total, $index) use ($showProgressBar) {
+                    function (array $items, $total, $index) use ($showProgressBar): void {
                         if ($showProgressBar) {
-                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) album lastfm item/s",  "- Album: {$items[$index]->album} - artist: {$items[$index]->artist}");
+                            \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) album lastfm item/s', $total),  sprintf('- Album: %s - artist: %s', $items[$index]->album, $items[$index]->artist));
                         } else {
                             if ($index == 0) {
-                                echo " - Caching {$total} album lastfm item/s: ";
+                                echo sprintf(' - Caching %s album lastfm item/s: ', $total);
                             }
+                            
                             echo ".";
                             if ($index == $total - 1) {
                                 echo PHP_EOL;
@@ -275,18 +289,20 @@ try {
                 echo "ERROR - Missing LastFM API KEY " . PHP_EOL;
             }
         }
+        
         if ($cmdLine->hasParam("scrapWikipediaArtistCache")) {
             echo "Starting Wikipedia Artist Scrapper (Wikipedia artist page without cache):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("Wikipedia"), null, \aportela\SimpleFSCache\CacheFormat::HTML);
             $wikipediaScraper = new \Spieldose\Library\Scraper\Wikipedia\ArtistScraper($dbh, $logger, $cache);
             $totalScrapTime = $wikipediaScraper->scrapMissingCache(
-                function ($artists, $total, $index) use ($showProgressBar) {
+                function (array $artists, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) artist/s",  "- Artist: {$artists[$index]->name}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) artist/s', $total),  '- Artist: ' . $artists[$index]->name);
                     } else {
                         if ($index == 0) {
-                            echo " - Caching {$total} artist/s: ";
+                            echo sprintf(' - Caching %s artist/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -297,18 +313,20 @@ try {
             );
             echo sprintf("Wikipedia artist scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("scrapLyrics")) {
             echo "Starting Lyrics Scrapper (Lyrics without cache):" . PHP_EOL;
             $cache = new \aportela\SimpleFSCache\Cache($logger, $settings->getCachePath("Lyrics"), null, \aportela\SimpleFSCache\CacheFormat::TXT);
             $lyricsScraper = new \Spieldose\Library\Scraper\Lyrics($dbh, $logger, $cache);
             $totalScrapTime = $lyricsScraper->scrapMissingCache(
-                function ($tracks, $total, $index) use ($showProgressBar) {
+                function (array $tracks, $total, $index) use ($showProgressBar): void {
                     if ($showProgressBar) {
-                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, " - Caching ({$total}) track/s",  "- Artist: {$tracks[$index]->artist} - Title: {$tracks[$index]->title}");
+                        \Spieldose\Utils::showProgressBar($index + 1, $total, PROGRESSBAR_LENGTH, sprintf(' - Caching (%s) track/s', $total),  sprintf('- Artist: %s - Title: %s', $tracks[$index]->artist, $tracks[$index]->title));
                     } else {
                         if ($index == 0) {
-                            echo " - Caching {$total} tracks/s: ";
+                            echo sprintf(' - Caching %s tracks/s: ', $total);
                         }
+                        
                         echo ".";
                         if ($index == $total - 1) {
                             echo PHP_EOL;
@@ -319,6 +337,7 @@ try {
             );
             echo sprintf("Lyrics track scrap process finished (total process time: %.2f seconds)%s", $totalScrapTime, PHP_EOL);
         }
+        
         if ($cmdLine->hasParam("clean")) {
             echo "Cleaning database...";
             $libraryManager = new \Spieldose\Library\Manager($dbh, $logger);
@@ -326,14 +345,16 @@ try {
             $totalFiles = count($libraryDirectoryFiles);
             echo " " . $totalFiles . " files found" . PHP_EOL;
             $totalDeleted = 0;
-            for ($i = 0; $i < $totalFiles; $i++) {
+            for ($i = 0; $i < $totalFiles; ++$i) {
                 if (! file_exists($libraryDirectoryFiles[$i]->fullPath)) {
 
                     $libraryManager->removeLibraryPathDirectoryFile($libraryDirectoryFiles[$i]->id);
-                    $totalDeleted++;
+                    ++$totalDeleted;
                 }
+                
                 \Spieldose\Utils::showProgressBar($i + 1, $totalFiles, PROGRESSBAR_LENGTH, $libraryDirectoryFiles[$i]->fullPath);
             }
+            
             echo "Datatabase clean finished. ";
             if ($totalDeleted > 0) {
                 echo "Total deleted files: " . $totalDeleted . PHP_EOL;
@@ -374,9 +395,9 @@ try {
         echo "- Force process again all items (not only pending):" . PHP_EOL;
         echo "\tphp " . $argv[0] . " --force <other params>" . PHP_EOL;
     }
-} catch (\Exception $e) {
-    echo "Uncaught exception: " . $e->getMessage() . PHP_EOL;
-    $logger->critical("Uncaught exception: " . $e->getMessage());
+} catch (\Exception $exception) {
+    echo "Uncaught exception: " . $exception->getMessage() . PHP_EOL;
+    $logger->critical("Uncaught exception: " . $exception->getMessage());
 }
 
 exit(0);

@@ -14,20 +14,21 @@ class Album extends \Spieldose\Browse\Base
         $this->fieldDefinitions = [
             "title" => "TMP.title",
             "mbId" => "TMP.mbId",
-            "year" => "TMP.year"
+            "year" => "TMP.year",
         ];
         $this->fieldCountDefinition = [
-            "total" => "COUNT(TMP.title)"
+            "total" => "COUNT(TMP.title)",
         ];
-        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $data) {
+        $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $browserResults): void {
             array_map(
                 function (object $item): object {
                     if (property_exists($item, "totalTracks") && is_numeric($item->totalTracks)) {
                         $item->totalTracks = intval($item->totalTracks);
                     }
+
                     return ($item);
                 },
-                $data->items
+                $browserResults->items
             );
         };
         $browser = new \aportela\DatabaseBrowserWrapper\Browser(
@@ -43,9 +44,10 @@ class Album extends \Spieldose\Browse\Base
         $params = [];
         if ($filter->hasParam("title") && is_string($filter->getParamValue("title"))) {
             $queryConditions[] = sprintf(" TMP.title LIKE %s ", ":title");
-            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title",  "%" . $filter->getParamValue("title") . "%");
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":title", "%" . $filter->getParamValue("title") . "%");
         }
-        $whereCondition = $queryConditions !== [] ? " WHERE " .  implode(" AND ", $queryConditions) : "";
+
+        $whereCondition = $queryConditions !== [] ? " WHERE " . implode(" AND ", $queryConditions) : "";
         $browser->addDBQueryParams($params);
         $query = $browser->buildQuery(
             sprintf(

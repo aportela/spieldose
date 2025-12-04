@@ -4,38 +4,31 @@ declare(strict_types=1);
 
 namespace Spieldose\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 final class AppRoutesTest extends APITest
 {
     /**
      * Called once just like normal constructor
      */
-    public static function setUpBeforeClass(): void
-    {
-    }
+    public static function setUpBeforeClass(): void {}
 
     /**
      * Clean up the whole test class
      */
-    public static function tearDownAfterClass(): void
-    {
-    }
+    public static function tearDownAfterClass(): void {}
 
     /**
      * Initialize the test case
      * Called for every defined test
      */
-    protected function setUp(): void
-    {
-    }
+    protected function setUp(): void {}
 
     /**
      * Clean up the test case, called for every defined test
      */
-    protected function tearDown(): void
-    {
-    }
+    #[\Override]
+    protected function tearDown(): void {}
 
     public function testRootPath(): void
     {

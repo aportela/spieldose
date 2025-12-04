@@ -7,48 +7,45 @@ namespace Spieldose;
 class Playlist
 {
     public const FAVORITE_TRACKS_PLAYLIST_ID = "00000000-0000-0000-0000-000000000000";
-    public string $id;
-    public string $name;
-    public $ctime = null;
-    public $mtime = null;
-    public $owner = null;
-    public $public = false;
-    public array $tracks = [];
+    public $ctime;
 
-    public function __construct(string $id, string $name, array $tracks = [], bool $public = false, ?string $ownerId = null, string $ownerName = null)
+    public $mtime;
+
+    /**
+     * @var \stdClass
+     */
+    public $owner;
+
+    /**
+     * @var bool
+     */
+    public $public = false;
+
+    public function __construct(public string $id, public string $name, public array $tracks = [], bool $public = false, ?string $ownerId = null, ?string $ownerName = null)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->tracks = $tracks;
         $this->public = $public;
         $this->owner = new \stdClass();
         $this->owner->id = $ownerId;
         $this->owner->name = $ownerName;
     }
 
-    public function __destruct()
+    public function allowView(\aportela\DatabaseWrapper\DB $db): bool
     {
-    }
-
-    public function allowView(\aportela\DatabaseWrapper\DB $dbh): bool
-    {
-        if (!empty($this->id)) {
+        if ($this->id !== '' && $this->id !== '0') {
             // special playlists, user allowed
-            if ($this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+            if ($this->id === self::FAVORITE_TRACKS_PLAYLIST_ID) {
                 return (true);
             } else {
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
-                );
-                $query = sprintf(
-                    '
+                $params = [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                ];
+                $query = '
                         SELECT P.user_id AS userId, P.public
                         FROM PLAYLIST P
                         WHERE P.id = :id
-                    '
-                );
-                $data = $dbh->query($query, $params);
-                if (count($data) == 1) {
+                    ';
+                $data = $db->query($query, $params);
+                if (count($data) === 1) {
                     return ($data[0]->userId == \Spieldose\UserSession::getUserId() || $data[0]->public == "S");
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
@@ -59,25 +56,23 @@ class Playlist
         }
     }
 
-    public function allowUpdate(\aportela\DatabaseWrapper\DB $dbh): bool
+    public function allowUpdate(\aportela\DatabaseWrapper\DB $db): bool
     {
-        if (!empty($this->id)) {
+        if ($this->id !== '' && $this->id !== '0') {
             // special playlists, user allowed
-            if ($this->id == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+            if ($this->id === self::FAVORITE_TRACKS_PLAYLIST_ID) {
                 return (false);
             } else {
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
-                );
-                $query = sprintf(
-                    '
+                $params = [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                ];
+                $query = '
                     SELECT P.user_id AS userId
                     FROM PLAYLIST P
                     WHERE P.id = :id
-                '
-                );
-                $data = $dbh->query($query, $params);
-                if (count($data) == 1) {
+                ';
+                $data = $db->query($query, $params);
+                if (count($data) === 1) {
                     return ($data[0]->userId == \Spieldose\UserSession::getUserId());
                 } else {
                     throw new \Spieldose\Exception\NotFoundException("id: " . $this->id);
@@ -88,13 +83,13 @@ class Playlist
         }
     }
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh): void
+    public function get(\aportela\DatabaseWrapper\DB $db): void
     {
-        if (!empty($this->id)) {
-            if ($this->allowView($dbh)) {
-                $params = array();
+        if ($this->id !== '' && $this->id !== '0') {
+            if ($this->allowView($db)) {
+                $params = [];
                 $query = null;
-                if ($this->id != self::FAVORITE_TRACKS_PLAYLIST_ID) {
+                if ($this->id !== self::FAVORITE_TRACKS_PLAYLIST_ID) {
                     $query = "
                         SELECT P.id, P.name, P.ctime, P.mtime, P.name, P.public, P.user_id AS ownerId, U.name AS ownerName
                         FROM PLAYLIST P
@@ -113,8 +108,9 @@ class Playlist
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId());
                     $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
                 }
-                $data = $dbh->query($query, $params);
-                if (count($data) == 1) {
+
+                $data = $db->query($query, $params);
+                if (count($data) === 1) {
                     $this->id = $data[0]->id;
                     $this->name = $data[0]->name;
                     $this->ctime = $data[0]->ctime;
@@ -124,19 +120,19 @@ class Playlist
                     $this->owner->id = $data[0]->ownerId;
                     $this->owner->name = $data[0]->ownerName;
                     $this->public = $data[0]->public == "S";
-                    if (!($this->public || $this->owner->id == \Spieldose\UserSession::getUserId() || $this->id == self::FAVORITE_TRACKS_PLAYLIST_ID)) {
+                    if (!($this->public || $this->owner->id == \Spieldose\UserSession::getUserId() || $this->id === self::FAVORITE_TRACKS_PLAYLIST_ID)) {
                         throw new \Spieldose\Exception\AccessDeniedException("id");
                     } else {
-                        $filter = array(
-                            "playlistId" => $this->id
-                        );
+                        $filter = [
+                            "playlistId" => $this->id,
+                        ];
                         $sort = new \aportela\DatabaseBrowserWrapper\Sort(
                             [
-                                new \aportela\DatabaseBrowserWrapper\SortItem("playListTrackIndex", \aportela\DatabaseBrowserWrapper\Order::ASC, true)
+                                new \aportela\DatabaseBrowserWrapper\SortItem("playListTrackIndex", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
                             ]
                         );
                         $pager = new \aportela\DatabaseBrowserWrapper\Pager(false, 1, 0);
-                        $data = \Spieldose\Entities\Track::search($dbh, $filter, $sort, $pager);
+                        $data = \Spieldose\Entities\Track::search($db, $filter, $sort, $pager);
                         $this->tracks = $data->items;
                     }
                 } else {
@@ -150,30 +146,31 @@ class Playlist
         }
     }
 
-    public function add(\aportela\DatabaseWrapper\DB $dbh)
+    public function add(\aportela\DatabaseWrapper\DB $db): void
     {
-        if (!empty($this->id)) {
-            if (!empty($this->name)) {
-                $params = array(
+        if ($this->id !== '' && $this->id !== '0') {
+            if ($this->name !== '' && $this->name !== '0') {
+                $params = [
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
                     new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
-                );
-                $dbh->execute(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime, public) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now'), :public) ", $params);
-                if (is_array($this->tracks) && count($this->tracks) > 0) {
+                    new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N"),
+                ];
+                $db->execute(" INSERT INTO PLAYLIST (id, user_id, name, ctime, mtime, public) VALUES(:id, :user_id, :name, strftime('%s', 'now'), strftime('%s', 'now'), :public) ", $params);
+                if (is_array($this->tracks) && $this->tracks !== []) {
                     foreach ($this->tracks as $trackIndex => $trackId) {
-                        $params = array(
+                        $params = [
                             new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
                             new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
                             new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
-                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
-                        );
-                        $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
+                            new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex),
+                        ];
+                        $db->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                     }
                 }
-                $cp = new \Spieldose\CurrentPlaylist();
-                $cp->setLinkedPlaylist($dbh, $this->id);
+
+                $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                $currentPlaylist->setLinkedPlaylist($db, $this->id);
             } else {
                 throw new \Spieldose\Exception\InvalidParamsException("name");
             }
@@ -182,33 +179,34 @@ class Playlist
         }
     }
 
-    public function update(\aportela\DatabaseWrapper\DB $dbh)
+    public function update(\aportela\DatabaseWrapper\DB $db): void
     {
-        if (!empty($this->id)) {
-            if ($this->allowUpdate($dbh)) {
-                if (!empty($this->name)) {
-                    $params = array(
+        if ($this->id !== '' && $this->id !== '0') {
+            if ($this->allowUpdate($db)) {
+                if ($this->name !== '' && $this->name !== '0') {
+                    $params = [
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N")
-                    );
-                    $dbh->execute(" UPDATE PLAYLIST SET name = :name, public = :public, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
-                    $params = array(
-                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
-                    );
-                    $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
-                    if (is_array($this->tracks) && count($this->tracks) > 0) {
+                        new \aportela\DatabaseWrapper\Param\StringParam(":public", $this->public ? "S" : "N"),
+                    ];
+                    $db->execute(" UPDATE PLAYLIST SET name = :name, public = :public, mtime = strftime('%s', 'now') WHERE id = :id ", $params);
+                    $params = [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                    ];
+                    $db->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
+                    if (is_array($this->tracks) && $this->tracks !== []) {
                         foreach ($this->tracks as $trackIndex => $trackId) {
-                            $params = array(
+                            $params = [
                                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
                                 new \aportela\DatabaseWrapper\Param\StringParam(":track_id", $trackId),
-                                new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex)
-                            );
-                            $dbh->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
+                                new \aportela\DatabaseWrapper\Param\IntegerParam(":track_index", $trackIndex),
+                            ];
+                            $db->execute(" INSERT INTO PLAYLIST_TRACK (playlist_id, track_id, track_index) VALUES(:playlist_id, :track_id, :track_index) ", $params);
                         }
                     }
-                    $cp = new \Spieldose\CurrentPlaylist();
-                    $cp->setLinkedPlaylist($dbh, $this->id);
+
+                    $currentPlaylist = new \Spieldose\CurrentPlaylist();
+                    $currentPlaylist->setLinkedPlaylist($db, $this->id);
                 } else {
                     throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
@@ -220,23 +218,23 @@ class Playlist
         }
     }
 
-    public function remove(\aportela\DatabaseWrapper\DB $dbh)
+    public function remove(\aportela\DatabaseWrapper\DB $db): void
     {
-        if (!empty($this->id)) {
-            if ($this->allowUpdate($dbh)) {
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
-                );
-                $dbh->execute(" UPDATE CURRENT_PLAYLIST SET playlist_id = NULL WHERE playlist_id = :playlist_id ", $params);
-                $params = array(
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id)
-                );
-                $dbh->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
-                $params = array(
+        if ($this->id !== '' && $this->id !== '0') {
+            if ($this->allowUpdate($db)) {
+                $params = [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                ];
+                $db->execute(" UPDATE CURRENT_PLAYLIST SET playlist_id = NULL WHERE playlist_id = :playlist_id ", $params);
+                $params = [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                ];
+                $db->execute(" DELETE FROM PLAYLIST_TRACK WHERE playlist_id = :playlist_id  ", $params);
+                $params = [
                     new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
-                );
-                $dbh->execute(" DELETE FROM PLAYLIST WHERE id = :id AND user_id = :user_id ", $params);
+                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+                ];
+                $db->execute(" DELETE FROM PLAYLIST WHERE id = :id AND user_id = :user_id ", $params);
             } else {
                 throw new \Spieldose\Exception\AccessDeniedException("userId: " . \Spieldose\UserSession::getUserId());
             }
@@ -245,12 +243,15 @@ class Playlist
         }
     }
 
-    private static function getPlaylistCovers(\aportela\DatabaseWrapper\DB $dbh, string $playlistId)
+    /**
+     * @return string[]
+     */
+    private static function getPlaylistCovers(\aportela\DatabaseWrapper\DB $db, string $playlistId): array
     {
         $covers = [];
-        if ($playlistId == self::FAVORITE_TRACKS_PLAYLIST_ID) {
+        if ($playlistId === self::FAVORITE_TRACKS_PLAYLIST_ID) {
             foreach (
-                $dbh->query(
+                $db->query(
                     "
                    SELECT
                         DISTINCT DIRECTORY.id
@@ -262,7 +263,7 @@ class Playlist
                     LIMIT 16
                 ",
                     [
-                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
                     ]
                 ) as $cover
             ) {
@@ -270,7 +271,7 @@ class Playlist
             }
         } else {
             foreach (
-                $dbh->query(
+                $db->query(
                     "
                    SELECT
                         DISTINCT DIRECTORY.id
@@ -282,7 +283,7 @@ class Playlist
                     LIMIT 16
                 ",
                     [
-                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId)
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $playlistId),
                     ]
                 ) as $cover
             ) {
@@ -293,10 +294,10 @@ class Playlist
         return ($covers);
     }
 
-    public static function search(\aportela\DatabaseWrapper\DB $dbh, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
+    public static function search(\aportela\DatabaseWrapper\DB $db, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
-        $params = array();
-        $filterConditions = array();
+        $params = [];
+        $filterConditions = [];
         $type = $filter->getParamValue("type");
         $userId = $filter->getParamValue("userId");
         if ($type == "myPlaylists" || ($type == "userPlaylists" && $userId == \Spieldose\UserSession::getUserId())) {
@@ -315,9 +316,10 @@ class Playlist
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":uuid_zero", self::FAVORITE_TRACKS_PLAYLIST_ID);
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":session_user_id", \Spieldose\UserSession::getUserId());
         }
+
         $name = $filter->getParamValue("name");
         if (!empty($name)) {
-            $words = explode(" ", trim($name));
+            $words = explode(" ", trim((string) $name));
             foreach ($words as $word) {
                 $paramName = ":name_" . uniqid();
                 $filterConditions[] = sprintf(" PLAYLIST.name LIKE %s", $paramName);
@@ -331,16 +333,16 @@ class Playlist
             "trackCount" => "COUNT(*)",
             "ownerId" => "PLAYLIST.user_id",
             "ownerName" => "USER.name",
-            "updated" =>  "PLAYLIST.mtime"
+            "updated" =>  "PLAYLIST.mtime",
         ];
         $fieldCountDefinition = [
-            "totalResults" => " SUM(total)"
+            "totalResults" => " SUM(total)",
         ];
 
-        $afterBrowseFunction = function ($data) use ($dbh) {
+        $afterBrowseFunction = function ($data) use ($db): void {
             $data->items = array_map(
-                function ($result) use ($dbh) {
-                    $result->covers = self::getPlaylistCovers($dbh, $result->id);
+                function ($result) use ($db) {
+                    $result->covers = self::getPlaylistCovers($db, $result->id);
                     $result->owner = new \stdClass();
                     $result->owner->id = $result->ownerId;
                     $result->owner->name = $result->ownerName;
@@ -353,7 +355,7 @@ class Playlist
             );
         };
 
-        $browser = new \aportela\DatabaseBrowserWrapper\Browser($dbh, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
+        $browser = new \aportela\DatabaseBrowserWrapper\Browser($db, $fieldDefinitions, $fieldCountDefinition, $pager, $sort, new \aportela\DatabaseBrowserWrapper\Filter(), $afterBrowseFunction);
         foreach ($params as $param) {
             $browser->addDBQueryParam($param);
         }
@@ -385,7 +387,7 @@ class Playlist
                     %s
                 ",
                 $browser->getQueryFields(),
-                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                 $browser->getQuerySort(),
                 $pager->getQueryLimit()
             );
@@ -404,7 +406,7 @@ class Playlist
                     )
                 ",
                 $browser->getQueryCountFields(),
-                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+                $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null
             );
         } else {
             $query = sprintf(
@@ -422,7 +424,7 @@ class Playlist
                     %s
                 ",
                 $browser->getQueryFields(),
-                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null,
+                $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null,
                 $browser->getQuerySort(),
                 $pager->getQueryLimit()
             );
@@ -436,19 +438,18 @@ class Playlist
                     )
                 ",
                 $browser->getQueryCountFields(),
-                count($filterConditions) > 0 ? " WHERE " . implode(" AND ", $filterConditions) : null
+                $filterConditions !== [] ? " WHERE " . implode(" AND ", $filterConditions) : null
             );
         }
-        $data = $browser->launch($query, $queryCount);
 
-        return ($data);
+        return ($browser->launch($query, $queryCount));
     }
 
-    public static function getTrackIds(\aportela\DatabaseWrapper\DB $dbh, string $id): array
+    public static function getTrackIds(\aportela\DatabaseWrapper\DB $db, string $id): array
     {
         $query = "";
         $params = [];
-        if ($id == \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
+        if ($id === \Spieldose\Playlist::FAVORITE_TRACKS_PLAYLIST_ID) {
             $query = "
                 SELECT F.id
                 FROM FILE_FAVORITE FF
@@ -468,11 +469,13 @@ class Playlist
                 ";
             $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $id);
         }
-        $data = $dbh->query($query, $params);
+
+        $data = $db->query($query, $params);
         $ids = [];
         foreach ($data as $item) {
             $ids[] = $item->id;
         }
+
         return ($ids);
     }
 }

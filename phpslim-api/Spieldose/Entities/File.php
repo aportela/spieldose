@@ -9,21 +9,21 @@ use stdClass;
 class File
 {
     protected \aportela\DatabaseWrapper\DB $dbh;
-
-    public string $id;
     public string $filename;
+
     public int $filesize;
+
     public string $mime;
+
     public stdClass $trackInfo;
 
-    public function __construct(string $id)
+    public function __construct(public string $id)
     {
-        $this->id = $id;
     }
 
-    public function get(\aportela\DatabaseWrapper\DB $dbh)
+    public function get(\aportela\DatabaseWrapper\DB $db): void
     {
-        $results = $dbh->query(
+        $results = $db->query(
             "
                 SELECT
                     FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
@@ -36,10 +36,10 @@ class File
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                 new \aportela\DatabaseWrapper\Param\StringParam(":default_mime", "application/octet-stream"),
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId())
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
             ]
         );
-        if (count($results) == 1) {
+        if (count($results) === 1) {
             $this->filename = $results[0]->name;
             $this->filesize = $results[0]->size;
             $this->mime = $results[0]->mime;
@@ -60,14 +60,15 @@ class File
             if (! empty($results[0]->cover_filename)) {
                 $this->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $results[0]->directoryPathId;
                 $this->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $results[0]->directoryPathId;
-            } else if (! empty($results[0]->release_mbid)) {
-                $coverUrl = "https://coverartarchive.org/release/{$results[0]->release_mbid}/front-500";
+            } elseif (! empty($results[0]->release_mbid)) {
+                $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $results[0]->release_mbid);
                 $this->trackInfo->imageURL->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
                 $this->trackInfo->imageURL->normal = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
             } else {
                 $this->trackInfo->imageURL->small = null;
                 $this->trackInfo->imageURL->normal = null;
             }
+
             $this->trackInfo->favorited = $results[0]->ftime ? intval($results[0]->ftime) : null;
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
@@ -77,9 +78,9 @@ class File
     /**
      * temporal method
      */
-    public function rnd(\aportela\DatabaseWrapper\DB $dbh)
+    public function rnd(\aportela\DatabaseWrapper\DB $db): void
     {
-        $results = $dbh->query(
+        $results = $db->query(
             "
                 SELECT
                     FILE.id

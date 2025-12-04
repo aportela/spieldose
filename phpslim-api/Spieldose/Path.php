@@ -6,17 +6,9 @@ namespace Spieldose;
 
 class Path
 {
-    public function __construct()
+    public static function getTree(\aportela\DatabaseWrapper\DB $db): array
     {
-    }
-
-    public function __destruct()
-    {
-    }
-
-    public static function getTree(\aportela\DatabaseWrapper\DB $dbh): array
-    {
-        $items = $dbh->query("
+        $items = $db->query("
             SELECT D.id AS id, D.path AS fullPath, COALESCE(TMP_COUNT.total_files, 0) AS totalFiles
             FROM DIRECTORY D
             LEFT JOIN (
@@ -34,9 +26,9 @@ class Path
         foreach (array_keys($fullPaths) as $path) {
             // https://stackoverflow.com/a/53322666
             $node = &$tree;
-            $parts = explode(DIRECTORY_SEPARATOR, $path);
+            $parts = explode(DIRECTORY_SEPARATOR, (string) $path);
             foreach ($parts as $index => $level) {
-                $newNode = array_search($level, array_column($node, "name") ?? []);
+                $newNode = array_search($level, array_column($node, "name") ?? [], true);
 
                 if ($newNode === false) {
                     $id = null;
@@ -48,6 +40,7 @@ class Path
                     } else {
                         //$id = \Spieldose\Utils::uuidv4();
                     }
+
                     /*
                     if ($i) {
                         //$i->totalFiles;
@@ -56,13 +49,15 @@ class Path
                     */
                     $newNode = array_push($node, ["hash" => sha1($completePath), "id" => $id, "name" => $level, "completePath" => $completePath, "children" => [], "totalFiles" => $totalFiles]) - 1;
                 }
+
                 $node = &$node[$newNode]["children"];
             }
         }
+
         return ($tree);
     }
 
-    public static function getTrackIds(\aportela\DatabaseWrapper\DB $dbh, string $id): array
+    public static function getTrackIds(\aportela\DatabaseWrapper\DB $db, string $id): array
     {
         $query = "";
         $params = [];
@@ -73,11 +68,12 @@ class Path
                 ORDER BY F.name
             ";
         $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":path_id", $id);
-        $data = $dbh->query($query, $params);
+        $data = $db->query($query, $params);
         $ids = [];
         foreach ($data as $item) {
             $ids[] = $item->id;
         }
+
         return ($ids);
     }
 }

@@ -58,29 +58,29 @@ class Setup
         */
 
         $path = $this->settings->getCachePath("MusicBrainz");
-        if (!file_exists($path) && !mkdir($path, 0750, true)) {
+        if (!file_exists($path) && !mkdir($path, 0o750, true)) {
             $this->logger->critical("Error creating MusicBrainz cache basePath: " . $path);
             return (false);
         }
-        
+
         $path = $this->settings->getCachePath("LastFM");
-        if (!file_exists($path) && !mkdir($path, 0750, true)) {
+        if (!file_exists($path) && !mkdir($path, 0o750, true)) {
             $this->logger->critical("Error creating LastFM cache basePath: " . $path);
             return (false);
         }
-        
+
         $path = $this->settings->getCachePath("Wikipedia");
-        if (!file_exists($path) && !mkdir($path, 0750, true)) {
+        if (!file_exists($path) && !mkdir($path, 0o750, true)) {
             $this->logger->critical("Error creating Wikipedia cache basePath: " . $path);
             return (false);
         }
-        
+
         $path = $this->settings->getCachePath("Lyrics");
-        if (!file_exists($path) && !mkdir($path, 0750, true)) {
+        if (!file_exists($path) && !mkdir($path, 0o750, true)) {
             $this->logger->critical("Error creating Lyrics cache basePath: " . $path);
             return (false);
         }
-        
+
         return (true);
     }
 }
