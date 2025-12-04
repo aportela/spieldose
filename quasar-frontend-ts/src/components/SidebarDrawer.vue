@@ -1,6 +1,5 @@
 <template>
-  <q-drawer v-bind="attrs" show-if-above bordered :width="430" :mini="mini" @click.capture="onDrawerClick"
-    class="fit theme-default-q-drawer">
+  <q-drawer v-bind="attrs" show-if-above bordered :width="430" :mini="mini" class=" fit theme-default-q-drawer">
     <!--
     <PlayerWidget></PlayerWidget>
     -->
@@ -17,7 +16,7 @@
       </q-item>
       <q-item v-for="link in menuItems" :key="link.text" v-ripple clickable :to="{ name: link.routeName }"
         class="rounded-borders q-ma-sm theme-default-q-item"
-        :active="$route.name === link.routeName || (link.alternateRouteNames?.includes($route.name))"
+        :active="$route.name === link.routeName || (link.alternateRouteNames?.includes(String($route.name)))"
         active-class="theme-default-q-item-active">
         <q-item-section avatar>
           <q-icon :name="link.icon" />
@@ -66,7 +65,14 @@ const sessionStore = useSessionStore();
 
 const mini = computed(() => props.mini);
 
-const menuItems = [
+interface MenuItem {
+  icon: string;
+  text: string;
+  routeName: string;
+  alternateRouteNames?: string;
+
+};
+const menuItems: MenuItem[] = [
   { icon: 'home', text: "Index", routeName: 'index' },
 
   {
@@ -115,18 +121,6 @@ const menuItems = [
   },
   { icon: 'account_circle', text: "My profile", routeName: 'profile' },
 ];
-
-
-
-function onDrawerClick(e) {
-  if (mini.value) {
-    mini.value = false
-    // notice we have registered an event with capture flag;
-    // we need to stop further propagation as this click is
-    // intended for switching drawer to "normal" mode only
-    e.stopPropagation()
-  }
-}
 
 const logout = () => {
   api.auth
