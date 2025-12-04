@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-            }}</DesktopToolTip>
+          }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -25,6 +25,7 @@
         </q-btn-group>
       </q-toolbar>
     </q-header>
+    <SidebarDrawer v-model="visibleSidebar" :mini="miniSidebarCurrentMode" />
     <q-page-container>
       <router-view class="q-pa-sm" />
     </q-page-container>
@@ -36,10 +37,11 @@ import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { useQuasar, LocalStorage } from "quasar";
 import { useI18n } from "vue-i18n";
 
-import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
-import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"
-import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue"
-import { GITHUB_PROJECT_URL } from "src/constants"
+import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
+import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue";
+import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue";
+import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue";
+import { GITHUB_PROJECT_URL } from "src/constants";
 
 import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
