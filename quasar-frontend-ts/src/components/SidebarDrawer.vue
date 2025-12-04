@@ -82,7 +82,7 @@ const menuItems: MenuItem[] = [
   },
 
   {
-    icon: 'list_alt',
+    icon: 'queue_music',
     text: 'Current playlist',
     routeName: 'currentPlaylist'
   },
@@ -110,7 +110,7 @@ const menuItems: MenuItem[] = [
   },
 
   {
-    icon: 'list',
+    icon: 'library_music',
     text: 'Browse playlists',
     routeName: 'playlists'
   },
