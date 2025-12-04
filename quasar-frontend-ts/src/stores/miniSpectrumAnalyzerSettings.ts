@@ -58,7 +58,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAna
   actions: {
     setVisibility(visible: boolean) {
       this.visible = visible;
-      showMiniSpectrumAnalyzer.set(this.visible);
+      localStorageShowMiniSpectrumAnalyzer.set(this.visible);
     },
     setMode(mode: number) {
       if (mode == 10 || (mode >= 0 && mode < 9)) {
