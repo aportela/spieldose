@@ -2,9 +2,11 @@
   <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
     spellcheck="false">
     <q-card-section class="text-center">
+      <!--
       <q-avatar square size="128px">
         <img src="icons/favicon-128x128.png" />
       </q-avatar>
+      -->
       <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{ t("Sign up now and take control.") }}</h4>
       <div class="text-color-secondary">{{ t("The first track to your musical adventure begins here!") }}</div>
     </q-card-section>

@@ -2,16 +2,18 @@
   <form @submit.prevent.stop="onValidateForm" autocorrect="off" autocapitalize="off" autocomplete="off"
     spellcheck="false">
     <q-card-section class="text-center">
+      <!--
       <q-avatar square size="128px">
         <img src="icons/favicon-128x128.png" />
       </q-avatar>
+      -->
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-        }}</h4>
+          }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-        }}
+          }}
         </div>
       </slot>
     </q-card-section>
