@@ -18,6 +18,12 @@
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
         -->
+        <q-btn-group flat class="q-ml-md" v-if="!miniSidebarCurrentMode">
+          <q-btn stack v-for="item in menuItems" size="md" no-caps :icon="item.icon" :key="item.text"
+            :to="item.routeName">{{ item.text
+            }}</q-btn>
+        </q-btn-group>
+        <q-space></q-space>
         <q-btn-group flat class="q-ml-md">
           <DarkModeButton dense />
           <SwitchLanguageButton :short-labels="true" style="min-width: 9em" />
@@ -65,6 +71,57 @@ if (saveMiniSidebarMode && miniSidebarCurrentModeSavedMode != null) {
 const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? miniSidebarCurrentModeSavedMode == true : $q.screen.md);
 
 const currentScreenSize = computed(() => $q.screen.name);
+
+const menuItems = [
+  { icon: 'home', text: "Index", routeName: 'index' },
+  { icon: 'search', text: "Search", routeName: 'search' },
+
+  {
+    icon: 'analytics',
+    text: 'Dashboard',
+    routeName: 'dashboard'
+  },
+
+  {
+    icon: 'list_alt',
+    text: 'Current playlist',
+    routeName: 'currentPlaylist'
+  },
+  {
+    icon: 'person',
+    text: 'Browse artists',
+    routeName: 'artists'
+  },
+  /*
+  {
+    icon: 'search',
+    text: 'Search',
+    routeName: 'search'
+  },
+  */
+  {
+    icon: 'album',
+    text: 'Browse albums',
+    routeName: 'albums'
+  },
+  {
+    icon: 'folder_open',
+    text: 'Browse paths',
+    routeName: 'paths'
+  },
+
+  {
+    icon: 'list',
+    text: 'Browse playlists',
+    routeName: 'playlists'
+  },
+  {
+    icon: 'radio',
+    text: 'Browse radio stations',
+    routeName: 'radioStations'
+  },
+  { icon: 'account_circle', text: "My profile", routeName: 'profile' },
+];
 
 watch(currentScreenSize, () => {
   if (!lockminiSidebarCurrentModeMode.value) {
