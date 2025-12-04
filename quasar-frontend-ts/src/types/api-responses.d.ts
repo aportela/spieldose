@@ -52,11 +52,11 @@ interface SetProfileResponse extends Omit<DefaultAxiosResponse, 'data'> {
 };
 
 export {
-  type getServerEnvironmentResponseData,
-  type DefaultAxiosResponse,
-  type LoginResponse,
-  type GetNewAccessTokenResponse,
-  type RegisterResponse,
-  type GetProfileResponse,
-  type SetProfileResponse,
+  getServerEnvironmentResponseData,
+  DefaultAxiosResponse,
+  LoginResponse,
+  GetNewAccessTokenResponse,
+  RegisterResponse,
+  GetProfileResponse,
+  SetProfileResponse,
 };
