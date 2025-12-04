@@ -1,9 +1,7 @@
 <template>
   <q-drawer v-bind="attrs" show-if-above bordered :width="430" :mini="mini" class=" fit theme-default-q-drawer">
-    <!--
-    <PlayerWidget></PlayerWidget>
-    -->
-    <q-list>
+    <SidebarPlayer v-if="!mini" />
+    <q-list v-if="mini">
       <q-item class="cursor-pointer non-selectable no-pointer-events rounded-borders q-ma-sm theme-default-q-item">
         <q-item-section avatar>
           <q-avatar square size="24px">
@@ -44,6 +42,7 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { api } from "src/composables/api";
 import { useSessionStore } from "src/stores/session";
+import { default as SidebarPlayer } from "./Widgets/SidebarPlayer.vue";
 
 //import { default as PlayerWidget } from "./Player/PlayerWidget.vue";
 
