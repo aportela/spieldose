@@ -1,4 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { playerVinylAnimation as localStoragePlayerVinylAnimation } from 'src/composables/localStorage';
+import { type VinylAnimation } from 'src/types/common';
 
 interface Player {
   userInteracted: boolean;
@@ -11,16 +13,16 @@ interface Player {
     mode: string;
   };
 };
+
 interface State {
   data: {
     audio: HTMLAudioElement;
     audioCurrentTime: number;
     audioDuration: number;
     player: Player;
-    vinylAnimation: string | null;
+    vinylAnimation: VinylAnimation;
   }
 };
-
 
 export const usePlayerStore = defineStore('playerStore', {
   state: (): State => ({
@@ -46,7 +48,7 @@ export const usePlayerStore = defineStore('playerStore', {
         },
         */
       },
-      vinylAnimation: localStorage.playerVinylAnimation.get() ?? null,
+      vinylAnimation: localStoragePlayerVinylAnimation.get(),
       /*
       currentPlaylistIndex: 0,
       playlists: [
@@ -443,9 +445,9 @@ export const usePlayerStore = defineStore('playerStore', {
       // TODO: BASIL
     },
     */
-    setCurrentVinylAnimation(animation: string | null) {
+    setCurrentVinylAnimation(animation: VinylAnimation) {
       this.data.vinylAnimation = animation;
-      localStorage.playerVinylAnimation.set(this.data.vinylAnimation);
+      localStoragePlayerVinylAnimation.set(this.data.vinylAnimation);
     },
     onAudioEndEvent: function () {
       this.stop();
