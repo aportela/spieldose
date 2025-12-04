@@ -78,7 +78,7 @@ return function (App $app) {
             $dbh->close();
             return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);
         }
-    })->add(\Spieldose\Middleware\JWT::class);
+    });
 
     $app->group(
         '/api2',
@@ -90,20 +90,20 @@ return function (App $app) {
             }
 
             $settings = new \Spieldose\Settings();
-            $initialState = \Spieldose\Utils::getInitialState($settings);
+            $serverEnvironment = \Spieldose\Utils::GetServerEnvironment($settings);
 
-            $group->get('/initial_state', function (Request $request, Response $response, array $args) use ($initialState): \Psr\Http\Message\MessageInterface {
+            $group->get('/server_environment', function (Request $request, Response $response, array $args) use ($serverEnvironment): \Psr\Http\Message\MessageInterface {
                 $payload = \Spieldose\Utils::getJSONPayload(
                     [
-                        'initialState' => $initialState
+                        'serverEnvironment' => $serverEnvironment,
                     ]
                 );
                 $response->getBody()->write($payload);
                 return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
             });
 
-            $group->group('/auth', function (RouteCollectorProxy $group) use ($container, $initialState, $settings) {
-                $group->post('/register', function (Request $request, Response $response, array $args) use ($container, $initialState, $settings) {
+            $group->group('/auth', function (RouteCollectorProxy $routeCollectorProxy) use ($container, $settings): void {
+                $routeCollectorProxy->post('/register', function (Request $request, Response $response, array $args) use ($container, $settings): \Psr\Http\Message\MessageInterface {
                     if ($settings->allowSignUp()) {
                         $params = $request->getParsedBody();
                         if (! is_array($params)) {
@@ -125,9 +125,7 @@ return function (App $app) {
                             );
                             $user->add($dbh);
                             $payload = \Spieldose\Utils::getJSONPayload(
-                                [
-                                    'initialState' => $initialState
-                                ]
+                                []
                             );
                             $response->getBody()->write($payload);
                             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
@@ -137,7 +135,7 @@ return function (App $app) {
                     }
                 });
 
-                $group->post('/login', function (Request $request, Response $response, array $args) use ($container, $initialState) {
+                $routeCollectorProxy->post('/login', function (Request $request, Response $response, array $args) use ($container, $settings): \Psr\Http\Message\MessageInterface {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
@@ -148,6 +146,11 @@ return function (App $app) {
                         throw new \RuntimeException("Failed to create database handler from container");
                     }
 
+                    $logger = $container->get(\Spieldose\Logger\DefaultLogger::class);
+                    if (! $logger instanceof \Spieldose\Logger\DefaultLogger) {
+                        throw new \RuntimeException("Failed to create logger from container");
+                    }
+
                     $user = new \Spieldose\User(
                         "",
                         array_key_exists("email", $params) && is_string($params["email"]) ? $params["email"] : "",
@@ -155,20 +158,107 @@ return function (App $app) {
                     );
                     $user->login($dbh);
 
+                    $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
+
+                    $currentTimestamp = time();
+                    $accessToken = $jwt->encode(strval(\Spieldose\UserSession::getUserId()), $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                    $refreshToken = $jwt->encode(strval(\Spieldose\UserSession::getUserId()), $currentTimestamp + $settings->getRefreshTokenExpirationTimeInSeconds());
+                    \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
-                            'initialState' => $initialState
+                            "accessToken" => $accessToken,
+                            "refreshToken" => $refreshToken,
+                            "tokenType" => "Bearer",
+                        ]
+                    );
+                    setcookie(
+                        "refresh_token",
+                        $refreshToken,
+                        [
+                            'expires' => $currentTimestamp + $settings->getRefreshTokenExpirationTimeInSeconds(),
+                            'path' => '/api3/auth/renew_access_token',
+                            'secure' => true,
+                            'httponly' => true,
+                            'samesite' => 'Strict',
                         ]
                     );
                     $response->getBody()->write($payload);
                     return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
                 });
 
-                $group->post('/logout', function (Request $request, Response $response, array $args) use ($initialState) {
+                $routeCollectorProxy->post('/renew_access_token', function (Request $request, Response $response, array $args) use ($container, $settings): \Psr\Http\Message\MessageInterface {
+                    $refreshToken = null;
+                    if (isset($_COOKIE['refresh_token']) && ! empty($_COOKIE['refresh_token'])) {
+                        $refreshToken = $_COOKIE['refresh_token'];
+                    } else {
+                        $params = $request->getParsedBody();
+                        if (is_array($params) && array_key_exists("refreshToken", $params) && is_string($params["refreshToken"]) && ($params["refreshToken"] !== '' && $params["refreshToken"] !== '0')) {
+                            $refreshToken = $params["refreshToken"];
+                        }
+                    }
+
+                    if (! is_string($refreshToken) || ($refreshToken === '' || $refreshToken === '0')) {
+                        throw new \Spieldose\Exception\UnauthorizedException("Missing refresh token (cookie/POST param)");
+                    }
+
+                    $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                    if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                        throw new \RuntimeException("Failed to create database handler from container");
+                    }
+
+                    $logger = $container->get(\Spieldose\Logger\DefaultLogger::class);
+                    if (! $logger instanceof \Spieldose\Logger\DefaultLogger) {
+                        throw new \RuntimeException("Failed to create logger from container");
+                    }
+
+                    \Spieldose\UserSession::clear();
+
+                    $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
+                    $decoded = null;
+                    try {
+                        $decoded = $jwt->decode($refreshToken);
+                    } catch (\Firebase\JWT\ExpiredException $e) {
+                        $logger->notice("JWT expired", [$e->getMessage()]);
+                        throw new \Spieldose\Exception\UnauthorizedException("JWT expired");
+                    } catch (\Throwable $e) {
+                        $logger->notice("JWT decode error", [$e->getMessage()]);
+                        throw new \Spieldose\Exception\UnauthorizedException("JWT decode error");
+                    }
+
+                    if (property_exists($decoded, "sub") && is_string($decoded->sub) && ($decoded->sub !== '' && $decoded->sub !== '0')) {
+                        $user = new \Spieldose\User($decoded->sub);
+                        $user->get($dbh);
+                        $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
+                        $currentTimestamp = time();
+                        $accessToken = $jwt->encode(strval($user->id), $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                        \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                        $payload = \Spieldose\Utils::getJSONPayload(
+                            [
+                                "accessToken" => $accessToken,
+                                "tokenType" => "Bearer",
+                            ]
+                        );
+                        $response->getBody()->write($payload);
+                        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                    } else {
+                        throw new \Spieldose\Exception\UnauthorizedException("Missing user id on JWT refresh token");
+                    }
+                });
+
+                $routeCollectorProxy->post('/logout', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface {
                     \Spieldose\User::logout();
                     $payload = \Spieldose\Utils::getJSONPayload(
+                        []
+                    );
+                    setcookie(
+                        "refresh_token",
+                        "",
                         [
-                            'initialState' => $initialState
+                            'expires' => time() - 3600,
+                            'path' => '/api3/auth/renew_access_token',
+                            'secure' => true,
+                            'httponly' => true,
+                            'samesite' => 'Strict',
                         ]
                     );
                     $response->getBody()->write($payload);
@@ -176,28 +266,27 @@ return function (App $app) {
                 });
             });
 
-            $group->group('/user', function (RouteCollectorProxy $routeCollectorProxy) use ($container, $initialState): void {
+            $group->group('/user', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
 
-                $routeCollectorProxy->get('/profile', function (Request $request, Response $response, array $args) use ($dbh, $initialState): \Psr\Http\Message\MessageInterface {
+                $routeCollectorProxy->get('/profile', function (Request $request, Response $response, array $args) use ($dbh): \Psr\Http\Message\MessageInterface {
                     $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
                     $user->get($dbh);
                     unset($user->password);
                     unset($user->passwordHash);
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
-                            'initialState' => $initialState,
-                            'data' => $user
+                            'user' => $user,
                         ]
                     );
                     $response->getBody()->write($payload);
                     return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
                 });
 
-                $routeCollectorProxy->put('/profile', function (Request $request, Response $response, array $args) use ($dbh, $initialState): \Psr\Http\Message\MessageInterface {
+                $routeCollectorProxy->put('/profile', function (Request $request, Response $response, array $args) use ($dbh): \Psr\Http\Message\MessageInterface {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
@@ -226,8 +315,7 @@ return function (App $app) {
                     unset($user->passwordHash);
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
-                            'initialState' => $initialState,
-                            'data' => $user
+                            'user' => $user,
                         ]
                     );
                     $response->getBody()->write($payload);
@@ -235,8 +323,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-
-            $group->group('/browse', function (RouteCollectorProxy $group) use ($container, $initialState) {
+            $group->group('/browse', function (RouteCollectorProxy $group) use ($container) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
@@ -286,7 +373,7 @@ return function (App $app) {
                     return (array_key_exists("skipCount", $params));
                 }
 
-                $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->post('/artist', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
@@ -300,7 +387,6 @@ return function (App $app) {
                     );
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => ! $skipCount ?
                                 [
                                     "pager" => [
@@ -321,7 +407,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/album', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->post('/album', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
@@ -335,7 +421,6 @@ return function (App $app) {
                     );
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => ! $skipCount ?
                                 [
                                     "pager" => [
@@ -356,14 +441,13 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
                     if (empty($args['id'])) {
                         throw new \Spieldose\Exception\InvalidParamsException("id");
                     }
                     $tree = (new \Spieldose\Browse\Path($dbh))->getTree($args['id']);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => [
                                 "tree" => $tree
                             ]
@@ -376,10 +460,9 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => [
                                 "items" => (new \Spieldose\Browse\Path($dbh))->getLibraries()
                             ]
@@ -393,15 +476,14 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/common', function (RouteCollectorProxy $group) use ($container, $initialState) {
+            $group->group('/common', function (RouteCollectorProxy $group) use ($container) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "items" => \Spieldose\Entities\Artist::getMusicBrainzArtistGenreCloud($dbh)
                         ]
                     );
@@ -411,10 +493,9 @@ return function (App $app) {
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
-                $group->get('/lastfm_artist_tag_cloud', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/lastfm_artist_tag_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "items" => \Spieldose\Entities\Artist::getLastFMArtistTagCloud($dbh)
                         ]
                     );
@@ -530,18 +611,17 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/file', function (RouteCollectorProxy $group) use ($container, $initialState) {
+            $group->group('/file', function (RouteCollectorProxy $group) use ($container) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
                     if (!empty($args['id'])) {
                         $file = new \Spieldose\Entities\File($args["id"]);
                         $file->get($dbh);
                         $payload = json_encode(
                             [
-                                'initialState' => $initialState,
                                 "file" => $file
                             ]
                         );
@@ -600,13 +680,12 @@ return function (App $app) {
                     }
                 });
 
-                $group->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh) {
                     $file = new \Spieldose\Entities\File("");
                     $file->rnd($dbh);
                     $file->get($dbh);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "file" => $file
                         ]
                     );
@@ -618,17 +697,16 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/track', function (RouteCollectorProxy $group) use ($container, $initialState) {
+            $group->group('/track', function (RouteCollectorProxy $group) use ($container) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                $group->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, true);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "favorited" => $track->favorited
                         ]
                     );
@@ -639,12 +717,11 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh, $initialState) {
+                $group->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, false);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "favorited" => null // TODO: false ???
                         ]
                     );
@@ -657,15 +734,14 @@ return function (App $app) {
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             /*
-            $group->group('/user', function (RouteCollectorProxy $group) use ($app, $initialState) {
-                $group->get('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->group('/user', function (RouteCollectorProxy $group) use ($app) {
+                $group->get('/profile', function (Request $request, Response $response, array $args) use ($app) {
                     $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
                     $user->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                     unset($user->password);
                     unset($user->passwordHash);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             'data' => $user
                         ]
                     );
@@ -676,7 +752,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->put('/profile', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->put('/profile', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $user = new \Spieldose\User(\Spieldose\UserSession::getUserId());
@@ -697,7 +773,6 @@ return function (App $app) {
                     unset($user->passwordHash);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             'data' => $user
                         ]
                     );
@@ -709,7 +784,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/global_search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/global_search', function (Request $request, Response $response, array $args) use ($app) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -765,7 +840,6 @@ return function (App $app) {
                 $data["albums"] = $result->items;
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "data" => $data
                     ]
                 );
@@ -776,14 +850,13 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/track', function (RouteCollectorProxy $group) use ($app, $initialState) {
-                $group->get('/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->group('/track', function (RouteCollectorProxy $group) use ($app) {
+                $group->get('/{id}', function (Request $request, Response $response, array $args) use ($app) {
                     if (!empty($args['id'])) {
                         $track = new \Spieldose\Entities\Track($args['id']);
                         $track->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                         $payload = json_encode(
                             [
-                                'initialState' => $initialState,
                                 "track" => $track
                             ]
                         );
@@ -798,7 +871,7 @@ return function (App $app) {
                 });
 
                 // TODO: move to /search/tracks
-                $group->post('/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/search', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = array(
                         "text" => $params["filter"]["text"] ?? "",
@@ -832,7 +905,6 @@ return function (App $app) {
                     );
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -843,12 +915,11 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/increase_play_count/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/increase_play_count/{id}', function (Request $request, Response $response, array $args) use ($app) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->increasePlayCount($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             // TODO: success: true ?
                         ]
                     );
@@ -859,12 +930,11 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/set_favorite/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/set_favorite/{id}', function (Request $request, Response $response, array $args) use ($app) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), true);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "favorited" => $track->favorited
                         ]
                     );
@@ -875,12 +945,11 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/unset_favorite/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/unset_favorite/{id}', function (Request $request, Response $response, array $args) use ($app) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), false);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "favorited" => null // TODO: false ???
                         ]
                     );
@@ -1073,7 +1142,7 @@ return function (App $app) {
 
 
             /*
-            $group->get('/artist_overview', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/artist_overview', function (Request $request, Response $response, array $args) use ($app) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 // TODO: change dbh handler to public methods param ?
@@ -1085,7 +1154,6 @@ return function (App $app) {
                     $artist->get($settings['useLocalCovers']);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             'artist' => $artist
                         ]
                     );
@@ -1099,7 +1167,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/artist', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/artist', function (Request $request, Response $response, array $args) use ($app) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $artist = new \Spieldose\Entities\Artist($dbh);
@@ -1110,7 +1178,6 @@ return function (App $app) {
                     $artist->get($settings['useLocalCovers']);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             'artist' => $artist
                         ]
                     );
@@ -1124,7 +1191,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/artists_genres', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/artists_genres', function (Request $request, Response $response, array $args) use ($app) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $filter = [];
                 $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -1140,7 +1207,6 @@ return function (App $app) {
                 $data = \Spieldose\ArtistGenre::search($dbh, $filter, $sort, $pager);
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "genres" =>
                         array_map(
                             function ($result) {
@@ -1157,7 +1223,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/album/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/album/search', function (Request $request, Response $response, array $args) use ($app) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
@@ -1181,7 +1247,6 @@ return function (App $app) {
                 $data = \Spieldose\Entities\Album::search($dbh, $filter, $sort, $pager, $settings['useLocalCovers']);
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "data" => $data
                     ]
                 );
@@ -1192,7 +1257,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/album', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/album', function (Request $request, Response $response, array $args) use ($app) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $album = new \Spieldose\Entities\Album(
@@ -1205,7 +1270,6 @@ return function (App $app) {
                 $album->get($dbh, $settings['useLocalCovers']);
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         'album' => $album
                     ]
                 );
@@ -1216,7 +1280,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/album/small_random_covers/{count:[0-9]+}', function (Request $request, Response $response, array $args) use ($app) {
                 // TODO
                 $settings = $this->get('settings')['thumbnails']['albums'];
                 $coverBasePath = $settings['basePath'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['quality'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['width'] . DIRECTORY_SEPARATOR . $settings['sizes']['small']['height'];
@@ -1244,7 +1308,6 @@ return function (App $app) {
                 }
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         'coverURLs' => $urls
                     ]
                 );
@@ -1298,11 +1361,10 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/path/tree', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/path/tree', function (Request $request, Response $response, array $args) use ($app) {
                 $data = \Spieldose\Path::getTree($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "items" => $data
                     ]
                 );
@@ -1313,8 +1375,8 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/metrics', function (RouteCollectorProxy $group) use ($app, $initialState) {
-                $group->post('/tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->group('/metrics', function (RouteCollectorProxy $group) use ($app) {
+                $group->post('/tracks', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -1326,7 +1388,6 @@ return function (App $app) {
                     $data = \Spieldose\Metrics::searchTracks($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1337,7 +1398,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/artists', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/artists', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -1349,7 +1410,6 @@ return function (App $app) {
                     $data = \Spieldose\Metrics::searchArtists($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1360,7 +1420,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/albums', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/albums', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -1372,7 +1432,6 @@ return function (App $app) {
                     $data = \Spieldose\Metrics::searchAlbums($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1383,7 +1442,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/genres', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/genres', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $sort = new \aportela\DatabaseBrowserWrapper\Sort(
@@ -1395,7 +1454,6 @@ return function (App $app) {
                     $data = \Spieldose\Metrics::searchGenres($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1406,13 +1464,12 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/date_range', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/date_range', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $data = \Spieldose\Metrics::searchPlaysByDateRange($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1423,13 +1480,12 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/by_user', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/by_user', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $filter = $params["filter"] ?? [];
                     $data = \Spieldose\Metrics::searchPlaysByUser($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1441,7 +1497,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/playlist/search', function (Request $request, Response $response, array $args) use ($app) {
                 $params = $request->getParsedBody();
                 // TODO: include this check on all search api methods
                 if (!empty($params["filter"])) {
@@ -1465,7 +1521,6 @@ return function (App $app) {
                     $data = \Spieldose\Playlist::search($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class), $filter, $sort, $pager);
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "data" => $data
                         ]
                     );
@@ -1479,7 +1534,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/add', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/playlist/add', function (Request $request, Response $response, array $args) use ($app) {
                 $params = $request->getParsedBody();
                 $playlist = new \Spieldose\Playlist(
                     $params["playlist"]["id"] ?? "",
@@ -1490,7 +1545,6 @@ return function (App $app) {
                 $playlist->add($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "playlist" => $params["playlist"]
                     ]
                 );
@@ -1501,7 +1555,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/playlist/update', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/playlist/update', function (Request $request, Response $response, array $args) use ($app) {
                 $params = $request->getParsedBody();
                 $playlist = new \Spieldose\Playlist(
                     $params["playlist"]["id"] ?? "",
@@ -1512,7 +1566,6 @@ return function (App $app) {
                 $playlist->update($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                 $payload = json_encode(
                     [
-                        'initialState' => $initialState,
                         "playlist" => $params["playlist"]
                     ]
                 );
@@ -1523,7 +1576,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app) {
                 if (!empty($args['id'])) {
                     $playlist = new \Spieldose\Playlist(
                         $args['id'],
@@ -1534,7 +1587,6 @@ return function (App $app) {
                     $playlist->remove($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                         ]
                     );
                     if (json_last_error() != JSON_ERROR_NONE) {
@@ -1547,7 +1599,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/playlist/{id}', function (Request $request, Response $response, array $args) use ($app) {
                 if (!empty($args['id'])) {
                     $playlist = new \Spieldose\Playlist(
                         $args['id'],
@@ -1558,7 +1610,6 @@ return function (App $app) {
                     $playlist->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                     $payload = json_encode(
                         [
-                            'initialState' => $initialState,
                             "playlist" => $playlist
                         ]
                     );
@@ -1572,7 +1623,7 @@ return function (App $app) {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/current_playlist', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/current_playlist', function (Request $request, Response $response, array $args) use ($app) {
                 $currentPlaylist = new \Spieldose\CurrentPlaylist();
                 $currentPlaylist->get($app->getContainer()->get(\aportela\DatabaseWrapper\DB::class));
                 // TODO: initialState
@@ -1584,8 +1635,8 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/current_playlist', function (RouteCollectorProxy $group) use ($app, $initialState) {
-                $group->get('/sort/random', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->group('/current_playlist', function (RouteCollectorProxy $group) use ($app) {
+                $group->get('/sort/random', function (Request $request, Response $response, array $args) use ($app) {
                     $queryParams = $request->getQueryParams();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     // TODO: initialState
@@ -1597,7 +1648,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/sort/indexes', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/sort/indexes', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $indexes = [];
@@ -1618,7 +1669,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/current_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/current_element', function (Request $request, Response $response, array $args) use ($app) {
                     $queryParams = $request->getQueryParams();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1634,7 +1685,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/previous_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/previous_element', function (Request $request, Response $response, array $args) use ($app) {
                     $queryParams = $request->getQueryParams();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1650,7 +1701,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/next_element', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/next_element', function (Request $request, Response $response, array $args) use ($app) {
                     $queryParams = $request->getQueryParams();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1666,7 +1717,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->get('/element_at_index', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->get('/element_at_index', function (Request $request, Response $response, array $args) use ($app) {
                     $queryParams = $request->getQueryParams();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1682,7 +1733,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/remove_element_at_index', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/remove_element_at_index', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1699,7 +1750,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/discover_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/discover_tracks', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
                     $payload = json_encode(
@@ -1716,7 +1767,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/set_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/set_tracks', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
@@ -1767,7 +1818,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/append_tracks', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/append_tracks', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                     $currentPlaylist = new \Spieldose\CurrentPlaylist();
@@ -1810,7 +1861,7 @@ return function (App $app) {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $group->post('/set_radiostation', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+                $group->post('/set_radiostation', function (Request $request, Response $response, array $args) use ($app) {
                     $params = $request->getParsedBody();
                     if (!empty($params["id"])) {
                         $dbh =  $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
@@ -1833,7 +1884,7 @@ return function (App $app) {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->post('/radio_station/search', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->post('/radio_station/search', function (Request $request, Response $response, array $args) use ($app) {
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $params = $request->getParsedBody();
                 $filter = array(
@@ -1850,7 +1901,6 @@ return function (App $app) {
                 ];
                 $payload = json_encode(
                     [
-                        "initialState" => $initialState,
                         "data" => $data
                     ]
                 );
@@ -1861,7 +1911,7 @@ return function (App $app) {
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->get('/lyrics', function (Request $request, Response $response, array $args) use ($app, $initialState) {
+            $group->get('/lyrics', function (Request $request, Response $response, array $args) use ($app) {
                 $queryParams = $request->getQueryParams();
                 $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                 $title = $queryParams["title"] ?? "";
@@ -1869,7 +1919,6 @@ return function (App $app) {
                 $lyrics = new \Spieldose\Lyrics($this->get(\Spieldose\Logger\ScraperLogger::class));
                 $payload = json_encode(
                     [
-                        "initialState" => $initialState,
                         'lyrics' => $lyrics->get($dbh, $title, $artist) ? $lyrics->lyrics : null
                     ]
                 );
@@ -1882,5 +1931,5 @@ return function (App $app) {
 
             */
         }
-    )->add(\Spieldose\Middleware\JWT::class)->add(\Spieldose\Middleware\APIExceptionCatcher::class);
+    )->add(\Spieldose\Middleware\APIExceptionCatcher::class);
 };
