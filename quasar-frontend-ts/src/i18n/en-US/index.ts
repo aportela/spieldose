@@ -20,4 +20,15 @@ export default {
 
   "Field is required": "Field is required",
   "Show password": "Show password",
+
+  "Search on Spieldose...": "Search on Spieldose...",
+  "Home": "Home",
+  "Current playlist": "Current playlist",
+  "Browse artists": "Browse artists",
+  "Browse albums": "Browse albums",
+  "Browse paths": "Browse paths",
+  "Browse playlists": "Browse playlists",
+  "Browse radio stations": "Browse radio stations",
+  "My profile": "My profile",
+  "Sign out": "Sign out",
 };
