@@ -40,9 +40,11 @@ function createStorageEntry<T extends StorageValue>(
 const email = createStorageEntry<string | null>("email", null);
 const darkMode = createStorageEntry<boolean>("darkMode", false);
 const locale = createStorageEntry<string | null>("locale", null);
+const showToolTips = createStorageEntry<boolean>("showToolTips", false);
 
 export {
   email,
   darkMode,
   locale,
+  showToolTips,
 };
