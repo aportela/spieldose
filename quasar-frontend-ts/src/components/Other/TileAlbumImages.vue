@@ -16,6 +16,7 @@
 import { ref, onMounted } from "vue";
 //import { api } from "src/composables/api";
 
+// vinyl svg credits: https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
 const defaultImage = 'vectors/Vinyl_record.svg';
 
 const images = ref<string[]>([]);
