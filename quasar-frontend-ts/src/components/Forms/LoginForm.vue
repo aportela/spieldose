@@ -8,10 +8,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-        }}</h4>
+          }}</h4>
         <div class="text-color-secondary">{{
-          t(!!savedEmail ? "Let's get back to organizing." : "Let's start organizing.")
-        }}
+          t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
+          }}
         </div>
       </slot>
     </q-card-section>

@@ -6,7 +6,7 @@
         <img src="icons/favicon-128x128.png" />
       </q-avatar>
       <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{ t("Sign up now and take control.") }}</h4>
-      <div class="text-grey-6">{{ t("The first step to a more organized you starts here!") }}</div>
+      <div class="text-color-secondary">{{ t("The first track to your musical adventure begins here!") }}</div>
     </q-card-section>
     <q-card-section>
       <q-input dense outlined ref="emailRef" v-model="profile.email" type="email" name="email" :label="t('Email')"
