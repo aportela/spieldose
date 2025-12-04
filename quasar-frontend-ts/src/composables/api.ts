@@ -31,6 +31,16 @@ const api = {
       return axiosInstance.post("/auth/register", params);
     },
   },
+  user: {
+    getProfile: () => axiosInstance.get("/user/profile"),
+    setProfile: function (email: string, password: string) {
+      const params = {
+        email: email,
+        password: password,
+      };
+      return axiosInstance.put("/user/profile", params);
+    },
+  },
   track: {
     setFavorite: function (id: string) {
       return axiosInstance.get(`/track/${id}/set_favorite`);
