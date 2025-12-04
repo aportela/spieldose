@@ -443,7 +443,7 @@ export const usePlayerStore = defineStore('playerStore', {
       // TODO: BASIL
     },
     */
-    setCurrentVinylAnimation(animation: string) {
+    setCurrentVinylAnimation(animation: string | null) {
       this.data.vinylAnimation = animation;
       localStorage.playerVinylAnimation.set(this.data.vinylAnimation);
     },
