@@ -16,4 +16,4 @@ const defaultAuthValidator: AuthValidator = {
   }
 };
 
-export { AuthValidator, defaultAuthValidator };
+export { type AuthValidator, defaultAuthValidator };

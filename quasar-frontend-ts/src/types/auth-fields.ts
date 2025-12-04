@@ -3,4 +3,4 @@ interface AuthFields {
   password: string;
 };
 
-export { AuthFields };
+export { type AuthFields };

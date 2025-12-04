@@ -13,4 +13,4 @@ interface APIErrorDetails {
   response: string | null;
 };
 
-export { APIErrorDetails };
+export { type APIErrorDetails };
