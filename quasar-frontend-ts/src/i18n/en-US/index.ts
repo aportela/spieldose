@@ -31,4 +31,6 @@ export default {
   "Browse radio stations": "Browse radio stations",
   "My profile": "My profile",
   "Sign out": "Sign out",
+
+  "Toggle art animation": "Toggle art animation",
 };
