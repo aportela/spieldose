@@ -15,7 +15,9 @@ return [
     ],
     'jwt' => [
         // WARNING: for security reasons, generate a random string for using as your OWN (not default) passphrase
-        'passphrase' => '~!yK^I7AhbnuqY@J4*Lst[g+QD6a9N5URPB?%Gf`XF(]eMrvckSm$ECx,j;3H&dV'
+        'passphrase' => '~!yK^I7AhbnuqY@J4*Lst[g+QD6a9N5URPB?%Gf`XF(]eMrvckSm$ECx,j;3H&dV',
+        'accessTokenExpirationTimeInSeconds' => 86400, // access token expires in 1 day
+        'refreshTokenExpirationTimeInSeconds' => 31536000, // refresh token expires in 365 days
     ],
     'paths' => [
         'logs' => $logPath,
