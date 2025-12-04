@@ -1,5 +1,6 @@
 import { LocalStorage } from "quasar";
 import { LOCAL_STORAGE_NAMESPACE } from "src/constants";
+import { type VinylAnimation } from "src/types/common";
 
 export type StorageValue = string | number | boolean | null | object;
 
@@ -54,7 +55,7 @@ const playerMiniAnalyzerLedBars = createStorageEntry<boolean>("playerMiniAnalyze
 const playerMiniAnalyzerTrueLeds = createStorageEntry<boolean>("playerMiniAnalyzerTrueLeds", true);
 const playerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerTrueLeds", "spieldose");
 const playerMiniAnalyzerLoRes = createStorageEntry<boolean>("playerMiniAnalyzerLoRes", false);
-const playerVinylAnimation = createStorageEntry<string | null>("playerVinylAnimation", null);
+const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
 
 export {
   email,
