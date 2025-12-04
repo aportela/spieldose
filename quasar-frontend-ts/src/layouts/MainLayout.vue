@@ -1,81 +1,90 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+  <q-layout view="lHh lpR lFf" class="theme-default-q-layout">
+    <q-header height-hint="61.59" class="theme-default-q-header" bordered>
+      <q-toolbar class="theme-default-q-toolbar">
+        <q-btn flat dense round @click="visibleSidebar = !visibleSidebar;" aria-label="Toggle drawer" icon="menu"
+          v-show="!visibleSidebar" class="q-mr-md" />
+        <q-btn flat dense round @click="onToggleminiSidebarCurrentMode" aria-label="Toggle drawer"
+          :icon="miniSidebarCurrentMode ? 'arrow_forward_ios' : 'arrow_back_ios_new'" class="q-mr-md"
+          v-show="visibleSidebar">
+          <DesktopToolTip>{{ t(miniSidebarCurrentMode ? "Expand sidebar" : "Collapse sidebar") }}
+          </DesktopToolTip>
+        </q-btn>
+        <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
+          class="full-width no-caps theme-default-q-btn">
+          <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
+            }}</DesktopToolTip>
+        </q-btn>
+        <!--
+        <FastSearchSelector dense class="full-width"></FastSearchSelector>
+        -->
+        <q-btn-group flat class="q-ml-md">
+          <DarkModeButton dense />
+          <SwitchLanguageButton :short-labels="true" style="min-width: 9em" />
+          <GitHubButton dense :href="GITHUB_PROJECT_URL" />
+        </q-btn-group>
       </q-toolbar>
     </q-header>
-
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
-      <router-view />
+      <router-view class="q-pa-sm" />
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
+import { useQuasar, LocalStorage } from "quasar";
+import { useI18n } from "vue-i18n";
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
+import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
+import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"
+import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue"
+import { GITHUB_PROJECT_URL } from "src/constants"
 
-const leftDrawerOpen = ref(false);
+import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+const $q = useQuasar();
+
+const { t } = useI18n();
+
+const lockminiSidebarCurrentModeMode = ref<boolean>(false);
+
+const visibleSidebar = ref($q.screen.gt.sm);
+
+// toggle this for using current mini sidebar saved mode
+const saveMiniSidebarMode = true;
+
+const miniSidebarCurrentModeSavedMode = saveMiniSidebarMode ? LocalStorage.getItem("miniSidebarCurrentMode") : null;
+
+if (saveMiniSidebarMode && miniSidebarCurrentModeSavedMode != null) {
+  lockminiSidebarCurrentModeMode.value = true;
 }
+
+const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? miniSidebarCurrentModeSavedMode == true : $q.screen.md);
+
+const currentScreenSize = computed(() => $q.screen.name);
+
+watch(currentScreenSize, () => {
+  if (!lockminiSidebarCurrentModeMode.value) {
+    miniSidebarCurrentMode.value = $q.screen.lt.lg;
+  }
+});
+
+const searchButtonLabel = computed(() => $q.screen.gt.xs ? t('Search on Spieldose...') : '');
+
+const onToggleminiSidebarCurrentMode = () => {
+  miniSidebarCurrentMode.value = !miniSidebarCurrentMode.value;
+  lockminiSidebarCurrentModeMode.value = true;
+  if (saveMiniSidebarMode) {
+    LocalStorage.set("miniSidebarCurrentMode", miniSidebarCurrentMode.value);
+  }
+}
+
+
+onMounted(() => {
+});
+
+onBeforeUnmount(() => {
+});
+
 </script>

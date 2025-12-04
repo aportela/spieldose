@@ -17,6 +17,19 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: "/",
+    name: "root",
+    redirect: "/index",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        name: "index",
+        path: "index",
+        component: () => import("pages/IndexPage.vue"),
+      },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
