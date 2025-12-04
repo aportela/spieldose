@@ -14,7 +14,7 @@
   <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
       width="100%" spinner-color="pink" />
-    <q-img v-else src="images/Vinyl_record.svg" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
+    <q-img v-else src="vectors/Vinyl_record.svg" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
   </div>
 </template>
 
