@@ -176,7 +176,7 @@ return function (App $app) {
                         $refreshToken,
                         [
                             'expires' => $currentTimestamp + $settings->getRefreshTokenExpirationTimeInSeconds(),
-                            'path' => '/api3/auth/renew_access_token',
+                            'path' => '/api2/auth/renew_access_token',
                             'secure' => true,
                             'httponly' => true,
                             'samesite' => 'Strict',
@@ -255,7 +255,7 @@ return function (App $app) {
                         "",
                         [
                             'expires' => time() - 3600,
-                            'path' => '/api3/auth/renew_access_token',
+                            'path' => '/api2/auth/renew_access_token',
                             'secure' => true,
                             'httponly' => true,
                             'samesite' => 'Strict',
