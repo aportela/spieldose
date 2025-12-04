@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-card class="q-pa-xl" flat>
+    <q-card class="q-pa-md" flat>
       <LoginForm @success="onSuccessLogin" />
     </q-card>
   </q-page>
