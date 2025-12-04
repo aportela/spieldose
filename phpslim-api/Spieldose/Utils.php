@@ -23,20 +23,12 @@ class Utils
         return ($json);
     }
 
-    /**
-     * @return array<mixed>
-     */
-    public static function getInitialState(\Spieldose\Settings $settings): object
+    public static function GetServerEnvironment(\Spieldose\Settings $settings): object
     {
         return ((object)
         [
             'allowSignUp' => $settings->allowSignUp(),
-            'environment' => $settings->getEnvironment(),
-            'session' => [
-                'logged' => \Spieldose\UserSession::isLogged(),
-                'id' => \Spieldose\UserSession::getUserId(),
-                'email' => \Spieldose\UserSession::getEmail()
-            ]
+            'environment' => $settings->getEnvironment()
         ]
         );
     }
@@ -69,7 +61,7 @@ class Utils
 
         $bar = (int) floor($percent * $size);
         $bar = min($bar, $size);
-        
+
         $filled = str_repeat("=", $bar);
         $empty = str_repeat(" ", $size - $bar);
         $progressBar = "[" . $filled . ($bar < $size ? ">" : "=") . $empty . "]";
@@ -103,12 +95,12 @@ class Utils
                 $value = $seconds;
                 $unit = "second";
             }
-            
+
             $value = round($value);
             if ($value != 1) {
                 $unit .= "s";
             }
-            
+
             return sprintf('%s %s', $value, $unit);
         };
 
@@ -128,7 +120,7 @@ class Utils
             echo PHP_EOL;
             $startTimestamp = null;
         }
-        
+
         flush();
     }
 
@@ -174,7 +166,7 @@ class Utils
                 $paragraphs[] = $paragraph = "<p>" . $paragraph . "</p>";
             }
         }
-        
+
         return (implode(PHP_EOL, $paragraphs));
     }
 }
