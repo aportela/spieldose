@@ -12,20 +12,36 @@ class UserSession
             session_set_cookie_params([
                 "SameSite" => "Strict",
                 "Secure" => true,
-                "HttpOnly" => true
+                "HttpOnly" => true,
             ]);
-            session_name('SPIELDOSE');
             session_cache_limiter("nocache");
             session_start();
         }
     }
 
-    public static function set(string $userId = "", string $email = ""): void
+    public static function init(string $userId, string $email): void
     {
+        self::clear();
         self::start();
-
         $_SESSION["userId"] = $userId;
         $_SESSION["email"] = $email;
+    }
+
+    public static function setEmail(string $email): void
+    {
+        $_SESSION["email"] = $email;
+    }
+
+    public static function setAccessTokenData(string $token, int $expiresAt): void
+    {
+        $_SESSION["accessToken"] = $token;
+        $_SESSION["accessTokenExpiresAt"] = $expiresAt;
+    }
+
+    public static function unsetAccessTokenData(): void
+    {
+        unset($_SESSION["accessToken"]);
+        unset($_SESSION["accessTokenExpiresAt"]);
     }
 
     public static function clear(): void
@@ -41,26 +57,37 @@ class UserSession
                     'path' => $params["path"],
                     'domain' => $params["domain"],
                     'secure' => $params["secure"],
-                    'httponly' => $params["httponly"]
+                    'httponly' => $params["httponly"],
                 ]);
             }
 
             session_destroy();
+            $newId = session_create_id('Spieldose-');
+            if (is_string($newId)) {
+                session_id($newId);
+            }
         }
     }
 
     public static function isLogged(): bool
     {
-        return array_key_exists("userId", $_SESSION) && is_string($_SESSION["userId"]);
+        return array_key_exists("userId", $_SESSION) && is_string($_SESSION["userId"]) && (($_SESSION["userId"] !== '' && $_SESSION["userId"] !== '0'));
     }
 
-    public static function getUserId(): string
+    public static function hasValidAccessToken(): bool
     {
-        return array_key_exists("userId", $_SESSION) && is_string($_SESSION["userId"]) ? $_SESSION["userId"] : '';
+        return array_key_exists("accessToken", $_SESSION) && is_string($_SESSION["accessToken"])
+            && array_key_exists("accessTokenExpiresAt", $_SESSION) && is_numeric($_SESSION["accessTokenExpiresAt"])
+            && $_SESSION["accessTokenExpiresAt"] >= time();
     }
 
-    public static function getEmail(): string
+    public static function getUserId(): ?string
     {
-        return array_key_exists("email", $_SESSION) && is_string($_SESSION["email"]) ? $_SESSION["email"] : '';
+        return array_key_exists("userId", $_SESSION) && is_string($_SESSION["userId"]) ? $_SESSION["userId"] : null;
+    }
+
+    public static function getEmail(): ?string
+    {
+        return array_key_exists("email", $_SESSION) && is_string($_SESSION["email"]) ? $_SESSION["email"] : null;
     }
 }
