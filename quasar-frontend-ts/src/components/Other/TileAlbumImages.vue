@@ -16,26 +16,24 @@
 import { ref, onMounted } from "vue";
 //import { api } from "src/composables/api";
 
-/**
-  * Vinyl disc icon credits: Jordan Green (http://www.jordangreenphoto.com/)
-  * https://jordygreen.deviantart.com/art/Vinyl-Disc-Icon-Updated-57968239
-*/
+const defaultImage = 'vectors/Vinyl_record.svg';
 
-const defaultImage = 'images/vinyl-medium.png';
+const images = ref<string[]>([]);
 
-const images = ref([]);
+const rowCount = 12;
+const columnCount = 12;
 
-const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-const columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const rows = [...Array(rowCount).keys()];
+const columns = [...Array(columnCount).keys()];
 
 // https://stackoverflow.com/a/1484514
 const getRandomColor = (): string => {
   const allowed = "ABCDEF0123456789";
   let S = "#";
   while (S.length < 7) {
-    S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
+    S += allowed.charAt(Math.floor(Math.random() * 16));
   }
-  return (S);
+  return S;
 };
 
 const getImageSourceFromIndex = (index: number): string => {
