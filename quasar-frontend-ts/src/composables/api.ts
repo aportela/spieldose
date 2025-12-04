@@ -31,6 +31,14 @@ const api = {
       return axiosInstance.post("/auth/register", params);
     },
   },
+  track: {
+    setFavorite: function (id: string) {
+      return axiosInstance.get(`/track/${id}/set_favorite`);
+    },
+    unSetFavorite: function (id: string) {
+      return axiosInstance.get(`/track/${id}/unset_favorite`);
+    },
+  }
 };
 
 export { api };
