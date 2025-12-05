@@ -2,6 +2,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import { playerVinylAnimation as localStoragePlayerVinylAnimation } from 'src/composables/localStorage';
 import { type VinylAnimation, type PlayerStatus } from 'src/types/common';
 import { playerVolume as localStoragePlayerVolume, playerMuted as localStoragePlayerMuted } from 'src/composables/localStorage';
+import { skipToNextItem } from 'src/composables/playlistActions';
 
 interface Player {
   userInteracted: boolean;
@@ -450,6 +451,7 @@ export const usePlayerStore = defineStore('playerStore', {
     },
     onAudioEndEvent: function () {
       this.stop();
+      skipToNextItem();
     },
     onAudioErrorEvent: function (event: Event) {
       console.error("Audio loading error", event);
