@@ -20,7 +20,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
@@ -137,6 +138,7 @@ const refreshVuMeter = (timestamp) => {
   const elapsed = timestamp - lastTime;
   if (elapsed > fpsInterval) {
     lastTime = timestamp - (elapsed % fpsInterval);
+    // TODO: use getBars for allowing stereoc channels
     const energy = smoothEnergy(analyzer.value.getEnergy());
     const angle = mapEnergyToAngle(energy);
     drawCanvasVuMeterBar(angle);
