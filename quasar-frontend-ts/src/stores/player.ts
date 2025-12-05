@@ -18,7 +18,7 @@ interface Player {
 
 interface State {
   data: {
-    audio: HTMLAudioElement | null;
+    audio: HTMLAudioElement;
     audioCurrentTime: number;
     audioDuration: number;
     player: Player;
@@ -29,7 +29,7 @@ interface State {
 export const usePlayerStore = defineStore('playerStore', {
   state: (): State => ({
     data: {
-      audio: null,
+      audio: new Audio(),
       audioCurrentTime: 0,
       audioDuration: 0,
       //fullScreenVisualizationSettings: null,
@@ -185,20 +185,14 @@ export const usePlayerStore = defineStore('playerStore', {
   },
   actions: {
     create: function (src?: string | null) {
-      if (this.data.audio === null) {
-        if (src) {
-          this.data.audio = new Audio(src);
-        } else {
-          this.data.audio = new Audio();
-        }
-        this.data.audio.autoplay = false;
-      } else {
-        this.data.audio.src = "";
+      this.data.audio.autoplay = false;
+      if (src) {
+        this.data.audio.src = src;
       }
       this.setVolume(localStoragePlayerVolume.get());
       this.setMute(localStoragePlayerMuted.get());
       // required for radio stations streams
-      //this.data.audio.crossOrigin = "anonymous";
+      this.data.audio.crossOrigin = "anonymous";
       //this.restoreFullScreenVisualizationSettings();
       //this.restorePlayerSettings(this.hasPreviousUserInteractions);
       this.data.audio.addEventListener("ended", () => {
@@ -217,18 +211,16 @@ export const usePlayerStore = defineStore('playerStore', {
       });
     },
     destroy: function () {
-      if (this.data.audio !== null) {
-        // remove events
-      }
+      this.data.audio.removeEventListener("ended", () => { });
+      this.data.audio.removeEventListener("error", () => { });
+      this.data.audio.removeEventListener("timeupdate", () => { });
     },
     setAudioSource(src: string) {
-      if (src) {
-        if (this.data.audio) {
-          this.data.audio.src = src;
-        }
-        if (this.hasPreviousUserInteractions && !this.isPlaying) {
-          this.play(true);
-        }
+      if (this.data.audio) {
+        this.data.audio.src = src;
+      }
+      if (this.hasPreviousUserInteractions && !this.isPlaying) {
+        this.play(true);
       }
     },
     toggleSidebarAudioMotionAnalyzer: function () {
