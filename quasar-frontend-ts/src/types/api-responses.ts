@@ -58,15 +58,15 @@ interface PagerResponse {
 
 interface BrowseArtistItemResponse {
   name: string;
-  mbId?: string;
-  image?: string;
+  mbId: string | null;
+  image: string | null;
   totalTracks: number;
 }
 
 interface BrowseArtistsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
     pager: PagerResponse;
-    items: BrowseArtistItemResponse[];
+    artists: BrowseArtistItemResponse[];
   }
 };
 
