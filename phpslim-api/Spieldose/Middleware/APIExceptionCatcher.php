@@ -6,14 +6,41 @@ namespace Spieldose\Middleware;
 
 class APIExceptionCatcher
 {
-    public function __construct(protected \Psr\Log\LoggerInterface $logger) {}
+    private readonly bool $debug;
+
+    public function __construct(protected \Psr\Log\LoggerInterface $logger)
+    {
+        $settings = new \Spieldose\Settings();
+        $this->debug = $settings->getEnvironment() === "development";
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    private function getExceptionData(\Throwable $throwable): array
+    {
+        return ([
+            'type' => $throwable::class,
+            'message' => $throwable->getMessage(),
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
+            'trace' => $throwable->getTrace(),
+        ]);
+    }
 
     /**
      * @param array<mixed> $payload
      */
     private function handleException(\Exception $exception, int $statusCode, array $payload): \Psr\Http\Message\ResponseInterface
     {
-        $this->logger->error(sprintf("Exception caught (%s) - Message: %s", $exception::class, $exception->getMessage()));
+        $payload['APIError'] = false;
+        $payload['status'] = $statusCode;
+        $this->logger->error(sprintf("Exception (%d) caught (%s) - Message: %s", $statusCode, $exception::class, $exception->getMessage()), [$exception]);
+        if ($this->debug) {
+            $payload['exception'] = $this->getExceptionData($exception);
+            $this->logger->debug("Exception: ", $payload['exception']);
+        }
+
         $response = new \Slim\Psr7\Response();
         $json = json_encode($payload);
         if (is_string($json)) {
@@ -28,35 +55,23 @@ class APIExceptionCatcher
 
     private function handleGenericException(\Throwable $throwable): \Psr\Http\Message\ResponseInterface
     {
-        $this->logger->error(sprintf("Unhandled exception caught (%s) - Message: %s", $throwable::class, $throwable->getMessage()));
-        $this->logger->debug($throwable->getTraceAsString());
-
-        $response = new \Slim\Psr7\Response();
-        $exception = [
-            'type' => $throwable::class,
-            'message' => $throwable->getMessage(),
-            'file' => $throwable->getFile(),
-            'line' => $throwable->getLine(),
+        $payload = [
+            'APIError' => true,
+            'status' => 500,
         ];
-        $parent = $throwable->getPrevious();
-        if ($parent instanceof \Throwable) {
-            $exception['parent'] = [
-                'type' => $parent::class,
-                'message' => $parent->getMessage(),
-                'file' => $parent->getFile(),
-                'line' => $parent->getLine(),
-            ];
+        $this->logger->error(sprintf("Unhandled exception (500) caught (%s) - Message: %s", $throwable::class, $throwable->getMessage()), [$throwable]);
+        if ($this->debug) {
+            $payload['exception'] = $this->getExceptionData($throwable);
+            $this->logger->debug("Exception: ", $payload['exception']);
         }
 
-        $payload = json_encode([
-            'APIError' => true,
-            'exception' => $exception,
-            'status' => 500,
-        ]);
-        if (is_string($payload)) {
-            $response->getBody()->write($payload);
+        $this->logger->debug($throwable->getTraceAsString());
+        $response = new \Slim\Psr7\Response();
+        $json = json_encode($payload);
+        if (is_string($json)) {
+            $response->getBody()->write($json);
         } else {
-            $this->logger->error("Error serializing payload", [$exception, $payload, json_last_error(), json_last_error_msg()]);
+            $this->logger->error("Error serializing payload", [$throwable, $payload, json_last_error(), json_last_error_msg()]);
             $response->getBody()->write("{}");
         }
 
@@ -81,17 +96,15 @@ class APIExceptionCatcher
 
             return $requestHandler->handle($serverRequest);
         } catch (\Spieldose\Exception\InvalidParamsException $e) {
-            return $this->handleException($e, 400, ['APIError' => true, 'invalidOrMissingParams' => explode(",", $e->getMessage())]);
+            return $this->handleException($e, 400, ['invalidOrMissingParams' => explode(",", $e->getMessage())]);
         } catch (\Spieldose\Exception\AlreadyExistsException $e) {
-            return $this->handleException($e, 409, ['APIError' => true, 'invalidOrMissingParams' => explode(",", $e->getMessage())]);
+            return $this->handleException($e, 409, ['invalidOrMissingParams' => explode(",", $e->getMessage())]);
         } catch (\Spieldose\Exception\UnauthorizedException $e) {
-            return $this->handleException($e, 401, ['APIError' => true,]);
+            return $this->handleException($e, 401, []);
         } catch (\Spieldose\Exception\AccessDeniedException $e) {
-            return $this->handleException($e, 403, ['APIError' => true,]);
-        } catch (\Spieldose\Exception\UploadException $e) {
-            return $this->handleException($e, $e->getCode(), ['APIError' => true,]);
+            return $this->handleException($e, 403, []);
         } catch (\Spieldose\Exception\NotFoundException $e) {
-            return $this->handleException($e, 404, ['APIError' => true, 'keyNotFound' => $e->getMessage()]);
+            return $this->handleException($e, 404, ['keyNotFound' => $e->getMessage()]);
         } catch (\Throwable $e) {
             return $this->handleGenericException($e);
         }
