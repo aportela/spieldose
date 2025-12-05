@@ -11,7 +11,7 @@
           </DesktopToolTip>
         </q-btn>
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
-          class="full-width no-caps theme-default-q-btn">
+          class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
           }}</DesktopToolTip>
         </q-btn>
