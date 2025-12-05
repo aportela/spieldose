@@ -314,16 +314,13 @@ export const usePlayerStore = defineStore('playerStore', {
             }
             this.data.player.status = "playing";
           } else {
-            if (this.data.audio) {
-              this.data.audio
-                .play()
-                .then(() => (this.data.player.status = "playing"))
-                .catch((error: Error) => {
-                  console.error(error);
-                  // TODO: show error ?
-                });
-            }
-            this.data.player.status = "playing";
+            this.data.audio
+              .play()
+              .then(() => (this.data.player.status = "playing"))
+              .catch((error: Error) => {
+                console.error(error);
+                // TODO: show error ?
+              });
           }
         }
       } else {
