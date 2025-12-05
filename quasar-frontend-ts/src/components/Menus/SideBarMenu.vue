@@ -23,6 +23,7 @@
       </q-item-section>
     </q-item>
     <q-item v-ripple clickable @click="logout" class="rounded-borders q-ma-sm theme-default-q-item">
+      <DesktopToolTip anchor="center end">{{ t("Sign out") }}</DesktopToolTip>
       <q-item-section avatar>
         <q-icon name="logout" />
       </q-item-section>
