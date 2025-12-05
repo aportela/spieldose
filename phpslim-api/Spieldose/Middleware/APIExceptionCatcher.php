@@ -33,7 +33,7 @@ class APIExceptionCatcher
      */
     private function handleException(\Exception $exception, int $statusCode, array $payload): \Psr\Http\Message\ResponseInterface
     {
-        $payload['APIError'] = false;
+        $payload['APIError'] = true;
         $payload['status'] = $statusCode;
         $this->logger->error(sprintf("Exception (%d) caught (%s) - Message: %s", $statusCode, $exception::class, $exception->getMessage()), [$exception]);
         if ($this->debug) {
@@ -56,7 +56,7 @@ class APIExceptionCatcher
     private function handleGenericException(\Throwable $throwable): \Psr\Http\Message\ResponseInterface
     {
         $payload = [
-            'APIError' => true,
+            'APIError' => false,
             'status' => 500,
         ];
         $this->logger->error(sprintf("Unhandled exception (500) caught (%s) - Message: %s", $throwable::class, $throwable->getMessage()), [$throwable]);
