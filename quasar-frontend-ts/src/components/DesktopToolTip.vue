@@ -1,5 +1,6 @@
 <template>
-  <q-tooltip v-if="isDesktop && sessionStore.toolTipsEnabled" :delay="delay" :anchor="anchor" :self="self">
+  <q-tooltip v-if="isDesktop && sessionStore.toolTipsEnabled" :delay="delay" :anchor="anchor" :self="self"
+    :offset="offset">
     <slot></slot>
   </q-tooltip>
 </template>
@@ -27,11 +28,13 @@ interface TooltipProps {
   delay?: number;
   anchor?: TooltipAnchor;
   self?: TooltipSelf;
+  offset?: [number, number];
 };
 
 withDefaults(defineProps<TooltipProps>(), {
   delay: 0,
   anchor: 'top middle',
   self: 'bottom middle',
+  offset: () => [0, 0],
 });
 </script>
