@@ -3,14 +3,14 @@
     <q-img img-class="sp-artist-image-filter" :src="thumbnailImage" width="250px" height="250px" fit="cover">
       <div class="absolute-bottom text-subtitle1 text-center">
         {{ name }}
-        <p class="text-caption q-mb-none">{{ totalTracks }} {{ t(totalTracks > 1 ? "tracks" : "track") }}</p>
+        <p class="text-caption q-mb-none">{{ totalTracks }} {{ t("trackCount", totalTracks) }}</p>
       </div>
       <template v-slot:loading>
         <div class="absolute-full flex flex-center bg-grey-3 text-dark">
           <q-spinner color="pink" size="xl" />
           <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
             {{ name }}
-            <p class="text-caption q-mb-none">{{ totalTracks }} {{ t(totalTracks > 1 ? "tracks" : "track") }}</p>
+            <p class="text-caption q-mb-none">{{ totalTracks }} {{ t("trackCount", totalTracks) }}</p>
           </div>
         </div>
       </template>
@@ -18,7 +18,7 @@
         <div class="absolute-full flex flex-center bg-grey-3 text-dark">
           <div class="absolute-bottom text-subtitle1 text-center bg-grey-5 q-py-md">
             {{ name }}
-            <p class="text-caption q-mb-none">{{ totalTracks }} {{ t(totalTracks > 1 ? "tracks" : "track") }}</p>
+            <p class="text-caption q-mb-none">{{ totalTracks }} {{ t("trackCount", totalTracks) }}</p>
           </div>
         </div>
       </template>

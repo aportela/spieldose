@@ -33,4 +33,6 @@ export default {
   "Sign out": "Sign out",
 
   "Toggle art animation": "Toggle art animation",
+
+  "trackCount": "tracks | track | tracks",
 };
