@@ -11,7 +11,7 @@ class APIExceptionCatcher
     public function __construct(protected \Psr\Log\LoggerInterface $logger)
     {
         $settings = new \Spieldose\Settings();
-        $this->debug = $settings->getEnvironment() === "development";
+        $this->debug = $settings->getEnvironment() === 'development';
     }
 
     /**
