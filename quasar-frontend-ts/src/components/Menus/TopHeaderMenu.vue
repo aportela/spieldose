@@ -2,11 +2,12 @@
   <q-btn-group flat class="q-ml-md" v-if="visible">
     <q-btn stack v-for="item in menuItems" size="md" no-caps :icon="item.icon" :key="item.text" :to="item.routeName">{{
       item.text
-      }}</q-btn>
+    }}</q-btn>
   </q-btn-group>
 </template>
 
 <script setup lang="ts">
+import { type MenuItem } from "src/types/menu-item";
 
 interface TopHeaderMenuProps {
   visible: boolean;
@@ -14,7 +15,7 @@ interface TopHeaderMenuProps {
 
 defineProps<TopHeaderMenuProps>();
 
-const menuItems = [
+const menuItems: MenuItem[] = [
   { icon: 'home', text: "Index", routeName: 'index' },
   { icon: 'search', text: "Search", routeName: 'search' },
 
