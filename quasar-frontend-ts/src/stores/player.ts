@@ -285,8 +285,8 @@ export const usePlayerStore = defineStore('playerStore', {
       }
       localStorage.playerMuted.set(this.data.player.muted);
     },
-    seek: function (time: number) {
-      if (this.data.audio && time > 0 && time <= this.audioDuration) {
+    seek: function (time: number | null) {
+      if (this.data.audio && time !== null && time > 0 && time <= this.audioDuration) {
         this.data.audio.currentTime = time;
       }
     },
