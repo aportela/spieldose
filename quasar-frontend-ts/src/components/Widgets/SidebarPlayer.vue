@@ -6,8 +6,9 @@
       <SidebarPlayerAnalogVuMeter></SidebarPlayerAnalogVuMeter>
     </div>
     -->
+    <SpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
+    <VolumeControl />
     <!--
-    <SidebarPlayerSpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
     <SidebarPlayerVolumeControl />
     <SidebarPlayerTrackInfo />
     <SidebarPlayerMainControls />
@@ -18,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 import { default as AlbumCover } from "./Player/AlbumCover.vue";
+import { default as SpectrumAnalyzer } from "./Player/SpectrumAnalyzer.vue";
+import { default as VolumeControl } from "./Player/VolumeControl.vue";
 
+const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
 /*
-import { default as SidebarPlayerAlbumCover } from "./SidebarPlayerAlbumCover.vue";
 import { default as SidebarPlayerSpectrumAnalyzer } from "./SidebarPlayerSpectrumAnalyzer.vue";
 import { default as SidebarPlayerAnalogVuMeter } from "./SidebarPlayerAnalogVuMeter.vue";
 import { default as SidebarPlayerVolumeControl } from './SidebarPlayerVolumeControl.vue';
@@ -31,8 +35,8 @@ import { default as SidebarPlayerSeekControl } from './SidebarPlayerSeekControl.
 import { default as SidebarPlayerTrackActions } from "./SidebarPlayerTrackActions.vue";
 
 
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 
-const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
+
+
 */
 </script>
