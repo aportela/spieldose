@@ -54,7 +54,7 @@ const playerMiniAnalyzerChannelLayout = createStorageEntry<SpectrumAnalyzerChann
 const playerMiniAnalyzerShowPeaks = createStorageEntry<boolean>("playerMiniAnalyzerShowPeaks", true);
 const playerMiniAnalyzerLedBars = createStorageEntry<boolean>("playerMiniAnalyzerLedBars", true);
 const playerMiniAnalyzerTrueLeds = createStorageEntry<boolean>("playerMiniAnalyzerTrueLeds", true);
-const playerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerTrueLeds", "spieldose");
+const playerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerGradient", "spieldose");
 const playerMiniAnalyzerLoRes = createStorageEntry<boolean>("playerMiniAnalyzerLoRes", false);
 const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
 
