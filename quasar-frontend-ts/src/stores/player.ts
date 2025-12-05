@@ -1,11 +1,11 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { playerVinylAnimation as localStoragePlayerVinylAnimation } from 'src/composables/localStorage';
-import { type VinylAnimation } from 'src/types/common';
+import { type VinylAnimation, type PlayerStatus } from 'src/types/common';
 
 interface Player {
   userInteracted: boolean;
   volume: number;
-  status: string;
+  status: PlayerStatus;
   muted: boolean;
   repeatMode: string;
   shuffle: boolean;
