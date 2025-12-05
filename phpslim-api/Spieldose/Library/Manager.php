@@ -6,9 +6,7 @@ namespace Spieldose\Library;
 
 class Manager
 {
-    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger)
-    {
-    }
+    public function __construct(private readonly \aportela\DatabaseWrapper\DB $db, private readonly \Psr\Log\LoggerInterface $logger) {}
 
     /**
      * checks for library path existence (returns path id || null)
@@ -51,14 +49,7 @@ class Manager
                 new \aportela\DatabaseWrapper\Param\StringParam(":path", $path),
             ]
         );
-        foreach ($results as $result) {
-            // TODO: str_starts_with works with unicode ?
-            if (str_starts_with($path, (string) $result->path)) {
-                return (true);
-            }
-        }
-
-        return (false);
+        return array_any($results, fn($result): bool => str_starts_with($path, (string) $result->path));
     }
 
     /**

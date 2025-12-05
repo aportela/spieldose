@@ -20,6 +20,7 @@ use Slim\Http\Uri;
 final class APITest extends \PHPUnit\Framework\TestCase
 {
     public $app;
+
     private $response;
 
     /**

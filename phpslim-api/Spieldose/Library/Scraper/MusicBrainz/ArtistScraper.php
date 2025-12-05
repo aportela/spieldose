@@ -127,7 +127,7 @@ class ArtistScraper
             WHERE
                 CACHE_MUSICBRAINZ_ARTIST.mbid IS NULL
             ";
-        return (array_map(fn($result) => $result->mbid, $this->db->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
+        return (array_map(fn(object $result) => $result->mbid, $this->db->query($ignoreCache ? $allArtistMBIdsQuery : $notCachedArtistMBIdsQuery)));
     }
 
     public function hasCache(string $mbId): bool
@@ -242,7 +242,7 @@ class ArtistScraper
             try {
                 if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
                     $mbDataResults = $this->artist->search($missingElements[$i]->artistName, 1);
-                    if (count($mbDataResults) == 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                    if (count($mbDataResults) === 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
                         $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
                         $this->setID3OrphanedArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
                     }
@@ -276,7 +276,7 @@ class ArtistScraper
             try {
                 if (! array_key_exists($missingElements[$i]->artistName, $cachedElements)) {
                     $mbDataResults = $this->artist->search($missingElements[$i]->artistName, 1);
-                    if (count($mbDataResults) == 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
+                    if (count($mbDataResults) === 1 && $mbDataResults[0]->mbId != \aportela\MusicBrainzWrapper\Artist::NO_ARTIST_MB_ID) {
                         $cachedElements[$missingElements[$i]->artistName] = $mbDataResults[0]->mbId;
                         $this->setID3OrphanedReleaseArtistMBIdData($missingElements[$i]->fileId, $mbDataResults[0]->mbId);
                     }
@@ -334,7 +334,7 @@ class ArtistScraper
              * https://musicbrainz.org/doc/MusicBrainz_Database/Schema%23Artist#MBID_redirects
              *
              */
-            if ($artist->mbId != $mbId) {
+            if ($artist->mbId !== $mbId) {
                 $this->replaceMbIdRedirect($mbId, $artist->mbId);
             }
 

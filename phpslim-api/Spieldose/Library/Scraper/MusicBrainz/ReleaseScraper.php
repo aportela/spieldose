@@ -31,7 +31,7 @@ class ReleaseScraper
             AND
                 CACHE_MUSICBRAINZ_RELEASE.mbid IS NULL
         ";
-        return (array_map(fn($result) => $result->mbid, $this->db->query($ignoreCache ? $allReleaseMBIdsQuery : $notCachedReleaseMBIdsQuery)));
+        return (array_map(fn(object $result) => $result->mbid, $this->db->query($ignoreCache ? $allReleaseMBIdsQuery : $notCachedReleaseMBIdsQuery)));
     }
 
     /**

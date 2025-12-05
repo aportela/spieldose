@@ -7,11 +7,14 @@ namespace Spieldose\Entities;
 class Track extends \Spieldose\Entities\Entity
 {
     public ?string $url;
+
     public object $artist;
 
     public object $album;
+
     public array $covers;
-     // TODO: change to boolean
+
+    // TODO: change to boolean
     public ?string $lyrics = null;
 
     public function __construct(public string $id, ?string $mbId = null, public ?string $title = null, ?string $artistMBId = null, ?string $artistName = null, ?string $albumMBId = null, ?string $albumTitle = null, ?string $albumArtistMBId = null, ?string $albumArtistName = null, ?int $year = null, public ?int $trackNumber = null, ?string $coverPathId = null, public ?int $favorited = null)
@@ -47,8 +50,6 @@ class Track extends \Spieldose\Entities\Entity
             ];
         }
     }
-
-    public function __destruct() {}
 
     public function get(\aportela\DatabaseWrapper\DB $db): void
     {

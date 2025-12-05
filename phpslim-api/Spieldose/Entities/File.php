@@ -9,6 +9,7 @@ use stdClass;
 class File
 {
     protected \aportela\DatabaseWrapper\DB $dbh;
+
     public string $filename;
 
     public int $filesize;
@@ -17,9 +18,7 @@ class File
 
     public stdClass $trackInfo;
 
-    public function __construct(public string $id)
-    {
-    }
+    public function __construct(public string $id) {}
 
     public function get(\aportela\DatabaseWrapper\DB $db): void
     {

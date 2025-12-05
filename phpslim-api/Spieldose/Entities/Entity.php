@@ -6,7 +6,6 @@ namespace Spieldose\Entities;
 
 class Entity
 {
-
     /**
      * @var string
      */

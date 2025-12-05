@@ -13,7 +13,7 @@ class AlbumScraper
         $this->album = new \aportela\LastFMWrapper\Album($this->logger, \aportela\LastFMWrapper\APIFormat::JSON, $apiKey, \aportela\LastFMWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, $cache);
     }
 
-    private function getMissingCacheAlbumsData()
+    private function getMissingCacheAlbumsData(): array
     {
         return (
             $this->db->query(
@@ -38,7 +38,7 @@ class AlbumScraper
         );
     }
 
-    private function getAllAlbumsData()
+    private function getAllAlbumsData(): array
     {
         return (
             $this->db->query(

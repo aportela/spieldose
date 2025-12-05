@@ -7,6 +7,7 @@ namespace Spieldose\Browse;
 abstract class Base implements \Spieldose\Browse\IBrowse
 {
     public const int DEFAULT_RESULTS_PAGE = 32;
+
     protected array $fieldDefinitions;
 
     protected array $fieldCountDefinition;
@@ -19,9 +20,7 @@ abstract class Base implements \Spieldose\Browse\IBrowse
 
     protected \aportela\DatabaseBrowserWrapper\Browser $browser;
 
-    public function __construct(protected \aportela\DatabaseWrapper\DB $dbh)
-    {
-    }
+    public function __construct(protected \aportela\DatabaseWrapper\DB $dbh) {}
 
     abstract public function browse(\aportela\DatabaseBrowserWrapper\Pager $pager, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort): \aportela\DatabaseBrowserWrapper\BrowserResults;
 }

@@ -7,6 +7,7 @@ namespace Spieldose\Entities;
 class Album extends \Spieldose\Entities\Entity
 {
     public $mbId;
+
     public ?string $pathId = null;
 
     public array $media = [];
@@ -184,7 +185,7 @@ class Album extends \Spieldose\Entities\Entity
     {
         $params = [new \aportela\DatabaseWrapper\Param\StringParam(":pathId", $pathId)];
         $results = $db->query("SELECT D.path AS localCoverPath, D.cover_filename AS localCoverFilename FROM DIRECTORY D WHERE D.id = :pathId", $params);
-        if (count($results) == 1 && ($results[0]->localCoverPath && $results[0]->localCoverFilename)) {
+        if (count($results) === 1 && ($results[0]->localCoverPath && $results[0]->localCoverFilename)) {
             return ($results[0]->localCoverPath . DIRECTORY_SEPARATOR . $results[0]->localCoverFilename);
         }
 

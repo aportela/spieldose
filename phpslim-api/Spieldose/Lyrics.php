@@ -7,9 +7,13 @@ namespace Spieldose;
 class Lyrics extends \aportela\ScraperLyrics\Lyrics
 {
     public $title;
+
     public $artist;
+
     public $lyrics;
+
     public $source;
+
     private function save(\aportela\DatabaseWrapper\DB $db): void
     {
         $db->execute(

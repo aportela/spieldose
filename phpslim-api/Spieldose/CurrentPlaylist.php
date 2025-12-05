@@ -250,6 +250,7 @@ class CurrentPlaylist
                         $db->execute(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
                     }
                 }
+
                 return (true);
             } finally {
                 if ($success) {
@@ -348,6 +349,7 @@ class CurrentPlaylist
                         $db->execute(" INSERT INTO CURRENT_PLAYLIST_TRACK (playlist_id, track_id, track_index, track_shuffled_index) VALUES(:playlist_id, :track_id, :track_index, :track_shuffled_index) ", $params);
                     }
                 }
+
                 return (true);
             } finally {
                 if ($success) {
@@ -490,6 +492,7 @@ class CurrentPlaylist
                 throw new \Exception("");
             }
         }
+
         return null;
     }
 }
