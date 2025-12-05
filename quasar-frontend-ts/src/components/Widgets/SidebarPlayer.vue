@@ -8,13 +8,10 @@
     -->
     <SpectrumAnalyzer v-if="miniSpectrumAnalyzerSettings.isVisible" />
     <VolumeControl />
-    <!--
-    <SidebarPlayerVolumeControl />
-    <SidebarPlayerTrackInfo />
-    <SidebarPlayerMainControls />
-    <SidebarPlayerSeekControl />
-    <SidebarPlayerTrackActions />
-    -->
+    <TrackInfo />
+    <MainControls />
+    <SeekControl />
+    <TrackActions />
   </q-card>
 </template>
 
@@ -23,20 +20,11 @@ import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAna
 import { default as AlbumCover } from "./Player/AlbumCover.vue";
 import { default as SpectrumAnalyzer } from "./Player/SpectrumAnalyzer.vue";
 import { default as VolumeControl } from "./Player/VolumeControl.vue";
+import { default as TrackInfo } from "./Player/TrackInfo.vue";
+import { default as MainControls } from "./Player/MainControls.vue";
+import { default as SeekControl } from "./Player/SeekControl.vue";
+import { default as TrackActions } from "./Player/TrackActions.vue";
 
 const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
-/*
-import { default as SidebarPlayerSpectrumAnalyzer } from "./SidebarPlayerSpectrumAnalyzer.vue";
-import { default as SidebarPlayerAnalogVuMeter } from "./SidebarPlayerAnalogVuMeter.vue";
-import { default as SidebarPlayerVolumeControl } from './SidebarPlayerVolumeControl.vue';
-import { default as SidebarPlayerTrackInfo } from './SidebarPlayerTrackInfo.vue';
-import { default as SidebarPlayerMainControls } from './SidebarPlayerMainControls.vue';
-import { default as SidebarPlayerSeekControl } from './SidebarPlayerSeekControl.vue';
-import { default as SidebarPlayerTrackActions } from "./SidebarPlayerTrackActions.vue";
 
-
-
-
-
-*/
 </script>

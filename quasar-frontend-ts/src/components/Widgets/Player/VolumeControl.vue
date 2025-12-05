@@ -16,7 +16,7 @@
   </q-list>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref, computed } from "vue";
 import { usePlayerStore } from 'src/stores/player';
