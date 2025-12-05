@@ -51,6 +51,28 @@ interface SetProfileResponse extends Omit<DefaultAxiosResponse, 'data'> {
   }
 };
 
+interface PagerResponse {
+  totalResults: number;
+  totalPages: number;
+}
+
+interface BrowseArtistItemResponse {
+  name: string;
+  mbId?: string;
+  image?: string;
+  totalTracks: number;
+}
+
+interface BrowseArtistsResponse extends Omit<DefaultAxiosResponse, 'data'> {
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    tokenType: ValidAuthTypes;
+    pager: PagerResponse;
+    items: BrowseArtistItemResponse[];
+  }
+};
+
 export {
   type getServerEnvironmentResponseData,
   type DefaultAxiosResponse,
@@ -59,4 +81,7 @@ export {
   type RegisterResponse,
   type GetProfileResponse,
   type SetProfileResponse,
+  type PagerResponse,
+  type BrowseArtistItemResponse,
+  type BrowseArtistsResponse,
 };
