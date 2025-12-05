@@ -22,6 +22,7 @@ export default {
   "Show password": "Show password",
 
   "Search on Spieldose...": "Search on Spieldose...",
+  "Search": "Search",
   "Home": "Home",
   "Current playlist": "Current playlist",
   "Browse artists": "Browse artists",
@@ -32,6 +33,7 @@ export default {
   "My profile": "My profile",
   "Sign out": "Sign out",
 
+  "Toggle analyzer octave bands number": "Toggle analyzer octave bands number",
   "Toggle art animation": "Toggle art animation",
 
   "trackCount": "tracks | track | tracks",
