@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { playerVinylAnimation as localStoragePlayerVinylAnimation } from 'src/composables/localStorage';
 import { type VinylAnimation, type PlayerStatus } from 'src/types/common';
+import { playerVolume as localStoragePlayerVolume, playerMuted as localStoragePlayerMuted } from 'src/composables/localStorage';
 
 interface Player {
   userInteracted: boolean;
@@ -16,7 +17,7 @@ interface Player {
 
 interface State {
   data: {
-    audio: HTMLAudioElement;
+    audio: HTMLAudioElement | null;
     audioCurrentTime: number;
     audioDuration: number;
     player: Player;
@@ -27,7 +28,7 @@ interface State {
 export const usePlayerStore = defineStore('playerStore', {
   state: (): State => ({
     data: {
-      audio: new Audio(),
+      audio: null,
       audioCurrentTime: 0,
       audioDuration: 0,
       //fullScreenVisualizationSettings: null,
@@ -193,8 +194,8 @@ export const usePlayerStore = defineStore('playerStore', {
       } else {
         this.data.audio.src = "";
       }
-      this.setVolume(localStorage.playerVolume.get());
-      this.setMute(localStorage.playerMuted.get());
+      this.setVolume(localStoragePlayerVolume.get());
+      this.setMute(localStoragePlayerMuted.get());
       // required for radio stations streams
       //this.data.audio.crossOrigin = "anonymous";
       //this.restoreFullScreenVisualizationSettings();
@@ -269,7 +270,7 @@ export const usePlayerStore = defineStore('playerStore', {
         if (this.data.audio) {
           this.data.audio.volume = volume;
         }
-        localStorage.playerVolume.set(volume);
+        localStoragePlayerVolume.set(volume);
       }
     },
     setMute: function (isMuted: boolean) {
@@ -283,7 +284,7 @@ export const usePlayerStore = defineStore('playerStore', {
       if (this.data.audio) {
         this.data.audio.muted = this.data.player.muted;
       }
-      localStorage.playerMuted.set(this.data.player.muted);
+      localStoragePlayerMuted.set(this.data.player.muted);
     },
     seek: function (time: number | null) {
       if (this.data.audio && time !== null && time > 0 && time <= this.audioDuration) {
@@ -320,8 +321,6 @@ export const usePlayerStore = defineStore('playerStore', {
             }
             this.data.player.status = "playing";
           } else {
-            // TODO: required ?
-            //audio.load();
             if (this.data.audio) {
               this.data.audio
                 .play()
