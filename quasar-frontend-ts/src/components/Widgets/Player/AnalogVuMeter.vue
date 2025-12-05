@@ -23,7 +23,7 @@
 <script setup lang="ts">
 
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
-import AudioMotionAnalyzer from "audiomotion-analyzer";
+import { AudioMotionAnalyzer } from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
@@ -33,12 +33,12 @@ const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
 const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
 
 const analyzer = ref(null);
-let canvas = null;
-let ctx = null;
-let displayedEnergy = 0;
-let lastTime = 0;
-const maxFPS = 120;
-const fpsInterval = 1000 / maxFPS;
+let canvas: HTMLCanvasElement;
+let ctx: CanvasRenderingContext2D;
+let displayedEnergy: number = 0;
+let lastTime: number = 0;
+const maxFPS: number = 120;
+const fpsInterval: number = 1000 / maxFPS;
 
 const defaultAnalyzerOptions = {
   showCanvas: false,
@@ -108,13 +108,13 @@ const smoothEnergy = (target) => {
   return displayedEnergy;
 }
 
-const mapEnergyToAngle = (energy) => {
+const mapEnergyToAngle = (energy: number) => {
   const minAngle = -60; //-65;
   const maxAngle = +60; // +70;
   return minAngle + (maxAngle - minAngle) * energy;
 }
 
-const drawCanvasVuMeterBar = (angle) => {
+const drawCanvasVuMeterBar = (angle: number) => {
   const centerX = canvas.width / 2;
   const centerY = canvas.height;
   const radius = canvas.height + (canvas.height / 10); // vu-meter bar length
@@ -134,7 +134,7 @@ const drawCanvasVuMeterBar = (angle) => {
   ctx.restore();
 }
 
-const refreshVuMeter = (timestamp) => {
+const refreshVuMeter = (timestamp: number) => {
   const elapsed = timestamp - lastTime;
   if (elapsed > fpsInterval) {
     lastTime = timestamp - (elapsed % fpsInterval);
