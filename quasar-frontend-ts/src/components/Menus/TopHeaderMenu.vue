@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { type MenuItem, topHeaderMenuItems } from "src/types/menu-item";
+import { topHeaderMenuItems } from "src/types/menu-item";
 
 interface TopHeaderMenuProps {
   visible: boolean;
