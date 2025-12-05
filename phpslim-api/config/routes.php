@@ -24,17 +24,17 @@ return function (App $app): void {
                         $pathErrors[] = $settings['thumbnails']['artists']['basePath'];
                         $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
                     }
-                    
+
                     if (!file_exists($settings['thumbnails']['albums']['basePath']) && !@mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
                         $pathErrors[] = $settings['thumbnails']['albums']['basePath'];
                         $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
                     }
-                    
+
                     if (!file_exists($settings['thumbnails']['radioStations']['basePath']) && !@mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
                         $pathErrors[] = $settings['thumbnails']['radioStations']['basePath'];
                         $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
                     }
-                    
+
                     if ($pathErrors === []) {
                         $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
                         try {
@@ -64,12 +64,12 @@ return function (App $app): void {
                     $logger->critical("Error: missing php extension/s: ", implode(", ", $missingExtensions));
                 }
             }
-            
+
             $dbh->close();
             if (!$installOK && file_exists($settings['paths']['database'])) {
                 unlink($settings['paths']['database']);
             }
-            
+
             return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
         } elseif ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
             return $this->get('Twig')->render($response, 'index-upgrade.html.twig', ["launched" => false, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => null, "pathErrors" => $pathErrors ?? []]);
@@ -336,12 +336,12 @@ return function (App $app): void {
                         if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["currentPageIndex"])) {
                             $currentPageIndex = intval($params["pager"]["currentPageIndex"]);
                         }
-                        
+
                         if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["resultsPage"])) {
                             $resultsPage = intval($params["pager"]["resultsPage"]);
                         }
                     }
-                    
+
                     return (new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPageIndex, $resultsPage));
                 };
 
@@ -361,7 +361,7 @@ return function (App $app): void {
                             $caseInsensitive
                         );
                     }
-                    
+
                     return (new \aportela\DatabaseBrowserWrapper\Sort([$sortItem]));
                 };
 
@@ -380,7 +380,7 @@ return function (App $app): void {
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
-                    
+
                     $skipCount = skipCountParamFound($params);
                     $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
                         getPagerFromParams($params),
@@ -389,24 +389,22 @@ return function (App $app): void {
                         $skipCount
                     );
                     $payload = json_encode(
-                        [
-                            "data" => $skipCount ?
-                                [
-                                    "items" => $browserResults->items
-                                ] :
-                                [
-                                    "pager" => [
-                                        "totalPages" => $browserResults->pager->getTotalPages(),
-                                        "totalResults" => $browserResults->pager->getTotalResults()
-                                    ],
-                                    "items" => $browserResults->items
-                                ]
-                        ]
+                        $skipCount ?
+                            [
+                                "artists" => $browserResults->items
+                            ] :
+                            [
+                                "pager" => [
+                                    "totalPages" => $browserResults->pager->getTotalPages(),
+                                    "totalResults" => $browserResults->pager->getTotalResults()
+                                ],
+                                "artists" => $browserResults->items
+                            ]
                     );
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -416,7 +414,7 @@ return function (App $app): void {
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
-                    
+
                     $skipCount = skipCountParamFound($params);
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
                         getPagerFromParams($params),
@@ -442,7 +440,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -451,7 +449,7 @@ return function (App $app): void {
                     if (empty($args['id'])) {
                         throw new \Spieldose\Exception\InvalidParamsException("id");
                     }
-                    
+
                     $tree = new \Spieldose\Browse\Path($dbh)->getTree($args['id']);
                     $payload = json_encode(
                         [
@@ -463,7 +461,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -479,7 +477,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -490,7 +488,7 @@ return function (App $app): void {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                
+
                 $routeCollectorProxy->get('/musicbrainz_artist_genre_cloud', function (Request $request, Response $response, array $args) use ($dbh) {
                     $payload = json_encode(
                         [
@@ -500,7 +498,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -513,7 +511,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -524,19 +522,19 @@ return function (App $app): void {
                 if (! is_array($queryParams)) {
                     throw new \Spieldose\Exception\InvalidParamsException();
                 }
-                
+
                 if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("width");
                 }
-                
+
                 if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("height");
                 }
-                
+
                 if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
                     throw new \Spieldose\Exception\InvalidParamsException("quality");
                 }
-                
+
                 if (! (array_key_exists("url", $queryParams) && is_string($queryParams["url"]) && filter_var($queryParams["url"], FILTER_VALIDATE_URL))) {
                     throw new \Spieldose\Exception\InvalidParamsException("url");
                 }
@@ -576,24 +574,24 @@ return function (App $app): void {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                
+
                 $queryParams = $request->getQueryParams();
                 if (! is_array($queryParams)) {
                     throw new \Spieldose\Exception\InvalidParamsException();
                 }
-                
+
                 if (! (array_key_exists("width", $queryParams) && is_numeric($queryParams["width"]) && $queryParams["width"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("width");
                 }
-                
+
                 if (! (array_key_exists("height", $queryParams) && is_numeric($queryParams["height"]) && $queryParams["height"] > 0)) {
                     throw new \Spieldose\Exception\InvalidParamsException("height");
                 }
-                
+
                 if (! (array_key_exists("quality", $queryParams) && is_numeric($queryParams["quality"]) && $queryParams["quality"]) > 0  && $queryParams["quality"] <= 100) {
                     throw new \Spieldose\Exception\InvalidParamsException("quality");
                 }
-                
+
                 if (! (array_key_exists("pathId", $queryParams) && is_string($queryParams["pathId"]))) {
                     throw new \Spieldose\Exception\InvalidParamsException("pathId");
                 }
@@ -605,7 +603,7 @@ return function (App $app): void {
                 if (in_array($localCoverPath, [null, '', '0'], true)) {
                     throw new \Spieldose\Exception\NotFoundException("");
                 }
-                
+
                 $thumbnail = new \aportela\RemoteThumbnailCacheWrapper\JPEGThumbnail(
                     $logger,
                     $settings->getCachePath("Thumbnails"),
@@ -638,7 +636,7 @@ return function (App $app): void {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                
+
                 $routeCollectorProxy->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
                     if (!empty($args['id'])) {
                         $file = new \Spieldose\Entities\File($args["id"]);
@@ -651,7 +649,7 @@ return function (App $app): void {
                         if (json_last_error() !== JSON_ERROR_NONE) {
                             throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                         }
-                        
+
                         $response->getBody()->write($payload);
                         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                     } else {
@@ -679,7 +677,7 @@ return function (App $app): void {
                                 $offset = intval($matches[1]);
                                 $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
                             }
-                            
+
                             $response->getBody()->write($file->getData($offset, $length));
                             if ($partialContent) {
                                 // output the right headers for partial content
@@ -709,7 +707,7 @@ return function (App $app): void {
                     $file = new \Spieldose\Entities\File("");
                     $file->rnd($dbh);
                     $file->get($dbh);
-                    
+
                     $payload = json_encode(
                         [
                             "file" => $file
@@ -718,7 +716,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -729,11 +727,11 @@ return function (App $app): void {
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
-                
+
                 $routeCollectorProxy->get('/{id}/set_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, true);
-                    
+
                     $payload = json_encode(
                         [
                             "favorited" => $track->favorited
@@ -742,7 +740,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
@@ -750,7 +748,7 @@ return function (App $app): void {
                 $routeCollectorProxy->get('/{id}/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
                     $track = new \Spieldose\Entities\Track($args["id"]);
                     $track->toggleFavorite($dbh, false);
-                    
+
                     $payload = json_encode(
                         [
                             "favorited" => null // TODO: false ???
@@ -759,7 +757,7 @@ return function (App $app): void {
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
                     }
-                    
+
                     $response->getBody()->write($payload);
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
