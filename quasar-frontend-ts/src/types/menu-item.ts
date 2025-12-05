@@ -57,4 +57,47 @@ const topHeaderMenuItems: MenuItem[] = [
   { icon: 'account_circle', text: "My profile", routeName: 'profile' },
 ];
 
-export { type MenuItem, topHeaderMenuItems };
+const sidebarMenuItems: MenuItem[] = [
+  { icon: 'home', text: "Home", routeName: 'index' },
+  {
+    icon: 'queue_music',
+    text: 'Current playlist',
+    routeName: 'currentPlaylist'
+  },
+  {
+    icon: 'person',
+    text: 'Browse artists',
+    routeName: 'artists'
+  },
+  /*
+  {
+    icon: 'search',
+    text: 'Search',
+    routeName: 'search'
+  },
+  */
+  {
+    icon: 'album',
+    text: 'Browse albums',
+    routeName: 'albums'
+  },
+  {
+    icon: 'folder_open',
+    text: 'Browse paths',
+    routeName: 'paths'
+  },
+
+  {
+    icon: 'library_music',
+    text: 'Browse playlists',
+    routeName: 'playlists'
+  },
+  {
+    icon: 'radio',
+    text: 'Browse radio stations',
+    routeName: 'radioStations'
+  },
+  { icon: 'account_circle', text: "My profile", routeName: 'profile' },
+];
+
+export { type MenuItem, topHeaderMenuItems, sidebarMenuItems };
