@@ -14,7 +14,7 @@
       class="rounded-borders q-ma-sm theme-default-q-item"
       :active="$route.name === item.routeName || (item.alternateRouteNames?.includes(String($route.name)))"
       active-class="theme-default-q-item-active">
-      <DesktopToolTip anchor="center end">{{ t(item.text) }}</DesktopToolTip>
+      <DesktopToolTip anchor="center end" self="center left" :offset="[16, 0]">{{ t(item.text) }}</DesktopToolTip>
       <q-item-section avatar>
         <q-icon :name="item.icon" />
       </q-item-section>
@@ -23,7 +23,7 @@
       </q-item-section>
     </q-item>
     <q-item v-ripple clickable @click="logout" class="rounded-borders q-ma-sm theme-default-q-item">
-      <DesktopToolTip anchor="center end">{{ t("Sign out") }}</DesktopToolTip>
+      <DesktopToolTip anchor="center end" self="center left" :offset="[16, 0]">{{ t(" Sign out") }}</DesktopToolTip>
       <q-item-section avatar>
         <q-icon name="logout" />
       </q-item-section>
