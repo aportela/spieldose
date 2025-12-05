@@ -84,6 +84,20 @@
           </q-card-section>
         </q-card>
       </div>
+      <div class="col-lg-4 col-xl-4 col-12 flex">
+        <q-card class="full-width">
+          <q-item class="theme-default-q-card-section-header">
+            Mini Analog Vumeter Settings
+          </q-item>
+          <q-separator />
+          <q-card-section>
+            <p>
+              <q-toggle v-model="showMiniAnalogVumeter" label="visible"
+                @update:model-value="onChangeShowMiniAnalogVumeter" />
+            </p>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
@@ -95,10 +109,13 @@ import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 import { type SpectrumAnalyzerChannelLayout } from "src/types/common";
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
 
 const { t } = useI18n();
 
 const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
+
+const miniAnalogVumeterSettingsStore = useMiniAnalogVumeterSettingsStore();
 
 const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettingsStore.visible);
 
@@ -121,6 +138,8 @@ const barSpace = ref(miniSpectrumAnalyzerSettingsStore.currentBarSpace);
 const height = ref(miniSpectrumAnalyzerSettingsStore.height);
 
 const gradient = ref(miniSpectrumAnalyzerSettingsStore.currentGradient);
+
+const showMiniAnalogVumeter = ref(miniAnalogVumeterSettingsStore.visible);
 
 watch(() => miniSpectrumAnalyzerSettingsStore.visible, (newValue) => {
   showMiniSpectrumAnalyzer.value = newValue;
@@ -166,6 +185,10 @@ watch(() => miniSpectrumAnalyzerSettingsStore.gradient, (newValue) => {
   gradient.value = newValue;
 });
 
+watch(() => miniAnalogVumeterSettingsStore.visible, (newValue) => {
+  showMiniAnalogVumeter.value = newValue;
+});
+
 const onChangeShowMiniSpectrumAnalyzer = (visible: boolean) => {
   miniSpectrumAnalyzerSettingsStore.setVisibility(visible);
 };
@@ -209,6 +232,10 @@ const onChangeTrueLeds = (active: boolean) => {
 const onChangeLoRes = (active: boolean) => {
   miniSpectrumAnalyzerSettingsStore.setLoRes(active);
 }
+
+const onChangeShowMiniAnalogVumeter = (visible: boolean) => {
+  miniAnalogVumeterSettingsStore.setVisibility(visible);
+};
 
 </script>
 

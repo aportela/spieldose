@@ -41,9 +41,10 @@ function createStorageEntry<T extends StorageValue>(
 const email = createStorageEntry<string | null>("email", null);
 const darkMode = createStorageEntry<boolean>("darkMode", false);
 const locale = createStorageEntry<string | null>("locale", null);
-const showToolTips = createStorageEntry<boolean>("showToolTips", false);
+const showToolTips = createStorageEntry<boolean>("showToolTips", true);
 const playerVolume = createStorageEntry<number>("playerVolume", 1);
 const playerMuted = createStorageEntry<boolean>("playerMuted", false);
+const showMiniAnalogVumeter = createStorageEntry<boolean>("showMiniAnalogVumeter", false);
 const showMiniSpectrumAnalyzer = createStorageEntry<boolean>("showMiniSpectrumAnalyzer", true);
 const playerMiniAnalyzerMode = createStorageEntry<number>("playerMiniAnalyzerMode", 7);
 const playerMiniAnalyzerFPS = createStorageEntry<number>("playerMiniAnalyzerFPS", 30);
@@ -64,6 +65,7 @@ export {
   showToolTips,
   playerVolume,
   playerMuted,
+  showMiniAnalogVumeter,
   showMiniSpectrumAnalyzer,
   playerMiniAnalyzerMode,
   playerMiniAnalyzerFPS,
