@@ -43,8 +43,7 @@ function browse() {
   warningNoItems.value = false;
   api.browse.artist({ genre: null, tag: null, name: null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((successResponse: BrowseArtistsResponseInterface) => {
     // create unique id (name can not be used because there are some items with same name but different mbId, like Alice Cooper (artist) && Alice Cooper (band))
-    console.log(successResponse.data);
-    artists.value = successResponse.data.items.map((item) => {
+    artists.value = successResponse.data.data.items.map((item) => {
       return ({
         _id: uid(),
         name: item.name,
@@ -53,10 +52,10 @@ function browse() {
         totalTracks: item.totalTracks
       });
     });
-    if (successResponse.data.pager) {
-      totalPages.value = successResponse.data.pager.totalPages;
-      totalResults.value = successResponse.data.pager.totalResults;
-      warningNoItems.value = successResponse.data.pager.totalResults < 1;
+    if (successResponse.data.data.pager) {
+      totalPages.value = successResponse.data.data.pager.totalPages;
+      totalResults.value = successResponse.data.data.pager.totalResults;
+      warningNoItems.value = successResponse.data.data.pager.totalResults < 1;
       skipCount.value = true;
     }
     /*

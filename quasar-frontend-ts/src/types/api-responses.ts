@@ -65,9 +65,6 @@ interface BrowseArtistItemResponse {
 
 interface BrowseArtistsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    accessToken: string;
-    refreshToken: string;
-    tokenType: ValidAuthTypes;
     pager: PagerResponse;
     items: BrowseArtistItemResponse[];
   }
