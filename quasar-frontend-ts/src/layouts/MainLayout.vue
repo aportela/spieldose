@@ -42,8 +42,6 @@
 import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { useQuasar, LocalStorage } from "quasar";
 import { useI18n } from "vue-i18n";
-import { usePlayerStore } from "stores/player";
-import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { randomTrack } from "src/composables/playlistActions";
 
 import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
@@ -142,27 +140,7 @@ const onToggleminiSidebarCurrentMode = () => {
   }
 }
 
-
-const playerStore = usePlayerStore();
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-
-watch(
-  () => currentPlaylistItemStore.t,
-  (newValue) => {
-    if (currentPlaylistItemStore.isTrack) {
-      playerStore.setAudioSource(
-        "/api2/file/raw/" + currentPlaylistItemStore.trackFileId,
-      );
-      if (playerStore.hasPreviousUserInteractions) {
-        playerStore.play(true);
-      }
-    }
-  },
-);
-
-
 onMounted(() => {
-  playerStore.create();
   randomTrack();
 });
 
