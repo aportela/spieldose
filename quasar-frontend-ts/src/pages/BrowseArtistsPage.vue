@@ -23,18 +23,30 @@ const { t } = useI18n();
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
-interface Artist extends BrowseArtistItemResponseInterface {
+class Artist implements BrowseArtistItemResponseInterface {
   _id: string;
-};
+  name: string;
+  mbId: string | null;
+  image: string | null;
+  totalTracks: number;
 
+  constructor(item: BrowseArtistItemResponseInterface) {
+    this._id = uid();
+    this.name = item.name;
+    this.mbId = item.mbId;
+    this.image = item.image;
+    this.totalTracks = item.totalTracks;
+  }
+
+}
 const currentPageIndex = ref(1);
 const totalPages = ref(0);
 const totalResults = ref(0);
 const warningNoItems = ref(false);
-const sortField = ref(null);
-const sortOrder = ref(null);
+const sortField = ref("name");
+const sortOrder = ref("ASC");
 const skipCount = ref(false);
-const artists = shallowRef([]);
+const artists = shallowRef<Artist[]>([]);
 const loading = ref(false);
 
 function browse() {
@@ -43,20 +55,14 @@ function browse() {
   warningNoItems.value = false;
   api.browse.artist({ genre: null, tag: null, name: null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((successResponse: BrowseArtistsResponseInterface) => {
     // create unique id (name can not be used because there are some items with same name but different mbId, like Alice Cooper (artist) && Alice Cooper (band))
-    artists.value = successResponse.data.data.items.map((item) => {
-      return ({
-        _id: uid(),
-        name: item.name,
-        mbId: item.mbId ?? undefined,
-        image: item.image ?? undefined,
-        totalTracks: item.totalTracks
-      });
+    artists.value = successResponse.data.artists.map((item) => {
+      return (new Artist(item));
     });
-    if (successResponse.data.data.pager) {
-      totalPages.value = successResponse.data.data.pager.totalPages;
-      totalResults.value = successResponse.data.data.pager.totalResults;
-      warningNoItems.value = successResponse.data.data.pager.totalResults < 1;
-      skipCount.value = true;
+    if (successResponse.data.pager) {
+      totalPages.value = successResponse.data.pager.totalPages;
+      totalResults.value = successResponse.data.pager.totalResults;
+      warningNoItems.value = successResponse.data.pager.totalResults < 1;
+      skipCount.value = true; // we receive a new pager vale with total pages/results for current search, if we do not modify the search filters and get another page, total pages/results will be the same, so we can skip count for speeding up calls
     }
     /*
     nextTick(() => {
