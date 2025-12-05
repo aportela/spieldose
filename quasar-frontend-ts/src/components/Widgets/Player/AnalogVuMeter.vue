@@ -23,7 +23,7 @@
 <script setup lang="ts">
 
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
-import { AudioMotionAnalyzer } from "audiomotion-analyzer";
+import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface } from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
@@ -32,16 +32,16 @@ const playerStore = usePlayerStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
 const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
 
-const analyzer = ref(null);
-let canvas: HTMLCanvasElement;
+const analyzer = ref<AudioMotionAnalyzer | null>(null);
+let canvas: any;
 let ctx: CanvasRenderingContext2D;
 let displayedEnergy: number = 0;
 let lastTime: number = 0;
 const maxFPS: number = 120;
 const fpsInterval: number = 1000 / maxFPS;
 
-const defaultAnalyzerOptions = {
-  showCanvas: false,
+const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
+  //showCanvas: false,
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
@@ -54,7 +54,7 @@ const defaultAnalyzerOptions = {
   showScaleX: false,
   showScaleY: false,
   channelLayout: "single",
-  colorcurrentMode: 'gradient',
+  //colorcurrentMode: 'gradient',
   splitGradient: false,
   bgAlpha: 1,
   overlay: true,
@@ -77,7 +77,7 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
 const createAudioMotionAnalyzer = (defaultOptions, start) => {
   if (!analyzer.value) {
     analyzer.value = new AudioMotionAnalyzer(
-      document.getElementById('vu-meter-canvas'),
+      document.getElementById('vu-meter-canvas')!,
       defaultOptions
     );
     if (!audioMotionAnalyzerStore.hasOtherRuningInstances) {
@@ -103,7 +103,7 @@ const createVumeterCanvas = () => {
   ctx = canvas.getContext('2d');
 }
 
-const smoothEnergy = (target) => {
+const smoothEnergy = (target: number) => {
   displayedEnergy += (target - displayedEnergy) * 0.1; // smoot factor
   return displayedEnergy;
 }
