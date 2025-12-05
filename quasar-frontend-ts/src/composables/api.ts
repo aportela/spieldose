@@ -41,6 +41,11 @@ const api = {
       return axiosInstance.put("/user/profile", params);
     },
   },
+  file: {
+    getRandom: function () {
+      return axiosInstance.get("/file/rnd");
+    },
+  },
   track: {
     setFavorite: function (id: string) {
       return axiosInstance.get(`/track/${id}/set_favorite`);
