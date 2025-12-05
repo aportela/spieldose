@@ -3,7 +3,6 @@ interface MenuItem {
   text: string;
   routeName: string;
   alternateRouteNames?: string;
-  action?: () => void;
 };
 
 const topHeaderMenuItems: MenuItem[] = [
@@ -55,6 +54,7 @@ const topHeaderMenuItems: MenuItem[] = [
     routeName: 'radioStations'
   },
   { icon: 'account_circle', text: "My profile", routeName: 'profile' },
+  { icon: 'account_circle', text: "My profile", routeName: 'profile' },
 ];
 
 const sidebarMenuItems: MenuItem[] = [
@@ -69,13 +69,6 @@ const sidebarMenuItems: MenuItem[] = [
     text: 'Browse artists',
     routeName: 'artists'
   },
-  /*
-  {
-    icon: 'search',
-    text: 'Search',
-    routeName: 'search'
-  },
-  */
   {
     icon: 'album',
     text: 'Browse albums',
