@@ -37,22 +37,17 @@ watch(() => playerStore.audioCurrentTime, (newValue) => {
   currentTime.value = Math.floor(playerStore.audioCurrentTime);
 });
 
-function formatSecondsAsTime(secs: number) {
-  if (secs && Number.isInteger(secs) && secs > 0) {
-    var hr = Math.floor(secs / 3600);
-    var min = Math.floor((secs - (hr * 3600)) / 60);
-    var sec = Math.floor(secs - (hr * 3600) - (min * 60));
-
-    if (min < 10) {
-      min = '0' + min;
-    }
-    if (sec < 10) {
-      sec = '0' + sec;
-    }
-    return (min + ':' + sec);
+const formatSecondsAsTime = (seconds: number): string => {
+  if (Number.isInteger(seconds) && seconds >= 0) {
+    const hoursValue = Math.floor(seconds / 3600);
+    let minutesValue = Math.floor((seconds - (hoursValue * 3600)) / 60);
+    let secondsValue = Math.floor(seconds - (hoursValue * 3600) - (minutesValue * 60));
+    const minutesStr: string = minutesValue < 10 ? '0' + minutesValue : minutesValue.toString();
+    const secondsStr: string = secondsValue < 10 ? '0' + secondsValue : secondsValue.toString();
+    return `${minutesStr}:${secondsStr}`;
   } else {
-    return ('00:00');
+    return '00:00';
   }
-}
+};
 
 </script>
