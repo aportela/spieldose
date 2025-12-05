@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-          }}</DesktopToolTip>
+            }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -42,6 +42,9 @@
 import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { useQuasar, LocalStorage } from "quasar";
 import { useI18n } from "vue-i18n";
+import { usePlayerStore } from "stores/player";
+import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+import { randomTrack } from "src/composables/playlistActions";
 
 import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
 import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue";
@@ -140,7 +143,27 @@ const onToggleminiSidebarCurrentMode = () => {
 }
 
 
+const playerStore = usePlayerStore();
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
+
+watch(
+  () => currentPlaylistItemStore.t,
+  (newValue) => {
+    if (currentPlaylistItemStore.isTrack) {
+      playerStore.setAudioSource(
+        "/api2/file/raw/" + currentPlaylistItemStore.trackFileId,
+      );
+      if (playerStore.hasPreviousUserInteractions) {
+        playerStore.play(true);
+      }
+    }
+  },
+);
+
+
 onMounted(() => {
+  playerStore.create();
+  randomTrack();
 });
 
 onBeforeUnmount(() => {
