@@ -15,7 +15,6 @@ const api = {
   common: {
     getServerEnvironment: () => axiosInstance.get("/server_environment"),
   },
-
   auth: {
     login: (email: string, password: string) => {
       const params: LoginParams = { email, password };
@@ -39,6 +38,62 @@ const api = {
         password: password,
       };
       return axiosInstance.put("/user/profile", params);
+    },
+  },
+  browse: {
+    artist: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      sortField,
+      sortOrder,
+      skipCount,
+    ) {
+      let params = {
+        filter: filter || {},
+        pager: {
+          currentPageIndex: currentPageIndex,
+          resultsPage: resultsPage,
+        },
+        sort: {
+          field: sortField,
+          order: sortOrder,
+        },
+      };
+      if (skipCount) {
+        params.skipCount = true;
+      }
+      return axiosInstance.post("/browse/artist", params);
+    },
+    album: function (
+      filter,
+      currentPageIndex,
+      resultsPage,
+      sortField,
+      sortOrder,
+      skipCount,
+    ) {
+      let params = {
+        filter: filter || {},
+        pager: {
+          currentPageIndex: currentPageIndex,
+          resultsPage: resultsPage,
+        },
+        sort: {
+          field: sortField,
+          order: sortOrder,
+        },
+      };
+      if (skipCount) {
+        params.skipCount = true;
+      }
+      return axiosInstance.post("/browse/album", params);
+    },
+    path: function (libraryId) {
+      return axiosInstance.post("/browse/path/" + libraryId);
+    },
+    libraries: function () {
+      return axiosInstanceget("/browse/libraries");
     },
   },
   file: {
