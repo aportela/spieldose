@@ -13,7 +13,6 @@ import { useI18n } from "vue-i18n";
 import { api } from "src/composables/api";
 import { useSessionStore } from "src/stores/session";
 import { sidebarMenuItems } from "src/types/menu-item";
-import { default as DesktopToolTip } from "../DesktopToolTip.vue";
 
 interface TopHeaderMenuProps {
   visible: boolean;
