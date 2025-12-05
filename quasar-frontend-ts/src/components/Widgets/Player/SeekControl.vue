@@ -37,7 +37,7 @@ watch(() => playerStore.audioCurrentTime, (newValue) => {
   currentTime.value = Math.floor(playerStore.audioCurrentTime);
 });
 
-function formatSecondsAsTime(secs, format) {
+function formatSecondsAsTime(secs: number) {
   if (secs && Number.isInteger(secs) && secs > 0) {
     var hr = Math.floor(secs / 3600);
     var min = Math.floor((secs - (hr * 3600)) / 60);
