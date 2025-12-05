@@ -20,11 +20,8 @@ const api = {
       const params: LoginParams = { email, password };
       return axiosInstance.post("/auth/login", params);
     },
-
     renewAccessToken: () => axiosInstance.post("/auth/renew_access_token"),
-
     logout: () => axiosInstance.post("/auth/logout"),
-
     register: (id: string, email: string, password: string) => {
       const params: RegisterParams = { id, email, password };
       return axiosInstance.post("/auth/register", params);
@@ -42,12 +39,12 @@ const api = {
   },
   browse: {
     artist: function (
-      filter,
-      currentPageIndex,
-      resultsPage,
-      sortField,
-      sortOrder,
-      skipCount,
+      filter: unknown,
+      currentPageIndex: number,
+      resultsPage: number,
+      sortField: string,
+      sortOrder: string,
+      skipCount: boolean,
     ) {
       let params = {
         filter: filter || {},
@@ -66,14 +63,14 @@ const api = {
       return axiosInstance.post("/browse/artist", params);
     },
     album: function (
-      filter,
-      currentPageIndex,
-      resultsPage,
-      sortField,
-      sortOrder,
-      skipCount,
+      filter: unknown,
+      currentPageIndex: number,
+      resultsPage: number,
+      sortField: string,
+      sortOrder: string,
+      skipCount: boolean,
     ) {
-      let params = {
+      const params = {
         filter: filter || {},
         pager: {
           currentPageIndex: currentPageIndex,
@@ -89,11 +86,11 @@ const api = {
       }
       return axiosInstance.post("/browse/album", params);
     },
-    path: function (libraryId) {
+    path: function (libraryId: string) {
       return axiosInstance.post("/browse/path/" + libraryId);
     },
     libraries: function () {
-      return axiosInstanceget("/browse/libraries");
+      return axiosInstance.get("/browse/libraries");
     },
   },
   file: {
