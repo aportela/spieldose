@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pa-lg">
+  <q-card class="q-pa-lg" v-bind="attrs">
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <slot name="current-breadcrumb">
@@ -23,9 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, useAttrs } from "vue";
 
 const emit = defineEmits(['paginationChanged']);
+
+const attrs = useAttrs();
 
 interface BrowserBaseProps {
   disable?: boolean;
