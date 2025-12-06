@@ -26,82 +26,82 @@ import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface } from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 
 const playerStore = usePlayerStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
-const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
 
-const analyzer = ref<AudioMotionAnalyzer | null>(null);
-let canvas: any;
-let ctx: CanvasRenderingContext2D;
+const analyzerInstance = ref<AudioMotionAnalyzer | null>(null);
+let canvas: HTMLCanvasElement | null;
+let ctx: CanvasRenderingContext2D | null;
 let displayedEnergy: number = 0;
 let lastTime: number = 0;
 const maxFPS: number = 120;
 const fpsInterval: number = 1000 / maxFPS;
 
-const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
-  //showCanvas: false,
+const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
-  maxFPS: miniSpectrumAnalyzerSettingsStore.currentFPS,
-  mode: 8,
-  ledBars: true,
-  showPeaks: false,
-  trueLeds: true,
-  barSpace: miniSpectrumAnalyzerSettingsStore.currentBarSpace,
-  showScaleX: false,
-  showScaleY: false,
-  channelLayout: "single",
-  //colorcurrentMode: 'gradient',
-  splitGradient: false,
-  bgAlpha: 1,
-  overlay: true,
-  showBgColor: true
 };
 
 watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
-  if (!analyzer.value) {
-    if (newValue) {
-      createAudioMotionAnalyzer(defaultAnalyzerOptions, true);
+  if (newValue) {
+    if (analyzerInstance.value === null) {
+      createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, true);
     }
-  } else {
-    if (newValue) {
-      analyzer.value.start();
-      refreshVuMeter();
+    else if (!analyzerInstance.value.isOn) {
+      analyzerInstance.value.start();
+      refreshVuMeter(lastTime);
     }
   }
 });
 
-const createAudioMotionAnalyzer = (defaultOptions, start) => {
-  if (!analyzer.value) {
-    analyzer.value = new AudioMotionAnalyzer(
-      document.getElementById('vu-meter-canvas')!,
+
+const setupCanvas = (): boolean => {
+  canvas = document.getElementById('vu-meter-canvas') as HTMLCanvasElement | null;
+  if (canvas !== null) {
+    ctx = canvas.getContext('2d');
+    if (ctx === null) {
+      console.error("Error gettting canvas 2d context");
+      return (false);
+    } else {
+      return (true);
+    }
+  } else {
+    console.error("Error getting canvas element");
+    return (false);
+  }
+}
+
+const createAudioMotionAnalyzerInstance = (defaultOptions: AudioMotionAnalyzerConstructorOptionsInterface, start) => {
+  if (!analyzerInstance.value) {
+    analyzerInstance.value = new AudioMotionAnalyzer(
+      //document.getElementById('vu-meter-canvas')!,
       defaultOptions
     );
     if (!audioMotionAnalyzerStore.hasOtherRuningInstances) {
       audioMotionAnalyzerStore.instance();
     }
-    if (start) {
-      analyzer.value.start();
-      refreshVuMeter();
+    analyzerInstance.value.setOptions(
+      {
+        useCanvas: false,
+        channelLayout: "single",
+      }
+    );
+    if (!defaultOptions.start && start) {
+      analyzerInstance.value.start();
+      refreshVuMeter(lastTime);
     }
   }
 };
 
-const destroyAudioMotionAnalyzer = () => {
-  if (analyzer.value) {
-    analyzer.value.stop();
-    // TODO: stops audio
-    //analyzer.value.destroy();
+const destroyAudioMotionAnalyzerInstance = () => {
+  if (analyzerInstance.value !== null) {
+    analyzerInstance.value.stop();
+    // TODO: WARNING: possible leak, next line stops audio (check disconnectInput method before destroy)
+    //analyzerInstance.value.destroy();
   }
 };
-
-const createVumeterCanvas = () => {
-  canvas = document.getElementById('vu-meter-canvas');
-  ctx = canvas.getContext('2d');
-}
 
 const smoothEnergy = (target: number) => {
   displayedEnergy += (target - displayedEnergy) * 0.1; // smoot factor
@@ -115,23 +115,23 @@ const mapEnergyToAngle = (energy: number) => {
 }
 
 const drawCanvasVuMeterBar = (angle: number) => {
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height;
-  const radius = canvas.height + (canvas.height / 10); // vu-meter bar length
+  const centerX = canvas!.width / 2;
+  const centerY = canvas!.height;
+  const radius = canvas!.height + (canvas!.height / 10); // vu-meter bar length
 
   // clear previous canvas value
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
 
-  ctx.save();
-  ctx.translate(centerX, centerY);
-  ctx.rotate((angle * Math.PI) / 180);
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(0, -radius);
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = '#111';
-  ctx.stroke();
-  ctx.restore();
+  ctx!.save();
+  ctx!.translate(centerX, centerY);
+  ctx!.rotate((angle * Math.PI) / 180);
+  ctx!.beginPath();
+  ctx!.moveTo(0, 0);
+  ctx!.lineTo(0, -radius);
+  ctx!.lineWidth = 1;
+  ctx!.strokeStyle = '#111';
+  ctx!.stroke();
+  ctx!.restore();
 }
 
 const refreshVuMeter = (timestamp: number) => {
@@ -139,7 +139,7 @@ const refreshVuMeter = (timestamp: number) => {
   if (elapsed > fpsInterval) {
     lastTime = timestamp - (elapsed % fpsInterval);
     // TODO: use getBars for allowing stereoc channels
-    const energy = smoothEnergy(analyzer.value.getEnergy());
+    const energy = smoothEnergy(analyzerInstance.value!.getEnergy());
     const angle = mapEnergyToAngle(energy);
     drawCanvasVuMeterBar(angle);
   }
@@ -148,14 +148,17 @@ const refreshVuMeter = (timestamp: number) => {
 };
 
 onMounted(() => {
-  createVumeterCanvas();
-  drawCanvasVuMeterBar(mapEnergyToAngle(0));
-  // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  createAudioMotionAnalyzer(defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
+  if (setupCanvas()) {
+    drawCanvasVuMeterBar(mapEnergyToAngle(0)); // draw vumeter bar at minimum value
+    // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
+    createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, playerStore.hasPreviousUserInteractions);
+  } else {
+    console.error("Error setting up vumeter canvas");
+  }
 });
 
 onBeforeUnmount(() => {
-  destroyAudioMotionAnalyzer();
+  destroyAudioMotionAnalyzerInstance();
 });
 
 </script>
