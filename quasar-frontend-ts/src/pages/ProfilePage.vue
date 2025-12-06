@@ -33,11 +33,16 @@
                 @update:model-value="onChangeLedBars" />
               <q-toggle v-model="trueLeds" :disable="!showMiniSpectrumAnalyzer || !ledBars" label="true leds"
                 @update:model-value="onChangeTrueLeds" />
-
             </p>
             <p class="q-mt-lg"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
                 :label-value="'Height: ' + height + 'px'" v-model="height" :min="30" :max="180" :step="1"
                 v-on:update:model-value="onChangeHeight" /></p>
+            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="colorMode"
+                v-on:update:model-value="onChangeColorMode" toggle-color="primary" no-caps :options="[
+                  { label: 'gradient', value: 'gradient' },
+                  { label: 'bar-index', value: 'bar-index' },
+                  { label: 'bar-level', value: 'bar-level' },
+                ]" /></p>
             <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="gradient"
                 v-on:update:model-value="onChangeGradient" toggle-color="primary" no-caps :options="[
                   { label: 'spieldose', value: 'spieldose' },
@@ -107,7 +112,7 @@
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
-import { type SpectrumAnalyzerChannelLayout } from "src/types/common";
+import { type AudioMotionAnalyzerOptionColorMode, type SpectrumAnalyzerChannelLayout } from "src/types/common";
 import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
 
@@ -136,6 +141,8 @@ const mode = ref(miniSpectrumAnalyzerSettingsStore.currentMode);
 const barSpace = ref(miniSpectrumAnalyzerSettingsStore.currentBarSpace);
 
 const height = ref(miniSpectrumAnalyzerSettingsStore.height);
+
+const colorMode = ref(miniSpectrumAnalyzerSettingsStore.currentColorMode);
 
 const gradient = ref(miniSpectrumAnalyzerSettingsStore.currentGradient);
 
@@ -181,6 +188,10 @@ watch(() => miniSpectrumAnalyzerSettingsStore.channelLayout, (newValue) => {
   channelLayout.value = newValue;
 });
 
+watch(() => miniSpectrumAnalyzerSettingsStore.colorMode, (newValue) => {
+  colorMode.value = newValue;
+});
+
 watch(() => miniSpectrumAnalyzerSettingsStore.gradient, (newValue) => {
   gradient.value = newValue;
 });
@@ -215,6 +226,10 @@ const onChangeChannelLayout = (layout: SpectrumAnalyzerChannelLayout) => {
 
 const onChangeGradient = (gradient: string) => {
   miniSpectrumAnalyzerSettingsStore.setGradient(gradient);
+}
+
+const onChangeColorMode = (colorMode: AudioMotionAnalyzerOptionColorMode) => {
+  miniSpectrumAnalyzerSettingsStore.setColorMode(colorMode);
 }
 
 const onChangeShowPeaks = (visible: boolean) => {
