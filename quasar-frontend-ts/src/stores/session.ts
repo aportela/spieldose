@@ -5,7 +5,9 @@ interface State {
   tokens: {
     access: string | null;
   };
-  toolTips: boolean;
+  other: {
+    toolTips: boolean;
+  };
 };
 
 export const useSessionStore = defineStore("session", {
@@ -13,7 +15,9 @@ export const useSessionStore = defineStore("session", {
     tokens: {
       access: null,
     },
-    toolTips: localStorageShowToolTips.get(),
+    other: {
+      toolTips: localStorageShowToolTips.get(),
+    },
   }),
   getters: {
     hasAccessToken(state): boolean {
@@ -23,7 +27,7 @@ export const useSessionStore = defineStore("session", {
       return state.tokens.access
     },
     toolTipsEnabled(state): boolean {
-      return (state.toolTips);
+      return (state.other.toolTips);
     },
   },
   actions: {
@@ -34,8 +38,8 @@ export const useSessionStore = defineStore("session", {
       this.tokens.access = null;
     },
     toggleToolTips(enabled: boolean) {
-      this.toolTips = enabled;
-      localStorageShowToolTips.set(this.toolTips);
+      this.other.toolTips = enabled;
+      localStorageShowToolTips.set(this.other.toolTips);
     }
   },
 });
