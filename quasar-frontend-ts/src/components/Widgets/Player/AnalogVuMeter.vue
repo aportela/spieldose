@@ -37,6 +37,7 @@ let displayedEnergy: number = 0;
 let lastTime: number = 0;
 const maxFPS: number = 60;
 const fpsInterval: number = 1000 / maxFPS;
+const smoothFactor: number = 0.1;
 
 const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   source: audioMotionAnalyzerStore.audioInstance,
@@ -44,10 +45,17 @@ const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsIn
   start: false,
 };
 
+const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
+  useCanvas: false,
+  channelLayout: "single",
+  maxFPS: maxFPS,
+  mode: 8,
+};
+
 watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
   if (newValue) {
     if (analyzerInstance.value === null) {
-      createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, true);
+      createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
     }
     else if (!analyzerInstance.value.isOn) {
       analyzerInstance.value.start();
@@ -72,29 +80,33 @@ const setupCanvas = (): boolean => {
   }
 }
 
-const createAudioMotionAnalyzerInstance = (defaultOptions: AudioMotionAnalyzerConstructorOptionsInterface, start) => {
-  if (!analyzerInstance.value) {
+const startAnalyzer = (): void => {
+  if (analyzerInstance.value !== null) {
+    if (!analyzerInstance.value.isOn) {
+      analyzerInstance.value.start();
+    }
+    refreshVuMeter(lastTime);
+  } else {
+    console.error("AudioMotion analyzer instance is null");
+  }
+};
+
+const createAudioMotionAnalyzerInstance = (constructorOptions: AudioMotionAnalyzerConstructorOptionsInterface, defaultOptions: AudioMotionAnalyzerConstructorOptionsInterface, start: boolean) => {
+  if (analyzerInstance.value === null) {
     analyzerInstance.value = new AudioMotionAnalyzer(
       //document.getElementById('vu-meter-canvas')!,
-      defaultOptions
+      constructorOptions
     );
     if (!audioMotionAnalyzerStore.hasOtherRuningInstances) {
       audioMotionAnalyzerStore.instance();
     }
-    analyzerInstance.value.setOptions(
-      {
-        useCanvas: false,
-        channelLayout: "single",
-        maxFPS: maxFPS,
-        mode: 8,
-      }
-    );
-    if (!defaultOptions.start && start) {
-      analyzerInstance.value.start();
-      refreshVuMeter(lastTime);
-    }
+    analyzerInstance.value.setOptions(defaultOptions);
+  }
+  if (start) {
+    startAnalyzer();
   }
 };
+
 
 const destroyAudioMotionAnalyzerInstance = () => {
   if (analyzerInstance.value !== null) {
@@ -105,7 +117,7 @@ const destroyAudioMotionAnalyzerInstance = () => {
 };
 
 const smoothEnergy = (target: number) => {
-  displayedEnergy += (target - displayedEnergy) * 0.1; // smoot factor
+  displayedEnergy += (target - displayedEnergy) * smoothFactor; // smooth factor
   return displayedEnergy;
 }
 
@@ -150,7 +162,7 @@ onMounted(() => {
   if (setupCanvas()) {
     drawCanvasVuMeterBar(mapEnergyToAngle(0)); // draw vumeter bar at minimum value
     // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-    createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, playerStore.hasPreviousUserInteractions);
+    createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
   } else {
     console.error("Error setting up vumeter canvas");
   }
