@@ -11,14 +11,14 @@
       <span v-else>&nbsp;</span>
     </p>
 
-    <p class="text-center ellipsis" :title="currentPlaylistItemStore.trackAlbumTitle">
+    <p class="text-center ellipsis" :title="currentPlaylistItemStore.trackAlbumTitle || undefined">
       <router-link style="text-decoration: none;"
         :to="{ name: 'album', params: { title: currentPlaylistItemStore.trackAlbumTitle }, query: { mbId: currentPlaylistItemStore.trackAlbumMBId, artistName: currentPlaylistItemStore.trackAlbumArtistName, artistMBId: currentPlaylistItemStore.trackAlbumArtistMBId, year: currentPlaylistItemStore.trackAlbumYear } }"
         v-if="currentPlaylistItemStore.trackAlbumTitle">{{ currentPlaylistItemStore.trackAlbumTitle }}
         <br /><span v-if="currentPlaylistItemStore.trackAlbumArtistName">by {{
           currentPlaylistItemStore.trackAlbumArtistName }}</span>
         <br /><span v-if="currentPlaylistItemStore.trackAlbumYear">({{ currentPlaylistItemStore.trackAlbumYear
-          }})</span>
+        }})</span>
       </router-link>
       <span v-else>&nbsp;</span>
     </p>

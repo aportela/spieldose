@@ -48,7 +48,7 @@ function onToggleMute() {
 
 }
 
-function setVolume(volume) {
+function setVolume(volume: number) {
   playerStore.interact();
   playerStore.setVolume(volume);
 
