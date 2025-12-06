@@ -46,7 +46,7 @@ const api = {
       sortOrder: string,
       skipCount: boolean,
     ) {
-      let params = {
+      const params = {
         filter: filter || {},
         pager: {
           currentPageIndex: currentPageIndex,
@@ -56,10 +56,8 @@ const api = {
           field: sortField,
           order: sortOrder,
         },
+        skipCount: skipCount,
       };
-      if (skipCount) {
-        params.skipCount = true;
-      }
       return axiosInstance.post("/browse/artist", params);
     },
     album: function (
@@ -80,10 +78,8 @@ const api = {
           field: sortField,
           order: sortOrder,
         },
+        skipCount: skipCount,
       };
-      if (skipCount) {
-        params.skipCount = true;
-      }
       return axiosInstance.post("/browse/album", params);
     },
     path: function (libraryId: string) {
