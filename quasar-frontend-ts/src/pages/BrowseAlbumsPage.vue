@@ -3,9 +3,9 @@
     :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
     @paginationChanged="onPaginationChanged">
     <template #items>
-      <AnimatedAlbumCover v-for="album in albums" :key="album._id" v-memo="[lastChangesTimestamp]" :image="album.image"
-        :title="album.title" :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name"
-        :year="album.year">
+      <AnimatedAlbumCover v-for="album in albums" :key="album._id" :image="album.image || undefined"
+        :title="album.title" :albumMbId="album.mbId || undefined" :artistMbId="album.artist?.mbId || undefined"
+        :artistName="album.artist?.name || undefined" :year="album.year || undefined">
       </AnimatedAlbumCover>
     </template>
   </BrowserBase>
@@ -19,6 +19,10 @@ import { api } from "src/composables/api";
 import { getSmallURL } from "src/composables/thumbnail";
 import { default as BrowserBase } from 'src/components/BrowserBase.vue';
 import { default as AnimatedAlbumCover } from 'src/components/AnimatedAlbumCover.vue';
+import {
+  type BrowseAlbumsResponse as BrowseAlbumsResponseInterface,
+  type BrowseAlbumItemResponse as BrowseAlbumItemResponseInterface,
+} from "src/types/api-responses";
 
 const { t } = useI18n();
 
@@ -26,21 +30,44 @@ const currentPageIndex = ref(1);
 const totalPages = ref(0);
 const totalResults = ref(0);
 const warningNoItems = ref(false);
-const sortField = ref(null);
-const sortOrder = ref(null);
+const sortField = ref("Title");
+const sortOrder = ref("ASC");
 const skipCount = ref(false);
-const albums = shallowRef([]);
+const albums = shallowRef<Album[]>([]);
 const loading = ref(false);
+
+class Album implements BrowseAlbumItemResponseInterface {
+  _id: string;
+  title: string;
+  mbId: string | null;
+  year: number | null;
+  image: string | null;
+  artist?: {
+    name: string | null;
+    mbId: string | null;
+  }
+
+  constructor(item: BrowseAlbumItemResponseInterface) {
+    this._id = uid();
+    this.title = item.title;
+    this.mbId = item.mbId;
+    this.year = item.year;
+    this.image = item.image;
+  }
+}
 
 function browse() {
   warningNoItems.value = false;
   loading.value = true;
-  api.browse.album({ title: null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((success) => {
-    albums.value = success.data.data.items.map((item) => { item._id = uid(); item.artist = { mbId: null, name: null }; item.image = getSmallURL(`https://coverartarchive.org/release/${item.mbId}/front-250`); return (item); });
-    if (success.data.data.pager) {
-      totalPages.value = success.data.data.pager.totalPages;
-      totalResults.value = success.data.data.pager.totalResults;
-      warningNoItems.value = success.data.data.pager.totalResults < 1;
+  api.browse.album({ title: null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((successResponse: BrowseAlbumsResponseInterface) => {
+    albums.value = successResponse.data.albums.map((item) => {
+      return (new Album(item));
+    });
+
+    if (successResponse.data.pager) {
+      totalPages.value = successResponse.data.pager.totalPages;
+      totalResults.value = successResponse.data.pager.totalResults;
+      warningNoItems.value = successResponse.data.pager.totalResults < 1;
       skipCount.value = true;
     }
     loading.value = false;
