@@ -8,6 +8,9 @@
       <p>
         <q-toggle v-model="visible" label="visible" />
       </p>
+      <p class="q-mt-xl"><q-slider :disable="!visible" label label-always
+          :label-value="'Smooth factor: ' + smoothFactor" v-model.number="smoothFactor" :min="0.1" :max="1.0"
+          :step="0.1" /></p>
     </q-card-section>
   </q-card>
 </template>
@@ -28,6 +31,15 @@ const visible = computed({
   },
   set(value) {
     store.setVisibility(value);
+  }
+});
+
+const smoothFactor = computed({
+  get() {
+    return store.currentSmoothFactor;
+  },
+  set(value) {
+    store.setSmoothFactor(value);
   }
 });
 

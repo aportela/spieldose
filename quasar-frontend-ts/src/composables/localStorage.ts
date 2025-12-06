@@ -46,6 +46,7 @@ const showToolTips = createStorageEntry<boolean>("showToolTips", true);
 const playerVolume = createStorageEntry<number>("playerVolume", 1);
 const playerMuted = createStorageEntry<boolean>("playerMuted", false);
 const showMiniAnalogVumeter = createStorageEntry<boolean>("showMiniAnalogVumeter", false);
+const sidebarAnalogVumeterSmoothFactor = createStorageEntry<number>("sidebarAnalogVumeterSmoothFactor", 0.1);
 const showMiniSpectrumAnalyzer = createStorageEntry<boolean>("showMiniSpectrumAnalyzer", true);
 const playerMiniAnalyzerMode = createStorageEntry<number>("playerMiniAnalyzerMode", 7);
 const playerMiniAnalyzerFPS = createStorageEntry<number>("playerMiniAnalyzerFPS", 30);
@@ -68,6 +69,7 @@ export {
   playerVolume,
   playerMuted,
   showMiniAnalogVumeter,
+  sidebarAnalogVumeterSmoothFactor,
   showMiniSpectrumAnalyzer,
   playerMiniAnalyzerMode,
   playerMiniAnalyzerFPS,
