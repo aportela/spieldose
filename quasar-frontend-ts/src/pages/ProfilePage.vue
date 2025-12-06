@@ -40,7 +40,7 @@ import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
-import { default as SidebarSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarSpectrumAnalyzerSettings.vue
+import { default as SidebarSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarSpectrumAnalyzerSettings.vue";
 
 const { t } = useI18n();
 
