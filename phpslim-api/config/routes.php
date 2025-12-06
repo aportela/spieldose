@@ -370,9 +370,9 @@ return function (App $app): void {
                     return (new \aportela\DatabaseBrowserWrapper\Filter(array_key_exists("filter", $params) && is_array($params["filter"]) ? $params["filter"] : []));
                 }
 
-                function skipCountParamFound(array $params): bool
+                function skipCountTrueParamFound(array $params): bool
                 {
-                    return (array_key_exists("skipCount", $params));
+                    return (array_key_exists("skipCount", $params) && is_bool($params["skipCount"]) && $params["skipCount"] === true);
                 }
 
                 $routeCollectorProxy->post('/artist', function (Request $request, Response $response, array $args) use ($dbh) {
@@ -381,7 +381,7 @@ return function (App $app): void {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
 
-                    $skipCount = skipCountParamFound($params);
+                    $skipCount = skipCountTrueParamFound($params);
                     $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
                         getPagerFromParams($params),
                         getFilterFromParams($params),
@@ -415,7 +415,7 @@ return function (App $app): void {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
 
-                    $skipCount = skipCountParamFound($params);
+                    $skipCount = skipCountTrueParamFound($params);
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
                         getPagerFromParams($params),
                         getFilterFromParams($params),
@@ -423,19 +423,17 @@ return function (App $app): void {
                         $skipCount
                     );
                     $payload = json_encode(
-                        [
-                            "data" => $skipCount ?
-                                [
-                                    "items" => $browserResults->items
-                                ] :
-                                [
-                                    "pager" => [
-                                        "totalPages" => $browserResults->pager->getTotalPages(),
-                                        "totalResults" => $browserResults->pager->getTotalResults()
-                                    ],
-                                    "items" => $browserResults->items
-                                ]
-                        ]
+                        $skipCount ?
+                            [
+                                "albums" => $browserResults->items
+                            ] :
+                            [
+                                "pager" => [
+                                    "totalPages" => $browserResults->pager->getTotalPages(),
+                                    "totalResults" => $browserResults->pager->getTotalResults()
+                                ],
+                                "albums" => $browserResults->items
+                            ]
                     );
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
