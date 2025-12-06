@@ -14,7 +14,7 @@
         <UpdateProfileForm></UpdateProfileForm>
       </div>
       <div class="col-lg-4 col-xl-4 col-12 flex">
-        <SidebarMiniSpectrumAnalyzerSettings />
+        <SidebarSpectrumAnalyzerSettings />
       </div>
       <div class="col-lg-4 col-xl-4 col-12 flex">
         <q-card class="full-width">
@@ -40,7 +40,7 @@ import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
-import { default as SidebarMiniSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarMiniSpectrumAnalyzerSettings.vue";
+import { default as SidebarSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarSpectrumAnalyzerSettings.vue
 
 const { t } = useI18n();
 
