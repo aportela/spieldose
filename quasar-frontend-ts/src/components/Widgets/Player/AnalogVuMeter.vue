@@ -35,7 +35,7 @@ let canvas: HTMLCanvasElement | null;
 let ctx: CanvasRenderingContext2D | null;
 let displayedEnergy: number = 0;
 let lastTime: number = 0;
-const maxFPS: number = 120;
+const maxFPS: number = 60;
 const fpsInterval: number = 1000 / maxFPS;
 
 const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
@@ -55,7 +55,6 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
     }
   }
 });
-
 
 const setupCanvas = (): boolean => {
   canvas = document.getElementById('vu-meter-canvas') as HTMLCanvasElement | null;
@@ -86,6 +85,8 @@ const createAudioMotionAnalyzerInstance = (defaultOptions: AudioMotionAnalyzerCo
       {
         useCanvas: false,
         channelLayout: "single",
+        maxFPS: maxFPS,
+        mode: 8,
       }
     );
     if (!defaultOptions.start && start) {
@@ -139,6 +140,7 @@ const refreshVuMeter = (timestamp: number) => {
   if (elapsed > fpsInterval) {
     lastTime = timestamp - (elapsed % fpsInterval);
     // TODO: use getBars for allowing stereoc channels
+    //
     const energy = smoothEnergy(analyzerInstance.value!.getEnergy());
     const angle = mapEnergyToAngle(energy);
     drawCanvasVuMeterBar(angle);
@@ -189,7 +191,7 @@ div#analog-vu-meter-container {
 
 /* top scale arc */
 .arc {
-  width: 95%;
+  width: 88%;
   aspect-ratio: 1 / 1;
   /*
   height: 90%;
