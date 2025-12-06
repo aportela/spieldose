@@ -10,10 +10,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-          }}</h4>
+        }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-          }}
+        }}
         </div>
       </slot>
     </q-card-section>
@@ -74,7 +74,7 @@ import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { useSessionStore } from "src/stores/session";
-import { email as localStorageEmail } from "src/composables/localStorage";
+import { useProfileStore } from "src/stores/profile";
 import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
 import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/auth-validator";
 import { type AuthFields as AuthFieldsInterface } from "src/types/auth-fields";
@@ -103,12 +103,13 @@ const { requiredFieldRule } = useFormUtils();
 const serverEnvironment = useServerEnvironmentStore();
 
 const sessionStore = useSessionStore();
+const profileStore = useProfileStore();
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
 const validator = reactive<AuthValidatorInterface>({ ...defaultAuthValidator });
 
-const savedEmail = localStorageEmail.get();
+const savedEmail = profileStore.email;
 
 const profile = reactive<AuthFieldsInterface>(
   {
@@ -154,7 +155,7 @@ const onSubmitForm = () => {
       .login(profile.email, profile.password)
       .then((successResponse: LoginResponse) => {
         sessionStore.setAccessToken(successResponse.data.accessToken);
-        localStorageEmail.set(profile.email);
+        profileStore.setEmail(profile.email);
         emit("success", successResponse.data);
       })
       .catch((errorResponse) => {

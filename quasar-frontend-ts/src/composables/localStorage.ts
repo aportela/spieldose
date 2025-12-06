@@ -39,7 +39,6 @@ function createStorageEntry<T extends StorageValue>(
   };
 }
 
-const email = createStorageEntry<string | null>("email", null);
 const darkMode = createStorageEntry<boolean>("darkMode", false);
 const locale = createStorageEntry<string | null>("locale", null);
 const showToolTips = createStorageEntry<boolean>("showToolTips", true);
@@ -63,7 +62,7 @@ const playerMiniAnalyzerLoRes = createStorageEntry<boolean>("playerMiniAnalyzerL
 const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
 
 export {
-  email,
+  createStorageEntry,
   darkMode,
   locale,
   showToolTips,
