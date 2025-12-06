@@ -1,7 +1,22 @@
 <template>
+
+
   <BrowserBase current-bread-crumb-icon="person" :current-bread-crumb-label="t('Browse artists')" :disable="loading"
     :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
     @paginationChanged="onPaginationChanged">
+    <template #filter>
+      <div class="row">
+        <q-input class="col-10" v-model.trim="textFilter" dense outlined clearable icon="search"
+          label="Search artist name" @update:model-value="skipCount = false" @keydown.enter="browse">
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <SortFieldSelector class="col-1" :options="sortItems" v-model="currentSortField" dense outlined
+          label="Sort field" />
+        <SortOrderSelector class=" col-1" v-model="currentSortOrder" dense outlined label="Sort order" />
+      </div>
+    </template>
     <template #items>
       <ArtistAvatarLink v-for="artist in artists" :key="artist._id" :mbId="artist.mbId" :name="artist.name"
         :image="artist.image" :totalTracks="artist.totalTracks"></ArtistAvatarLink>
@@ -17,8 +32,19 @@ import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/type
 import { api } from "src/composables/api";
 import { default as BrowserBase } from "src/components/BrowserBase.vue";
 import { default as ArtistAvatarLink } from "src/components/ArtistAvatarLink.vue"
-import { type BrowseArtistsResponse as BrowseArtistsResponseInterface, BrowseArtistItemResponse as BrowseArtistItemResponseInterface } from "src/types/api-responses";
+import {
+  type BrowseArtistsResponse as BrowseArtistsResponseInterface,
+  type BrowseArtistItemResponse as BrowseArtistItemResponseInterface,
+} from "src/types/api-responses";
+import {
+  type SelectorOption as SelectorOptionInterface,
+  sortOrderSelectorOptions
+} from "src/types/common";
 
+import { type Sort as SortInterface, SortClass } from "src/types/sort";
+
+import { default as SortFieldSelector } from "src/components/Forms/Fields/SortFieldSelector.vue";
+import { default as SortOrderSelector } from "src/components/Forms/Fields/SortOrderSelector.vue";
 const { t } = useI18n();
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
@@ -39,6 +65,24 @@ class Artist implements BrowseArtistItemResponseInterface {
   }
 
 }
+
+const sortItems = [
+  {
+    label: "Artist name",
+    value: "name",
+  },
+  {
+    label: "Artist track count",
+    value: "trackCount",
+  }
+];
+
+const textFilter = ref<string | null>(null);
+const currentSortField = ref(sortItems[0]!);
+const currentSortOrder: SelectorOptionInterface = ref(sortOrderSelectorOptions[0]!);
+
+//const sort: SortClass = ref<SortClass>(new SortClass(sortItems[0]!.label, "ASC"));
+
 const currentPageIndex = ref(1);
 const totalPages = ref(0);
 const totalResults = ref(0);
@@ -53,7 +97,7 @@ function browse() {
   Object.assign(state, defaultAjaxState);
   state.ajaxRunning = true;
   warningNoItems.value = false;
-  api.browse.artist({ genre: null, tag: null, name: null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((successResponse: BrowseArtistsResponseInterface) => {
+  api.browse.artist({ genre: null, tag: null, name: textFilter.value ?? null }, currentPageIndex.value, 32, sortField.value, sortOrder.value, skipCount.value).then((successResponse: BrowseArtistsResponseInterface) => {
     // create unique id (name can not be used because there are some items with same name but different mbId, like Alice Cooper (artist) && Alice Cooper (band))
     artists.value = successResponse.data.artists.map((item) => {
       return (new Artist(item));
