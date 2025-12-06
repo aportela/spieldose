@@ -2,7 +2,7 @@
   <q-card class="overflow-hidden">
     <AlbumCover />
     <div style="width: 100%; height: 200px;" v-if="miniAnalogVumeterSettingsStore.visible">
-      <AnalogVuMeter />
+      <SidebarAnalogVumeter />
     </div>
     <SidebarSpectrumAnalyzer v-if="sidebarMiniSpectrumAnalyzerSettingsStore.isVisible" />
     <VolumeControl />
@@ -18,7 +18,7 @@ import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarM
 import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
 import { default as AlbumCover } from "./Player/AlbumCover.vue";
 import { default as SidebarSpectrumAnalyzer } from "./Visualizations/SidebarSpectrumAnalyzer.vue";
-import { default as AnalogVuMeter } from "./Player/AnalogVuMeter.vue";
+import { default as SidebarAnalogVumeter } from "./Visualizations/SidebarAnalogVumeter.vue";
 import { default as VolumeControl } from "./Player/VolumeControl.vue";
 import { default as TrackInfo } from "./Player/TrackInfo.vue";
 import { default as MainControls } from "./Player/MainControls.vue";
