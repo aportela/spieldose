@@ -1,8 +1,9 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import {
-  showMiniAnalogVumeter as localStorageShowMiniAnalogVumeter, sidebarAnalogVumeterSmoothFactor as localStorageSidebarAnalogVumeterSmoothFactor,
-  sidebarAnalogVumeterFPS as localStorageSidebarAnalogVumeterFPS
-} from 'src/composables/localStorage';
+import { createStorageEntry } from 'src/composables/localStorage';
+
+const localStorageShowMiniAnalogVumeter = createStorageEntry<boolean>("visualizations.sidebar.analogVumeter.visible", false);
+const localStorageSidebarAnalogVumeterSmoothFactor = createStorageEntry<number>("visualizations.sidebar.analogVumeter.smoothFactor", 0.1);
+const localStorageSidebarAnalogVumeterFPS = createStorageEntry<number>("visualizations.sidebar.analogVumeter.fps", 30);
 
 interface State {
   visible: boolean;
