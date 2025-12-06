@@ -1,27 +1,27 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { createStorageEntry } from 'src/composables/localStorage';
 
-const localStorageEmail = createStorageEntry<string | null>("profile.email", "foo@ba.r");
+const localStorageEmail = createStorageEntry<string | null>("profile.lastEmailUsed", "foo@ba.r");
 
 interface State {
-  data: {
-    email: string | null;
+  profile: {
+    lastEmailUsed: string | null;
   }
 };
 
 export const useProfileStore = defineStore('profileStore', {
   state: (): State => ({
-    data: {
-      email: localStorageEmail.get(),
+    profile: {
+      lastEmailUsed: localStorageEmail.get(),
     },
   }),
   getters: {
-    email: (state) => state.data.email,
+    lastEmailUsed: (state) => state.profile.lastEmailUsed,
   },
   actions: {
-    setEmail(email: string | null) {
-      this.data.email = email;
-      localStorageEmail.set(this.data.email);
+    setLastEmailUsed(email: string | null) {
+      this.profile.lastEmailUsed = email;
+      localStorageEmail.set(this.profile.lastEmailUsed);
     }
   }
 });

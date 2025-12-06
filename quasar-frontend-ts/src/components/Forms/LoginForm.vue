@@ -109,7 +109,7 @@ const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
 const validator = reactive<AuthValidatorInterface>({ ...defaultAuthValidator });
 
-const savedEmail = profileStore.email;
+const savedEmail = profileStore.lastEmailUsed;
 
 const profile = reactive<AuthFieldsInterface>(
   {
@@ -155,7 +155,7 @@ const onSubmitForm = () => {
       .login(profile.email, profile.password)
       .then((successResponse: LoginResponse) => {
         sessionStore.setAccessToken(successResponse.data.accessToken);
-        profileStore.setEmail(profile.email);
+        profileStore.setLastEmailUsed(profile.email);
         emit("success", successResponse.data);
       })
       .catch((errorResponse) => {
