@@ -30,7 +30,7 @@ interface State {
   loRes: boolean;
 };
 
-export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAnalyzerSettingsStore', {
+export const useSidebarMiniSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniSpectrumAnalyzerSettingsStore', {
   state: (): State => ({
     visible: localStorageShowMiniSpectrumAnalyzer.get(),
     mode: localStoragePlayerMiniAnalyzerMode.get(),
@@ -147,5 +147,5 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAna
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useMiniSpectrumAnalyzerSettingsStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useSidebarMiniSpectrumAnalyzerSettingsStore, import.meta.hot));
 }

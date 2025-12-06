@@ -4,7 +4,7 @@
     <div style="width: 100%; height: 200px;" v-if="miniAnalogVumeterSettingsStore.visible">
       <AnalogVuMeter />
     </div>
-    <SpectrumAnalyzer v-if="miniSpectrumAnalyzerSettingsStore.isVisible" />
+    <SpectrumAnalyzer v-if="sidebarMiniSpectrumAnalyzerSettingsStore.isVisible" />
     <VolumeControl />
     <TrackInfo />
     <MainControls />
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
 import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
 import { default as AlbumCover } from "./Player/AlbumCover.vue";
 import { default as SpectrumAnalyzer } from "./Player/SpectrumAnalyzer.vue";
@@ -27,6 +27,6 @@ import { default as TrackActions } from "./Player/TrackActions.vue";
 
 
 const miniAnalogVumeterSettingsStore = useMiniAnalogVumeterSettingsStore();
-const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
+const sidebarMiniSpectrumAnalyzerSettingsStore = useSidebarMiniSpectrumAnalyzerSettingsStore();
 
 </script>

@@ -25,11 +25,11 @@ import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
 
 const playerStore = usePlayerStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
-const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
+const sidebarMiniSpectrumAnalyzerSettingsStore = useSidebarMiniSpectrumAnalyzerSettingsStore();
 
 const analyzer = ref(null);
 let canvas = null;
@@ -44,12 +44,12 @@ const defaultAnalyzerOptions = {
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
-  maxFPS: miniSpectrumAnalyzerSettingsStore.currentFPS,
+  maxFPS: sidebarMiniSpectrumAnalyzerSettingsStore.currentFPS,
   mode: 8,
   ledBars: true,
   showPeaks: false,
   trueLeds: true,
-  barSpace: miniSpectrumAnalyzerSettingsStore.currentBarSpace,
+  barSpace: sidebarMiniSpectrumAnalyzerSettingsStore.currentBarSpace,
   showScaleX: false,
   showScaleY: false,
   channelLayout: "single",

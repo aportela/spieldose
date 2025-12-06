@@ -96,120 +96,120 @@ import { useI18n } from "vue-i18n";
 
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
 
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
 
 const { t } = useI18n();
 
-const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
+const sidebarMiniSpectrumAnalyzerSettings = useSidebarMiniSpectrumAnalyzerSettingsStore();
 
-const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettings.visible);
+const showMiniSpectrumAnalyzer = ref(sidebarMiniSpectrumAnalyzerSettings.visible);
 
-const showPeaks = ref(miniSpectrumAnalyzerSettings.showPeaks);
+const showPeaks = ref(sidebarMiniSpectrumAnalyzerSettings.showPeaks);
 
-const ledBars = ref(miniSpectrumAnalyzerSettings.ledBarsActive);
+const ledBars = ref(sidebarMiniSpectrumAnalyzerSettings.ledBarsActive);
 
-const trueLeds = ref(miniSpectrumAnalyzerSettings.trueLedsActive);
+const trueLeds = ref(sidebarMiniSpectrumAnalyzerSettings.trueLedsActive);
 
-const loRes = ref(miniSpectrumAnalyzerSettings.isLoResActive);
+const loRes = ref(sidebarMiniSpectrumAnalyzerSettings.isLoResActive);
 
-const channelLayout = ref(miniSpectrumAnalyzerSettings.currentChannelLayout);
+const channelLayout = ref(sidebarMiniSpectrumAnalyzerSettings.currentChannelLayout);
 
-const fps = ref(miniSpectrumAnalyzerSettings.currentFPS);
+const fps = ref(sidebarMiniSpectrumAnalyzerSettings.currentFPS);
 
-const mode = ref(miniSpectrumAnalyzerSettings.currentMode);
+const mode = ref(sidebarMiniSpectrumAnalyzerSettings.currentMode);
 
-const barSpace = ref(miniSpectrumAnalyzerSettings.currentBarSpace);
+const barSpace = ref(sidebarMiniSpectrumAnalyzerSettings.currentBarSpace);
 
-const height = ref(miniSpectrumAnalyzerSettings.height);
+const height = ref(sidebarMiniSpectrumAnalyzerSettings.height);
 
-const gradient = ref(miniSpectrumAnalyzerSettings.currentGradient);
+const gradient = ref(sidebarMiniSpectrumAnalyzerSettings.currentGradient);
 
-watch(() => miniSpectrumAnalyzerSettings.visible, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.visible, (newValue) => {
   showMiniSpectrumAnalyzer.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.showPeaks, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.showPeaks, (newValue) => {
   showPeaks.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.ledBarsActive, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.ledBarsActive, (newValue) => {
   ledBars.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.trueLedsActive, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.trueLedsActive, (newValue) => {
   trueLeds.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.isLoResActive, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.isLoResActive, (newValue) => {
   loRes.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.currentFPS, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.currentFPS, (newValue) => {
   fps.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.currentMode, (newValue,) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.currentMode, (newValue,) => {
   mode.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.currentBarSpace, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.currentBarSpace, (newValue) => {
   barSpace.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.height, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.height, (newValue) => {
   height.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.channelLayout, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.channelLayout, (newValue) => {
   channelLayout.value = newValue;
 });
 
-watch(() => miniSpectrumAnalyzerSettings.gradient, (newValue) => {
+watch(() => sidebarMiniSpectrumAnalyzerSettings.gradient, (newValue) => {
   gradient.value = newValue;
 });
 
 const onChangeShowMiniSpectrumAnalyzer = (visible) => {
-  miniSpectrumAnalyzerSettings.setVisibility(visible);
+  sidebarMiniSpectrumAnalyzerSettings.setVisibility(visible);
 };
 
 const onChangeFPS = (fps) => {
-  miniSpectrumAnalyzerSettings.setFPS(fps);
+  sidebarMiniSpectrumAnalyzerSettings.setFPS(fps);
 }
 
 const onChangeMode = (mode) => {
-  miniSpectrumAnalyzerSettings.setMode(mode);
+  sidebarMiniSpectrumAnalyzerSettings.setMode(mode);
 };
 
 const onChangeBarSpace = (space) => {
-  miniSpectrumAnalyzerSettings.setBarSpace(space);
+  sidebarMiniSpectrumAnalyzerSettings.setBarSpace(space);
 }
 
 const onChangeHeight = (height) => {
-  miniSpectrumAnalyzerSettings.setHeight(height);
+  sidebarMiniSpectrumAnalyzerSettings.setHeight(height);
 };
 
 const onChangeChannelLayout = (layout) => {
-  miniSpectrumAnalyzerSettings.setChannelLayout(layout);
+  sidebarMiniSpectrumAnalyzerSettings.setChannelLayout(layout);
 }
 
 const onChangeGradient = (gradient) => {
-  miniSpectrumAnalyzerSettings.setGradient(gradient);
+  sidebarMiniSpectrumAnalyzerSettings.setGradient(gradient);
 }
 
 const onChangeShowPeaks = (visible) => {
-  miniSpectrumAnalyzerSettings.setPeaksVisibility(visible);
+  sidebarMiniSpectrumAnalyzerSettings.setPeaksVisibility(visible);
 };
 
 const onChangeLedBars = (active) => {
-  miniSpectrumAnalyzerSettings.setLedBars(active);
+  sidebarMiniSpectrumAnalyzerSettings.setLedBars(active);
 };
 
 const onChangeTrueLeds = (active) => {
-  miniSpectrumAnalyzerSettings.setTrueLeds(active);
+  sidebarMiniSpectrumAnalyzerSettings.setTrueLeds(active);
 };
 
 const onChangeLoRes = (active) => {
-  miniSpectrumAnalyzerSettings.setLoRes(active);
+  sidebarMiniSpectrumAnalyzerSettings.setLoRes(active);
 }
 
 </script>

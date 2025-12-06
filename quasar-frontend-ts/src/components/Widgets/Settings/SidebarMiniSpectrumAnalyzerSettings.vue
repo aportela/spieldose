@@ -72,11 +72,11 @@
 
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
 
 const { t } = useI18n();
 
-const store = useMiniSpectrumAnalyzerSettingsStore();
+const store = useSidebarMiniSpectrumAnalyzerSettingsStore();
 
 const showMiniSpectrumAnalyzer = computed({
   get() {

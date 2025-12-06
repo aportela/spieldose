@@ -16,8 +16,8 @@ const {
   playerMiniAnalyzerLoRes,
 } = useLocalStorage();
 
-export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
-  "miniSpectrumAnalyzerSettings",
+export const useSidebarMiniSpectrumAnalyzerSettingsStore = defineStore(
+  "sidebarMiniSpectrumAnalyzerSettings",
   {
     state: () => ({
       visible: showMiniSpectrumAnalyzer.get() ?? true,
@@ -44,7 +44,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore(
       ledBarsActive: (state) => state.ledBars,
       trueLedsActive: (state) => state.trueLeds,
       currentGradient: (state) => state.gradient,
-      isLoResActive: (state) => state.loRes
+      isLoResActive: (state) => state.loRes,
     },
     actions: {
       setVisibility(visible) {

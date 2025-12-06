@@ -2,7 +2,7 @@
   <div id="current_track_actions">
     <q-btn-group spread>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon
-          name="bar_chart" :color="miniSpectrumAnalyzerSettings.isVisible ? 'pink' : ''"></q-icon></q-btn>
+          name="bar_chart" :color="sidebarMiniSpectrumAnalyzerSettings.isVisible ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle shuffle"><q-icon name="shuffle"
           :color="playerStore.shuffleMode ? 'pink' : ''" @click="playerStore.toggleShuffeMode"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel"
@@ -30,12 +30,12 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { bus } from "src/composables/bus";
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
+import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
 
 import { useCurrentPlaylistItemStore } from 'src/stores/currentPlaylistItem';
 import { usePlayerStore } from "src/stores/player";
 
-const miniSpectrumAnalyzerSettings = useMiniSpectrumAnalyzerSettingsStore();
+const sidebarMiniSpectrumAnalyzerSettings = useSidebarMiniSpectrumAnalyzerSettingsStore();
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
@@ -84,7 +84,7 @@ const repeatModeLabel = computed(() => {
 });
 
 function onToggleAnalyzer() {
-  miniSpectrumAnalyzerSettings.setVisibility(!miniSpectrumAnalyzerSettings.isVisible);
+  sidebarMiniSpectrumAnalyzerSettings.setVisibility(!sidebarMiniSpectrumAnalyzerSettings.isVisible);
 }
 
 function onToggleVisualization() {
