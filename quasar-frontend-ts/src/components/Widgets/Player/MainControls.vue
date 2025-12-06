@@ -20,7 +20,7 @@ import { computed } from "vue";
 import { usePlayerStore } from 'src/stores/player';
 import { togglePlay, skipPrevious, skipNext } from "src/composables/playerActions";
 
-const props = defineProps({
+defineProps({
   disabled: {
     type: Boolean,
     required: false,
