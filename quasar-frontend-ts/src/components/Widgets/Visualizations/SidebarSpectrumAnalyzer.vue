@@ -1,6 +1,6 @@
 <template>
   <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
-    :style="{ height: sidebarMiniSpectrumAnalyzerSettingsStore.currentHeight + 'px' }"
+    :style="{ height: sidebarSpectrumAnalyzerSettingsStore.currentHeight + 'px' }"
     :title="t('Toggle analyzer octave bands number')" @click="onToggleCurrentMode"></div>
 </template>
 
@@ -10,13 +10,13 @@ import { useI18n } from "vue-i18n";
 import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface, type GradientOptions as GradientOptionsInterface } from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
-import { useSidebarMiniSpectrumAnalyzerSettingsStore } from "src/stores/sidebarMiniSpectrumAnalyzerSettings";
+import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 
 const { t } = useI18n();
 
 const playerStore = usePlayerStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
-const sidebarMiniSpectrumAnalyzerSettingsStore = useSidebarMiniSpectrumAnalyzerSettingsStore();
+const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
 const analyzerInstance = ref<AudioMotionAnalyzer | null>(null);
 
@@ -31,17 +31,17 @@ const defaultAnalyzerOptions = {
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
-  loRes: sidebarMiniSpectrumAnalyzerSettingsStore.isLoResActive,
-  maxFPS: sidebarMiniSpectrumAnalyzerSettingsStore.currentFPS,
-  mode: sidebarMiniSpectrumAnalyzerSettingsStore.currentMode,
-  ledBars: sidebarMiniSpectrumAnalyzerSettingsStore.ledBarsActive,
-  showPeaks: sidebarMiniSpectrumAnalyzerSettingsStore.showPeaks,
-  trueLeds: sidebarMiniSpectrumAnalyzerSettingsStore.trueLedsActive,
-  barSpace: sidebarMiniSpectrumAnalyzerSettingsStore.currentBarSpace,
+  loRes: sidebarSpectrumAnalyzerSettingsStore.isLoResActive,
+  maxFPS: sidebarSpectrumAnalyzerSettingsStore.currentFPS,
+  mode: sidebarSpectrumAnalyzerSettingsStore.currentMode,
+  ledBars: sidebarSpectrumAnalyzerSettingsStore.ledBarsActive,
+  showPeaks: sidebarSpectrumAnalyzerSettingsStore.showPeaks,
+  trueLeds: sidebarSpectrumAnalyzerSettingsStore.trueLedsActive,
+  barSpace: sidebarSpectrumAnalyzerSettingsStore.currentBarSpace,
   showScaleX: false,
   showScaleY: false,
-  channelLayout: sidebarMiniSpectrumAnalyzerSettingsStore.currentChannelLayout,
-  colorMode: sidebarMiniSpectrumAnalyzerSettingsStore.currentColorMode,
+  channelLayout: sidebarSpectrumAnalyzerSettingsStore.currentChannelLayout,
+  colorMode: sidebarSpectrumAnalyzerSettingsStore.currentColorMode,
   splitGradient: false,
   bgAlpha: 1,
   overlay: true,
@@ -58,78 +58,78 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentMode, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentMode, (newValue) => {
   if (analyzerInstance.value && (newValue == 10 || (newValue >= 0 && newValue <= 8))) {
-    analyzerInstance.value.setOptions({ mode: newValue, barSpace: sidebarMiniSpectrumAnalyzerSettingsStore.currentBarSpace });
+    analyzerInstance.value.setOptions({ mode: newValue, barSpace: sidebarSpectrumAnalyzerSettingsStore.currentBarSpace });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentBarSpace, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentBarSpace, (newValue) => {
   if (analyzerInstance.value && newValue >= 0 && newValue <= 1) {
-    analyzerInstance.value.setOptions({ mode: sidebarMiniSpectrumAnalyzerSettingsStore.currentMode, barSpace: newValue });
+    analyzerInstance.value.setOptions({ mode: sidebarSpectrumAnalyzerSettingsStore.currentMode, barSpace: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
   if (analyzerInstance.value && newValue >= 0 && newValue <= 144) {
     analyzerInstance.value.setOptions({ maxFPS: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
   if (analyzerInstance.value && newValue > 0) {
     analyzerInstance.value.setOptions({ height: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ channelLayout: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentColorMode, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentColorMode, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ colorMode: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.currentGradient, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.currentGradient, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ gradient: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ showPeaks: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ ledBars: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ trueLeds: newValue });
   }
 });
 
-watch(() => sidebarMiniSpectrumAnalyzerSettingsStore.isLoResActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.isLoResActive, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ loRes: newValue });
   }
 });
 
 const onToggleCurrentMode = () => {
-  let mode = sidebarMiniSpectrumAnalyzerSettingsStore.currentMode;
+  let mode = sidebarSpectrumAnalyzerSettingsStore.currentMode;
   if (++mode > 8) {
     mode = 1;
   }
-  sidebarMiniSpectrumAnalyzerSettingsStore.setMode(mode);
+  sidebarSpectrumAnalyzerSettingsStore.setMode(mode);
 };
 
 const startAnalyzer = (): void => {
@@ -166,7 +166,7 @@ const createAudioMotionAnalyzerInstance = (constructorOptions: AudioMotionAnalyz
         ]
       }
       analyzerInstance.value.registerGradient('spieldose', gradientOptions);
-      analyzerInstance.value.gradient = sidebarMiniSpectrumAnalyzerSettingsStore.currentGradient;
+      analyzerInstance.value.gradient = sidebarSpectrumAnalyzerSettingsStore.currentGradient;
       if (start) {
         startAnalyzer();
       }
