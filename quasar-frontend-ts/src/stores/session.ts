@@ -1,12 +1,14 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { showToolTips as localStorageShowToolTips } from "src/composables/localStorage";
+import { createStorageEntry } from "src/composables/localStorage";
+
+const localStorageShowToolTips = createStorageEntry<boolean>("session.showToolTips", true);
 
 interface State {
   tokens: {
     access: string | null;
   };
   other: {
-    toolTips: boolean;
+    showToolTips: boolean;
   };
 };
 
@@ -16,7 +18,7 @@ export const useSessionStore = defineStore("session", {
       access: null,
     },
     other: {
-      toolTips: localStorageShowToolTips.get(),
+      showToolTips: localStorageShowToolTips.get(),
     },
   }),
   getters: {
@@ -26,8 +28,8 @@ export const useSessionStore = defineStore("session", {
     accessToken(state): string | null {
       return state.tokens.access
     },
-    toolTipsEnabled(state): boolean {
-      return (state.other.toolTips);
+    showToolTips(state): boolean {
+      return (state.other.showToolTips);
     },
   },
   actions: {
@@ -38,8 +40,8 @@ export const useSessionStore = defineStore("session", {
       this.tokens.access = null;
     },
     toggleToolTips(enabled: boolean) {
-      this.other.toolTips = enabled;
-      localStorageShowToolTips.set(this.other.toolTips);
+      this.other.showToolTips = enabled;
+      localStorageShowToolTips.set(this.other.showToolTips);
     }
   },
 });

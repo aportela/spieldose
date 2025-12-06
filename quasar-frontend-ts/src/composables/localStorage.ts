@@ -39,7 +39,6 @@ const createStorageEntry = <T extends StorageValue>(
 
 const darkMode = createStorageEntry<boolean>("darkMode", false);
 const locale = createStorageEntry<string | null>("locale", null);
-const showToolTips = createStorageEntry<boolean>("showToolTips", true);
 const playerVolume = createStorageEntry<number>("playerVolume", 1);
 const playerMuted = createStorageEntry<boolean>("playerMuted", false);
 const showMiniAnalogVumeter = createStorageEntry<boolean>("showMiniAnalogVumeter", false);
@@ -63,7 +62,6 @@ export {
   createStorageEntry,
   darkMode,
   locale,
-  showToolTips,
   playerVolume,
   playerMuted,
   showMiniAnalogVumeter,

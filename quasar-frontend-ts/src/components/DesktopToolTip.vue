@@ -1,5 +1,5 @@
 <template>
-  <q-tooltip v-if="isDesktop && sessionStore.toolTipsEnabled" :delay="delay" :anchor="anchor" :self="self"
+  <q-tooltip v-if="isDesktop && sessionStore.showToolTips" :delay="delay" :anchor="anchor" :self="self"
     :offset="offset">
     <slot></slot>
   </q-tooltip>
