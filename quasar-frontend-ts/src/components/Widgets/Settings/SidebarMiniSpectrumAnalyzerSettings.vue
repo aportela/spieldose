@@ -76,113 +76,113 @@ import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAna
 
 const { t } = useI18n();
 
-const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
+const store = useMiniSpectrumAnalyzerSettingsStore();
 
 const showMiniSpectrumAnalyzer = computed({
   get() {
-    return miniSpectrumAnalyzerSettingsStore.visible;
+    return store.visible;
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setVisibility(value);
+    store.setVisibility(value);
   }
 });
 
 const showPeaks = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.showPeaks);
+    return (store.showPeaks);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setPeaksVisibility(value);
+    store.setPeaksVisibility(value);
   }
 });
 
 const ledBars = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.ledBarsActive);
+    return (store.ledBarsActive);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setLedBars(value);
+    store.setLedBars(value);
   }
 });
 
 const trueLeds = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.trueLedsActive);
+    return (store.trueLedsActive);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setTrueLeds(value);
+    store.setTrueLeds(value);
   }
 });
 
 const loRes = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.isLoResActive);
+    return (store.isLoResActive);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setLoRes(value);
+    store.setLoRes(value);
   }
 });
 
 const channelLayout = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentChannelLayout);
+    return (store.currentChannelLayout);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setChannelLayout(value);
+    store.setChannelLayout(value);
   }
 });
 
 const fps = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentFPS);
+    return (store.currentFPS);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setFPS(value);
+    store.setFPS(value);
   }
 });
 
 const mode = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentMode);
+    return (store.currentMode);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setMode(value);
+    store.setMode(value);
   }
 });
 
 const barSpace = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentBarSpace);
+    return (store.currentBarSpace);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setBarSpace(value);
+    store.setBarSpace(value);
   }
 });
 
 const height = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.height);
+    return (store.height);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setHeight(value);
+    store.setHeight(value);
   }
 });
 
 const colorMode = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentColorMode);
+    return (store.currentColorMode);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setColorMode(value);
+    store.setColorMode(value);
   }
 });
 
 const gradient = computed({
   get() {
-    return (miniSpectrumAnalyzerSettingsStore.currentGradient);
+    return (store.currentGradient);
   },
   set(value) {
-    miniSpectrumAnalyzerSettingsStore.setGradient(value);
+    store.setGradient(value);
   }
 });
 
