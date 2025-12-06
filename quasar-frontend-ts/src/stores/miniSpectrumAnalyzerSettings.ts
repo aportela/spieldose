@@ -9,10 +9,11 @@ import {
   playerMiniAnalyzerShowPeaks as localStoragePlayerMiniAnalyzerShowPeaks,
   playerMiniAnalyzerLedBars as localStoragePlayerMiniAnalyzerLedBars,
   playerMiniAnalyzerTrueLeds as localStoragePlayerMiniAnalyzerTrueLeds,
+  playerMiniAnalyzerColorMode as localStoragePlayerMiniAnalyzerColorMode,
   playerMiniAnalyzerGradient as localStoragePlayerMiniAnalyzerGradient,
   playerMiniAnalyzerLoRes as localStoragePlayerMiniAnalyzerLoRes,
 } from 'src/composables/localStorage';
-import { type SpectrumAnalyzerChannelLayout } from 'src/types/common';
+import { type SpectrumAnalyzerChannelLayout, type AudioMotionAnalyzerOptionColorMode } from 'src/types/common';
 
 interface State {
   visible: boolean;
@@ -24,6 +25,7 @@ interface State {
   peaks: boolean;
   ledBars: boolean;
   trueLeds: boolean;
+  colorMode: AudioMotionAnalyzerOptionColorMode;
   gradient: string;
   loRes: boolean;
 };
@@ -39,6 +41,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAna
     peaks: localStoragePlayerMiniAnalyzerShowPeaks.get(),
     ledBars: localStoragePlayerMiniAnalyzerLedBars.get(),
     trueLeds: localStoragePlayerMiniAnalyzerTrueLeds.get(),
+    colorMode: localStoragePlayerMiniAnalyzerColorMode.get(),
     gradient: localStoragePlayerMiniAnalyzerGradient.get(),
     loRes: localStoragePlayerMiniAnalyzerLoRes.get(),
   }),
@@ -52,6 +55,7 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAna
     showPeaks: (state) => state.peaks,
     ledBarsActive: (state) => state.ledBars,
     trueLedsActive: (state) => state.trueLeds,
+    currentColorMode: (state) => state.colorMode,
     currentGradient: (state) => state.gradient,
     isLoResActive: (state) => state.loRes
   },
@@ -119,6 +123,10 @@ export const useMiniSpectrumAnalyzerSettingsStore = defineStore('miniSpectrumAna
     setTrueLeds(active: boolean) {
       this.trueLeds = active;
       localStoragePlayerMiniAnalyzerTrueLeds.set(this.trueLeds);
+    },
+    setColorMode(colorMode: AudioMotionAnalyzerOptionColorMode) {
+      this.colorMode = colorMode;
+      localStoragePlayerMiniAnalyzerColorMode.set(this.colorMode);
     },
     setGradient(gradient: string) {
       if (gradient) {

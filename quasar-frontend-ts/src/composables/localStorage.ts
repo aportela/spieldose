@@ -1,6 +1,7 @@
 import { LocalStorage } from "quasar";
 import { LOCAL_STORAGE_NAMESPACE } from "src/constants";
 import { type VinylAnimation, type SpectrumAnalyzerChannelLayout } from "src/types/common";
+import { type AudioMotionAnalyzerOptionColorMode } from "src/types/common";
 
 export type StorageValue = string | number | boolean | null | object;
 
@@ -54,6 +55,7 @@ const playerMiniAnalyzerChannelLayout = createStorageEntry<SpectrumAnalyzerChann
 const playerMiniAnalyzerShowPeaks = createStorageEntry<boolean>("playerMiniAnalyzerShowPeaks", true);
 const playerMiniAnalyzerLedBars = createStorageEntry<boolean>("playerMiniAnalyzerLedBars", true);
 const playerMiniAnalyzerTrueLeds = createStorageEntry<boolean>("playerMiniAnalyzerTrueLeds", true);
+const playerMiniAnalyzerColorMode = createStorageEntry<AudioMotionAnalyzerOptionColorMode>("playerMiniAnalyzerColorMode", "gradient");
 const playerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerGradient", "spieldose");
 const playerMiniAnalyzerLoRes = createStorageEntry<boolean>("playerMiniAnalyzerLoRes", false);
 const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
@@ -75,6 +77,7 @@ export {
   playerMiniAnalyzerShowPeaks,
   playerMiniAnalyzerLedBars,
   playerMiniAnalyzerTrueLeds,
+  playerMiniAnalyzerColorMode,
   playerMiniAnalyzerGradient,
   playerMiniAnalyzerLoRes,
   playerVinylAnimation,

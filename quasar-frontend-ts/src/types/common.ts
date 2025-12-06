@@ -26,6 +26,8 @@ const sortOrderSelectorOptions: SelectorOption[] = [
   }
 ];
 
+type AudioMotionAnalyzerOptionColorMode = "gradient" | "bar-index" | "bar-level";
+
 export {
-  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type SortOrder, type SelectorOption, sortOrderSelectorOptions
+  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type SortOrder, type SelectorOption, sortOrderSelectorOptions, type AudioMotionAnalyzerOptionColorMode
 };
