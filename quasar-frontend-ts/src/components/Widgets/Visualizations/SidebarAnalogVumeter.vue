@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface } from "audiomotion-analyzer";
 import { usePlayerStore } from "src/stores/player";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
@@ -37,8 +37,10 @@ let canvas: HTMLCanvasElement | null;
 let ctx: CanvasRenderingContext2D | null;
 let displayedEnergy: number = 0;
 let lastTime: number = 0;
-const maxFPS: number = 60;
-const fpsInterval: number = 1000 / maxFPS;
+//const maxFPS: number = 60;
+//const fpsInterval: number = 1000 / maxFPS;
+
+const fpsInterval = computed(() => sidebarAnalogVumeterSettingsStore.currentFPS > 0 ? 1000 / sidebarAnalogVumeterSettingsStore.currentFPS : 0);
 
 const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   source: audioMotionAnalyzerStore.audioInstance,
@@ -49,7 +51,7 @@ const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsIn
 const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   useCanvas: false,
   channelLayout: "single",
-  maxFPS: maxFPS,
+  maxFPS: sidebarAnalogVumeterSettingsStore.currentFPS,
   mode: 8, // 10 bands (min)
 };
 
@@ -116,7 +118,7 @@ const destroyAudioMotionAnalyzerInstance = () => {
 };
 
 const smoothEnergy = (target: number) => {
-  displayedEnergy += (target - displayedEnergy) * sidebarAnalogVumeterSettingsStore.currentSmoothFactor; // smooth factor
+  displayedEnergy += (target - displayedEnergy) * sidebarAnalogVumeterSettingsStore.currentSmoothFactor;
   return displayedEnergy;
 }
 
@@ -143,10 +145,16 @@ const drawCanvasVuMeterBar = (angle: number) => {
   ctx!.restore();
 }
 
+let animationId: number | null = null;
+
 const refreshVuMeter = (timestamp: number) => {
   const elapsed = timestamp - lastTime;
-  if (elapsed > fpsInterval) {
-    lastTime = timestamp - (elapsed % fpsInterval);
+  if (elapsed > fpsInterval.value) {
+    if (fpsInterval.value > 0) { // 0 = unlimited FPS
+      lastTime = timestamp - (elapsed % fpsInterval.value);
+    } else {
+      lastTime = timestamp;
+    }
     // TODO: use getBars for allowing stereoc channels
     //
     const energy = smoothEnergy(analyzerInstance.value!.getEnergy());
@@ -154,7 +162,7 @@ const refreshVuMeter = (timestamp: number) => {
     drawCanvasVuMeterBar(angle);
   }
   // TODO: limit fps
-  requestAnimationFrame(refreshVuMeter);
+  animationId = requestAnimationFrame(refreshVuMeter);
 };
 
 onMounted(() => {
@@ -168,6 +176,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+  }
   destroyAudioMotionAnalyzerInstance();
 });
 

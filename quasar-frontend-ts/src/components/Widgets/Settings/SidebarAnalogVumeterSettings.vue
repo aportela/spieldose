@@ -11,6 +11,16 @@
       <p class="q-mt-xl"><q-slider :disable="!visible" label label-always
           :label-value="'Smooth factor: ' + smoothFactor" v-model.number="smoothFactor" :min="0.1" :max="1.0"
           :step="0.1" /></p>
+      <p><q-btn-toggle spread size="md" :disable="!visible" v-model="fps" toggle-color="primary" no-caps :options="[
+        { label: '10fps', value: 10 },
+        { label: '15fps', value: 15 },
+        { label: '30fps', value: 30 },
+        { label: '60fps', value: 60 },
+        { label: '90fps', value: 90 },
+        { label: '120fps', value: 120 },
+        { label: '144fps', value: 144 },
+        { label: 'unlimited fps', value: 0 },
+      ]" /></p>
     </q-card-section>
   </q-card>
 </template>
@@ -40,6 +50,15 @@ const smoothFactor = computed({
   },
   set(value) {
     store.setSmoothFactor(value);
+  }
+});
+
+const fps = computed({
+  get() {
+    return (store.currentFPS);
+  },
+  set(value) {
+    store.setFPS(value);
   }
 });
 
