@@ -118,11 +118,8 @@ const mapEnergyToAngle = (energy: number) => {
 const drawCanvasVuMeterBar = (angle: number) => {
   const centerX = canvas!.width / 2;
   const centerY = canvas!.height;
-  const radius = canvas!.height + (canvas!.height / 10); // vu-meter bar length
-
-  // clear previous canvas value
+  const radius = 130;
   ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-
   ctx!.save();
   ctx!.translate(centerX, centerY);
   ctx!.rotate((angle * Math.PI) / 180);
