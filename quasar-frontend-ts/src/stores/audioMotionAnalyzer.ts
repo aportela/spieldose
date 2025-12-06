@@ -4,7 +4,6 @@ import { usePlayerStore } from "./player";
 const playerStore = usePlayerStore();
 
 interface State {
-  audioInstance: HTMLAudioElement | null,
   options: {
     instanced: boolean;
     connectSpeakers: boolean;
@@ -13,7 +12,6 @@ interface State {
 
 export const useAudioMotionAnalyzerStore = defineStore('audioMotionAnalyzerStore', {
   state: (): State => ({
-    audioInstance: null,
     options: {
       instanced: false,
       connectSpeakers: true,
@@ -25,9 +23,6 @@ export const useAudioMotionAnalyzerStore = defineStore('audioMotionAnalyzerStore
     connectSpeakers: (state) => state.options.connectSpeakers,
   },
   actions: {
-    setAudio(audio: HTMLAudioElement) {
-      this.audioInstance = audio;
-    },
     instance() {
       this.options.instanced = true;
       // disable connected Speakers for next instances
