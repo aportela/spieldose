@@ -17,18 +17,7 @@
         <SidebarSpectrumAnalyzerSettings />
       </div>
       <div class="col-lg-4 col-xl-4 col-12 flex">
-        <q-card class="full-width">
-          <q-item class="theme-default-q-card-section-header">
-            Mini Analog Vumeter Settings
-          </q-item>
-          <q-separator />
-          <q-card-section>
-            <p>
-              <q-toggle v-model="showMiniAnalogVumeter" label="visible"
-                @update:model-value="onChangeShowMiniAnalogVumeter" />
-            </p>
-          </q-card-section>
-        </q-card>
+        <SidebarAnalogVumeterSettings />
       </div>
     </div>
   </q-page>
@@ -36,29 +25,12 @@
 
 <script setup lang="ts">
 
-import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
-import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
 import { default as SidebarSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarSpectrumAnalyzerSettings.vue";
+import { default as SidebarAnalogVumeterSettings } from "src/components/Widgets/Settings/SidebarAnalogVumeterSettings.vue";
 
 const { t } = useI18n();
-
-
-const sidebarAnalogVumeterSettingsStore = useSidebarAnalogVumeterSettingsStore();
-
-const showMiniAnalogVumeter = ref(sidebarAnalogVumeterSettingsStore.visible);
-
-
-watch(() => sidebarAnalogVumeterSettingsStore.visible, (newValue) => {
-  showMiniAnalogVumeter.value = newValue;
-});
-
-
-
-const onChangeShowMiniAnalogVumeter = (visible: boolean) => {
-  sidebarAnalogVumeterSettingsStore.setVisibility(visible);
-};
 
 </script>
 
