@@ -6,35 +6,39 @@ const localStorageSidebarAnalogVumeterSmoothFactor = createStorageEntry<number>(
 const localStorageSidebarAnalogVumeterFPS = createStorageEntry<number>("visualizations.sidebar.analogVumeter.fps", 30);
 
 interface State {
-  visible: boolean;
-  smoothFactor: number;
-  fps: number;
+  settings: {
+    visible: boolean;
+    smoothFactor: number;
+    fps: number;
+  }
 };
 
 export const useSidebarAnalogVumeterSettingsStore = defineStore('sidebarAnalogVumeterSettingsStore', {
   state: (): State => ({
-    visible: localStorageShowMiniAnalogVumeter.get(),
-    smoothFactor: localStorageSidebarAnalogVumeterSmoothFactor.get(),
-    fps: localStorageSidebarAnalogVumeterFPS.get(),
+    settings: {
+      visible: localStorageShowMiniAnalogVumeter.get(),
+      smoothFactor: localStorageSidebarAnalogVumeterSmoothFactor.get(),
+      fps: localStorageSidebarAnalogVumeterFPS.get(),
+    },
   }),
   getters: {
-    isVisible: (state) => state.visible,
-    currentSmoothFactor: (state) => state.smoothFactor,
-    currentFPS: (state) => state.fps,
+    visible: (state) => state.settings.visible,
+    smoothFactor: (state) => state.settings.smoothFactor,
+    fps: (state) => state.settings.fps,
   },
   actions: {
     setVisibility(visible: boolean) {
-      this.visible = visible;
-      localStorageShowMiniAnalogVumeter.set(this.visible);
+      this.settings.visible = visible;
+      localStorageShowMiniAnalogVumeter.set(this.settings.visible);
     },
     setSmoothFactor(factor: number) {
-      this.smoothFactor = factor;
-      localStorageSidebarAnalogVumeterSmoothFactor.set(this.smoothFactor);
+      this.settings.smoothFactor = factor;
+      localStorageSidebarAnalogVumeterSmoothFactor.set(this.settings.smoothFactor);
     },
     setFPS(fps: number) {
       if (fps >= 0 && fps <= 144) {
-        this.fps = fps;
-        localStorageSidebarAnalogVumeterFPS.set(this.fps);
+        this.settings.fps = fps;
+        localStorageSidebarAnalogVumeterFPS.set(this.settings.fps);
       } else {
         console.error(
           "Sidebar analog vumeter settings = setFPS() => invalid fps",

@@ -40,7 +40,7 @@ let lastTime: number = 0;
 //const maxFPS: number = 60;
 //const fpsInterval: number = 1000 / maxFPS;
 
-const fpsInterval = computed(() => sidebarAnalogVumeterSettingsStore.currentFPS > 0 ? 1000 / sidebarAnalogVumeterSettingsStore.currentFPS : 0);
+const fpsInterval = computed(() => sidebarAnalogVumeterSettingsStore.fps > 0 ? 1000 / sidebarAnalogVumeterSettingsStore.fps : 0);
 
 const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   source: audioMotionAnalyzerStore.audioInstance,
@@ -51,7 +51,7 @@ const defaultAnalyzerConstructorOptions: AudioMotionAnalyzerConstructorOptionsIn
 const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   useCanvas: false,
   channelLayout: "single",
-  maxFPS: sidebarAnalogVumeterSettingsStore.currentFPS,
+  maxFPS: sidebarAnalogVumeterSettingsStore.fps,
   mode: 8, // 10 bands (min)
 };
 
@@ -118,7 +118,7 @@ const destroyAudioMotionAnalyzerInstance = () => {
 };
 
 const smoothEnergy = (target: number) => {
-  displayedEnergy += (target - displayedEnergy) * sidebarAnalogVumeterSettingsStore.currentSmoothFactor;
+  displayedEnergy += (target - displayedEnergy) * sidebarAnalogVumeterSettingsStore.smoothFactor;
   return displayedEnergy;
 }
 

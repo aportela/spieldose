@@ -46,7 +46,7 @@ const visible = computed({
 
 const smoothFactor = computed({
   get() {
-    return store.currentSmoothFactor;
+    return store.smoothFactor;
   },
   set(value) {
     store.setSmoothFactor(value);
@@ -55,7 +55,7 @@ const smoothFactor = computed({
 
 const fps = computed({
   get() {
-    return (store.currentFPS);
+    return (store.fps);
   },
   set(value) {
     store.setFPS(value);
