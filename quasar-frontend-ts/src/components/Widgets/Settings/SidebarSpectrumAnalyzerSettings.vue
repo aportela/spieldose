@@ -1,7 +1,7 @@
 <template>
   <q-card class="full-width">
     <q-item class="theme-default-q-card-section-header">
-      {{ t('Sidebar mini spectrum analyzer settings') }}
+      {{ t('Sidebar spectrum analyzer settings') }}
     </q-item>
     <q-separator />
     <q-card-section>
