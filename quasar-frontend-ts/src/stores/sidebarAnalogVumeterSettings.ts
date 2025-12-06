@@ -5,7 +5,7 @@ interface State {
   visible: boolean;
 };
 
-export const useMiniAnalogVumeterSettingsStore = defineStore('miniAnalogVumeterStore', {
+export const useSidebarAnalogVumeterSettingsStore = defineStore('sidebarAnalogVumeterSettingsStore', {
   state: (): State => ({
     visible: localStorageShowMiniAnalogVumeter.get(),
   }),
@@ -21,5 +21,5 @@ export const useMiniAnalogVumeterSettingsStore = defineStore('miniAnalogVumeterS
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useMiniAnalogVumeterSettingsStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useSidebarAnalogVumeterSettingsStore, import.meta.hot));
 }

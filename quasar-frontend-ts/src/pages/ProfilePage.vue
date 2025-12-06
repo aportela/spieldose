@@ -39,25 +39,25 @@
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
-import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
+import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
 import { default as SidebarMiniSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarMiniSpectrumAnalyzerSettings.vue";
 
 const { t } = useI18n();
 
 
-const miniAnalogVumeterSettingsStore = useMiniAnalogVumeterSettingsStore();
+const sidebarAnalogVumeterSettingsStore = useSidebarAnalogVumeterSettingsStore();
 
-const showMiniAnalogVumeter = ref(miniAnalogVumeterSettingsStore.visible);
+const showMiniAnalogVumeter = ref(sidebarAnalogVumeterSettingsStore.visible);
 
 
-watch(() => miniAnalogVumeterSettingsStore.visible, (newValue) => {
+watch(() => sidebarAnalogVumeterSettingsStore.visible, (newValue) => {
   showMiniAnalogVumeter.value = newValue;
 });
 
 
 
 const onChangeShowMiniAnalogVumeter = (visible: boolean) => {
-  miniAnalogVumeterSettingsStore.setVisibility(visible);
+  sidebarAnalogVumeterSettingsStore.setVisibility(visible);
 };
 
 </script>
