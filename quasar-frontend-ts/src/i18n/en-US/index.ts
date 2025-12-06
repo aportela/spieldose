@@ -33,6 +33,11 @@ export default {
   "My profile": "My profile",
   "Sign out": "Sign out",
 
+  "Personal information": "Personal information",
+  "Update your data": "Update your data",
+  "New password": "New password",
+  "Update profile": "Update profile",
+
   "Toggle analyzer octave bands number": "Toggle analyzer octave bands number",
   "Toggle art animation": "Toggle art animation",
 
