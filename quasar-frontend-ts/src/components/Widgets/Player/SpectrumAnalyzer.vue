@@ -41,7 +41,7 @@ const defaultAnalyzerOptions = {
   showScaleX: false,
   showScaleY: false,
   channelLayout: miniSpectrumAnalyzerSettingsStore.currentChannelLayout,
-  colorMode: 'gradient',
+  colorMode: miniSpectrumAnalyzerSettingsStore.currentColorMode,
   splitGradient: false,
   bgAlpha: 1,
   overlay: true,
