@@ -12,6 +12,7 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { api } from "src/composables/api";
 import { useSessionStore } from "src/stores/session";
+import { usePlayerStore } from "src/stores/player";
 import { sidebarMenuItems } from "src/types/menu-item";
 
 interface TopHeaderMenuProps {
@@ -23,8 +24,10 @@ defineProps<TopHeaderMenuProps>();
 const { t } = useI18n();
 const router = useRouter();
 const sessionStore = useSessionStore();
+const playerStore = usePlayerStore();
 
 const logout = () => {
+  playerStore.stop();
   api.auth
     .logout()
     .then(() => {
