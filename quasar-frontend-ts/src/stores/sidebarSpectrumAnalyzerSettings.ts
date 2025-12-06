@@ -1,19 +1,19 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import {
-  showMiniSpectrumAnalyzer as localStorageShowMiniSpectrumAnalyzer,
-  playerMiniAnalyzerMode as localStoragePlayerMiniAnalyzerMode,
-  playerMiniAnalyzerFPS as localStoragePlayerMiniAnalyzerFPS,
-  playerMiniAnalyzerBarSpace as localStoragePlayerMiniAnalyzerBarSpace,
-  playerMiniAnalyzerHeight as localStoragePlayerMiniAnalyzerHeight,
-  playerMiniAnalyzerChannelLayout as localStoragePlayerMiniAnalyzerChannelLayout,
-  playerMiniAnalyzerShowPeaks as localStoragePlayerMiniAnalyzerShowPeaks,
-  playerMiniAnalyzerLedBars as localStoragePlayerMiniAnalyzerLedBars,
-  playerMiniAnalyzerTrueLeds as localStoragePlayerMiniAnalyzerTrueLeds,
-  playerMiniAnalyzerColorMode as localStoragePlayerMiniAnalyzerColorMode,
-  playerMiniAnalyzerGradient as localStoragePlayerMiniAnalyzerGradient,
-  playerMiniAnalyzerLoRes as localStoragePlayerMiniAnalyzerLoRes,
-} from 'src/composables/localStorage';
+import { createStorageEntry } from 'src/composables/localStorage';
 import { type SpectrumAnalyzerChannelLayout, type AudioMotionAnalyzerOptionColorMode } from 'src/types/common';
+
+const localStorageShowMiniSpectrumAnalyzer = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.visible", true);
+const localStoragePlayerMiniAnalyzerMode = createStorageEntry<number>("visualizations.sidebar.spectrumAnalyzer.mode", 7);
+const localStoragePlayerMiniAnalyzerFPS = createStorageEntry<number>("visualizations.sidebar.spectrumAnalyzer.fps", 30);
+const localStoragePlayerMiniAnalyzerBarSpace = createStorageEntry<number>("visualizations.sidebar.spectrumAnalyzer.barSpace", 0.2);
+const localStoragePlayerMiniAnalyzerHeight = createStorageEntry<number>("visualizations.sidebar.spectrumAnalyzer.height", 40);
+const localStoragePlayerMiniAnalyzerChannelLayout = createStorageEntry<SpectrumAnalyzerChannelLayout>("visualizations.sidebar.spectrumAnalyzer.channelLayout", "single");
+const localStoragePlayerMiniAnalyzerShowPeaks = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.showPeaks", true);
+const localStoragePlayerMiniAnalyzerLedBars = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.ledBars", true);
+const localStoragePlayerMiniAnalyzerTrueLeds = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.trueLeds", true);
+const localStoragePlayerMiniAnalyzerColorMode = createStorageEntry<AudioMotionAnalyzerOptionColorMode>("visualizations.sidebar.spectrumAnalyzer.colorMode", "gradient");
+const localStoragePlayerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerGradient", "spieldose");
+const localStoragePlayerMiniAnalyzerLoRes = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.loRes", false);
 
 interface State {
   visible: boolean;
