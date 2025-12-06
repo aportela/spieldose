@@ -14,80 +14,7 @@
         <UpdateProfileForm></UpdateProfileForm>
       </div>
       <div class="col-lg-4 col-xl-4 col-12 flex">
-        <q-card class="full-width">
-          <q-item class="theme-default-q-card-section-header">
-            Mini Spectrum Analyzer Settings
-          </q-item>
-          <q-separator />
-          <q-card-section>
-            <p>
-              <q-toggle v-model="showMiniSpectrumAnalyzer" label="visible"
-                @update:model-value="onChangeShowMiniSpectrumAnalyzer" />
-              <q-toggle v-model="loRes" :disable="!showMiniSpectrumAnalyzer" label="Low resolution"
-                @update:model-value="onChangeLoRes" />
-            </p>
-            <p>
-              <q-toggle v-model="showPeaks" :disable="!showMiniSpectrumAnalyzer" label="show peaks"
-                @update:model-value="onChangeShowPeaks" />
-              <q-toggle v-model="ledBars" :disable="!showMiniSpectrumAnalyzer" label="led bars"
-                @update:model-value="onChangeLedBars" />
-              <q-toggle v-model="trueLeds" :disable="!showMiniSpectrumAnalyzer || !ledBars" label="true leds"
-                @update:model-value="onChangeTrueLeds" />
-            </p>
-            <p class="q-mt-lg"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
-                :label-value="'Height: ' + height + 'px'" v-model="height" :min="30" :max="180" :step="1"
-                v-on:update:model-value="onChangeHeight" /></p>
-            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="colorMode"
-                v-on:update:model-value="onChangeColorMode" toggle-color="primary" no-caps :options="[
-                  { label: 'gradient', value: 'gradient' },
-                  { label: 'bar-index', value: 'bar-index' },
-                  { label: 'bar-level', value: 'bar-level' },
-                ]" /></p>
-            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="gradient"
-                v-on:update:model-value="onChangeGradient" toggle-color="primary" no-caps :options="[
-                  { label: 'spieldose', value: 'spieldose' },
-                  { label: 'classic', value: 'classic' },
-                  { label: 'orangered', value: 'orangered' },
-                  { label: 'prism', value: 'prism' },
-                  { label: 'rainbow', value: 'rainbow' },
-                  { label: 'steelblue', value: 'steelblue' },
-                ]" /></p>
-            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="channelLayout"
-                v-on:update:model-value="onChangeChannelLayout" toggle-color="primary" no-caps :options="[
-                  { label: 'Single channel', value: 'single' },
-                  { label: 'Dual channel (overlay)', value: 'dual-combined' },
-                  { label: 'Dual channel (side by side)', value: 'dual-horizontal' },
-                  { label: 'Dual channel (top/bottom)', value: 'dual-vertical' },
-                ]" /></p>
-            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="fps"
-                v-on:update:model-value="onChangeFPS" toggle-color="primary" no-caps :options="[
-                  { label: '10fps', value: 10 },
-                  { label: '15fps', value: 15 },
-                  { label: '30fps', value: 30 },
-                  { label: '60fps', value: 60 },
-                  { label: '90fps', value: 90 },
-                  { label: '120fps', value: 120 },
-                  { label: '144fps', value: 144 },
-                  { label: 'unlimited fps', value: 0 },
-                ]" /></p>
-            <p><q-btn-toggle spread size="md" :disable="!showMiniSpectrumAnalyzer" v-model="mode"
-                v-on:update:model-value="onChangeMode" toggle-color="primary" no-caps :options="[
-                  { label: 'all', value: 0 },
-                  { label: '240 bands', value: 1 },
-                  { label: '120 bands', value: 2 },
-                  { label: '80 bands', value: 3 },
-                  { label: '60 bands', value: 4 },
-                  { label: '40 bands', value: 5 },
-                  { label: '30 bands', value: 6 },
-                  { label: '20 bands', value: 7 },
-                  { label: '10 bands', value: 8 },
-                  { label: 'line/area graph', value: 10 },
-                ]" /></p>
-            <p class="q-mt-xl"><q-slider :disable="!showMiniSpectrumAnalyzer" label label-always
-                :label-value="'Bar space: ' + barSpace" v-model.number="barSpace" :min="0.0" :max="1.0" :step="0.01"
-                v-on:update:model-value="onChangeBarSpace" /></p>
-          </q-card-section>
-        </q-card>
+        <SidebarMiniSpectrumAnalyzerSettings />
       </div>
       <div class="col-lg-4 col-xl-4 col-12 flex">
         <q-card class="full-width">
@@ -112,141 +39,22 @@
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { default as UpdateProfileForm } from "src/components/Forms/UpdateProfileForm.vue";
-import { type AudioMotionAnalyzerOptionColorMode, type SpectrumAnalyzerChannelLayout } from "src/types/common";
-import { useMiniSpectrumAnalyzerSettingsStore } from "src/stores/miniSpectrumAnalyzerSettings";
 import { useMiniAnalogVumeterSettingsStore } from "src/stores/miniAnalogVumeterSettings";
+import { default as SidebarMiniSpectrumAnalyzerSettings } from "src/components/Widgets/Settings/SidebarMiniSpectrumAnalyzerSettings.vue";
 
 const { t } = useI18n();
 
-const miniSpectrumAnalyzerSettingsStore = useMiniSpectrumAnalyzerSettingsStore();
 
 const miniAnalogVumeterSettingsStore = useMiniAnalogVumeterSettingsStore();
 
-const showMiniSpectrumAnalyzer = ref(miniSpectrumAnalyzerSettingsStore.visible);
-
-const showPeaks = ref(miniSpectrumAnalyzerSettingsStore.showPeaks);
-
-const ledBars = ref(miniSpectrumAnalyzerSettingsStore.ledBarsActive);
-
-const trueLeds = ref(miniSpectrumAnalyzerSettingsStore.trueLedsActive);
-
-const loRes = ref(miniSpectrumAnalyzerSettingsStore.isLoResActive);
-
-const channelLayout = ref(miniSpectrumAnalyzerSettingsStore.currentChannelLayout);
-
-const fps = ref(miniSpectrumAnalyzerSettingsStore.currentFPS);
-
-const mode = ref(miniSpectrumAnalyzerSettingsStore.currentMode);
-
-const barSpace = ref(miniSpectrumAnalyzerSettingsStore.currentBarSpace);
-
-const height = ref(miniSpectrumAnalyzerSettingsStore.height);
-
-const colorMode = ref(miniSpectrumAnalyzerSettingsStore.currentColorMode);
-
-const gradient = ref(miniSpectrumAnalyzerSettingsStore.currentGradient);
-
 const showMiniAnalogVumeter = ref(miniAnalogVumeterSettingsStore.visible);
 
-watch(() => miniSpectrumAnalyzerSettingsStore.visible, (newValue) => {
-  showMiniSpectrumAnalyzer.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
-  showPeaks.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
-  ledBars.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
-  trueLeds.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.isLoResActive, (newValue) => {
-  loRes.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
-  fps.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.currentMode, (newValue,) => {
-  mode.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.currentBarSpace, (newValue) => {
-  barSpace.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.height, (newValue) => {
-  height.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.channelLayout, (newValue) => {
-  channelLayout.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.colorMode, (newValue) => {
-  colorMode.value = newValue;
-});
-
-watch(() => miniSpectrumAnalyzerSettingsStore.gradient, (newValue) => {
-  gradient.value = newValue;
-});
 
 watch(() => miniAnalogVumeterSettingsStore.visible, (newValue) => {
   showMiniAnalogVumeter.value = newValue;
 });
 
-const onChangeShowMiniSpectrumAnalyzer = (visible: boolean) => {
-  miniSpectrumAnalyzerSettingsStore.setVisibility(visible);
-};
 
-const onChangeFPS = (fps: number) => {
-  miniSpectrumAnalyzerSettingsStore.setFPS(fps);
-}
-
-const onChangeMode = (mode: number) => {
-  miniSpectrumAnalyzerSettingsStore.setMode(mode);
-};
-
-const onChangeBarSpace = (space: number | null) => {
-  miniSpectrumAnalyzerSettingsStore.setBarSpace(space || 40);
-}
-
-const onChangeHeight = (height: number | null) => {
-  miniSpectrumAnalyzerSettingsStore.setHeight(height || 0);
-};
-
-const onChangeChannelLayout = (layout: SpectrumAnalyzerChannelLayout) => {
-  miniSpectrumAnalyzerSettingsStore.setChannelLayout(layout);
-}
-
-const onChangeGradient = (gradient: string) => {
-  miniSpectrumAnalyzerSettingsStore.setGradient(gradient);
-}
-
-const onChangeColorMode = (colorMode: AudioMotionAnalyzerOptionColorMode) => {
-  miniSpectrumAnalyzerSettingsStore.setColorMode(colorMode);
-}
-
-const onChangeShowPeaks = (visible: boolean) => {
-  miniSpectrumAnalyzerSettingsStore.setPeaksVisibility(visible);
-};
-
-const onChangeLedBars = (active: boolean) => {
-  miniSpectrumAnalyzerSettingsStore.setLedBars(active);
-};
-
-const onChangeTrueLeds = (active: boolean) => {
-  miniSpectrumAnalyzerSettingsStore.setTrueLeds(active);
-};
-
-const onChangeLoRes = (active: boolean) => {
-  miniSpectrumAnalyzerSettingsStore.setLoRes(active);
-}
 
 const onChangeShowMiniAnalogVumeter = (visible: boolean) => {
   miniAnalogVumeterSettingsStore.setVisibility(visible);
