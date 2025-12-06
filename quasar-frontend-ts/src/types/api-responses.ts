@@ -70,6 +70,20 @@ interface BrowseArtistsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   }
 };
 
+interface BrowseAlbumItemResponse {
+  title: string;
+  mbId: string | null;
+  year: number | null;
+  image: string | null;
+}
+
+interface BrowseAlbumsResponse extends Omit<DefaultAxiosResponse, 'data'> {
+  data: {
+    pager: PagerResponse;
+    albums: BrowseAlbumItemResponse[];
+  }
+};
+
 export {
   type getServerEnvironmentResponseData,
   type DefaultAxiosResponse,
@@ -81,4 +95,6 @@ export {
   type PagerResponse,
   type BrowseArtistItemResponse,
   type BrowseArtistsResponse,
+  type BrowseAlbumItemResponse,
+  type BrowseAlbumsResponse,
 };
