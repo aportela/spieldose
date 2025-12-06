@@ -57,9 +57,8 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
     if (analyzerInstance.value === null) {
       createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
     }
-    else if (!analyzerInstance.value.isOn) {
-      analyzerInstance.value.start();
-      refreshVuMeter(lastTime);
+    else {
+      startAnalyzer();
     }
   }
 });
