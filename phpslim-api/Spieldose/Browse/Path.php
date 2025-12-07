@@ -20,8 +20,8 @@ class Path extends \Spieldose\Browse\Base
         $afterBrowse = function (\aportela\DatabaseBrowserWrapper\BrowserResults $browserResults): void {
             array_map(
                 function (object $item): object {
-                    if (property_exists($item, "totalTracks") && is_numeric($item->totalTracks)) {
-                        $item->totalTracks = intval($item->totalTracks);
+                    if (property_exists($item, "totalFiles") && is_numeric($item->totalFiles)) {
+                        $item->totalFiles = intval($item->totalFiles);
                     }
 
                     return ($item);
