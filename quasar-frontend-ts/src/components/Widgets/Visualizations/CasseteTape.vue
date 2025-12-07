@@ -3,16 +3,53 @@
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
   </div>
+  <div class="label gochi-hand-regular" v-if="currentPlaylistItemStore.isTrack">
+    <span class="artist">{{ currentPlaylistItemStore.trackAlbumArtistName }}</span>
+    <span class="album">{{ currentPlaylistItemStore.trackAlbumTitle }}</span>
+  </div>
+
 
 </template>
 
 <script setup lang="ts">
 import { usePlayerStore } from 'src/stores/player';
-
+import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 const playerStore = usePlayerStore();
 </script>
 
 <style lang="css">
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap');
+
+.label {
+  position: relative;
+  top: -220px;
+  left: 82px;
+  z-index: 3;
+
+}
+
+.artist {
+  position: absolute;
+  top: -16px;
+  transform: rotate(-3deg);
+}
+
+.album {
+  position: absolute;
+  top: 3px;
+  left: 20px;
+  transform: rotate(-2deg);
+}
+
+.gochi-hand-regular {
+  font-family: "Gochi Hand", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  color: #04008f;
+}
+
 /*
   cassete vector credits: Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
   */
