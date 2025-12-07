@@ -37,6 +37,13 @@ export default {
   "My profile": "My profile",
   "Sign out": "Sign out",
 
+  "Toggle spectrum analyzer": "Toggle spectrum analyzer",
+  "Toggle player shuffle mode": "Toggle player shuffle mode",
+  "Toggle favorite track": "Toggle favorite track",
+  "Download track": "Download track",
+  "Toggle fullscreen visualization": "Toggle fullscreen visualization",
+  "View track details": "View track details",
+
   "Personal information": "Personal information",
   "Update your data": "Update your data",
   "New password": "New password",
