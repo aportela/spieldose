@@ -3,18 +3,35 @@
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
   </div>
-  <div class="label gochi-hand-regular" v-if="currentPlaylistItemStore.isTrack">
+  <div class="label gochi-hand-regular" :style="{ color: currentFontColor }" v-if="currentPlaylistItemStore.isTrack">
     <span class="artist">{{ currentPlaylistItemStore.trackAlbumArtistName }}</span>
     <span class="album">{{ currentPlaylistItemStore.trackTitle }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { usePlayerStore } from 'src/stores/player';
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 const playerStore = usePlayerStore();
 const emit = defineEmits(['click']);
+
+const currentFontColor = ref<string>("#000");
+
+
+const getRandomColor = (): string => {
+  const allowed = "ABCDEF0123456789";
+  let S = "#";
+  while (S.length < 7) {
+    S += allowed.charAt(Math.floor(Math.random() * 16));
+  }
+  return S;
+};
+
+watch(() => currentPlaylistItemStore.trackFileId, () => {
+  currentFontColor.value = getRandomColor();
+});
 
 const onClick = () => {
   emit("click");
