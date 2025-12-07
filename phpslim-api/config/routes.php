@@ -374,7 +374,7 @@ return function (App $app): void {
                     return (array_key_exists("skipCount", $params) && is_bool($params["skipCount"]) && $params["skipCount"] === true);
                 }
 
-                $routeCollectorProxy->post('/artist', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->post('/artists', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
@@ -408,7 +408,7 @@ return function (App $app): void {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $routeCollectorProxy->post('/album', function (Request $request, Response $response, array $args) use ($dbh) {
+                $routeCollectorProxy->post('/albums', function (Request $request, Response $response, array $args) use ($dbh) {
                     $params = $request->getParsedBody();
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();

@@ -58,7 +58,7 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/browse/artist", params);
+      return axiosInstance.post("/browse/artists", params);
     },
     album: function (
       filter: unknown,
@@ -80,7 +80,7 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/browse/album", params);
+      return axiosInstance.post("/browse/albums", params);
     },
     path: function (libraryId: string) {
       return axiosInstance.post("/browse/path/" + libraryId);
