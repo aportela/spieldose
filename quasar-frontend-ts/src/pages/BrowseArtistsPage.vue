@@ -32,16 +32,13 @@ import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/type
 import { api } from "src/composables/api";
 import { default as BrowserBase } from "src/components/BrowserBase.vue";
 import { default as ArtistAvatarLink } from "src/components/ArtistAvatarLink.vue"
+import { sortOrderSelectorOptions } from "src/types/common";
 import {
   type BrowseArtistsResponse as BrowseArtistsResponseInterface,
   type BrowseArtistItemResponse as BrowseArtistItemResponseInterface,
 } from "src/types/api-responses";
-import {
-  type SelectorOption as SelectorOptionInterface,
-  sortOrderSelectorOptions
-} from "src/types/common";
 
-import { type Sort as SortInterface, SortClass } from "src/types/sort";
+//import { type Sort as SortInterface, SortClass } from "src/types/sort";
 
 import { default as SortFieldSelector } from "src/components/Forms/Fields/SortFieldSelector.vue";
 import { default as SortOrderSelector } from "src/components/Forms/Fields/SortOrderSelector.vue";
@@ -78,9 +75,10 @@ const sortItems = [
 
 const textFilter = ref<string | null>(null);
 const currentSortField = ref(sortItems[0]!);
-const currentSortOrder: SelectorOptionInterface = ref(sortOrderSelectorOptions[0]!);
+const currentSortOrder = ref(sortOrderSelectorOptions[0]!);
 
 //const sort: SortClass = ref<SortClass>(new SortClass(sortItems[0]!.label, "ASC"));
+
 
 const currentPageIndex = ref(1);
 const totalPages = ref(0);
