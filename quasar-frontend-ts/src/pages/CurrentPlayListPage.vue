@@ -1,5 +1,6 @@
 <template>
   <q-card class="q-pa-lg">
+    <!--
     <q-breadcrumbs class="q-mb-lg">
       <q-breadcrumbs-el icon="home" label="Spieldose" />
       <q-breadcrumbs-el icon="queue_music" :label="t('Current playlist')" />
@@ -89,7 +90,9 @@
           </q-td>
         </q-tr>
       </template>
-    </q-table>
+</q-table>
+-->
+    <!--
     <q-dialog v-model="showSavePlaylistDialog">
       <q-card style="min-width: 350px">
         <q-card-section>
@@ -111,10 +114,12 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    -->
   </q-card>
 </template>
 
 <script setup lang="ts">
+/*
 import { ref, watch, computed, onMounted, inject } from "vue";
 import { useQuasar, uid } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -128,90 +133,90 @@ import { usePlayerStore } from "src/stores/player";
 const $q = useQuasar();
 const { t } = useI18n();
 
-/*
+
 const playerStore = useplayerStore();
 
-*/
+
 const tableRef = ref(null);
 
 const tableRows = ref([]);
 const tableColumns = [
-  {
-    name: 'index',
-    required: true,
-    label: 'Index',
-    align: 'right',
-    field: row => row.index,
-    sortable: false
-  },
-  {
-    name: 'title',
-    required: true,
-    label: 'Title',
-    align: 'left',
-    field: row => row.title,
-    sortable: false
-  },
-  {
-    name: 'artist',
-    required: true,
-    label: 'Artist',
-    align: 'left',
-    field: row => row.artist.name,
-    sortable: false
-  },
-  {
-    name: 'albumArtist',
-    required: false,
-    label: 'Album artist',
-    align: 'left',
-    field: row => row.album.artist.name,
-    sortable: false
-  },
-  {
-    name: 'albumTitle',
-    required: false,
-    label: 'Album',
-    align: 'left',
-    field: row => row.album.title,
-    sortable: false
-  },
-  {
-    name: 'albumTrackIndex',
-    required: false,
-    label: 'Album Track nº',
-    align: 'right',
-    field: row => row.trackNumber,
-    sortable: false
-  },
-  {
-    name: 'year',
-    required: false,
-    label: 'Year',
-    align: 'right',
-    field: row => row.album.year,
-    sortable: false
-  },
-  {
-    name: 'actions',
-    required: true,
-    label: 'Actions',
-    align: 'center',
-    favorited: row => row.favorited
-  },
+{
+  name: 'index',
+  required: true,
+  label: 'Index',
+  align: 'right',
+  field: row => row.index,
+  sortable: false
+},
+{
+  name: 'title',
+  required: true,
+  label: 'Title',
+  align: 'left',
+  field: row => row.title,
+  sortable: false
+},
+{
+  name: 'artist',
+  required: true,
+  label: 'Artist',
+  align: 'left',
+  field: row => row.artist.name,
+  sortable: false
+},
+{
+  name: 'albumArtist',
+  required: false,
+  label: 'Album artist',
+  align: 'left',
+  field: row => row.album.artist.name,
+  sortable: false
+},
+{
+  name: 'albumTitle',
+  required: false,
+  label: 'Album',
+  align: 'left',
+  field: row => row.album.title,
+  sortable: false
+},
+{
+  name: 'albumTrackIndex',
+  required: false,
+  label: 'Album Track nº',
+  align: 'right',
+  field: row => row.trackNumber,
+  sortable: false
+},
+{
+  name: 'year',
+  required: false,
+  label: 'Year',
+  align: 'right',
+  field: row => row.album.year,
+  sortable: false
+},
+{
+  name: 'actions',
+  required: true,
+  label: 'Actions',
+  align: 'center',
+  favorited: row => row.favorited
+},
 ];
 
 const playerStore = usePlayerStore();
 const currentElementRowIcon = computed(() => {
-  if (playerStore.isPlaying) {
-    return ('play_arrow');
-  } else if (playerStore.isPaused) {
-    return ('pause');
-  } else if (playerStore.isStopped) {
-    return ('stop');
-  } else {
-    return ('play_arrow');
-  }
+if (playerStore.isPlaying) {
+  return ('play_arrow');
+} else if (playerStore.isPaused) {
+  return ('pause');
+} else if (playerStore.isStopped) {
+  return ('stop');
+} else {
+  return ('play_arrow');
+}
 });
 
 const currentTrackIndex = ref(0);
@@ -222,304 +227,305 @@ const loading = ref(false);
 const showSavePlaylistDialog = ref(false);
 
 const playlist = ref(
-  {
-    id: null,
-    name: null,
-    public: false
-  }
+{
+  id: null,
+  name: null,
+  public: false
+}
 );
 
-/*
+
 const bus = inject('bus');
 
 bus.on(spieldoseEventNames.track.setFavorite, (data) => {
-  if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
-    const index = tableRows.value.findIndex(
-      (element) => element && element.id == data.id
-    );
-    if (index !== -1) {
-      tableRows.value[index].favorited = data.timestamp;
-    }
+if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
+  const index = tableRows.value.findIndex(
+    (element) => element && element.id == data.id
+  );
+  if (index !== -1) {
+    tableRows.value[index].favorited = data.timestamp;
   }
+}
 });
 
 bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
-  if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
-    const index = tableRows.value.findIndex(
-      (element) => element && element.id == data.id
-    );
-    if (index !== -1) {
-      tableRows.value[index].favorited = null;
-    }
+if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
+  const index = tableRows.value.findIndex(
+    (element) => element && element.id == data.id
+  );
+  if (index !== -1) {
+    tableRows.value[index].favorited = null;
   }
+}
 });
 
-*/
+
 function onClear() {
-  playerStore.interact();
-  playerStore.stop();
-  //currentPlayListActions.clear();
-  tableRows.value = [];
+playerStore.interact();
+playerStore.stop();
+//currentPlayListActions.clear();
+tableRows.value = [];
 }
 
 function onMoveUpTrackAtIndex(oldIndex) {
-  let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
-  // https://stackoverflow.com/a/6470794
-  indexes.splice(oldIndex, 1);
-  indexes.splice(oldIndex - 1, 0, oldIndex);
-  currentPlayListActions.resortByIndexes(indexes).then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = currentPlaylistTrackIndex.value;
-    loading.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error resorting tracks"),
-      caption: t("API Error: fatal error details", {
-        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-          ? error.response.statusText : 'undefined'
-      })
-    });
-    loading.value = false;
+let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
+// https://stackoverflow.com/a/6470794
+indexes.splice(oldIndex, 1);
+indexes.splice(oldIndex - 1, 0, oldIndex);
+currentPlayListActions.resortByIndexes(indexes).then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = currentPlaylistTrackIndex.value;
+  loading.value = false;
+}).catch((error) => {
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error resorting tracks"),
+    caption: t("API Error: fatal error details", {
+      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+        ? error.response.statusText : 'undefined'
+    })
   });
+  loading.value = false;
+});
 }
 
 function onMoveDownTrackAtIndex(oldIndex) {
-  let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
-  // https://stackoverflow.com/a/6470794
-  indexes.splice(oldIndex, 1);
-  indexes.splice(oldIndex + 1, 0, oldIndex);
-  currentPlayListActions.resortByIndexes(indexes).then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = currentPlaylistTrackIndex.value;
-    loading.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error resorting tracks"),
-      caption: t("API Error: fatal error details", {
-        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-          ? error.response.statusText : 'undefined'
-      })
-    });
-    loading.value = false;
+let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
+// https://stackoverflow.com/a/6470794
+indexes.splice(oldIndex, 1);
+indexes.splice(oldIndex + 1, 0, oldIndex);
+currentPlayListActions.resortByIndexes(indexes).then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = currentPlaylistTrackIndex.value;
+  loading.value = false;
+}).catch((error) => {
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error resorting tracks"),
+    caption: t("API Error: fatal error details", {
+      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+        ? error.response.statusText : 'undefined'
+    })
   });
+  loading.value = false;
+});
 }
 
 function onToggleFavorite(index, trackId, favorited) {
-  const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
-  funct(trackId, 'CurrentPlaylistPage').then((success) => {
-    tableRows.value[index - 1].favorited = success.data.favorited;
-  })
-    .catch((error) => {
-      switch (error.response.status) {
-        default:
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error toggling favorite flag"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-    });
+const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
+funct(trackId, 'CurrentPlaylistPage').then((success) => {
+  tableRows.value[index - 1].favorited = success.data.favorited;
+})
+  .catch((error) => {
+    switch (error.response.status) {
+      default:
+        $q.notify({
+          type: "negative",
+          message: t("API Error: error toggling favorite flag"),
+          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        });
+        break;
+    }
+  });
 }
 
 function onRemoveElementAtIndex(index) {
-  loading.value = true;
-  currentPlayListActions.removeElementAtIndex(index).then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = currentPlaylistTrackIndex.value;
+loading.value = true;
+currentPlayListActions.removeElementAtIndex(index).then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = currentPlaylistTrackIndex.value;
+  loading.value = false;
+})
+  .catch((error) => {
+    switch (error.response.status) {
+      default:
+        $q.notify({
+          type: "negative",
+          message: t("API Error: error removing element"),
+          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
+        });
+        break;
+    }
     loading.value = false;
-  })
-    .catch((error) => {
-      switch (error.response.status) {
-        default:
-          $q.notify({
-            type: "negative",
-            message: t("API Error: error removing element"),
-            caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-          });
-          break;
-      }
-      loading.value = false;
-    });
+  });
 }
 
 function onRowClick(evt, row, index) {
-  if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
-    playerStore.interact();
-    currentPlayListActions.skipToElementIndex(index).then((success) => {
-    }).catch((error) => {
-      // TODO
-    });
-  }
+if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
+  playerStore.interact();
+  currentPlayListActions.skipToElementIndex(index).then((success) => {
+  }).catch((error) => {
+    // TODO
+  });
+}
 }
 
 function getCurrentPlaylist() {
-  loading.value = true;
-  currentPlayListActions.get().then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = !playerStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[success.data.currentIndex];
-    loading.value = false;
-  }).catch((error) => {
-    // TODO
-    loading.value = false;
-  });
+loading.value = true;
+currentPlayListActions.get().then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = !playerStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[success.data.currentIndex];
+  loading.value = false;
+}).catch((error) => {
+  // TODO
+  loading.value = false;
+});
 }
 
 const currentPlaylistTrackIndex = computed(() => {
-  if (!playerStore.getShuffle) {
-    return (playerStore.getCurrentPlaylistIndex);
-  } else {
-    return (playerStore.getCurrentPlaylistShuffledIndex);
-  }
+if (!playerStore.getShuffle) {
+  return (playerStore.getCurrentPlaylistIndex);
+} else {
+  return (playerStore.getCurrentPlaylistShuffledIndex);
+}
 });
 
 watch(currentPlaylistTrackIndex, (newValue) => {
-  currentTrackIndex.value = newValue;
-  // TODO: only scroll on actions buttons click (NOT row click)
-  tableRef.value.scrollTo(newValue, 'center-force');
+currentTrackIndex.value = newValue;
+// TODO: only scroll on actions buttons click (NOT row click)
+tableRef.value.scrollTo(newValue, 'center-force');
 });
 
 function onRandomizeSorting() {
-  playerStore.stop();
-  loading.value = true;
-  currentPlayListActions.randomize().then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = currentPlaylistTrackIndex.value;
-    loading.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error loading random tracks"),
-      caption: t("API Error: fatal error details", {
-        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-          ? error.response.statusText : 'undefined'
-      })
-    });
-    loading.value = false;
+playerStore.stop();
+loading.value = true;
+currentPlayListActions.randomize().then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = currentPlaylistTrackIndex.value;
+  loading.value = false;
+}).catch((error) => {
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error loading random tracks"),
+    caption: t("API Error: fatal error details", {
+      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+        ? error.response.statusText : 'undefined'
+    })
   });
+  loading.value = false;
+});
 }
 
 function onDiscover() {
-  playerStore.stop();
-  loading.value = true;
-  currentPlayListActions.discover(32).then((success) => {
-    tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-    shuffledIndexes.value = success.data.shuffledIndexes;
-    currentTrackIndex.value = currentPlaylistTrackIndex.value;
-    loading.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error loading random tracks"),
-      caption: t("API Error: fatal error details", {
-        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-          ? error.response.statusText : 'undefined'
-      })
-    });
-    loading.value = false;
+playerStore.stop();
+loading.value = true;
+currentPlayListActions.discover(32).then((success) => {
+  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
+  shuffledIndexes.value = success.data.shuffledIndexes;
+  currentTrackIndex.value = currentPlaylistTrackIndex.value;
+  loading.value = false;
+}).catch((error) => {
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error loading random tracks"),
+    caption: t("API Error: fatal error details", {
+      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+        ? error.response.statusText : 'undefined'
+    })
   });
+  loading.value = false;
+});
 }
 
 function onPreviusPlaylist() {
-  playerStore.interact();
-  currentPlayListActions.skipToPreviousElement().then((success) => {
-  }).catch((error) => {
-    // TODO
-  });
+playerStore.interact();
+currentPlayListActions.skipToPreviousElement().then((success) => {
+}).catch((error) => {
+  // TODO
+});
 }
 
 function onPlay() {
-  playerStore.interact();
-  playerStore.play();
+playerStore.interact();
+playerStore.play();
 
 }
 
 function onPause() {
-  playerStore.interact();
-  playerStore.play();
+playerStore.interact();
+playerStore.play();
 }
 
 function onResume() {
-  playerStore.interact();
-  playerStore.play();
+playerStore.interact();
+playerStore.play();
 }
 
 function onStop() {
-  playerStore.stop();
-  playerStore.setCurrentTime(0);
+playerStore.stop();
+playerStore.setCurrentTime(0);
 }
 
 function onNextPlaylist() {
-  playerStore.interact();
-  currentPlayListActions.skipToNextElement().then((success) => {
-  }).catch((error) => {
-    // TODO
-  });
+playerStore.interact();
+currentPlayListActions.skipToNextElement().then((success) => {
+}).catch((error) => {
+  // TODO
+});
 }
 
 function onSavePlaylist() {
-  if (playerStore.getCurrentPlaylistLinkedPlaylist) {
-    console.log("hya plyalist");
-    if (playerStore.getCurrentPlaylistLinkedPlaylist.allowUpdate) {
-      console.log("se puede actualizar");
-      playlist.value = playerStore.getCurrentPlaylistLinkedPlaylist;
-    } else {
-      playlist.value = {
-        id: uid(),
-        name: playerStore.getCurrentPlaylistLinkedPlaylist.name,
-        public: false,
-        allowUpdate: true,
-      };
-    }
+if (playerStore.getCurrentPlaylistLinkedPlaylist) {
+  console.log("hya plyalist");
+  if (playerStore.getCurrentPlaylistLinkedPlaylist.allowUpdate) {
+    console.log("se puede actualizar");
+    playlist.value = playerStore.getCurrentPlaylistLinkedPlaylist;
   } else {
     playlist.value = {
       id: uid(),
-      name: null,
+      name: playerStore.getCurrentPlaylistLinkedPlaylist.name,
       public: false,
       allowUpdate: true,
     };
   }
-  showSavePlaylistDialog.value = true;
+} else {
+  playlist.value = {
+    id: uid(),
+    name: null,
+    public: false,
+    allowUpdate: true,
+  };
+}
+showSavePlaylistDialog.value = true;
 }
 
 function onSavePlaylistElements() {
-  const ids = tableRows.value.map((element) => element.id);
-  playerStore.interact();
-  loading.value = true;
-  const funct = playerStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update : api.playlist.add;
-  funct(playlist.value.id, playlist.value.name, ids, playlist.value.public).then((success) => {
-    playerStore.data.currentPlaylist.playlist = playlist.value;
-    loading.value = false;
-    showSavePlaylistDialog.value = false;
-  }).catch((error) => {
-    $q.notify({
-      type: "negative",
-      message: t("API Error: error loading random tracks"),
-      caption: t("API Error: fatal error details", {
-        status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-          ? error.response.statusText : 'undefined'
-      })
-    });
-    loading.value = false;
+const ids = tableRows.value.map((element) => element.id);
+playerStore.interact();
+loading.value = true;
+const funct = playerStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update : api.playlist.add;
+funct(playlist.value.id, playlist.value.name, ids, playlist.value.public).then((success) => {
+  playerStore.data.currentPlaylist.playlist = playlist.value;
+  loading.value = false;
+  showSavePlaylistDialog.value = false;
+}).catch((error) => {
+  $q.notify({
+    type: "negative",
+    message: t("API Error: error loading random tracks"),
+    caption: t("API Error: fatal error details", {
+      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
+        ? error.response.statusText : 'undefined'
+    })
   });
+  loading.value = false;
+});
 }
 
 currentTrackIndex.value = currentPlaylistTrackIndex.value;
 
 onMounted(() => {
-  //getCurrentPlaylist();
-  if (currentTrackIndex.value > 0) {
-    tableRef.value.scrollTo(currentTrackIndex.value, 'center-force');
-  }
+//getCurrentPlaylist();
+if (currentTrackIndex.value > 0) {
+  tableRef.value.scrollTo(currentTrackIndex.value, 'center-force');
+}
 });
 
+*/
 
 </script>
 
