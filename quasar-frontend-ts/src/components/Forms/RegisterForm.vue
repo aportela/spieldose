@@ -11,8 +11,8 @@
       <div class="text-color-secondary">{{ t("The first track to your musical adventure begins here!") }}</div>
     </q-card-section>
     <q-card-section>
-      <q-input dense outlined ref="emailRef" v-model="profile.email" type="email" name="email" :label="t('Email')"
-        :disable="state.ajaxRunning || signUpDenied" :autofocus="true" :rules="[requiredFieldRule]" lazy-rules
+      <q-input autofocus dense outlined ref="emailRef" v-model="profile.email" type="email" name="email"
+        :label="t('Email')" :disable="state.ajaxRunning || signUpDenied" :rules="[requiredFieldRule]" lazy-rules
         :error="validator.email.hasErrors" :error-message="validator.email.message ? t(validator.email.message) : ''">
         <template v-slot:prepend>
           <q-icon name="alternate_email" />

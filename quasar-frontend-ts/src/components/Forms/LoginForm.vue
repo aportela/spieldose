@@ -10,24 +10,24 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-        }}</h4>
+          }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-        }}
+          }}
         </div>
       </slot>
     </q-card-section>
     <q-card-section>
       <q-input dense outlined ref="emailRef" v-model="profile.email" type="email" name="email" :label="t('Email')"
-        :disable="state.ajaxRunning" :autofocus="!savedEmail" :rules="[requiredFieldRule]" lazy-rules
-        :error="validator.email.hasErrors" :error-message="validator.email.message ? t(validator.email.message) : ''">
+        :disable="state.ajaxRunning" :rules="[requiredFieldRule]" lazy-rules :error="validator.email.hasErrors"
+        :error-message="validator.email.message ? t(validator.email.message) : ''">
         <template v-slot:prepend>
           <q-icon name="alternate_email" />
         </template>
       </q-input>
       <PasswordFieldCustomInput dense outlined ref="passwordRef" class="q-mt-md" v-model="profile.password"
-        name="password" :label="t('Password')" :disable="state.ajaxRunning" :autofocus="!!savedEmail"
-        :rules="[requiredFieldRule]" lazy-rules :error="validator.password.hasErrors"
+        name="password" :label="t('Password')" :disable="state.ajaxRunning" :rules="[requiredFieldRule]" lazy-rules
+        :error="validator.password.hasErrors"
         :error-message="validator.password.message ? t(validator.password.message) : ''">
       </PasswordFieldCustomInput>
     </q-card-section>
@@ -66,16 +66,15 @@
 
 <script setup lang="ts">
 
-import { ref, reactive, nextTick } from "vue";
+import { ref, reactive, nextTick, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { QInput } from "quasar";
 
 import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
-import { createStorageEntry } from 'src/composables/localStorage';
-
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { useSessionStore } from "src/stores/session";
+import { createStorageEntry } from "src/composables/localStorage";
 import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
 import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/auth-validator";
 import { type AuthFields as AuthFieldsInterface } from "src/types/auth-fields";
@@ -86,7 +85,6 @@ import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue
 import { GITHUB_PROJECT_URL } from "src/constants"
 import { default as PasswordFieldCustomInput } from "src/components/Forms/Fields/PasswordFieldCustomInput.vue";
 import { default as CustomErrorBanner } from "src/components/Banners/CustomErrorBanner.vue";
-
 
 interface LoginFormProps {
   showExtraBottom?: boolean;
@@ -105,7 +103,6 @@ const { requiredFieldRule } = useFormUtils();
 const serverEnvironment = useServerEnvironmentStore();
 
 const sessionStore = useSessionStore();
-
 const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
@@ -238,4 +235,16 @@ const onSubmitForm = () => {
   }
 }
 
+onMounted(() => {
+  nextTick()
+    .then(() => {
+      if (savedEmail) {
+        passwordRef.value?.focus();
+      } else {
+        emailRef.value?.focus();
+      }
+    }).catch((e) => {
+      console.error(e);
+    });
+});
 </script>
