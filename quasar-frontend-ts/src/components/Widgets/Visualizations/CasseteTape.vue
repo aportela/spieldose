@@ -36,6 +36,10 @@ watch(() => currentPlaylistItemStore.trackFileId, () => {
 const onClick = () => {
   emit("click");
 };
+
+// TODO: resize font on long labels
+// TODO: more random "dark" colors
+// TODO: default label "Spieldose awesome mix vol.1" if no track/stream data available
 </script>
 
 <style lang="css">
