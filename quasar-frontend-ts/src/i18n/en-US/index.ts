@@ -8,6 +8,7 @@ export default {
   "The music never ends—just keep listening.": "The music never ends—just keep listening.",
 
   "Switch to dark mode": "Switch to dark mode",
+  "Switch to light mode": "Switch to light mode",
   "Switch language": "Switch language",
   "Browse project page": "Browse project page",
 
