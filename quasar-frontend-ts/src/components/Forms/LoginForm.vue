@@ -10,10 +10,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-        }}</h4>
+          }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-        }}
+          }}
         </div>
       </slot>
     </q-card-section>
@@ -72,6 +72,8 @@ import { QInput } from "quasar";
 
 import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
+import { createStorageEntry } from 'src/composables/localStorage';
+
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { useSessionStore } from "src/stores/session";
 import { useProfileStore } from "src/stores/profile";
@@ -85,6 +87,7 @@ import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue
 import { GITHUB_PROJECT_URL } from "src/constants"
 import { default as PasswordFieldCustomInput } from "src/components/Forms/Fields/PasswordFieldCustomInput.vue";
 import { default as CustomErrorBanner } from "src/components/Banners/CustomErrorBanner.vue";
+
 
 interface LoginFormProps {
   showExtraBottom?: boolean;
@@ -103,13 +106,14 @@ const { requiredFieldRule } = useFormUtils();
 const serverEnvironment = useServerEnvironmentStore();
 
 const sessionStore = useSessionStore();
-const profileStore = useProfileStore();
+
+const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
 const validator = reactive<AuthValidatorInterface>({ ...defaultAuthValidator });
 
-const savedEmail = profileStore.lastEmailUsed;
+const savedEmail = localStorageLastEmailUsed.get();
 
 const profile = reactive<AuthFieldsInterface>(
   {
@@ -155,7 +159,7 @@ const onSubmitForm = () => {
       .login(profile.email, profile.password)
       .then((successResponse: LoginResponse) => {
         sessionStore.setAccessToken(successResponse.data.accessToken);
-        profileStore.setLastEmailUsed(profile.email);
+        localStorageLastEmailUsed.set(profile.email);
         emit("success", successResponse.data);
       })
       .catch((errorResponse) => {
