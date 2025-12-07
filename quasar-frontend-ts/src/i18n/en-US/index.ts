@@ -49,6 +49,9 @@ export default {
   "New password": "New password",
   "Update profile": "Update profile",
 
+  "Sidebar spectrum analyzer settings": "Sidebar spectrum analyzer settings",
+  "Sidebar analog vumeter settings": "Sidebar analog vumeter settings",
+
   "Toggle analyzer octave bands number": "Toggle analyzer octave bands number",
   "Toggle art animation": "Toggle art animation",
 
