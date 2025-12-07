@@ -15,7 +15,7 @@ import { ref, shallowRef, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { uid } from "quasar";
 import { api } from "src/composables/api";
-//import { getSmallURL } from "src/composables/thumbnail";
+import { getSmallURL } from "src/composables/thumbnail";
 import { default as BrowserBase } from 'src/components/BrowserBase.vue';
 import { default as AnimatedAlbumCover } from 'src/components/AnimatedAlbumCover.vue';
 import {
@@ -51,7 +51,7 @@ class Album implements BrowseAlbumItemResponseInterface {
     this.title = item.title;
     this.mbId = item.mbId;
     this.year = item.year;
-    this.image = item.image;
+    this.image = item.mbId ? getSmallURL(`https://coverartarchive.org/release/${item.mbId}/front-250`) : null;
     this.artist = {
       name: null,
       mbId: null,
