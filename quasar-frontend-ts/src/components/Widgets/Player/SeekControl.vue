@@ -20,7 +20,7 @@ import { usePlayerStore } from "src/stores/player";
 
 const playerStore = usePlayerStore();
 
-const props = defineProps({
+defineProps({
   disabled: {
     type: Boolean,
     required: false,
