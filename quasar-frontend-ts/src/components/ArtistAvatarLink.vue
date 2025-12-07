@@ -36,9 +36,9 @@ import { getSmallURL } from "src/composables/thumbnail";
 const { t } = useI18n();
 
 interface ArtistAvatarLinkProps {
-  mbId?: string;
+  mbId: string | null;
   name: string;
-  image?: string;
+  image: string | null;
   totalTracks: number;
 };
 

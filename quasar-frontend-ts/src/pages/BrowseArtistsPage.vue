@@ -63,7 +63,6 @@ class Artist implements BrowseArtistItemResponseInterface {
     this.image = item.image;
     this.totalTracks = item.totalTracks;
   }
-
 }
 
 const sortItems = [
