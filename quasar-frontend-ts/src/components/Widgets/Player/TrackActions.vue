@@ -45,7 +45,7 @@ const playerStore = usePlayerStore();
 
 const { t } = useI18n();
 
-const props = defineProps({
+defineProps({
   disabled: {
     type: Boolean,
     required: false,
