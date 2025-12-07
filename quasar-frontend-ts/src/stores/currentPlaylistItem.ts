@@ -154,7 +154,7 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
               this.file!.id,
             );
           } catch (e: unknown) {
-            console.error("Error setting favorite track");
+            console.error("Error setting favorite track", e);
           }
         } else {
           try {
@@ -162,7 +162,7 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
               this.file!.id,
             );
           } catch (e: unknown) {
-            console.error("Error unsetting favorite track");
+            console.error("Error unsetting favorite track", e);
           }
         }
       } else {
