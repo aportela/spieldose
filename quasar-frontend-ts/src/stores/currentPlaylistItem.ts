@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { date } from "quasar";
 import { setFavoriteTrack, unsetFavoriteTrack } from 'src/composables/trackActions';
+import { buildDownloadTrackURL } from 'src/composables/common';
 
 interface File {
   id: string;
@@ -81,7 +82,7 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
     trackImageNormal: (state) =>
       state.file !== null ? state.file.trackInfo.image.normal : null,
     trackDownloadURL: (state) =>
-      state.file !== null ? `/api2/file/download/${state.file.id}` : null,
+      state.file !== null ? buildDownloadTrackURL(state.file.id) : null,
     trackFavorited: (state) =>
       state.file !== null ? state.file.trackInfo.favorited : null,
   },
@@ -135,7 +136,6 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
         },
       };
     },
-    // TODO
     setRadioStation(id: string, name: string, url: string, image: string) {
       this.lastTimestamp = Number(date.formatDate(new Date(), "x"));
       this.file = null;
@@ -154,7 +154,7 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
               this.file!.id,
             );
           } catch (e: unknown) {
-            console.error(e);
+            console.error("Error setting favorite track");
           }
         } else {
           try {
@@ -162,12 +162,11 @@ export const useCurrentPlaylistItemStore = defineStore('currentPlaylistItemStore
               this.file!.id,
             );
           } catch (e: unknown) {
-            console.error(e);
+            console.error("Error unsetting favorite track");
           }
         }
       } else {
         console.error("only tracks can set the favorite flag");
-
       }
     },
   }
