@@ -1,12 +1,9 @@
 <template>
-  <q-card class="q-pa-lg">
-    <!--
-    <q-breadcrumbs class="q-mb-lg">
-      <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <q-breadcrumbs-el icon="queue_music" :label="t('Current playlist')" />
-      <q-breadcrumbs-el v-if="playerStore.getCurrentPlaylistLinkedPlaylist"
-        :label="playerStore.getCurrentPlaylistLinkedPlaylist.name" />
-    </q-breadcrumbs>
+  <q-page>
+    <BreadCrumb icon="queue_music" label="Current playlist" />
+    <q-card class="q-pa-lg">
+
+      <!--
     <q-btn-group spread class="q-mb-md">
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
         :disable="loading || !(tableRows?.length > 0)">
@@ -92,7 +89,7 @@
       </template>
 </q-table>
 -->
-    <!--
+      <!--
     <q-dialog v-model="showSavePlaylistDialog">
       <q-card style="min-width: 350px">
         <q-card-section>
@@ -115,12 +112,18 @@
       </q-card>
     </q-dialog>
     -->
-  </q-card>
+    </q-card>
+  </q-page>
 </template>
 
 <script setup lang="ts">
 
+import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
+
 import { api } from 'src/composables/api';
+//import { useI18n } from "vue-i18n";
+//const { t } = useI18n();
+
 
 api.currentPlayList.get().then((successResponse) => {
   console.log(successResponse);
@@ -131,7 +134,6 @@ api.currentPlayList.get().then((successResponse) => {
 /*
 import { ref, watch, computed, onMounted, inject } from "vue";
 import { useQuasar, uid } from "quasar";
-import { useI18n } from "vue-i18n";
 import { api } from "src/composables/api";
 import { usePlayerStore } from "src/stores/player";
 //import { spieldoseEventNames } from "boot/events";
@@ -140,7 +142,6 @@ import { usePlayerStore } from "src/stores/player";
 //import { trackActions, currentPlayListActions } from "../boot/spieldose";
 
 const $q = useQuasar();
-const { t } = useI18n();
 
 
 const playerStore = useplayerStore();

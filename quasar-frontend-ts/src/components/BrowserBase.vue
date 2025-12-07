@@ -1,12 +1,5 @@
 <template>
   <q-card class="q-pa-lg" v-bind="attrs">
-    <q-breadcrumbs class="q-mb-lg">
-      <q-breadcrumbs-el icon="home" label="Spieldose" />
-      <slot name="current-breadcrumb">
-        <q-breadcrumbs-el v-if="currentBreadCrumbIcon && currentBreadCrumbLabel" :icon="currentBreadCrumbIcon"
-          :label="currentBreadCrumbLabel" />
-      </slot>
-    </q-breadcrumbs>
     <q-card-section>
       <slot name="filter"></slot>
       <div v-if="totalResults > 0">
@@ -34,8 +27,6 @@ interface BrowserBaseProps {
   currentPageIndex?: number;
   totalPages?: number;
   totalResults?: number;
-  currentBreadCrumbIcon: string;
-  currentBreadCrumbLabel: string;
 };
 
 const props = withDefaults(defineProps<BrowserBaseProps>(), {

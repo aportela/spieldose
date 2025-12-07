@@ -1,28 +1,29 @@
 <template>
-
-
-  <BrowserBase current-bread-crumb-icon="person" :current-bread-crumb-label="t('Browse artists')" :disable="loading"
-    :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
-    @paginationChanged="onPaginationChanged">
-    <template #filter>
-      <div class="row">
-        <q-input class="col-10" v-model.trim="textFilter" dense outlined clearable icon="search"
-          label="Search artist name" @update:model-value="skipCount = false" @keydown.enter="browse">
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-        <SortFieldSelector class="col-1" :options="sortItems" v-model="currentSortField"
-          @update:model-value="onSortFieldChanged" dense outlined label="Sort field" />
-        <SortOrderSelector class=" col-1" v-model="currentSortOrder" @update:model-value="onSortOrderChanged" dense
-          outlined label="Sort order" />
-      </div>
-    </template>
-    <template #items>
-      <ArtistAvatarLink v-for="artist in artists" :key="artist._id" :mbId="artist.mbId" :name="artist.name"
-        :image="artist.image" :totalTracks="artist.totalTracks"></ArtistAvatarLink>
-    </template>
-  </BrowserBase>
+  <q-page>
+    <BreadCrumb icon="person" label="Browse artists" />
+    <BrowserBase current-bread-crumb-icon="person" :current-bread-crumb-label="t('Browse artists')" :disable="loading"
+      :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
+      @paginationChanged="onPaginationChanged">
+      <template #filter>
+        <div class="row">
+          <q-input class="col-10" v-model.trim="textFilter" dense outlined clearable icon="search"
+            label="Search artist name" @update:model-value="skipCount = false" @keydown.enter="browse">
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <SortFieldSelector class="col-1" :options="sortItems" v-model="currentSortField"
+            @update:model-value="onSortFieldChanged" dense outlined label="Sort field" />
+          <SortOrderSelector class=" col-1" v-model="currentSortOrder" @update:model-value="onSortOrderChanged" dense
+            outlined label="Sort order" />
+        </div>
+      </template>
+      <template #items>
+        <ArtistAvatarLink v-for="artist in artists" :key="artist._id" :mbId="artist.mbId" :name="artist.name"
+          :image="artist.image" :totalTracks="artist.totalTracks"></ArtistAvatarLink>
+      </template>
+    </BrowserBase>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +32,7 @@ import { useI18n } from "vue-i18n";
 import { uid } from "quasar";
 import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
 import { api } from "src/composables/api";
+import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { default as BrowserBase } from "src/components/BrowserBase.vue";
 import { default as ArtistAvatarLink } from "src/components/ArtistAvatarLink.vue"
 import { sortOrderSelectorOptions } from "src/types/common";

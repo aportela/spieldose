@@ -1,21 +1,24 @@
 <template>
-  <BrowserBase current-bread-crumb-icon="album" :current-bread-crumb-label="t('Browse albums')" :disable="loading"
-    :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
-    @paginationChanged="onPaginationChanged">
-    <template #items>
-      <AnimatedAlbumCover v-for="album in albums" :key="album._id" :image="album.image" :albumTitle="album.title"
-        :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year">
-      </AnimatedAlbumCover>
-    </template>
-  </BrowserBase>
+  <q-page>
+    <BreadCrumb icon="album" label="Browse albums" />
+    <BrowserBase :disable="loading" :currentPageIndex="currentPageIndex" :totalPages="totalPages"
+      :totalResults="totalResults" @paginationChanged="onPaginationChanged">
+      <template #items>
+        <AnimatedAlbumCover v-for="album in albums" :key="album._id" :image="album.image" :albumTitle="album.title"
+          :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year">
+        </AnimatedAlbumCover>
+      </template>
+    </BrowserBase>
+  </q-page>
 </template>
 
 <script setup lang="ts">
 import { ref, shallowRef, onMounted } from "vue";
-import { useI18n } from "vue-i18n";
+//import { useI18n } from "vue-i18n";
 import { uid } from "quasar";
 import { api } from "src/composables/api";
 import { getSmallURL } from "src/composables/thumbnail";
+import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { default as BrowserBase } from 'src/components/BrowserBase.vue';
 import { default as AnimatedAlbumCover } from 'src/components/AnimatedAlbumCover.vue';
 import {
@@ -23,7 +26,7 @@ import {
   type BrowseAlbumItemResponse as BrowseAlbumItemResponseInterface,
 } from "src/types/api-responses";
 
-const { t } = useI18n();
+//const { t } = useI18n();
 
 const currentPageIndex = ref(1);
 const totalPages = ref(0);
