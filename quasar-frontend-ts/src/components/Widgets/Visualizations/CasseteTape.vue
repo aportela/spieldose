@@ -1,5 +1,5 @@
 <template>
-  <div class="cassette-container">
+  <div class="cassette-container cursor-pointer" @click="onClick">
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
   </div>
@@ -14,6 +14,11 @@ import { usePlayerStore } from 'src/stores/player';
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 const playerStore = usePlayerStore();
+const emit = defineEmits(['click']);
+
+const onClick = () => {
+  emit("click");
+};
 </script>
 
 <style lang="css">
@@ -94,15 +99,19 @@ const playerStore = usePlayerStore();
 }
 
 .cassette-wheel:first-child {
-  left: 97px;
-  top: 102px;
+  _left: 97px;
+  left: 23.6%;
+  _top: 102px;
+  top: 41%;
   transform: translateY(-50%) rotate(0deg);
   background-position: -104px -79px;
 }
 
 .cassette-wheel:last-child {
-  right: 97px;
-  top: 103px;
+  _right: 97px;
+  right: 23.6%;
+  _top: 103px;
+  top: 41%;
   transform: translateY(-50%) rotate(0deg);
   background-position: -256px -79px;
 }

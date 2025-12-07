@@ -2,7 +2,7 @@ type EnvironmentType = "development" | "production";
 
 type ValidAuthTypes = "Bearer";
 
-type VinylAnimation = "rotate" | null;
+type VinylAnimation = "vinyl" | "cassete" | null;
 
 type SpectrumAnalyzerChannelLayout = "single" | "dual-combined" | "dual-horizontal" | "dual-vertical";
 

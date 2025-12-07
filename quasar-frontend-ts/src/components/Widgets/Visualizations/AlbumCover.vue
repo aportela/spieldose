@@ -3,7 +3,7 @@
   vinyl svg credits:
   https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
   -->
-  <div v-if="playerStore.currentVinylAnimation == 'rotate'" @click="toggleAnimation"
+  <div v-if="playerStore.currentVinylAnimation === 'vinyl'" @click="toggleAnimation"
     id="spieldose-sidebar-vinyl-container" class="cursor-pointer overflow-hidden relative-position full-width"
     style="background: url(vectors/Vinyl_record.svg) no-repeat; background-size: cover;"
     :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
@@ -11,6 +11,12 @@
     <q-img v-if="images.small" :src="images.small" @error="images.small = null" :ratio="1" img-class="vinyl_mini_cover"
       spinner-color="pink"></q-img>
   </div>
+  <!--
+  cassete vector credits:
+  Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
+  -->
+  <cassete-tape v-else-if="playerStore.currentVinylAnimation === 'cassete'" @click="toggleAnimation"
+    class="cursor-pointer full-width" />
   <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
       width="100%" spinner-color="pink" />
@@ -23,6 +29,7 @@ import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+import { default as CasseteTape } from "./CasseteTape.vue";
 
 const playerStore = usePlayerStore();
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
@@ -59,10 +66,16 @@ watch(() => currentPlaylistItemStore.trackImageNormal, (newValue) => {
 });
 
 const toggleAnimation = () => {
-  if (playerStore.currentVinylAnimation == 'rotate') {
-    playerStore.setCurrentVinylAnimation(null);
-  } else {
-    playerStore.setCurrentVinylAnimation('rotate');
+  switch (playerStore.currentVinylAnimation) {
+    case null:
+      playerStore.setCurrentVinylAnimation("cassete");
+      break;
+    case "cassete":
+      playerStore.setCurrentVinylAnimation("vinyl");
+      break;
+    case "vinyl":
+      playerStore.setCurrentVinylAnimation(null);
+      break;
   }
 };
 
