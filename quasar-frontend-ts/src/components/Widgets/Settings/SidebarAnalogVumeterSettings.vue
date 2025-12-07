@@ -40,7 +40,7 @@ const visible = computed({
     return store.visible;
   },
   set(value) {
-    store.setVisibility(value);
+    store.setVisible(value);
   }
 });
 
@@ -58,7 +58,7 @@ const fps = computed({
     return (store.fps);
   },
   set(value) {
-    store.setFPS(value);
+    store.setFps(value);
   }
 });
 

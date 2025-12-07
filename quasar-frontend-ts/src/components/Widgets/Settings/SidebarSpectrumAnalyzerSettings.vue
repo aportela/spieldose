@@ -79,7 +79,7 @@ const visible = computed({
     return store.visible;
   },
   set(value) {
-    store.setVisibility(value);
+    store.setVisible(value);
   }
 });
 
@@ -88,7 +88,7 @@ const showPeaks = computed({
     return (store.showPeaks);
   },
   set(value) {
-    store.setPeaksVisibility(value);
+    store.setShowPeaks(value);
   }
 });
 
@@ -133,7 +133,7 @@ const fps = computed({
     return (store.fps);
   },
   set(value) {
-    store.setFPS(value);
+    store.setFps(value);
   }
 });
 

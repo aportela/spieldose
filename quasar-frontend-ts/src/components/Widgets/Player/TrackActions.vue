@@ -85,7 +85,7 @@ const repeatModeLabel = computed(() => {
 });
 
 function onToggleAnalyzer() {
-  sidebarSpectrumAnalyzerSettingsStore.setVisibility(!sidebarSpectrumAnalyzerSettingsStore.visible);
+  sidebarSpectrumAnalyzerSettingsStore.setVisible(!sidebarSpectrumAnalyzerSettingsStore.visible);
 }
 
 function onToggleVisualization() {

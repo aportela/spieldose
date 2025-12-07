@@ -64,7 +64,7 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
     loRes: (state) => state.settings.loRes
   },
   actions: {
-    setVisibility(visible: boolean) {
+    setVisible(visible: boolean) {
       this.settings.visible = visible;
       localStorageShowMiniSpectrumAnalyzer.set(this.settings.visible);
     },
@@ -79,7 +79,7 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
         );
       }
     },
-    setFPS(fps: number) {
+    setFps(fps: number) {
       if (fps >= 0 && fps <= 144) {
         this.settings.fps = fps;
         localStoragePlayerMiniAnalyzerFPS.set(this.settings.fps);
@@ -116,7 +116,7 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
       this.settings.channelLayout = channelLayout;
       localStoragePlayerMiniAnalyzerChannelLayout.set(this.settings.channelLayout);
     },
-    setPeaksVisibility(visible: boolean) {
+    setShowPeaks(visible: boolean) {
       this.settings.showPeaks = visible;
       localStoragePlayerMiniAnalyzerShowPeaks.set(this.settings.showPeaks);
     },

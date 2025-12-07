@@ -25,7 +25,7 @@ export const useServerEnvironmentStore = defineStore('serverEnvironment', {
       allowSignUp: boolean = false,
       environment: EnvironmentType = "production",
     ): void {
-      this.allowSignUp = !!allowSignUp;
+      this.allowSignUp = allowSignUp;
       this.environment = environment;
     },
   },

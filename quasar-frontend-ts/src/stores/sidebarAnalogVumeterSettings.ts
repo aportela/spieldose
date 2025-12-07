@@ -27,7 +27,7 @@ export const useSidebarAnalogVumeterSettingsStore = defineStore('sidebarAnalogVu
     fps: (state) => state.settings.fps,
   },
   actions: {
-    setVisibility(visible: boolean) {
+    setVisible(visible: boolean) {
       this.settings.visible = visible;
       localStorageShowMiniAnalogVumeter.set(this.settings.visible);
     },
@@ -35,7 +35,7 @@ export const useSidebarAnalogVumeterSettingsStore = defineStore('sidebarAnalogVu
       this.settings.smoothFactor = factor;
       localStorageSidebarAnalogVumeterSmoothFactor.set(this.settings.smoothFactor);
     },
-    setFPS(fps: number) {
+    setFps(fps: number) {
       if (fps >= 0 && fps <= 144) {
         this.settings.fps = fps;
         localStorageSidebarAnalogVumeterFPS.set(this.settings.fps);
