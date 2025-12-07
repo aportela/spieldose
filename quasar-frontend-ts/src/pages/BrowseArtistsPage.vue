@@ -12,9 +12,10 @@
             <q-icon name="search" />
           </template>
         </q-input>
-        <SortFieldSelector class="col-1" :options="sortItems" v-model="currentSortField" dense outlined
-          label="Sort field" />
-        <SortOrderSelector class=" col-1" v-model="currentSortOrder" dense outlined label="Sort order" />
+        <SortFieldSelector class="col-1" :options="sortItems" v-model="currentSortField"
+          @update:model-value="onSortFieldChanged" dense outlined label="Sort field" />
+        <SortOrderSelector class=" col-1" v-model="currentSortOrder" @update:model-value="onSortOrderChanged" dense
+          outlined label="Sort order" />
       </div>
     </template>
     <template #items>
@@ -62,7 +63,12 @@ class Artist implements BrowseArtistItemResponseInterface {
   }
 }
 
-const sortItems = [
+interface SortItem {
+  label: string;
+  value: string;
+};
+
+const sortItems: SortItem[] = [
   {
     label: "Artist name",
     value: "name",
@@ -125,6 +131,16 @@ function browse() {
 
 const onPaginationChanged = (pageIndex: number) => {
   currentPageIndex.value = pageIndex;
+  browse();
+};
+
+const onSortFieldChanged = (value: SortItem) => {
+  sortField.value = value.value;
+  browse();
+};
+
+const onSortOrderChanged = (value: SortItem) => {
+  sortOrder.value = value.value;
   browse();
 };
 
