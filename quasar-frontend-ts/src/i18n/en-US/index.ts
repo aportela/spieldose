@@ -7,6 +7,10 @@ export default {
   "Unlock the music you’ve been looking for.": "Unlock the music you’ve been looking for.",
   "The music never ends—just keep listening.": "The music never ends—just keep listening.",
 
+  "Switch to dark mode": "Switch to dark mode",
+  "Switch language": "Switch language",
+  "Browse project page": "Browse project page",
+
   "Email": "Email",
   "Password": "Password",
   "Sign in": "Sign in",
