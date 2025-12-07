@@ -38,7 +38,6 @@ const createStorageEntry = <T extends StorageValue>(
 });
 
 const darkMode = createStorageEntry<boolean>("darkMode", false);
-const locale = createStorageEntry<string | null>("locale", null);
 const playerVolume = createStorageEntry<number>("playerVolume", 1);
 const playerMuted = createStorageEntry<boolean>("playerMuted", false);
 const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
@@ -46,7 +45,6 @@ const playerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnim
 export {
   createStorageEntry,
   darkMode,
-  locale,
   playerVolume,
   playerMuted,
   playerVinylAnimation,
