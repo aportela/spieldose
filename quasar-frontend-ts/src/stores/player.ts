@@ -1,8 +1,11 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { playerVinylAnimation as localStoragePlayerVinylAnimation } from 'src/composables/localStorage';
+import { createStorageEntry } from 'src/composables/localStorage';
 import { type VinylAnimation, type PlayerStatus } from 'src/types/common';
-import { playerVolume as localStoragePlayerVolume, playerMuted as localStoragePlayerMuted } from 'src/composables/localStorage';
 import { skipToNextItem } from 'src/composables/playlistActions';
+
+const localStoragePlayerVinylAnimation = createStorageEntry<VinylAnimation>("playerVinylAnimation", null);
+const localStoragePlayerVolume = createStorageEntry<number>("playerVolume", 1);
+const localStoragePlayerMuted = createStorageEntry<boolean>("playerMuted", false);
 
 interface Player {
   userInteracted: boolean;
