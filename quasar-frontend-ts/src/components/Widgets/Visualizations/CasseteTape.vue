@@ -24,7 +24,7 @@ const playerStore = usePlayerStore();
 .label {
   position: relative;
   top: -220px;
-  left: 82px;
+  left: 64px;
   z-index: 3;
 
 }
@@ -32,21 +32,35 @@ const playerStore = usePlayerStore();
 .artist {
   position: absolute;
   top: -16px;
+  transform-origin: center;
   transform: rotate(-3deg);
+  display: inline-block;
+  width: 236px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .album {
   position: absolute;
   top: 3px;
-  left: 20px;
+  left: 16px;
+  transform-origin: center;
   transform: rotate(-2deg);
+  display: inline-block;
+  width: 296px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .gochi-hand-regular {
   font-family: "Gochi Hand", cursive;
   font-weight: 400;
   font-style: normal;
-  font-size: 24px;
+  font-size: 22px;
   color: #04008f;
 }
 
