@@ -74,6 +74,7 @@ import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { useSessionStore } from "src/stores/session";
+import { usePlayerStore } from "src/stores/player";
 import { createStorageEntry } from "src/composables/localStorage";
 import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
 import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/auth-validator";
@@ -104,6 +105,8 @@ const serverEnvironment = useServerEnvironmentStore();
 
 const sessionStore = useSessionStore();
 const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
+
+const playerStore = usePlayerStore();
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
@@ -157,6 +160,7 @@ const onSubmitForm = () => {
         sessionStore.setAccessToken(successResponse.data.accessToken);
         localStorageLastEmailUsed.set(profile.email);
         emit("success", successResponse.data);
+        playerStore.interact();
       })
       .catch((errorResponse) => {
         state.ajaxErrors = true;
