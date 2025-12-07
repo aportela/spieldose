@@ -40,9 +40,7 @@ const setQuasarLanguage = (locale: string) => {
       Lang.set(quasarLanguages["en-US"]);
       break;
     case "es-ES":
-      console.log(1);
       Lang.set(quasarLanguages["es-ES"]);
-      console.log(2);
       break;
     case "gl-GL":
       Lang.set(quasarLanguages["gl-GL"]);
