@@ -4,7 +4,7 @@ import { createStorageEntry } from 'src/composables/localStorage';
 import { availableSystemLocales } from "src/i18n";
 import { DEFAULT_LOCALE } from 'src/constants';
 
-const localStorageLocale = createStorageEntry<string | null>("locale", null);
+const localStorageLocale = createStorageEntry<string | null>("session.locale", null);
 
 const getMatchedLocale = (locale: string): string | null => {
   if (availableSystemLocales.includes(locale)) {
