@@ -5,10 +5,8 @@
   </div>
   <div class="label gochi-hand-regular" v-if="currentPlaylistItemStore.isTrack">
     <span class="artist">{{ currentPlaylistItemStore.trackAlbumArtistName }}</span>
-    <span class="album">{{ currentPlaylistItemStore.trackAlbumTitle }}</span>
+    <span class="album">{{ currentPlaylistItemStore.trackTitle }}</span>
   </div>
-
-
 </template>
 
 <script setup lang="ts">
