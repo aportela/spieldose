@@ -3,9 +3,8 @@
     :currentPageIndex="currentPageIndex" :totalPages="totalPages" :totalResults="totalResults"
     @paginationChanged="onPaginationChanged">
     <template #items>
-      <AnimatedAlbumCover v-for="album in albums" :key="album._id" :image="album.image || undefined"
-        :title="album.title" :albumMbId="album.mbId || undefined" :artistMbId="album.artist?.mbId || undefined"
-        :artistName="album.artist?.name || undefined" :year="album.year || undefined">
+      <AnimatedAlbumCover v-for="album in albums" :key="album._id" :image="album.image" :albumTitle="album.title"
+        :albumMbId="album.mbId" :artistMbId="album.artist.mbId" :artistName="album.artist.name" :year="album.year">
       </AnimatedAlbumCover>
     </template>
   </BrowserBase>
@@ -16,7 +15,7 @@ import { ref, shallowRef, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { uid } from "quasar";
 import { api } from "src/composables/api";
-import { getSmallURL } from "src/composables/thumbnail";
+//import { getSmallURL } from "src/composables/thumbnail";
 import { default as BrowserBase } from 'src/components/BrowserBase.vue';
 import { default as AnimatedAlbumCover } from 'src/components/AnimatedAlbumCover.vue';
 import {
@@ -42,7 +41,7 @@ class Album implements BrowseAlbumItemResponseInterface {
   mbId: string | null;
   year: number | null;
   image: string | null;
-  artist?: {
+  artist: {
     name: string | null;
     mbId: string | null;
   }
@@ -53,6 +52,10 @@ class Album implements BrowseAlbumItemResponseInterface {
     this.mbId = item.mbId;
     this.year = item.year;
     this.image = item.image;
+    this.artist = {
+      name: null,
+      mbId: null,
+    };
   }
 }
 

@@ -18,10 +18,10 @@
       <img class="vinyl no-cover" src="vectors/Vinyl_record.svg" v-if="loaded || errors" />
     </div>
     <div class="album-info">
-      <p class="album-name" v-if="title" :title="title">
+      <p class="album-name" v-if="albumTitle" :title="albumTitle">
         <router-link
-          :to="{ name: 'album', params: { title: title }, query: { mbId: albumMbId, artistMbId: artistMbId, artistName: artistName, year: year } }">{{
-            title }}</router-link>
+          :to="{ name: 'album', params: { title: albumTitle }, query: { mbId: albumMbId, artistMbId: artistMbId, artistName: artistName, year: year } }">{{
+            albumTitle }}</router-link>
       </p>
       <p v-if="artistName" class="artist-name">by <router-link :title="artistName"
           :to="{ name: 'artist', params: { name: artistName }, query: { mbid: artistMbId, tab: 'overview' } }">{{
@@ -39,12 +39,12 @@ import { ref, computed } from "vue";
 const emit = defineEmits(['play', 'enqueue']);
 
 interface AnimatedAlbumCoverProps {
-  title: string;
-  albumMbId?: string;
-  artistMbId?: string;
-  artistName?: string;
-  year?: number;
-  image?: string;
+  albumTitle: string | null;
+  albumMbId: string | null;
+  artistMbId: string | null;
+  artistName: string | null;
+  year: number | null;
+  image: string | null;
 };
 
 const props = defineProps<AnimatedAlbumCoverProps>();
