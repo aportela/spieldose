@@ -34,14 +34,14 @@ const audioDurationLabel = computed(() => formatSecondsAsTime(Math.floor(playerS
 const currentTime = ref(Math.floor(playerStore.audioCurrentTime));
 
 watch(() => playerStore.audioCurrentTime, (newValue) => {
-  currentTime.value = Math.floor(playerStore.audioCurrentTime);
+  currentTime.value = Math.floor(newValue);
 });
 
 const formatSecondsAsTime = (seconds: number): string => {
   if (Number.isInteger(seconds) && seconds >= 0) {
     const hoursValue = Math.floor(seconds / 3600);
-    let minutesValue = Math.floor((seconds - (hoursValue * 3600)) / 60);
-    let secondsValue = Math.floor(seconds - (hoursValue * 3600) - (minutesValue * 60));
+    const minutesValue = Math.floor((seconds - (hoursValue * 3600)) / 60);
+    const secondsValue = Math.floor(seconds - (hoursValue * 3600) - (minutesValue * 60));
     const minutesStr: string = minutesValue < 10 ? '0' + minutesValue : minutesValue.toString();
     const secondsStr: string = secondsValue < 10 ? '0' + secondsValue : secondsValue.toString();
     return `${minutesStr}:${secondsStr}`;

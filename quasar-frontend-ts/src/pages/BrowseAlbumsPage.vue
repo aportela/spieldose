@@ -81,7 +81,8 @@ function browse() {
       }
     });
     */
-  }).catch((error) => {
+  }).catch((error: Error) => {
+    console.error("Error browsing albums", error);
     albums.value = [];
     totalPages.value = 0;
     totalResults.value = 0;
