@@ -58,7 +58,7 @@ const topHeaderMenuItems: MenuItem[] = [
 ];
 
 const sidebarMenuItems: MenuItem[] = [
-  { icon: 'home', text: "Home", routeName: 'index' },
+  { icon: 'explore', text: "Explore", routeName: 'index' },
   {
     icon: 'queue_music',
     text: 'Current playlist',
