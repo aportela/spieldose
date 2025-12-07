@@ -12,62 +12,66 @@ const localStoragePlayerMiniAnalyzerShowPeaks = createStorageEntry<boolean>("vis
 const localStoragePlayerMiniAnalyzerLedBars = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.ledBars", true);
 const localStoragePlayerMiniAnalyzerTrueLeds = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.trueLeds", true);
 const localStoragePlayerMiniAnalyzerColorMode = createStorageEntry<AudioMotionAnalyzerOptionColorMode>("visualizations.sidebar.spectrumAnalyzer.colorMode", "gradient");
-const localStoragePlayerMiniAnalyzerGradient = createStorageEntry<string>("playerMiniAnalyzerGradient", "spieldose");
+const localStoragePlayerMiniAnalyzerGradient = createStorageEntry<string>("visualizations.sidebar.spectrumAnalyzer.gradient", "spieldose");
 const localStoragePlayerMiniAnalyzerLoRes = createStorageEntry<boolean>("visualizations.sidebar.spectrumAnalyzer.loRes", false);
 
 interface State {
-  visible: boolean;
-  mode: number;
-  fps: number;
-  barSpace: number;
-  height: number;
-  channelLayout: SpectrumAnalyzerChannelLayout;
-  peaks: boolean;
-  ledBars: boolean;
-  trueLeds: boolean;
-  colorMode: AudioMotionAnalyzerOptionColorMode;
-  gradient: string;
-  loRes: boolean;
+  settings: {
+    visible: boolean;
+    mode: number;
+    fps: number;
+    barSpace: number;
+    height: number;
+    channelLayout: SpectrumAnalyzerChannelLayout;
+    showPeaks: boolean;
+    ledBars: boolean;
+    trueLeds: boolean;
+    colorMode: AudioMotionAnalyzerOptionColorMode;
+    gradient: string;
+    loRes: boolean;
+  }
 };
 
 export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniSpectrumAnalyzerSettingsStore', {
   state: (): State => ({
-    visible: localStorageShowMiniSpectrumAnalyzer.get(),
-    mode: localStoragePlayerMiniAnalyzerMode.get(),
-    fps: localStoragePlayerMiniAnalyzerFPS.get(),
-    barSpace: localStoragePlayerMiniAnalyzerBarSpace.get(),
-    height: localStoragePlayerMiniAnalyzerHeight.get(),
-    channelLayout: localStoragePlayerMiniAnalyzerChannelLayout.get(),
-    peaks: localStoragePlayerMiniAnalyzerShowPeaks.get(),
-    ledBars: localStoragePlayerMiniAnalyzerLedBars.get(),
-    trueLeds: localStoragePlayerMiniAnalyzerTrueLeds.get(),
-    colorMode: localStoragePlayerMiniAnalyzerColorMode.get(),
-    gradient: localStoragePlayerMiniAnalyzerGradient.get(),
-    loRes: localStoragePlayerMiniAnalyzerLoRes.get(),
+    settings: {
+      visible: localStorageShowMiniSpectrumAnalyzer.get(),
+      mode: localStoragePlayerMiniAnalyzerMode.get(),
+      fps: localStoragePlayerMiniAnalyzerFPS.get(),
+      barSpace: localStoragePlayerMiniAnalyzerBarSpace.get(),
+      height: localStoragePlayerMiniAnalyzerHeight.get(),
+      channelLayout: localStoragePlayerMiniAnalyzerChannelLayout.get(),
+      showPeaks: localStoragePlayerMiniAnalyzerShowPeaks.get(),
+      ledBars: localStoragePlayerMiniAnalyzerLedBars.get(),
+      trueLeds: localStoragePlayerMiniAnalyzerTrueLeds.get(),
+      colorMode: localStoragePlayerMiniAnalyzerColorMode.get(),
+      gradient: localStoragePlayerMiniAnalyzerGradient.get(),
+      loRes: localStoragePlayerMiniAnalyzerLoRes.get(),
+    },
   }),
   getters: {
-    isVisible: (state) => state.visible,
-    currentMode: (state) => state.mode,
-    currentFPS: (state) => state.fps,
-    currentBarSpace: (state) => state.barSpace,
-    currentHeight: (state) => state.height,
-    currentChannelLayout: (state) => state.channelLayout,
-    showPeaks: (state) => state.peaks,
-    ledBarsActive: (state) => state.ledBars,
-    trueLedsActive: (state) => state.trueLeds,
-    currentColorMode: (state) => state.colorMode,
-    currentGradient: (state) => state.gradient,
-    isLoResActive: (state) => state.loRes
+    visible: (state) => state.settings.visible,
+    mode: (state) => state.settings.mode,
+    fps: (state) => state.settings.fps,
+    barSpace: (state) => state.settings.barSpace,
+    height: (state) => state.settings.height,
+    channelLayout: (state) => state.settings.channelLayout,
+    showPeaks: (state) => state.settings.showPeaks,
+    ledBars: (state) => state.settings.ledBars,
+    trueLeds: (state) => state.settings.trueLeds,
+    colorMode: (state) => state.settings.colorMode,
+    gradient: (state) => state.settings.gradient,
+    loRes: (state) => state.settings.loRes
   },
   actions: {
     setVisibility(visible: boolean) {
-      this.visible = visible;
-      localStorageShowMiniSpectrumAnalyzer.set(this.visible);
+      this.settings.visible = visible;
+      localStorageShowMiniSpectrumAnalyzer.set(this.settings.visible);
     },
     setMode(mode: number) {
       if (mode == 10 || (mode >= 0 && mode < 9)) {
-        this.mode = mode;
-        localStoragePlayerMiniAnalyzerMode.set(this.mode);
+        this.settings.mode = mode;
+        localStoragePlayerMiniAnalyzerMode.set(this.settings.mode);
       } else {
         console.error(
           "Mini Spectrum Analyzer settings = setMode() => invalid mode",
@@ -77,8 +81,8 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
     },
     setFPS(fps: number) {
       if (fps >= 0 && fps <= 144) {
-        this.fps = fps;
-        localStoragePlayerMiniAnalyzerFPS.set(this.fps);
+        this.settings.fps = fps;
+        localStoragePlayerMiniAnalyzerFPS.set(this.settings.fps);
       } else {
         console.error(
           "Mini Spectrum Analyzer settings = setFPS() => invalid fps",
@@ -88,8 +92,8 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
     },
     setBarSpace(space: number) {
       if (space >= 0 && space <= 1) {
-        this.barSpace = space;
-        localStoragePlayerMiniAnalyzerBarSpace.set(this.barSpace);
+        this.settings.barSpace = space;
+        localStoragePlayerMiniAnalyzerBarSpace.set(this.settings.barSpace);
       } else {
         console.error(
           "Mini Spectrum Analyzer settings = setBarSpace() => invalid space",
@@ -99,8 +103,8 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
     },
     setHeight(height: number) {
       if (height > 0) {
-        this.height = height;
-        localStoragePlayerMiniAnalyzerHeight.set(this.height);
+        this.settings.height = height;
+        localStoragePlayerMiniAnalyzerHeight.set(this.settings.height);
       } else {
         console.error(
           "Mini Spectrum Analyzer settings = setHeight() => invalid height",
@@ -109,29 +113,29 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
       }
     },
     setChannelLayout(channelLayout: SpectrumAnalyzerChannelLayout) {
-      this.channelLayout = channelLayout;
-      localStoragePlayerMiniAnalyzerChannelLayout.set(this.channelLayout);
+      this.settings.channelLayout = channelLayout;
+      localStoragePlayerMiniAnalyzerChannelLayout.set(this.settings.channelLayout);
     },
     setPeaksVisibility(visible: boolean) {
-      this.peaks = visible;
-      localStoragePlayerMiniAnalyzerShowPeaks.set(this.peaks);
+      this.settings.showPeaks = visible;
+      localStoragePlayerMiniAnalyzerShowPeaks.set(this.settings.showPeaks);
     },
     setLedBars(active: boolean) {
-      this.ledBars = active;
-      localStoragePlayerMiniAnalyzerLedBars.set(this.ledBars);
+      this.settings.ledBars = active;
+      localStoragePlayerMiniAnalyzerLedBars.set(this.settings.ledBars);
     },
     setTrueLeds(active: boolean) {
-      this.trueLeds = active;
-      localStoragePlayerMiniAnalyzerTrueLeds.set(this.trueLeds);
+      this.settings.trueLeds = active;
+      localStoragePlayerMiniAnalyzerTrueLeds.set(this.settings.trueLeds);
     },
     setColorMode(colorMode: AudioMotionAnalyzerOptionColorMode) {
-      this.colorMode = colorMode;
-      localStoragePlayerMiniAnalyzerColorMode.set(this.colorMode);
+      this.settings.colorMode = colorMode;
+      localStoragePlayerMiniAnalyzerColorMode.set(this.settings.colorMode);
     },
     setGradient(gradient: string) {
       if (gradient) {
-        this.gradient = gradient;
-        localStoragePlayerMiniAnalyzerGradient.set(this.gradient);
+        this.settings.gradient = gradient;
+        localStoragePlayerMiniAnalyzerGradient.set(this.settings.gradient);
       } else {
         console.error(
           "Mini Spectrum Analyzer settings = setGradient() => invalid gradient",
@@ -140,8 +144,8 @@ export const useSidebarSpectrumAnalyzerSettingsStore = defineStore('sidebarMiniS
       }
     },
     setLoRes(active: boolean) {
-      this.loRes = active;
-      localStoragePlayerMiniAnalyzerLoRes.set(this.loRes);
+      this.settings.loRes = active;
+      localStoragePlayerMiniAnalyzerLoRes.set(this.settings.loRes);
     },
   }
 });

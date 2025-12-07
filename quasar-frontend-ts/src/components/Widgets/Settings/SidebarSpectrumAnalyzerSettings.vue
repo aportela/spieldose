@@ -94,7 +94,7 @@ const showPeaks = computed({
 
 const ledBars = computed({
   get() {
-    return (store.ledBarsActive);
+    return (store.ledBars);
   },
   set(value) {
     store.setLedBars(value);
@@ -103,7 +103,7 @@ const ledBars = computed({
 
 const trueLeds = computed({
   get() {
-    return (store.trueLedsActive);
+    return (store.trueLeds);
   },
   set(value) {
     store.setTrueLeds(value);
@@ -112,7 +112,7 @@ const trueLeds = computed({
 
 const loRes = computed({
   get() {
-    return (store.isLoResActive);
+    return (store.loRes);
   },
   set(value) {
     store.setLoRes(value);
@@ -121,7 +121,7 @@ const loRes = computed({
 
 const channelLayout = computed({
   get() {
-    return (store.currentChannelLayout);
+    return (store.channelLayout);
   },
   set(value) {
     store.setChannelLayout(value);
@@ -130,7 +130,7 @@ const channelLayout = computed({
 
 const fps = computed({
   get() {
-    return (store.currentFPS);
+    return (store.fps);
   },
   set(value) {
     store.setFPS(value);
@@ -139,7 +139,7 @@ const fps = computed({
 
 const mode = computed({
   get() {
-    return (store.currentMode);
+    return (store.mode);
   },
   set(value) {
     store.setMode(value);
@@ -148,7 +148,7 @@ const mode = computed({
 
 const barSpace = computed({
   get() {
-    return (store.currentBarSpace);
+    return (store.barSpace);
   },
   set(value) {
     store.setBarSpace(value);
@@ -166,7 +166,7 @@ const height = computed({
 
 const colorMode = computed({
   get() {
-    return (store.currentColorMode);
+    return (store.colorMode);
   },
   set(value) {
     store.setColorMode(value);
@@ -175,7 +175,7 @@ const colorMode = computed({
 
 const gradient = computed({
   get() {
-    return (store.currentGradient);
+    return (store.gradient);
   },
   set(value) {
     store.setGradient(value);

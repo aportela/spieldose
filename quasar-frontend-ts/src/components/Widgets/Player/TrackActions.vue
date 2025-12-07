@@ -2,7 +2,7 @@
   <div id="current_track_actions">
     <q-btn-group spread>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle analyzer" @click="onToggleAnalyzer"><q-icon
-          name="bar_chart" :color="sidebarSpectrumAnalyzerSettingsStore.isVisible ? 'pink' : ''"></q-icon></q-btn>
+          name="bar_chart" :color="sidebarSpectrumAnalyzerSettingsStore.visible ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" title="Toggle shuffle"><q-icon name="shuffle"
           :color="playerStore.shuffleMode ? 'pink' : ''" @click="playerStore.toggleShuffeMode"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel"
@@ -84,7 +84,7 @@ const repeatModeLabel = computed(() => {
 });
 
 function onToggleAnalyzer() {
-  sidebarSpectrumAnalyzerSettingsStore.setVisibility(!sidebarSpectrumAnalyzerSettingsStore.isVisible);
+  sidebarSpectrumAnalyzerSettingsStore.setVisibility(!sidebarSpectrumAnalyzerSettingsStore.visible);
 }
 
 function onToggleVisualization() {

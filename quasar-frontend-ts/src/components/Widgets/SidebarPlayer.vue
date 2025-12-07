@@ -4,7 +4,7 @@
     <div style="width: 100%; height: 200px;" v-if="sidebarAnalogVumeterSettingsStore.visible">
       <SidebarAnalogVumeter />
     </div>
-    <SidebarSpectrumAnalyzer v-if="sidebarSpectrumAnalyzerSettingsStore.isVisible" />
+    <SidebarSpectrumAnalyzer v-if="sidebarSpectrumAnalyzerSettingsStore.visible" />
     <VolumeControl />
     <TrackInfo />
     <MainControls />

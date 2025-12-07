@@ -1,6 +1,6 @@
 <template>
   <div id="spieldose-sidebar-analyzer-container" class="cursor-pointer"
-    :style="{ height: sidebarSpectrumAnalyzerSettingsStore.currentHeight + 'px' }"
+    :style="{ height: sidebarSpectrumAnalyzerSettingsStore.height + 'px' }"
     :title="t('Toggle analyzer octave bands number')" @click="onToggleCurrentMode"></div>
 </template>
 
@@ -31,17 +31,17 @@ const defaultAnalyzerOptions = {
   source: audioMotionAnalyzerStore.audioInstance,
   connectSpeakers: audioMotionAnalyzerStore.connectSpeakers,
   start: false,
-  loRes: sidebarSpectrumAnalyzerSettingsStore.isLoResActive,
-  maxFPS: sidebarSpectrumAnalyzerSettingsStore.currentFPS,
-  mode: sidebarSpectrumAnalyzerSettingsStore.currentMode,
-  ledBars: sidebarSpectrumAnalyzerSettingsStore.ledBarsActive,
+  loRes: sidebarSpectrumAnalyzerSettingsStore.loRes,
+  maxFPS: sidebarSpectrumAnalyzerSettingsStore.fps,
+  mode: sidebarSpectrumAnalyzerSettingsStore.mode,
+  ledBars: sidebarSpectrumAnalyzerSettingsStore.ledBars,
   showPeaks: sidebarSpectrumAnalyzerSettingsStore.showPeaks,
-  trueLeds: sidebarSpectrumAnalyzerSettingsStore.trueLedsActive,
-  barSpace: sidebarSpectrumAnalyzerSettingsStore.currentBarSpace,
+  trueLeds: sidebarSpectrumAnalyzerSettingsStore.trueLeds,
+  barSpace: sidebarSpectrumAnalyzerSettingsStore.barSpace,
   showScaleX: false,
   showScaleY: false,
-  channelLayout: sidebarSpectrumAnalyzerSettingsStore.currentChannelLayout,
-  colorMode: sidebarSpectrumAnalyzerSettingsStore.currentColorMode,
+  channelLayout: sidebarSpectrumAnalyzerSettingsStore.channelLayout,
+  colorMode: sidebarSpectrumAnalyzerSettingsStore.colorMode,
   splitGradient: false,
   bgAlpha: 1,
   overlay: true,
@@ -58,43 +58,43 @@ watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentMode, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.mode, (newValue) => {
   if (analyzerInstance.value && (newValue == 10 || (newValue >= 0 && newValue <= 8))) {
-    analyzerInstance.value.setOptions({ mode: newValue, barSpace: sidebarSpectrumAnalyzerSettingsStore.currentBarSpace });
+    analyzerInstance.value.setOptions({ mode: newValue, barSpace: sidebarSpectrumAnalyzerSettingsStore.barSpace });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentBarSpace, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.barSpace, (newValue) => {
   if (analyzerInstance.value && newValue >= 0 && newValue <= 1) {
-    analyzerInstance.value.setOptions({ mode: sidebarSpectrumAnalyzerSettingsStore.currentMode, barSpace: newValue });
+    analyzerInstance.value.setOptions({ mode: sidebarSpectrumAnalyzerSettingsStore.mode, barSpace: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentFPS, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.fps, (newValue) => {
   if (analyzerInstance.value && newValue >= 0 && newValue <= 144) {
     analyzerInstance.value.setOptions({ maxFPS: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentHeight, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.height, (newValue) => {
   if (analyzerInstance.value && newValue > 0) {
     analyzerInstance.value.setOptions({ height: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentChannelLayout, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.channelLayout, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ channelLayout: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentColorMode, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.colorMode, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ colorMode: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.currentGradient, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.gradient, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ gradient: newValue });
   }
@@ -106,26 +106,26 @@ watch(() => sidebarSpectrumAnalyzerSettingsStore.showPeaks, (newValue) => {
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.ledBarsActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.ledBars, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ ledBars: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.trueLedsActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.trueLeds, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ trueLeds: newValue });
   }
 });
 
-watch(() => sidebarSpectrumAnalyzerSettingsStore.isLoResActive, (newValue) => {
+watch(() => sidebarSpectrumAnalyzerSettingsStore.loRes, (newValue) => {
   if (analyzerInstance.value) {
     analyzerInstance.value.setOptions({ loRes: newValue });
   }
 });
 
 const onToggleCurrentMode = () => {
-  let mode = sidebarSpectrumAnalyzerSettingsStore.currentMode;
+  let mode = sidebarSpectrumAnalyzerSettingsStore.mode;
   if (++mode > 8) {
     mode = 1;
   }
@@ -166,7 +166,7 @@ const createAudioMotionAnalyzerInstance = (constructorOptions: AudioMotionAnalyz
         ]
       }
       analyzerInstance.value.registerGradient('spieldose', gradientOptions);
-      analyzerInstance.value.gradient = sidebarSpectrumAnalyzerSettingsStore.currentGradient;
+      analyzerInstance.value.gradient = sidebarSpectrumAnalyzerSettingsStore.gradient;
       if (start) {
         startAnalyzer();
       }
