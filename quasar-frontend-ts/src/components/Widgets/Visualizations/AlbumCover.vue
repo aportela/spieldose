@@ -15,8 +15,7 @@
   cassete vector credits:
   Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
   -->
-  <cassete-tape v-else-if="playerStore.currentVinylAnimation === 'cassete'" @click="toggleAnimation"
-    class="cursor-pointer full-width" />
+  <cassete-tape v-else-if="playerStore.currentVinylAnimation === 'cassete'" @click="toggleAnimation" />
   <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
       width="100%" spinner-color="pink" />
