@@ -169,7 +169,9 @@ onMounted(() => {
   if (setupCanvas()) {
     drawCanvasVuMeterBar(mapEnergyToAngle(0)); // draw vumeter bar at minimum value
     // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-    createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
+    if (playerStore.hasPreviousUserInteractions) {
+      createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
+    }
   } else {
     console.error("Error setting up vumeter canvas");
   }

@@ -184,7 +184,9 @@ const destroyAudioMotionAnalyzerInstance = () => {
 
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, playerStore.hasPreviousUserInteractions);
+  if (playerStore.hasPreviousUserInteractions) {
+    createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
+  }
 });
 
 onBeforeUnmount(() => {
