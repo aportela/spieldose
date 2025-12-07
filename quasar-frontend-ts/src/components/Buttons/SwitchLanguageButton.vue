@@ -1,11 +1,11 @@
 <template>
   <q-btn v-bind="attrs" :label="shortLabels ? selectedLocale.shortLabel : selectedLocale.label" icon="language"
-    :icon-right="availableLocales.length > 1 ? 'unfold_more' : undefined" no-caps dense
-    :disable="availableLocales.length <= 1">
+    :icon-right="availableLocaleSelectorOptionItems.length > 1 ? 'unfold_more' : undefined" no-caps dense
+    :disable="availableLocaleSelectorOptionItems.length <= 1">
     <DesktopToolTip>{{ tooltip }}</DesktopToolTip>
-    <q-menu fit anchor="top left" self="bottom left" v-if="availableLocales.length > 1">
-      <q-item dense clickable v-close-popup v-for="availableLanguage in availableLocales" :key="availableLanguage.value"
-        @click="onSelectLocale(availableLanguage.value)">
+    <q-menu fit anchor="top left" self="bottom left" v-if="availableLocaleSelectorOptionItems.length > 1">
+      <q-item dense clickable v-close-popup v-for="availableLanguage in availableLocaleSelectorOptionItems"
+        :key="availableLanguage.value" @click="onSetLocale(availableLanguage.value)">
         <q-item-section>{{ availableLanguage.label }}</q-item-section>
         <q-item-section avatar v-if="availableLanguage.value === selectedLocale.value">
           <q-icon name="check" />
@@ -16,17 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs, ref } from "vue";
+import { ref, computed, useAttrs, watch } from "vue";
 import { useI18n } from "vue-i18n";
-
+import { availableLocaleSelectorOptionItems, getlocaleSelectorOptionItem } from "src/i18n";
 import { useI18nStore } from "src/stores/i18n";
-import { availableSystemLocales, setQuasarLanguage } from "src/composables/i18n";
-
 import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
 const { t } = useI18n();
-
-const { locale: i18nInstanceCurrentLocale } = useI18n();
 
 const i18NStore = useI18nStore();
 
@@ -41,26 +37,13 @@ withDefaults(defineProps<SwitchLanguageButtonProps>(), {
 
 const tooltip = computed(() => t("Switch language"));
 
-const localeMappings = [
-  { shortLabel: "EN", label: "English", value: "en-US" },
-  { shortLabel: "ES", label: "Español", value: "es-ES" },
-  { shortLabel: "GL", label: "Galego", value: "gl-GL" },
-];
+const selectedLocale = ref(getlocaleSelectorOptionItem(i18NStore.currentLocale));
 
-const availableLocales = localeMappings.filter((l) => availableSystemLocales.includes(l.value));
+watch(() => i18NStore.currentLocale, () => {
+  selectedLocale.value = getlocaleSelectorOptionItem(i18NStore.currentLocale);
+});
 
-const index = availableLocales.findIndex((l) => l.value === i18NStore.currentLocale);
-
-const selectedLocale = ref(availableLocales[index >= 0 ? index : 0]!);
-
-const onSelectLocale = (newLocale: string) => {
-  setQuasarLanguage(newLocale);
-  if (i18NStore.setLocale(newLocale)) {
-    i18nInstanceCurrentLocale.value = i18NStore.currentLocale;
-    selectedLocale.value = availableLocales.find(l => l.value === newLocale) ?? availableLocales[0]!;
-
-  } else {
-    console.error("Invalid locale", newLocale)
-  }
+const onSetLocale = (newLocale: string) => {
+  i18NStore.setLocale(newLocale);
 };
 </script>

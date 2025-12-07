@@ -1,6 +1,23 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { locale as localStorageLocale } from 'src/composables/localStorage';
-import { autodetectLocale, getMatchedLocale } from 'src/composables/i18n';
+import { Lang } from "quasar";
+import { createStorageEntry } from 'src/composables/localStorage';
+import { availableSystemLocales } from "src/i18n";
+import { DEFAULT_LOCALE } from 'src/constants';
+
+const localStorageLocale = createStorageEntry<string | null>("locale", null);
+
+const getMatchedLocale = (locale: string): string | null => {
+  if (availableSystemLocales.includes(locale)) {
+    return locale;
+  } else if (locale.length >= 2) {
+    // try similar match, example: locale es-MX (spanish, mexico) return es-ES (spanish, spain) if availableSystemLocales only contains [ 'en-US', 'es-ES', 'gl-GL']
+    const shortLocale = locale.substring(0, 2).toLocaleLowerCase();
+    const match = availableSystemLocales.find((locale) => locale.substring(0, 2).toLocaleLowerCase() === shortLocale);
+    return (match ?? null);
+  } else {
+    return null;
+  }
+};
 
 interface State {
   locale: string;
@@ -8,7 +25,7 @@ interface State {
 
 export const useI18nStore = defineStore('i18nStore', {
   state: (): State => ({
-    locale: autodetectLocale()
+    locale: getMatchedLocale(localStorageLocale.get() || Lang.getLocale() || "") ?? DEFAULT_LOCALE,
   }),
   getters: {
     currentLocale(state): string {
