@@ -5,10 +5,9 @@
         @click="onToggleAnalyzer"><q-icon name="bar_chart"
           :color="sidebarSpectrumAnalyzerSettingsStore.visible ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Toggle player shuffle mode')"><q-icon
-          name="shuffle" :color="playerStore.shuffleMode ? 'pink' : ''"
-          @click="playerStore.toggleShuffeMode"></q-icon></q-btn>
-      <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel"
-        @click="playerStore.toggleRepeatMode"><q-icon :name="repeatModeIcon"
+          name="shuffle" :color="playerStore.shuffleMode ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
+      <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
+          :name="repeatModeIcon"
           :color="playerStore.repeatMode && playerStore.repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Toggle favorite track')"
         @click="onToggleFavorite"><q-icon name="favorite"
@@ -94,15 +93,19 @@ function onToggleVisualization() {
 }
 
 function onToggleShuffle() {
-  //emit('toggleShuffle');
+  playerStore.toggleShuffeMode();
 }
 
 function onToggleRepeatMode() {
-  //emit('toggleRepeatMode');
+  playerStore.toggleRepeatMode();
 }
 
-function onToggleFavorite() {
-  currentPlaylistItemStore.toggleFavoriteTrack();
+async function onToggleFavorite() {
+  try {
+    await currentPlaylistItemStore.toggleFavoriteTrack();
+  } catch (e: unknown) {
+    console.error("Error toggling favorite", e);
+  }
 }
 
 function onShowTrackDetailsModal() {
