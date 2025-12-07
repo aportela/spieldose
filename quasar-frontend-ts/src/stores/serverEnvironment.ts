@@ -13,12 +13,8 @@ export const useServerEnvironmentStore = defineStore('serverEnvironment', {
     environment: "production",
   }),
   getters: {
-    isSignUpAllowed(state): boolean {
-      return state.allowSignUp
-    },
-    isCurrentEnvironmentDevelopment(state): boolean {
-      return state.environment == "development"
-    },
+    isSignUpAllowed: (state): boolean => state.allowSignUp,
+    isCurrentEnvironmentDevelopment: (state): boolean => state.environment == "development",
   },
   actions: {
     set(
