@@ -29,6 +29,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import("pages/IndexPage.vue"),
       },
       {
+        name: "currentPlaylist",
+        path: "current_playlist",
+        component: () => import("pages/CurrentPlayListPage.vue"),
+      },
+      {
         name: "artists",
         path: "artists",
         component: () => import("pages/BrowseArtistsPage.vue"),
