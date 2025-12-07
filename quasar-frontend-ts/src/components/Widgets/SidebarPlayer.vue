@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
-import { default as AlbumCover } from "./Player/AlbumCover.vue";
+import { default as AlbumCover } from "./Visualizations/AlbumCover.vue";
 import { default as SidebarSpectrumAnalyzer } from "./Visualizations/SidebarSpectrumAnalyzer.vue";
 import { default as SidebarAnalogVumeter } from "./Visualizations/SidebarAnalogVumeter.vue";
 import { default as VolumeControl } from "./Player/VolumeControl.vue";
