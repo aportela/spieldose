@@ -101,6 +101,11 @@ const api = {
     unSetFavorite: function (id: string) {
       return axiosInstance.get(`/track/${id}/unset_favorite`);
     },
+  },
+  currentPlayList: {
+    get: function () {
+      return axiosInstance.get("/current_playlist");
+    },
   }
 };
 

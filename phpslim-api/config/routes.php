@@ -759,6 +759,28 @@ return function (App $app): void {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->get('/current_playlist', function (Request $request, Response $response, array $args) use ($container) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+
+                $playlistItems = \Spieldose\Entities\File::getRandomPlayList($dbh, 32);
+                $payload = json_encode(
+                    [
+                        "playList" => [
+                            "items" => $playlistItems
+                        ],
+                    ]
+                );
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                }
+
+                $response->getBody()->write($payload);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             /*
             $group->group('/user', function (RouteCollectorProxy $group) use ($app) {
                 $group->get('/profile', function (Request $request, Response $response, array $args) use ($app) {

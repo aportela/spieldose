@@ -119,6 +119,15 @@
 </template>
 
 <script setup lang="ts">
+
+import { api } from 'src/composables/api';
+
+api.currentPlayList.get().then((successResponse) => {
+  console.log(successResponse);
+}).catch((errorResponse) => {
+  console.error(errorResponse);
+}).finally(() => { });
+
 /*
 import { ref, watch, computed, onMounted, inject } from "vue";
 import { useQuasar, uid } from "quasar";

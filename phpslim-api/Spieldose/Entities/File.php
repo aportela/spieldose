@@ -74,6 +74,65 @@ class File
         }
     }
 
+    public static function getRandomPlayList(\aportela\DatabaseWrapper\DB $db, int $count = 32): array
+    {
+        $results = $db->query(
+            "
+                SELECT
+                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
+                FROM FILE
+                LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
+                LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
+                LEFT JOIN FILE_FAVORITE ON FILE_FAVORITE.file_id = FILE.id AND FILE_FAVORITE.user_id = :user_id
+                ORDER BY RANDOM()
+                LIMIT :limit
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":default_mime", "application/octet-stream"),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":limit", $count),
+
+            ]
+        );
+        $playlistItems = [];
+        foreach ($results as $result) {
+            $item = new \stdClass();
+
+            $item->filename = $result->name;
+            $item->filesize = $result->size;
+            $item->mime = $result->mime;
+            $item->trackInfo = new \stdClass();
+            $item->trackInfo->playTimeSeconds = $result->playtime_seconds;
+            $item->trackInfo->title = $result->title;
+            $item->trackInfo->artist = new \stdClass();
+            $item->trackInfo->artist->mbId = null;
+            $item->trackInfo->artist->name = $result->artist;
+            $item->trackInfo->album = new \stdClass();
+            $item->trackInfo->album->mbId = $result->release_mbid;
+            $item->trackInfo->album->title = $result->album;
+            $item->trackInfo->album->year = intval($result->year);
+            $item->trackInfo->album->artist = new \stdClass();
+            $item->trackInfo->album->artist->mbId = null;
+            $item->trackInfo->album->artist->name = $result->artist;
+            $item->trackInfo->imageURL = new \stdClass();
+            if (! empty($result->cover_filename)) {
+                $item->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
+                $item->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
+            } elseif (! empty($result->release_mbid)) {
+                $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $result->release_mbid);
+                $item->trackInfo->imageURL->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
+                $item->trackInfo->imageURL->normal = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
+            } else {
+                $item->trackInfo->imageURL->small = null;
+                $item->trackInfo->imageURL->normal = null;
+            }
+
+            $item->trackInfo->favorited = $result->ftime ? intval($result->ftime) : null;
+            $playlistItems[] = $item;
+        }
+        return ($playlistItems);
+    }
+
     /**
      * temporal method
      */
