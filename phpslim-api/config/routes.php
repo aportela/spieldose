@@ -333,15 +333,14 @@ return function (App $app): void {
                     $currentPageIndex = 1;
                     $resultsPage = \Spieldose\Browse\Base::DEFAULT_RESULTS_PAGE;
                     if (array_key_exists("pager", $params)) {
-                        if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["currentPageIndex"])) {
+                        if (array_key_exists("currentPageIndex", $params["pager"]) && is_numeric($params["pager"]["currentPageIndex"])) {
                             $currentPageIndex = intval($params["pager"]["currentPageIndex"]);
                         }
 
-                        if (array_key_exists("name", $params["filter"]) && is_numeric($params["pager"]["resultsPage"])) {
+                        if (array_key_exists("resultsPage", $params["pager"]) && is_numeric($params["pager"]["resultsPage"])) {
                             $resultsPage = intval($params["pager"]["resultsPage"]);
                         }
                     }
-
                     return (new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPageIndex, $resultsPage));
                 };
 
@@ -414,7 +413,6 @@ return function (App $app): void {
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
-
                     $skipCount = skipCountTrueParamFound($params);
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
                         getPagerFromParams($params),
