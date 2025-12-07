@@ -2,7 +2,7 @@
   <q-btn-group flat class="q-ml-md" v-if="visible">
     <q-btn stack size="md" no-caps icon="search" :label="t('Search')" />
     <q-btn stack v-for="item in sidebarMenuItems" size="md" no-caps :icon="item.icon" :key="item.text"
-      :to="item.routeName" :label="t(item.text)" />
+      :to="{ name: item.routeName }" :label="t(item.text)" />
     <q-btn stack size="md" no-caps icon="logout" @click="logout" :label="t('Sign out')" />
   </q-btn-group>
 </template>
