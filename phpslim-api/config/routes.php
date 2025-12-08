@@ -91,52 +91,6 @@ return function (App $app): void {
             $settings = new \Spieldose\Settings();
             $serverEnvironment = \Spieldose\Utils::GetServerEnvironment($settings);
 
-            function getPagerFromParams(array $params = []): \aportela\DatabaseBrowserWrapper\Pager
-            {
-                $currentPageIndex = 1;
-                $resultsPage = \Spieldose\Browse\Base::DEFAULT_RESULTS_PAGE;
-                if (array_key_exists("pager", $params)) {
-                    if (array_key_exists("currentPageIndex", $params["pager"]) && is_numeric($params["pager"]["currentPageIndex"])) {
-                        $currentPageIndex = intval($params["pager"]["currentPageIndex"]);
-                    }
-
-                    if (array_key_exists("resultsPage", $params["pager"]) && is_numeric($params["pager"]["resultsPage"])) {
-                        $resultsPage = intval($params["pager"]["resultsPage"]);
-                    }
-                }
-                return (new \aportela\DatabaseBrowserWrapper\Pager(true, $currentPageIndex, $resultsPage));
-            };
-
-            function getSortFromParams(array $params = [], string $defaultSortField = '', ?\aportela\DatabaseBrowserWrapper\Order $defaultSortOrder = null, bool $caseInsensitive = false): \aportela\DatabaseBrowserWrapper\Sort
-            {
-                $sortItem = null;
-                if (array_key_exists("sort", $params)) {
-                    $sortItem = new \aportela\DatabaseBrowserWrapper\SortItem(
-                        array_key_exists("field", $params["sort"]) && is_string($params["sort"]["field"]) ? $params["sort"]["field"] : $defaultSortField,
-                        array_key_exists("order", $params["sort"]) && is_string($params["sort"]["order"]) && in_array($params["sort"]["order"], ["ASC", "DESC"]) ? \aportela\DatabaseBrowserWrapper\Order::from($params["sort"]["order"]) : $defaultSortOrder,
-                        $caseInsensitive
-                    );
-                } else {
-                    $sortItem = new \aportela\DatabaseBrowserWrapper\SortItem(
-                        $defaultSortField,
-                        $defaultSortOrder,
-                        $caseInsensitive
-                    );
-                }
-
-                return (new \aportela\DatabaseBrowserWrapper\Sort([$sortItem]));
-            };
-
-            function getFilterFromParams(array $params = []): \aportela\DatabaseBrowserWrapper\Filter
-            {
-                return (new \aportela\DatabaseBrowserWrapper\Filter(array_key_exists("filter", $params) && is_array($params["filter"]) ? $params["filter"] : []));
-            }
-
-            function skipCountTrueParamFound(array $params): bool
-            {
-                return (array_key_exists("skipCount", $params) && is_bool($params["skipCount"]) && $params["skipCount"] === true);
-            }
-
             $group->get('/server_environment', function (Request $request, Response $response, array $args) use ($serverEnvironment): \Psr\Http\Message\MessageInterface {
                 $payload = \Spieldose\Utils::getJSONPayload(
                     [
@@ -382,7 +336,7 @@ return function (App $app): void {
 
                     $skipCount = true;
                     $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
-                        getPagerFromParams($params),
+                        \Spieldose\RouteHelper::getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
                         $skipCount,
@@ -415,7 +369,7 @@ return function (App $app): void {
                     }
                     $skipCount = true;
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
-                        getPagerFromParams($params),
+                        \Spieldose\RouteHelper::getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
                         $skipCount,
@@ -491,11 +445,11 @@ return function (App $app): void {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
 
-                    $skipCount = skipCountTrueParamFound($params);
+                    $skipCount = \Spieldose\RouteHelper::skipCountTrueParamFound($params);
                     $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
-                        getPagerFromParams($params),
-                        getFilterFromParams($params),
-                        getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                        \Spieldose\RouteHelper::getPagerFromParams($params),
+                        \Spieldose\RouteHelper::getFilterFromParams($params),
+                        \Spieldose\RouteHelper::getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
                         $skipCount
                     );
                     $payload = json_encode(
@@ -524,11 +478,11 @@ return function (App $app): void {
                     if (! is_array($params)) {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
-                    $skipCount = skipCountTrueParamFound($params);
+                    $skipCount = \Spieldose\RouteHelper::skipCountTrueParamFound($params);
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
-                        getPagerFromParams($params),
-                        getFilterFromParams($params),
-                        getSortFromParams($params, "title", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
+                        \Spieldose\RouteHelper::getPagerFromParams($params),
+                        \Spieldose\RouteHelper::getFilterFromParams($params),
+                        \Spieldose\RouteHelper::getSortFromParams($params, "title", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
                         $skipCount
                     );
                     $payload = json_encode(
