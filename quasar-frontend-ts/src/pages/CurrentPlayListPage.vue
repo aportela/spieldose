@@ -2,7 +2,68 @@
   <q-page>
     <BreadCrumb icon="queue_music" label="Current playlist" />
     <q-card class="q-pa-lg">
+      <q-btn-group spread class="q-mb-md">
+        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear"
+          :disable="!currentPlayListStore.hasItems" @click="onEmpty" />
+        <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt" @click="onDiscover" />
+        <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle"
+          :disable="!currentPlayListStore.hasItems" @click="onRandomize" />
+        <q-btn size="md" no-caps outline color="dark" label="Previous" icon="skip_previous"
+          :disable="!currentPlayListStore.hasItems" @click="onSkipPrevious" />
+        <q-btn size="md" no-caps outline color="dark" label="Play" icon="play_arrow"
+          :disable="!currentPlayListStore.hasItems" @click="onPlay" />
+        <q-btn size="md" no-caps outline color="dark" label="Pause" icon="pause"
+          :disable="!currentPlayListStore.hasItems" @click="onPause" />
+        <q-btn size="md" no-caps outline color="dark" label="Stop" icon="stop" :disable="!currentPlayListStore.hasItems"
+          @click="onStop" />
+        <q-btn size="md" no-caps outline color="dark" label="Next" icon="skip_next"
+          :disable="!currentPlayListStore.hasItems" @click="onSkipNext" />
+        <q-btn-dropdown outline no-caps label="Columns" icon="settings">
+          <q-list>
+            <q-item dense v-for="column in availableColumns" :key="column.name" v-show="column.name !== 'index'"
+              clickable @click="onToggleColumnVisibility(column)">
+              <q-icon :name="column.visible ? 'visibility' : 'visibility_off'" size="xs" class="q-mr-sm"
+                :class="{ 'text-pink': column.visible, 'text-grey-6': !column.visible }" />
+              <!--
+              <q-icon name="arrow_drop_up" size="xs" class="cursor-pointer" />
+              <q-icon name="arrow_drop_down" size="xs" class="cursor-pointer" />
+              -->
+              {{ column.label }}
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+      </q-btn-group>
 
+      <q-markup-table dense flat bordered separator="cell">
+        <thead>
+          <tr>
+            <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
+          </tr>
+        </thead>
+        <tbody v-if="currentPlayListStore.hasItems">
+          <tr v-for="item, index in currentPlayListStore.playList.items" :key="index">
+            <td v-if="visibleColumnNames.includes('index')" class="text-right"><q-icon name="play_arrow" size="sm"
+                color="pink" class="cursor-pointer" v-if="index == currentPlayListStore.currentItemIndex" /> {{ index +
+                  1 }}/{{
+                currentPlayListStore.playList.items.length }}</td>
+            <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
+            <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
+            <td v-if="visibleColumnNames.includes('trackAlbumTitle')">{{ item.file?.trackInfo.album.title }}</td>
+            <td v-if="visibleColumnNames.includes('trackAlbumArtist')">{{ item.file?.trackInfo.album.artist.name }}</td>
+            <td v-if="visibleColumnNames.includes('year')">{{ item.file?.trackInfo.album.year }}</td>
+            <td v-if="visibleColumnNames.includes('trackNumber')">0</td>
+            <td v-if="visibleColumnNames.includes('actions')">
+              <q-btn-group outline>
+                <q-btn size="sm" icon="north" title="Up" />
+                <q-btn size="sm" icon="south" title="Down" />
+                <q-btn size="sm" icon="delete" title="Remove" />
+                <q-btn size="sm" icon="favorite" title="Toggle favorite" />
+                <q-btn size="sm" icon="save_alt" title="Download" />
+              </q-btn-group>
+            </td>
+          </tr>
+        </tbody>
+      </q-markup-table>
       <!--
     <q-btn-group spread class="q-mb-md">
       <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
@@ -117,19 +178,113 @@
 </template>
 
 <script setup lang="ts">
-
-import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
-
-import { api } from 'src/composables/api';
+import { reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
+import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
+import { useCurrentPlayListStore } from "src/stores/currentPlayList";
+
 //const { t } = useI18n();
 
+interface Column {
+  name: string;
+  label: string;
+  index: number;
+  visible: boolean;
+};
 
-api.currentPlayList.get().then((successResponse) => {
-  console.log(successResponse);
-}).catch((errorResponse) => {
-  console.error(errorResponse);
-}).finally(() => { });
+const availableColumns = reactive<Column[]>(
+  [
+    {
+      name: "index",
+      label: "Index",
+      index: 0,
+      visible: true,
+    },
+    {
+      name: "trackTitle",
+      label: "Title",
+      index: 1,
+      visible: true,
+    },
+    {
+      name: "trackArtist",
+      label: "Artist",
+      index: 2,
+      visible: true,
+    },
+    {
+      name: "trackAlbumTitle",
+      label: "Album",
+      index: 3,
+      visible: true,
+    },
+    {
+      name: "trackAlbumArtist",
+      label: "Album artist",
+      index: 4,
+      visible: true,
+    },
+    {
+      name: "year",
+      label: "Year",
+      index: 5,
+      visible: true,
+    },
+    {
+      name: "actions",
+      label: "Actions",
+      index: 6,
+      visible: true,
+    }
+  ]
+);
+
+const visibleColumns = computed(() => availableColumns.filter((column) => column.visible));
+const visibleColumnNames = computed(() => visibleColumns.value.map((column) => column.name));
+const currentPlayListStore = useCurrentPlayListStore();
+
+const onEmpty = (): void => {
+  currentPlayListStore.empty();
+};
+
+const onDiscover = (): void => {
+  console.log("onDiscover");
+  currentPlayListStore.init().then((successResponse) => {
+    currentPlayListStore.playList.items = successResponse.data.playList.items.map(
+      (i: unknown) => {
+        return ({ file: i });
+      }
+    );
+  }).catch((errorResponse) => { console.error(errorResponse); }).finally(() => { });
+};
+
+const onRandomize = (): void => {
+  console.log("onRandomize");
+};
+
+const onSkipPrevious = (): void => {
+  console.log("onSkipPrevious");
+};
+
+const onPlay = (): void => {
+  console.log("onPlay");
+};
+
+const onPause = (): void => {
+  console.log("onPause");
+};
+
+const onStop = (): void => {
+  console.log("onStop");
+};
+
+const onSkipNext = (): void => {
+  console.log("onSkipNext");
+};
+
+const onToggleColumnVisibility = (column: Column): void => {
+  column.visible = !column.visible;
+};
 
 /*
 import { ref, watch, computed, onMounted, inject } from "vue";
