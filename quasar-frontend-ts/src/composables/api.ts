@@ -37,6 +37,58 @@ const api = {
       return axiosInstance.put("/user/profile", params);
     },
   },
+  discover: {
+    artist: function (
+      filter: unknown,
+      currentPageIndex: number,
+      resultsPage: number,
+      sortField: string,
+      sortOrder: string,
+      skipCount: boolean,
+    ) {
+      const params = {
+        filter: filter || {},
+        pager: {
+          currentPageIndex: currentPageIndex,
+          resultsPage: resultsPage,
+        },
+        sort: {
+          field: sortField,
+          order: sortOrder,
+        },
+        skipCount: skipCount,
+      };
+      return axiosInstance.post("/discover/artists", params);
+    },
+    album: function (
+      filter: unknown,
+      currentPageIndex: number,
+      resultsPage: number,
+      sortField: string,
+      sortOrder: string,
+      skipCount: boolean,
+    ) {
+      const params = {
+        filter: filter || {},
+        pager: {
+          currentPageIndex: currentPageIndex,
+          resultsPage: resultsPage,
+        },
+        sort: {
+          field: sortField,
+          order: sortOrder,
+        },
+        skipCount: skipCount,
+      };
+      return axiosInstance.post("/discover/albums", params);
+    },
+    path: function (libraryId: string) {
+      return axiosInstance.post("/browse/path/" + libraryId);
+    },
+    libraries: function () {
+      return axiosInstance.get("/browse/libraries");
+    },
+  },
   browse: {
     artist: function (
       filter: unknown,

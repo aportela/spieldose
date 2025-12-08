@@ -322,6 +322,117 @@ return function (App $app): void {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->group('/discover', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+
+                $routeCollectorProxy->post('/artists', function (Request $request, Response $response, array $args) use ($dbh) {
+                    $params = $request->getParsedBody();
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+
+                    $skipCount = true;
+                    $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
+                        new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 6),
+                        new \aportela\DatabaseBrowserWrapper\Filter([]),
+                        new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
+                        $skipCount
+                    );
+                    $payload = json_encode(
+                        $skipCount ?
+                            [
+                                "artists" => $browserResults->items
+                            ] :
+                            [
+                                "pager" => [
+                                    "totalPages" => $browserResults->pager->getTotalPages(),
+                                    "totalResults" => $browserResults->pager->getTotalResults()
+                                ],
+                                "artists" => $browserResults->items
+                            ]
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $routeCollectorProxy->post('/albums', function (Request $request, Response $response, array $args) use ($dbh) {
+                    $params = $request->getParsedBody();
+                    if (! is_array($params)) {
+                        throw new \Spieldose\Exception\InvalidParamsException();
+                    }
+                    $skipCount = true;
+                    $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
+                        new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 16),
+                        new \aportela\DatabaseBrowserWrapper\Filter([]),
+                        new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
+                        $skipCount
+                    );
+                    $payload = json_encode(
+                        $skipCount ?
+                            [
+                                "albums" => $browserResults->items
+                            ] :
+                            [
+                                "pager" => [
+                                    "totalPages" => $browserResults->pager->getTotalPages(),
+                                    "totalResults" => $browserResults->pager->getTotalResults()
+                                ],
+                                "albums" => $browserResults->items
+                            ]
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $routeCollectorProxy->post('/path/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
+                    if (empty($args['id'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException("id");
+                    }
+
+                    $tree = new \Spieldose\Browse\Path($dbh)->getTree($args['id']);
+                    $payload = json_encode(
+                        [
+                            "data" => [
+                                "tree" => $tree
+                            ]
+                        ]
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $routeCollectorProxy->get('/libraries', function (Request $request, Response $response, array $args) use ($dbh) {
+                    $payload = json_encode(
+                        [
+                            "data" => [
+                                "items" => new \Spieldose\Browse\Path($dbh)->getLibraries()
+                            ]
+                        ]
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->group('/browse', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
