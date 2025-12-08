@@ -43,10 +43,10 @@ import { QInput } from "quasar";
 import { bus } from "src/composables/bus";
 import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
-import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
-import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/auth-validator";
-import { type AuthFields as AuthFieldsInterface } from "src/types/auth-fields";
-import { type GetProfileResponse, type SetProfileResponse } from "src/types/api-responses";
+import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
+import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/authValidator";
+import { type AuthFields as AuthFieldsInterface } from "src/types/authFields";
+import { type GetProfileResponse, type SetProfileResponse } from "src/types/apiResponses";
 
 import { default as BaseWidget } from "src/components/Widgets/BaseWidget.vue";
 import { default as PasswordFieldCustomInput } from "src/components/Forms/Fields/PasswordFieldCustomInput.vue";

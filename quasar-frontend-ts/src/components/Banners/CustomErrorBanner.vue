@@ -12,7 +12,7 @@ import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { default as CustomBanner } from "src/components/Banners/CustomBanner.vue";
 import { default as APIErrorDetails } from "src/components/APIErrorDetails.vue";
 
-import type { APIErrorDetails as APIErrorDetailsInterface } from "src/types/api-error-details";
+import type { APIErrorDetails as APIErrorDetailsInterface } from "src/types/APIErrorDetails";
 
 const serverEnvironment = useServerEnvironmentStore();
 

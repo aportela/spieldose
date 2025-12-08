@@ -8,7 +8,6 @@ type SpectrumAnalyzerChannelLayout = "single" | "dual-combined" | "dual-horizont
 
 type PlayerStatus = "stopped" | "playing" | "paused";
 
-type SortOrder = "ASC" | "DESC";
 
 interface SelectorOption {
   label: string;

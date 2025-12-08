@@ -13,7 +13,7 @@ import { useI18n } from "vue-i18n";
 import { api } from "src/composables/api";
 import { useSessionStore } from "src/stores/session";
 import { usePlayerStore } from "src/stores/player";
-import { sidebarMenuItems } from "src/types/menu-item";
+import { sidebarMenuItems } from "src/types/menu";
 
 interface TopHeaderMenuProps {
   visible: boolean;

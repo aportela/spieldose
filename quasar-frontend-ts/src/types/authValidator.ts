@@ -1,4 +1,4 @@
-import { type ValidatorField as ValidatorFieldInterface } from "src/types/validator-field";
+import { type ValidatorField as ValidatorFieldInterface } from "src/types/validatorField";
 
 interface AuthValidator {
   email: ValidatorFieldInterface;

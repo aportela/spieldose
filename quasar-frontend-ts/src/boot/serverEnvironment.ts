@@ -2,7 +2,7 @@ import { defineBoot } from '#q-app/wrappers'
 
 import { api } from "src/composables/api";
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
-import { type getServerEnvironmentResponseData } from "src/types/api-responses";
+import { type getServerEnvironmentResponseData } from "src/types/apiResponses";
 
 const serverEnvironment = useServerEnvironmentStore();
 

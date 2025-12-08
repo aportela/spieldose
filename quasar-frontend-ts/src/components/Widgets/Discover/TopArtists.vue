@@ -33,12 +33,12 @@
 import { ref, onMounted, shallowRef, reactive } from 'vue';
 import { api } from 'src/composables/api';
 import { uid } from 'quasar';
-import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
+import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
 //import { default as ArtistAvatarLink } from 'src/components/ArtistAvatarLink.vue';
 import {
   type BrowseArtistsResponse as BrowseArtistsResponseInterface,
   type BrowseArtistItemResponse as BrowseArtistItemResponseInterface,
-} from "src/types/api-responses";
+} from "src/types/apiResponses";
 import { getSmallURL } from "src/composables/thumbnail";
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });

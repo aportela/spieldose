@@ -1,5 +1,7 @@
 import { type SortOrder } from "./common";
 
+type SortOrder = "ASC" | "DESC";
+
 interface Sort {
   field: string;
   order: SortOrder;
@@ -15,4 +17,4 @@ class SortClass implements Sort {
   }
 }
 
-export { type Sort, SortClass };
+export { type SortOrder, type Sort, SortClass };

@@ -1,5 +1,5 @@
 import { defineBoot } from '#q-app/wrappers'
-import { type GetNewAccessTokenResponse as GetNewAccessTokenResponseInterface } from "src/types/api-responses";
+import { type GetNewAccessTokenResponse as GetNewAccessTokenResponseInterface } from "src/types/apiResponses";
 import { useSessionStore } from "src/stores/session";
 import { api } from "src/composables/api";
 import { AxiosError } from "axios";

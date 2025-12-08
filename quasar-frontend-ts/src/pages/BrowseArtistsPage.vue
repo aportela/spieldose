@@ -30,7 +30,7 @@
 import { ref, shallowRef, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { uid } from "quasar";
-import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
+import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
 import { api } from "src/composables/api";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { default as BrowserBase } from "src/components/BrowserBase.vue";
@@ -39,7 +39,7 @@ import { sortOrderSelectorOptions } from "src/types/common";
 import {
   type BrowseArtistsResponse as BrowseArtistsResponseInterface,
   type BrowseArtistItemResponse as BrowseArtistItemResponseInterface,
-} from "src/types/api-responses";
+} from "src/types/apiResponses";
 
 //import { type Sort as SortInterface, SortClass } from "src/types/sort";
 

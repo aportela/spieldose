@@ -72,10 +72,10 @@ import { QInput } from "quasar";
 import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
-import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
-import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/auth-validator";
-import { type AuthFields as AuthFieldsInterface } from "src/types/auth-fields";
-import { type RegisterResponse } from "src/types/api-responses";
+import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
+import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/authValidator";
+import { type AuthFields as AuthFieldsInterface } from "src/types/authFields";
+import { type RegisterResponse } from "src/types/apiResponses";
 
 import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
 import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"

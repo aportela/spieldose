@@ -24,7 +24,7 @@ import { default as AnimatedAlbumCover } from 'src/components/AnimatedAlbumCover
 import {
   type BrowseAlbumsResponse as BrowseAlbumsResponseInterface,
   type BrowseAlbumItemResponse as BrowseAlbumItemResponseInterface,
-} from "src/types/api-responses";
+} from "src/types/apiResponses";
 
 //const { t } = useI18n();
 

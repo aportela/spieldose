@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import type { APIErrorDetails } from "src/types/api-error-details";
+import type { APIErrorDetails } from "src/types/APIErrorDetails";
 
 const { t } = useI18n();
 
