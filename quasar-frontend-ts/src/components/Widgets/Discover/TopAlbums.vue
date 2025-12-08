@@ -4,7 +4,8 @@
       Top albums
       <q-tabs v-model="tabModel" dense no-caps class="text-grey" active-color="primary" indicator-color="primary"
         align="justify" narrow-indicator>
-        <q-tab v-for="tab in tabs" :name="tab.name" :label="tab.label" :key="tab.name" @click="onRefresh" />
+        <q-tab v-for="tab in tabs" :name="tab.name" :label="tab.label" :key="tab.name" @click="onRefresh"
+          :disable="state.ajaxRunning" />
       </q-tabs>
     </q-card-section>
     <q-separator />
@@ -29,15 +30,18 @@
 </template>
 <script setup lang="ts">
 
-import { ref, onMounted, shallowRef } from 'vue';
+import { ref, onMounted, shallowRef, reactive } from 'vue';
 import { api } from 'src/composables/api';
 import { uid } from 'quasar';
+import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajax-state";
 //import { default as ArtistAvatarLink } from 'src/components/ArtistAvatarLink.vue';
 import {
   type BrowseAlbumsResponse as BrowseAlbumsResponseInterface,
   type BrowseAlbumItemResponse as BrowseAlbumItemResponseInterface,
 } from "src/types/api-responses";
 import { getSmallURL } from "src/composables/thumbnail";
+
+const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
 const tabs = [
   { label: "Today", name: "tabToday" },
@@ -75,14 +79,21 @@ const tabModel = ref<string>(tabs[tabs.length - 1]!.name);
 const albums = shallowRef<Album[]>([]);
 
 const count = 8;
+
 const onRefresh = () => {
-  api.discover.album({}, 1, count, "", "", true).then((successResponse: BrowseAlbumsResponseInterface) => {
-    albums.value = successResponse.data.albums.map((item) => {
-      return (new Album(item));
+  if (!state.ajaxRunning) {
+    Object.assign(state, defaultAjaxState);
+    state.ajaxRunning = true;
+    api.discover.album({}, 1, count, "", "", true).then((successResponse: BrowseAlbumsResponseInterface) => {
+      albums.value = successResponse.data.albums.map((item) => {
+        return (new Album(item));
+      });
+    }).catch((errorResponse) => {
+      console.error(errorResponse);
+    }).finally(() => {
+      state.ajaxRunning = false;
     });
-  }).catch((errorResponse) => {
-    console.error(errorResponse);
-  }).finally(() => { });
+  }
 };
 
 onMounted(() => {
