@@ -2,7 +2,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import { Dark } from "quasar";
 import { createStorageEntry } from "src/composables/localStorage";
 
-const localStorageDarkMode = createStorageEntry<boolean | null>("darkMode", null);
+const localStorageDarkMode = createStorageEntry<boolean | null>("session.darkMode", null);
 
 const savedMode = localStorageDarkMode.get();
 
