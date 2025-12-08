@@ -336,7 +336,7 @@ return function (App $app): void {
 
                     $skipCount = true;
                     $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
-                        new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 6),
+                        getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
                         $skipCount
@@ -369,7 +369,7 @@ return function (App $app): void {
                     }
                     $skipCount = true;
                     $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
-                        new \aportela\DatabaseBrowserWrapper\Pager(true, 1, 16),
+                        getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
                         $skipCount

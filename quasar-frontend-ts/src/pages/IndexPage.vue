@@ -8,8 +8,11 @@
       <q-card-section class="q-pa-none">
 
         <div class="row">
-          <div class="col-6" v-for="index in 2" :key="index">
+          <div class="col-6">
             <TopArtists />
+          </div>
+          <div class="col-6">
+            <TopAlbums />
           </div>
         </div>
 
@@ -77,6 +80,7 @@
 import { ref } from "vue";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { default as TopArtists } from "src/components/Widgets/Discover/TopArtists.vue";
+import { default as TopAlbums } from "src/components/Widgets/Discover/TopAlbums.vue";
 
 const artistsSections = ref<string[]>(["Top artists", "Recommended artists", "Random artists", "New artists"]);
 const albumsSections = ref<string[]>(["Top albums", "Recommended albums", "Random albums", "New albums"]);
