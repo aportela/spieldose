@@ -1,3 +1,5 @@
+import { type SortOrder } from "./sort";
+
 type EnvironmentType = "development" | "production";
 
 type ValidAuthTypes = "Bearer";
@@ -28,5 +30,5 @@ const sortOrderSelectorOptions: SelectorOption[] = [
 type AudioMotionAnalyzerOptionColorMode = "gradient" | "bar-index" | "bar-level";
 
 export {
-  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type SortOrder, type SelectorOption, sortOrderSelectorOptions, type AudioMotionAnalyzerOptionColorMode
+  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type SelectorOption, sortOrderSelectorOptions, type AudioMotionAnalyzerOptionColorMode
 };

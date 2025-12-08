@@ -1,5 +1,3 @@
-import { type SortOrder } from "./common";
-
 type SortOrder = "ASC" | "DESC";
 
 interface Sort {
