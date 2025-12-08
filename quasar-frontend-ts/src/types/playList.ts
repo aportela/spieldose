@@ -13,4 +13,16 @@ interface PlayList {
   items: PlayListItem[];
 };
 
-export { type PlayListItem, type PlayList };
+class PlayListClass implements PlayList {
+  id: string | null;
+  name: string | null;
+  items: PlayListItem[];
+
+  constructor(id: string | null, name: string | null, items: PlayListItem[]) {
+    this.id = id;
+    this.name = name;
+    this.items = items;
+  }
+}
+
+export { type PlayListItem, type PlayList, PlayListClass };
