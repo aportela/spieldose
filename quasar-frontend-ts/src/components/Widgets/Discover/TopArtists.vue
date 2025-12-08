@@ -9,7 +9,7 @@
     </q-card-section>
     <q-separator />
     <q-card-section>
-      <div class="q-gutter-md2 row items-start">
+      <div class="q-gutter-xs row items-start justify-center">
         <ArtistAvatarLink v-for="artist in artists" :key="artist._id" :name="artist.name" :mb-id="artist.mbId"
           :image="artist.image" :total-tracks="artist.totalTracks" />
       </div>
