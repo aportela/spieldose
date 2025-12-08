@@ -277,6 +277,13 @@ return ([
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
             ) STRICT;
+
+            CREATE TABLE ARTIST_IMAGE (
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                image TEXT CHECK(length(image) <= 8192),
+                relation_type_id TEXT NOT NULL CHECK(length(relation_type_id) == 36),
+            ) STRICT;
+
         ',
     ]
 ]);
