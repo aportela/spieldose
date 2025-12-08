@@ -385,7 +385,7 @@ return function (App $app): void {
                         getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
-                        $skipCount
+                        $skipCount,
                     );
                     $payload = json_encode(
                         $skipCount ?
@@ -418,7 +418,7 @@ return function (App $app): void {
                         getPagerFromParams($params),
                         new \aportela\DatabaseBrowserWrapper\Filter([]),
                         new \aportela\DatabaseBrowserWrapper\Sort([new \aportela\DatabaseBrowserWrapper\SortItemRandom()]),
-                        $skipCount
+                        $skipCount,
                     );
                     $payload = json_encode(
                         $skipCount ?
