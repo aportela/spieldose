@@ -29,6 +29,7 @@ export default {
   "Search on Spieldose...": "Search on Spieldose...",
   "Search": "Search",
   "Home": "Home",
+  "Explore": "Explore",
   "Current playlist": "Current playlist",
   "Browse artists": "Browse artists",
   "Browse albums": "Browse albums",
