@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class PlayListFileItem
+final class PlayListFileItem
 {
     public \Spieldose\Entities\File $file;
     public \Spieldose\ThumbnailImages $images;

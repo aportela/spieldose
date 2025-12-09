@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class PlayList
+final class PlayList
 {
     public string $id;
     public string $name;
