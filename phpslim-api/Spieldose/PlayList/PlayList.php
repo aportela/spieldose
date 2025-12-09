@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose;
+namespace Spieldose\PlayList;
 
 final class PlayList
 {
@@ -15,12 +15,12 @@ final class PlayList
      */
     public array $items;
 
-    public \Spieldose\PlayListFlags  $flags;
+    public \Spieldose\PlayList\PlayListFlags $flags;
 
     public function __construct(string $id, string $name)
     {
         if (mb_strlen($id) !== 36) {
-            throw new \Spieldose\Exception\InvalidParamsException("userId");
+            throw new \Spieldose\Exception\InvalidParamsException("id");
         }
         if (mb_strlen($name) > 128) {
             throw new \Spieldose\Exception\InvalidParamsException("name");
@@ -28,7 +28,7 @@ final class PlayList
         $this->id = $id;
         $this->name = $name;
         $this->items = [];
-        $this->flags = new \Spieldose\PlayListFlags(false, false, false, false, false);
+        $this->flags = new \Spieldose\PlayList\PlayListFlags(false, false, false, false, false);
     }
 
     public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -37,7 +37,7 @@ final class PlayList
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
         $this->createdAt = intval(microtime(true) * 1000);
-        $this->flags = new \Spieldose\PlayListFlags(true, true, false, false, false);
+        $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, false, false, false);
         if ($dbh->execute(
             "
                 INSERT INTO PLAYLIST
@@ -52,6 +52,7 @@ final class PlayList
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
             ]
         )) {
+            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
             return ($dbh->execute(
                 "
                 INSERT INTO USER_PLAYLIST
@@ -109,6 +110,42 @@ final class PlayList
         }
     }
 
+    public function get(\aportela\DatabaseWrapper\DB $dbh, string $userId): void
+    {
+        $results = $dbh->query(
+            "
+                SELECT
+                    P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.published, UP.shared
+                FROM PLAYLIST P
+                INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.user_id = P.user_id
+                WHERE
+                    P.id = :id
+                UNION
+                SELECT
+                    P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, NULL AS opened, NULL AS published, NULL AS shared
+                FROM PLAYLIST P
+                INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.shared IS NOT NULL
+                WHERE
+                    P.id = :id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
+            ]
+        );
+        if (count($results) === 1) {
+            $this->name = $results[0]->name;
+            $this->createdAt = intval($results[0]->ctime);
+            $this->updatedAt = is_numeric($results[0]->mtime) ? intval($results[0]->mtime) : null;
+            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, 32);
+            $this->flags->isMine = $userId == $results[0]->userId;
+            $this->flags->opened = is_numeric($results[0]->opened);
+            $this->flags->published = is_numeric($results[0]->published);
+            $this->flags->shared = is_numeric($results[0]->shared);
+            $this->flags->isFavorites = false;
+        } else {
+            throw new \Spieldose\Exception\NotFoundException("id");
+        }
+    }
     public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $dbh, string $userId): array
     {
         $results = $dbh->query(
@@ -129,13 +166,13 @@ final class PlayList
         );
         $playLists = [];
         foreach ($results as $result) {
-            $playList = new \Spieldose\PlayList($result->id, $result->name);
+            $playList = new \Spieldose\PlayList\PlayList($result->id, $result->name);
             $playList->flags->isMine = $userId == $result->userId;
             $playList->flags->opened = is_numeric($result->opened);
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;
-            $playList->items = \Spieldose\PlayListFileItem::getPlayListFileItems($dbh, 32);
+            $playList->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
             $playLists[] = $playList;
         }
         return ($playLists);

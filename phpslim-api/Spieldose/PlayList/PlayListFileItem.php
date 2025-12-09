@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Spieldose;
+namespace Spieldose\PlayList;
 
-final class PlayListFileItem
+final class PlayListFileItem extends PlayListItem
 {
     public \Spieldose\Entities\File $file;
-    public \Spieldose\ThumbnailImages $images;
 
     public function __construct(\Spieldose\Entities\File $file)
     {
+        parent::__construct();
         $this->file = $file;
-        $this->images = new \Spieldose\ThumbnailImages();
     }
 
-    public static function getPlayListFileItems(\aportela\DatabaseWrapper\DB $db, int $count = 32): array
+    public static function getPlayListFileItems(\aportela\DatabaseWrapper\DB $db): array
     {
         $results = $db->query(
             "
@@ -31,7 +30,7 @@ final class PlayListFileItem
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":default_mime", "application/octet-stream"),
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", \Spieldose\UserSession::getUserId()),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":limit", $count),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":limit", 32),
 
             ]
         );
