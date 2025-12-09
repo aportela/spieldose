@@ -35,17 +35,18 @@
         </q-btn-dropdown>
       </q-btn-group>
 
-      <q-tabs dense align="left" v-model="currentPlayListTab">
-        <q-tab no-caps v-for="playList in currentPlayLists" :key="playList">
+      <q-tabs dense align="left" v-model="currentPlayListTab" v-if="currentPlayListsStore.hasPlayLists">
+        <q-tab no-caps v-for="playList, index in currentPlayListsStore.playLists" :key="playList.id"
+          :name="playList.id">
           <q-row class="q-pa-none" align="center">
             <q-col>
               <div class="q-gutter-none">
                 <q-toolbar class="q-pa-none">
                   <span>
-                    {{ playList }}
+                    {{ playList.name }}
                   </span>
                   <q-space />
-                  <q-btn size="sm" flat icon="close" />
+                  <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.removeAtIndex(index)" />
                 </q-toolbar>
               </div>
             </q-col>
@@ -99,8 +100,12 @@ import { default as TrackImage } from "src/components/TrackImage.vue";
 import { useCurrentPlayListStore } from "src/stores/currentPlayList";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+import { uid } from "quasar";
 
 //const { t } = useI18n();
+
+const currentPlayListsStore = useCurrentPlayListsStore();
 
 const currentPlayListTab = ref<string | null>(null);
 const currentPlayLists = ref<string[]>([]);
@@ -213,8 +218,9 @@ const handleTableBodyClick = (event: MouseEvent) => {
 
 const onNew = (): void => {
   console.log("onNew");
-  currentPlayLists.value.push(`New playlist ${currentPlayLists.value.length + 1}`);
-  currentPlayListTab.value = currentPlayLists.value[currentPlayLists.value.length - 1]!;
+  const newPlayListId = uid();
+  currentPlayListsStore.add(newPlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
+  currentPlayListTab.value = newPlayListId;
 };
 const onEmpty = (): void => {
   currentPlayListStore.empty();
