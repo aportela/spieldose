@@ -824,6 +824,73 @@ return function (App $app): void {
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
+            $group->post('/playlist/{id}', function (Request $request, Response $response, array $args) use ($container) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                $params = $request->getParsedBody();
+                if (! is_array($params)) {
+                    throw new \Spieldose\Exception\InvalidParamsException();
+                }
+
+                if (! (array_key_exists("name", $params) && is_string($params["name"]))) {
+                    throw new \Spieldose\Exception\InvalidParamsException("name");
+                }
+                if (!empty($args['id'])) {
+                    $playlist = new \Spieldose\NewPlayList(
+                        $args['id'],
+                        $params["name"]
+                    );
+
+                    $playlist->add($dbh, \Spieldose\UserSession::getUserId());
+                    $payload = \Spieldose\Utils::getJSONPayload(
+                        [
+                            "playList" => [
+                                "id" => $playlist->id,
+                                "name" => $playlist->name,
+                            ],
+                        ]
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
+            $group->delete('/playlist/{id}', function (Request $request, Response $response, array $args) use ($container) {
+                $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
+                if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
+                    throw new \RuntimeException("Failed to create database handler from container");
+                }
+                if (!empty($args['id'])) {
+                    $playlist = new \Spieldose\NewPlayList(
+                        $args['id'],
+                        "",
+                    );
+
+                    $playlist->delete($dbh, \Spieldose\UserSession::getUserId());
+                    $payload = \Spieldose\Utils::getJSONPayload(
+                        []
+                    );
+                    $response->getBody()->write($payload);
+                    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                } else {
+                    throw new \Spieldose\Exception\InvalidParamsException('id');
+                }
+            })->add(\Spieldose\Middleware\CheckAuth::class);
+
             $group->get('/current_playlist', function (Request $request, Response $response, array $args) use ($container) {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {

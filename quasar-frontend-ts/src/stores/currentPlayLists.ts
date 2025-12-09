@@ -1,9 +1,13 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { api } from 'src/composables/api';
+
+import { type AddPlayListResponse } from 'src/types/apiResponses';
 
 interface PlayList {
   id: string;
   name: string;
 }
+
 interface State {
   activePlayListIndex: number;
   playLists: PlayList[];
@@ -18,13 +22,18 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     hasPlayLists: (state): boolean => state.playLists.length > 0,
   },
   actions: {
-    add(id: string, name: string) {
-      this.playLists.push({ id: id, name: name });
-      this.activePlayListIndex = this.playLists.length - 1;
+    async add(id: string, name: string) {
+      const newPlayList: AddPlayListResponse = await api.playList.add(id, name);
+      this.playLists.push(
+        {
+          id: newPlayList.data.playList.id,
+          name: newPlayList.data.playList.name
+        }
+      );
     },
-    remove(id: string) {
+    async remove(id: string) {
+      await api.playList.remove(id);
       this.playLists = this.playLists.filter((playList) => playList.id !== id);
-      console.log(id);
     },
     closeAtIndex(index: number) {
       this.playLists.splice(index, 1);

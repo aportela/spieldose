@@ -59,4 +59,41 @@ class NewPlayList
             return (false);
         }
     }
+
+    public function delete(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
+    {
+        if (mb_strlen($userId) !== 36) {
+            throw new \Spieldose\Exception\InvalidParamsException("userId");
+        }
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+            new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+        ];
+        if ($dbh->execute(
+            "
+                DELETE
+                    FROM USER_PLAYLIST
+                WHERE
+                    playlist_id = :playlist_id
+                AND
+                    user_id = :user_id
+
+            ",
+            $params
+        )) {
+            return ($dbh->execute(
+                "
+                DELETE
+                    FROM PLAYLIST
+                WHERE
+                    id = :playlist_id
+                AND
+                    user_id = :user_id
+            ",
+                $params
+            ));
+        } else {
+            return (false);
+        }
+    }
 }

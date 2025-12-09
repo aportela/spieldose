@@ -84,6 +84,15 @@ interface BrowseAlbumsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   }
 };
 
+interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
+  data: {
+    playList: {
+      id: string;
+      name: string;
+    };
+  }
+};
+
 export {
   type getServerEnvironmentResponseData,
   type DefaultAxiosResponse,
@@ -97,4 +106,5 @@ export {
   type BrowseArtistsResponse,
   type BrowseAlbumItemResponse,
   type BrowseAlbumsResponse,
+  type AddPlayListResponse,
 };

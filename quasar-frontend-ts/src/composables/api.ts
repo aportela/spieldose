@@ -154,6 +154,14 @@ const api = {
       return axiosInstance.get(`/track/${id}/unset_favorite`);
     },
   },
+  playList: {
+    add(id: string, name: string) {
+      return axiosInstance.post(`/playlist/${id}`, { name: name });
+    },
+    remove(id: string) {
+      return axiosInstance.delete(`/playlist/${id}`);
+    }
+  },
   currentPlayList: {
     get: function () {
       return axiosInstance.get("/current_playlist");

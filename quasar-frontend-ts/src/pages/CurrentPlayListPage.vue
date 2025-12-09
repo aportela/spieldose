@@ -47,7 +47,7 @@
                   </span>
                   <q-space />
                   <q-btn size="sm" flat icon="save" @click="currentPlayListsStore.removeAtIndex(index)" />
-                  <q-btn size="sm" flat icon="delete" @click="currentPlayListsStore.saveAtIndex(index)" />
+                  <q-btn size="sm" flat icon="delete" @click="currentPlayListsStore.remove(playList.id)" />
                   <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.closeAtIndex(index)" />
                 </q-toolbar>
               </div>
@@ -217,12 +217,26 @@ const handleTableBodyClick = (event: MouseEvent) => {
   }
 };
 
-const onNew = (): void => {
+const onNew = async (): Promise<void> => {
   console.log("onNew");
   const newPlayListId = uid();
-  currentPlayListsStore.add(newPlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
+  try {
+    await currentPlayListsStore.add(newPlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
+  } catch (e) {
+    console.error(e);
+  }
   currentPlayListTab.value = newPlayListId;
 };
+
+const onRemove = async (id: string): Promise<void> => {
+  console.log("onRemove");
+  try {
+    await currentPlayListsStore.remove(id);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 const onEmpty = (): void => {
   currentPlayListStore.empty();
 };
