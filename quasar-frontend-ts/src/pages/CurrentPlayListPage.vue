@@ -238,12 +238,15 @@ const onEmpty = (): void => {
 const onDiscover = (): void => {
   console.log("onDiscover");
   currentPlayListStore.init().then((successResponse) => {
+    /*
     currentPlayListStore.playList.items = successResponse.data.playList.items.map(
       (i: any) => {
         i.trackInfo.image = i.trackInfo.imageURL;
         return ({ file: i });
       }
     );
+    */
+    console.log(successResponse);
   }).catch((errorResponse) => { console.error(errorResponse); }).finally(() => { });
 };
 
