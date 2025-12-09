@@ -40,8 +40,8 @@
             <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
           </tr>
         </thead>
-        <tbody v-if="currentPlayListStore.hasItems">
-          <tr v-for="item, index in currentPlayListStore.playList.items" :key="index">
+        <tbody v-if="currentPlayListStore.hasItems" @click="handleTableBodyClick">
+          <tr class="cursor-pointer" v-for="item, index in currentPlayListStore.playList.items" :key="index">
             <td v-if="visibleColumnNames.includes('index')" class="text-right"><q-icon name="play_arrow" size="sm"
                 color="pink" class="cursor-pointer" v-if="index == currentPlayListStore.currentItemIndex" /> {{ index +
                   1 }}/{{
@@ -54,125 +54,16 @@
             <td v-if="visibleColumnNames.includes('trackNumber')">0</td>
             <td v-if="visibleColumnNames.includes('actions')">
               <q-btn-group outline>
-                <q-btn size="sm" icon="north" title="Up" />
-                <q-btn size="sm" icon="south" title="Down" />
-                <q-btn size="sm" icon="delete" title="Remove" />
-                <q-btn size="sm" icon="favorite" title="Toggle favorite" />
+                <q-btn size="sm" icon="north" title="Up" data-button-action="up" />
+                <q-btn size="sm" icon="south" title="Down" data-button-action="down" />
+                <q-btn size="sm" icon="delete" title="Remove" data-button-action="remove" />
+                <q-btn size="sm" icon="favorite" title="Toggle favorite" data-button-action="toggleFavorite" />
                 <q-btn size="sm" icon="save_alt" title="Download" />
               </q-btn-group>
             </td>
           </tr>
         </tbody>
       </q-markup-table>
-      <!--
-    <q-btn-group spread class="q-mb-md">
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Clear') : ''" icon="clear" @click="onClear"
-        :disable="loading || !(tableRows?.length > 0)">
-      </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Discover') : ''" icon="bolt"
-        @click="onDiscover" :disable="loading">
-      </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Randomize') : ''" icon="shuffle"
-        @click="onRandomizeSorting" :disable="loading || !(tableRows?.length > 0)">
-      </q-btn>
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Previous') : ''" icon="skip_previous"
-        @click="onPreviusPlaylist" :disable="loading || !playerStore.allowSkipPrevious" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Play') : ''" icon="play_arrow" @click="onPlay"
-        :disable="loading || !playerStore.hasCurrentPlaylistElements" v-if="playerStore.isStopped" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Pause') : ''" icon="pause" @click="onPause"
-        :disable="loading || !(tableRows?.length > 0)" v-else-if="playerStore.isPlaying" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Resume') : ''" icon="play_arrow"
-        @click="onResume" :disable="loading || !(tableRows?.length > 0)" v-else-if="playerStore.isPaused" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Stop') : ''" icon="stop" @click="onStop"
-        :disable="loading || playerStore.isStopped || !(tableRows?.length > 0)" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Next') : ''" icon="skip_next"
-        @click="onNextPlaylist" :disable="loading || !playerStore.allowSkipNext" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Download') : ''" icon="save_alt"
-        :disable="loading || !playerStore.isCurrentPlaylistElementATrack"
-        :href="playerStore.isCurrentPlaylistElementATrack ? playerStore.getCurrentPlaylistElementURL : '#'" />
-      <q-btn size="md" outline color="dark" :label="$q.screen.gt.md ? t('Save as') : ''" icon="save"
-        :disable="loading || !(tableRows?.length > 0)" @click="onSavePlaylist" />
-    </q-btn-group>
-    <q-table ref="tableRef" class="my-sticky-header-table" style="height: 46.2em" :rows="tableRows"
-      :columns="tableColumns" row-key="id" virtual-scroll :rows-per-page-options="[0]" :hide-bottom="true">
-      <template v-slot:body="props">
-        <q-tr class="cursor-pointer" :props="props" @click="(evt) => onRowClick(evt, props.row, props.row.index - 1)"
-          :class="{ 'selected-row': currentTrackIndex + 1 == props.row.index }">
-          <q-td key="index" :props="props">
-            <q-icon :name="currentElementRowIcon" color="pink" size="sm" class="q-mr-sm"
-              v-if="currentTrackIndex + 1 == props.row.index"></q-icon>
-            {{ props.row.index }} / {{ tableRows.length }}
-          </q-td>
-          <q-td key="title" :props="props">
-            {{ props.row.title }}
-          </q-td>
-          <q-td key="artist" :props="props">
-            <router-link v-if="props.row.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.artist.name }, query: { mbid: props.row.artist.mbId, tab: 'overview' } }"><q-icon
-                name="link" class="q-mr-sm"></q-icon>{{
-                  props.row.artist.name }}</router-link>
-          </q-td>
-          <q-td key="albumArtist" :props="props">
-            <router-link v-if="props.row.album.artist.name" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'artist', params: { name: props.row.album.artist.name }, query: { mbid: props.row.album.artist.mbId, tab: 'overview' } }"><q-icon
-                name="link" class="q-mr-sm"></q-icon>{{ props.row.album.artist.name }}</router-link>
-          </q-td>
-          <q-td key="albumTitle" :props="props">
-            <router-link v-if="props.row.album.title" :class="{ 'text-white text-bold': false }"
-              :to="{ name: 'album', params: { title: props.row.album.title }, query: { mbId: props.row.album.mbId, artistMbId: props.row.album.artist.mbId, artistName: props.row.album.artist.name, year: props.row.album.year } }"><q-icon
-                name="link" class="q-mr-sm"></q-icon>{{ props.row.album.title }}</router-link>
-          </q-td>
-          <q-td key="albumTrackIndex" :props="props">
-            {{ props.row.trackNumber }}
-          </q-td>
-          <q-td key="year" :props="props">
-            {{ props.row.album.year }}
-          </q-td>
-          <q-td key="actions" :props="props">
-            <q-btn-group outline>
-              <q-btn size="sm" color="white" text-color="grey-5" icon="north" :title="t('Up')"
-                :disable="props.row.index == 1 || props.row.id == currentTrackIndex"
-                @click="onMoveUpTrackAtIndex(props.row.index - 1)" />
-              <q-btn size="sm" color="white" text-color="grey-5" icon="south" :title="t('Down')"
-                :disable="props.row.index == tableRows.length || props.row.id == currentTrackIndex"
-                @click="onMoveDownTrackAtIndex(props.row.index - 1)" />
-              <q-btn size="sm" color="white" text-color="grey-5" icon="delete" :title="t('Remove')"
-                @click.stop.prevent="onRemoveElementAtIndex(props.row.index - 1)" />
-              <q-btn size="sm" color="white" :text-color="props.row.favorited ? 'pink' : 'grey-5'" icon="favorite"
-                :title="t('Toggle favorite')"
-                @click="onToggleFavorite(props.row.index, props.row.id, props.row.favorited)" />
-              <q-btn size="sm" color="white" text-color="grey-5" icon="save_alt" :title="t('Download')"
-                :href="props.row.url" />
-
-            </q-btn-group>
-          </q-td>
-        </q-tr>
-      </template>
-</q-table>
--->
-      <!--
-    <q-dialog v-model="showSavePlaylistDialog">
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Save current playlist</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input outlined dense v-model="playlist.name" autofocus @keyup.enter="showSavePlaylistDialog = false"
-            label="Playlist name" />
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-toggle label="Public" color="pink" v-model="playlist.public" />
-        </q-card-section>
-
-        <q-card-actions align="right" class="">
-          <q-btn outline label="Cancel" v-close-popup />
-          <q-btn outline label="Save" :disable="!playlist.name" @click="onSavePlaylistElements" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    -->
     </q-card>
   </q-page>
 </template>
@@ -182,6 +73,8 @@ import { reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { useCurrentPlayListStore } from "src/stores/currentPlayList";
+import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+import { usePlayerStore } from "src/stores/player";
 
 //const { t } = useI18n();
 
@@ -242,6 +135,48 @@ const availableColumns = reactive<Column[]>(
 const visibleColumns = computed(() => availableColumns.filter((column) => column.visible));
 const visibleColumnNames = computed(() => visibleColumns.value.map((column) => column.name));
 const currentPlayListStore = useCurrentPlayListStore();
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
+const playerStore = usePlayerStore();
+
+const handleTableBodyClick = (event: MouseEvent) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const btn = target.closest("[data-button-action]");
+  if (btn instanceof HTMLElement) {
+    console.log("button action:", btn.dataset.buttonAction);
+  } else {
+    const row = target.closest("tr");
+    if (!(row instanceof HTMLTableRowElement)) return;
+    const rowIndex = row.sectionRowIndex;
+    console.log("row index", rowIndex);
+
+    console.log(currentPlayListStore.playList.items[rowIndex]!.file);
+    currentPlaylistItemStore.setTrack(
+      currentPlayListStore.playList.items[rowIndex]!.file!.id,
+      currentPlayListStore.playList.items[rowIndex]!.file!.name,
+      currentPlayListStore.playList.items[rowIndex]!.file!.size,
+      currentPlayListStore.playList.items[rowIndex]!.file!.mime,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.playTimeSeconds,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.title,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.artist.name,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.artist.mbId,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.album.title,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.album.mbId,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.album.year,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.album.artist.name,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.album.artist.mbId,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.image ? currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.image.small : null,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.image ? currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.image.normal : null,
+      currentPlayListStore.playList.items[rowIndex]!.file!.trackInfo.favorited
+    );
+    currentPlayListStore.currentItemIndex = rowIndex;
+    playerStore.interact();
+    playerStore.play(true);
+
+    //const rowData = currentPlayListStore.playList.items[rowIndex];
+    //console.log("Fila clickeada:", rowData);
+  }
+};
 
 const onEmpty = (): void => {
   currentPlayListStore.empty();
@@ -252,6 +187,7 @@ const onDiscover = (): void => {
   currentPlayListStore.init().then((successResponse) => {
     currentPlayListStore.playList.items = successResponse.data.playList.items.map(
       (i: unknown) => {
+        i.trackInfo.image = i.trackInfo.imageURL;
         return ({ file: i });
       }
     );
@@ -285,412 +221,6 @@ const onSkipNext = (): void => {
 const onToggleColumnVisibility = (column: Column): void => {
   column.visible = !column.visible;
 };
-
-/*
-import { ref, watch, computed, onMounted, inject } from "vue";
-import { useQuasar, uid } from "quasar";
-import { api } from "src/composables/api";
-import { usePlayerStore } from "src/stores/player";
-//import { spieldoseEventNames } from "boot/events";
-//import { useplayerStore } from "stores/spieldose";
-
-//import { trackActions, currentPlayListActions } from "../boot/spieldose";
-
-const $q = useQuasar();
-
-
-const playerStore = useplayerStore();
-
-
-const tableRef = ref(null);
-
-const tableRows = ref([]);
-const tableColumns = [
-{
-  name: 'index',
-  required: true,
-  label: 'Index',
-  align: 'right',
-  field: row => row.index,
-  sortable: false
-},
-{
-  name: 'title',
-  required: true,
-  label: 'Title',
-  align: 'left',
-  field: row => row.title,
-  sortable: false
-},
-{
-  name: 'artist',
-  required: true,
-  label: 'Artist',
-  align: 'left',
-  field: row => row.artist.name,
-  sortable: false
-},
-{
-  name: 'albumArtist',
-  required: false,
-  label: 'Album artist',
-  align: 'left',
-  field: row => row.album.artist.name,
-  sortable: false
-},
-{
-  name: 'albumTitle',
-  required: false,
-  label: 'Album',
-  align: 'left',
-  field: row => row.album.title,
-  sortable: false
-},
-{
-  name: 'albumTrackIndex',
-  required: false,
-  label: 'Album Track nº',
-  align: 'right',
-  field: row => row.trackNumber,
-  sortable: false
-},
-{
-  name: 'year',
-  required: false,
-  label: 'Year',
-  align: 'right',
-  field: row => row.album.year,
-  sortable: false
-},
-{
-  name: 'actions',
-  required: true,
-  label: 'Actions',
-  align: 'center',
-  favorited: row => row.favorited
-},
-];
-
-const playerStore = usePlayerStore();
-const currentElementRowIcon = computed(() => {
-if (playerStore.isPlaying) {
-  return ('play_arrow');
-} else if (playerStore.isPaused) {
-  return ('pause');
-} else if (playerStore.isStopped) {
-  return ('stop');
-} else {
-  return ('play_arrow');
-}
-});
-
-const currentTrackIndex = ref(0);
-let shuffledIndexes = [];
-
-const loading = ref(false);
-
-const showSavePlaylistDialog = ref(false);
-
-const playlist = ref(
-{
-  id: null,
-  name: null,
-  public: false
-}
-);
-
-
-const bus = inject('bus');
-
-bus.on(spieldoseEventNames.track.setFavorite, (data) => {
-if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
-  const index = tableRows.value.findIndex(
-    (element) => element && element.id == data.id
-  );
-  if (index !== -1) {
-    tableRows.value[index].favorited = data.timestamp;
-  }
-}
-});
-
-bus.on(spieldoseEventNames.track.unSetFavorite, (data) => {
-if (data.source != "CurrentPlaylistPage" && tableRows?.value.length > 0) {
-  const index = tableRows.value.findIndex(
-    (element) => element && element.id == data.id
-  );
-  if (index !== -1) {
-    tableRows.value[index].favorited = null;
-  }
-}
-});
-
-
-function onClear() {
-playerStore.interact();
-playerStore.stop();
-//currentPlayListActions.clear();
-tableRows.value = [];
-}
-
-function onMoveUpTrackAtIndex(oldIndex) {
-let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
-// https://stackoverflow.com/a/6470794
-indexes.splice(oldIndex, 1);
-indexes.splice(oldIndex - 1, 0, oldIndex);
-currentPlayListActions.resortByIndexes(indexes).then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = currentPlaylistTrackIndex.value;
-  loading.value = false;
-}).catch((error) => {
-  $q.notify({
-    type: "negative",
-    message: t("API Error: error resorting tracks"),
-    caption: t("API Error: fatal error details", {
-      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-        ? error.response.statusText : 'undefined'
-    })
-  });
-  loading.value = false;
-});
-}
-
-function onMoveDownTrackAtIndex(oldIndex) {
-let indexes = Array.from({ length: tableRows.value.length }, (e, i) => i);
-// https://stackoverflow.com/a/6470794
-indexes.splice(oldIndex, 1);
-indexes.splice(oldIndex + 1, 0, oldIndex);
-currentPlayListActions.resortByIndexes(indexes).then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = currentPlaylistTrackIndex.value;
-  loading.value = false;
-}).catch((error) => {
-  $q.notify({
-    type: "negative",
-    message: t("API Error: error resorting tracks"),
-    caption: t("API Error: fatal error details", {
-      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-        ? error.response.statusText : 'undefined'
-    })
-  });
-  loading.value = false;
-});
-}
-
-function onToggleFavorite(index, trackId, favorited) {
-const funct = !favorited ? trackActions.setFavorite : trackActions.unSetFavorite;
-funct(trackId, 'CurrentPlaylistPage').then((success) => {
-  tableRows.value[index - 1].favorited = success.data.favorited;
-})
-  .catch((error) => {
-    switch (error.response.status) {
-      default:
-        $q.notify({
-          type: "negative",
-          message: t("API Error: error toggling favorite flag"),
-          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-        });
-        break;
-    }
-  });
-}
-
-function onRemoveElementAtIndex(index) {
-loading.value = true;
-currentPlayListActions.removeElementAtIndex(index).then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = currentPlaylistTrackIndex.value;
-  loading.value = false;
-})
-  .catch((error) => {
-    switch (error.response.status) {
-      default:
-        $q.notify({
-          type: "negative",
-          message: t("API Error: error removing element"),
-          caption: t("API Error: fatal error details", { status: error.response.status, statusText: error.response.statusText })
-        });
-        break;
-    }
-    loading.value = false;
-  });
-}
-
-function onRowClick(evt, row, index) {
-if (evt.target.nodeName != 'A' && evt.target.nodeName != 'I' && evt.target.nodeName != 'BUTTON') { // PREVENT play if we are clicking on action buttons
-  playerStore.interact();
-  currentPlayListActions.skipToElementIndex(index).then((success) => {
-  }).catch((error) => {
-    // TODO
-  });
-}
-}
-
-function getCurrentPlaylist() {
-loading.value = true;
-currentPlayListActions.get().then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = !playerStore.getShuffle ? success.data.currentIndex : shuffledIndexes.value[success.data.currentIndex];
-  loading.value = false;
-}).catch((error) => {
-  // TODO
-  loading.value = false;
-});
-}
-
-const currentPlaylistTrackIndex = computed(() => {
-if (!playerStore.getShuffle) {
-  return (playerStore.getCurrentPlaylistIndex);
-} else {
-  return (playerStore.getCurrentPlaylistShuffledIndex);
-}
-});
-
-watch(currentPlaylistTrackIndex, (newValue) => {
-currentTrackIndex.value = newValue;
-// TODO: only scroll on actions buttons click (NOT row click)
-tableRef.value.scrollTo(newValue, 'center-force');
-});
-
-function onRandomizeSorting() {
-playerStore.stop();
-loading.value = true;
-currentPlayListActions.randomize().then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = currentPlaylistTrackIndex.value;
-  loading.value = false;
-}).catch((error) => {
-  $q.notify({
-    type: "negative",
-    message: t("API Error: error loading random tracks"),
-    caption: t("API Error: fatal error details", {
-      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-        ? error.response.statusText : 'undefined'
-    })
-  });
-  loading.value = false;
-});
-}
-
-function onDiscover() {
-playerStore.stop();
-loading.value = true;
-currentPlayListActions.discover(32).then((success) => {
-  tableRows.value = success.data.tracks.map((element, index) => { element.index = index + 1; return (element) });
-  shuffledIndexes.value = success.data.shuffledIndexes;
-  currentTrackIndex.value = currentPlaylistTrackIndex.value;
-  loading.value = false;
-}).catch((error) => {
-  $q.notify({
-    type: "negative",
-    message: t("API Error: error loading random tracks"),
-    caption: t("API Error: fatal error details", {
-      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-        ? error.response.statusText : 'undefined'
-    })
-  });
-  loading.value = false;
-});
-}
-
-function onPreviusPlaylist() {
-playerStore.interact();
-currentPlayListActions.skipToPreviousElement().then((success) => {
-}).catch((error) => {
-  // TODO
-});
-}
-
-function onPlay() {
-playerStore.interact();
-playerStore.play();
-
-}
-
-function onPause() {
-playerStore.interact();
-playerStore.play();
-}
-
-function onResume() {
-playerStore.interact();
-playerStore.play();
-}
-
-function onStop() {
-playerStore.stop();
-playerStore.setCurrentTime(0);
-}
-
-function onNextPlaylist() {
-playerStore.interact();
-currentPlayListActions.skipToNextElement().then((success) => {
-}).catch((error) => {
-  // TODO
-});
-}
-
-function onSavePlaylist() {
-if (playerStore.getCurrentPlaylistLinkedPlaylist) {
-  console.log("hya plyalist");
-  if (playerStore.getCurrentPlaylistLinkedPlaylist.allowUpdate) {
-    console.log("se puede actualizar");
-    playlist.value = playerStore.getCurrentPlaylistLinkedPlaylist;
-  } else {
-    playlist.value = {
-      id: uid(),
-      name: playerStore.getCurrentPlaylistLinkedPlaylist.name,
-      public: false,
-      allowUpdate: true,
-    };
-  }
-} else {
-  playlist.value = {
-    id: uid(),
-    name: null,
-    public: false,
-    allowUpdate: true,
-  };
-}
-showSavePlaylistDialog.value = true;
-}
-
-function onSavePlaylistElements() {
-const ids = tableRows.value.map((element) => element.id);
-playerStore.interact();
-loading.value = true;
-const funct = playerStore.getCurrentPlaylistLinkedPlaylist ? api.playlist.update : api.playlist.add;
-funct(playlist.value.id, playlist.value.name, ids, playlist.value.public).then((success) => {
-  playerStore.data.currentPlaylist.playlist = playlist.value;
-  loading.value = false;
-  showSavePlaylistDialog.value = false;
-}).catch((error) => {
-  $q.notify({
-    type: "negative",
-    message: t("API Error: error loading random tracks"),
-    caption: t("API Error: fatal error details", {
-      status: error && error.response ? error.response.status : 'undefined', statusText: error && error.response
-        ? error.response.statusText : 'undefined'
-    })
-  });
-  loading.value = false;
-});
-}
-
-currentTrackIndex.value = currentPlaylistTrackIndex.value;
-
-onMounted(() => {
-//getCurrentPlaylist();
-if (currentTrackIndex.value > 0) {
-  tableRef.value.scrollTo(currentTrackIndex.value, 'center-force');
-}
-});
-
-*/
 
 </script>
 
