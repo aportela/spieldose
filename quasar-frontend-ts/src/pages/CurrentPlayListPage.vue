@@ -47,7 +47,8 @@
                   1 }}/{{
                 currentPlayListStore.playList.items.length }}</td>
             <td style="padding: 0px !important; width: 4em !important;" v-if="visibleColumnNames.includes('image')">
-              <TrackImage :src="item.file?.trackInfo.image.small ?? null" />
+              <TrackImage :src="item.file?.trackInfo.image.small ?? null" round
+                :rotate="index == currentPlayListStore.currentItemIndex" />
             </td>
             <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
             <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
