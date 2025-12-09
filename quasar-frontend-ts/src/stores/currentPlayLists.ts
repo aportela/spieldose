@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { api } from 'src/composables/api';
 
-import { type AddPlayListResponse, type GetCurrentPlayListsResponse } from 'src/types/apiResponses';
+import { type AddPlayListResponse } from 'src/types/apiResponses';
 
 interface PlayList {
   id: string;

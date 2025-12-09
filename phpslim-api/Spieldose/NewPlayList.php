@@ -10,12 +10,12 @@ class NewPlayList
     public string $name;
     public int $createdAt;
     public int|null $updatedAt;
+    /**
+     * var array<\Spieldose\Entities\File>
+     */
+    public array $items;
 
-    private bool $flagOpened;
-    private bool $flagPublished;
-    private bool $flagShared;
-    private bool $flagIsFavorites;
-    private bool $flagIsMine;
+    public \Spieldose\NewPlayListFlags  $flags;
 
     public function __construct(string $id, string $name)
     {
@@ -27,6 +27,8 @@ class NewPlayList
         }
         $this->id = $id;
         $this->name = $name;
+        $this->items = [];
+        $this->flags = new \Spieldose\NewPlayListFlags(false, false, false, false, false);
     }
 
     public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -35,11 +37,7 @@ class NewPlayList
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
         $this->createdAt = intval(microtime(true) * 1000);
-        $this->flagOpened = true;
-        $this->flagPublished = false;
-        $this->flagShared = false;
-        $this->flagIsFavorites = false;
-        $this->flagIsMine = true;
+        $this->flags = new \Spieldose\NewPlayListFlags(true, true, false, false, false);
         if ($dbh->execute(
             "
                 INSERT INTO PLAYLIST
@@ -64,9 +62,9 @@ class NewPlayList
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                    $this->flagOpened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
-                    $this->flagPublished ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
-                    $this->flagShared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
+                    $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
+                    $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
+                    $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
                 ]
             ));
         } else {
@@ -113,12 +111,12 @@ class NewPlayList
 
     public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $db, string $userId): array
     {
-        return ($db->query(
+        $results = $db->query(
             "
                 SELECT
-                    P.id, P.name, P.ctime AS createdAt, P.mtime AS updatedAt
+                    P.id, P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.published, UP.shared
                 FROM USER_PLAYLIST UP
-                INNER JOIN PLAYLIST P ON P.id = UP.playlist_id AND P.user_id = UP.user_id
+                INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
                     UP.user_id = :user_id
                 AND
@@ -127,7 +125,18 @@ class NewPlayList
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId)
-            ],
-        ));
+            ]
+        );
+        $playLists = [];
+        foreach ($results as $result) {
+            $playList = new \Spieldose\NewPlayList($result->id, $result->name);
+            $playList->flags->isMine = $userId == $result->userId;
+            $playList->flags->opened = is_numeric($result->opened);
+            $playList->flags->published = is_numeric($result->published);
+            $playList->flags->shared = is_numeric($result->shared);
+            $playList->flags->isFavorites = false;
+            $playLists[] = $playList;
+        }
+        return ($playLists);
     }
 }
