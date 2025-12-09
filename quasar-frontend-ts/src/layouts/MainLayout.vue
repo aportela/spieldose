@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh lpR lFf" class="theme-default-q-layout">
     <q-header height-hint="61.59" class="theme-default-q-header" bordered>
-      <q-toolbar class="bg-grey-3 text-dark theme-default-q-toolbar">
+      <q-toolbar class="bg-grey-3 text-dark __theme-default-q-toolbar">
         <q-btn flat dense round @click="visibleSidebar = !visibleSidebar;" aria-label="Toggle drawer" icon="menu"
           v-show="!visibleSidebar" class="q-mr-md" />
         <q-btn flat dense round @click="onToggleminiSidebarCurrentMode" aria-label="Toggle drawer"
@@ -33,8 +33,24 @@
     </q-page-container>
     <q-footer elevated v-if="miniSidebarCurrentMode">
       <q-toolbar class="bg-grey-3 q-px-none">
-        <q-img width="100px" ratio="1"
-          :src="currentPlaylistItemStore.isTrack ? currentPlaylistItemStore.trackImageSmall : '/vectors/Vinyl_record.svg'" />
+        <q-img width="100px" ratio="1" :src="currentImage" />
+        <div style="width: 30em" class="q-ml-sm text-dark">
+          <p class="q-mb-none">{{ currentPlaylistItemStore.trackTitle }}</p>
+          <p>by {{ currentPlaylistItemStore.trackArtistName }}</p>
+          <p class="q-mb-none">{{ currentPlaylistItemStore.trackAlbumTitle }} ({{
+            currentPlaylistItemStore.trackAlbumYear }})</p>
+          <p>by {{ currentPlaylistItemStore.trackAlbumArtistName }}</p>
+        </div>
+        <MainControls />
+        <div style="width: 25%;">
+          <SeekControl />
+        </div>
+        <div style="width: 20%">
+          <SidebarSpectrumAnalyzer />
+        </div>
+        <div style="width: 20em;">
+          <VolumeControl />
+        </div>
       </q-toolbar>
     </q-footer>
   </q-layout>
@@ -55,6 +71,10 @@ import { GITHUB_PROJECT_URL } from "src/constants";
 import { default as TopHeaderMenu } from "src/components/Menus/TopHeaderMenu.vue";
 import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
+import { default as MainControls } from "src/components/Widgets/Player/MainControls.vue";
+import { default as SeekControl } from "src/components/Widgets/Player/SeekControl.vue";
+import { default as SidebarSpectrumAnalyzer } from "src/components/Widgets/Visualizations/SidebarSpectrumAnalyzer.vue";
+import { default as VolumeControl } from "src/components/Widgets/Player/VolumeControl.vue";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 const $q = useQuasar();
 
@@ -81,6 +101,7 @@ const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? min
 
 const currentScreenSize = computed(() => $q.screen.name);
 
+const currentImage = computed(() => currentPlaylistItemStore.isTrack ? currentPlaylistItemStore.trackImageSmall ?? '/vectors/Vinyl_record.svg' : '/vectors/Vinyl_record.svg');
 watch(currentScreenSize, () => {
   if (!lockminiSidebarCurrentModeMode.value) {
     miniSidebarCurrentMode.value = $q.screen.lt.lg;
