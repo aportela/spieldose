@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "root",
-    redirect: "/index",
+    redirect: "/current_playlist",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
