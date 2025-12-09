@@ -284,6 +284,7 @@ return ([
                 opened INTEGER,
                 published INTEGER,
                 shared INTEGER,
+                favorites INTEGER,
                 playlist_item_index INTEGER NOT NULL DEFAULT 0,
                 playlist_item_position INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (playlist_id, user_id),
