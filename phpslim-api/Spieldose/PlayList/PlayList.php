@@ -52,13 +52,12 @@ final class PlayList
                 new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
             ]
         )) {
-            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
             return ($dbh->execute(
                 "
                 INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, published, shared)
+                    (user_id, playlist_id, opened, published, shared, favorites)
                 VALUES
-                    (:user_id, :playlist_id, :opened, :published, :shared)
+                    (:user_id, :playlist_id, :opened, :published, :shared, :favorites)
             ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
@@ -66,6 +65,7 @@ final class PlayList
                     $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
                     $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
                     $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
+                    $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
                 ]
             ));
         } else {
@@ -127,6 +127,8 @@ final class PlayList
                 INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.shared IS NOT NULL
                 WHERE
                     P.id = :id
+                AND
+                    P.user_id <> P.id
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
@@ -136,16 +138,39 @@ final class PlayList
             $this->name = $results[0]->name;
             $this->createdAt = intval($results[0]->ctime);
             $this->updatedAt = is_numeric($results[0]->mtime) ? intval($results[0]->mtime) : null;
-            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, 32);
+            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
             $this->flags->isMine = $userId == $results[0]->userId;
             $this->flags->opened = is_numeric($results[0]->opened);
             $this->flags->published = is_numeric($results[0]->published);
             $this->flags->shared = is_numeric($results[0]->shared);
-            $this->flags->isFavorites = false;
+            $this->flags->isFavorites = $this->flags->isMine && $this->id === $userId; // favorites playlist has same uuid of the user
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
         }
     }
+
+    public static function hasFavoritesPlaylist(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
+    {
+        return (
+            count(
+                $dbh->query(
+                    "
+                        SELECT
+                            UP.favorites
+                        FROM USER_PLAYLIST UP
+                        WHERE
+                            UP.user_id = P.user_id
+                        AND
+                            UP.favorites IS NOT NULL
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId)
+                    ]
+                )
+            ) === 1
+        );
+    }
+
     public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $dbh, string $userId): array
     {
         $results = $dbh->query(
