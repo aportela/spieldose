@@ -21,6 +21,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
   }),
   getters: {
     hasPlayLists: (state): boolean => state.playLists.length > 0,
+    activePlayList: (state): PlayList | null => state.playLists.length > 0 ? state.playLists[state.activePlayListIndex]! : null,
   },
   actions: {
     async init() {
@@ -40,6 +41,12 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     async remove(id: string) {
       await api.playList.remove(id);
       this.playLists = this.playLists.filter((playList) => playList.id !== id);
+    },
+    async randomFillActivePlayList() {
+      const filledPlayList = await api.playList.randomFill(this.playLists[this.activePlayListIndex]!.id);
+      console.log(this.playLists[this.activePlayListIndex]!.items.length);
+      this.playLists[this.activePlayListIndex] = filledPlayList.data.playList;
+      console.log(this.playLists[this.activePlayListIndex]!.items.length);
     },
     closeAtIndex(index: number) {
       this.playLists.splice(index, 1);

@@ -161,6 +161,9 @@ const api = {
     remove(id: string) {
       return axiosInstance.delete(`/playlist/${id}`);
     },
+    randomFill(id: string) {
+      return axiosInstance.post(`/playlist/${id}/random_fill`);
+    },
     getCurrentPlayLists: function () {
       return axiosInstance.get("/current_playlists");
     },

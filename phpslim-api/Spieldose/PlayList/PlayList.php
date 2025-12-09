@@ -115,7 +115,7 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.published, UP.shared
+                    P.name, P.ctime, P.mtime, P.user_id AS userId, UP.opened, UP.published, UP.shared
                 FROM PLAYLIST P
                 INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.user_id = P.user_id
                 WHERE
@@ -138,7 +138,7 @@ final class PlayList
             $this->name = $results[0]->name;
             $this->createdAt = intval($results[0]->ctime);
             $this->updatedAt = is_numeric($results[0]->mtime) ? intval($results[0]->mtime) : null;
-            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
+            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $this->id);
             $this->flags->isMine = $userId == $results[0]->userId;
             $this->flags->opened = is_numeric($results[0]->opened);
             $this->flags->published = is_numeric($results[0]->published);
@@ -149,26 +149,109 @@ final class PlayList
         }
     }
 
-    public static function hasFavoritesPlaylist(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
+    public function open(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
     {
-        return (
-            count(
-                $dbh->query(
-                    "
-                        SELECT
-                            UP.favorites
-                        FROM USER_PLAYLIST UP
-                        WHERE
-                            UP.user_id = P.user_id
-                        AND
-                            UP.favorites IS NOT NULL
-                    ",
-                    [
-                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId)
-                    ]
-                )
-            ) === 1
+        return ($dbh->execute(
+            "
+                INSERT INTO USER_PLAYLIST
+                    (user_id, playlist_id, opened, published, shared, favorites)
+                VALUES
+                    (:user_id, :playlist_id, :opened, NULL, NULL, NULL)
+                ON CONFLICT (user_id, playlist_id) DO
+                UPDATE
+                    SET
+                        :opened = :opened,
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", intval(microtime(true) * 1000)),
+            ]
+        ));
+    }
+
+    public function close(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
+    {
+        return ($dbh->execute(
+            "
+                INSERT INTO USER_PLAYLIST
+                    (user_id, playlist_id, opened, published, shared, favorites)
+                VALUES
+                    (:user_id, :playlist_id, NULL, NULL, NULL, NULL)
+                ON CONFLICT (user_id, playlist_id) DO
+                UPDATE
+                    SET
+                        :opened = NULL
+
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+            ]
+        ));
+    }
+
+    public function randomFill(\aportela\DatabaseWrapper\DB $dbh, int $count): bool
+    {
+        $dbh->execute(
+            "
+                DELETE
+                FROM PLAYLIST_FILE
+                WHERE
+                    playlist_id = :playlist_id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+            ]
         );
+        $dbh->execute(
+            "
+                INSERT INTO
+                    PLAYLIST_FILE
+                SELECT
+                    :playlist_id, FILE.id, ROWID
+                FROM FILE
+                ORDER BY RANDOM()
+                LIMIT :count
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":count", $count),
+            ]
+        );
+        return (true);
+    }
+
+    public function toggleFavoriteFile(\aportela\DatabaseWrapper\DB $dbh, string $userId, string $fileId, bool $flag): bool
+    {
+        if ($fileId !== '' && $fileId !== '0') {
+            $query = null;
+            $params = [
+                new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+            ];
+            if ($flag) {
+                $query = "
+                    INSERT INTO FILE_FAVORITE
+                        (file_id, user_id, ftime)
+                    VALUES
+                        (:file_id, :user_id, :current_timestamp) ON CONFLICT (file_id, user_id) DO UPDATE SET ftime = :ftime
+                ";
+                $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":ftime", intval(microtime(true) * 1000));
+            } else {
+                $query = "
+                    DELETE
+                    FROM FILE_FAVORITE
+                    WHERE
+                        file_id = :file_id
+                    AND
+                        user_id = :user_id
+                ";
+            }
+            return ($dbh->execute($query, $params));
+        } else {
+            throw new \Spieldose\Exception\InvalidParamsException("id");
+        }
     }
 
     public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $dbh, string $userId): array
@@ -197,7 +280,7 @@ final class PlayList
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;
-            $playList->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh);
+            $playList->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $playList->id);
             $playLists[] = $playList;
         }
         return ($playLists);
