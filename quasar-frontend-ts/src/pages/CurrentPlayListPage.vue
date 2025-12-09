@@ -46,7 +46,9 @@
                     {{ playList.name }}
                   </span>
                   <q-space />
-                  <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.removeAtIndex(index)" />
+                  <q-btn size="sm" flat icon="save" @click="currentPlayListsStore.removeAtIndex(index)" />
+                  <q-btn size="sm" flat icon="delete" @click="currentPlayListsStore.saveAtIndex(index)" />
+                  <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.closeAtIndex(index)" />
                 </q-toolbar>
               </div>
             </q-col>
@@ -108,7 +110,6 @@ import { uid } from "quasar";
 const currentPlayListsStore = useCurrentPlayListsStore();
 
 const currentPlayListTab = ref<string | null>(null);
-const currentPlayLists = ref<string[]>([]);
 
 interface Column {
   name: string;

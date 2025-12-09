@@ -26,8 +26,14 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.playLists = this.playLists.filter((playList) => playList.id !== id);
       console.log(id);
     },
-    removeAtIndex(index: number) {
+    closeAtIndex(index: number) {
       this.playLists.splice(index, 1);
+    },
+    removeAtIndex(index: number) {
+      console.debug(index);
+    },
+    saveAtIndex(index: number) {
+      console.debug(index);
     },
   }
 });
