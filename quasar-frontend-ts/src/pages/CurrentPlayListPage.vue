@@ -3,6 +3,7 @@
     <BreadCrumb icon="queue_music" label="Current playlist" />
     <q-card class="q-pa-lg">
       <q-btn-group spread class="q-mb-md">
+        <q-btn size="md" no-caps outline color="dark" label="New" icon="add" @click="onNew" />
         <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear"
           :disable="!currentPlayListStore.hasItems" @click="onEmpty" />
         <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt" @click="onDiscover" />
@@ -34,7 +35,25 @@
         </q-btn-dropdown>
       </q-btn-group>
 
-      <q-markup-table dense flat bordered separator="cell">
+      <q-tabs dense align="left" v-model="currentPlayListTab">
+        <q-tab no-caps v-for="playList in currentPlayLists" :key="playList">
+          <q-row class="q-pa-none" align="center">
+            <q-col>
+              <div class="q-gutter-none">
+                <q-toolbar class="q-pa-none">
+                  <span>
+                    {{ playList }}
+                  </span>
+                  <q-space />
+                  <q-btn size="sm" flat icon="close" />
+                </q-toolbar>
+              </div>
+            </q-col>
+          </q-row>
+        </q-tab>
+      </q-tabs>
+
+      <q-markup-table dense flat bordered separator="cell" v-if="false">
         <thead>
           <tr>
             <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
@@ -73,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
+import { ref, reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
 import { default as TrackImage } from "src/components/TrackImage.vue";
@@ -82,6 +101,9 @@ import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { usePlayerStore } from "src/stores/player";
 
 //const { t } = useI18n();
+
+const currentPlayListTab = ref<string | null>(null);
+const currentPlayLists = ref<string[]>([]);
 
 interface Column {
   name: string;
@@ -189,6 +211,11 @@ const handleTableBodyClick = (event: MouseEvent) => {
   }
 };
 
+const onNew = (): void => {
+  console.log("onNew");
+  currentPlayLists.value.push(`New playlist ${currentPlayLists.value.length + 1}`);
+  currentPlayListTab.value = currentPlayLists.value[currentPlayLists.value.length - 1]!;
+};
 const onEmpty = (): void => {
   currentPlayListStore.empty();
 };
@@ -197,7 +224,7 @@ const onDiscover = (): void => {
   console.log("onDiscover");
   currentPlayListStore.init().then((successResponse) => {
     currentPlayListStore.playList.items = successResponse.data.playList.items.map(
-      (i: unknown) => {
+      (i: any) => {
         i.trackInfo.image = i.trackInfo.imageURL;
         return ({ file: i });
       }
