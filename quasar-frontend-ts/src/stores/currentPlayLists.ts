@@ -6,6 +6,7 @@ import { type AddPlayListResponse } from 'src/types/apiResponses';
 interface PlayList {
   id: string;
   name: string;
+  items: [];
 }
 
 interface State {
@@ -31,7 +32,8 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.playLists.push(
         {
           id: newPlayList.data.playList.id,
-          name: newPlayList.data.playList.name
+          name: newPlayList.data.playList.name,
+          items: newPlayList.data.playList.items,
         }
       );
     },

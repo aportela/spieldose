@@ -128,7 +128,7 @@ class File
             }
 
             $item->trackInfo->favorited = $result->ftime ? intval($result->ftime) : null;
-            $playlistItems[] = $item;
+            $playlistItems[] = ["file" => $item];
         }
         return ($playlistItems);
     }

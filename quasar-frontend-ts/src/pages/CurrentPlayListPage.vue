@@ -38,8 +38,8 @@
       <q-tabs dense align="left" v-model="currentPlayListTab" v-if="currentPlayListsStore.hasPlayLists">
         <q-tab no-caps v-for="playList, index in currentPlayListsStore.playLists" :key="playList.id"
           :name="playList.id">
-          <q-row class="q-pa-none" align="center">
-            <q-col>
+          <div class="row q-pa-none" align="center">
+            <div class="col">
               <div class="q-gutter-none">
                 <q-toolbar class="q-pa-none">
                   <span>
@@ -51,45 +51,54 @@
                   <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.closeAtIndex(index)" />
                 </q-toolbar>
               </div>
-            </q-col>
-          </q-row>
+            </div>
+          </div>
         </q-tab>
       </q-tabs>
 
-      <q-markup-table dense flat bordered separator="cell" v-if="false">
-        <thead>
-          <tr>
-            <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
-          </tr>
-        </thead>
-        <tbody v-if="currentPlayListStore.hasItems" @click="handleTableBodyClick">
-          <tr class="cursor-pointer" v-for="item, index in currentPlayListStore.playList.items" :key="index">
-            <td v-if="visibleColumnNames.includes('index')" class="text-right"><q-icon name="play_arrow" size="sm"
-                color="pink" class="cursor-pointer" v-if="index == currentPlayListStore.currentItemIndex" /> {{ index +
-                  1 }}/{{
-                currentPlayListStore.playList.items.length }}</td>
-            <td style="padding: 0px !important; width: 4em !important;" v-if="visibleColumnNames.includes('image')">
-              <TrackImage :src="item.file?.trackInfo.image.small ?? null" round
-                :rotate="index == currentPlayListStore.currentItemIndex" />
-            </td>
-            <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
-            <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
-            <td v-if="visibleColumnNames.includes('trackAlbumTitle')">{{ item.file?.trackInfo.album.title }}</td>
-            <td v-if="visibleColumnNames.includes('trackAlbumArtist')">{{ item.file?.trackInfo.album.artist.name }}</td>
-            <td v-if="visibleColumnNames.includes('year')">{{ item.file?.trackInfo.album.year }}</td>
-            <td v-if="visibleColumnNames.includes('trackNumber')">0</td>
-            <td v-if="visibleColumnNames.includes('actions')">
-              <q-btn-group outline>
-                <q-btn size="sm" icon="north" title="Up" data-button-action="up" />
-                <q-btn size="sm" icon="south" title="Down" data-button-action="down" />
-                <q-btn size="sm" icon="delete" title="Remove" data-button-action="remove" />
-                <q-btn size="sm" icon="favorite" title="Toggle favorite" data-button-action="toggleFavorite" />
-                <q-btn size="sm" icon="save_alt" title="Download" />
-              </q-btn-group>
-            </td>
-          </tr>
-        </tbody>
-      </q-markup-table>
+      <q-tab-panels v-model="currentPlayListTab">
+        <q-tab-panel :name="playList.id" v-for="playList, index2 in currentPlayListsStore.playLists" :key="playList.id">
+          <q-markup-table dense flat bordered separator="cell">
+            <thead>
+              <tr>
+                <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
+              </tr>
+            </thead>
+            <tbody v-if="currentPlayListsStore.playLists[index2]?.items.length ?? 0 > 0" @click="handleTableBodyClick">
+              <tr class="cursor-pointer" v-for="item, index in currentPlayListsStore.playLists[index2]?.items"
+                :key="index">
+                <td v-if="visibleColumnNames.includes('index')" class="text-right"><q-icon name="play_arrow" size="sm"
+                    color="pink" class="cursor-pointer" v-if="index == currentPlayListStore.currentItemIndex" /> {{
+                      index +
+                      1 }}/{{
+                    currentPlayListsStore.playLists[index2]?.items.length }}</td>
+                <td style="padding: 0px !important; width: 4em !important;" v-if="visibleColumnNames.includes('image')">
+                  <TrackImage :src="item.file?.trackInfo.imageURL.small ?? null" round
+                    :rotate="index == currentPlayListStore.currentItemIndex" />
+                </td>
+                <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
+                <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
+                <td v-if="visibleColumnNames.includes('trackAlbumTitle')">{{ item.file?.trackInfo.album.title }}</td>
+                <td v-if="visibleColumnNames.includes('trackAlbumArtist')">{{ item.file?.trackInfo.album.artist.name }}
+                </td>
+                <td v-if="visibleColumnNames.includes('year')">{{ item.file?.trackInfo.album.year }}</td>
+                <td v-if="visibleColumnNames.includes('trackNumber')">0</td>
+                <td v-if="visibleColumnNames.includes('actions')">
+                  <q-btn-group outline>
+                    <q-btn size="sm" icon="north" title="Up" data-button-action="up" />
+                    <q-btn size="sm" icon="south" title="Down" data-button-action="down" />
+                    <q-btn size="sm" icon="delete" title="Remove" data-button-action="remove" />
+                    <q-btn size="sm" icon="favorite" title="Toggle favorite" data-button-action="toggleFavorite" />
+                    <q-btn size="sm" icon="save_alt" title="Download" />
+                  </q-btn-group>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-tab-panel>
+      </q-tab-panels>
+
+
     </q-card>
   </q-page>
 </template>
@@ -112,6 +121,8 @@ const currentPlayListsStore = useCurrentPlayListsStore();
 
 
 const currentPlayListTab = ref<string | null>(null);
+
+currentPlayListTab.value = currentPlayListsStore.playLists[0]?.id ?? null;
 
 interface Column {
   name: string;

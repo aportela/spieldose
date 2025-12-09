@@ -109,9 +109,9 @@ class NewPlayList
         }
     }
 
-    public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $db, string $userId): array
+    public static function getCurrentPlayLists(\aportela\DatabaseWrapper\DB $dbh, string $userId): array
     {
-        $results = $db->query(
+        $results = $dbh->query(
             "
                 SELECT
                     P.id, P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.published, UP.shared
@@ -135,6 +135,7 @@ class NewPlayList
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;
+            $playList->items = \Spieldose\Entities\File::getRandomPlayList($dbh, 32);
             $playLists[] = $playList;
         }
         return ($playLists);

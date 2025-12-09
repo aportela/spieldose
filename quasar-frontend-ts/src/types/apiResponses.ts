@@ -89,6 +89,7 @@ interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
     playList: {
       id: string;
       name: string;
+      items: [];
     };
   }
 };
