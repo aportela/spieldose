@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class NewPlayListFlags
+class PlayListFlags
 {
     public bool $isMine;
     public bool $opened;

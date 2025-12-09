@@ -233,13 +233,13 @@ const handleTableBodyClick = (event: MouseEvent) => {
 
 const onNew = async (): Promise<void> => {
   console.log("onNew");
-  const newPlayListId = uid();
+  const PlayListId = uid();
   try {
-    await currentPlayListsStore.add(newPlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
+    await currentPlayListsStore.add(PlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
   } catch (e) {
     console.error(e);
   }
-  currentPlayListTab.value = newPlayListId;
+  currentPlayListTab.value = PlayListId;
 };
 
 const onEmpty = (): void => {

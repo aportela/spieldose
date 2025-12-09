@@ -10,9 +10,9 @@ class File
 {
     protected \aportela\DatabaseWrapper\DB $dbh;
 
-    public string $filename;
+    public string $name;
 
-    public int $filesize;
+    public int $size;
 
     public string $mime;
 
@@ -25,7 +25,7 @@ class File
         $results = $db->query(
             "
                 SELECT
-                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
+                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_name, FILE_FAVORITE.ftime
                 FROM FILE
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
@@ -39,8 +39,8 @@ class File
             ]
         );
         if (count($results) === 1) {
-            $this->filename = $results[0]->name;
-            $this->filesize = $results[0]->size;
+            $this->name = $results[0]->name;
+            $this->size = $results[0]->size;
             $this->mime = $results[0]->mime;
             $this->trackInfo = new \stdClass();
             $this->trackInfo->playTimeSeconds = $results[0]->playtime_seconds;
@@ -56,7 +56,7 @@ class File
             $this->trackInfo->album->artist->mbId = null;
             $this->trackInfo->album->artist->name = $results[0]->artist;
             $this->trackInfo->imageURL = new \stdClass();
-            if (! empty($results[0]->cover_filename)) {
+            if (! empty($results[0]->cover_name)) {
                 $this->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $results[0]->directoryPathId;
                 $this->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $results[0]->directoryPathId;
             } elseif (! empty($results[0]->release_mbid)) {
@@ -79,7 +79,7 @@ class File
         $results = $db->query(
             "
                 SELECT
-                    FILE.id, FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
+                    FILE.id, FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_name, FILE_FAVORITE.ftime
                 FROM FILE
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
@@ -98,8 +98,8 @@ class File
         foreach ($results as $result) {
             $item = new \stdClass();
             $item->id = $result->id;
-            $item->filename = $result->name;
-            $item->filesize = $result->size;
+            $item->name = $result->name;
+            $item->size = $result->size;
             $item->mime = $result->mime;
             $item->trackInfo = new \stdClass();
             $item->trackInfo->playTimeSeconds = $result->playtime_seconds;
@@ -115,7 +115,7 @@ class File
             $item->trackInfo->album->artist->mbId = null;
             $item->trackInfo->album->artist->name = $result->artist;
             $item->trackInfo->imageURL = new \stdClass();
-            if (! empty($result->cover_filename)) {
+            if (! empty($result->cover_name)) {
                 $item->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
                 $item->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
             } elseif (! empty($result->release_mbid)) {

@@ -28,12 +28,12 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.playLists = response.data.playLists;
     },
     async add(id: string, name: string) {
-      const newPlayList: AddPlayListResponse = await api.playList.add(id, name);
+      const PlayList: AddPlayListResponse = await api.playList.add(id, name);
       this.playLists.push(
         {
-          id: newPlayList.data.playList.id,
-          name: newPlayList.data.playList.name,
-          items: newPlayList.data.playList.items,
+          id: PlayList.data.playList.id,
+          name: PlayList.data.playList.name,
+          items: PlayList.data.playList.items,
         }
       );
     },

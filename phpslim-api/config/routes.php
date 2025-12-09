@@ -838,7 +838,7 @@ return function (App $app): void {
                     throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\NewPlayList(
+                    $playlist = new \Spieldose\PlayList(
                         $args['id'],
                         $params["name"]
                     );
@@ -870,7 +870,7 @@ return function (App $app): void {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\NewPlayList(
+                    $playlist = new \Spieldose\PlayList(
                         $args['id'],
                         "",
                     );
@@ -898,7 +898,7 @@ return function (App $app): void {
                 }
                 $payload = json_encode(
                     [
-                        "playLists" => \Spieldose\NewPlayList::getCurrentPlayLists($dbh, \Spieldose\UserSession::getUserId()),
+                        "playLists" => \Spieldose\PlayList::getCurrentPlayLists($dbh, \Spieldose\UserSession::getUserId()),
                         "current" => [
                             "id" => null,
                             "itemIndex" => 0,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose;
 
-class NewPlayList
+class PlayList
 {
     public string $id;
     public string $name;
@@ -15,7 +15,7 @@ class NewPlayList
      */
     public array $items;
 
-    public \Spieldose\NewPlayListFlags  $flags;
+    public \Spieldose\PlayListFlags  $flags;
 
     public function __construct(string $id, string $name)
     {
@@ -28,7 +28,7 @@ class NewPlayList
         $this->id = $id;
         $this->name = $name;
         $this->items = [];
-        $this->flags = new \Spieldose\NewPlayListFlags(false, false, false, false, false);
+        $this->flags = new \Spieldose\PlayListFlags(false, false, false, false, false);
     }
 
     public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -37,7 +37,7 @@ class NewPlayList
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
         $this->createdAt = intval(microtime(true) * 1000);
-        $this->flags = new \Spieldose\NewPlayListFlags(true, true, false, false, false);
+        $this->flags = new \Spieldose\PlayListFlags(true, true, false, false, false);
         if ($dbh->execute(
             "
                 INSERT INTO PLAYLIST
@@ -129,13 +129,13 @@ class NewPlayList
         );
         $playLists = [];
         foreach ($results as $result) {
-            $playList = new \Spieldose\NewPlayList($result->id, $result->name);
+            $playList = new \Spieldose\PlayList($result->id, $result->name);
             $playList->flags->isMine = $userId == $result->userId;
             $playList->flags->opened = is_numeric($result->opened);
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;
-            $playList->items = \Spieldose\Entities\File::getRandomPlayList($dbh, 32);
+            $playList->items = \Spieldose\PlayListFileItem::getPlayListFileItems($dbh, 32);
             $playLists[] = $playList;
         }
         return ($playLists);
