@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh lpR lFf" class="theme-default-q-layout">
     <q-header height-hint="61.59" class="theme-default-q-header" bordered>
-      <q-toolbar class="theme-default-q-toolbar">
+      <q-toolbar class="bg-grey-3 text-dark theme-default-q-toolbar">
         <q-btn flat dense round @click="visibleSidebar = !visibleSidebar;" aria-label="Toggle drawer" icon="menu"
           v-show="!visibleSidebar" class="q-mr-md" />
         <q-btn flat dense round @click="onToggleminiSidebarCurrentMode" aria-label="Toggle drawer"
@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-            }}</DesktopToolTip>
+          }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -31,6 +31,12 @@
     <q-page-container>
       <router-view class="q-pa-sm" />
     </q-page-container>
+    <q-footer elevated v-if="miniSidebarCurrentMode">
+      <q-toolbar class="bg-grey-3 q-px-none">
+        <q-img width="100px" ratio="1"
+          :src="currentPlaylistItemStore.isTrack ? currentPlaylistItemStore.trackImageSmall : '/vectors/Vinyl_record.svg'" />
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -49,9 +55,14 @@ import { GITHUB_PROJECT_URL } from "src/constants";
 import { default as TopHeaderMenu } from "src/components/Menus/TopHeaderMenu.vue";
 import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
+import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 const $q = useQuasar();
 
+
 const { t } = useI18n();
+
+
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
 const lockminiSidebarCurrentModeMode = ref<boolean>(false);
 

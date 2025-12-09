@@ -20,8 +20,9 @@
         <div class="text-center cursor-pointer" style="min-width: 10em; width: 20%; overflow: hidden;"
           v-for="artist in artists" :key="artist._id" :title="artist.name">
           <q-img v-if="artist.image" :src="getSmallURL(artist.image)" fit="cover" :ratio="1"
-            style="min-width: 10em; width: 20%; " />
-          <q-skeleton v-else width="100%" style="height: auto; aspect-ratio: 1; margin: 0px auto" animation="none" />
+            style="min-width: 10em; width: 20%;" />
+          <q-skeleton v-else style="min-width: 10em; width: 20%; height: auto; aspect-ratio: 1; margin: 0px auto"
+            animation="none" />
           <span class="artist_name">{{ artist.name }}</span>
         </div>
       </div>
