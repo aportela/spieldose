@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-            }}</DesktopToolTip>
+          }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -107,7 +107,6 @@ const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? min
 
 const currentScreenSize = computed(() => $q.screen.name);
 
-const currentImage = computed(() => currentPlaylistItemStore.isTrack ? currentPlaylistItemStore.trackImageSmall ?? '/vectors/Vinyl_record.svg' : '/vectors/Vinyl_record.svg');
 watch(currentScreenSize, () => {
   if (!lockminiSidebarCurrentModeMode.value) {
     miniSidebarCurrentMode.value = $q.screen.lt.lg;
