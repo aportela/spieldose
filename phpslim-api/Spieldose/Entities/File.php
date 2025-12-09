@@ -79,7 +79,7 @@ class File
         $results = $db->query(
             "
                 SELECT
-                    FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
+                    FILE.id, FILE.name, FILE.size, COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime, FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds, FILE_ID3_TAG.release_mbid, FILE_ID3_TAG.release_track_mbid, FILE_ID3_TAG.artist, FILE_ID3_TAG.album, COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year, DIRECTORY.id AS directoryPathId, DIRECTORY.cover_filename, FILE_FAVORITE.ftime
                 FROM FILE
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
@@ -97,7 +97,7 @@ class File
         $playlistItems = [];
         foreach ($results as $result) {
             $item = new \stdClass();
-
+            $item->id = $result->id;
             $item->filename = $result->name;
             $item->filesize = $result->size;
             $item->mime = $result->mime;
