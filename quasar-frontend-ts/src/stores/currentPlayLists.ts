@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { api } from 'src/composables/api';
 
-import { type AddPlayListResponse } from 'src/types/apiResponses';
+import { type AddPlayListResponse, type GetCurrentPlayListsResponse } from 'src/types/apiResponses';
 
 interface PlayList {
   id: string;
@@ -22,6 +22,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     hasPlayLists: (state): boolean => state.playLists.length > 0,
   },
   actions: {
+    async init() {
+      const response = await api.playList.getCurrentPlayLists();
+      this.playLists = response.data.playLists;
+    },
     async add(id: string, name: string) {
       const newPlayList: AddPlayListResponse = await api.playList.add(id, name);
       this.playLists.push(

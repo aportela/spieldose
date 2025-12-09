@@ -109,6 +109,8 @@ import { uid } from "quasar";
 
 const currentPlayListsStore = useCurrentPlayListsStore();
 
+
+
 const currentPlayListTab = ref<string | null>(null);
 
 interface Column {
@@ -177,6 +179,7 @@ const currentPlayListStore = useCurrentPlayListStore();
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 const playerStore = usePlayerStore();
 
+
 const handleTableBodyClick = (event: MouseEvent) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
@@ -226,15 +229,6 @@ const onNew = async (): Promise<void> => {
     console.error(e);
   }
   currentPlayListTab.value = newPlayListId;
-};
-
-const onRemove = async (id: string): Promise<void> => {
-  console.log("onRemove");
-  try {
-    await currentPlayListsStore.remove(id);
-  } catch (e) {
-    console.error(e);
-  }
 };
 
 const onEmpty = (): void => {

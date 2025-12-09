@@ -93,6 +93,19 @@ interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
   }
 };
 
+interface PlayList {
+  id: string;
+  name: string;
+  createdAt: number;
+  updatedAt: number | null;
+}
+
+interface GetCurrentPlayListsResponse extends Omit<DefaultAxiosResponse, 'data'> {
+  data: {
+    playLists: PlayList[],
+  }
+};
+
 export {
   type getServerEnvironmentResponseData,
   type DefaultAxiosResponse,
@@ -107,4 +120,5 @@ export {
   type BrowseAlbumItemResponse,
   type BrowseAlbumsResponse,
   type AddPlayListResponse,
+  type GetCurrentPlayListsResponse,
 };

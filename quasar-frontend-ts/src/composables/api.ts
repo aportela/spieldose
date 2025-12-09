@@ -160,7 +160,10 @@ const api = {
     },
     remove(id: string) {
       return axiosInstance.delete(`/playlist/${id}`);
-    }
+    },
+    getCurrentPlayLists: function () {
+      return axiosInstance.get("/current_playlists");
+    },
   },
   currentPlayList: {
     get: function () {

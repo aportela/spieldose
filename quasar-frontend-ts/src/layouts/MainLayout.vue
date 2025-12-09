@@ -81,6 +81,8 @@ import { default as TrackImage } from "src/components/TrackImage.vue";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { usePlayerStore } from "src/stores/player";
 
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+
 const $q = useQuasar();
 
 
@@ -122,6 +124,11 @@ const onToggleminiSidebarCurrentMode = () => {
     LocalStorage.set("miniSidebarCurrentMode", miniSidebarCurrentMode.value);
   }
 }
+
+const currentPlayListsStore = useCurrentPlayListsStore();
+currentPlayListsStore.init().then(() => {
+}).catch((error) => { console.error(error); }).finally(() => { });
+
 
 onMounted(() => {
   randomTrack();
