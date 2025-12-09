@@ -46,6 +46,9 @@
                 color="pink" class="cursor-pointer" v-if="index == currentPlayListStore.currentItemIndex" /> {{ index +
                   1 }}/{{
                 currentPlayListStore.playList.items.length }}</td>
+            <td style="padding: 0px !important; width: 4em !important;" v-if="visibleColumnNames.includes('image')">
+              <TrackImage :src="item.file?.trackInfo.image.small ?? null" />
+            </td>
             <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
             <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
             <td v-if="visibleColumnNames.includes('trackAlbumTitle')">{{ item.file?.trackInfo.album.title }}</td>
@@ -72,6 +75,7 @@
 import { reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
+import { default as TrackImage } from "src/components/TrackImage.vue";
 import { useCurrentPlayListStore } from "src/stores/currentPlayList";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { usePlayerStore } from "src/stores/player";
@@ -94,39 +98,45 @@ const availableColumns = reactive<Column[]>(
       visible: true,
     },
     {
+      name: "image",
+      label: "Image",
+      index: 1,
+      visible: true,
+    },
+    {
       name: "trackTitle",
       label: "Title",
-      index: 1,
+      index: 2,
       visible: true,
     },
     {
       name: "trackArtist",
       label: "Artist",
-      index: 2,
+      index: 3,
       visible: true,
     },
     {
       name: "trackAlbumTitle",
       label: "Album",
-      index: 3,
+      index: 4,
       visible: true,
     },
     {
       name: "trackAlbumArtist",
       label: "Album artist",
-      index: 4,
+      index: 5,
       visible: true,
     },
     {
       name: "year",
       label: "Year",
-      index: 5,
+      index: 6,
       visible: true,
     },
     {
       name: "actions",
       label: "Actions",
-      index: 6,
+      index: 7,
       visible: true,
     }
   ]
@@ -224,39 +234,4 @@ const onToggleColumnVisibility = (column: Column): void => {
 
 </script>
 
-<style lang="sass">
-.my-sticky-header-table
-  /* height or max-height is important */
-  height: 310px
-
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th
-    /* bg color is important for th; just specify one */
-    background-color: #eeeeee
-
-  thead tr th
-    position: sticky
-    z-index: 1
-  thead tr:first-child th
-    top: 0
-
-  /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
-    /* height of all previous header rows */
-    top: 48px
-
-  /* prevent scrolling behind sticky top row on focus */
-  tbody
-    /* height of all previous header rows */
-    scroll-margin-top: 48px
-
-    tr.selected-row
-      background: #f0cbd1 !important
-      color: #222
-    tr
-      td
-        a
-          text-decoration: none
-
-</style>
+<style lang="css"></style>
