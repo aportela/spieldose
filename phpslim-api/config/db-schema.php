@@ -269,16 +269,6 @@ return ([
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
             ) STRICT;
 
-            CREATE TABLE USER_CURRENT_PLAYLIST (
-                playlist_id TEXT NOT NULL CHECK(length(user_id) == 36),
-                user_id TEXT NOT NULL CHECK(length(user_id) == 36),
-                current_item_index INTEGER NOT NULL DEFAULT 0,
-                current_item_position INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY (playlist_id, user_id),
-                FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
-                FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE
-            ) STRICT;
-
             CREATE TABLE PLAYLIST_FILE (
                 playlist_id TEXT NOT NULL CHECK(length(playlist_id) == 36),
                 file_id TEXT NOT NULL CHECK(length(file_id) == 36),
@@ -286,6 +276,19 @@ return ([
                 PRIMARY KEY (playlist_id, file_id, file_index),
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE,
                 FOREIGN KEY(file_id) REFERENCES FILE(id) ON DELETE CASCADE
+            ) STRICT;
+
+            CREATE TABLE USER_PLAYLIST (
+                user_id TEXT NOT NULL CHECK(length(user_id) == 36),
+                playlist_id TEXT NOT NULL CHECK(length(user_id) == 36),
+                opened INTEGER,
+                published INTEGER,
+                shared INTEGER,
+                playlist_item_index INTEGER NOT NULL DEFAULT 0,
+                playlist_item_position INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (playlist_id, user_id),
+                FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE,
+                FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE
             ) STRICT;
 
             CREATE TABLE ARTIST_IMAGE (
