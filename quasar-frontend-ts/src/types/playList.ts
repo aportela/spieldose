@@ -79,23 +79,37 @@ class PlayListItemClass implements PlayListItem {
 }
 
 interface PlayList {
-  id: string | null;
-  name: string | null;
+  id: string;
+  name: string;
   items: PlayListItemClass[];
 };
 
 class PlayListClass implements PlayList {
-  _id: string;
-  id: string | null;
-  name: string | null;
+  id: string;
+  name: string;
   items: PlayListItemClass[];
+  currentItemIndex: number;
 
-  constructor(id: string | null, name: string | null, items: PlayListItem[]) {
-    this._id = uid();
+  constructor(id: string, name: string, items: PlayListItem[]) {
     this.id = id;
     this.name = name;
     this.items = items.map(item => new PlayListItemClass(item.file, item.stream, item.images));
+    this.currentItemIndex = 0;
   }
+
+  get hasItems(): boolean {
+    return this.items.length > 0;
+  };
+
+  get allowSkipNext(): boolean {
+    return (this.hasItems && this.currentItemIndex < this.items.length);
+  };
+
+  get allowSkipPrevious(): boolean {
+    return (this.hasItems && this.currentItemIndex > 0);
+  };
+
+
 }
 
 export { type PlayListItem, PlayListItemClass, type PlayList, PlayListClass };
