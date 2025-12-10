@@ -8,6 +8,8 @@
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
     <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode"
       @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.normal" />
+    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage"
+      @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   </div>
 </template>
 
@@ -28,9 +30,7 @@ const playerStore = usePlayerStore();
 const currentPlayListsStore = useCurrentPlayListsStore();
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
-
 const sidebarAlbumCoverSettingsStore = useSidebarAlbumCoverSettingsStore();
-
 
 const { t } = useI18n();
 

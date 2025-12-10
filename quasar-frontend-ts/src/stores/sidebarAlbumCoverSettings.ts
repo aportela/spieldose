@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { createStorageEntry } from 'src/composables/localStorage';
 
-type AlbumCoverMode = "staticImage" | "vinyl" | "cassetteTape";
+type AlbumCoverMode = "none" | "staticImage" | "vinyl" | "cassetteTape";
 
 const localStorageVisible = createStorageEntry<boolean>("visualizations.sidebar.albumCover.visible", true);
 const localStorageMode = createStorageEntry<AlbumCoverMode>("visualizations.sidebar.albumCover.mode", "staticImage");
@@ -24,6 +24,7 @@ export const useSidebarAlbumCoverSettingsStore = defineStore('sidebarAlbumCoverS
     },
   }),
   getters: {
+    hasNoImage: (state): boolean => state.settings.mode === "none",
     hasStaticImageMode: (state): boolean => state.settings.mode === "staticImage",
     hasVinilMode: (state): boolean => state.settings.mode === "vinyl",
     hasCassetteTapeMode: (state): boolean => state.settings.mode === "cassetteTape",
@@ -36,6 +37,9 @@ export const useSidebarAlbumCoverSettingsStore = defineStore('sidebarAlbumCoverS
     },
     toggleMode() {
       switch (this.settings.mode) {
+        case "none":
+          this.settings.mode = "staticImage";
+          break;
         case "staticImage":
           this.settings.mode = "vinyl";
           break;
@@ -43,7 +47,7 @@ export const useSidebarAlbumCoverSettingsStore = defineStore('sidebarAlbumCoverS
           this.settings.mode = "cassetteTape";
           break;
         case "cassetteTape":
-          this.settings.mode = "staticImage";
+          this.settings.mode = "none";
           break;
       }
       localStorageMode.set(this.settings.mode);
