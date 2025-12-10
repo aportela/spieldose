@@ -9,6 +9,7 @@ type VinylAnimation = "vinyl" | "cassete" | null;
 type SpectrumAnalyzerChannelLayout = "single" | "dual-combined" | "dual-horizontal" | "dual-vertical";
 
 type PlayerStatus = "stopped" | "playing" | "paused";
+type PlayerRepeatMode = "none" | "track" | "playList";
 
 type PlayListTableColumnName = "index" | "image" | "trackTitle" | "trackArtist" | "trackAlbumTitle" | "trackAlbumNumber" | "trackAlbumArtist" | "year" | "actions";
 
@@ -96,5 +97,5 @@ const sortOrderSelectorOptions: SelectorOption[] = [
 type AudioMotionAnalyzerOptionColorMode = "gradient" | "bar-index" | "bar-level";
 
 export {
-  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type PlayListTableColumn, availablePlayListTableColumns, type SelectorOption, sortOrderSelectorOptions, type AudioMotionAnalyzerOptionColorMode
+  type EnvironmentType, type ValidAuthTypes, type VinylAnimation, type SpectrumAnalyzerChannelLayout, type PlayerStatus, type PlayerRepeatMode, type PlayListTableColumn, availablePlayListTableColumns, type SelectorOption, sortOrderSelectorOptions, type AudioMotionAnalyzerOptionColorMode
 };
