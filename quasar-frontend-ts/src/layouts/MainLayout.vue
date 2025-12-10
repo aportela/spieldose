@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-            }}</DesktopToolTip>
+          }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -38,8 +38,11 @@
           <Vinyl :image="currentPlayListsStore.currentActivePlayListItem?.images?.small ?? null"
             :animated="playerStore.isPlaying" />
             -->
+          <StaticAlbumCoverImage :image="currentPlayListsStore.currentActivePlayListItem?.images?.small ?? null" />
+          <!--
           <TrackImage :src="currentPlayListsStore.currentActivePlayListItem?.images?.small ?? null"
             :rotate="playerStore.isPlaying" />
+            -->
         </div>
         <div style="width: 30em" class="q-ml-sm text-dark">
           <p class="q-mb-none">{{ currentPlaylistItemStore.trackTitle }}</p>
@@ -84,6 +87,7 @@ import { default as SidebarSpectrumAnalyzer } from "src/components/Widgets/Visua
 import { default as VolumeControl } from "src/components/Widgets/Player/VolumeControl.vue";
 import { default as TrackImage } from "src/components/TrackImage.vue";
 import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
+import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 import { usePlayerStore } from "src/stores/player";
 
