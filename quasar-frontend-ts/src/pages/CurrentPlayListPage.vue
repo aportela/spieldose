@@ -4,8 +4,7 @@
     <q-card class="q-pa-lg">
       <q-btn-group spread class="q-mb-md">
         <q-btn size="md" no-caps outline color="dark" label="New" icon="add" @click="onNew" />
-        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear"
-          :disable="!currentPlayListStore.hasItems" @click="onEmpty" />
+        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear" @click="onEmpty" />
         <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt" @click="onDiscover" />
         <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle"
           :disable="!currentPlayListStore.hasItems" @click="onRandomize" />
@@ -25,217 +24,87 @@
               clickable @click="onToggleColumnVisibility(column)">
               <q-icon :name="column.visible ? 'visibility' : 'visibility_off'" size="xs" class="q-mr-sm"
                 :class="{ 'text-pink': column.visible, 'text-grey-6': !column.visible }" />
-              <!--
-              <q-icon name="arrow_drop_up" size="xs" class="cursor-pointer" />
-              <q-icon name="arrow_drop_down" size="xs" class="cursor-pointer" />
-              -->
               {{ column.label }}
             </q-item>
           </q-list>
         </q-btn-dropdown>
       </q-btn-group>
 
-      <q-tabs dense align="left" v-model="activePlayListId" v-if="currentPlayListsStore.hasPlayLists">
-        <q-tab no-caps v-for="playList, index in currentPlayListsStore.playLists" :key="playList.id"
-          :name="playList.id">
-          <q-badge color="grey-7" floating>{{
-            currentPlayListsStore.playLists[currentPlayListsStore.activePlayListIndex]?.items.length ?? 0 }}</q-badge>
-          <div class="row q-pa-none" align="center">
-            <div class="col">
-              <div class="q-gutter-none">
-                <q-toolbar class="q-pa-none">
-                  <span>
-                    {{ playList.name }}
-                  </span>
-                  <q-space />
-                  <q-btn size="sm" flat icon="save" @click="currentPlayListsStore.removeAtIndex(index)" />
-                  <q-btn size="sm" flat icon="delete" @click="currentPlayListsStore.remove(playList.id)" />
-                  <q-btn size="sm" flat icon="close" @click="currentPlayListsStore.closeAtIndex(index)" />
-                </q-toolbar>
+      <div v-if="playListsFound">
+        <q-tabs dense align="left" v-model="tab">
+          <q-tab no-caps v-for="playList, playListIndex in currentPlayListsStore.playLists" :key="playList.id"
+            :name="playList.id">
+            <q-badge :color="currentPlayListsStore.playLists[playListIndex]?.items.length ? 'grey-7' : 'red'"
+              floating>{{
+                currentPlayListsStore.playLists[playListIndex]?.items.length
+              }}</q-badge>
+            <div class="row q-pa-none" align="center">
+              <div class="col">
+                <div class="q-gutter-none">
+                  <q-toolbar class="q-pa-none">
+                    <q-icon name="speaker" color="dark" class="zoom-infinite q-mr-sm"
+                      v-if="currentPlayListsStore.activePlayListIndex == playListIndex" />
+                    <span>
+                      {{ playList.name }}
+                    </span>
+                    <q-space />
+                    <q-btn size="sm" flat icon="save"
+                      @click.stop="currentPlayListsStore.savePlayListAtIndex(playListIndex)" />
+                    <q-btn size="sm" flat icon="delete"
+                      @click.stop="currentPlayListsStore.removePlayListAtIndex(playListIndex)" />
+                    <q-btn size="sm" flat icon="close"
+                      @click.stop="currentPlayListsStore.closePlayListAtIndex(playListIndex)" />
+                  </q-toolbar>
+                </div>
               </div>
             </div>
-          </div>
-        </q-tab>
-      </q-tabs>
-
-      <q-tab-panels v-model="activePlayListId" v-if="currentPlayListsStore.hasPlayLists">
-        <q-tab-panel :name="playList.id" v-for="playList, playListIndex in currentPlayListsStore.playLists"
-          :key="playList.id">
-          <q-markup-table dense flat bordered separator="cell">
-            <thead>
-              <tr>
-                <th v-for="column in visibleColumns" :key="column.name">{{ column.label }}</th>
-              </tr>
-            </thead>
-            <tbody v-if="currentPlayListsStore.playLists[playListIndex]?.items.length ?? 0 > 0"
-              @click="handleTableBodyClick">
-              <tr class="cursor-pointer"
-                v-for="item, itemIndex in currentPlayListsStore.playLists[playListIndex]?.items" :key="itemIndex">
-                <td v-if="visibleColumnNames.includes('index')" class="text-right"><q-icon name="play_arrow" size="sm"
-                    color="pink" class="cursor-pointer"
-                    v-if="currentPlayListsStore.activePlayList!.id == currentPlayListsStore.playLists[playListIndex]!.id && itemIndex == currentPlayListStore.currentItemIndex" />
-                  {{
-                    itemIndex +
-                    1 }}/{{
-                    currentPlayListsStore.playLists[playListIndex]?.items.length }}</td>
-                <td style="padding: 0px !important; width: 4em !important;" v-if="visibleColumnNames.includes('image')">
-                  <TrackImage :src="item.file?.trackInfo.imageURL.small ?? null" round
-                    :rotate="itemIndex == currentPlayListStore.currentItemIndex" />
-                </td>
-                <td v-if="visibleColumnNames.includes('trackTitle')">{{ item.file?.trackInfo.title }}</td>
-                <td v-if="visibleColumnNames.includes('trackArtist')">{{ item.file?.trackInfo.artist.name }}</td>
-                <td v-if="visibleColumnNames.includes('trackAlbumTitle')">{{ item.file?.trackInfo.album.title }}</td>
-                <td v-if="visibleColumnNames.includes('trackAlbumArtist')">{{ item.file?.trackInfo.album.artist.name }}
-                </td>
-                <td v-if="visibleColumnNames.includes('year')">{{ item.file?.trackInfo.album.year }}</td>
-                <td v-if="visibleColumnNames.includes('trackNumber')">0</td>
-                <td v-if="visibleColumnNames.includes('actions')">
-                  <q-btn-group outline>
-                    <q-btn size="sm" icon="north" title="Up" data-button-action="up" />
-                    <q-btn size="sm" icon="south" title="Down" data-button-action="down" />
-                    <q-btn size="sm" icon="delete" title="Remove" data-button-action="remove" />
-                    <q-btn size="sm" icon="favorite" title="Toggle favorite" data-button-action="toggleFavorite" />
-                    <q-btn size="sm" icon="save_alt" title="Download" />
-                  </q-btn-group>
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-tab-panel>
-      </q-tab-panels>
-
-
+          </q-tab>
+        </q-tabs>
+        <q-tab-panels v-model="tab">
+          <q-tab-panel :name="playList.id" v-for="playList, playListIndex in currentPlayListsStore.playLists"
+            :key="playList.id">
+            <PlayListTable :columns="availableColumns" :playList="playList"
+              :active="currentPlayListsStore.activePlayListIndex === playListIndex"
+              :play-list-current-item-index="currentPlayListsStore.activePlayListItemIndex"
+              @on-click-item-at-index="(index: number) => currentPlayListsStore.selectPlayListItem(playListIndex, index)"
+              @on-action-move-up-item-at-index="(index: number) => currentPlayListsStore.moveUpPlayListItem(playListIndex, index)"
+              @on-action-move-down-item-at-index="(index: number) => currentPlayListsStore.moveDownPlayListItem(playListIndex, index)"
+              @on-action-remove-item-at-index="(index: number) => currentPlayListsStore.removePlayListItem(playListIndex, index)"
+              @on-action-toggle-favorite-item-at-index="(index: number) => currentPlayListsStore.toggleFavoritePlayListItem(playListIndex, index)" />
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
     </q-card>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue";
+import { reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
-import { default as TrackImage } from "src/components/TrackImage.vue";
 import { useCurrentPlayListStore } from "src/stores/currentPlayList";
-import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
-import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { uid } from "quasar";
-
+import { type PlayListTableColumn, availablePlayListTableColumns } from "src/types/common";
+import { default as PlayListTable } from "src/components/PlayListTable.vue";
 //const { t } = useI18n();
 
 const currentPlayListsStore = useCurrentPlayListsStore();
 
-const activePlayListId = ref<string | null>(null);
+const playListsFound = computed(() => currentPlayListsStore.hasPlayLists);
 
-activePlayListId.value = currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.activePlayListIndex]?.id ?? null : null;
-
-watch(() => activePlayListId.value, (newValue) => {
-  const index = currentPlayListsStore.playLists.findIndex((playList) => playList.id == newValue);
-  if (index >= 0) {
-    currentPlayListsStore.activePlayListIndex = index;
+const tab = computed({
+  get() {
+    return currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.selectedPlayListIndex]?.id ?? null : null;
+  },
+  set(value: string) {
+    currentPlayListsStore.setSelectedPlayListId(value);
   }
 });
-interface Column {
-  name: string;
-  label: string;
-  index: number;
-  visible: boolean;
-};
 
-const availableColumns = reactive<Column[]>(
-  [
-    {
-      name: "index",
-      label: "Index",
-      index: 0,
-      visible: true,
-    },
-    {
-      name: "image",
-      label: "Image",
-      index: 1,
-      visible: false,
-    },
-    {
-      name: "trackTitle",
-      label: "Title",
-      index: 2,
-      visible: true,
-    },
-    {
-      name: "trackArtist",
-      label: "Artist",
-      index: 3,
-      visible: true,
-    },
-    {
-      name: "trackAlbumTitle",
-      label: "Album",
-      index: 4,
-      visible: true,
-    },
-    {
-      name: "trackAlbumArtist",
-      label: "Album artist",
-      index: 5,
-      visible: true,
-    },
-    {
-      name: "year",
-      label: "Year",
-      index: 6,
-      visible: true,
-    },
-    {
-      name: "actions",
-      label: "Actions",
-      index: 7,
-      visible: true,
-    }
-  ]
-);
+const availableColumns = reactive<PlayListTableColumn[]>(availablePlayListTableColumns);
 
-const visibleColumns = computed(() => availableColumns.filter((column) => column.visible));
-const visibleColumnNames = computed(() => visibleColumns.value.map((column) => column.name));
 const currentPlayListStore = useCurrentPlayListStore();
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-const playerStore = usePlayerStore();
-
-const handleTableBodyClick = (event: MouseEvent) => {
-  const target = event.target;
-  if (!(target instanceof HTMLElement)) return;
-  const btn = target.closest("[data-button-action]");
-  if (btn instanceof HTMLElement) {
-    console.log("button action:", btn.dataset.buttonAction);
-  } else {
-    const row = target.closest("tr");
-    if (!(row instanceof HTMLTableRowElement)) return;
-    const rowIndex = row.sectionRowIndex;
-    currentPlaylistItemStore.setTrack(
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.id,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.name,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.size,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.mime,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.playTimeSeconds,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.title,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.artist.name,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.artist.mbId,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.album.title,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.album.mbId,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.album.year,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.album.artist.name,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.album.artist.mbId,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.imageURL ? currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.imageURL.small : null,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.imageURL ? currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.imageURL.normal : null,
-      currentPlayListsStore.activePlayList.items[rowIndex]!.file!.trackInfo.favorited
-    );
-    currentPlayListStore.currentItemIndex = rowIndex;
-    playerStore.interact();
-    playerStore.play(true);
-
-    //const rowData = currentPlayListStore.playList.items[rowIndex];
-    //console.log("Fila clickeada:", rowData);
-  }
-};
 
 const onNew = async (): Promise<void> => {
   console.log("onNew");
@@ -245,16 +114,24 @@ const onNew = async (): Promise<void> => {
   } catch (e) {
     console.error(e);
   }
-  activePlayListId.value = PlayListId;
 };
 
 const onEmpty = (): void => {
-  currentPlayListStore.empty();
+  console.log("onEmpty");
+  if (tab.value) {
+    currentPlayListsStore.empty(tab.value);
+  } else {
+    console.error("Invalid tab", tab.value);
+  }
 };
 
 const onDiscover = (): void => {
   console.log("onDiscover");
-  currentPlayListsStore.randomFillActivePlayList().then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
+  if (tab.value) {
+    currentPlayListsStore.randomFill(tab.value).then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
+  } else {
+    console.error("Invalid tab", tab.value);
+  }
 };
 
 const onRandomize = (): void => {
@@ -281,10 +158,28 @@ const onSkipNext = (): void => {
   console.log("onSkipNext");
 };
 
-const onToggleColumnVisibility = (column: Column): void => {
+const onToggleColumnVisibility = (column: PlayListTableColumn): void => {
   column.visible = !column.visible;
 };
 
 </script>
 
-<style lang="css"></style>
+<style lang="css">
+.zoom-infinite {
+  animation: zoomEffect 2s ease-in-out infinite;
+}
+
+@keyframes zoomEffect {
+  0% {
+    transform: scale(2);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(2);
+  }
+}
+</style>

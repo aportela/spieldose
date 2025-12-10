@@ -39,7 +39,6 @@ import { usePlayerStore } from "src/stores/player";
 const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-
 const playerStore = usePlayerStore();
 
 const { t } = useI18n();

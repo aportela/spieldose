@@ -27,20 +27,26 @@
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "src/stores/player";
-import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+
+
 import { default as CasseteTape } from "./CasseteTape.vue";
 
 const playerStore = usePlayerStore();
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
+
+const currentPlayListsStore = useCurrentPlayListsStore();
+
 
 const { t } = useI18n();
 
 const images = ref({
-  normal: currentPlaylistItemStore.trackImageNormal,
-  small: currentPlaylistItemStore.trackImageSmall,
+  normal: currentPlayListsStore.currentActivePlayListItem?.images?.big ?? null,
+  small: currentPlayListsStore.currentActivePlayListItem?.images?.medium ?? null,
 });
+console.log(images);
 
-watch(() => currentPlaylistItemStore.trackImageSmall, (newValue) => {
+watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.medium, (newValue) => {
+  console.log("cange", newValue);
   images.value.small = null;
   if (newValue) {
     nextTick()
@@ -52,7 +58,7 @@ watch(() => currentPlaylistItemStore.trackImageSmall, (newValue) => {
   }
 });
 
-watch(() => currentPlaylistItemStore.trackImageNormal, (newValue) => {
+watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.big, (newValue) => {
   images.value.normal = null;
   if (newValue) {
     nextTick()
