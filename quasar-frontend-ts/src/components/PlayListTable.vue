@@ -19,10 +19,10 @@
         <td v-if="columnTrackTitleVisible">{{ item.file?.trackInfo.title }}</td>
         <td v-if="columnTrackArtistVisible">{{ item.file?.trackInfo.artist.name }}</td>
         <td v-if="columnTrackAlbumTitleVisible">{{ item.file?.trackInfo.album.title }}</td>
+        <td v-if="columnTrackAlbumTrackIndexVisible">0</td>
         <td v-if="columnTrackAlbumArtistVisible">{{ item.file?.trackInfo.album.artist.name }}
         </td>
         <td v-if="columnTrackYearVisible">{{ item.file?.trackInfo.album.year }}</td>
-        <td v-if="columnTrackAlbumTrackIndexVisible">0</td>
         <td v-if="columnTrackActionsVisible">
           <q-btn-group outline>
             <q-btn size="sm" icon="north" title="Up" data-button-action="up" :disable="itemIndex === 0" />
