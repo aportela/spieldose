@@ -1,14 +1,13 @@
 <template>
-  <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small" :animated="playerStore.isPlaying"
-    clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
-  <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode" :animated="playerStore.isPlaying"
-    :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
-    :bottom-label="currentPlaylistItemStore.trackTitle" clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
-  <div v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" @click="sidebarAlbumCoverSettingsStore.toggleMode"
-    class="cursor-pointer" :title="t('Toggle art animation')">
-    <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
-      width="100%" spinner-color="pink" />
-    <q-img v-else src="vectors/Vinyl_record.svg" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
+  <div>
+    <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small" :animated="playerStore.isPlaying"
+      clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+    <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode" :animated="playerStore.isPlaying"
+      :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
+      :bottom-label="currentPlaylistItemStore.trackTitle" clickable
+      @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode"
+      @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.normal" />
   </div>
 </template>
 
@@ -20,6 +19,7 @@ import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { useSidebarAlbumCoverSettingsStore } from "src/stores/sidebarAlbumCoverSettings";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
+import { default as StaticAlbumCoverImage } from "./StaticAlbumCoverImage.vue";
 import { default as Vinyl } from "./Vinyl.vue";
 import { default as CasseteTape } from "./CasseteTape.vue";
 
