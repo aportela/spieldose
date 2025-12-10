@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'cursor-pointer': clickable }" @click="onClick">
-    <q-img v-if="currentImage" :src="currentImage" @error="currentImage = null" :ratio="1" width="100%"
+    <q-img v-if="currentImage" :src="currentImage" @error="currentImage = failbackImage ?? null" :ratio="1" width="100%"
       spinner-color="pink" />
     <div v-else class="no-image shadow-6 overflow-hidden">
       <p class="q-mt-xl no-image-label no-image-top-label text-grey-7">Spieldose</p>
