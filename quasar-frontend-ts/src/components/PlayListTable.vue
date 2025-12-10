@@ -28,13 +28,14 @@
         <td v-if="columnTrackYearVisible">{{ item.file?.trackInfo.album.year }}</td>
         <td v-if="columnTrackActionsVisible">
           <q-btn-group outline>
-            <q-btn size="sm" icon="north" title="Up" data-button-action="up" :disable="itemIndex === 0" />
-            <q-btn size="sm" icon="south" title="Down" data-button-action="down"
+            <q-btn class="q-pa-xs" size="sm" icon="north" title="Up" data-button-action="up"
+              :disable="itemIndex === 0" />
+            <q-btn class="q-pa-xs" size="sm" icon="south" title="Down" data-button-action="down"
               :disable="itemIndex === playList.items.length - 1" />
-            <q-btn size="sm" icon="delete" title="Remove" data-button-action="remove" />
-            <q-btn size="sm" icon="favorite" :class="{ 'text-pink': item.file?.trackInfo.favorited }"
+            <q-btn class="q-pa-xs" size="sm" icon="delete" title="Remove" data-button-action="remove" />
+            <q-btn class="q-pa-xs" size="sm" icon="favorite" :class="{ 'text-pink': item.file?.trackInfo.favorited }"
               title="Toggle favorite" data-button-action="toggleFavorite" />
-            <q-btn size="sm" icon="save_alt" title="Download"
+            <q-btn class="q-pa-xs" size="sm" icon="save_alt" title="Download"
               :href="item.file !== null ? buildDownloadTrackURL(item.file?.id) : '#'" />
           </q-btn-group>
         </td>
