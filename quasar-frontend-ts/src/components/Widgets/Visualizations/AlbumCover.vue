@@ -1,9 +1,9 @@
 <template>
   <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small" :animated="playerStore.isPlaying"
-    @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+    clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode" :animated="playerStore.isPlaying"
     :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
-    :bottom-label="currentPlaylistItemStore.trackTitle" @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+    :bottom-label="currentPlaylistItemStore.trackTitle" clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   <div v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" @click="sidebarAlbumCoverSettingsStore.toggleMode"
     class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"

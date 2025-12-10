@@ -3,9 +3,9 @@
   vinyl svg credits:
   https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
   -->
-  <div @click="onClick" class="vinyl-container cursor-pointer overflow-hidden relative-position full-width"
-    style="background: url(vectors/Vinyl_record.svg) no-repeat; background-size: cover;"
-    :class="{ 'vinyl-rotation': animated }">
+  <div @click="onClick" class="vinyl-container overflow-hidden relative-position full-width"
+    :class="{ 'cursor-pointer': clickable, 'vinyl-rotation': animated }"
+    style="background: url(vectors/Vinyl_record.svg) no-repeat; background-size: cover;">
     <q-img v-if="currentImage" :src="currentImage" @error="currentImage = null" :ratio="1"
       img-class="vinyl_mini_album_cover" spinner-color="pink" />
   </div>
@@ -18,11 +18,13 @@ import { ref, watch, nextTick } from "vue";
 interface VinylProps {
   animated?: boolean;
   image?: string | null;
+  clickable?: boolean;
 };
 
 const props = withDefaults(defineProps<VinylProps>(), {
   animated: false,
   image: null,
+  clickable: false,
 });
 
 const emit = defineEmits(['onClick']);
@@ -42,7 +44,9 @@ watch(() => props.image, (newValue: string | null) => {
 });
 
 const onClick = () => {
-  emit('onClick');
+  if (props.clickable) {
+    emit('onClick');
+  }
 };
 
 </script>

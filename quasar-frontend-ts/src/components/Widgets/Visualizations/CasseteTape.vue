@@ -3,7 +3,7 @@
   cassete vector credits:
   Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
   -->
-  <div class="cassette-container cursor-pointer" @click="onClick">
+  <div class="cassette-container" :class="{ 'cursor-pointer': clickable }" @click="onClick">
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': animated }"></div>
     <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': animated }"></div>
   </div>
@@ -19,6 +19,7 @@ import { ref, watch, computed } from "vue";
 interface CasseteTapeProps {
   animated?: boolean;
   image?: string | null;
+  clickable?: boolean;
   id: string;
   topLabel?: string | null;
   bottomLabel?: string | null;
@@ -27,6 +28,7 @@ interface CasseteTapeProps {
 const props = withDefaults(defineProps<CasseteTapeProps>(), {
   animated: false,
   image: null,
+  clickable: false,
   topLabel: null,
   bottomLabel: null,
 });
@@ -51,7 +53,9 @@ watch(() => props.id, () => {
 });
 
 const onClick = () => {
-  emit("click");
+  if (props.clickable) {
+    emit("click");
+  }
 };
 
 // TODO: resize font on long labels
