@@ -6,9 +6,9 @@
       :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
       :bottom-label="currentPlaylistItemStore.trackTitle" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
-    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode"
+    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.normal" />
-    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage"
+    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   </div>
 </template>
