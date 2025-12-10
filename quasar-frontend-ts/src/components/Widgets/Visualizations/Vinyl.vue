@@ -45,7 +45,6 @@ const onClick = () => {
   emit('onClick');
 };
 
-
 </script>
 
 <style lang="css">
