@@ -1,22 +1,11 @@
 <template>
-  <!--
-  vinyl svg credits:
-  https://commons.wikimedia.org/wiki/File:Vinyl_record.svg
-  -->
-  <div v-if="playerStore.currentVinylAnimation === 'vinyl'" @click="toggleAnimation"
-    id="spieldose-sidebar-vinyl-container" class="cursor-pointer overflow-hidden relative-position full-width"
-    style="background: url(vectors/Vinyl_record.svg) no-repeat; background-size: cover;"
-    :class="{ 'spieldose-sidebar-animation-rotation-infinite': playerStore.isPlaying }"
-    :title="t('Toggle art animation')">
-    <q-img v-if="images.small" :src="images.small" @error="images.small = null" :ratio="1" img-class="vinyl_mini_cover"
-      spinner-color="pink"></q-img>
-  </div>
-  <!--
-  cassete vector credits:
-  Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
-  -->
-  <cassete-tape v-else-if="playerStore.currentVinylAnimation === 'cassete'" @click="toggleAnimation" />
-  <div v-else @click="toggleAnimation" class="cursor-pointer" :title="t('Toggle art animation')">
+  <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small" :animated="playerStore.isPlaying"
+    @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+  <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode" :animated="playerStore.isPlaying"
+    :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
+    :bottom-label="currentPlaylistItemStore.trackTitle" @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+  <div v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" @click="sidebarAlbumCoverSettingsStore.toggleMode"
+    class="cursor-pointer" :title="t('Toggle art animation')">
     <q-img v-if="images.normal" :src="images.normal" @error="images.normal = null" alt="Album cover" :ratio="1"
       width="100%" spinner-color="pink" />
     <q-img v-else src="vectors/Vinyl_record.svg" alt="Vinyl" :ratio="1" width="100%" spinner-color="pink" />
@@ -28,13 +17,19 @@ import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+import { useSidebarAlbumCoverSettingsStore } from "src/stores/sidebarAlbumCoverSettings";
+import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
-
+import { default as Vinyl } from "./Vinyl.vue";
 import { default as CasseteTape } from "./CasseteTape.vue";
 
 const playerStore = usePlayerStore();
 
 const currentPlayListsStore = useCurrentPlayListsStore();
+const currentPlaylistItemStore = useCurrentPlaylistItemStore();
+
+
+const sidebarAlbumCoverSettingsStore = useSidebarAlbumCoverSettingsStore();
 
 
 const { t } = useI18n();
@@ -43,10 +38,8 @@ const images = ref({
   normal: currentPlayListsStore.currentActivePlayListItem?.images?.big ?? null,
   small: currentPlayListsStore.currentActivePlayListItem?.images?.medium ?? null,
 });
-console.log(images);
 
 watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.medium, (newValue) => {
-  console.log("cange", newValue);
   images.value.small = null;
   if (newValue) {
     nextTick()
@@ -69,20 +62,6 @@ watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.big, (newVa
       });
   }
 });
-
-const toggleAnimation = () => {
-  switch (playerStore.currentVinylAnimation) {
-    case null:
-      playerStore.setCurrentVinylAnimation("cassete");
-      break;
-    case "cassete":
-      playerStore.setCurrentVinylAnimation("vinyl");
-      break;
-    case "vinyl":
-      playerStore.setCurrentVinylAnimation(null);
-      break;
-  }
-};
 
 </script>
 
