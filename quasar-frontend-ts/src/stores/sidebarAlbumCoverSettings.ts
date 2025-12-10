@@ -38,18 +38,21 @@ export const useSidebarAlbumCoverSettingsStore = defineStore('sidebarAlbumCoverS
     toggleMode() {
       switch (this.settings.mode) {
         case "none":
-          this.settings.mode = "staticImage";
+          this.setMode("staticImage");
           break;
         case "staticImage":
-          this.settings.mode = "vinyl";
+          this.setMode("vinyl");
           break;
         case "vinyl":
-          this.settings.mode = "cassetteTape";
+          this.setMode("cassetteTape");
           break;
         case "cassetteTape":
-          this.settings.mode = "none";
+          this.setMode("none");
           break;
       }
+    },
+    setMode(mode: AlbumCoverMode) {
+      this.settings.mode = mode;
       localStorageMode.set(this.settings.mode);
     },
     togglePlaybackAnimation() {
