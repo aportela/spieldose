@@ -74,7 +74,8 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       console.log("remove", id);
       await api.playList.remove(id);
       this.playLists = this.playLists.filter((playList) => playList.id !== id);
-      this.activePlayListIndex = 0;
+      this.selectedPlayListIndex = 0;
+      // TODO: stop if remove active
     },
     async randomFill(playListId: string) {
       console.log("randomFill", playListId);
@@ -102,7 +103,8 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     closePlayListAtIndex(index: number) {
       console.log("closePlayListAtIndex", index);
       this.playLists.splice(index, 1);
-      this.activePlayListIndex = 0;
+      this.selectedPlayListIndex = 0;
+      // TODO: stop if remove active
     },
     savePlayListAtIndex(index: number) {
       console.log("savePlayListAtIndex", index);
