@@ -4,6 +4,9 @@ import { api } from 'src/composables/api';
 import { PlayListClass, type PlayList, type PlayListItemClass } from 'src/types/playList';
 import { type AddPlayListResponse } from 'src/types/apiResponses';
 
+import { usePlayerStore } from './player';
+
+const playerStore = usePlayerStore();
 
 interface State {
   selectedPlayListIndex: number;
@@ -24,8 +27,44 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     activePlayList: (state): PlayList | null => state.playLists.length > 0 ? state.playLists[state.activePlayListIndex]! : null,
     currentFileId: (state): string | null => state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file?.id ?? null,
     currentActivePlayListItem: (state): PlayListItemClass | null => state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex] ?? null,
+    /*
+      active/current playlist property getters
+    */
+    allowSkipPreviousItemOnActivePlayList: () => true,
+    allowSkipNextItemOnActivePlayList: () => true,
   },
   actions: {
+    /*
+      active/current playlist actions
+    */
+    skipPreviousItemOnActivePlayList(): boolean {
+      if (this.activePlayListItemIndex > 0) {
+        if (!playerStore.hasPreviousUserInteractions) {
+          playerStore.interact();
+        }
+        playerStore.stop();
+        this.activePlayListItemIndex--;
+        playerStore.play(true);
+        return (true);
+      } else {
+        console.error("skipPreviousItemOnActivePlayList - invalid activePlayListItemIndex", this.activePlayListItemIndex);
+        return (false);
+      }
+    },
+    skipNextItemOnActivePlayList(): boolean {
+      if (this.activePlayListItemIndex < (this.playLists[this.activePlayListIndex]?.items.length ?? 0)) {
+        if (!playerStore.hasPreviousUserInteractions) {
+          playerStore.interact();
+        }
+        playerStore.stop();
+        this.activePlayListItemIndex++;
+        playerStore.play(true);
+        return (true);
+      } else {
+        console.error("skipNextItemOnActivePlayList - invalid activePlayListItemIndex", this.activePlayListItemIndex);
+        return (false);
+      }
+    },
     setActivePlayListIndex(index: number): boolean {
       if (index > 0 && index < this.playLists.length) {
         this.activePlayListIndex = index;
@@ -125,8 +164,13 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         playListItemIndex >= 0 &&
         playListItemIndex < this.playLists[playListIndex]!.items.length
       ) {
+        if (!playerStore.hasPreviousUserInteractions) {
+          playerStore.interact();
+        }
+        playerStore.stop();
         this.activePlayListIndex = playListIndex;
         this.activePlayListItemIndex = playListItemIndex;
+        playerStore.play(true);
       } else {
         console.error("selectPlayListItem - Invalid playListItemIndex", playListItemIndex);
       }
