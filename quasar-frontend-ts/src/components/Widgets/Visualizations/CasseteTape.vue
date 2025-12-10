@@ -1,24 +1,41 @@
 <template>
+  <!--
+  cassete vector credits:
+  Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
+  -->
   <div class="cassette-container cursor-pointer" @click="onClick">
-    <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
-    <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': playerStore.isPlaying }"></div>
+    <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': animated }"></div>
+    <div class="cassette-wheel" :class="{ 'cassette-wheel-animated': animated }"></div>
   </div>
-  <div class="label gochi-hand-regular" :style="{ color: currentFontColor }" v-if="currentPlaylistItemStore.isTrack">
-    <span class="artist">{{ currentPlaylistItemStore.trackAlbumArtistName }}</span>
-    <span class="album">{{ currentPlaylistItemStore.trackTitle }}</span>
+  <div class="label gochi-hand-regular" :style="{ color: currentFontColor }" v-if="hasLabels">
+    <span class="artist">{{ topLabel }}</span>
+    <span class="album">{{ bottomLabel }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { usePlayerStore } from 'src/stores/player';
-import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-const playerStore = usePlayerStore();
+import { ref, watch, computed } from "vue";
+
+interface CasseteTapeProps {
+  animated?: boolean;
+  image?: string | null;
+  id: string;
+  topLabel?: string | null;
+  bottomLabel?: string | null;
+};
+
+const props = withDefaults(defineProps<CasseteTapeProps>(), {
+  animated: false,
+  image: null,
+  topLabel: null,
+  bottomLabel: null,
+});
+
 const emit = defineEmits(['click']);
 
-const currentFontColor = ref<string>("#000");
+const hasLabels = computed(() => props.topLabel && props.bottomLabel);
 
+const currentFontColor = ref<string>("#000");
 
 const getRandomColor = (): string => {
   const allowed = "ABCDEF0123456789";
@@ -29,7 +46,7 @@ const getRandomColor = (): string => {
   return S;
 };
 
-watch(() => currentPlaylistItemStore.trackFileId, () => {
+watch(() => props.id, () => {
   currentFontColor.value = getRandomColor();
 });
 
@@ -50,7 +67,14 @@ const onClick = () => {
   top: -220px;
   left: 64px;
   z-index: 3;
+}
 
+.gochi-hand-regular {
+  font-family: "Gochi Hand", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 22px;
+  color: #04008f;
 }
 
 .artist {
@@ -80,17 +104,6 @@ const onClick = () => {
   text-align: center;
 }
 
-.gochi-hand-regular {
-  font-family: "Gochi Hand", cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 22px;
-  color: #04008f;
-}
-
-/*
-  cassete vector credits: Patrick Schwarz (nablagrange) at https://pixabay.com/vectors/cassette-music-magnetic-tape-7576061/
-  */
 .cassette-container {
   width: 410px;
   height: 250px;
