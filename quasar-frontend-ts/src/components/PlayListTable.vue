@@ -13,7 +13,10 @@
           {{ itemIndex + 1 }}/{{ playListItemCount }}
         </td>
         <td class="playlist-column-image" v-if="visibleColumnsNames.includes('image')">
+          <StaticAlbumCoverImage :image="item.images?.small ?? null" />
+          <!--
           <TrackImage :src="item.images?.small ?? null" :round="roundImage" :rotate="roundImage && rotateImage" />
+          -->
         </td>
         <!-- TODO: stream combine columns with colspan ??? -->
         <td v-if="columnTrackTitleVisible">{{ item.file?.trackInfo.title }}</td>
@@ -44,6 +47,7 @@ import { computed } from "vue";
 import { type PlayListTableColumn } from "src/types/common";
 import { type PlayListClass } from "src/types/playList";
 import { default as TrackImage } from "src/components/TrackImage.vue";
+import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
 import { buildDownloadTrackURL } from "src/composables/common";
 
 interface PlayListTableProps {
