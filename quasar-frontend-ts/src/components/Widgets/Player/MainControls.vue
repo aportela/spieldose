@@ -3,30 +3,29 @@
     <div class="q-pa-md q-gutter-sm text-center">
       <q-btn round dense size="md" :disable="disabled || !currentPlayListsStore.allowSkipPreviousItemOnActivePlayList"
         @click="onSkipPrevious">
-        <q-icon name="skip_previous" title="Skip to previous track"></q-icon>
+        <q-icon name="skip_previous" title="Skip to previous track" />
       </q-btn>
       <q-btn round dense size="lg" :disable="disabled" @click="onPlayPauseResume" class="q-mx-md">
-        <q-icon :name="playPauseResumeIcon" title="Play/Pause/Resume track" :class="playPauseResumeClass"></q-icon>
+        <q-icon :name="playPauseResumeIcon" title="Play/Pause/Resume track" :class="playPauseResumeClass" />
       </q-btn>
       <q-btn round dense size="md" :disable="disabled || !currentPlayListsStore.allowSkipNextItemOnActivePlayList"
         @click="onSkipNext">
-        <q-icon name="skip_next" title="Skip to next track"></q-icon>
+        <q-icon name="skip_next" title="Skip to next track" />
       </q-btn>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
 import { computed } from "vue";
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
-defineProps({
-  disabled: {
-    type: Boolean,
-    required: false,
-    default: false
-  }
+interface MainControlsProps {
+  disabled?: boolean;
+}
+
+withDefaults(defineProps<MainControlsProps>(), {
+  disabled: false,
 });
 
 const currentPlayListsStore = useCurrentPlayListsStore();
