@@ -112,7 +112,9 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       });
     },
     destroy: function (): void {
+      this.audio.instance.removeEventListener('loadedmetadata', () => {});
       this.audio.instance.removeEventListener('ended', () => {});
+      this.audio.instance.removeEventListener('timeupdate', () => {});
       this.audio.instance.removeEventListener('error', () => {});
     },
     // constructor / destructor
