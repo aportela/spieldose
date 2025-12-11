@@ -19,6 +19,7 @@ interface State {
     volume: number;
     muted: boolean;
     currentTime: number;
+    duration: number;
   };
   player: Player;
   selectedPlayListIndex: number;
@@ -34,6 +35,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       volume: localStorageAudioVolume.get(),
       muted: localStorageAudioMuted.get(),
       currentTime: 0,
+      duration: 0,
     },
     player: {
       userInteracted: false,
@@ -94,6 +96,9 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.setAudioMute(this.audio.muted);
       // required for radio stations streams
       this.audio.instance.crossOrigin = 'anonymous';
+      this.audio.instance.addEventListener('loadedmetadata', () => {
+        this.audio.duration = this.audio.instance.duration;
+      });
       this.audio.instance.addEventListener('ended', () => {
         if (this.allowSkipNextItemOnActivePlayList) {
           this.skipPreviousItemOnActivePlayList();
