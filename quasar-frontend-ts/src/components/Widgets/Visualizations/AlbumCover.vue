@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small" :animated="playerStore.isPlaying"
-      clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
-    <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode" :animated="playerStore.isPlaying"
-      :top-label="currentPlaylistItemStore.trackAlbumArtistName" :id="currentPlaylistItemStore.file?.id ?? ''"
-      :bottom-label="currentPlaylistItemStore.trackTitle" clickable
+    <Vinyl v-if="sidebarAlbumCoverSettingsStore.hasVinilMode" :image="images.small"
+      :animated="currentPlayListsStore.playerIsPlaying" clickable @click="sidebarAlbumCoverSettingsStore.toggleMode" />
+    <cassete-tape v-else-if="sidebarAlbumCoverSettingsStore.hasCassetteTapeMode"
+      :animated="currentPlayListsStore.playerIsPlaying" :top-label="currentPlaylistItemStore.trackAlbumArtistName"
+      :id="currentPlaylistItemStore.file?.id ?? ''" :bottom-label="currentPlaylistItemStore.trackTitle" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
     <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.normal" />
@@ -15,8 +15,6 @@
 
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { usePlayerStore } from "src/stores/player";
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { useSidebarAlbumCoverSettingsStore } from "src/stores/sidebarAlbumCoverSettings";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
@@ -25,14 +23,10 @@ import { default as StaticAlbumCoverImage } from "./StaticAlbumCoverImage.vue";
 import { default as Vinyl } from "./Vinyl.vue";
 import { default as CasseteTape } from "./CasseteTape.vue";
 
-const playerStore = usePlayerStore();
-
 const currentPlayListsStore = useCurrentPlayListsStore();
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
 const sidebarAlbumCoverSettingsStore = useSidebarAlbumCoverSettingsStore();
-
-const { t } = useI18n();
 
 const images = ref({
   normal: currentPlayListsStore.currentActivePlayListItem?.images?.big ?? null,
