@@ -1,14 +1,14 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { usePlayerStore } from "./player";
+import { useCurrentPlayListsStore } from './currentPlayLists';
 
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 
 interface State {
   options: {
     instanced: boolean;
     connectSpeakers: boolean;
   };
-};
+}
 
 export const useAudioMotionAnalyzerStore = defineStore('audioMotionAnalyzerStore', {
   state: (): State => ({
@@ -18,9 +18,9 @@ export const useAudioMotionAnalyzerStore = defineStore('audioMotionAnalyzerStore
     },
   }),
   getters: {
-    audioInstance: () => playerStore.audioInstance,
-    hasOtherRuningInstances: (state) => state.options.instanced,
-    connectSpeakers: (state) => state.options.connectSpeakers,
+    audioInstance: () => currentPlayListsStore.audioInstance,
+    hasOtherRuningInstances: (state: State) => state.options.instanced,
+    connectSpeakers: (state: State) => state.options.connectSpeakers,
   },
   actions: {
     instance() {
@@ -28,7 +28,7 @@ export const useAudioMotionAnalyzerStore = defineStore('audioMotionAnalyzerStore
       // disable connected Speakers for next instances
       this.options.connectSpeakers = false;
     },
-  }
+  },
 });
 
 if (import.meta.hot) {
