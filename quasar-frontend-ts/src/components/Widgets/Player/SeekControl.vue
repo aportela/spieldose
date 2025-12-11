@@ -32,6 +32,9 @@ const currentTime = computed({
     return Math.floor(currentPlayListsStore.audioCurrentTime)
   },
   set(value: number | null) {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
     currentPlayListsStore.setAudioCurrentTime(value);
   }
 });
