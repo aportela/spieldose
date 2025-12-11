@@ -5,8 +5,9 @@
         {{ audioCurrentTimeLabel }}
       </q-item-section>
       <q-item-section>
-        <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="playerStore.audioDuration" :step="1" label
-          :label-value="audioCurrentTimeLabel" @update:model-value="playerStore.seek" />
+        <q-slider :disable="disabled" v-model="currentTime" :min="0" :max="currentPlayListsStore.audioDuration"
+          :step="1" label :label-value="audioCurrentTimeLabel"
+          @update:model-value="currentPlayListsStore.setAudioCurrentTime" />
       </q-item-section>
       <q-item-section side>{{ audioDurationLabel }}</q-item-section>
     </q-item>
@@ -16,9 +17,9 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 
 defineProps({
   disabled: {
@@ -28,12 +29,12 @@ defineProps({
   }
 });
 
-const audioCurrentTimeLabel = computed(() => formatSecondsAsTime(Math.floor(playerStore.audioCurrentTime)));
-const audioDurationLabel = computed(() => formatSecondsAsTime(Math.floor(playerStore.audioDuration)));
+const audioCurrentTimeLabel = computed(() => formatSecondsAsTime(Math.floor(currentPlayListsStore.audioCurrentTime)));
+const audioDurationLabel = computed(() => formatSecondsAsTime(Math.floor(currentPlayListsStore.audioDuration)));
 
-const currentTime = ref(Math.floor(playerStore.audioCurrentTime));
+const currentTime = ref(Math.floor(currentPlayListsStore.audioCurrentTime));
 
-watch(() => playerStore.audioCurrentTime, (newValue) => {
+watch(() => currentPlayListsStore.audioCurrentTime, (newValue: number) => {
   currentTime.value = Math.floor(newValue);
 });
 
