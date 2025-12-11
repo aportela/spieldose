@@ -9,15 +9,15 @@
         <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle"
           :disable="!currentPlayListStore.hasItems" @click="onRandomize" />
         <q-btn size="md" no-caps outline color="dark" label="Previous" icon="skip_previous"
-          :disable="!currentPlayListStore.hasItems" @click="onSkipPrevious" />
+          :disable="!currentPlayListsStore.allowSkipPreviousItemOnActivePlayList" @click="onSkipPrevious" />
         <q-btn size="md" no-caps outline color="dark" label="Play" icon="play_arrow"
-          :disable="!currentPlayListStore.hasItems" @click="onPlay" />
+          :disable="currentPlayListsStore.playerIsPlaying" @click="onPlay" />
         <q-btn size="md" no-caps outline color="dark" label="Pause" icon="pause"
-          :disable="!currentPlayListStore.hasItems" @click="onPause" />
-        <q-btn size="md" no-caps outline color="dark" label="Stop" icon="stop" :disable="!currentPlayListStore.hasItems"
-          @click="onStop" />
+          :disable="currentPlayListsStore.playerIsPaused" @click="onPause" />
+        <q-btn size="md" no-caps outline color="dark" label="Stop" icon="stop"
+          :disable="currentPlayListsStore.playerIsStopped" @click="onStop" />
         <q-btn size="md" no-caps outline color="dark" label="Next" icon="skip_next"
-          :disable="!currentPlayListStore.hasItems" @click="onSkipNext" />
+          :disable="!currentPlayListsStore.allowSkipNextItemOnActivePlayList" @click="onSkipNext" />
         <q-btn-dropdown outline no-caps label="Columns" icon="settings">
           <q-list>
             <q-item dense v-for="column in availableColumns" :key="column.name" v-show="column.name !== 'index'"
@@ -135,27 +135,45 @@ const onDiscover = (): void => {
 };
 
 const onRandomize = (): void => {
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
   console.log("onRandomize");
 };
 
 const onSkipPrevious = (): void => {
-  console.log("onSkipPrevious");
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
+  currentPlayListsStore.skipPreviousItemOnActivePlayList();
 };
 
 const onPlay = (): void => {
-  console.log("onPlay");
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
+  currentPlayListsStore.playerActionPlay(true);
 };
 
 const onPause = (): void => {
-  console.log("onPause");
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
+  currentPlayListsStore.playerActionPause();
 };
 
 const onStop = (): void => {
-  console.log("onStop");
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
+  currentPlayListsStore.playerActionStop();
 };
 
 const onSkipNext = (): void => {
-  console.log("onSkipNext");
+  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+    currentPlayListsStore.playerInteract();
+  }
+  currentPlayListsStore.skipNextItemOnActivePlayList();
 };
 
 const onToggleColumnVisibility = (column: PlayListTableColumn): void => {
