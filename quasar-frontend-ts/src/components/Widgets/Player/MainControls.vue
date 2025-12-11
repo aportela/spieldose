@@ -2,14 +2,14 @@
   <div>
     <div class="q-pa-md q-gutter-sm text-center">
       <q-btn round dense size="md" :disable="disabled || !currentPlayListsStore.allowSkipPreviousItemOnActivePlayList"
-        @click="currentPlayListsStore.skipPreviousItemOnActivePlayList">
+        @click="onSkipPrevious">
         <q-icon name="skip_previous" title="Skip to previous track"></q-icon>
       </q-btn>
-      <q-btn round dense size="lg" :disable="disabled" @click="togglePlay" class="q-mx-md">
+      <q-btn round dense size="lg" :disable="disabled" @click="onPlayPauseResume" class="q-mx-md">
         <q-icon :name="playPauseResumeIcon" title="Play/Pause/Resume track" :class="playPauseResumeClass"></q-icon>
       </q-btn>
       <q-btn round dense size="md" :disable="disabled || !currentPlayListsStore.allowSkipNextItemOnActivePlayList"
-        @click="currentPlayListsStore.skipNextItemOnActivePlayList">
+        @click="onSkipNext">
         <q-icon name="skip_next" title="Skip to next track"></q-icon>
       </q-btn>
     </div>
@@ -19,9 +19,7 @@
 <script setup lang="ts">
 
 import { computed } from "vue";
-import { usePlayerStore } from 'src/stores/player';
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
-import { togglePlay, skipPrevious, skipNext } from "src/composables/playerActions";
 
 defineProps({
   disabled: {
@@ -31,10 +29,23 @@ defineProps({
   }
 });
 
-const playerStore = usePlayerStore();
 const currentPlayListsStore = useCurrentPlayListsStore();
 
-const playPauseResumeClass = computed(() => playerStore.status == 'playing' || playerStore.status == 'paused' ? 'text-pink-6' : '');
-const playPauseResumeIcon = computed(() => playerStore.status == 'paused' ? 'pause' : 'play_arrow');
+const playPauseResumeClass = computed(() => currentPlayListsStore.playerIsPlaying || currentPlayListsStore.playerIsPaused ? 'text-pink-6' : '');
+const playPauseResumeIcon = computed(() => currentPlayListsStore.playerIsPaused ? 'pause' : 'play_arrow');
 
+const onSkipPrevious = () => {
+  currentPlayListsStore.playerInteract();
+  currentPlayListsStore.skipPreviousItemOnActivePlayList();
+};
+
+const onPlayPauseResume = () => {
+  currentPlayListsStore.playerInteract();
+  currentPlayListsStore.playerActionPlay(false)
+};
+
+const onSkipNext = () => {
+  currentPlayListsStore.playerInteract();
+  currentPlayListsStore.skipNextItemOnActivePlayList();
+};
 </script>
