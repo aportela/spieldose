@@ -101,7 +101,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       });
       this.audio.instance.addEventListener('ended', () => {
         if (this.allowSkipNextItemOnActivePlayList) {
-          this.skipPreviousItemOnActivePlayList();
+          this.skipNextItemOnActivePlayList();
         }
       });
       this.audio.instance.addEventListener('timeupdate', () => {
