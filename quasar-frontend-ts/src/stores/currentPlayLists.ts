@@ -54,7 +54,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     audioVolume: (state: State): number => state.audio.volume,
     audioMuted: (state: State): boolean => state.audio.muted,
     audioCurrentTime: (state: State): number => state.audio.currentTime,
-    audioDuration: (state: State): number => state.audio.instance.duration,
+    audioDuration: (state: State): number => state.audio.duration,
 
     /* audio */
 
