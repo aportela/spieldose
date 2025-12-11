@@ -10,10 +10,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-          }}</h4>
+        }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-          }}
+        }}
         </div>
       </slot>
     </q-card-section>
@@ -74,7 +74,7 @@ import { api } from "src/composables/api";
 import { useFormUtils } from "src/composables/useFormUtils";
 import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
 import { useSessionStore } from "src/stores/session";
-import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { createStorageEntry } from "src/composables/localStorage";
 import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
 import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/authValidator";
@@ -106,7 +106,7 @@ const serverEnvironment = useServerEnvironmentStore();
 const sessionStore = useSessionStore();
 const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
 
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 
 const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
@@ -160,7 +160,7 @@ const onSubmitForm = () => {
         sessionStore.setAccessToken(successResponse.data.accessToken);
         localStorageLastEmailUsed.set(profile.email);
         emit("success", successResponse.data);
-        playerStore.interact();
+        currentPlayListsStore.playerInteract();
       })
       .catch((errorResponse) => {
         state.ajaxErrors = true;
