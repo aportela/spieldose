@@ -82,7 +82,6 @@
 import { reactive, computed } from "vue";
 //import { useI18n } from "vue-i18n";
 import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
-import { useCurrentPlayListStore } from "src/stores/currentPlayList";
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { uid } from "quasar";
 import { type PlayListTableColumn, availablePlayListTableColumns } from "src/types/common";
@@ -103,8 +102,6 @@ const tab = computed({
 });
 
 const availableColumns = reactive<PlayListTableColumn[]>(availablePlayListTableColumns);
-
-const currentPlayListStore = useCurrentPlayListStore();
 
 const onNew = async (): Promise<void> => {
   console.log("onNew");

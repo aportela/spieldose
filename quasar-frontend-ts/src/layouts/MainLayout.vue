@@ -70,7 +70,6 @@
 import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { useQuasar, LocalStorage } from "quasar";
 import { useI18n } from "vue-i18n";
-import { randomTrack } from "src/composables/playlistActions";
 
 import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
 import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue";
@@ -89,7 +88,6 @@ import { default as TrackImage } from "src/components/TrackImage.vue";
 import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
 import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
 import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
-import { usePlayerStore } from "src/stores/player";
 
 import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
@@ -100,7 +98,7 @@ const { t } = useI18n();
 
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-const playerStore = usePlayerStore();
+
 
 const lockminiSidebarCurrentModeMode = ref<boolean>(false);
 
@@ -141,7 +139,6 @@ currentPlayListsStore.init().then(() => {
 
 
 onMounted(() => {
-  randomTrack();
 });
 
 onBeforeUnmount(() => {

@@ -5,10 +5,11 @@
         @click="onToggleAnalyzer"><q-icon name="bar_chart"
           :color="sidebarSpectrumAnalyzerSettingsStore.visible ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Toggle player shuffle mode')"><q-icon
-          name="shuffle" :color="playerStore.shuffleMode ? 'pink' : ''" @click="onToggleShuffle"></q-icon></q-btn>
+          name="shuffle" :color="currentPlayListsStore.playerShuffle ? 'pink' : ''"
+          @click="onToggleShuffle"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="repeatModeLabel" @click="onToggleRepeatMode"><q-icon
           :name="repeatModeIcon"
-          :color="playerStore.repeatMode && playerStore.repeatMode != 'none' ? 'pink' : ''"></q-icon></q-btn>
+          :color="currentPlayListsStore.playerRepeatMode !== 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Toggle favorite track')"
         @click="onToggleFavorite"><q-icon name="favorite"
           :color="currentPlaylistItemStore.trackFavorited ? 'pink' : ''"></q-icon></q-btn>
@@ -34,12 +35,12 @@ import { useI18n } from "vue-i18n";
 import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 
 import { useCurrentPlaylistItemStore } from 'src/stores/currentPlaylistItem';
-import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
 const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
 const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 
 const { t } = useI18n();
 
@@ -53,11 +54,11 @@ defineProps({
 
 const repeatModeIcon = computed(() => {
   let icon = null;
-  switch (playerStore.repeatMode) {
+  switch (currentPlayListsStore.playerRepeatMode) {
     case 'track':
       icon = 'music_note';
       break;
-    case 'playlist':
+    case 'playList':
       icon = 'queue_music';
       break;
     default:
@@ -69,11 +70,11 @@ const repeatModeIcon = computed(() => {
 
 const repeatModeLabel = computed(() => {
   let label = null;
-  switch (playerStore.repeatMode) {
+  switch (currentPlayListsStore.playerRepeatMode) {
     case 'track':
       label = 'Repeat mode: track';
       break;
-    case 'playlist':
+    case 'playList':
       label = 'Repeat mode: playlist';
       break;
     default:
@@ -92,11 +93,11 @@ function onToggleVisualization() {
 }
 
 function onToggleShuffle() {
-  playerStore.toggleShuffeMode();
+  currentPlayListsStore.togglePlayerShuffeMode();
 }
 
 function onToggleRepeatMode() {
-  playerStore.toggleRepeatMode();
+  currentPlayListsStore.togglePlayerRepeatMode();
 }
 
 async function onToggleFavorite() {

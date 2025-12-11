@@ -3,7 +3,7 @@
     <q-item>
       <q-item-section side>
         <q-icon class="cursor-pointer" :name="volumeIcon" @click.stop="onToggleMute"
-          :class="{ 'text-pink': playerStore.isMuted }" />
+          :class="{ 'text-pink': currentPlayListsStore.audio.muted }" />
       </q-item-section>
       <q-item-section>
         <q-slider v-model="volume" :min="0" :max="1" :step="0.05" label :label-value="volumePercentValue + '%'"
@@ -19,15 +19,14 @@
 <script setup lang="ts">
 
 import { ref, computed } from "vue";
-import { usePlayerStore } from 'src/stores/player';
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
+const currentPlayListsStore = useCurrentPlayListsStore();
 
-const playerStore = usePlayerStore();
-
-const volume = ref(playerStore.volume);
+const volume = ref(currentPlayListsStore.audio.volume);
 
 const volumeIcon = computed(() => {
-  if (volume.value == 0 || playerStore.isMuted) {
+  if (volume.value == 0 || currentPlayListsStore.audio.muted) {
     return ('volume_off');
   } else if (volume.value < 0.4) {
     return ('volume_mute');
@@ -43,15 +42,14 @@ const volumePercentValue = computed(() => {
 });
 
 function onToggleMute() {
-  playerStore.interact();
-  playerStore.toggleMute();
+  currentPlayListsStore.playerInteract();
+  currentPlayListsStore.toggleAudioMute();
 
 }
 
 function setVolume(volume: number) {
-  playerStore.interact();
-  playerStore.setVolume(volume);
-
+  currentPlayListsStore.playerInteract();
+  currentPlayListsStore.setAudioVolume(volume);
 }
 
 </script>
