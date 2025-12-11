@@ -24,11 +24,11 @@
 
 import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface } from "audiomotion-analyzer";
-import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
 import { useSidebarAnalogVumeterSettingsStore } from "src/stores/sidebarAnalogVumeterSettings";
 
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
 const sidebarAnalogVumeterSettingsStore = useSidebarAnalogVumeterSettingsStore();
 
@@ -55,7 +55,7 @@ const defaultAnalyzerOptions: AudioMotionAnalyzerConstructorOptionsInterface = {
   mode: 8, // 10 bands (min)
 };
 
-watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
+watch(() => currentPlayListsStore.playerHasPreviousUserInteractions, (newValue) => {
   if (newValue) {
     if (analyzerInstance.value === null) {
       createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
@@ -169,7 +169,7 @@ onMounted(() => {
   if (setupCanvas()) {
     drawCanvasVuMeterBar(mapEnergyToAngle(0)); // draw vumeter bar at minimum value
     // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-    if (playerStore.hasPreviousUserInteractions) {
+    if (currentPlayListsStore.playerHasPreviousUserInteractions) {
       createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
     }
   } else {

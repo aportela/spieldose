@@ -8,13 +8,13 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import { AudioMotionAnalyzer, type ConstructorOptions as AudioMotionAnalyzerConstructorOptionsInterface, type GradientOptions as GradientOptionsInterface } from "audiomotion-analyzer";
-import { usePlayerStore } from "src/stores/player";
+import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 import { useAudioMotionAnalyzerStore } from "src/stores/audioMotionAnalyzer";
 import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 
 const { t } = useI18n();
 
-const playerStore = usePlayerStore();
+const currentPlayListsStore = useCurrentPlayListsStore();
 const audioMotionAnalyzerStore = useAudioMotionAnalyzerStore();
 const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
@@ -48,7 +48,7 @@ const defaultAnalyzerOptions = {
   showBgColor: true
 };
 
-watch(() => playerStore.hasPreviousUserInteractions, (newValue) => {
+watch(() => currentPlayListsStore.playerHasPreviousUserInteractions, (newValue) => {
   if (newValue) {
     if (analyzerInstance.value === null) {
       createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
@@ -184,7 +184,7 @@ const destroyAudioMotionAnalyzerInstance = () => {
 
 onMounted(() => {
   // TODO: WARNING: on empty playlists js console show warning about AudioContext auto start denied
-  if (playerStore.hasPreviousUserInteractions) {
+  if (currentPlayListsStore.playerHasPreviousUserInteractions) {
     createAudioMotionAnalyzerInstance(defaultAnalyzerConstructorOptions, defaultAnalyzerOptions, true);
   }
 });
