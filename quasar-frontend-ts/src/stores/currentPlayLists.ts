@@ -18,6 +18,7 @@ interface State {
     instance: HTMLAudioElement;
     volume: number;
     muted: boolean;
+    currentTime: number;
   };
   player: Player;
   selectedPlayListIndex: number;
@@ -32,6 +33,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       instance: new Audio(),
       volume: localStorageAudioVolume.get(),
       muted: localStorageAudioMuted.get(),
+      currentTime: 0,
     },
     player: {
       userInteracted: false,
@@ -49,7 +51,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     audioInstance: (state: State): HTMLAudioElement => state.audio.instance,
     audioVolume: (state: State): number => state.audio.volume,
     audioMuted: (state: State): boolean => state.audio.muted,
-    audioCurrentTime: (state: State): number => state.audio.instance.currentTime,
+    audioCurrentTime: (state: State): number => state.audio.currentTime,
     audioDuration: (state: State): number => state.audio.instance.duration,
 
     /* audio */
@@ -76,8 +78,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     /*
       active/current playlist property getters
     */
-    allowSkipPreviousItemOnActivePlayList: () => true,
-    allowSkipNextItemOnActivePlayList: () => true,
+    allowSkipPreviousItemOnActivePlayList: (state: State) => state.activePlayListItemIndex > 0,
+    allowSkipNextItemOnActivePlayList: (state: State) =>
+      state.activePlayListItemIndex <
+      (state.playLists[state.activePlayListIndex]?.items.length ?? 0) - 1,
   },
   actions: {
     // constructor / destructor
@@ -94,6 +98,9 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         if (this.allowSkipNextItemOnActivePlayList) {
           this.skipPreviousItemOnActivePlayList();
         }
+      });
+      this.audio.instance.addEventListener('timeupdate', () => {
+        this.audio.currentTime = this.audio.instance.currentTime;
       });
       this.audio.instance.addEventListener('error', (event: Event) => {
         console.error('create - audio event error', event);
