@@ -6,8 +6,8 @@
         <q-btn size="md" no-caps outline color="dark" label="New" icon="add" @click="onNew" />
         <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear" @click="onEmpty" />
         <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt" @click="onDiscover" />
-        <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle"
-          :disable="!currentPlayListStore.hasItems" @click="onRandomize" />
+        <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle" :disable="true"
+          @click="onRandomize" />
         <q-btn size="md" no-caps outline color="dark" label="Previous" icon="skip_previous"
           :disable="!currentPlayListsStore.allowSkipPreviousItemOnActivePlayList" @click="onSkipPrevious" />
         <q-btn size="md" no-caps outline color="dark" label="Play" icon="play_arrow"
