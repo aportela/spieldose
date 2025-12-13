@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { createStorageEntry } from 'src/composables/localStorage';
 
-type PlayListTableColumnName =
+export type PlayListTableColumnName =
   | 'index'
   | 'image'
   | 'trackTitle'
