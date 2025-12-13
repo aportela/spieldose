@@ -18,16 +18,7 @@
           :disable="currentPlayListsStore.playerIsStopped" @click="onStop" />
         <q-btn size="md" no-caps outline color="dark" label="Next" icon="skip_next"
           :disable="!currentPlayListsStore.allowSkipNextItemOnActivePlayList" @click="onSkipNext" />
-        <q-btn-dropdown outline no-caps label="Columns" icon="settings">
-          <q-list>
-            <q-item dense v-for="column in availableColumns" :key="column.name" v-show="column.name !== 'index'"
-              clickable @click="onToggleColumnVisibility(column)">
-              <q-icon :name="column.visible ? 'visibility' : 'visibility_off'" size="xs" class="q-mr-sm"
-                :class="{ 'text-pink': column.visible, 'text-grey-6': !column.visible }" />
-              {{ column.label }}
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
+        <PlayListColumnSettingsButton />
       </q-btn-group>
 
       <div v-if="playListsFound">
@@ -63,7 +54,7 @@
         <q-tab-panels v-model="tab">
           <q-tab-panel :name="playList.id" v-for="playList, playListIndex in currentPlayListsStore.playLists"
             :key="playList.id">
-            <PlayListTable :columns="availableColumns" :playList="playList"
+            <PlayListTable :columns="playListVisibleColumnsStore.visibleColumnDefinitions" :playList="playList"
               :active="currentPlayListsStore.activePlayListIndex === playListIndex"
               :play-list-current-item-index="currentPlayListsStore.activePlayListItemIndex"
               @on-click-item-at-index="(index: number) => currentPlayListsStore.selectPlayListItem(playListIndex, index)"
@@ -79,122 +70,118 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
-//import { useI18n } from "vue-i18n";
-import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
-import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
-import { uid } from "quasar";
-import { type PlayListTableColumn, availablePlayListTableColumns } from "src/types/common";
-import { default as PlayListTable } from "src/components/PlayListTable.vue";
-//const { t } = useI18n();
+  import { computed } from "vue";
+  //import { useI18n } from "vue-i18n";
+  import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
+  import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+  import { uid } from "quasar";
+  import { default as PlayListColumnSettingsButton } from "src/components/Buttons/PlayListColumnSettingsButton.vue";
+  import { default as PlayListTable } from "src/components/PlayListTable.vue";
+  import { usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
+  //const { t } = useI18n();
 
-const currentPlayListsStore = useCurrentPlayListsStore();
+  const currentPlayListsStore = useCurrentPlayListsStore();
 
-const playListsFound = computed(() => currentPlayListsStore.hasPlayLists);
+  const playListVisibleColumnsStore = usePlayListVisibleColumnsStore();
+  const playListsFound = computed(() => currentPlayListsStore.hasPlayLists);
 
-const tab = computed({
-  get() {
-    return currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.selectedPlayListIndex]?.id ?? null : null;
-  },
-  set(value: string) {
-    currentPlayListsStore.setSelectedPlayListId(value);
-  }
-});
+  const tab = computed({
+    get() {
+      return currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.selectedPlayListIndex]?.id ?? null : null;
+    },
+    set(value: string) {
+      currentPlayListsStore.setSelectedPlayListId(value);
+    }
+  });
 
-const availableColumns = reactive<PlayListTableColumn[]>(availablePlayListTableColumns);
+  const onNew = async (): Promise<void> => {
+    console.log("onNew");
+    const PlayListId = uid();
+    try {
+      await currentPlayListsStore.add(PlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-const onNew = async (): Promise<void> => {
-  console.log("onNew");
-  const PlayListId = uid();
-  try {
-    await currentPlayListsStore.add(PlayListId, `New playlist ${currentPlayListsStore.playLists.length + 1}`);
-  } catch (e) {
-    console.error(e);
-  }
-};
+  const onEmpty = (): void => {
+    console.log("onEmpty");
+    if (tab.value) {
+      currentPlayListsStore.empty(tab.value);
+    } else {
+      console.error("Invalid tab", tab.value);
+    }
+  };
 
-const onEmpty = (): void => {
-  console.log("onEmpty");
-  if (tab.value) {
-    currentPlayListsStore.empty(tab.value);
-  } else {
-    console.error("Invalid tab", tab.value);
-  }
-};
+  const onDiscover = (): void => {
+    console.log("onDiscover");
+    if (tab.value) {
+      currentPlayListsStore.randomFill(tab.value).then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
+    } else {
+      console.error("Invalid tab", tab.value);
+    }
+  };
 
-const onDiscover = (): void => {
-  console.log("onDiscover");
-  if (tab.value) {
-    currentPlayListsStore.randomFill(tab.value).then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
-  } else {
-    console.error("Invalid tab", tab.value);
-  }
-};
+  const onRandomize = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    console.log("onRandomize");
+  };
 
-const onRandomize = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  console.log("onRandomize");
-};
+  const onSkipPrevious = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    currentPlayListsStore.skipPreviousItemOnActivePlayList();
+  };
 
-const onSkipPrevious = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  currentPlayListsStore.skipPreviousItemOnActivePlayList();
-};
+  const onPlay = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    currentPlayListsStore.playerActionPlay(true);
+  };
 
-const onPlay = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  currentPlayListsStore.playerActionPlay(true);
-};
+  const onPause = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    currentPlayListsStore.playerActionPause();
+  };
 
-const onPause = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  currentPlayListsStore.playerActionPause();
-};
+  const onStop = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    currentPlayListsStore.playerActionStop();
+  };
 
-const onStop = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  currentPlayListsStore.playerActionStop();
-};
-
-const onSkipNext = (): void => {
-  if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
-    currentPlayListsStore.playerInteract();
-  }
-  currentPlayListsStore.skipNextItemOnActivePlayList();
-};
-
-const onToggleColumnVisibility = (column: PlayListTableColumn): void => {
-  column.visible = !column.visible;
-};
+  const onSkipNext = (): void => {
+    if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
+      currentPlayListsStore.playerInteract();
+    }
+    currentPlayListsStore.skipNextItemOnActivePlayList();
+  };
 
 </script>
 
 <style lang="css">
-.zoom-infinite {
-  animation: zoomEffect 2s ease-in-out infinite;
-}
-
-@keyframes zoomEffect {
-  0% {
-    transform: scale(2);
+  .zoom-infinite {
+    animation: zoomEffect 2s ease-in-out infinite;
   }
 
-  50% {
-    transform: scale(1.5);
-  }
+  @keyframes zoomEffect {
+    0% {
+      transform: scale(2);
+    }
 
-  100% {
-    transform: scale(2);
+    50% {
+      transform: scale(1.5);
+    }
+
+    100% {
+      transform: scale(2);
+    }
   }
-}
 </style>

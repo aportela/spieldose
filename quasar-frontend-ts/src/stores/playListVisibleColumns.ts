@@ -81,10 +81,23 @@ export const usePlayListVisibleColumnsStore = defineStore('playListVisibleColumn
     },
   }),
   getters: {
-    availableColumnDefinitions: (state) => state.columns.available,
-    visibleColumnDefinitions: (state) =>
+    availableColumnDefinitions: (state): PlayListTableColumn[] => state.columns.available,
+    visibleColumnDefinitions: (state): PlayListTableColumn[] =>
       state.columns.available.filter((column) => state.columns.visible.includes(column.name)),
-    visibleColumnNames: (state) => state.columns.visible,
+    visibleColumnNames: (state): string[] => state.columns.visible,
+
+    isIndexColumnVisible: (state): boolean => state.columns.visible.includes('index'),
+    isImageColumnVisible: (state): boolean => state.columns.visible.includes('image'),
+    isTrackTitleColumnVisible: (state): boolean => state.columns.visible.includes('trackTitle'),
+    isTrackArtistColumnVisible: (state): boolean => state.columns.visible.includes('trackArtist'),
+    isTrackAlbumTitleColumnVisible: (state): boolean =>
+      state.columns.visible.includes('trackAlbumTitle'),
+    isTrackAlbumNumberColumnVisible: (state): boolean =>
+      state.columns.visible.includes('trackAlbumNumber'),
+    isTrackAlbumArtistColumnVisible: (state): boolean =>
+      state.columns.visible.includes('trackAlbumArtist'),
+    isYearColumnVisible: (state): boolean => state.columns.visible.includes('year'),
+    isActionsColumnVisible: (state): boolean => state.columns.visible.includes('actions'),
   },
   actions: {
     toggleColumnVisibility(columnName: PlayListTableColumnName) {
