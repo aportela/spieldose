@@ -124,6 +124,7 @@ export {
   type Player,
   type PlayerStatus,
   type PlayerRepeatMode,
+  type PlayListTableColumnName,
   type PlayListTableColumn,
   availablePlayListTableColumns,
   type SelectorOption,
