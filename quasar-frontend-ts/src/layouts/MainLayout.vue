@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-          }}</DesktopToolTip>
+            }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -44,6 +44,9 @@
             :rotate="playerStore.isPlaying" />
             -->
         </div>
+        <div style="width: 20%">
+          <SidebarSpectrumAnalyzer />
+        </div>
         <div style="width: 30em" class="q-ml-sm text-dark">
           <p class="q-mb-none">{{ currentPlaylistItemStore.trackTitle }}</p>
           <p>by {{ currentPlaylistItemStore.trackArtistName }}</p>
@@ -55,9 +58,6 @@
         <div style="width: 25%;">
           <SeekControl />
         </div>
-        <div style="width: 20%">
-          <SidebarSpectrumAnalyzer />
-        </div>
         <div style="width: 20em;">
           <VolumeControl />
         </div>
@@ -67,81 +67,81 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
-import { useQuasar, LocalStorage } from "quasar";
-import { useI18n } from "vue-i18n";
+  import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
+  import { useQuasar, LocalStorage } from "quasar";
+  import { useI18n } from "vue-i18n";
 
-import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
-import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue";
-import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue";
-import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue";
-import { GITHUB_PROJECT_URL } from "src/constants";
+  import { default as SidebarDrawer } from "src/components/SidebarDrawer.vue";
+  import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue";
+  import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue";
+  import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue";
+  import { GITHUB_PROJECT_URL } from "src/constants";
 
-import { default as TopHeaderMenu } from "src/components/Menus/TopHeaderMenu.vue";
-import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
+  import { default as TopHeaderMenu } from "src/components/Menus/TopHeaderMenu.vue";
+  import { default as DesktopToolTip } from "src/components/DesktopToolTip.vue";
 
-import { default as MainControls } from "src/components/Widgets/Player/MainControls.vue";
-import { default as SeekControl } from "src/components/Widgets/Player/SeekControl.vue";
-import { default as SidebarSpectrumAnalyzer } from "src/components/Widgets/Visualizations/SidebarSpectrumAnalyzer.vue";
-import { default as VolumeControl } from "src/components/Widgets/Player/VolumeControl.vue";
-import { default as TrackImage } from "src/components/TrackImage.vue";
-import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
-import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
-import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
+  import { default as MainControls } from "src/components/Widgets/Player/MainControls.vue";
+  import { default as SeekControl } from "src/components/Widgets/Player/SeekControl.vue";
+  import { default as SidebarSpectrumAnalyzer } from "src/components/Widgets/Visualizations/SidebarSpectrumAnalyzer.vue";
+  import { default as VolumeControl } from "src/components/Widgets/Player/VolumeControl.vue";
+  import { default as TrackImage } from "src/components/TrackImage.vue";
+  import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
+  import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
+  import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
-import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+  import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
-const $q = useQuasar();
-
-
-const { t } = useI18n();
+  const $q = useQuasar();
 
 
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
+  const { t } = useI18n();
 
 
-const lockminiSidebarCurrentModeMode = ref<boolean>(false);
+  const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
-const visibleSidebar = ref($q.screen.gt.sm);
 
-// toggle this for using current mini sidebar saved mode
-const saveMiniSidebarMode = true;
+  const lockminiSidebarCurrentModeMode = ref<boolean>(false);
 
-const miniSidebarCurrentModeSavedMode = saveMiniSidebarMode ? LocalStorage.getItem("miniSidebarCurrentMode") : null;
+  const visibleSidebar = ref($q.screen.gt.sm);
 
-if (saveMiniSidebarMode && miniSidebarCurrentModeSavedMode != null) {
-  lockminiSidebarCurrentModeMode.value = true;
-}
+  // toggle this for using current mini sidebar saved mode
+  const saveMiniSidebarMode = true;
 
-const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? miniSidebarCurrentModeSavedMode == true : $q.screen.md);
+  const miniSidebarCurrentModeSavedMode = saveMiniSidebarMode ? LocalStorage.getItem("miniSidebarCurrentMode") : null;
 
-const currentScreenSize = computed(() => $q.screen.name);
-
-watch(currentScreenSize, () => {
-  if (!lockminiSidebarCurrentModeMode.value) {
-    miniSidebarCurrentMode.value = $q.screen.lt.lg;
+  if (saveMiniSidebarMode && miniSidebarCurrentModeSavedMode != null) {
+    lockminiSidebarCurrentModeMode.value = true;
   }
-});
 
-const searchButtonLabel = computed(() => $q.screen.gt.xs ? t('Search on Spieldose...') : '');
+  const miniSidebarCurrentMode = ref(miniSidebarCurrentModeSavedMode != null ? miniSidebarCurrentModeSavedMode == true : $q.screen.md);
 
-const onToggleminiSidebarCurrentMode = () => {
-  miniSidebarCurrentMode.value = !miniSidebarCurrentMode.value;
-  lockminiSidebarCurrentModeMode.value = true;
-  if (saveMiniSidebarMode) {
-    LocalStorage.set("miniSidebarCurrentMode", miniSidebarCurrentMode.value);
+  const currentScreenSize = computed(() => $q.screen.name);
+
+  watch(currentScreenSize, () => {
+    if (!lockminiSidebarCurrentModeMode.value) {
+      miniSidebarCurrentMode.value = $q.screen.lt.lg;
+    }
+  });
+
+  const searchButtonLabel = computed(() => $q.screen.gt.xs ? t('Search on Spieldose...') : '');
+
+  const onToggleminiSidebarCurrentMode = () => {
+    miniSidebarCurrentMode.value = !miniSidebarCurrentMode.value;
+    lockminiSidebarCurrentModeMode.value = true;
+    if (saveMiniSidebarMode) {
+      LocalStorage.set("miniSidebarCurrentMode", miniSidebarCurrentMode.value);
+    }
   }
-}
 
-const currentPlayListsStore = useCurrentPlayListsStore();
-currentPlayListsStore.init().then(() => {
-}).catch((error) => { console.error(error); }).finally(() => { });
+  const currentPlayListsStore = useCurrentPlayListsStore();
+  currentPlayListsStore.init().then(() => {
+  }).catch((error) => { console.error(error); }).finally(() => { });
 
 
-onMounted(() => {
-});
+  onMounted(() => {
+  });
 
-onBeforeUnmount(() => {
-});
+  onBeforeUnmount(() => {
+  });
 
 </script>
