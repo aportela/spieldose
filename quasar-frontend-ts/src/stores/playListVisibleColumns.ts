@@ -1,80 +1,70 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { createStorageEntry } from 'src/composables/localStorage';
 
-const localStoragePlaylistIndexColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.index',
-  true,
-);
+type PlayListTableColumnName =
+  | 'index'
+  | 'image'
+  | 'trackTitle'
+  | 'trackArtist'
+  | 'trackAlbumTitle'
+  | 'trackAlbumNumber'
+  | 'trackAlbumArtist'
+  | 'year'
+  | 'actions';
 
-const localStoragePlaylistImageColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.image',
-  false,
-);
+const availableColumns: PlayListTableColumnName[] = [
+  'index',
+  'image',
+  'trackTitle',
+  'trackArtist',
+  'trackAlbumTitle',
+  'trackAlbumNumber',
+  'trackAlbumArtist',
+  'year',
+  'actions',
+];
+const defaultVisibleColumns: PlayListTableColumnName[] = [
+  'index',
+  'trackTitle',
+  'trackArtist',
+  'trackAlbumTitle',
+  'trackAlbumNumber',
+  'trackAlbumArtist',
+  'year',
+  'actions',
+];
 
-const localStoragePlaylistTrackTitleColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.trackTitle',
-  true,
-);
-
-const localStoragePlaylistTrackArtistColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.trackArtist',
-  true,
-);
-
-const localStoragePlaylistTrackAlbumTitleColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.trackAlbumTitle',
-  true,
-);
-
-const localStoragePlaylistTrackAlbumNumberColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.trackAlbumNumber',
-  true,
-);
-
-const localStoragePlaylistTrackAlbumArtistColumnVisibility = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.trackAlbumArtist',
-  true,
-);
-
-const localStoragePlaylistTrackYear = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.year',
-  true,
-);
-
-const localStoragePlaylistActions = createStorageEntry<boolean>(
-  'interface.playlist.columnVisibility.actions',
-  true,
+const localStoragePlaylistVisibleColumns = createStorageEntry<string>(
+  'interface.playlist.visibleColumns',
+  defaultVisibleColumns.join(','),
 );
 
 interface State {
-  columns: {
-    index: boolean;
-    image: boolean;
-    trackTitle: boolean;
-    trackArtist: boolean;
-    trackAlbumTitle: boolean;
-    trackAlbumNumber: boolean;
-    trackAlbumArtist: boolean;
-    year: boolean;
-    actions: boolean;
-  };
+  availableColumns: PlayListTableColumnName[];
+  visibleColumns: PlayListTableColumnName[];
 }
+
 export const usePlayListVisibleColumnsStore = defineStore('playListVisibleColumnsStore', {
   state: (): State => ({
-    columns: {
-      index: localStoragePlaylistIndexColumnVisibility.get(),
-      image: localStoragePlaylistImageColumnVisibility.get(),
-      trackTitle: localStoragePlaylistTrackTitleColumnVisibility.get(),
-      trackArtist: localStoragePlaylistTrackArtistColumnVisibility.get(),
-      trackAlbumTitle: localStoragePlaylistTrackAlbumTitleColumnVisibility.get(),
-      trackAlbumNumber: localStoragePlaylistTrackAlbumNumberColumnVisibility.get(),
-      trackAlbumArtist: localStoragePlaylistTrackAlbumArtistColumnVisibility.get(),
-      year: localStoragePlaylistTrackYear.get(),
-      actions: localStoragePlaylistActions.get(),
-    },
+    availableColumns: availableColumns,
+    visibleColumns: localStoragePlaylistVisibleColumns
+      .get()
+      .split(',') as PlayListTableColumnName[],
   }),
   getters: {},
-  actions: {},
+  actions: {
+    isColumnVisible(column: PlayListTableColumnName) {
+      return this.visibleColumns.includes(column);
+    },
+    toggleColumnVisibility(column: PlayListTableColumnName) {
+      if (this.visibleColumns.includes(column)) {
+        this.visibleColumns = this.visibleColumns.filter((c) => c !== column);
+      } else {
+        this.visibleColumns.push(column);
+      }
+      localStoragePlaylistVisibleColumns.set(this.visibleColumns.join(','));
+    },
+  },
 });
 
 if (import.meta.hot) {
