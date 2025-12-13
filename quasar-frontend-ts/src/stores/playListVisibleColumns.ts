@@ -12,27 +12,54 @@ type PlayListTableColumnName =
   | 'year'
   | 'actions';
 
-const availableColumns: PlayListTableColumnName[] = [
-  'index',
-  'image',
-  'trackTitle',
-  'trackArtist',
-  'trackAlbumTitle',
-  'trackAlbumNumber',
-  'trackAlbumArtist',
-  'year',
-  'actions',
+interface PlayListTableColumn {
+  name: PlayListTableColumnName;
+  label: string;
+}
+
+const availablePlayListTableColumns: PlayListTableColumn[] = [
+  {
+    name: 'index',
+    label: 'Index',
+  },
+  {
+    name: 'image',
+    label: 'Image',
+  },
+  {
+    name: 'trackTitle',
+    label: 'Title',
+  },
+  {
+    name: 'trackArtist',
+    label: 'Artist',
+  },
+  {
+    name: 'trackAlbumTitle',
+    label: 'Album',
+  },
+  {
+    name: 'trackAlbumNumber',
+    label: 'Track album number',
+  },
+  {
+    name: 'trackAlbumArtist',
+    label: 'Album artist',
+  },
+
+  {
+    name: 'year',
+    label: 'Year',
+  },
+  {
+    name: 'actions',
+    label: 'Actions',
+  },
 ];
-const defaultVisibleColumns: PlayListTableColumnName[] = [
-  'index',
-  'trackTitle',
-  'trackArtist',
-  'trackAlbumTitle',
-  'trackAlbumNumber',
-  'trackAlbumArtist',
-  'year',
-  'actions',
-];
+
+const defaultVisibleColumns: PlayListTableColumnName[] = availablePlayListTableColumns
+  .filter((column) => column.name !== 'image')
+  .map((column) => column.name);
 
 const localStoragePlaylistVisibleColumns = createStorageEntry<string>(
   'interface.playlist.visibleColumns',
@@ -40,29 +67,33 @@ const localStoragePlaylistVisibleColumns = createStorageEntry<string>(
 );
 
 interface State {
-  availableColumns: PlayListTableColumnName[];
-  visibleColumns: PlayListTableColumnName[];
+  columns: {
+    available: PlayListTableColumn[];
+    visible: PlayListTableColumnName[];
+  };
 }
 
 export const usePlayListVisibleColumnsStore = defineStore('playListVisibleColumnsStore', {
   state: (): State => ({
-    availableColumns: availableColumns,
-    visibleColumns: localStoragePlaylistVisibleColumns
-      .get()
-      .split(',') as PlayListTableColumnName[],
-  }),
-  getters: {},
-  actions: {
-    isColumnVisible(column: PlayListTableColumnName) {
-      return this.visibleColumns.includes(column);
+    columns: {
+      available: availablePlayListTableColumns,
+      visible: localStoragePlaylistVisibleColumns.get().split(',') as PlayListTableColumnName[],
     },
-    toggleColumnVisibility(column: PlayListTableColumnName) {
-      if (this.visibleColumns.includes(column)) {
-        this.visibleColumns = this.visibleColumns.filter((c) => c !== column);
+  }),
+  getters: {
+    availableColumnDefinitions: (state) => state.columns.available,
+    visibleColumnDefinitions: (state) =>
+      state.columns.available.filter((column) => state.columns.visible.includes(column.name)),
+    visibleColumnNames: (state) => state.columns.visible,
+  },
+  actions: {
+    toggleColumnVisibility(columnName: PlayListTableColumnName) {
+      if (this.columns.visible.includes(columnName)) {
+        this.columns.visible = this.columns.visible.filter((c) => c !== columnName);
       } else {
-        this.visibleColumns.push(column);
+        this.columns.visible.push(columnName);
       }
-      localStoragePlaylistVisibleColumns.set(this.visibleColumns.join(','));
+      localStoragePlaylistVisibleColumns.set(this.columns.visible.join(','));
     },
   },
 });
