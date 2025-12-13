@@ -6,9 +6,9 @@ export type PlayListTableColumnName =
   | 'image'
   | 'trackTitle'
   | 'trackArtist'
-  | 'trackAlbumTitle'
-  | 'trackAlbumNumber'
-  | 'trackAlbumArtist'
+  | 'albumTitle'
+  | 'albumArtist'
+  | 'albumTrackNumber'
   | 'year'
   | 'actions';
 
@@ -35,18 +35,17 @@ const availablePlayListTableColumns: PlayListTableColumn[] = [
     label: 'Artist',
   },
   {
-    name: 'trackAlbumTitle',
+    name: 'albumTitle',
     label: 'Album',
   },
   {
-    name: 'trackAlbumNumber',
-    label: 'Track album number',
-  },
-  {
-    name: 'trackAlbumArtist',
+    name: 'albumArtist',
     label: 'Album artist',
   },
-
+  {
+    name: 'albumTrackNumber',
+    label: 'Track album number',
+  },
   {
     name: 'year',
     label: 'Year',
@@ -90,12 +89,10 @@ export const usePlayListVisibleColumnsStore = defineStore('playListVisibleColumn
     isImageColumnVisible: (state): boolean => state.columns.visible.includes('image'),
     isTrackTitleColumnVisible: (state): boolean => state.columns.visible.includes('trackTitle'),
     isTrackArtistColumnVisible: (state): boolean => state.columns.visible.includes('trackArtist'),
-    isTrackAlbumTitleColumnVisible: (state): boolean =>
-      state.columns.visible.includes('trackAlbumTitle'),
-    isTrackAlbumNumberColumnVisible: (state): boolean =>
-      state.columns.visible.includes('trackAlbumNumber'),
-    isTrackAlbumArtistColumnVisible: (state): boolean =>
-      state.columns.visible.includes('trackAlbumArtist'),
+    isAlbumTitleColumnVisible: (state): boolean => state.columns.visible.includes('albumTitle'),
+    isAlbumArtistColumnVisible: (state): boolean => state.columns.visible.includes('albumArtist'),
+    isAlbumTrackNumberColumnVisible: (state): boolean =>
+      state.columns.visible.includes('albumTrackNumber'),
     isYearColumnVisible: (state): boolean => state.columns.visible.includes('year'),
     isActionsColumnVisible: (state): boolean => state.columns.visible.includes('actions'),
   },
