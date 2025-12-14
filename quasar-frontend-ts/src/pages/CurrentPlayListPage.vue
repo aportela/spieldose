@@ -55,8 +55,7 @@
         <q-tab-panels v-model="tab">
           <q-tab-panel :name="playList.id" v-for="playList, playListIndex in currentPlayListsStore.playLists"
             :key="playList.id">
-            <PlayListTable :columns="playListVisibleColumnsStore.visibleColumnDefinitions" :playList="playList"
-              :active="currentPlayListsStore.activePlayListIndex === playListIndex"
+            <PlayListTable :playList="playList" :active="currentPlayListsStore.activePlayListIndex === playListIndex"
               :play-list-current-item-index="currentPlayListsStore.activePlayListItemIndex"
               @on-click-item-at-index="(index: number) => currentPlayListsStore.selectPlayListItem(playListIndex, index)"
               @on-action-move-up-item-at-index="(index: number) => currentPlayListsStore.moveUpPlayListItem(playListIndex, index)"
@@ -78,12 +77,10 @@
   import { uid } from "quasar";
   import { default as PlayListColumnSettingsButton } from "src/components/Buttons/PlayListColumnSettingsButton.vue";
   import { default as PlayListTable } from "src/components/PlayListTable.vue";
-  import { usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
   //const { t } = useI18n();
 
   const currentPlayListsStore = useCurrentPlayListsStore();
 
-  const playListVisibleColumnsStore = usePlayListVisibleColumnsStore();
   const playListsFound = computed(() => currentPlayListsStore.hasPlayLists);
 
   const tab = computed({
