@@ -33,7 +33,8 @@
               <div class="col">
                 <div class="q-gutter-none">
                   <q-toolbar class="q-pa-none">
-                    <q-icon name="speaker" color="dark" class="zoom-infinite q-mr-sm"
+                    <q-icon name="speaker" color="dark" class="q-mr-sm"
+                      :class="{ 'zoom-infinite': currentPlayListsStore.playerIsPlaying }"
                       v-if="currentPlayListsStore.activePlayListIndex == playListIndex" />
                     <span>
                       {{ playList.name }}
