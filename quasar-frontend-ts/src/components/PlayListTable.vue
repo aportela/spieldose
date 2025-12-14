@@ -1,12 +1,20 @@
 <template>
   <q-markup-table dense flat bordered separator="cell">
     <thead>
-      <tr>
+      <tr v-if="!combinedItemView">
         <th v-for="column in playListVisibleColumnsStore.visibleColumnDefinitions" :key="column.name">{{ column.label }}
         </th>
       </tr>
+      <tr v-else>
+        <th>
+          Index
+        </th>
+        <th>Image</th>
+        <th>Details</th>
+        <th>Operations</th>
+      </tr>
     </thead>
-    <tbody v-if="playListHasItems" @click="handleTableBodyClick">
+    <tbody v-if="!combinedItemView && playListHasItems" @click="handleTableBodyClick">
       <tr class="cursor-pointer" v-for="item, itemIndex in playList.items" :key="item._id">
         <td v-if="playListVisibleColumnsStore.isIndexColumnVisible" class="text-right">
           <q-icon name="play_arrow" size="sm" color="pink" class="cursor-pointer"
@@ -44,6 +52,42 @@
         </td>
       </tr>
     </tbody>
+    <tbody v-else-if="playListHasItems">
+      <tr class="cursor-pointer" v-for="item, itemIndex in playList.items" :key="item._id">
+        <td class="text-right">
+          <q-icon name="play_arrow" size="sm" color="pink" class="cursor-pointer"
+            v-if="active && itemIndex == playListCurrentItemIndex" />
+          {{ itemIndex + 1 }}/{{ playListItemCount }}
+        </td>
+        <td class="playlist-column-image">
+          <!--
+          <StaticAlbumCoverImage :image="item.images?.small ?? null" />
+          -->
+          <TrackImage :src="item.images?.small ?? null" :round="roundImage" :rotate="roundImage && rotateImage" />
+        </td>
+        <td style="max-width: 40vw; word-wrap: break-word;">
+          <p class="q-ma-none">Title: <strong>{{ item.file?.trackInfo.title }}</strong> | Artist: <strong>{{
+            item.file?.trackInfo.artist.name }}</strong></p>
+          <p class="q-ma-none">Album: <strong>{{ item.file?.trackInfo.album.title }}</strong> | Artist: <strong>{{
+            item.file?.trackInfo.album.artist.name
+              }}</strong></p>
+          <p class="q-ma-none">Year: <strong>{{ item.file?.trackInfo.album.year }}</strong></p>
+        </td>
+        <td>
+          <q-btn-group outline>
+            <q-btn class="q-pa-xs" size="sm" icon="north" title="Up" data-button-action="up"
+              :disable="itemIndex === 0" />
+            <q-btn class="q-pa-xs" size="sm" icon="south" title="Down" data-button-action="down"
+              :disable="itemIndex === playList.items.length - 1" />
+            <q-btn class="q-pa-xs" size="sm" icon="delete" title="Remove" data-button-action="remove" />
+            <q-btn class="q-pa-xs" size="sm" icon="favorite" :class="{ 'text-pink': item.file?.trackInfo.favorited }"
+              title="Toggle favorite" data-button-action="toggleFavorite" />
+            <q-btn class="q-pa-xs" size="sm" icon="save_alt" title="Download"
+              :href="item.file !== null ? buildDownloadTrackURL(item.file?.id) : '#'" />
+          </q-btn-group>
+        </td>
+      </tr>
+    </tbody>
   </q-markup-table>
 </template>
 <script setup lang="ts">
@@ -53,6 +97,8 @@
   //import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
   import { buildDownloadTrackURL } from "src/composables/common";
   import { usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
+  import { useQuasar } from "quasar";
+
 
   interface PlayListTableProps {
     disable?: boolean;
@@ -68,6 +114,10 @@
     roundImage: false,
     rotateImage: false,
   });
+
+  const { screen } = useQuasar();
+
+  const combinedItemView = computed(() => screen.lt.lg);
 
   const playListVisibleColumnsStore = usePlayListVisibleColumnsStore();
 
