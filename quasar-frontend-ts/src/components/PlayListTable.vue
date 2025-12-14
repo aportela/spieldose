@@ -14,10 +14,10 @@
           {{ itemIndex + 1 }}/{{ playListItemCount }}
         </td>
         <td class="playlist-column-image" v-if="playListVisibleColumnsStore.isImageColumnVisible">
-          <StaticAlbumCoverImage :image="item.images?.small ?? null" />
           <!--
-          <TrackImage :src="item.images?.small ?? null" :round="roundImage" :rotate="roundImage && rotateImage" />
+          <StaticAlbumCoverImage :image="item.images?.small ?? null" />
           -->
+          <TrackImage :src="item.images?.small ?? null" :round="roundImage" :rotate="roundImage && rotateImage" />
         </td>
         <!-- TODO: stream combine columns with colspan ??? -->
         <td v-if="playListVisibleColumnsStore.isTrackTitleColumnVisible">{{ item.file?.trackInfo.title }}</td>
@@ -26,7 +26,7 @@
         </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTrackNumberColumnVisible">0</td>
         <td v-if="playListVisibleColumnsStore.isAlbumArtistColumnVisible">{{ item.file?.trackInfo.album.artist.name
-        }}
+          }}
         </td>
         <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year }}</td>
         <td v-if="playListVisibleColumnsStore.isActionsColumnVisible">
