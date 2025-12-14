@@ -33,7 +33,7 @@
               <div class="col">
                 <div class="q-gutter-none">
                   <q-toolbar class="q-pa-none">
-                    <q-icon name="speaker" color="dark" class="q-mr-sm"
+                    <q-icon name="speaker" color="dark" class="q-mr-sm" size="md"
                       :class="{ 'zoom-infinite': currentPlayListsStore.playerIsPlaying }"
                       v-if="currentPlayListsStore.activePlayListIndex == playListIndex" />
                     <span>
@@ -174,15 +174,15 @@
 
   @keyframes zoomEffect {
     0% {
-      transform: scale(2);
+      transform: scale(1);
     }
 
     50% {
-      transform: scale(1.5);
+      transform: scale(0.8);
     }
 
     100% {
-      transform: scale(2);
+      transform: scale(1);
     }
   }
 </style>
