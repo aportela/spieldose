@@ -74,11 +74,15 @@ class ID3Wrapper
     private function toUTF8(string $str): ?string
     {
         if ($str !== '' && $str !== '0') {
-            $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-            if ($encoding === 'UTF-8') {
-                return ($str);
+            if (mb_check_encoding($str, 'UTF-8')) {
+                return $str;
             } else {
-                return mb_convert_encoding($str, 'UTF-8', $encoding);
+                $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                if ($encoding !== false) {
+                    return ($encoding !== 'UTF-8' ? mb_convert_encoding($str, 'UTF-8', $encoding) : $str);
+                } else {
+                    throw new \RuntimeException("Invalid encoding");
+                }
             }
         } else {
             return (null);
