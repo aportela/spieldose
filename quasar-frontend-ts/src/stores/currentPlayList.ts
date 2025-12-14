@@ -4,13 +4,13 @@ import { type PlayList as PlayListInterface, PlayListClass } from 'src/types/pla
 import { api } from 'src/composables/api';
 
 interface State {
-  playList: PlayListInterface,
+  playList: PlayListInterface;
   currentItemIndex: number;
-};
+}
 
 export const useCurrentPlayListStore = defineStore('currentPlayListStore', {
   state: (): State => ({
-    playList: new PlayListClass(null, null, []),
+    playList: new PlayListClass('', '', []),
     currentItemIndex: 0,
   }),
   getters: {
@@ -38,40 +38,40 @@ export const useCurrentPlayListStore = defineStore('currentPlayListStore', {
           // TODO
         }
       } else {
-        console.error("No tracks specified");
+        console.error('No tracks specified');
       }
-      console.log("addTracks", trackIds, append, autoPlay);
+      console.log('addTracks', trackIds, append, autoPlay);
       const response = await api.currentPlayList.get();
       console.log(response.data);
     },
     addRadioStation(radioStationId: string, append: boolean, autoPlay: boolean) {
-      console.log("addRadioStation", radioStationId, append, autoPlay);
+      console.log('addRadioStation', radioStationId, append, autoPlay);
     },
     removeItemAtIndex(index: number) {
       if (index >= 0 && index <= this.playList.items.length - 1) {
         // TODO: check currentItemIndex
-        console.log("removeItemAtIndex", index);
+        console.log('removeItemAtIndex', index);
       } else {
-        console.error("removeItemAtIndex, invalid index", index);
+        console.error('removeItemAtIndex, invalid index', index);
       }
     },
     moveUpItemAtIndex(index: number) {
       if (index > 0) {
         // TODO: check currentItemIndex
-        console.log("moveUpItemAtIndex", index);
+        console.log('moveUpItemAtIndex', index);
       } else {
-        console.error("moveUpItemAtIndex, invalid index", index);
+        console.error('moveUpItemAtIndex, invalid index', index);
       }
     },
     moveDownItemAtIndex(index: number) {
       if (index >= 0 && index <= this.playList.items.length - 1) {
         // TODO: check currentItemIndex
-        console.log("moveDownItemAtIndex", index);
+        console.log('moveDownItemAtIndex', index);
       } else {
-        console.error("moveDownItemAtIndex, invalid index", index);
+        console.error('moveDownItemAtIndex, invalid index', index);
       }
-    }
-  }
+    },
+  },
 });
 
 if (import.meta.hot) {
