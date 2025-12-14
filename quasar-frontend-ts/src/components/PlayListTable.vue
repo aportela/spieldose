@@ -26,7 +26,7 @@
         </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTrackNumberColumnVisible">0</td>
         <td v-if="playListVisibleColumnsStore.isAlbumArtistColumnVisible">{{ item.file?.trackInfo.album.artist.name
-          }}
+        }}
         </td>
         <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year }}</td>
         <td v-if="playListVisibleColumnsStore.isActionsColumnVisible">
@@ -48,7 +48,7 @@
 </template>
 <script setup lang="ts">
   import { computed } from "vue";
-  import { type PlayListClass } from "src/types/playList";
+  import { type PlayList } from "src/types/playList";
   import { default as TrackImage } from "src/components/TrackImage.vue";
   //import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
   import { buildDownloadTrackURL } from "src/composables/common";
@@ -56,7 +56,7 @@
 
   interface PlayListTableProps {
     disable?: boolean;
-    playList: PlayListClass;
+    playList: PlayList;
     active: boolean;
     playListCurrentItemIndex: number;
     roundImage?: boolean;
