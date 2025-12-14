@@ -346,6 +346,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       if (index !== -1) {
         const filledPlayList = await api.playList.randomFill(playListId);
         this.playLists[index] = filledPlayList.data.playList;
+        this.activePlayListItemIndex = 0;
         return true;
       } else {
         console.error('empty - missing index for id', playListId);
