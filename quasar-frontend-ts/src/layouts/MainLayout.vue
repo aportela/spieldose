@@ -84,8 +84,8 @@
   import { default as SeekControl } from "src/components/Widgets/Player/SeekControl.vue";
   import { default as SidebarSpectrumAnalyzer } from "src/components/Widgets/Visualizations/SidebarSpectrumAnalyzer.vue";
   import { default as VolumeControl } from "src/components/Widgets/Player/VolumeControl.vue";
-  import { default as TrackImage } from "src/components/TrackImage.vue";
-  import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
+  //import { default as TrackImage } from "src/components/TrackImage.vue";
+  //import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
   import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
   import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
