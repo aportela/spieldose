@@ -48,16 +48,14 @@
 </template>
 <script setup lang="ts">
   import { computed } from "vue";
-  import { type PlayListTableColumn } from "src/types/common";
   import { type PlayListClass } from "src/types/playList";
   import { default as TrackImage } from "src/components/TrackImage.vue";
-  import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
+  //import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
   import { buildDownloadTrackURL } from "src/composables/common";
   import { usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
 
   interface PlayListTableProps {
     disable?: boolean;
-    columns: PlayListTableColumn[];
     playList: PlayListClass;
     active: boolean;
     playListCurrentItemIndex: number;
