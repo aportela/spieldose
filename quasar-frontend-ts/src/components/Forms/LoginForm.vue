@@ -10,10 +10,10 @@
       <slot name="slogan">
         <h4 class="q-mt-sm q-mb-md text-h4 text-weight-bolder">{{
           t(!!savedEmail ? "Glad to see you again!" : "Welcome aboard!")
-        }}</h4>
+          }}</h4>
         <div class="text-color-secondary">{{
           t(!!savedEmail ? "The music never ends—just keep listening." : "Unlock the music you’ve been looking for.")
-        }}
+          }}
         </div>
       </slot>
     </q-card-section>
@@ -66,189 +66,189 @@
 
 <script setup lang="ts">
 
-import { ref, reactive, nextTick, onMounted } from "vue";
-import { useI18n } from "vue-i18n";
-import { QInput } from "quasar";
+  import { ref, reactive, nextTick, onMounted } from "vue";
+  import { useI18n } from "vue-i18n";
+  import { QInput } from "quasar";
 
-import { api } from "src/composables/api";
-import { useFormUtils } from "src/composables/useFormUtils";
-import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
-import { useSessionStore } from "src/stores/session";
-import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
-import { createStorageEntry } from "src/composables/localStorage";
-import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
-import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/authValidator";
-import { type AuthFields as AuthFieldsInterface } from "src/types/authFields";
-import { type LoginResponse } from "src/types/apiResponses";
-import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
-import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"
-import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue"
-import { GITHUB_PROJECT_URL } from "src/constants"
-import { default as PasswordFieldCustomInput } from "src/components/Forms/Fields/PasswordFieldCustomInput.vue";
-import { default as CustomErrorBanner } from "src/components/Banners/CustomErrorBanner.vue";
+  import { api } from "src/composables/api";
+  import { useFormUtils } from "src/composables/useFormUtils";
+  import { useServerEnvironmentStore } from "src/stores/serverEnvironment";
+  import { useSessionStore } from "src/stores/session";
+  import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+  import { createStorageEntry } from "src/composables/localStorage";
+  import { type AjaxState as AjaxStateInterface, defaultAjaxState } from "src/types/ajaxAtate";
+  import { type AuthValidator as AuthValidatorInterface, defaultAuthValidator } from "src/types/authValidator";
+  import { type AuthFields as AuthFieldsInterface } from "src/types/authFields";
+  import { type LoginResponse } from "src/types/apiResponses";
+  import { default as DarkModeButton } from "src/components/Buttons/DarkModeButton.vue"
+  import { default as SwitchLanguageButton } from "src/components/Buttons/SwitchLanguageButton.vue"
+  import { default as GitHubButton } from "src/components/Buttons/GitHubButton.vue"
+  import { GITHUB_PROJECT_URL } from "src/constants"
+  import { default as PasswordFieldCustomInput } from "src/components/Forms/Fields/PasswordFieldCustomInput.vue";
+  import { default as CustomErrorBanner } from "src/components/Banners/CustomErrorBanner.vue";
 
-interface LoginFormProps {
-  showExtraBottom?: boolean;
-};
+  interface LoginFormProps {
+    showExtraBottom?: boolean;
+  };
 
-withDefaults(defineProps<LoginFormProps>(), {
-  showExtraBottom: true,
-});
+  withDefaults(defineProps<LoginFormProps>(), {
+    showExtraBottom: true,
+  });
 
-const emit = defineEmits(['success']);
+  const emit = defineEmits(['success']);
 
-const { t } = useI18n();
+  const { t } = useI18n();
 
-const { requiredFieldRule } = useFormUtils();
+  const { requiredFieldRule } = useFormUtils();
 
-const serverEnvironment = useServerEnvironmentStore();
+  const serverEnvironment = useServerEnvironmentStore();
 
-const sessionStore = useSessionStore();
-const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
+  const sessionStore = useSessionStore();
+  const localStorageLastEmailUsed = createStorageEntry<string | null>("session.lastEmailUsed", null);
 
-const currentPlayListsStore = useCurrentPlayListsStore();
+  const currentPlayListsStore = useCurrentPlayListsStore();
 
-const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
+  const state: AjaxStateInterface = reactive({ ...defaultAjaxState });
 
-const validator = reactive<AuthValidatorInterface>({ ...defaultAuthValidator });
+  const validator = reactive<AuthValidatorInterface>({ ...defaultAuthValidator });
 
-const savedEmail = localStorageLastEmailUsed.get();
+  const savedEmail = localStorageLastEmailUsed.get();
 
-const profile = reactive<AuthFieldsInterface>(
-  {
-    email: savedEmail || "",
-    password: ""
-  }
-);
-
-const emailRef = ref<QInput | null>(null);
-const passwordRef = ref<QInput | null>(null);
-
-const onResetForm = () => {
-  validator.email.hasErrors = false;
-  validator.email.message = null;
-  validator.password.hasErrors = false;
-  validator.password.message = null;
-  emailRef.value?.resetValidation();
-  passwordRef.value?.resetValidation();
-}
-
-const onValidateForm = async () => {
-  onResetForm();
-  try {
-    await emailRef.value?.validate();
-    await passwordRef.value?.validate();
-    if (emailRef.value?.hasError) {
-      emailRef.value?.focus();
-    } else if (passwordRef.value?.hasError) {
-      passwordRef.value?.focus();
-    } else {
-      onSubmitForm();
+  const profile = reactive<AuthFieldsInterface>(
+    {
+      email: savedEmail || "",
+      password: ""
     }
-  } catch (error) {
-    console.error('Validation error', error);
-  }
-};
+  );
 
-const onSubmitForm = () => {
-  if (profile.email && profile.password) {
-    Object.assign(state, defaultAjaxState);
-    state.ajaxRunning = true;
-    api.auth
-      .login(profile.email, profile.password)
-      .then((successResponse: LoginResponse) => {
-        sessionStore.setAccessToken(successResponse.data.accessToken);
-        localStorageLastEmailUsed.set(profile.email);
-        emit("success", successResponse.data);
-        currentPlayListsStore.playerInteract();
-      })
-      .catch((errorResponse) => {
-        state.ajaxErrors = true;
-        if (errorResponse.isAPIError) {
-          state.ajaxAPIErrorDetails = errorResponse.customAPIErrorDetails;
-          switch (errorResponse.response.status) {
-            case 400:
-              if (
-                errorResponse.response.data.invalidOrMissingParams.find(function (e: string) {
-                  return e === "email";
-                })
-              ) {
-                state.ajaxErrorMessage = "API Error: missing email param";
+  const emailRef = ref<QInput | null>(null);
+  const passwordRef = ref<QInput | null>(null);
+
+  const onResetForm = () => {
+    validator.email.hasErrors = false;
+    validator.email.message = null;
+    validator.password.hasErrors = false;
+    validator.password.message = null;
+    emailRef.value?.resetValidation();
+    passwordRef.value?.resetValidation();
+  }
+
+  const onValidateForm = async () => {
+    onResetForm();
+    try {
+      await emailRef.value?.validate();
+      await passwordRef.value?.validate();
+      if (emailRef.value?.hasError) {
+        emailRef.value?.focus();
+      } else if (passwordRef.value?.hasError) {
+        passwordRef.value?.focus();
+      } else {
+        onSubmitForm();
+      }
+    } catch (error) {
+      console.error('Validation error', error);
+    }
+  };
+
+  const onSubmitForm = () => {
+    if (profile.email && profile.password) {
+      Object.assign(state, defaultAjaxState);
+      state.ajaxRunning = true;
+      api.auth
+        .login(profile.email, profile.password)
+        .then((successResponse: LoginResponse) => {
+          sessionStore.setAccessToken(successResponse.data.accessToken.token, successResponse.data.accessToken.expiresAtTimestamp);
+          localStorageLastEmailUsed.set(profile.email);
+          emit("success", successResponse.data);
+          currentPlayListsStore.playerInteract();
+        })
+        .catch((errorResponse) => {
+          state.ajaxErrors = true;
+          if (errorResponse.isAPIError) {
+            state.ajaxAPIErrorDetails = errorResponse.customAPIErrorDetails;
+            switch (errorResponse.response.status) {
+              case 400:
+                if (
+                  errorResponse.response.data.invalidOrMissingParams.find(function (e: string) {
+                    return e === "email";
+                  })
+                ) {
+                  state.ajaxErrorMessage = "API Error: missing email param";
+                  nextTick()
+                    .then(() => {
+                      emailRef.value?.focus();
+                    }).catch((e) => {
+                      console.error(e);
+                    });
+                } else if (
+                  errorResponse.response.data.invalidOrMissingParams.find(function (e: string) {
+                    return e === "password";
+                  })
+                ) {
+                  state.ajaxErrorMessage = "API Error: missing password param";
+                  nextTick()
+                    .then(() => {
+                      passwordRef.value?.focus();
+                    }).catch((e) => {
+                      console.error(e);
+                    });
+                } else {
+                  state.ajaxErrorMessage = "API Error: invalid/missing param";
+                  nextTick()
+                    .then(() => {
+                      emailRef.value?.focus();
+                    }).catch((e) => {
+                      console.error(e);
+                    });
+                }
+                break;
+              case 404:
+                validator.email.hasErrors = true;
+                validator.email.message = "Email not registered";
                 nextTick()
                   .then(() => {
                     emailRef.value?.focus();
                   }).catch((e) => {
                     console.error(e);
                   });
-              } else if (
-                errorResponse.response.data.invalidOrMissingParams.find(function (e: string) {
-                  return e === "password";
-                })
-              ) {
-                state.ajaxErrorMessage = "API Error: missing password param";
+                break;
+              case 401:
+                validator.password.hasErrors = true;
+                validator.password.message = "Invalid password";
                 nextTick()
                   .then(() => {
                     passwordRef.value?.focus();
                   }).catch((e) => {
                     console.error(e);
                   });
-              } else {
-                state.ajaxErrorMessage = "API Error: invalid/missing param";
-                nextTick()
-                  .then(() => {
-                    emailRef.value?.focus();
-                  }).catch((e) => {
-                    console.error(e);
-                  });
-              }
-              break;
-            case 404:
-              validator.email.hasErrors = true;
-              validator.email.message = "Email not registered";
-              nextTick()
-                .then(() => {
-                  emailRef.value?.focus();
-                }).catch((e) => {
-                  console.error(e);
-                });
-              break;
-            case 401:
-              validator.password.hasErrors = true;
-              validator.password.message = "Invalid password";
-              nextTick()
-                .then(() => {
-                  passwordRef.value?.focus();
-                }).catch((e) => {
-                  console.error(e);
-                });
-              break;
-            default:
-              state.ajaxErrorMessage = "API Error: fatal error";
-              break;
+                break;
+              default:
+                state.ajaxErrorMessage = "API Error: fatal error";
+                break;
+            }
+          } else {
+            state.ajaxErrorMessage = `Uncaught exception: ${errorResponse}`;
+            console.error(errorResponse);
           }
-        } else {
-          state.ajaxErrorMessage = `Uncaught exception: ${errorResponse}`;
-          console.error(errorResponse);
-        }
-      }).finally(() => {
-        state.ajaxRunning = false;
-      });
-  } else {
-    // TODO
-    console.error("Missing email|password values");
+        }).finally(() => {
+          state.ajaxRunning = false;
+        });
+    } else {
+      // TODO
+      console.error("Missing email|password values");
+    }
   }
-}
 
-onMounted(() => {
-  nextTick()
-    .then(() => {
-      if (savedEmail) {
-        passwordRef.value?.focus();
-      } else {
-        emailRef.value?.focus();
-      }
-    }).catch((e) => {
-      console.error(e);
-    });
-});
+  onMounted(() => {
+    nextTick()
+      .then(() => {
+        if (savedEmail) {
+          passwordRef.value?.focus();
+        } else {
+          emailRef.value?.focus();
+        }
+      }).catch((e) => {
+        console.error(e);
+      });
+  });
 </script>
