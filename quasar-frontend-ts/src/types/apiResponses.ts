@@ -1,5 +1,5 @@
-import { type AxiosResponse } from "axios";
-import { type EnvironmentType, type ValidAuthTypes } from "./common";
+import { type AxiosResponse } from 'axios';
+import { type EnvironmentType, type ValidAuthTypes } from './common';
 
 interface DefaultAxiosResponse<T = unknown> {
   data: AxiosResponse<T>;
@@ -11,45 +11,54 @@ interface getServerEnvironmentResponseData {
       allowSignUp: boolean;
       environment: EnvironmentType;
       maxUploadFileSize: number;
-    }
-  }
-};
+    };
+  };
+}
 
 interface LoginResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    accessToken: string;
-    refreshToken: string;
+    accessToken: {
+      token: string;
+      expiresAtTimestamp: number;
+    };
+    refreshToken: {
+      token: string;
+      expiresAtTimestamp: number;
+    };
     tokenType: ValidAuthTypes;
-  }
-};
+  };
+}
 
 interface GetNewAccessTokenResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    accessToken: string;
+    accessToken: {
+      token: string;
+      expiresAtTimestamp: number;
+    };
     tokenType: ValidAuthTypes;
-  }
-};
+  };
+}
 
 interface RegisterResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: undefined;
-};
+}
 
 interface UserProfileResponseData {
   id: string | null;
   email: string;
-};
+}
 
 interface GetProfileResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
     user: UserProfileResponseData;
-  }
-};
+  };
+}
 
 interface SetProfileResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
     user: UserProfileResponseData;
-  }
-};
+  };
+}
 
 interface PagerResponse {
   totalResults: number;
@@ -67,8 +76,8 @@ interface BrowseArtistsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
     pager: PagerResponse;
     artists: BrowseArtistItemResponse[];
-  }
-};
+  };
+}
 
 interface BrowseAlbumItemResponse {
   title: string;
@@ -81,8 +90,8 @@ interface BrowseAlbumsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
     pager: PagerResponse;
     albums: BrowseAlbumItemResponse[];
-  }
-};
+  };
+}
 
 interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
@@ -91,8 +100,8 @@ interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
       name: string;
       items: [];
     };
-  }
-};
+  };
+}
 
 interface PlayList {
   id: string;
@@ -103,9 +112,9 @@ interface PlayList {
 
 interface GetCurrentPlayListsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    playLists: PlayList[],
-  }
-};
+    playLists: PlayList[];
+  };
+}
 
 export {
   type getServerEnvironmentResponseData,

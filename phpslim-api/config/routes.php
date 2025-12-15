@@ -165,8 +165,14 @@ return function (App $app): void {
                     \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
-                            "accessToken" => $accessToken,
-                            "refreshToken" => $refreshToken,
+                            "accessToken" => [
+                                "token" => $accessToken,
+                                "expiresAtTimestamp" => $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds(),
+                            ],
+                            "refreshToken" => [
+                                "token" => $refreshToken,
+                                "expiresAtTimestamp" => $currentTimestamp + $settings->getRefreshTokenExpirationTimeInSeconds(),
+                            ],
                             "tokenType" => "Bearer",
                         ]
                     );
@@ -233,7 +239,10 @@ return function (App $app): void {
                         \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
                         $payload = \Spieldose\Utils::getJSONPayload(
                             [
-                                "accessToken" => $accessToken,
+                                "accessToken" => [
+                                    "token" => $accessToken,
+                                    "expiresAtTimestamp" => $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds(),
+                                ],
                                 "tokenType" => "Bearer",
                             ]
                         );
