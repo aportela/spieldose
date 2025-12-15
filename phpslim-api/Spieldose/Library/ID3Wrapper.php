@@ -71,25 +71,34 @@ class ID3Wrapper
     }
 
     // convert $str to UTF-8 string (if required)
-    private function toUTF8(string $str): ?string
+    private function toUTF8(string|null $str): string|null
     {
-        if ($str !== '' && $str !== '0') {
+        if ($str !== null && $str !== '' && $str !== '0') {
             if (mb_check_encoding($str, 'UTF-8')) {
                 return $str;
             } else {
-                $encoding = mb_detect_encoding($str, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-                if ($encoding !== false) {
-                    return ($encoding !== 'UTF-8' ? mb_convert_encoding($str, 'UTF-8', $encoding) : $str);
+                $encoding = mb_detect_encoding($str, null, true);
+                if (is_string($encoding)) {
+                    if ($encoding !== 'UTF-8') {
+                        $encoded = mb_convert_encoding($str, 'UTF-8', $encoding);
+                        if (is_string($encoded)) {
+                            return $encoded;
+                        } else {
+                            throw new \RuntimeException("ID3Wrapper::toUTF8() - mb_convert_encoding failed");
+                        }
+                    } else {
+                        return $str;
+                    }
                 } else {
-                    throw new \RuntimeException("Invalid encoding");
+                    throw new \RuntimeException("ID3Wrapper::toUTF8() - mb_detect_encoding failed");
                 }
             }
         } else {
-            return (null);
+            return null;
         }
     }
 
-    private function getTag(\Spieldose\Library\ID3TAGType $id3TAGType): mixed
+    private function getTag(\Spieldose\Library\ID3TAGType $id3TAGType): string|int|null
     {
         switch ($id3TAGType) {
             case \Spieldose\Library\ID3TAGType::TITLE:
