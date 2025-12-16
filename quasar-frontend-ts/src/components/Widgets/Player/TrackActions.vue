@@ -12,9 +12,9 @@
           :color="currentPlayListsStore.playerRepeatMode !== 'none' ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Toggle favorite track')"
         @click="onToggleFavorite"><q-icon name="favorite"
-          :color="currentPlaylistItemStore.trackFavorited ? 'pink' : ''"></q-icon></q-btn>
+          :color="currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.favorited ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Download track')"
-        v-if="currentPlaylistItemStore.trackDownloadURL" :href="currentPlaylistItemStore.trackDownloadURL"><q-icon
+        v-if="currentPlayListsStore.currentFileId" :href="currentPlayListsStore.currentFileId"><q-icon
           name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable :title="t('Download track')" v-else><q-icon
           name="file_download"></q-icon></q-btn>
@@ -28,94 +28,92 @@
 </template>
 
 <script setup lang="ts">
-// TODO: translations
-import { computed } from "vue";
-import { useI18n } from "vue-i18n";
-//import { bus } from "src/composables/bus";
-import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
+  // TODO: translations
+  import { computed } from "vue";
+  import { useI18n } from "vue-i18n";
+  //import { bus } from "src/composables/bus";
+  import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 
-import { useCurrentPlaylistItemStore } from 'src/stores/currentPlaylistItem';
-import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+  import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
-const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
+  const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
-const currentPlaylistItemStore = useCurrentPlaylistItemStore();
-const currentPlayListsStore = useCurrentPlayListsStore();
+  const currentPlayListsStore = useCurrentPlayListsStore();
 
-const { t } = useI18n();
+  const { t } = useI18n();
 
-defineProps({
-  disabled: {
-    type: Boolean,
-    required: false,
-    default: false
+  defineProps({
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  });
+
+  const repeatModeIcon = computed(() => {
+    let icon = null;
+    switch (currentPlayListsStore.playerRepeatMode) {
+      case 'track':
+        icon = 'music_note';
+        break;
+      case 'playList':
+        icon = 'queue_music';
+        break;
+      default:
+        icon = 'replay';
+        break;
+    }
+    return (icon);
+  });
+
+  const repeatModeLabel = computed(() => {
+    let label = null;
+    switch (currentPlayListsStore.playerRepeatMode) {
+      case 'track':
+        label = 'Repeat mode: track';
+        break;
+      case 'playList':
+        label = 'Repeat mode: playlist';
+        break;
+      default:
+        label = 'Repeat mode: none';
+        break;
+    }
+    return (label);
+  });
+
+  function onToggleAnalyzer() {
+    sidebarSpectrumAnalyzerSettingsStore.setVisible(!sidebarSpectrumAnalyzerSettingsStore.visible);
   }
-});
 
-const repeatModeIcon = computed(() => {
-  let icon = null;
-  switch (currentPlayListsStore.playerRepeatMode) {
-    case 'track':
-      icon = 'music_note';
-      break;
-    case 'playList':
-      icon = 'queue_music';
-      break;
-    default:
-      icon = 'replay';
-      break;
+  function onToggleVisualization() {
+    //bus.emit('showFullScreenVisualization');
   }
-  return (icon);
-});
 
-const repeatModeLabel = computed(() => {
-  let label = null;
-  switch (currentPlayListsStore.playerRepeatMode) {
-    case 'track':
-      label = 'Repeat mode: track';
-      break;
-    case 'playList':
-      label = 'Repeat mode: playlist';
-      break;
-    default:
-      label = 'Repeat mode: none';
-      break;
+  function onToggleShuffle() {
+    currentPlayListsStore.togglePlayerShuffeMode();
   }
-  return (label);
-});
 
-function onToggleAnalyzer() {
-  sidebarSpectrumAnalyzerSettingsStore.setVisible(!sidebarSpectrumAnalyzerSettingsStore.visible);
-}
-
-function onToggleVisualization() {
-  //bus.emit('showFullScreenVisualization');
-}
-
-function onToggleShuffle() {
-  currentPlayListsStore.togglePlayerShuffeMode();
-}
-
-function onToggleRepeatMode() {
-  currentPlayListsStore.togglePlayerRepeatMode();
-}
-
-async function onToggleFavorite() {
-  try {
-    await currentPlaylistItemStore.toggleFavoriteTrack();
-  } catch (e: unknown) {
-    console.error("Error toggling favorite", e);
+  function onToggleRepeatMode() {
+    currentPlayListsStore.togglePlayerRepeatMode();
   }
-}
 
-function onShowTrackDetailsModal() {
-  //emit('toggleTrackDetailsModal');
-}
+  function onToggleFavorite() {
+    try {
+      currentPlayListsStore.toggleCurrentActivePlayListItemFavorite();
+    } catch (e: unknown) {
+      console.error("Error toggling favorite", e);
+    }
+  }
+
+  function onShowTrackDetailsModal() {
+    //emit('toggleTrackDetailsModal');
+  }
 
 </script>
 
 <style lang="css">
-div#current_track_actions {
-  padding: 1rem;
-}
+  div#current_track_actions {
+    padding: 1rem;
+  }
 </style>

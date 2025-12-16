@@ -471,6 +471,13 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       console.log('toggleFavoritePlayListItem', playListIndex, playListItemIndex);
       return false;
     },
+    toggleCurrentActivePlayListItemFavorite(): boolean {
+      console.log('toggleCurrentActivePlayListItemFavorite');
+      return this.toggleFavoritePlayListItem(
+        this.activePlayListIndex,
+        this.activePlayListItemIndex,
+      );
+    },
   },
 });
 

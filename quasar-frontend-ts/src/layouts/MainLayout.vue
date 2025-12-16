@@ -13,7 +13,7 @@
         <q-btn type="button" no-caps no-wrap align="left" outline :label="searchButtonLabel" icon="search"
           class="full-width no-caps theme-default-q-btn" v-if="miniSidebarCurrentMode">
           <DesktopToolTip anchor="bottom middle" self="top middle">{{ t("Click to open fast search")
-            }}</DesktopToolTip>
+          }}</DesktopToolTip>
         </q-btn>
         <!--
         <FastSearchSelector dense class="full-width"></FastSearchSelector>
@@ -48,11 +48,11 @@
           <SidebarSpectrumAnalyzer />
         </div>
         <div style="width: 30em" class="q-ml-sm text-dark">
-          <p class="q-mb-none">{{ currentPlaylistItemStore.trackTitle }}</p>
-          <p>by {{ currentPlaylistItemStore.trackArtistName }}</p>
-          <p class="q-mb-none">{{ currentPlaylistItemStore.trackAlbumTitle }} ({{
-            currentPlaylistItemStore.trackAlbumYear }})</p>
-          <p>by {{ currentPlaylistItemStore.trackAlbumArtistName }}</p>
+          <p class="q-mb-none">{{ currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.title }}</p>
+          <p>by {{ currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.artist.name }}</p>
+          <p class="q-mb-none">{{ currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.album.title }} ({{
+            currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.album.year }})</p>
+          <p>by {{ currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.album.artist.name }}</p>
         </div>
         <MainControls />
         <div style="width: 25%;">
@@ -87,7 +87,6 @@
   //import { default as TrackImage } from "src/components/TrackImage.vue";
   //import { default as Vinyl } from "src/components/Widgets/Visualizations/Vinyl.vue";
   import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
-  import { useCurrentPlaylistItemStore } from "src/stores/currentPlaylistItem";
 
   import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
 
@@ -95,9 +94,6 @@
 
 
   const { t } = useI18n();
-
-
-  const currentPlaylistItemStore = useCurrentPlaylistItemStore();
 
 
   const lockminiSidebarCurrentModeMode = ref<boolean>(false);

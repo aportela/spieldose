@@ -1,4 +1,4 @@
-import { api } from "src/composables/api";
+import { api } from 'src/composables/api';
 
 const setFavoriteTrack = async (id: string) => {
   try {
