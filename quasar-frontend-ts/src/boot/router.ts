@@ -25,7 +25,10 @@ export default defineBoot(async ({ router }) => {
   setInterval(() => {
     refreshAccessTokenIfNeeded()
       .then(() => {})
-      .catch(() => {});
+      .catch((e: Error) => {
+        console.error('An unhandled exception occurred during access token refresh', e);
+      })
+      .finally(() => {});
   }, accessTokenCheckInterval * 1000);
 
   router.beforeEach((to, _from, next) => {
