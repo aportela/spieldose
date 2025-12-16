@@ -146,6 +146,7 @@
   }
 
   let animationId: number | null = null;
+  let lastAngle: number = -1;
 
   const refreshVuMeter = (timestamp: number) => {
     const elapsed = timestamp - lastTime;
@@ -159,7 +160,10 @@
       //
       const energy = smoothEnergy(analyzerInstance.value!.getEnergy());
       const angle = mapEnergyToAngle(energy);
-      drawCanvasVuMeterBar(angle);
+      if (angle != lastAngle) {
+        drawCanvasVuMeterBar(angle);
+        lastAngle = angle;
+      }
     }
     // TODO: limit fps
     animationId = requestAnimationFrame(refreshVuMeter);
