@@ -49,9 +49,8 @@ export const useSessionStore = defineStore('sessionStore', {
         return true;
       } catch (e: unknown) {
         if (e instanceof AxiosError) {
-          // TODO: replace with e.response?.status ???
-          if (e.status !== 401) {
-            // 401 is the "normal" error response if we do not have a previous refresh token
+          if (e.response?.status !== 401) {
+            // 401 is the "normal" error response if we do not have a previous refresh token or refresh token is expired
             console.error('Invalid error http response code', e.status);
           }
         } else {
