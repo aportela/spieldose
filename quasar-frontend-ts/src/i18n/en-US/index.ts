@@ -27,7 +27,11 @@ export default {
   'Field is required': 'Field is required',
   'Show password': 'Show password',
 
+  'Collapse sidebar': 'Collapse sidebar',
+  'Expand sidebar': 'Expand sidebar',
+  'Click to open fast search': 'Click to open fast search',
   'Search on Spieldose...': 'Search on Spieldose...',
+
   Search: 'Search',
   Home: 'Home',
   Explore: 'Explore',
