@@ -3,24 +3,26 @@
     <BreadCrumb icon="queue_music" label="Current playlist" />
     <q-card class="q-pa-lg">
       <q-btn-group spread class="q-mb-md">
-        <q-btn size="md" no-caps outline color="dark" label="New" icon="add" @click="onNew" />
-        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear"
-          :disable="!currentPlayListsStore.hasPlayLists" @click="onEmpty" />
-        <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt"
-          :disable="!currentPlayListsStore.hasPlayLists" @click="onDiscover" />
-        <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle" :disable="true"
-          @click="onRandomize" />
-        <q-btn size="md" no-caps outline color="dark" label="Previous" icon="skip_previous"
-          :disable="!currentPlayListsStore.allowSkipPreviousItemOnActivePlayList" @click="onSkipPrevious" />
-        <q-btn size="md" no-caps outline color="dark" label="Play" icon="play_arrow"
-          :disable="currentPlayListsStore.playerIsPlaying" @click="onPlay" />
-        <q-btn size="md" no-caps outline color="dark" label="Pause" icon="pause"
-          :disable="currentPlayListsStore.playerIsPaused" @click="onPause" />
-        <q-btn size="md" no-caps outline color="dark" label="Stop" icon="stop"
-          :disable="currentPlayListsStore.playerIsStopped" @click="onStop" />
-        <q-btn size="md" no-caps outline color="dark" label="Next" icon="skip_next"
-          :disable="!currentPlayListsStore.allowSkipNextItemOnActivePlayList" @click="onSkipNext" />
-        <PlayListColumnSettingsButton />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'New' : undefined" title="New"
+          icon="add" @click="onNew" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Clear' : undefined"
+          title="Clear" icon="clear" :disable="!currentPlayListsStore.hasPlayLists" @click="onEmpty" />
+        <q-btn size=" md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Discover' : undefined"
+          title="Discover" icon="bolt" :disable="!currentPlayListsStore.hasPlayLists" @click="onDiscover" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Randomize' : undefined"
+          title="Randomize" icon="shuffle" :disable="true" @click="onRandomize" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Previous' : undefined"
+          title="Previous" icon="skip_previous" :disable="!currentPlayListsStore.allowSkipPreviousItemOnActivePlayList"
+          @click="onSkipPrevious" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Play' : undefined" title="Play"
+          icon="play_arrow" :disable="currentPlayListsStore.playerIsPlaying" @click="onPlay" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Pause' : undefined"
+          title="Pause" icon="pause" :disable="currentPlayListsStore.playerIsPaused" @click="onPause" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Stop' : undefined" title="Stop"
+          icon="stop" :disable="currentPlayListsStore.playerIsStopped" @click="onStop" />
+        <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Next' : undefined" title="Next"
+          icon="skip_next" :disable="!currentPlayListsStore.allowSkipNextItemOnActivePlayList" @click="onSkipNext" />
+        <PlayListColumnSettingsButton :label="showTopButtonBarLabels ? 'Columns' : null" title="Column settings" />
       </q-btn-group>
 
       <div v-if="currentPlayListsStore.hasPlayLists">
@@ -72,7 +74,8 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { ref, computed } from "vue";
+  import { useQuasar } from "quasar";
   //import { useI18n } from "vue-i18n";
   import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
   import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
@@ -83,6 +86,9 @@
 
   const currentPlayListsStore = useCurrentPlayListsStore();
 
+  const { screen } = useQuasar();
+
+  const showTopButtonBarLabels = computed(() => screen.gt.lg);
   const tab = computed({
     get() {
       return currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.selectedPlayListIndex]?.id ?? null : null;

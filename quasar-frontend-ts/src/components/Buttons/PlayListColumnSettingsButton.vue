@@ -1,5 +1,5 @@
 <template>
-  <q-btn-dropdown outline no-caps label="Columns" icon="settings">
+  <q-btn-dropdown outline no-caps :label="label ?? undefined" icon="settings" :title="title ?? undefined">
     <q-list>
       <q-item dense v-for="column in playListVisibleColumnsStore.availableColumnDefinitions" :key="column.name"
         v-show="column.name !== 'index'" clickable @click="onToggleColumnVisibility(column.name)">
@@ -15,6 +15,13 @@
 
 <script setup lang="ts">
   import { type PlayListTableColumnName, usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
+
+  interface PlayListColumnSettingsButtonProps {
+    label?: string | null;
+    title?: string | null;
+  };
+
+  defineProps<PlayListColumnSettingsButtonProps>();
 
   const playListVisibleColumnsStore = usePlayListVisibleColumnsStore();
 
