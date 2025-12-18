@@ -323,6 +323,12 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.playLists = response.data.playLists.map(
         (playList: PlayList) => new PlayListClass(playList.id, playList.name, playList.items),
       );
+      response.data.playLists.forEach((playList, index: number) => {
+        if (playList.flags.actived) {
+          this.activePlayListItemIndex = index;
+          this.selectedPlayListIndex = index;
+        }
+      });
     },
     async add(id: string, name: string) {
       const PlayList: AddPlayListResponse = await api.playList.add(id, name);

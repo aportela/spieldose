@@ -877,11 +877,6 @@ return function (App $app): void {
                 $payload = json_encode(
                     [
                         "playLists" => \Spieldose\PlayList\PlayList::getCurrentPlayLists($dbh, \Spieldose\UserSession::getUserId()),
-                        "current" => [
-                            "id" => null,
-                            "itemIndex" => 0,
-                            "itemPosition" => 0,
-                        ]
                     ],
                 );
                 if (json_last_error() !== JSON_ERROR_NONE) {

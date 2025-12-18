@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Spieldose\PlayList;
 
+use Rector\TypeDeclaration\Rector\ClassMethod\ReturnNeverTypeRector;
+
 final class PlayList
 {
     public string $id;
@@ -28,7 +30,7 @@ final class PlayList
         $this->id = $id;
         $this->name = $name;
         $this->items = [];
-        $this->flags = new \Spieldose\PlayList\PlayListFlags(false, false, false, false, false);
+        $this->flags = new \Spieldose\PlayList\PlayListFlags(false, false, false, false, false, false);
     }
 
     public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -36,38 +38,53 @@ final class PlayList
         if (mb_strlen($userId) !== 36) {
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
-        $this->createdAt = intval(microtime(true) * 1000);
-        $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, false, false, false);
         if ($dbh->execute(
             "
+                UPDATE USER_PLAYLIST
+                    SET actived = NULL
+                WHERE user_id = :user_id AND playlist_id <> :playlist_id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+            ]
+        )) {
+            $this->createdAt = intval(microtime(true) * 1000);
+            $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, true, false, false, false);
+            if ($dbh->execute(
+                "
                 INSERT INTO PLAYLIST
                     (id, name, user_id, ctime, mtime)
                 VALUES
                     (:id, :name, :user_id, :ctime, NULL)
             ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
-            ]
-        )) {
-            return ($dbh->execute(
-                "
-                INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, published, shared, favorites)
-                VALUES
-                    (:user_id, :playlist_id, :opened, :published, :shared, :favorites)
-            ",
                 [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                    $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
-                    $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
-                    $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
-                    $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
                 ]
-            ));
+            )) {
+                return ($dbh->execute(
+                    "
+                INSERT INTO USER_PLAYLIST
+                    (user_id, playlist_id, opened, actived, published, shared, favorites)
+                VALUES
+                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites)
+            ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                        $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
+                        $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
+                        $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
+                        $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
+                        $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
+                    ]
+                ));
+            } else {
+                return (false);
+            }
         } else {
             return (false);
         }
@@ -115,14 +132,14 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.name, P.ctime, P.mtime, P.user_id AS userId, UP.opened, UP.published, UP.shared
+                    P.name, P.ctime, P.mtime, P.user_id AS userId, UP.opened, UP.actived, UP.published, UP.shared
                 FROM PLAYLIST P
                 INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.user_id = P.user_id
                 WHERE
                     P.id = :id
                 UNION
                 SELECT
-                    P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, NULL AS opened, NULL AS published, NULL AS shared
+                    P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, NULL AS opened, NULL AS actived, NULL AS published, NULL AS shared
                 FROM PLAYLIST P
                 INNER JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.shared IS NOT NULL
                 WHERE
@@ -141,6 +158,7 @@ final class PlayList
             $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $this->id);
             $this->flags->isMine = $userId == $results[0]->userId;
             $this->flags->opened = is_numeric($results[0]->opened);
+            $this->flags->actived = is_numeric($results[0]->actived);
             $this->flags->published = is_numeric($results[0]->published);
             $this->flags->shared = is_numeric($results[0]->shared);
             $this->flags->isFavorites = $this->flags->isMine && $this->id === $userId; // favorites playlist has same uuid of the user
@@ -151,23 +169,38 @@ final class PlayList
 
     public function open(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
     {
-        return ($dbh->execute(
+        if ($dbh->execute(
             "
-                INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, published, shared, favorites)
-                VALUES
-                    (:user_id, :playlist_id, :opened, NULL, NULL, NULL)
-                ON CONFLICT (user_id, playlist_id) DO
-                UPDATE
-                    SET
-                        :opened = :opened,
+                UPDATE USER_PLAYLIST
+                    SET actived = NULL
+                WHERE user_id = :user_id AND playlist_id <> :playlist_id
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", intval(microtime(true) * 1000)),
             ]
-        ));
+        )) {
+            return ($dbh->execute(
+                "
+                INSERT INTO USER_PLAYLIST
+                    (user_id, playlist_id, opened, actived, published, shared, favorites)
+                VALUES
+                    (:user_id, :playlist_id, :current_timestamp, :current_timestamp NULL, NULL, NULL)
+                ON CONFLICT (user_id, playlist_id) DO
+                UPDATE
+                    SET
+                        :opened = :current_timestamp,
+                        :actived = :current_timestamp,
+            ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                    new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+                ]
+            ));
+        } else {
+            return (false);
+        }
     }
 
     public function close(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -175,13 +208,14 @@ final class PlayList
         return ($dbh->execute(
             "
                 INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, published, shared, favorites)
+                    (user_id, playlist_id, opened, actived, published, shared, favorites)
                 VALUES
-                    (:user_id, :playlist_id, NULL, NULL, NULL, NULL)
+                    (:user_id, :playlist_id, NULL, NULL, NULL, NULL, NULL)
                 ON CONFLICT (user_id, playlist_id) DO
                 UPDATE
                     SET
-                        :opened = NULL
+                        opened = NULL,
+                        actived = NULL
 
             ",
             [
@@ -259,7 +293,7 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.id, P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.published, UP.shared
+                    P.id, P.name, P.ctime AS createdAt, P.mtime AS updatedAt, P.user_id AS userId, UP.opened, UP.actived, UP.published, UP.shared
                 FROM USER_PLAYLIST UP
                 INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
@@ -277,6 +311,7 @@ final class PlayList
             $playList = new \Spieldose\PlayList\PlayList($result->id, $result->name);
             $playList->flags->isMine = $userId == $result->userId;
             $playList->flags->opened = is_numeric($result->opened);
+            $playList->flags->actived = is_numeric($result->actived);
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;

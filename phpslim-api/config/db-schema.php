@@ -282,6 +282,7 @@ return ([
                 user_id TEXT NOT NULL CHECK(length(user_id) == 36),
                 playlist_id TEXT NOT NULL CHECK(length(user_id) == 36),
                 opened INTEGER,
+                actived INTEGER,
                 published INTEGER,
                 shared INTEGER,
                 favorites INTEGER,
