@@ -34,7 +34,8 @@
         <div v-if="currentPlayListsStore.hasPlayLists">
           <q-tabs dense align="left" v-model="tab" indicator-color="pink">
             <q-tab no-caps v-for="playList, playListIndex in currentPlayListsStore.playLists" :key="playList.id"
-              :name="playList.id">
+              :name="playList.id"
+              :class="{ 'bg-grey-3': playListIndex === currentPlayListsStore.selectedPlayListIndex }">
               <q-badge :color="currentPlayListsStore.playLists[playListIndex]?.items.length ? 'grey-7' : 'red'"
                 floating>{{
                   currentPlayListsStore.playLists[playListIndex]?.items.length
