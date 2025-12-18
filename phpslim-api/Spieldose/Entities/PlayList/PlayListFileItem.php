@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\PlayList;
+namespace Spieldose\Entities\PlayList;
 
 final class PlayListFileItem extends PlayListItem
 {
@@ -59,27 +59,20 @@ final class PlayListFileItem extends PlayListItem
             $file->trackInfo->album->artist->name = $result->artist;
             $file->trackInfo->imageURL = new \stdClass();
             $file->trackInfo->favorited = $result->ftime ? intval($result->ftime) : null;
-            if (! empty($result->cover_filename)) {
-                $file->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
-                $file->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
-            } elseif (! empty($result->release_mbid)) {
-                $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $result->release_mbid);
-                $file->trackInfo->imageURL->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
-                $file->trackInfo->imageURL->normal = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
-            } else {
-                $file->trackInfo->imageURL->small = null;
-                $file->trackInfo->imageURL->normal = null;
-            }
             $playListFileItem = new PlayListFileItem($file);
             if (! empty($result->cover_filename)) {
-                $playListFileItem->images->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
-                $playListFileItem->images->medium = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
-                $playListFileItem->images->big = "api2/local_thumbnail?width=800&height=800&quality=90&pathId=" . $result->directoryPathId;
+                $playListFileItem->images->set(
+                    "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId,
+                    "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId,
+                    "api2/local_thumbnail?width=800&height=800&quality=90&pathId=" . $result->directoryPathId
+                );
             } elseif (! empty($result->release_mbid)) {
                 $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $result->release_mbid);
-                $playListFileItem->images->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
-                $playListFileItem->images->medium = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
-                $playListFileItem->images->big = "api2/remote_thumbnail?width=800&height=800&quality=90&url=" . urlencode($coverUrl);
+                $playListFileItem->images->set(
+                    "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl),
+                    "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl),
+                    "api2/remote_thumbnail?width=800&height=800&quality=90&url=" . urlencode($coverUrl),
+                );
             }
             $playlistItems[] = $playListFileItem;
         }
@@ -127,27 +120,20 @@ final class PlayListFileItem extends PlayListItem
             $file->trackInfo->album->artist->name = $result->artist;
             $file->trackInfo->imageURL = new \stdClass();
             $file->trackInfo->favorited = $result->ftime ? intval($result->ftime) : null;
-            if (! empty($result->cover_filename)) {
-                $file->trackInfo->imageURL->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
-                $file->trackInfo->imageURL->normal = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
-            } elseif (! empty($result->release_mbid)) {
-                $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $result->release_mbid);
-                $file->trackInfo->imageURL->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
-                $file->trackInfo->imageURL->normal = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
-            } else {
-                $file->trackInfo->imageURL->small = null;
-                $file->trackInfo->imageURL->normal = null;
-            }
             $playListFileItem = new PlayListFileItem($file);
             if (! empty($result->cover_filename)) {
-                $playListFileItem->images->small = "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId;
-                $playListFileItem->images->medium = "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId;
-                $playListFileItem->images->big = "api2/local_thumbnail?width=800&height=800&quality=90&pathId=" . $result->directoryPathId;
+                $playListFileItem->images->set(
+                    "api2/local_thumbnail?width=100&height=100&quality=90&pathId=" . $result->directoryPathId,
+                    "api2/local_thumbnail?width=400&height=400&quality=90&pathId=" . $result->directoryPathId,
+                    "api2/local_thumbnail?width=800&height=800&quality=90&pathId=" . $result->directoryPathId
+                );
             } elseif (! empty($result->release_mbid)) {
                 $coverUrl = sprintf('https://coverartarchive.org/release/%s/front-500', $result->release_mbid);
-                $playListFileItem->images->small = "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl);
-                $playListFileItem->images->medium = "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl);
-                $playListFileItem->images->big = "api2/remote_thumbnail?width=800&height=800&quality=90&url=" . urlencode($coverUrl);
+                $playListFileItem->images->set(
+                    "api2/remote_thumbnail?width=100&height=100&quality=90&url=" . urlencode($coverUrl),
+                    "api2/remote_thumbnail?width=400&height=400&quality=90&url=" . urlencode($coverUrl),
+                    "api2/remote_thumbnail?width=800&height=800&quality=90&url=" . urlencode($coverUrl),
+                );
             }
             $playlistItems[] = $playListFileItem;
         }

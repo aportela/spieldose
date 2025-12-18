@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\PlayList;
-
-use Rector\TypeDeclaration\Rector\ClassMethod\ReturnNeverTypeRector;
+namespace Spieldose\Entities\PlayList;
 
 final class PlayList
 {

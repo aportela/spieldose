@@ -790,7 +790,7 @@ return function (App $app): void {
                     throw new \Spieldose\Exception\InvalidParamsException("name");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\PlayList\PlayList(
+                    $playlist = new \Spieldose\Entities\PlayList\PlayList(
                         $args['id'],
                         $params["name"]
                     );
@@ -819,7 +819,7 @@ return function (App $app): void {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\PlayList\PlayList(
+                    $playlist = new \Spieldose\Entities\PlayList\PlayList(
                         $args['id'],
                         ""
                     );
@@ -848,7 +848,7 @@ return function (App $app): void {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\PlayList\PlayList(
+                    $playlist = new \Spieldose\Entities\PlayList\PlayList(
                         $args['id'],
                         ""
                     );
@@ -874,7 +874,7 @@ return function (App $app): void {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
                 if (!empty($args['id'])) {
-                    $playlist = new \Spieldose\PlayList\PlayList(
+                    $playlist = new \Spieldose\Entities\PlayList\PlayList(
                         $args['id'],
                         "",
                     );
@@ -902,7 +902,7 @@ return function (App $app): void {
                 }
                 $payload = json_encode(
                     [
-                        "playLists" => \Spieldose\PlayList\PlayList::getCurrentPlayLists($dbh, \Spieldose\UserSession::getUserId()),
+                        "playLists" => \Spieldose\Entities\PlayList\PlayList::getCurrentPlayLists($dbh, \Spieldose\UserSession::getUserId()),
                     ],
                 );
                 if (json_last_error() !== JSON_ERROR_NONE) {
