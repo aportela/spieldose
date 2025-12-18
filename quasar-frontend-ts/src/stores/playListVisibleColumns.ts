@@ -39,12 +39,12 @@ const availablePlayListTableColumns: PlayListTableColumn[] = [
     label: 'Album',
   },
   {
-    name: 'albumArtist',
-    label: 'Album artist',
-  },
-  {
     name: 'albumTrackNumber',
     label: 'Track album number',
+  },
+  {
+    name: 'albumArtist',
+    label: 'Album artist',
   },
   {
     name: 'year',
