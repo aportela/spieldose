@@ -34,9 +34,9 @@
         </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTrackNumberColumnVisible">0</td>
         <td v-if="playListVisibleColumnsStore.isAlbumArtistColumnVisible">{{ item.file?.trackInfo.album.artist.name
-        }}
+          }}
         </td>
-        <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year }}</td>
+        <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year || '' }}</td>
         <td v-if="playListVisibleColumnsStore.isActionsColumnVisible">
           <q-btn-group outline>
             <q-btn class="q-pa-xs" size="sm" icon="north" title="Up" data-button-action="up"
