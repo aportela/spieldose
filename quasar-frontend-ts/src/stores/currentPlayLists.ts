@@ -381,11 +381,15 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     },
     async removePlayListAtIndex(playListIndex: number) {
       console.log('removePlayListAtIndex', playListIndex);
+      if (playListIndex === this.activePlayListIndex) {
+        this.playerActionStop();
+      }
       await api.playList.remove(this.playLists[playListIndex]!.id);
       this.playLists = this.playLists.filter(
         (playList) => playList.id !== this.playLists[playListIndex]!.id,
       );
-      this.activePlayListIndex = 0;
+      this.selectedPlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
+      this.activePlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
     },
     selectPlayListItem(playListIndex: number, playListItemIndex: number): boolean {
       console.log('selectPlayListItem', playListIndex, playListItemIndex);
