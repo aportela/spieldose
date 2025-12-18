@@ -38,48 +38,52 @@ final class PlayList
         if (mb_strlen($userId) !== 36) {
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
+        $this->createdAt = intval(microtime(true) * 1000);
+        $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, true, false, false, false);
         if ($dbh->execute(
             "
-                UPDATE USER_PLAYLIST
-                    SET actived = NULL
-                WHERE user_id = :user_id AND playlist_id <> :playlist_id
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-            ]
-        )) {
-            $this->createdAt = intval(microtime(true) * 1000);
-            $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, true, false, false, false);
-            if ($dbh->execute(
-                "
                 INSERT INTO PLAYLIST
                     (id, name, user_id, ctime, mtime)
                 VALUES
                     (:id, :name, :user_id, :ctime, NULL)
             ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
+            ]
+        )) {
+            if ($dbh->execute(
+                "
+                    INSERT INTO USER_PLAYLIST
+                        (user_id, playlist_id, opened, actived, published, shared, favorites)
+                    VALUES
+                        (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites)
+                ",
                 [
-                    new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":name", $this->name),
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":ctime", $this->createdAt)
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                    $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
+                    $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
+                    $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
+                    $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
+                    $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
                 ]
             )) {
+
                 return ($dbh->execute(
                     "
-                INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, actived, published, shared, favorites)
-                VALUES
-                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites)
-            ",
+                        UPDATE USER_PLAYLIST
+                            SET actived = NULL
+                        WHERE
+                            user_id = :user_id
+                        AND
+                            playlist_id <> :playlist_id
+                    ",
                     [
                         new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                        $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
-                        $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
-                        $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
-                        $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
-                        $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $this->createdAt) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
                     ]
                 ));
             } else {
@@ -122,6 +126,7 @@ final class PlayList
             ",
                 $params
             ));
+            // TODO: set another current active playlist (default = 0 ?)
         } else {
             return (false);
         }
@@ -171,17 +176,6 @@ final class PlayList
     {
         if ($dbh->execute(
             "
-                UPDATE USER_PLAYLIST
-                    SET actived = NULL
-                WHERE user_id = :user_id AND playlist_id <> :playlist_id
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-            ]
-        )) {
-            return ($dbh->execute(
-                "
                 INSERT INTO USER_PLAYLIST
                     (user_id, playlist_id, opened, actived, published, shared, favorites)
                 VALUES
@@ -192,10 +186,24 @@ final class PlayList
                         :opened = :current_timestamp,
                         :actived = :current_timestamp,
             ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
+            ]
+        )) {
+            return ($dbh->execute(
+                "
+                    UPDATE USER_PLAYLIST
+                        SET actived = NULL
+                    WHERE
+                        user_id = :user_id
+                    AND
+                        playlist_id <> :playlist_id
+                ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                    new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                 ]
             ));
         } else {
@@ -223,6 +231,7 @@ final class PlayList
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
             ]
         ));
+        // TODO: set another current active playlist (default = 0 ?)
     }
 
     public function randomFill(\aportela\DatabaseWrapper\DB $dbh, int $count): bool
@@ -269,7 +278,10 @@ final class PlayList
                     INSERT INTO FILE_FAVORITE
                         (file_id, user_id, ftime)
                     VALUES
-                        (:file_id, :user_id, :current_timestamp) ON CONFLICT (file_id, user_id) DO UPDATE SET ftime = :ftime
+                        (:file_id, :user_id, :current_timestamp)
+                    ON CONFLICT (file_id, user_id) DO
+                    UPDATE SET
+                        ftime = :ftime
                 ";
                 $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":ftime", intval(microtime(true) * 1000));
             } else {
