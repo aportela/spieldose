@@ -1,4 +1,4 @@
-import { axiosInstance } from "src/composables/axios";
+import { axiosInstance } from 'src/composables/axios';
 
 interface LoginParams {
   email: string;
@@ -13,28 +13,28 @@ interface RegisterParams {
 
 const api = {
   common: {
-    getServerEnvironment: () => axiosInstance.get("/server_environment"),
+    getServerEnvironment: () => axiosInstance.get('/server_environment'),
   },
   auth: {
     login: (email: string, password: string) => {
       const params: LoginParams = { email, password };
-      return axiosInstance.post("/auth/login", params);
+      return axiosInstance.post('/auth/login', params);
     },
-    renewAccessToken: () => axiosInstance.post("/auth/renew_access_token"),
-    logout: () => axiosInstance.post("/auth/logout"),
+    renewAccessToken: () => axiosInstance.post('/auth/renew_access_token'),
+    logout: () => axiosInstance.post('/auth/logout'),
     register: (id: string, email: string, password: string) => {
       const params: RegisterParams = { id, email, password };
-      return axiosInstance.post("/auth/register", params);
+      return axiosInstance.post('/auth/register', params);
     },
   },
   user: {
-    getProfile: () => axiosInstance.get("/user/profile"),
+    getProfile: () => axiosInstance.get('/user/profile'),
     setProfile: function (email: string, password: string) {
       const params = {
         email: email,
         password: password,
       };
-      return axiosInstance.put("/user/profile", params);
+      return axiosInstance.put('/user/profile', params);
     },
   },
   discover: {
@@ -58,7 +58,7 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/discover/artists", params);
+      return axiosInstance.post('/discover/artists', params);
     },
     album: function (
       filter: unknown,
@@ -80,13 +80,13 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/discover/albums", params);
+      return axiosInstance.post('/discover/albums', params);
     },
     path: function (libraryId: string) {
-      return axiosInstance.post("/browse/path/" + libraryId);
+      return axiosInstance.post('/browse/path/' + libraryId);
     },
     libraries: function () {
-      return axiosInstance.get("/browse/libraries");
+      return axiosInstance.get('/browse/libraries');
     },
   },
   browse: {
@@ -110,7 +110,7 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/browse/artists", params);
+      return axiosInstance.post('/browse/artists', params);
     },
     album: function (
       filter: unknown,
@@ -132,18 +132,18 @@ const api = {
         },
         skipCount: skipCount,
       };
-      return axiosInstance.post("/browse/albums", params);
+      return axiosInstance.post('/browse/albums', params);
     },
     path: function (libraryId: string) {
-      return axiosInstance.post("/browse/path/" + libraryId);
+      return axiosInstance.post('/browse/path/' + libraryId);
     },
     libraries: function () {
-      return axiosInstance.get("/browse/libraries");
+      return axiosInstance.get('/browse/libraries');
     },
   },
   file: {
     getRandom: function () {
-      return axiosInstance.get("/file/rnd");
+      return axiosInstance.get('/file/rnd');
     },
   },
   track: {
@@ -161,18 +161,21 @@ const api = {
     remove(id: string) {
       return axiosInstance.delete(`/playlist/${id}`);
     },
+    close(id: string) {
+      return axiosInstance.post(`/playlist/${id}/close`);
+    },
     randomFill(id: string) {
       return axiosInstance.post(`/playlist/${id}/random_fill`);
     },
     getCurrentPlayLists: function () {
-      return axiosInstance.get("/current_playlists");
+      return axiosInstance.get('/current_playlists');
     },
   },
   currentPlayList: {
     get: function () {
-      return axiosInstance.get("/current_playlist");
+      return axiosInstance.get('/current_playlist');
     },
-  }
+  },
 };
 
 export { api };

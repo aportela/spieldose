@@ -370,11 +370,17 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         return false;
       }
     },
-    closePlayListAtIndex(playListIndex: number) {
+    async closePlayListAtIndex(playListIndex: number) {
       console.log('closePlayListAtIndex', playListIndex);
-      this.playLists.splice(playListIndex, 1);
-      this.selectedPlayListIndex = 0;
-      // TODO: stop if remove active
+      if (playListIndex === this.activePlayListIndex) {
+        this.playerActionStop();
+      }
+      await api.playList.close(this.playLists[playListIndex]!.id);
+      this.playLists = this.playLists.filter(
+        (playList) => playList.id !== this.playLists[playListIndex]!.id,
+      );
+      this.selectedPlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
+      this.activePlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
     },
     savePlayListAtIndex(playListIndex: number) {
       console.log('savePlayListAtIndex', playListIndex);

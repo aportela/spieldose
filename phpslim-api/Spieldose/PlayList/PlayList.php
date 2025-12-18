@@ -213,7 +213,7 @@ final class PlayList
 
     public function close(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
     {
-        return ($dbh->execute(
+        if ($dbh->execute(
             "
                 INSERT INTO USER_PLAYLIST
                     (user_id, playlist_id, opened, actived, published, shared, favorites)
@@ -224,13 +224,28 @@ final class PlayList
                     SET
                         opened = NULL,
                         actived = NULL
-
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
             ]
-        ));
+        )) {
+            // if playlist was not saved (temporal playlist, delete after closing)
+            return ($dbh->execute(
+                "
+                    DELETE FROM USER_PLAYLIST
+                    WHERE user_id = :user_id
+                    AND playlist_id = :playlist_id
+                    AND published = NULL
+                ",
+                [
+                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                ]
+            ));
+        } else {
+            return (false);
+        }
         // TODO: set another current active playlist (default = 0 ?)
     }
 
