@@ -22,7 +22,7 @@
       </q-btn-group>
 
       <div v-if="playListsFound">
-        <q-tabs dense align="left" v-model="tab">
+        <q-tabs dense align="left" v-model="tab" indicator-color="pink">
           <q-tab no-caps v-for="playList, playListIndex in currentPlayListsStore.playLists" :key="playList.id"
             :name="playList.id">
             <q-badge :color="currentPlayListsStore.playLists[playListIndex]?.items.length ? 'grey-7' : 'red'"
