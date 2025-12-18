@@ -51,6 +51,7 @@ class Track extends \Spieldose\Entities\Entity
         }
     }
 
+    /*
     public function get(\aportela\DatabaseWrapper\DB $db): void
     {
         $fieldDefinitions = [
@@ -366,6 +367,8 @@ class Track extends \Spieldose\Entities\Entity
     /**
      * @return mixed[]
      */
+
+    /*
     public static function getRandomTrackIds(\aportela\DatabaseWrapper\DB $db, int $count = 32): array
     {
         $query = " SELECT F.id FROM FILE F ORDER BY RANDOM() LIMIT :count ";
@@ -453,4 +456,6 @@ class Track extends \Spieldose\Entities\Entity
             throw new \Spieldose\Exception\NotFoundException("Invalid musicBrainzAlbumId for id: " . $id);
         }
     }
+
+    */
 }

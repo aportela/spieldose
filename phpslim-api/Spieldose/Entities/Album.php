@@ -19,6 +19,7 @@ class Album extends \Spieldose\Entities\Entity
         $this->mbId = $mbId;
     }
 
+    /*
     public function get(\aportela\DatabaseWrapper\DB $db, bool $useLocalCovers = true, bool $scrap = true): void
     {
         if (!empty($this->mbId)) {
@@ -357,4 +358,5 @@ class Album extends \Spieldose\Entities\Entity
 
         return ($ids);
     }
+    */
 }

@@ -42,6 +42,7 @@ class Artist extends \Spieldose\Entities\Entity
     }
     */
 
+    /*
     public static function search(\aportela\DatabaseWrapper\DB $db, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, \aportela\DatabaseBrowserWrapper\Pager $pager): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
         // TODO: ignore ids like "/"
@@ -815,4 +816,5 @@ class Artist extends \Spieldose\Entities\Entity
             "
         ));
     }
+    */
 }
