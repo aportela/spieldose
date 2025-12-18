@@ -60,6 +60,8 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
+      distDir: '../phpslim-api/public',
+
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
@@ -102,8 +104,8 @@ export default defineConfig((ctx) => {
       open: true, // opens browser window automatically
       proxy: {
         // proxy all requests starting with /api to jsonplaceholder
-        "/api": {
-          target: "http://127.0.0.1:8081",
+        '/api': {
+          target: 'http://127.0.0.1:8081',
           changeOrigin: true,
         },
       },
