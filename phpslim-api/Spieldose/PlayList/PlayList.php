@@ -247,6 +247,7 @@ final class PlayList
                     new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
                 ]
             ));
+            // TODO: remove playlist && details
         } else {
             return (false);
         }
