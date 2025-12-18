@@ -15,7 +15,7 @@ final class PlayList
      */
     public array $items;
 
-    public \Spieldose\PlayList\PlayListFlags $flags;
+    public \Spieldose\Entities\PlayList\PlayListFlags $flags;
 
     public function __construct(string $id, string $name)
     {
@@ -28,7 +28,7 @@ final class PlayList
         $this->id = $id;
         $this->name = $name;
         $this->items = [];
-        $this->flags = new \Spieldose\PlayList\PlayListFlags(false, false, false, false, false, false);
+        $this->flags = new \Spieldose\Entities\PlayList\PlayListFlags(false, false, false, false, false, false);
     }
 
     public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
@@ -37,7 +37,7 @@ final class PlayList
             throw new \Spieldose\Exception\InvalidParamsException("userId");
         }
         $this->createdAt = intval(microtime(true) * 1000);
-        $this->flags = new \Spieldose\PlayList\PlayListFlags(true, true, true, false, false, false);
+        $this->flags = new \Spieldose\Entities\PlayList\PlayListFlags(true, true, true, false, false, false);
         if ($dbh->execute(
             "
                 INSERT INTO PLAYLIST
@@ -158,7 +158,7 @@ final class PlayList
             $this->name = $results[0]->name;
             $this->createdAt = intval($results[0]->ctime);
             $this->updatedAt = is_numeric($results[0]->mtime) ? intval($results[0]->mtime) : null;
-            $this->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $this->id);
+            $this->items = \Spieldose\Entities\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $this->id);
             $this->flags->isMine = $userId == $results[0]->userId;
             $this->flags->opened = is_numeric($results[0]->opened);
             $this->flags->actived = is_numeric($results[0]->actived);
@@ -338,14 +338,14 @@ final class PlayList
         );
         $playLists = [];
         foreach ($results as $result) {
-            $playList = new \Spieldose\PlayList\PlayList($result->id, $result->name);
+            $playList = new \Spieldose\Entities\PlayList\PlayList($result->id, $result->name);
             $playList->flags->isMine = $userId == $result->userId;
             $playList->flags->opened = is_numeric($result->opened);
             $playList->flags->actived = is_numeric($result->actived);
             $playList->flags->published = is_numeric($result->published);
             $playList->flags->shared = is_numeric($result->shared);
             $playList->flags->isFavorites = false;
-            $playList->items = \Spieldose\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $playList->id);
+            $playList->items = \Spieldose\Entities\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $playList->id);
             $playLists[] = $playList;
         }
         return ($playLists);
