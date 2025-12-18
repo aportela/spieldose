@@ -455,7 +455,7 @@ return function (App $app): void {
                     }
 
                     $skipCount = \Spieldose\RouteHelper::skipCountTrueParamFound($params);
-                    $browserResults = new \Spieldose\Browse\Artist($dbh)->browse(
+                    $browserResults = new \Spieldose\Browse\Artists($dbh)->browse(
                         \Spieldose\RouteHelper::getPagerFromParams($params),
                         \Spieldose\RouteHelper::getFilterFromParams($params),
                         \Spieldose\RouteHelper::getSortFromParams($params, "name", \aportela\DatabaseBrowserWrapper\Order::ASC, true),
@@ -488,7 +488,7 @@ return function (App $app): void {
                         throw new \Spieldose\Exception\InvalidParamsException();
                     }
                     $skipCount = \Spieldose\RouteHelper::skipCountTrueParamFound($params);
-                    $browserResults = new \Spieldose\Browse\Album($dbh)->browse(
+                    $browserResults = new \Spieldose\Browse\Albums($dbh)->browse(
                         \Spieldose\RouteHelper::getPagerFromParams($params),
                         \Spieldose\RouteHelper::getFilterFromParams($params),
                         \Spieldose\RouteHelper::getSortFromParams($params, "title", \aportela\DatabaseBrowserWrapper\Order::ASC, true),

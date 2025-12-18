@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Spieldose\Browse;
 
-class Artist extends \Spieldose\Browse\Base
+class Artists extends \Spieldose\Browse\Base
 {
     public function browse(\aportela\DatabaseBrowserWrapper\Pager $pager, \aportela\DatabaseBrowserWrapper\Filter $filter, \aportela\DatabaseBrowserWrapper\Sort $sort, bool $skipCount = false): \aportela\DatabaseBrowserWrapper\BrowserResults
     {
