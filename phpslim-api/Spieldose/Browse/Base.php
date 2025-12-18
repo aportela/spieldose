@@ -8,8 +8,14 @@ abstract class Base implements \Spieldose\Browse\IBrowse
 {
     public const int DEFAULT_RESULTS_PAGE = 32;
 
+    /**
+     * @var array<string,string> $fieldDefinitions
+     */
     protected array $fieldDefinitions;
 
+    /**
+     * @var array<string,string> $fieldCountDefinition
+     */
     protected array $fieldCountDefinition;
 
     protected \aportela\DatabaseBrowserWrapper\Pager $pager;
