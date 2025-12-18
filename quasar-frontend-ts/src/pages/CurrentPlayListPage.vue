@@ -4,8 +4,10 @@
     <q-card class="q-pa-lg">
       <q-btn-group spread class="q-mb-md">
         <q-btn size="md" no-caps outline color="dark" label="New" icon="add" @click="onNew" />
-        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear" @click="onEmpty" />
-        <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt" @click="onDiscover" />
+        <q-btn size="md" no-caps outline color="dark" label="Clear" icon="clear"
+          :disable="!currentPlayListsStore.hasPlayLists" @click="onEmpty" />
+        <q-btn size=" md" no-caps outline color="dark" label="Discover" icon="bolt"
+          :disable="!currentPlayListsStore.hasPlayLists" @click="onDiscover" />
         <q-btn size="md" no-caps outline color="dark" label="Randomize" icon="shuffle" :disable="true"
           @click="onRandomize" />
         <q-btn size="md" no-caps outline color="dark" label="Previous" icon="skip_previous"
