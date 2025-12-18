@@ -1,0 +1,1 @@
+.round{border:1px solid #222;border-radius:50%}.rotate{animation:rotation 8s linear infinite}@keyframes rotation{0%{transform:rotate(0)}to{transform:rotate(359deg)}}td.playlist-column-image{padding:0!important;width:4em}.zoom-infinite{animation:zoomEffect 2s ease-in-out infinite}@keyframes zoomEffect{0%{transform:scale(1)}50%{transform:scale(.8)}to{transform:scale(1)}}

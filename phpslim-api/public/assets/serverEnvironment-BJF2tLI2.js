@@ -1,0 +1,1 @@
+import{P as t}from"./index-Cd-QutMQ.js";const r=t("serverEnvironment",{state:()=>({allowSignUp:!0,environment:"production"}),getters:{isSignUpAllowed:e=>e.allowSignUp,isCurrentEnvironmentDevelopment:e=>e.environment=="development"},actions:{set(e=!1,n="production"){this.allowSignUp=e,this.environment=n}}});export{r as u};

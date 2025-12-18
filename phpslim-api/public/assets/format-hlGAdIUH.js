@@ -1,0 +1,1 @@
+function o(t){return t.charAt(0).toUpperCase()+t.slice(1)}function u(t,e,n){return n<=e?e:Math.min(n,Math.max(e,t))}function c(t,e,n){if(n<=e)return e;const r=n-e+1;let a=e+(t-e)%r;return a<e&&(a=r+a),a===0?0:a}function i(t,e=2,n="0"){if(t==null)return t;const r=""+t;return r.length>=e?r:new Array(e-r.length+1).join(n)+r}export{u as b,o as c,c as n,i as p};

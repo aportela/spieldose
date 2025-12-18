@@ -1,0 +1,1 @@
+img.sp-artist-image-filter{filter:grayscale(100%) blur(4px) opacity(.5);transition:filter .2s ease-in}img.sp-artist-image-filter:hover{filter:none;transition:filter .2s ease-out}

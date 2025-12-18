@@ -1,0 +1,1 @@
+import{v as n}from"./use-timeout-CUhf6GoE.js";import{a5 as r,K as s,s as a,H as c}from"./index-Cd-QutMQ.js";function v(){let e;const i=c();function t(){e=void 0}return r(t),s(t),{removeTick:t,registerTick(o){e=o,a(()=>{e===o&&(n(i)===!1&&e(),e=void 0)})}}}export{v as u};

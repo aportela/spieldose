@@ -1,0 +1,1 @@
+import{d as e}from"./index-Cd-QutMQ.js";import{a as n}from"./api-BNBHdb8V.js";import{u as o}from"./serverEnvironment-BJF2tLI2.js";import"./index-CG2WSiiR.js";const t=o(),v=e(async()=>{try{const r=await n.common.getServerEnvironment();t.set(r.data.serverEnvironment.allowSignUp,r.data.serverEnvironment.environment)}catch(r){console.error(r)}});export{v as default};

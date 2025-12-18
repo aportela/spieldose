@@ -1,0 +1,1 @@
+import{d as e,w as o}from"./index-Cd-QutMQ.js";import{u as i}from"./currentPlayLists-D8mPK5W_.js";import"./api-BNBHdb8V.js";import"./index-CG2WSiiR.js";import"./uid-Bzmka5Fh.js";const r=i();o(()=>r.currentFileId,t=>{t&&(r.setAudioSource("/api2/file/raw/"+t),r.playerHasPreviousUserInteractions&&r.playerActionPlay(!0))});const l=e(()=>{r.create()});export{l as default};

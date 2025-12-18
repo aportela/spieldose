@@ -1,0 +1,1 @@
+import{P as i,q as o,aE as e}from"./index-Cd-QutMQ.js";const a=o("session.darkMode",null),s=a.get();s===!0?e.set(!0):s===!1?e.set(!1):e.set("auto");const c=i("darkModeStore",{state:()=>({active:e.isActive}),getters:{isActive:t=>t.active},actions:{set(t){this.active=t,e.set(this.active),a.set(this.active)},toggle(){this.set(!this.active)}}});export{c as u};
