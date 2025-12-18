@@ -22,8 +22,6 @@ return function (App $app): void {
         }
     });
 
-
-
     $app->group(
         '/api2',
         function (RouteCollectorProxy $group) use ($app): void {
