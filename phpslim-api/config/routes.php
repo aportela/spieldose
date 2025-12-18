@@ -6,78 +6,23 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app): void {
-    $app->get('/', function (Request $request, Response $response, array $args) use ($app) {
-        $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-        if (!$dbh->isSchemaInstalled()) {
-            // TODO: check upgrades
-            $settings = $app->getContainer()->get('settings');
-            $queryParams = $request->getQueryParams();
-            $launched = isset($queryParams["launch"]);
-            $installerException = null;
-            $installOK = false;
-            if ($launched) {
-                $logger = $this->get(\Spieldose\Logger\InstallerLogger::class);
-                $missingExtensions = array_diff($settings["phpRequiredExtensions"], get_loaded_extensions());
-                if (count($missingExtensions) < 1) {
-                    $pathErrors = [];
-                    if (!file_exists($settings['thumbnails']['artists']['basePath']) && !@mkdir($settings['thumbnails']['artists']['basePath'], 0750, true)) {
-                        $pathErrors[] = $settings['thumbnails']['artists']['basePath'];
-                        $logger->critical("Error creating artist thumbnail basePath: " . $settings['thumbnails']['artists']['basePath']);
-                    }
-
-                    if (!file_exists($settings['thumbnails']['albums']['basePath']) && !@mkdir($settings['thumbnails']['albums']['basePath'], 0750, true)) {
-                        $pathErrors[] = $settings['thumbnails']['albums']['basePath'];
-                        $logger->critical("Error creating album thumbnail basePath: " . $settings['thumbnails']['albums']['basePath']);
-                    }
-
-                    if (!file_exists($settings['thumbnails']['radioStations']['basePath']) && !@mkdir($settings['thumbnails']['radioStations']['basePath'], 0750, true)) {
-                        $pathErrors[] = $settings['thumbnails']['radioStations']['basePath'];
-                        $logger->critical("Error creating radio station thumbnail basePath: " . $settings['thumbnails']['radioStations']['basePath']);
-                    }
-
-                    if ($pathErrors === []) {
-                        $dbh = $app->getContainer()->get(\aportela\DatabaseWrapper\DB::class);
-                        try {
-                            if ($dbh->installSchema()) {
-                                $currentVersion = $dbh->upgradeSchema();
-                                if ($currentVersion !== -1) {
-                                    $installOK = true;
-                                } else {
-                                    unlink($settings['paths']['database']);
-                                }
-                            }
-                        } catch (\Throwable $e) {
-                            $installerException = [
-                                'type' => $e::class,
-                                'message' => $e->getMessage(),
-                                'file' => $e->getLine(),
-                                'line' => $e->getFile()
-                            ];
-                            $parent = $e->getPrevious();
-                            if ($parent instanceof \Throwable) {
-                                $installerException['parent'] = ['type' => $parent::class, 'message' => $parent->getMessage(), 'file' => $parent->getFile(), 'line' => $parent->getLine()];
-                            }
-                        } finally {
-                        }
-                    }
-                } else {
-                    $logger->critical("Error: missing php extension/s: ", implode(", ", $missingExtensions));
-                }
+    $app->get('/', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface|\Psr\Http\Message\ResponseInterface {
+        $filePath = dirname(__DIR__) . '/public/index.html';
+        if (file_exists($filePath)) {
+            $contents = file_get_contents($filePath);
+            if (is_string($contents)) {
+                $response->getBody()->write($contents);
+                return $response->withHeader('Content-Type', 'text/html; charset=UTF-8');
+            } else {
+                $response->getBody()->write("Invalid html template");
+                return $response->withStatus(500);
             }
-
-            $dbh->close();
-            if (!$installOK && file_exists($settings['paths']['database'])) {
-                unlink($settings['paths']['database']);
-            }
-
-            return $this->get('Twig')->render($response, 'index-install.html.twig', ["launched" => $launched, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => $installerException, "pathErrors" => $pathErrors ?? []]);
-        } elseif ($dbh->getCurrentSchemaVersion() < $dbh->getUpgradeSchemaVersion()) {
-            return $this->get('Twig')->render($response, 'index-upgrade.html.twig', ["launched" => false, "missingExtensions" => $missingExtensions ?? [], "installOK" => $installOK ?? false, "installerException" => null, "pathErrors" => $pathErrors ?? []]);
         } else {
-            $dbh->close();
-            return $this->get('Twig')->render($response, 'index-quasar.html.twig', []);
+            return $response->withStatus(404);
         }
     });
+
+
 
     $app->group(
         '/api2',
