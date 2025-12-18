@@ -215,15 +215,15 @@ final class PlayList
     {
         if ($dbh->execute(
             "
-                INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, actived, published, shared, favorites)
-                VALUES
-                    (:user_id, :playlist_id, NULL, NULL, NULL, NULL, NULL)
-                ON CONFLICT (user_id, playlist_id) DO
                 UPDATE
-                    SET
-                        opened = NULL,
-                        actived = NULL
+                    USER_PLAYLIST
+                SET
+                    opened = NULL,
+                    actived = NULL
+                WHERE
+                    user_id = :user_id
+                AND
+                    playlist_id = :playlist_id
             ",
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
@@ -233,10 +233,14 @@ final class PlayList
             // if playlist was not saved (temporal playlist, delete after closing)
             return ($dbh->execute(
                 "
-                    DELETE FROM USER_PLAYLIST
-                    WHERE user_id = :user_id
-                    AND playlist_id = :playlist_id
-                    AND published = NULL
+                    DELETE
+                        FROM USER_PLAYLIST
+                    WHERE
+                        user_id = :user_id
+                    AND
+                        playlist_id = :playlist_id
+                    AND
+                        published IS NULL
                 ",
                 [
                     new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
