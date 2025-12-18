@@ -23,7 +23,7 @@
         <PlayListColumnSettingsButton />
       </q-btn-group>
 
-      <div v-if="playListsFound">
+      <div v-if="currentPlayListsStore.hasPlayLists">
         <q-tabs dense align="left" v-model="tab" indicator-color="pink">
           <q-tab no-caps v-for="playList, playListIndex in currentPlayListsStore.playLists" :key="playList.id"
             :name="playList.id">
@@ -82,8 +82,6 @@
   //const { t } = useI18n();
 
   const currentPlayListsStore = useCurrentPlayListsStore();
-
-  const playListsFound = computed(() => currentPlayListsStore.hasPlayLists);
 
   const tab = computed({
     get() {
