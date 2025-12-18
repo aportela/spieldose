@@ -385,7 +385,6 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.playLists = this.playLists.filter(
         (playList) => playList.id !== this.playLists[playListIndex]!.id,
       );
-      this.playLists.splice(playListIndex, 1);
       this.activePlayListIndex = 0;
     },
     selectPlayListItem(playListIndex: number, playListItemIndex: number): boolean {
