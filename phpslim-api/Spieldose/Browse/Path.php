@@ -64,8 +64,10 @@ class Path extends \Spieldose\Browse\Base
         return ($browser->launch($query, "", true));
     }
 
+    /*
     public function getLibraries(): array
     {
+
         return ($this->dbh->query(
             "
                 SELECT
@@ -155,4 +157,5 @@ class Path extends \Spieldose\Browse\Base
             return (null);
         }
     }
+        */
 }
