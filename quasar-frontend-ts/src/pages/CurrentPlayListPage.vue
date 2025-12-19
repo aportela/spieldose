@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from "vue";
+  import { computed } from "vue";
   import { useQuasar } from "quasar";
   //import { useI18n } from "vue-i18n";
   import { default as BreadCrumb } from "src/components/BreadCrumb.vue";
