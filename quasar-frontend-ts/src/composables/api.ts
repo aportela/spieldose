@@ -141,11 +141,6 @@ const api = {
       return axiosInstance.get('/browse/libraries');
     },
   },
-  file: {
-    getRandom: function () {
-      return axiosInstance.get('/file/rnd');
-    },
-  },
   track: {
     setFavorite: function (id: string) {
       return axiosInstance.get(`/track/${id}/set_favorite`);
