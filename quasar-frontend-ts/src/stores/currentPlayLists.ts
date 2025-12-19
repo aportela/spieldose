@@ -141,7 +141,8 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     },
     toggleAudioMute: function (): void {
       this.audio.instance.muted = !this.audio.instance.muted;
-      localStorageAudioMuted.set(this.audio.instance.muted);
+      this.audio.muted = this.audio.instance.muted;
+      localStorageAudioMuted.set(this.audio.muted);
     },
     setAudioCurrentTime: function (time: number | null): boolean {
       if (time !== null && time > 0 && time <= this.audio.instance.duration) {
