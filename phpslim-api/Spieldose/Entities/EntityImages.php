@@ -55,15 +55,15 @@ final class EntityImages
     public function setLocal(string $albumPathId): void
     {
         $this->small = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
-        $this->medium = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
-        $this->big = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
+        $this->medium = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::MEDIUM_WIDTH, self::MEDIUM_HEIGTH, $albumPathId));
+        $this->big = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::BIG_WIDTH, self::BIG_HEIGTH, $albumPathId));
     }
 
     public function setRemote(string $url): void
     {
         $this->small = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
-        $this->medium = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
-        $this->big = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
+        $this->medium = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::MEDIUM_WIDTH, self::MEDIUM_HEIGTH, urlencode($url)));
+        $this->big = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::BIG_WIDTH, self::BIG_HEIGTH, urlencode($url)));
     }
 
     public static function getAlbumLocalImagePath(\aportela\DatabaseWrapper\DB $dbh, string $albumPathId): string|null
