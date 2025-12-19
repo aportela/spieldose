@@ -823,7 +823,7 @@ return function (App $app): void {
                         $args['id'],
                         ""
                     );
-                    $playlist->randomFill($dbh, 32);
+                    $playlist->randomFill($dbh, 32, \Spieldose\UserSession::getUserId());
                     $playlist->get($dbh, \Spieldose\UserSession::getUserId());
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
