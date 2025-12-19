@@ -644,75 +644,75 @@ return function (App $app): void {
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
-            $group->group('/file', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
+            $group->group('/file/{id}', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
                 $dbh = $container->get(\aportela\DatabaseWrapper\DB::class);
                 if (! $dbh instanceof \aportela\DatabaseWrapper\DB) {
                     throw new \RuntimeException("Failed to create database handler from container");
                 }
 
-                $routeCollectorProxy->get('/info/{id}', function (Request $request, Response $response, array $args) use ($dbh) {
-                    if (!empty($args['id'])) {
-                        $file = new \Spieldose\Entities\File($args["id"]);
-                        $file->get($dbh);
-                        $payload = json_encode(
-                            [
-                                "file" => $file
-                            ]
-                        );
-                        if (json_last_error() !== JSON_ERROR_NONE) {
-                            throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                        }
-
-                        $response->getBody()->write($payload);
-                        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-                    } else {
+                $routeCollectorProxy->get('/info', function (Request $request, Response $response, array $args) use ($dbh) {
+                    if (empty($args['id'])) {
                         throw new \Spieldose\Exception\InvalidParamsException('id');
                     }
+                    $fileId = $args['id'];
+                    $file = new \Spieldose\Entities\File($fileId);
+                    $file->get($dbh);
+                    $payload = json_encode(
+                        [
+                            "file" => $file
+                        ]
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
-                $routeCollectorProxy->get('/{action:raw|download}/{id}', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface {
+                $routeCollectorProxy->get('/{action:raw|download}', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface {
+                    if (empty($args['id'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                    }
+                    $fileId = $args['id'];
                     $action = $args['action'];
-                    if (!empty($args['id'])) {
-                        $file = new \Spieldose\File($this, $args['id']);
-                        $file->get();
-                        if (file_exists($file->path)) {
-                            $length = $file->length;
-                            // https://stackoverflow.com/a/157447
-                            $partialContent = false;
-                            $offset = 0;
-                            if (isset($_SERVER['HTTP_RANGE'])) {
-                                // if the HTTP_RANGE header is set we're dealing with partial content
-                                $partialContent = true;
-                                // find the requested range
-                                // this might be too simplistic, apparently the client can request
-                                // multiple ranges, which can become pretty complex, so ignore it for now
-                                preg_match('/bytes=(\d+)-(\d+)?/', (string) $_SERVER['HTTP_RANGE'], $matches);
-                                $offset = intval($matches[1]);
-                                $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
-                            }
+                    $file = new \Spieldose\File($this, $fileId);
+                    $file->get();
+                    if (file_exists($file->path)) {
+                        $length = $file->length;
+                        // https://stackoverflow.com/a/157447
+                        $partialContent = false;
+                        $offset = 0;
+                        if (isset($_SERVER['HTTP_RANGE'])) {
+                            // if the HTTP_RANGE header is set we're dealing with partial content
+                            $partialContent = true;
+                            // find the requested range
+                            // this might be too simplistic, apparently the client can request
+                            // multiple ranges, which can become pretty complex, so ignore it for now
+                            preg_match('/bytes=(\d+)-(\d+)?/', (string) $_SERVER['HTTP_RANGE'], $matches);
+                            $offset = intval($matches[1]);
+                            $length = ((isset($matches[2])) ? intval($matches[2]) : $file->length) - $offset;
+                        }
 
-                            $response->getBody()->write($file->getData($offset, $length));
-                            if ($partialContent) {
-                                // output the right headers for partial content
-                                return $response->withStatus(206)
+                        $response->getBody()->write($file->getData($offset, $length));
+                        if ($partialContent) {
+                            // output the right headers for partial content
+                            return $response->withStatus(206)
 
-                                    ->withHeader('Content-Type', $file->mime ?: 'application/octet-stream')
-                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
-                                    ->withHeader('Content-Length', $file->length)
-                                    ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
-                                    ->withHeader('Accept-Ranges', 'bytes');
-                            } else {
-                                return $response->withStatus(200)
-                                    ->withHeader('Content-Type', $file->mime ?: "application/octet-stream")
-                                    ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
-                                    ->withHeader('Content-Length', $file->length)
-                                    ->withHeader('Accept-Ranges', 'bytes');
-                            }
+                                ->withHeader('Content-Type', $file->mime ?: 'application/octet-stream')
+                                ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
+                                ->withHeader('Content-Length', $file->length)
+                                ->withHeader('Content-Range', 'bytes ' . $offset . '-' . ($offset + $length - 1) . '/' . $file->length)
+                                ->withHeader('Accept-Ranges', 'bytes');
                         } else {
-                            throw new \Spieldose\Exception\NotFoundException('id');
+                            return $response->withStatus(200)
+                                ->withHeader('Content-Type', $file->mime ?: "application/octet-stream")
+                                ->withHeader('Content-Disposition', ($action === 'download' ? "attachment" : "inline") . '; filename="' . basename((string) $file->path) . '"')
+                                ->withHeader('Content-Length', $file->length)
+                                ->withHeader('Accept-Ranges', 'bytes');
                         }
                     } else {
-                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                        throw new \Spieldose\Exception\NotFoundException('id');
                     }
                 });
             })->add(\Spieldose\Middleware\CheckAuth::class);
