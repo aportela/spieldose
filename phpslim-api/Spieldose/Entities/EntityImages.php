@@ -6,7 +6,7 @@ namespace Spieldose\Entities;
 
 final class EntityImages
 {
-    public const string LOCAL_URL_MASK = "api2/thumbnail/local?width=%d&height=%d&quality=90&albumPathId=%s";
+    public const string ALBUM_LOCAL_COVER_URL_MASK = "api2/thumbnail/local?width=%d&height=%d&quality=90&albumPathId=%s";
     public const string REMOTE_URL_MASK = "api2/thumbnail/remote?width=%d&height=%d&quality=90&url=%s";
 
     public const int SMALL_WIDTH = 100;
@@ -54,9 +54,9 @@ final class EntityImages
 
     public function setLocal(string $albumPathId): void
     {
-        $this->small = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
-        $this->medium = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::MEDIUM_WIDTH, self::MEDIUM_HEIGTH, $albumPathId));
-        $this->big = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::BIG_WIDTH, self::BIG_HEIGTH, $albumPathId));
+        $this->small = $this->parseAndValidate(sprintf(self::ALBUM_LOCAL_COVER_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
+        $this->medium = $this->parseAndValidate(sprintf(self::ALBUM_LOCAL_COVER_URL_MASK, self::MEDIUM_WIDTH, self::MEDIUM_HEIGTH, $albumPathId));
+        $this->big = $this->parseAndValidate(sprintf(self::ALBUM_LOCAL_COVER_URL_MASK, self::BIG_WIDTH, self::BIG_HEIGTH, $albumPathId));
     }
 
     public function setRemote(string $url): void
