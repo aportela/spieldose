@@ -19,8 +19,15 @@ final class PlayListFileItem extends PlayListItem
      */
     public static function getPlayListFileItems(\aportela\DatabaseWrapper\DB $db, string $playListId, string $userId): array
     {
-        $results = $db->query(
-            "
+        $query = null;
+        $params = [
+            new \aportela\DatabaseWrapper\Param\StringParam(":default_mime", "application/octet-stream"),
+            new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id",  $playListId),
+
+        ];
+        // user requested his own favorites playlist
+        if ($playListId === $userId) {
+            $query = "
                 SELECT
                     FILE.id,
                     FILE.name,
@@ -33,21 +40,47 @@ final class PlayListFileItem extends PlayListItem
                     FILE_ID3_TAG.album,
                     COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year,
                     DIRECTORY.id AS directoryPathId,
-                    DIRECTORY.cover_filename
+                    DIRECTORY.cover_filename,
+                    NULL AS favorite
                 FROM PLAYLIST_FILE
                 INNER JOIN FILE ON PLAYLIST_FILE.file_id = FILE.id
                 LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
                 LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
                 WHERE PLAYLIST_FILE.playlist_id = :playlist_id
                 ORDER BY PLAYLIST_FILE.file_index
-            ",
-            [
-                new \aportela\DatabaseWrapper\Param\StringParam(":default_mime", "application/octet-stream"),
-                //new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id",  $playListId),
-
-            ]
-        );
+            ";
+        } else {
+            // user requested another (not own favorites) playlist
+            $query = "
+                SELECT
+                    FILE.id,
+                    FILE.name,
+                    FILE.size,
+                    COALESCE(FILE_ID3_TAG.mime, :default_mime) AS mime,
+                    FILE_ID3_TAG.title, FILE_ID3_TAG.playtime_seconds,
+                    FILE_ID3_TAG.release_mbid,
+                    FILE_ID3_TAG.release_track_mbid,
+                    FILE_ID3_TAG.artist,
+                    FILE_ID3_TAG.album,
+                    COALESCE(FILE_ID3_TAG.original_year, FILE_ID3_TAG.year) AS year,
+                    DIRECTORY.id AS directoryPathId,
+                    DIRECTORY.cover_filename,
+                    PLAYLIST_FILE_USER_FAV.file_id AS favorite
+                FROM PLAYLIST_FILE
+                INNER JOIN FILE ON PLAYLIST_FILE.file_id = FILE.id
+                LEFT JOIN DIRECTORY ON DIRECTORY.id = FILE.directory_id
+                LEFT JOIN FILE_ID3_TAG ON FILE_ID3_TAG.file_id = FILE.id
+                LEFT JOIN PLAYLIST_FILE AS PLAYLIST_FILE_USER_FAV ON (
+                        PLAYLIST_FILE_USER_FAV.file_id = FILE.id
+                    AND
+                        PLAYLIST_FILE_USER_FAV.playlist_id = :user_id
+                )
+                WHERE PLAYLIST_FILE.playlist_id = :playlist_id
+                ORDER BY PLAYLIST_FILE.file_index
+            ";
+            $params[] = new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId);
+        }
+        $results = $db->query($query, $params);
         $playlistItems = [];
         foreach ($results as $result) {
             $file = new \Spieldose\Entities\File($result->id);
@@ -69,7 +102,12 @@ final class PlayListFileItem extends PlayListItem
             $file->trackInfo->album->artist->mbId = null;
             $file->trackInfo->album->artist->name = $result->artist;
             $file->trackInfo->imageURL = new \stdClass();
-            $file->trackInfo->favorited = $playListId === $userId; // TODO: playlist is not favorites playlit (add extra condition)
+            if ($playListId === $userId) { // requested playlist is user favorites playlist (all items have true value on favorite flag)
+                $file->trackInfo->favorited = true;
+            } else {
+                // another playlist (not user favorites playlist)
+                $file->trackInfo->favorited = $result->id === $result->favorite;
+            }
             $playListFileItem = new PlayListFileItem($file);
             if (! empty($result->cover_filename)) {
                 $playListFileItem->images->setLocal($result->directoryPathId);
