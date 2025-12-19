@@ -715,24 +715,6 @@ return function (App $app): void {
                         throw new \Spieldose\Exception\InvalidParamsException('id');
                     }
                 });
-
-                $routeCollectorProxy->get('/rnd', function (Request $request, Response $response, array $args) use ($dbh) {
-                    $file = new \Spieldose\Entities\File("");
-                    $file->rnd($dbh);
-                    $file->get($dbh);
-
-                    $payload = json_encode(
-                        [
-                            "file" => $file
-                        ]
-                    );
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
-                    }
-
-                    $response->getBody()->write($payload);
-                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-                });
             })->add(\Spieldose\Middleware\CheckAuth::class);
 
             $group->group('/track', function (RouteCollectorProxy $routeCollectorProxy) use ($container): void {
