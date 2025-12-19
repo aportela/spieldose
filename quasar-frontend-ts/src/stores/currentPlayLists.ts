@@ -13,6 +13,14 @@ const localStoragePlayerRepeatMode = createStorageEntry<PlayerRepeatMode>(
 );
 const localStoragePlayerShuffle = createStorageEntry<boolean>('player.shuffle', false);
 
+const getFileURL = (fileId: string | null): string | null => {
+  if (fileId) {
+    return '/api2/file/' + fileId + '/raw';
+  } else {
+    return null;
+  }
+};
+
 interface State {
   audio: {
     instance: HTMLAudioElement;
@@ -75,6 +83,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     currentFileId: (state: State): string | null =>
       state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file?.id ??
       null,
+    currentFileURL: (state: State): string | null =>
+      getFileURL(
+        state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
+          ?.id ?? null,
+      ),
     currentActivePlayListItem: (state: State): PlayListItemClass | null =>
       state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex] ?? null,
     /*
