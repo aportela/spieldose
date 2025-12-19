@@ -192,6 +192,7 @@ final class PlayList
             $this->associatePlayListFlagsToUser($dbh, $userId);
             // only one playlist can be active, clear active flag on other playlists of this user
             $this->resetActiveFlagOnAnotherUserPlayLists($dbh, $userId);
+            $dbh->commit();
         } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
             $dbh->rollBack();
             throw $e;
@@ -232,6 +233,7 @@ final class PlayList
                 // only one playlist can be active, clear active flag on other playlists of this user
                 $this->resetActiveFlagOnAnotherUserPlayLists($dbh, $userId);
             }
+            $dbh->commit();
         } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
             $dbh->rollBack();
             throw $e;
@@ -274,6 +276,7 @@ final class PlayList
                     $params
                 );
             }
+            $dbh->commit();
         } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
             $dbh->rollBack();
             throw $e;
@@ -291,6 +294,7 @@ final class PlayList
             $this->associatePlayListFlagsToUser($dbh, $userId);
             // only one playlist can be active, clear active flag on other playlists of this user
             $this->resetActiveFlagOnAnotherUserPlayLists($dbh, $userId);
+            $dbh->commit();
         } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
             $dbh->rollBack();
             throw $e;
@@ -308,6 +312,7 @@ final class PlayList
             $this->associatePlayListFlagsToUser($dbh, $userId);
             // clear active flag on other playlists of this user
             $this->resetActiveFlagOnAnotherUserPlayLists($dbh, $userId);
+            $dbh->commit();
         } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
             $dbh->rollBack();
             throw $e;
@@ -358,6 +363,7 @@ final class PlayList
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                     ]
                 );
+                $dbh->commit();
             } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
                 $dbh->rollBack();
                 throw $e;
@@ -416,6 +422,7 @@ final class PlayList
                     ";
                 }
                 $dbh->execute($query, $params);
+                $dbh->commit();
             } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
                 $dbh->rollBack();
                 throw $e;
