@@ -78,9 +78,9 @@ final class PlayList
                 SELECT
                     P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared, UP.favorites, UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
                 FROM USER_PLAYLIST UP
-                INNER JOIN PLAYLIST P ON P.id = USER_PLAYLIST.playlist_id
+                INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
-                    playlist_id = :playlist_id
+                    UP.playlist_id = :playlist_id
                 AND
                     P.user_id = :user_id
             ",
