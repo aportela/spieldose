@@ -605,14 +605,14 @@ return function (App $app): void {
                     throw new \Spieldose\Exception\InvalidParamsException("quality");
                 }
 
-                if (! (array_key_exists("pathId", $queryParams) && is_string($queryParams["pathId"]))) {
-                    throw new \Spieldose\Exception\InvalidParamsException("pathId");
+                if (! (array_key_exists("albumPathId", $queryParams) && is_string($queryParams["albumPathId"]))) {
+                    throw new \Spieldose\Exception\InvalidParamsException("albumPathId");
                 }
 
                 //$cachedETAG = $request->getHeaderLine('HTTP_IF_NONE_MATCH');
                 $logger = $this->get(\Spieldose\Logger\ThumbnailLogger::class);
 
-                $localCoverPath = new \Spieldose\Browse\Path($dbh)->getPathCoverLocalPath($queryParams["pathId"]);
+                $localCoverPath = \Spieldose\Entities\EntityImages::getAlbumLocalImagePath($dbh, $queryParams["albumPathId"]);
                 if (in_array($localCoverPath, [null, '', '0'], true)) {
                     throw new \Spieldose\Exception\NotFoundException("");
                 }
@@ -636,11 +636,11 @@ return function (App $app): void {
                     return $response
                         ->withHeader('Content-Type', 'image/jpeg')
                         ->withHeader('Content-Length', (string) $filesize)
-                        ->withHeader('ETag', sha1($queryParams["pathId"] . $path . $filesize))
+                        ->withHeader('ETag', sha1($queryParams["albumPathId"] . $path . $filesize))
                         ->withHeader('Cache-Control', 'max-age=86400')
                         ->withStatus(200);
                 } else {
-                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for url: ' . $queryParams["url"]);
+                    throw new \Spieldose\Exception\NotFoundException('Invalid / empty path for albumPathId: ' . $queryParams["albumPathId"]);
                 }
             })->add(\Spieldose\Middleware\CheckAuth::class);
 

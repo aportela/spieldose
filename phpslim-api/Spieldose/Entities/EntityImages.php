@@ -6,7 +6,7 @@ namespace Spieldose\Entities;
 
 final class EntityImages
 {
-    public const string LOCAL_URL_MASK = "api2/local_thumbnail?width=%d&height=%d&quality=90&pathId=%s";
+    public const string LOCAL_URL_MASK = "api2/local_thumbnail?width=%d&height=%d&quality=90&albumPathId=%s";
     public const string REMOTE_URL_MASK = "api2/remote_thumbnail?width=%d&height=%d&quality=90&url=%s";
 
     public const int SMALL_WIDTH = 100;
@@ -52,11 +52,11 @@ final class EntityImages
         $this->big = $this->parseAndValidate($big);
     }
 
-    public function setLocal(string $pathId): void
+    public function setLocal(string $albumPathId): void
     {
-        $this->small = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $pathId));
-        $this->medium = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $pathId));
-        $this->big = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $pathId));
+        $this->small = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
+        $this->medium = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
+        $this->big = $this->parseAndValidate(sprintf(self::LOCAL_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, $albumPathId));
     }
 
     public function setRemote(string $url): void
@@ -64,5 +64,26 @@ final class EntityImages
         $this->small = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
         $this->medium = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
         $this->big = $this->parseAndValidate(sprintf(self::REMOTE_URL_MASK, self::SMALL_WIDTH, self::SMALL_HEIGTH, urlencode($url)));
+    }
+
+    public static function getAlbumLocalImagePath(\aportela\DatabaseWrapper\DB $dbh, string $albumPathId): string|null
+    {
+        $results = $dbh->query(
+            "
+                SELECT
+                    DIRECTORY.path, DIRECTORY.cover_filename
+                FROM DIRECTORY
+                WHERE
+                    DIRECTORY.id = :id
+            ",
+            [
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $albumPathId),
+            ]
+        );
+        if (count($results) === 1 && ! empty($results[0]->path) && ! empty($results[0]->cover_filename)) {
+            return ($results[0]->path . DIRECTORY_SEPARATOR . $results[0]->cover_filename);
+        } else {
+            return (null);
+        }
     }
 }
