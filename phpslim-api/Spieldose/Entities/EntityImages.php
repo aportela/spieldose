@@ -71,17 +71,18 @@ final class EntityImages
         $results = $dbh->query(
             "
                 SELECT
-                    DIRECTORY.path, DIRECTORY.cover_filename
+                    CONCAT(DIRECTORY.path, :directory_separator, DIRECTORY.cover_filename) AS fullPath
                 FROM DIRECTORY
                 WHERE
                     DIRECTORY.id = :id
             ",
             [
+                new \aportela\DatabaseWrapper\Param\StringParam(":directory_separator", DIRECTORY_SEPARATOR),
                 new \aportela\DatabaseWrapper\Param\StringParam(":id", $albumPathId),
             ]
         );
-        if (count($results) === 1 && ! empty($results[0]->path) && ! empty($results[0]->cover_filename)) {
-            return ($results[0]->path . DIRECTORY_SEPARATOR . $results[0]->cover_filename);
+        if (count($results) === 1) {
+            return ($results[0]->fullPath);
         } else {
             return (null);
         }
