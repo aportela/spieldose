@@ -9,7 +9,7 @@
       :bottom-label="currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.title" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
     <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" clickable
-      @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.normal" />
+      @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.medium" />
     <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   </div>
@@ -29,11 +29,12 @@
   const sidebarAlbumCoverSettingsStore = useSidebarAlbumCoverSettingsStore();
 
   const images = ref({
-    normal: currentPlayListsStore.currentActivePlayListItem?.images?.big ?? null,
-    small: currentPlayListsStore.currentActivePlayListItem?.images?.medium ?? null,
+    small: currentPlayListsStore.currentActivePlayListItem?.images?.small ?? null,
+    medium: currentPlayListsStore.currentActivePlayListItem?.images?.medium ?? null,
+    big: currentPlayListsStore.currentActivePlayListItem?.images?.big ?? null,
   });
 
-  watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.medium, (newValue) => {
+  watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.small, (newValue) => {
     images.value.small = null;
     if (newValue) {
       nextTick()
@@ -45,12 +46,24 @@
     }
   });
 
-  watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.big, (newValue) => {
-    images.value.normal = null;
+  watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.medium, (newValue) => {
+    images.value.medium = null;
     if (newValue) {
       nextTick()
         .then(() => {
-          images.value.normal = newValue
+          images.value.medium = newValue
+        }).catch((e) => {
+          console.error(e);
+        });
+    }
+  });
+
+  watch(() => currentPlayListsStore.currentActivePlayListItem?.images?.big, (newValue) => {
+    images.value.small = null;
+    if (newValue) {
+      nextTick()
+        .then(() => {
+          images.value.small = newValue
         }).catch((e) => {
           console.error(e);
         });

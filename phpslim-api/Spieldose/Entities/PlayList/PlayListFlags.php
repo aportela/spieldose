@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spieldose\PlayList;
+namespace Spieldose\Entities\PlayList;
 
 final class PlayListFlags
 {
@@ -14,6 +14,11 @@ final class PlayListFlags
     public bool $isFavorites;
 
     public function __construct(bool $isMine, bool $opened, bool $actived, bool $published, bool $shared, bool $isFavorites)
+    {
+        $this->setFlags($isMine, $opened, $actived, $published, $shared, $isFavorites);
+    }
+
+    public function setFlags(bool $isMine, bool $opened, bool $actived, bool $published, bool $shared, bool $isFavorites): void
     {
         $this->isMine = $isMine;
         $this->opened = $opened;
