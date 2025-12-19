@@ -6,8 +6,8 @@ namespace Spieldose\Entities;
 
 final class EntityImages
 {
-    public const string LOCAL_URL_MASK = "api2/local_thumbnail?width=%d&height=%d&quality=90&albumPathId=%s";
-    public const string REMOTE_URL_MASK = "api2/remote_thumbnail?width=%d&height=%d&quality=90&url=%s";
+    public const string LOCAL_URL_MASK = "api2/thumbnail/local?width=%d&height=%d&quality=90&albumPathId=%s";
+    public const string REMOTE_URL_MASK = "api2/thumbnail/remote?width=%d&height=%d&quality=90&url=%s";
 
     public const int SMALL_WIDTH = 100;
     public const int SMALL_HEIGTH = 100;
