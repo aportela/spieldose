@@ -373,10 +373,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         return false;
       }
     },
-    empty(playListId: string): boolean {
+    async empty(playListId: string) {
       console.log('empty', playListId);
       const index = this.playLists.findIndex((playList) => playList.id === playListId);
       if (index !== -1) {
+        await api.playList.empty(playListId);
         this.playLists[index]!.items.length = 0;
         return true;
       } else {

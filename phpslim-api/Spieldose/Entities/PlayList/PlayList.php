@@ -373,6 +373,45 @@ final class PlayList
         }
     }
 
+    public function empty(\aportela\DatabaseWrapper\DB $dbh, string $userId): void
+    {
+        if ($this->isOwnedByUser($dbh, $userId)) {
+            try {
+                $dbh->beginTransaction();
+                $dbh->execute(
+                    "
+                        DELETE
+                        FROM PLAYLIST_FILE
+                        WHERE
+                            playlist_id = :playlist_id
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
+                    ]
+                );
+                $dbh->execute(
+                    "
+                        UPDATE PLAYLIST
+                        SET
+                            mtime = :mtime
+                        WHERE
+                            id = :id
+                    ",
+                    [
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":mtime", intval(microtime(true) * 1000)),
+                        new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                    ]
+                );
+                $dbh->commit();
+            } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
+                $dbh->rollBack();
+                throw $e;
+            }
+        } else {
+            throw new \Spieldose\Exception\AccessDeniedException("");
+        }
+    }
+
     public function toggleFavoriteFile(\aportela\DatabaseWrapper\DB $dbh, string $userId, string $fileId, bool $flag): void
     {
         if ($fileId !== '' && $fileId !== '0') {

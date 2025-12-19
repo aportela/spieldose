@@ -162,6 +162,9 @@ const api = {
     randomFill(id: string) {
       return axiosInstance.post(`/playlist/${id}/random_fill`);
     },
+    empty(id: string) {
+      return axiosInstance.post(`/playlist/${id}/empty`);
+    },
     getCurrentPlayLists: function () {
       return axiosInstance.get('/current_playlists');
     },

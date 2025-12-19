@@ -117,10 +117,14 @@
     }
   };
 
-  const onEmpty = (): void => {
+  const onEmpty = async (): Promise<void> => {
     console.log("onEmpty");
     if (tab.value) {
-      currentPlayListsStore.empty(tab.value);
+      try {
+        await currentPlayListsStore.empty(tab.value);
+      } catch (e) {
+        console.error(e);
+      }
     } else {
       console.error("Invalid tab", tab.value);
     }
