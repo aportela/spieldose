@@ -5,10 +5,10 @@ import { useCurrentPlayListsStore } from 'src/stores/currentPlayLists';
 const currentPlayListsStore = useCurrentPlayListsStore();
 
 watch(
-  () => currentPlayListsStore.currentFileId,
+  () => currentPlayListsStore.currentFileURL,
   (newValue: string | null) => {
     if (newValue) {
-      currentPlayListsStore.setAudioSource('/api2/file/raw/' + newValue);
+      currentPlayListsStore.setAudioSource(newValue);
       if (currentPlayListsStore.playerHasPreviousUserInteractions) {
         currentPlayListsStore.playerActionPlay(true);
       }
