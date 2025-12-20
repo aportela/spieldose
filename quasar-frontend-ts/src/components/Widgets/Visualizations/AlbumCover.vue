@@ -10,7 +10,7 @@
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
     <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasStaticImageMode" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" :image="images.medium" />
-    <StaticAlbumCoverImage v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage" clickable
+    <SpieldoseLabel v-else-if="sidebarAlbumCoverSettingsStore.hasNoImage" clickable
       @click="sidebarAlbumCoverSettingsStore.toggleMode" />
   </div>
 </template>
@@ -23,6 +23,7 @@
   import { default as StaticAlbumCoverImage } from "./StaticAlbumCoverImage.vue";
   import { default as VinylDisc } from "./VinylDisc.vue";
   import { default as CasseteTape } from "./CasseteTape.vue";
+  import { default as SpieldoseLabel } from "./SpieldoseLabel.vue";
 
   const currentPlayListsStore = useCurrentPlayListsStore();
 

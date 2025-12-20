@@ -2,10 +2,6 @@
   <div :class="{ 'cursor-pointer': clickable }" @click="onClick">
     <q-img v-if="currentImage" :src="currentImage" @error="currentImage = failbackImage ?? null" :ratio="1" width="100%"
       spinner-color="pink" />
-    <div v-else-if="!props.image" class="no-image overflow-hidden">
-      <p class="q-mt-xl no-image-label no-image-top-label text-grey-7">Spieldose</p>
-      <p class="q-mt-xl no-image-label no-image-bottom-label text-pink">Awesome Mix Vol. {{ currentDayOfYear }}</p>
-    </div>
     <div v-else class="no-image-or-error row items-center justify-center">
       [ no image ]
     </div>
@@ -13,8 +9,7 @@
 </template>
 
 <script setup lang="ts">
-  import { nextTick, ref, watch, computed } from "vue";
-  import { date } from "quasar";
+  import { nextTick, ref, watch } from "vue";
 
   interface StaticAlbumCoverImageProps {
     image?: string | null;
@@ -31,8 +26,6 @@
   const emit = defineEmits(['onClick']);
 
   const currentImage = ref<string | null>(props.image ?? props.failbackImage ?? null);
-
-  const currentDayOfYear = computed(() => date.formatDate(new Date(), "DDD"));
 
   watch(() => props.image, (newValue: string | null) => {
     currentImage.value = null;
@@ -65,33 +58,4 @@
     font-size: 3em;
   }
 
-  .no-image {
-    width: 98%;
-    margin: 1% auto;
-    height: auto;
-    aspect-ratio: 1;
-  }
-
-  .no-image-label {
-    font-family: "Gochi Hand", cursive;
-    font-weight: 400;
-    font-style: normal;
-    width: 100%;
-    white-space: nowrap;
-    text-align: center;
-    display: inline-block;
-    transform-origin: center;
-  }
-
-  .no-image-top-label {
-    color: hsl(46, 93%, 45%);
-    font-size: 6em;
-    transform: rotate(-5deg);
-  }
-
-
-  .no-image-bottom-label {
-    font-size: 3em;
-    transform: rotate(-3deg);
-  }
 </style>
