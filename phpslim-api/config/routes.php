@@ -627,6 +627,40 @@ return function (App $app): void {
                     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
                 });
 
+                $routeCollectorProxy->post('/set_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
+                    if (empty($args['id'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                    }
+                    $fileId = $args['id'];
+                    \Spieldose\Entities\PlayList\PlayList::toggleFavoriteFile($dbh, \Spieldose\UserSession::getUserId(), $fileId, true);
+                    $payload = json_encode(
+                        []
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
+                $routeCollectorProxy->post('/unset_favorite', function (Request $request, Response $response, array $args) use ($dbh) {
+                    if (empty($args['id'])) {
+                        throw new \Spieldose\Exception\InvalidParamsException('id');
+                    }
+                    $fileId = $args['id'];
+                    \Spieldose\Entities\PlayList\PlayList::toggleFavoriteFile($dbh, \Spieldose\UserSession::getUserId(), $fileId, false);
+                    $payload = json_encode(
+                        []
+                    );
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Spieldose\Exception\JSONSerializerException(json_last_error_msg());
+                    }
+
+                    $response->getBody()->write($payload);
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                });
+
                 $routeCollectorProxy->get('/{action:raw|download}', function (Request $request, Response $response, array $args): \Psr\Http\Message\MessageInterface {
                     if (empty($args['id'])) {
                         throw new \Spieldose\Exception\InvalidParamsException('id');

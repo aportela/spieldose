@@ -143,10 +143,10 @@ const api = {
   },
   track: {
     setFavorite: function (id: string) {
-      return axiosInstance.get(`/track/${id}/set_favorite`);
+      return axiosInstance.post(`/file/${id}/set_favorite`);
     },
     unSetFavorite: function (id: string) {
-      return axiosInstance.get(`/track/${id}/unset_favorite`);
+      return axiosInstance.post(`/file/${id}/unset_favorite`);
     },
   },
   playList: {

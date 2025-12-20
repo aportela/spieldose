@@ -412,10 +412,11 @@ final class PlayList
         }
     }
 
-    public function toggleFavoriteFile(\aportela\DatabaseWrapper\DB $dbh, string $userId, string $fileId, bool $flag): void
+    public static function toggleFavoriteFile(\aportela\DatabaseWrapper\DB $dbh, string $userId, string $fileId, bool $flag): void
     {
         if ($fileId !== '' && $fileId !== '0') {
             try {
+                $dbh->beginTransaction();
                 // always create / update user favorites playlist (playlist id === userId)
                 $dbh->execute(
                     "
@@ -431,33 +432,33 @@ final class PlayList
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $userId),
                         new \aportela\DatabaseWrapper\Param\StringParam(":name", "favorites"),
                         new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
-                        new \aportela\DatabaseWrapper\Param\StringParam(":current_timestamp", intval(microtime(true) * 1000)),
+                        new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000)),
                     ]
                 );
                 $query = null;
                 $params = [
                     new \aportela\DatabaseWrapper\Param\StringParam(":file_id", $fileId),
-                    new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
+                    new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $userId),
                 ];
                 if ($flag) {
                     $query = "
-                        INSERT INTO FILE_FAVORITE
-                            (file_id, user_id, ftime)
+                        INSERT INTO PLAYLIST_FILE
+                            (playlist_id, file_id, file_index)
                         VALUES
-                            (:file_id, :user_id, :current_timestamp)
-                        ON CONFLICT (file_id, user_id) DO
+                            (:playlist_id, :file_id, :current_timestamp)
+                        ON CONFLICT (playlist_id, file_id, file_index) DO
                         UPDATE SET
-                            ftime = :ftime
+                            file_index = :current_timestamp
                     ";
-                    $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":ftime", intval(microtime(true) * 1000));
+                    $params[] = new \aportela\DatabaseWrapper\Param\IntegerParam(":current_timestamp", intval(microtime(true) * 1000));
                 } else {
                     $query = "
                         DELETE
-                        FROM FILE_FAVORITE
+                        FROM PLAYLIST_FILE
                         WHERE
-                            file_id = :file_id
+                            playlist_id = :playlist_id
                         AND
-                            user_id = :user_id
+                            file_id = :file_id
                     ";
                 }
                 $dbh->execute($query, $params);

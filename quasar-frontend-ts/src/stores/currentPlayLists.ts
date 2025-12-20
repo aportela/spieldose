@@ -500,8 +500,40 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         return false;
       }
     },
-    toggleFavoritePlayListItem(playListIndex: number, playListItemIndex: number): boolean {
+    refreshInteralFavoriteValue(fileId: string, favorited: boolean) {
+      this.playLists.forEach((playList: PlayList) => {
+        playList.items.forEach((item: PlayListItemClass) => {
+          if (item.file?.id === fileId) {
+            item.file.trackInfo.favorited = favorited;
+          }
+        });
+      });
+    },
+    async toggleFavoritePlayListItem(playListIndex: number, playListItemIndex: number): boolean {
       console.log('toggleFavoritePlayListItem', playListIndex, playListItemIndex);
+      try {
+        if (this.playLists[playListIndex]?.items[playListItemIndex]?.file.id) {
+          if (this.playLists[playListIndex]?.items[playListItemIndex]?.file?.trackInfo.favorited) {
+            await api.track.unSetFavorite(
+              this.playLists[playListIndex]?.items[playListItemIndex]?.file.id,
+            );
+            this.refreshInteralFavoriteValue(
+              this.playLists[playListIndex]?.items[playListItemIndex]?.file.id,
+              false,
+            );
+          } else {
+            await api.track.setFavorite(
+              this.playLists[playListIndex]?.items[playListItemIndex]?.file.id,
+            );
+            this.refreshInteralFavoriteValue(
+              this.playLists[playListIndex]?.items[playListItemIndex]?.file.id,
+              true,
+            );
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
       return false;
     },
     toggleCurrentActivePlayListItemFavorite(): boolean {
