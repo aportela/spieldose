@@ -261,7 +261,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     // player block
 
     // playlist block
-    skipPreviousItemOnActivePlayList(): boolean {
+    async skipPreviousItemOnActivePlayList() {
       if (this.activePlayListItemIndex > 0) {
         if (!this.playerHasPreviousUserInteractions) {
           this.playerInteract();
@@ -272,16 +272,26 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         }
         this.activePlayListItemIndex--;
         this.playerActionPlay(true);
-        return true;
+        try {
+          if (this.activePlayList?.id) {
+            await api.playList.setCurrentPlayListItemIndex(
+              this.activePlayList?.id,
+              this.activePlayListItemIndex,
+            );
+          } else {
+            console.error('No playlist active');
+          }
+        } catch (e) {
+          console.error(e);
+        }
       } else {
         console.error(
           'skipPreviousItemOnActivePlayList - invalid activePlayListItemIndex',
           this.activePlayListItemIndex,
         );
-        return false;
       }
     },
-    skipNextItemOnActivePlayList(): boolean {
+    async skipNextItemOnActivePlayList() {
       if (
         this.activePlayListItemIndex < (this.playLists[this.activePlayListIndex]?.items.length ?? 0)
       ) {
@@ -294,13 +304,23 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         }
         this.activePlayListItemIndex++;
         this.playerActionPlay(true);
-        return true;
+        try {
+          if (this.activePlayList?.id) {
+            await api.playList.setCurrentPlayListItemIndex(
+              this.activePlayList?.id,
+              this.activePlayListItemIndex,
+            );
+          } else {
+            console.error('No playlist active');
+          }
+        } catch (e) {
+          console.error(e);
+        }
       } else {
         console.error(
           'skipNextItemOnActivePlayList - invalid activePlayListItemIndex',
           this.activePlayListItemIndex,
         );
-        return false;
       }
     },
     setActivePlayListIndex(index: number): boolean {
@@ -339,7 +359,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       );
       response.data.playLists.forEach((playList, index: number) => {
         if (playList.flags.actived) {
-          this.activePlayListItemIndex = index;
+          this.activePlayListItemIndex = playList.currentItemIndex;
           this.selectedPlayListIndex = index;
         }
       });
@@ -415,7 +435,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.selectedPlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
       this.activePlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
     },
-    selectPlayListItem(playListIndex: number, playListItemIndex: number): boolean {
+    async selectPlayListItem(playListIndex: number, playListItemIndex: number) {
       console.log('selectPlayListItem', playListIndex, playListItemIndex);
       if (
         playListIndex >= 0 &&
@@ -431,10 +451,20 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         this.activePlayListIndex = playListIndex;
         this.activePlayListItemIndex = playListItemIndex;
         this.playerActionPlay(true);
-        return true;
+        try {
+          if (this.activePlayList?.id) {
+            await api.playList.setCurrentPlayListItemIndex(
+              this.activePlayList?.id,
+              this.activePlayListItemIndex,
+            );
+          } else {
+            console.error('No playlist active');
+          }
+        } catch (e) {
+          console.error(e);
+        }
       } else {
         console.error('selectPlayListItem - invalid playListItemIndex', playListItemIndex);
-        return false;
       }
     },
     moveUpPlayListItem(playListIndex: number, playListItemIndex: number): boolean {

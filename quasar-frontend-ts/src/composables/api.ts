@@ -168,6 +168,9 @@ const api = {
     getCurrentPlayLists: function () {
       return axiosInstance.get('/current_playlists');
     },
+    setCurrentPlayListItemIndex: function (playListId: string, itemIndex: number) {
+      return axiosInstance.put(`/current_playlist/${playListId}/current_item_index/${itemIndex}`);
+    },
   },
   currentPlayList: {
     get: function () {

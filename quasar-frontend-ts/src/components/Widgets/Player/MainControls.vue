@@ -17,37 +17,45 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
-import { useI18n } from "vue-i18n";
+  import { computed } from "vue";
+  import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+  import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
+  const { t } = useI18n();
 
-interface MainControlsProps {
-  disabled?: boolean;
-}
+  interface MainControlsProps {
+    disabled?: boolean;
+  }
 
-withDefaults(defineProps<MainControlsProps>(), {
-  disabled: false,
-});
+  withDefaults(defineProps<MainControlsProps>(), {
+    disabled: false,
+  });
 
-const currentPlayListsStore = useCurrentPlayListsStore();
+  const currentPlayListsStore = useCurrentPlayListsStore();
 
-const playPauseResumeClass = computed(() => currentPlayListsStore.playerIsPlaying || currentPlayListsStore.playerIsPaused ? 'text-pink-6' : '');
-const playPauseResumeIcon = computed(() => currentPlayListsStore.playerIsPaused ? 'pause' : 'play_arrow');
+  const playPauseResumeClass = computed(() => currentPlayListsStore.playerIsPlaying || currentPlayListsStore.playerIsPaused ? 'text-pink-6' : '');
+  const playPauseResumeIcon = computed(() => currentPlayListsStore.playerIsPaused ? 'pause' : 'play_arrow');
 
-const onSkipPrevious = () => {
-  currentPlayListsStore.playerInteract();
-  currentPlayListsStore.skipPreviousItemOnActivePlayList();
-};
+  const onSkipPrevious = async () => {
+    currentPlayListsStore.playerInteract();
+    try {
+      await currentPlayListsStore.skipPreviousItemOnActivePlayList();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-const onPlayPauseResume = () => {
-  currentPlayListsStore.playerInteract();
-  currentPlayListsStore.playerActionPlay(false)
-};
+  const onPlayPauseResume = () => {
+    currentPlayListsStore.playerInteract();
+    currentPlayListsStore.playerActionPlay(false)
+  };
 
-const onSkipNext = () => {
-  currentPlayListsStore.playerInteract();
-  currentPlayListsStore.skipNextItemOnActivePlayList();
-};
+  const onSkipNext = async () => {
+    currentPlayListsStore.playerInteract();
+    try {
+      await currentPlayListsStore.skipNextItemOnActivePlayList();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 </script>

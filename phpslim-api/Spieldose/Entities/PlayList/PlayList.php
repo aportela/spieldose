@@ -412,6 +412,26 @@ final class PlayList
         }
     }
 
+    public function setCurrentItemIndex(\aportela\DatabaseWrapper\DB $dbh, int $currentItemIndex, string $userId): void
+    {
+        $this->getPlayListUserData($dbh, $userId);
+        $this->flags->opened = true;
+        $this->flags->actived = true;
+        $this->currentItemIndex = $currentItemIndex;
+        $this->currentItemPosition = 0;
+        try {
+            $dbh->beginTransaction();
+            // associate playlist to user with flags (opened & active)
+            $this->associatePlayListFlagsToUser($dbh, $userId);
+            // only one playlist can be active, clear active flag on other playlists of this user
+            $this->resetActiveFlagOnAnotherUserPlayLists($dbh, $userId);
+            $dbh->commit();
+        } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
+            $dbh->rollBack();
+            throw $e;
+        }
+    }
+
     public static function toggleFavoriteFile(\aportela\DatabaseWrapper\DB $dbh, string $userId, string $fileId, bool $flag): void
     {
         if ($fileId !== '' && $fileId !== '0') {
@@ -513,7 +533,8 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.id, P.name, P.ctime AS createdAtTimestamp, P.mtime AS updatedAtTimestamp, P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared
+                    P.id, P.name, P.ctime AS createdAtTimestamp, P.mtime AS updatedAtTimestamp, P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared,
+                    UP.playlist_item_index AS playListItemIndex, UP.playlist_item_position AS playListItemPosition
                 FROM USER_PLAYLIST UP
                 INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
@@ -540,6 +561,7 @@ final class PlayList
                     $result->id === $userId
                 )
             );
+            $playList->currentItemIndex = is_numeric($result->playListItemIndex) ? intval($result->playListItemIndex) : 0;
             $playList->setItems(\Spieldose\Entities\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $playList->id, $userId));
             $playLists[] = $playList;
         }
