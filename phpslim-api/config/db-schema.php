@@ -286,8 +286,8 @@ return ([
                 published INTEGER,
                 shared INTEGER,
                 favorites INTEGER,
-                playlist_item_index INTEGER NOT NULL DEFAULT 0,
-                playlist_item_position INTEGER NOT NULL DEFAULT 0,
+                playlist_item_index INTEGER,
+                playlist_item_position INTEGER,
                 PRIMARY KEY (playlist_id, user_id),
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE,
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE
