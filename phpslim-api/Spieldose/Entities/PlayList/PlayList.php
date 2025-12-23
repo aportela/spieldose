@@ -34,8 +34,8 @@ final class PlayList
         $this->name = $name;
         $this->items = [];
         $this->flags = $flags ?? new \Spieldose\Entities\PlayList\PlayListFlags(false, false, false, false, false, false);
-        $this->currentItemIndex = 0;
-        $this->currentItemPosition = 0;
+        $this->currentItemIndex = null;
+        $this->currentItemPosition = null;
     }
 
     /**
@@ -98,8 +98,8 @@ final class PlayList
                 is_numeric($results[0]->shared) && $results[0]->shared > 0,
                 is_numeric($results[0]->favorites) && $results[0]->favorites > 0
             );
-            $this->currentItemIndex = $results[0]->playListItemIndex;
-            $this->currentItemPosition = $results[0]->playListItemPosition;
+            $this->currentItemIndex = is_numeric($results[0]->playListItemIndex) ? intval($results[0]->playListItemIndex) : null;
+            $this->currentItemPosition = is_numeric($results[0]->playListItemPosition) ? intval($results[0]->playListItemPosition) : null;
             return (true);
         } else {
             return (false);
@@ -114,7 +114,7 @@ final class PlayList
                 INSERT INTO USER_PLAYLIST
                     (user_id, playlist_id, opened, actived, published, shared, favorites, playlist_item_index, playlist_item_position)
                 VALUES
-                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites, 0, 0)
+                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites, :playlist_item_index, :playlist_item_position)
                 ON CONFLICT (user_id, playlist_id) DO
                 UPDATE SET
                     opened = :opened,
@@ -129,12 +129,12 @@ final class PlayList
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
                 $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
-                $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
+                $this->flags->actived ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
                 $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
                 $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
                 $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_index", $this->currentItemIndex),
-                new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_position", $this->currentItemPosition)
+                $this->currentItemIndex === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_index") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_index", $this->currentItemIndex),
+                $this->currentItemPosition === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_position") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_position", $this->currentItemPosition)
             ]
         );
     }
@@ -497,7 +497,8 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.user_id AS ownerId, P.name, P.ctime, P.mtime, UP.opened, UP.actived, UP.published, UP.shared
+                    P.user_id AS ownerId, P.name, P.ctime, P.mtime, UP.opened, UP.actived, UP.published, UP.shared,
+                    UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
                 FROM PLAYLIST P
                 LEFT JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.user_id = :user_id
                 WHERE
@@ -519,6 +520,8 @@ final class PlayList
                 is_numeric($results[0]->shared) && $results[0]->shared > 0,
                 $this->id === $userId // is user favorites playlist (playlist id === userId)
             );
+            $this->currentItemIndex = is_numeric($results[0]->playListItemIndex) ? intval($results[0]->playListItemIndex) : null;
+            $this->currentItemPosition = is_numeric($results[0]->playListItemPosition) ? intval($results[0]->playListItemPosition) : null;
             $this->items = \Spieldose\Entities\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $this->id, $userId);
         } else {
             throw new \Spieldose\Exception\NotFoundException("id");
@@ -561,7 +564,8 @@ final class PlayList
                     $result->id === $userId
                 )
             );
-            $playList->currentItemIndex = is_numeric($result->playListItemIndex) ? intval($result->playListItemIndex) : 0;
+            $playList->currentItemIndex = is_numeric($result->playListItemIndex) ? intval($result->playListItemIndex) : null;
+            $playList->currentItemPosition = is_numeric($result->playListItemPosition) ? intval($result->playListItemPosition) : null;
             $playList->setItems(\Spieldose\Entities\PlayList\PlayListFileItem::getPlayListFileItems($dbh, $playList->id, $userId));
             $playLists[] = $playList;
         }
