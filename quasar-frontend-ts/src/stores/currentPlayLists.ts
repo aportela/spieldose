@@ -4,6 +4,7 @@ import { createStorageEntry } from 'src/composables/localStorage';
 import { PlayListClass, type PlayList, type PlayListItemClass } from 'src/types/playList';
 import { type AddPlayListResponse } from 'src/types/apiResponses';
 import { type Player, type PlayerStatus, type PlayerRepeatMode } from 'src/types/common';
+import { fasCircleMinus } from '@quasar/extras/fontawesome-v6';
 
 const localStorageAudioVolume = createStorageEntry<number>('audio.volume', 1);
 const localStorageAudioMuted = createStorageEntry<boolean>('audio.muted', false);
@@ -34,6 +35,7 @@ interface State {
   activePlayListIndex: number;
   activePlayListItemIndex: number;
   playLists: PlayList[];
+  processing: boolean;
 }
 
 export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
@@ -55,6 +57,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     activePlayListIndex: 0,
     activePlayListItemIndex: 0,
     playLists: [],
+    processing: false,
   }),
   getters: {
     /* audio */
@@ -81,13 +84,17 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     activePlayList: (state: State): PlayList | null =>
       state.playLists.length > 0 ? state.playLists[state.activePlayListIndex]! : null,
     currentFileId: (state: State): string | null =>
-      state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file?.id ??
-      null,
+      state.processing === false
+        ? (state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
+            ?.id ?? null)
+        : null,
     currentFileURL: (state: State): string | null =>
-      getFileURL(
-        state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
-          ?.id ?? null,
-      ),
+      state.processing === false
+        ? getFileURL(
+            state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
+              ?.id ?? null,
+          )
+        : null,
     currentActivePlayListItem: (state: State): PlayListItemClass | null =>
       state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex] ?? null,
     /*
@@ -353,6 +360,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       }
     },
     async init() {
+      this.processing = true;
       const response = await api.playList.getCurrentPlayLists();
       this.playLists = response.data.playLists.map(
         (playList: PlayList) => new PlayListClass(playList.id, playList.name, playList.items),
@@ -363,6 +371,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           this.selectedPlayListIndex = index;
         }
       });
+      this.processing = false;
     },
     async add(id: string, name: string) {
       const PlayList: AddPlayListResponse = await api.playList.add(id, name);
