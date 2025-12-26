@@ -585,17 +585,25 @@ return function (App $app): void {
                 $path = $thumbnail->get();
                 if (is_string($path) && file_exists($path)) {
                     $filesize = filesize($path);
-                    $f = fopen($path, 'r');
-                    fseek($f, 0);
-                    $data = fread($f, $filesize);
-                    fclose($f);
-                    $response->getBody()->write($data);
-                    return $response
-                        ->withHeader('Content-Type', 'image/jpeg')
-                        ->withHeader('Content-Length', (string) $filesize)
-                        ->withHeader('ETag', sha1($queryParams["url"] ?? $queryParams["albumPathId"] ?? "" . $path . $filesize))
-                        ->withHeader('Cache-Control', 'max-age=86400')
-                        ->withStatus(200);
+                    $etag = sha1($queryParams["url"] ?? $queryParams["albumPathId"] ?? "" . $path . $filesize);
+                    $ifNoneMatchHeader = $request->getHeaderLine('If-None-Match');
+                    if (! empty($ifNoneMatchHeader) && $ifNoneMatchHeader === $etag) {
+                        return $response->withStatus(304);
+                    } else {
+                        $f = fopen($path, 'r');
+                        fseek($f, 0);
+                        $data = fread($f, $filesize);
+                        fclose($f);
+                        $response->getBody()->write($data);
+                        return $response
+                            ->withHeader('Content-Type', 'image/jpeg')
+                            ->withHeader('Content-Length', (string) $filesize)
+                            ->withHeader('Vary', 'If-None-Match')
+                            ->withHeader('ETag', $etag)
+                            ->withHeader('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($path)) . ' GMT')
+                            ->withHeader('Cache-Control', 'public, max-age=86400, must-revalidate')
+                            ->withStatus(200);
+                    }
                 } else {
                     throw new \Spieldose\Exception\NotFoundException('Error getting local thumbnail path');
                 }
