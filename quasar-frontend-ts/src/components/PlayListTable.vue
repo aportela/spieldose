@@ -18,7 +18,7 @@
       <tr class="cursor-pointer" v-for="item, itemIndex in playList.items" :key="item._id">
         <td v-if="playListVisibleColumnsStore.isIndexColumnVisible" class="text-right">
           <q-icon name="play_arrow" size="sm" color="pink" class="cursor-pointer"
-            v-if="active && itemIndex == playListCurrentItemIndex" />
+            v-if="playList.currentItemIndex === itemIndex" />
           {{ itemIndex + 1 }}/{{ playListItemCount }}
         </td>
         <td class="playlist-column-image" v-if="playListVisibleColumnsStore.isImageColumnVisible">
@@ -34,7 +34,7 @@
         </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTrackNumberColumnVisible">0</td>
         <td v-if="playListVisibleColumnsStore.isAlbumArtistColumnVisible">{{ item.file?.trackInfo.album.artist.name
-          }}
+        }}
         </td>
         <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year || '' }}</td>
         <td v-if="playListVisibleColumnsStore.isActionsColumnVisible">
