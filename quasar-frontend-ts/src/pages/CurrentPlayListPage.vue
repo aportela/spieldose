@@ -46,7 +46,7 @@
                     <q-toolbar class="q-pa-none">
                       <q-icon name="speaker" color="dark" class="q-mr-sm" size="md"
                         :class="{ 'zoom-infinite': currentPlayListsStore.playerIsPlaying }"
-                        v-if="currentPlayListsStore.activePlayListIndex == playListIndex" />
+                        v-if="playList.flags.actived" />
                       <span>
                         {{ playList.name }}
                       </span>
