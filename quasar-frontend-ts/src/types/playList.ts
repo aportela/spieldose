@@ -104,13 +104,20 @@ class PlayListClass implements PlayList {
   currentItemIndex: null | number;
   currentItemPosition: null | number;
 
-  constructor(id: string, name: string, items: PlayListItem[], flags: PlayListFlags) {
+  constructor(
+    id: string,
+    name: string,
+    items: PlayListItem[],
+    flags: PlayListFlags,
+    currentItemIndex: null | number,
+    currentItemPosition: null | number,
+  ) {
     this.id = id;
     this.name = name;
     this.items = items.map((item) => new PlayListItemClass(item.file, item.stream, item.images));
     this.flags = flags;
-    this.currentItemIndex = null;
-    this.currentItemPosition = null;
+    this.currentItemIndex = currentItemIndex;
+    this.currentItemPosition = currentItemPosition;
   }
 
   get hasItems(): boolean {
