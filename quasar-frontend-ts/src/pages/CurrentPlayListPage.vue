@@ -146,11 +146,15 @@
     console.log("onRandomize");
   };
 
-  const onSkipPrevious = (): void => {
+  const onSkipPrevious = async () => {
     if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
       currentPlayListsStore.playerInteract();
     }
-    currentPlayListsStore.skipPreviousItemOnActivePlayList();
+    try {
+      await currentPlayListsStore.skipPreviousItemOnActivePlayList();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onPlay = (): void => {
@@ -174,11 +178,15 @@
     currentPlayListsStore.playerActionStop();
   };
 
-  const onSkipNext = (): void => {
+  const onSkipNext = async () => {
     if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
       currentPlayListsStore.playerInteract();
     }
-    currentPlayListsStore.skipNextItemOnActivePlayList();
+    try {
+      await currentPlayListsStore.skipNextItemOnActivePlayList();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
 </script>

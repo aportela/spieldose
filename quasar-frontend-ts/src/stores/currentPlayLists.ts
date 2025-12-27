@@ -4,7 +4,6 @@ import { createStorageEntry } from 'src/composables/localStorage';
 import { PlayListClass, type PlayList, type PlayListItemClass } from 'src/types/playList';
 import { type AddPlayListResponse } from 'src/types/apiResponses';
 import { type Player, type PlayerStatus, type PlayerRepeatMode } from 'src/types/common';
-import { fasCircleMinus } from '@quasar/extras/fontawesome-v6';
 
 const localStorageAudioVolume = createStorageEntry<number>('audio.volume', 1);
 const localStorageAudioMuted = createStorageEntry<boolean>('audio.muted', false);
@@ -121,7 +120,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       });
       this.audio.instance.addEventListener('ended', () => {
         if (this.allowSkipNextItemOnActivePlayList) {
-          this.skipNextItemOnActivePlayList();
+          this.skipNextItemOnActivePlayList()
+            .then(() => {})
+            .catch(() => {})
+            .finally(() => {});
         }
       });
       this.audio.instance.addEventListener('timeupdate', () => {
@@ -363,10 +365,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.processing = true;
       const response = await api.playList.getCurrentPlayLists();
       this.playLists = response.data.playLists.map(
-        (playList: PlayList) => new PlayListClass(playList.id, playList.name, playList.items),
+        (playList: PlayList) =>
+          new PlayListClass(playList.id, playList.name, playList.items, playList.flags),
       );
-      response.data.playLists.forEach((playList, index: number) => {
-        if (playList.flags.actived) {
+      response.data.playLists.forEach((playList: PlayList, index: number) => {
+        if (playList.flags.actived && playList.currentItemIndex !== null) {
           this.activePlayListItemIndex = playList.currentItemIndex;
           this.selectedPlayListIndex = index;
         }
@@ -379,6 +382,16 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         id: PlayList.data.playList.id,
         name: PlayList.data.playList.name,
         items: PlayList.data.playList.items,
+        flags: {
+          isMine: true,
+          opened: true,
+          actived: false,
+          published: false,
+          shared: false,
+          isFavorites: false,
+        },
+        currentItemIndex: null,
+        currentItemPosition: null,
       });
       this.selectedPlayListIndex = this.playLists.length - 1;
     },
@@ -548,10 +561,15 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         });
       });
     },
-    async toggleFavoritePlayListItem(playListIndex: number, playListItemIndex: number): boolean {
+    async toggleFavoritePlayListItem(playListIndex: number, playListItemIndex: number) {
       console.log('toggleFavoritePlayListItem', playListIndex, playListItemIndex);
       try {
-        if (this.playLists[playListIndex]?.items[playListItemIndex]?.file.id) {
+        if (
+          this.playLists[playListIndex] &&
+          this.playLists[playListIndex]?.items[playListItemIndex] &&
+          this.playLists[playListIndex]?.items[playListItemIndex].file &&
+          this.playLists[playListIndex]?.items[playListItemIndex]?.file.id
+        ) {
           if (this.playLists[playListIndex]?.items[playListItemIndex]?.file?.trackInfo.favorited) {
             await api.track.unSetFavorite(
               this.playLists[playListIndex]?.items[playListItemIndex]?.file.id,
@@ -573,14 +591,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       } catch (e) {
         console.error(e);
       }
-      return false;
     },
-    toggleCurrentActivePlayListItemFavorite(): boolean {
+    async toggleCurrentActivePlayListItemFavorite() {
       console.log('toggleCurrentActivePlayListItemFavorite');
-      return this.toggleFavoritePlayListItem(
-        this.activePlayListIndex,
-        this.activePlayListItemIndex,
-      );
+      await this.toggleFavoritePlayListItem(this.activePlayListIndex, this.activePlayListItemIndex);
     },
   },
 });

@@ -78,23 +78,39 @@ class PlayListItemClass implements PlayListItem {
   }
 }
 
+interface PlayListFlags {
+  isMine: boolean;
+  opened: boolean;
+  actived: boolean;
+  published: boolean;
+  shared: boolean;
+  isFavorites: boolean;
+}
+
 interface PlayList {
   id: string;
   name: string;
   items: PlayListItemClass[];
+  flags: PlayListFlags;
+  currentItemIndex: null | number;
+  currentItemPosition: null | number;
 }
 
 class PlayListClass implements PlayList {
   id: string;
   name: string;
   items: PlayListItemClass[];
-  currentItemIndex: number;
+  flags: PlayListFlags;
+  currentItemIndex: null | number;
+  currentItemPosition: null | number;
 
-  constructor(id: string, name: string, items: PlayListItem[]) {
+  constructor(id: string, name: string, items: PlayListItem[], flags: PlayListFlags) {
     this.id = id;
     this.name = name;
     this.items = items.map((item) => new PlayListItemClass(item.file, item.stream, item.images));
-    this.currentItemIndex = 0;
+    this.flags = flags;
+    this.currentItemIndex = null;
+    this.currentItemPosition = null;
   }
 
   get hasItems(): boolean {
@@ -102,11 +118,13 @@ class PlayListClass implements PlayList {
   }
 
   get allowSkipNext(): boolean {
-    return this.hasItems && this.currentItemIndex < this.items.length;
+    return (
+      this.hasItems && (this.currentItemIndex === null || this.currentItemIndex < this.items.length)
+    );
   }
 
   get allowSkipPrevious(): boolean {
-    return this.hasItems && this.currentItemIndex > 0;
+    return this.hasItems && this.currentItemIndex !== null && this.currentItemIndex > 0;
   }
 }
 
