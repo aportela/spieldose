@@ -285,7 +285,6 @@ return ([
                 actived INTEGER,
                 published INTEGER,
                 shared INTEGER,
-                favorites INTEGER,
                 playlist_item_index INTEGER,
                 playlist_item_position INTEGER,
                 PRIMARY KEY (playlist_id, user_id),

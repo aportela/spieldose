@@ -76,7 +76,7 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared, UP.favorites, UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
+                    P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared, UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
                 FROM USER_PLAYLIST UP
                 INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
@@ -96,7 +96,7 @@ final class PlayList
                 is_numeric($results[0]->actived) && $results[0]->actived > 0,
                 is_numeric($results[0]->published) && $results[0]->published > 0,
                 is_numeric($results[0]->shared) && $results[0]->shared > 0,
-                is_numeric($results[0]->favorites) && $results[0]->favorites > 0
+                $this->id === $userId
             );
             $this->currentItemIndex = is_numeric($results[0]->playListItemIndex) ? intval($results[0]->playListItemIndex) : null;
             $this->currentItemPosition = is_numeric($results[0]->playListItemPosition) ? intval($results[0]->playListItemPosition) : null;
@@ -112,16 +112,15 @@ final class PlayList
         $dbh->execute(
             "
                 INSERT INTO USER_PLAYLIST
-                    (user_id, playlist_id, opened, actived, published, shared, favorites, playlist_item_index, playlist_item_position)
+                    (user_id, playlist_id, opened, actived, published, shared, playlist_item_index, playlist_item_position)
                 VALUES
-                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :favorites, :playlist_item_index, :playlist_item_position)
+                    (:user_id, :playlist_id, :opened, :actived, :published, :shared, :playlist_item_index, :playlist_item_position)
                 ON CONFLICT (user_id, playlist_id) DO
                 UPDATE SET
                     opened = :opened,
                     actived = :actived,
                     published = :published,
                     shared = :shared,
-                    favorites = :favorites,
                     playlist_item_index = :playlist_item_index,
                     playlist_item_position = :playlist_item_position
             ",
@@ -132,7 +131,6 @@ final class PlayList
                 $this->flags->actived ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
                 $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
                 $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
-                $this->flags->isFavorites ? new \aportela\DatabaseWrapper\Param\IntegerParam(":favorites", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":favorites"),
                 $this->currentItemIndex === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_index") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_index", $this->currentItemIndex),
                 $this->currentItemPosition === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_position") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_position", $this->currentItemPosition)
             ]
