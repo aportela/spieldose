@@ -33,7 +33,7 @@ final class PlayList
         $this->id = $id;
         $this->name = $name;
         $this->items = [];
-        $this->flags = $flags ?? new \Spieldose\Entities\PlayList\PlayListFlags(false, false, false, false, false, false);
+        $this->flags = $flags ?? new \Spieldose\Entities\PlayList\PlayListFlags(false, false, null, null, null, null);
         $this->currentItemIndex = null;
         $this->currentItemPosition = null;
     }
@@ -66,17 +66,12 @@ final class PlayList
         return (count($results) === 1);
     }
 
-    private function isFavorites(string $userId): bool
-    {
-        return ($this->id === $userId);
-    }
-
     private function getPlayListUserData(\aportela\DatabaseWrapper\DB $dbh, string $userId): bool
     {
         $results = $dbh->query(
             "
                 SELECT
-                    P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared, UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
+                    P.user_id AS ownerId, UP.opened AS openedAtTimestamp, UP.actived AS activedAtTimestamp, UP.published AS publishedAtTimestamp, UP.shared AS sharedAtTimestamp, UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
                 FROM USER_PLAYLIST UP
                 INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
                 WHERE
@@ -92,11 +87,11 @@ final class PlayList
         if (count($results) === 1) {
             $this->flags->setFlags(
                 $results[0]->ownerId === $userId,
-                is_numeric($results[0]->opened) && $results[0]->opened > 0,
-                is_numeric($results[0]->actived) && $results[0]->actived > 0,
-                is_numeric($results[0]->published) && $results[0]->published > 0,
-                is_numeric($results[0]->shared) && $results[0]->shared > 0,
-                $this->id === $userId
+                $this->id === $userId,
+                is_numeric($results[0]->openedAtTimestamp)  ? intval($results[0]->openedAtTimestamp) : null,
+                is_numeric($results[0]->activedAtTimestamp) ? intval($results[0]->activedAtTimestamp) : null,
+                is_numeric($results[0]->publishedAtTimestamp) ?  intval($results[0]->publishedAtTimestamp) : null,
+                is_numeric($results[0]->sharedAtTimestamp) ? intval($results[0]->sharedAtTimestamp) : null,
             );
             $this->currentItemIndex = is_numeric($results[0]->playListItemIndex) ? intval($results[0]->playListItemIndex) : null;
             $this->currentItemPosition = is_numeric($results[0]->playListItemPosition) ? intval($results[0]->playListItemPosition) : null;
@@ -108,7 +103,6 @@ final class PlayList
 
     private function associatePlayListFlagsToUser(\aportela\DatabaseWrapper\DB $dbh, string $userId): void
     {
-        $currentTimestamp = intval(microtime(true) * 1000);
         $dbh->execute(
             "
                 INSERT INTO USER_PLAYLIST
@@ -127,10 +121,10 @@ final class PlayList
             [
                 new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId),
                 new \aportela\DatabaseWrapper\Param\StringParam(":playlist_id", $this->id),
-                $this->flags->opened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
-                $this->flags->actived ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
-                $this->flags->published ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
-                $this->flags->shared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $currentTimestamp) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
+                $this->flags->isOpened ? new \aportela\DatabaseWrapper\Param\IntegerParam(":opened", $this->flags->getOpenedAtTimestamp()) : new \aportela\DatabaseWrapper\Param\NullParam(":opened"),
+                $this->flags->isActive ? new \aportela\DatabaseWrapper\Param\IntegerParam(":actived", $this->flags->getActivedAtTimestamp()) : new \aportela\DatabaseWrapper\Param\NullParam(":actived"),
+                $this->flags->isPublished ? new \aportela\DatabaseWrapper\Param\IntegerParam(":published", $this->flags->getPublishedAtTimestamp()) : new \aportela\DatabaseWrapper\Param\NullParam(":published"),
+                $this->flags->isShared ? new \aportela\DatabaseWrapper\Param\IntegerParam(":shared", $this->flags->getSharedAtTimestamp()) : new \aportela\DatabaseWrapper\Param\NullParam(":shared"),
                 $this->currentItemIndex === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_index") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_index", $this->currentItemIndex),
                 $this->currentItemPosition === null ? new \aportela\DatabaseWrapper\Param\NullParam(":playlist_item_position") : new \aportela\DatabaseWrapper\Param\IntegerParam(":playlist_item_position", $this->currentItemPosition)
             ]
@@ -163,11 +157,11 @@ final class PlayList
         $this->createdAtTimestamp = intval(microtime(true) * 1000);
         $this->flags->setFlags(
             true, // isMine (i am the creator... so YES)
-            true, // opened (new playlist is created & opened)
-            true, // actived (new playlist is created & set to active)
-            false, // published (new playlist, created & opened, is always "temporal", until real save action)
-            false, // shared (new playlist, not published, can not be shared)
-            false, // favorites (favorites playlist id === userId)
+            false, // favorites playlist can not be created manually (favorites playlist id === userId)
+            $this->createdAtTimestamp, // opened (new playlist is created & opened)
+            $this->createdAtTimestamp, // actived (new playlist is created & set to active)
+            null, // published (new playlist, created & opened, is always "temporal", until real save action)
+            null, // shared (new playlist, not published, can not be shared)
         );
         try {
             $dbh->beginTransaction();
@@ -302,8 +296,8 @@ final class PlayList
     public function close(\aportela\DatabaseWrapper\DB $dbh, string $userId): void
     {
         $this->getPlayListUserData($dbh, $userId);
-        $this->flags->opened = false;
-        $this->flags->actived = false;
+        $this->flags->close();
+        $this->flags->unsetActive();
         try {
             $dbh->beginTransaction();
             // associate playlist to user with flags (opened & active)
@@ -413,8 +407,13 @@ final class PlayList
     public function setCurrentItemIndex(\aportela\DatabaseWrapper\DB $dbh, int $currentItemIndex, string $userId): void
     {
         $this->getPlayListUserData($dbh, $userId);
-        $this->flags->opened = true;
-        $this->flags->actived = true;
+        $currentTimestamp = intval(microtime(true) * 1000);
+        if (! $this->flags->isOpened) {
+            $this->flags->open($currentTimestamp);
+        }
+        if (! $this->flags->isActive) {
+            $this->flags->setActive($currentTimestamp);
+        }
         $this->currentItemIndex = $currentItemIndex;
         $this->currentItemPosition = 0;
         try {
@@ -495,7 +494,7 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.user_id AS ownerId, P.name, P.ctime, P.mtime, UP.opened, UP.actived, UP.published, UP.shared,
+                    P.user_id AS ownerId, P.name, P.ctime, P.mtime, UP.opened AS openedAtTimestamp, UP.actived AS activedAtTimestamp, UP.published AS publishedAtTimestamp, UP.shared AS sharedAtTimestamp,
                     UP.playlist_item_index as playListItemIndex, UP.playlist_item_position as playListItemPosition
                 FROM PLAYLIST P
                 LEFT JOIN USER_PLAYLIST UP ON UP.playlist_id = P.id AND UP.user_id = :user_id
@@ -512,11 +511,11 @@ final class PlayList
             $this->updatedAtTimestamp = is_numeric($results[0]->mtime) ? intval($results[0]->mtime) : null;
             $this->flags->setFlags(
                 $userId === $results[0]->ownerId, // is Mine ?
-                is_numeric($results[0]->opened) && $results[0]->opened > 0,
-                is_numeric($results[0]->actived) && $results[0]->opened > 0,
-                is_numeric($results[0]->published) && $results[0]->published > 0,
-                is_numeric($results[0]->shared) && $results[0]->shared > 0,
-                $this->id === $userId // is user favorites playlist (playlist id === userId)
+                $this->id === $userId, // is user favorites playlist (playlist id === userId)
+                is_numeric($results[0]->openedAtTimestamp)  ? intval($results[0]->openedAtTimestamp) : null,
+                is_numeric($results[0]->activedAtTimestamp) ? intval($results[0]->activedAtTimestamp) : null,
+                is_numeric($results[0]->publishedAtTimestamp) ?  intval($results[0]->publishedAtTimestamp) : null,
+                is_numeric($results[0]->sharedAtTimestamp) ? intval($results[0]->sharedAtTimestamp) : null,
             );
             $this->currentItemIndex = is_numeric($results[0]->playListItemIndex) ? intval($results[0]->playListItemIndex) : null;
             $this->currentItemPosition = is_numeric($results[0]->playListItemPosition) ? intval($results[0]->playListItemPosition) : null;
@@ -534,7 +533,8 @@ final class PlayList
         $results = $dbh->query(
             "
                 SELECT
-                    P.id, P.name, P.ctime AS createdAtTimestamp, P.mtime AS updatedAtTimestamp, P.user_id AS ownerId, UP.opened, UP.actived, UP.published, UP.shared,
+                    P.id, P.name, P.ctime AS createdAtTimestamp, P.mtime AS updatedAtTimestamp, P.user_id AS ownerId,
+                    UP.opened AS openedAtTimestamp, UP.actived AS activedAtTimestamp, UP.published AS publishedAtTimestamp, UP.shared AS sharedAtTimestamp,
                     UP.playlist_item_index AS playListItemIndex, UP.playlist_item_position AS playListItemPosition
                 FROM USER_PLAYLIST UP
                 INNER JOIN PLAYLIST P ON P.id = UP.playlist_id
@@ -555,11 +555,11 @@ final class PlayList
                 $result->name,
                 new \Spieldose\Entities\PlayList\PlayListFlags(
                     $result->ownerId === $userId,
-                    is_numeric($result->opened) && $result->opened > 0,
-                    is_numeric($result->actived) && $result->actived > 0,
-                    is_numeric($result->published) && $result->published > 0,
-                    is_numeric($result->shared) && $result->shared > 0,
-                    $result->id === $userId
+                    $result->id === $userId,
+                    is_numeric($result->openedAtTimestamp)  ? intval($result->openedAtTimestamp) : null,
+                    is_numeric($result->activedAtTimestamp) ? intval($result->activedAtTimestamp) : null,
+                    is_numeric($result->publishedAtTimestamp) ? intval($result->publishedAtTimestamp) : null,
+                    is_numeric($result->sharedAtTimestamp) ? intval($result->sharedAtTimestamp) : null
                 )
             );
             $playList->currentItemIndex = is_numeric($result->playListItemIndex) ? intval($result->playListItemIndex) : null;

@@ -17,7 +17,8 @@
     <tbody v-if="!combinedItemView && playListHasItems" @click="handleTableBodyClick">
       <tr class="cursor-pointer" v-for="item, itemIndex in playList.items" :key="item._id">
         <td v-if="playListVisibleColumnsStore.isIndexColumnVisible" class="text-right">
-          <q-icon name="play_arrow" size="sm" color="pink" class="cursor-pointer"
+          <q-icon :name="playList.flags.isActive ? 'play_arrow' : 'stop'" size="sm"
+            :color="playList.flags.isActive ? 'pink' : 'text-dark'" class="cursor-pointer"
             v-if="playList.currentItemIndex === itemIndex" />
           {{ itemIndex + 1 }}/{{ playListItemCount }}
         </td>
@@ -56,7 +57,7 @@
       <tr class="cursor-pointer" v-for="item, itemIndex in playList.items" :key="item._id">
         <td class="text-right">
           <q-icon name="play_arrow" size="sm" color="pink" class="cursor-pointer"
-            v-if="active && itemIndex == playListCurrentItemIndex" />
+            v-if="playList.currentItemIndex === itemIndex" />
           {{ itemIndex + 1 }}/{{ playListItemCount }}
         </td>
         <td class="playlist-column-image">
@@ -103,8 +104,6 @@
   interface PlayListTableProps {
     disable?: boolean;
     playList: PlayList;
-    active: boolean;
-    playListCurrentItemIndex: number;
     roundImage?: boolean;
     rotateImage?: boolean;
   };
@@ -154,7 +153,6 @@
       emit("onClickItemAtIndex", rowIndex);
     }
   };
-
 </script>
 
 <style lang="css">

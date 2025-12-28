@@ -46,7 +46,7 @@
                     <q-toolbar class="q-pa-none">
                       <q-icon name="speaker" color="dark" class="q-mr-sm" size="md"
                         :class="{ 'zoom-infinite': currentPlayListsStore.playerIsPlaying }"
-                        v-if="playList.flags.actived" />
+                        v-if="playList.flags.isActive" />
                       <span>
                         {{ playList.name }}
                       </span>
@@ -66,8 +66,7 @@
           <q-tab-panels v-model="tab" class="q-mt-xs">
             <q-tab-panel :name="playList.id" v-for="playList, playListIndex in currentPlayListsStore.playLists"
               :key="playList.id" class="q-pa-none">
-              <PlayListTable :playList="playList" :active="currentPlayListsStore.activePlayListIndex === playListIndex"
-                :play-list-current-item-index="currentPlayListsStore.activePlayListItemIndex"
+              <PlayListTable :playList="playList"
                 @on-click-item-at-index="(index: number) => currentPlayListsStore.selectPlayListItem(playListIndex, index)"
                 @on-action-move-up-item-at-index="(index: number) => currentPlayListsStore.moveUpPlayListItem(playListIndex, index)"
                 @on-action-move-down-item-at-index="(index: number) => currentPlayListsStore.moveDownPlayListItem(playListIndex, index)"

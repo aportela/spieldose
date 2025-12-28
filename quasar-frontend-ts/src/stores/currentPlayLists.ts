@@ -345,7 +345,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       const index = this.playLists.findIndex((playList) => playList.id === id);
       if (index !== -1) {
         this.selectedPlayListIndex = index;
-        this.playLists[index]!.currentItemIndex = index;
+        //this.playLists[index]!.currentItemIndex = index;
         return true;
       } else {
         console.error('setSelectedPlayListId - missing index for id', id);
@@ -377,7 +377,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           ),
       );
       response.data.playLists.forEach((playList: PlayList, index: number) => {
-        if (playList.flags.actived) {
+        if (playList.flags.isActive) {
           this.selectedPlayListIndex = index;
           if (playList.currentItemIndex !== null) {
             this.activePlayListItemIndex = playList.currentItemIndex;
@@ -394,11 +394,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         items: PlayList.data.playList.items,
         flags: {
           isMine: true,
-          opened: true,
-          actived: false,
-          published: false,
-          shared: false,
           isFavorites: false,
+          isOpened: true,
+          isActive: false,
+          isPublished: false,
+          isShared: false,
         },
         currentItemIndex: null,
         currentItemPosition: null,
@@ -483,6 +483,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         this.activePlayListIndex = playListIndex;
         this.activePlayListItemIndex = playListItemIndex;
         this.playLists[playListIndex]!.currentItemIndex = playListItemIndex;
+        this.playLists.forEach((playList) => {
+          playList.flags.isActive = false;
+        });
+        this.playLists[playListIndex]!.flags.isActive = true;
         this.playerActionPlay(true);
         try {
           if (this.activePlayList?.id) {

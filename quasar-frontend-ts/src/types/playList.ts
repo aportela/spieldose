@@ -80,11 +80,11 @@ class PlayListItemClass implements PlayListItem {
 
 interface PlayListFlags {
   isMine: boolean;
-  opened: boolean;
-  actived: boolean;
-  published: boolean;
-  shared: boolean;
   isFavorites: boolean;
+  isOpened: boolean;
+  isActive: boolean;
+  isPublished: boolean;
+  isShared: boolean;
 }
 
 interface PlayList {
