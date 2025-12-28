@@ -98,9 +98,9 @@
     currentPlayListsStore.togglePlayerRepeatMode();
   }
 
-  function onToggleFavorite() {
+  async function onToggleFavorite() {
     try {
-      currentPlayListsStore.toggleCurrentActivePlayListItemFavorite();
+      await currentPlayListsStore.toggleCurrentActivePlayListItemFavorite();
     } catch (e: unknown) {
       console.error("Error toggling favorite", e);
     }
