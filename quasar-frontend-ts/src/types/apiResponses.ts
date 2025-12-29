@@ -1,5 +1,6 @@
 import { type AxiosResponse } from 'axios';
 import { type EnvironmentType, type ValidAuthTypes } from './common';
+import { type PlayList as PlayListInterface } from './playList';
 
 interface DefaultAxiosResponse<T = unknown> {
   data: AxiosResponse<T>;
@@ -95,24 +96,19 @@ interface BrowseAlbumsResponse extends Omit<DefaultAxiosResponse, 'data'> {
 
 interface AddPlayListResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    playList: {
-      id: string;
-      name: string;
-      items: [];
-    };
+    playList: PlayListInterface;
   };
-}
-
-interface PlayList {
-  id: string;
-  name: string;
-  createdAt: number;
-  updatedAt: number | null;
 }
 
 interface GetCurrentPlayListsResponse extends Omit<DefaultAxiosResponse, 'data'> {
   data: {
-    playLists: PlayList[];
+    playLists: PlayListInterface[];
+  };
+}
+
+interface RandomPlayListFillResponse extends Omit<DefaultAxiosResponse, 'data'> {
+  data: {
+    playList: PlayListInterface;
   };
 }
 
@@ -131,4 +127,5 @@ export {
   type BrowseAlbumsResponse,
   type AddPlayListResponse,
   type GetCurrentPlayListsResponse,
+  type RandomPlayListFillResponse,
 };

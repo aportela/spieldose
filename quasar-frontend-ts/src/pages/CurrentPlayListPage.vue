@@ -35,7 +35,7 @@
           <q-tabs dense align="left" v-model="tab" indicator-color="pink">
             <q-tab no-caps v-for="playList, playListIndex in currentPlayListsStore.playLists" :key="playList.id"
               :name="playList.id"
-              :class="{ 'bg-grey-3': playListIndex === currentPlayListsStore.selectedPlayListIndex }">
+              :class="{ 'bg-grey-3': playListIndex === currentPlayListsStore.currentSelectedPlayList.index }">
               <q-badge :color="currentPlayListsStore.playLists[playListIndex]?.items.length ? 'grey-7' : 'red'"
                 floating>{{
                   currentPlayListsStore.playLists[playListIndex]?.items.length
@@ -99,10 +99,10 @@
   const showTopButtonBarLabels = computed(() => screen.gt.lg);
   const tab = computed({
     get() {
-      return currentPlayListsStore.hasPlayLists ? currentPlayListsStore.playLists[currentPlayListsStore.selectedPlayListIndex]?.id ?? null : null;
+      return currentPlayListsStore.hasPlayLists && currentPlayListsStore.currentSelectedPlayList.index !== null ? currentPlayListsStore.playLists[currentPlayListsStore.currentSelectedPlayList.index]?.id ?? null : null;
     },
     set(value: string) {
-      currentPlayListsStore.setSelectedPlayListId(value);
+      currentPlayListsStore.setInternalSelectedPlayListId(value);
     }
   });
 
@@ -120,7 +120,7 @@
     console.log("onEmpty");
     if (tab.value) {
       try {
-        await currentPlayListsStore.empty(tab.value);
+        await currentPlayListsStore.emptySelectedPlayList();
       } catch (e) {
         console.error(e);
       }
@@ -132,7 +132,7 @@
   const onDiscover = (): void => {
     console.log("onDiscover");
     if (tab.value) {
-      currentPlayListsStore.randomFill(tab.value).then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
+      currentPlayListsStore.randomFillSelectedPlayList().then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
     } else {
       console.error("Invalid tab", tab.value);
     }
@@ -145,15 +145,11 @@
     console.log("onRandomize");
   };
 
-  const onSkipPrevious = async () => {
+  const onSkipPrevious = () => {
     if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
       currentPlayListsStore.playerInteract();
     }
-    try {
-      await currentPlayListsStore.skipPreviousItemOnActivePlayList();
-    } catch (e) {
-      console.error(e);
-    }
+    currentPlayListsStore.skipPreviousItemOnActivePlayList();
   };
 
   const onPlay = (): void => {
@@ -177,15 +173,11 @@
     currentPlayListsStore.playerActionStop();
   };
 
-  const onSkipNext = async () => {
+  const onSkipNext = () => {
     if (!currentPlayListsStore.playerHasPreviousUserInteractions) {
       currentPlayListsStore.playerInteract();
     }
-    try {
-      await currentPlayListsStore.skipNextItemOnActivePlayList();
-    } catch (e) {
-      console.error(e);
-    }
+    currentPlayListsStore.skipNextItemOnActivePlayList();
   };
 
 </script>

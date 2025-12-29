@@ -36,13 +36,9 @@
   const playPauseResumeClass = computed(() => currentPlayListsStore.playerIsPlaying || currentPlayListsStore.playerIsPaused ? 'text-pink-6' : '');
   const playPauseResumeIcon = computed(() => currentPlayListsStore.playerIsPaused ? 'pause' : 'play_arrow');
 
-  const onSkipPrevious = async () => {
+  const onSkipPrevious = () => {
     currentPlayListsStore.playerInteract();
-    try {
-      await currentPlayListsStore.skipPreviousItemOnActivePlayList();
-    } catch (e) {
-      console.error(e);
-    }
+    currentPlayListsStore.skipPreviousItemOnActivePlayList();
   };
 
   const onPlayPauseResume = () => {
@@ -50,12 +46,8 @@
     currentPlayListsStore.playerActionPlay(false)
   };
 
-  const onSkipNext = async () => {
+  const onSkipNext = () => {
     currentPlayListsStore.playerInteract();
-    try {
-      await currentPlayListsStore.skipNextItemOnActivePlayList();
-    } catch (e) {
-      console.error(e);
-    }
+    currentPlayListsStore.skipNextItemOnActivePlayList();
   };
 </script>

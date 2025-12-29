@@ -1,8 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { api } from 'src/composables/api';
 import { createStorageEntry } from 'src/composables/localStorage';
-import { PlayListClass, type PlayList, type PlayListItemClass } from 'src/types/playList';
-import { type AddPlayListResponse } from 'src/types/apiResponses';
+import { type PlayList, type PlayListItemClass } from 'src/types/playList';
+import {
+  type AddPlayListResponse,
+  type GetCurrentPlayListsResponse,
+  type RandomPlayListFillResponse,
+} from 'src/types/apiResponses';
 import { type Player, type PlayerStatus, type PlayerRepeatMode } from 'src/types/common';
 
 const localStorageAudioVolume = createStorageEntry<number>('audio.volume', 1);
@@ -30,9 +34,6 @@ interface State {
     duration: number;
   };
   player: Player;
-  selectedPlayListIndex: number;
-  activePlayListIndex: number;
-  activePlayListItemIndex: number;
   playLists: PlayList[];
   currentActivePlayList: {
     id: string | null;
@@ -42,7 +43,6 @@ interface State {
   currentSelectedPlayList: {
     id: string | null;
     index: number | null;
-    itemIndex: number | null;
   };
   processing: boolean;
 }
@@ -62,9 +62,6 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       repeatMode: 'none',
       shuffle: false,
     },
-    selectedPlayListIndex: 0,
-    activePlayListIndex: 0,
-    activePlayListItemIndex: 0,
     playLists: [],
     currentActivePlayList: {
       id: null,
@@ -74,7 +71,6 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     currentSelectedPlayList: {
       id: null,
       index: null,
-      itemIndex: null,
     },
     processing: false,
   }),
@@ -171,18 +167,14 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         this.audio.duration = this.audio.instance.duration;
       });
       this.audio.instance.addEventListener('ended', () => {
-        if (this.allowSkipNextItemOnActivePlayList) {
-          this.skipNextItemOnActivePlayList()
-            .then(() => {})
-            .catch(() => {})
-            .finally(() => {});
-        }
+        this.skipNextItemOnActivePlayList();
       });
       this.audio.instance.addEventListener('timeupdate', () => {
         this.audio.currentTime = this.audio.instance.currentTime;
       });
       this.audio.instance.addEventListener('error', (event: Event) => {
         console.error('create - audio event error', event);
+        // TODO: skip next item ???
       });
     },
     destroy: function (): void {
@@ -194,7 +186,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     // constructor / destructor
 
     // audio block
-    setAudioSource(src: string) {
+    setAudioSource(src: string): void {
       this.audio.instance.src = src;
       if (this.playerHasPreviousUserInteractions && !this.playerIsPlaying) {
         this.playerActionPlay(true);
@@ -211,12 +203,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     },
     setAudioMute: function (muted: boolean): void {
       this.audio.instance.muted = muted;
-      localStorageAudioMuted.set(this.audio.instance.muted);
+      this.audio.muted = muted;
+      localStorageAudioMuted.set(this.audio.muted);
     },
     toggleAudioMute: function (): void {
-      this.audio.instance.muted = !this.audio.instance.muted;
-      this.audio.muted = this.audio.instance.muted;
-      localStorageAudioMuted.set(this.audio.muted);
+      this.setAudioMute(!this.audio.muted);
     },
     setAudioCurrentTime: function (time: number | null): boolean {
       if (time !== null && time > 0 && time <= this.audio.instance.duration) {
@@ -322,8 +313,13 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     // player block
 
     // playlist block
-    setInternalCurrentActivePlayListItemIndex: function (index: number): void {
-      this.currentActivePlayList.itemIndex = index;
+    setInternalCurrentActivePlayListItemIndex: function (itemIndex: number): boolean {
+      if (itemIndex >= 0) {
+        this.currentActivePlayList.itemIndex = itemIndex;
+        return true;
+      } else {
+        return false;
+      }
     },
     incrementInternalCurrentActivePlayListItemIndex: function (): boolean {
       if (this.currentActivePlayList.itemIndex !== null) {
@@ -334,11 +330,70 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       }
     },
     decrementInternalCurrentActivePlayListItemIndex: function (): boolean {
-      if (this.currentActivePlayList.itemIndex !== null) {
+      if (
+        this.currentActivePlayList.itemIndex !== null &&
+        this.currentActivePlayList.itemIndex > 0
+      ) {
         this.currentActivePlayList.itemIndex--;
         return true;
       } else {
         return false;
+      }
+    },
+    setInternalActivePlayListIndex(index: number): boolean {
+      if (index > 0 && index < this.playLists.length) {
+        this.currentActivePlayList.index = index;
+        this.currentActivePlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        return false;
+      }
+    },
+    setInternalActivePlayListId(id: string): boolean {
+      const index = this.playLists.findIndex((playList) => playList.id === id);
+      if (index !== -1) {
+        this.currentActivePlayList.index = index;
+        this.currentActivePlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        return false;
+      }
+    },
+    unsetActivePlayList(): void {
+      this.currentActivePlayList.id = null;
+      this.currentActivePlayList.index = null;
+      this.currentActivePlayList.itemIndex = null;
+    },
+    setInternalSelectedPlayListIndex(index: number): boolean {
+      if (index > 0 && index < this.playLists.length) {
+        this.currentSelectedPlayList.index = index;
+        this.currentSelectedPlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        return false;
+      }
+    },
+    setInternalSelectedPlayListId(id: string): boolean {
+      const index = this.playLists.findIndex((playList) => playList.id === id);
+      if (index !== -1) {
+        this.currentSelectedPlayList.index = index;
+        this.currentSelectedPlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        return false;
+      }
+    },
+    unsetSelectedPlayList(): void {
+      this.currentSelectedPlayList.id = null;
+      this.currentSelectedPlayList.index = null;
+    },
+    resetSelectedPlayList(): void {
+      if (this.playLists.length > 0) {
+        this.currentSelectedPlayList.id = this.playLists[0]!.id;
+        this.currentSelectedPlayList.index = 0;
+      } else {
+        this.currentSelectedPlayList.id = null;
+        this.currentSelectedPlayList.index = null;
       }
     },
     async syncActivePlayListItemIndex(): Promise<void> {
@@ -363,7 +418,9 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           this.playerActionPlay(true);
           this.syncActivePlayListItemIndex()
             .then(() => {})
-            .catch(() => {})
+            .catch((error) => {
+              console.error(error);
+            })
             .finally(() => {});
           return true;
         } else {
@@ -387,7 +444,9 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           this.playerActionPlay(true);
           this.syncActivePlayListItemIndex()
             .then(() => {})
-            .catch(() => {})
+            .catch((error) => {
+              console.error(error);
+            })
             .finally(() => {});
           return true;
         } else {
@@ -397,57 +456,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         return false;
       }
     },
-    setInternalActivePlayListIndex(index: number): boolean {
-      if (index > 0 && index < this.playLists.length) {
-        this.currentActivePlayList.index = index;
-        this.currentActivePlayList.id = this.playLists[index]!.id;
-        return true;
-      } else {
-        console.error('setActivePlayListIndex - invalid index', index);
-        return false;
-      }
-    },
-    setInternalActivePlayListId(id: string): boolean {
-      const index = this.playLists.findIndex((playList) => playList.id === id);
-      if (index !== -1) {
-        this.currentActivePlayList.index = index;
-        this.currentActivePlayList.id = this.playLists[index]!.id;
-        return true;
-      } else {
-        console.error('setActivePlayListId - missing index for id', id);
-        return false;
-      }
-    },
-    unsetActivePlayList(): void {
-      this.currentActivePlayList.id = null;
-      this.currentActivePlayList.index = null;
-      this.currentActivePlayList.itemIndex = null;
-    },
-    setInternalSelectedPlayListIndex(index: number): boolean {
-      if (index > 0 && index < this.playLists.length) {
-        this.currentSelectedPlayList.index = index;
-        this.currentSelectedPlayList.id = this.playLists[index]!.id;
-        return true;
-      } else {
-        console.error('setActivePlayListIndex - invalid index', index);
-        return false;
-      }
-    },
-    setInternalSelectedPlayListId(id: string): boolean {
-      const index = this.playLists.findIndex((playList) => playList.id === id);
-      if (index !== -1) {
-        this.currentSelectedPlayList.index = index;
-        this.currentSelectedPlayList.id = this.playLists[index]!.id;
-        return true;
-      } else {
-        console.error('setActivePlayListId - missing index for id', id);
-        return false;
-      }
-    },
 
     async init() {
       this.processing = true;
-      const response = await api.playList.getCurrentPlayLists();
+      const response: GetCurrentPlayListsResponse = await api.playList.getCurrentPlayLists();
+      /*
       this.playLists = response.data.playLists.map(
         (playList: PlayList) =>
           new PlayListClass(
@@ -459,102 +472,78 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             playList.currentItemPosition,
           ),
       );
-      response.data.playLists.forEach((playList: PlayList, index: number) => {
+      */
+      this.playLists = [...response.data.playLists];
+      this.playLists.forEach((playList: PlayList, index: number) => {
         if (playList.flags.isActive) {
           this.currentActivePlayList.id = playList.id;
           this.currentActivePlayList.index = index;
-          if (playList.currentItemIndex !== null) {
-            this.currentActivePlayList.itemIndex = playList.currentItemIndex;
-          }
+          this.currentActivePlayList.itemIndex = playList.currentItemIndex;
         }
       });
+      if (this.hasActivePlayList) {
+        this.currentSelectedPlayList.id = this.currentActivePlayList.id;
+        this.currentSelectedPlayList.index = this.currentActivePlayList.index;
+      } else {
+        this.resetSelectedPlayList();
+      }
       this.processing = false;
     },
     async add(id: string, name: string) {
-      const PlayList: AddPlayListResponse = await api.playList.add(id, name);
-      this.playLists.push({
-        id: PlayList.data.playList.id,
-        name: PlayList.data.playList.name,
-        items: PlayList.data.playList.items,
-        flags: {
-          isMine: true,
-          isFavorites: false,
-          isOpened: true,
-          isActive: false,
-          isPublished: false,
-          isShared: false,
-        },
-        currentItemIndex: null,
-        currentItemPosition: null,
-      });
+      const response: AddPlayListResponse = await api.playList.add(id, name);
+      this.playLists.push(response.data.playList);
       this.setInternalSelectedPlayListIndex(this.playLists.length - 1);
       if (!this.hasActivePlayList) {
         this.setInternalActivePlayListIndex(this.playLists.length - 1);
       }
     },
-    async remove(playListId: string) {
-      console.log('remove', playListId);
-      await api.playList.remove(playListId);
-      if (this.currentActivePlayList.id === playListId) {
+    savePlayListAtIndex(index: number) {
+      console.log('savePlayListAtIndex', index);
+    },
+    async randomFillSelectedPlayList() {
+      if (this.currentSelectedPlayList.id !== null && this.currentSelectedPlayList.index !== null) {
+        const response: RandomPlayListFillResponse = await api.playList.randomFill(
+          this.currentSelectedPlayList.id,
+        );
+        this.playLists[this.currentSelectedPlayList.index] = response.data.playList;
+        if (!this.hasActivePlayList) {
+          this.currentActivePlayList.id = this.currentSelectedPlayList.id;
+          this.currentActivePlayList.index = this.currentSelectedPlayList.index;
+          this.currentActivePlayList.itemIndex = 0;
+        }
+      }
+    },
+    async emptySelectedPlayList() {
+      if (this.currentSelectedPlayList.id !== null && this.currentSelectedPlayList.index !== null) {
+        if (this.currentSelectedPlayList.id === this.currentActivePlayList.id) {
+          this.playerActionStop();
+          this.unsetActivePlayList();
+        }
+        await api.playList.empty(this.currentSelectedPlayList.id);
+        this.playLists[this.currentSelectedPlayList.index]!.items.length = 0;
+      }
+    },
+    async closePlayListAtIndex(index: number) {
+      if (this.currentActivePlayList.index === index) {
         this.playerActionStop();
         this.unsetActivePlayList();
       }
-      this.playLists = this.playLists.filter((playList) => playList.id !== playListId);
-    },
-    async randomFill(playListId: string) {
-      console.log('randomFill', playListId);
-      const index = this.playLists.findIndex((playList) => playList.id === playListId);
-      if (index !== -1) {
-        const filledPlayList = await api.playList.randomFill(playListId);
-        this.playLists[index] = filledPlayList.data.playList;
-        this.activePlayListItemIndex = 0;
-        return true;
-      } else {
-        console.error('empty - missing index for id', playListId);
-        return false;
-      }
-    },
-    async empty(playListId: string) {
-      console.log('empty', playListId);
-      const index = this.playLists.findIndex((playList) => playList.id === playListId);
-      if (index !== -1) {
-        await api.playList.empty(playListId);
-        this.playLists[index]!.items.length = 0;
-        if (index === this.activePlayListIndex) {
-          this.activePlayListItemIndex = 0;
-        }
-        return true;
-      } else {
-        console.error('empty - missing index for id', playListId);
-        return false;
-      }
-    },
-    async closePlayListAtIndex(playListIndex: number) {
-      console.log('closePlayListAtIndex', playListIndex);
-      if (playListIndex === this.activePlayListIndex) {
-        this.playerActionStop();
-      }
-      await api.playList.close(this.playLists[playListIndex]!.id);
+      await api.playList.close(this.playLists[index]!.id);
       this.playLists = this.playLists.filter(
-        (playList) => playList.id !== this.playLists[playListIndex]!.id,
+        (playList) => playList.id !== this.playLists[index]!.id,
       );
-      this.selectedPlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
-      this.activePlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
+      this.resetSelectedPlayList();
     },
-    savePlayListAtIndex(playListIndex: number) {
-      console.log('savePlayListAtIndex', playListIndex);
-    },
-    async removePlayListAtIndex(playListIndex: number) {
-      console.log('removePlayListAtIndex', playListIndex);
-      if (playListIndex === this.activePlayListIndex) {
+    async removePlayListAtIndex(index: number) {
+      if (this.currentActivePlayList.index === index) {
         this.playerActionStop();
+        this.unsetActivePlayList();
       }
-      await api.playList.remove(this.playLists[playListIndex]!.id);
+      await api.playList.remove(this.playLists[index]!.id);
       this.playLists = this.playLists.filter(
-        (playList) => playList.id !== this.playLists[playListIndex]!.id,
+        (playList) => playList.id !== this.playLists[index]!.id,
       );
-      this.selectedPlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
-      this.activePlayListIndex = playListIndex > 1 ? playListIndex - 1 : 0;
+      this.resetSelectedPlayList();
     },
     async selectPlayListItem(playListIndex: number, playListItemIndex: number) {
       console.log('selectPlayListItem', playListIndex, playListItemIndex);
@@ -569,26 +558,22 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         } else {
           this.playerActionStop();
         }
-        this.activePlayListIndex = playListIndex;
-        this.activePlayListItemIndex = playListItemIndex;
+        this.currentSelectedPlayList.id = this.playLists[playListIndex]!.id;
+        this.currentSelectedPlayList.index = playListIndex;
+        this.currentActivePlayList.id = this.playLists[playListIndex]!.id;
+        this.currentActivePlayList.index = playListIndex;
+        this.currentActivePlayList.itemIndex = playListItemIndex;
         this.playLists[playListIndex]!.currentItemIndex = playListItemIndex;
+        this.playLists[playListIndex]!.currentItemPosition = null; // TODO
         this.playLists.forEach((playList) => {
           playList.flags.isActive = false;
         });
         this.playLists[playListIndex]!.flags.isActive = true;
         this.playerActionPlay(true);
-        try {
-          if (this.activePlayList?.id) {
-            await api.playList.setCurrentPlayListItemIndex(
-              this.activePlayList?.id,
-              this.activePlayListItemIndex,
-            );
-          } else {
-            console.error('No playlist active');
-          }
-        } catch (e) {
-          console.error(e);
-        }
+        await api.playList.setCurrentPlayListItemIndex(
+          this.currentActivePlayList.id,
+          this.currentActivePlayList.itemIndex,
+        );
       } else {
         console.error('selectPlayListItem - invalid playListItemIndex', playListItemIndex);
       }
@@ -604,6 +589,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         const [removedElement] = this.playLists[playListIndex]!.items.splice(playListItemIndex, 1);
         if (removedElement) {
           this.playLists[playListIndex]!.items.splice(playListItemIndex - 1, 0, removedElement);
+          // TODO: recalc playList currentItem index && currentActivePlayList item index
           return true;
         } else {
           console.error('moveUpPlayListItem - error removing element');
@@ -625,6 +611,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         const [removedElement] = this.playLists[playListIndex]!.items.splice(playListItemIndex, 1);
         if (removedElement) {
           this.playLists[playListIndex]!.items.splice(playListItemIndex + 1, 0, removedElement);
+          // TODO: recalc playList currentItem index && currentActivePlayList item index
           return true;
         } else {
           console.error('moveDownPlayListItem - error removing element');
@@ -645,6 +632,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       ) {
         const removedElement = this.playLists[playListIndex]!.items.splice(playListItemIndex, 1);
         if (removedElement.length > 0) {
+          // TODO: recalc playList currentItem index && currentActivePlayList item index
           console.log('Item removed', removedElement);
           return true;
         } else {
@@ -698,7 +686,15 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     },
     async toggleCurrentActivePlayListItemFavorite() {
       console.log('toggleCurrentActivePlayListItemFavorite');
-      await this.toggleFavoritePlayListItem(this.activePlayListIndex, this.activePlayListItemIndex);
+      if (
+        this.currentActivePlayList.index !== null &&
+        this.currentActivePlayList.itemIndex !== null
+      ) {
+        await this.toggleFavoritePlayListItem(
+          this.currentActivePlayList.index,
+          this.currentActivePlayList.itemIndex,
+        );
+      }
     },
   },
 });
