@@ -365,7 +365,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.currentActivePlayList.itemIndex = null;
     },
     setInternalSelectedPlayListIndex(index: number): boolean {
-      if (index > 0 && index < this.playLists.length) {
+      if (index >= 0 && index < this.playLists.length) {
         this.currentSelectedPlayList.index = index;
         this.currentSelectedPlayList.id = this.playLists[index]!.id;
         return true;
