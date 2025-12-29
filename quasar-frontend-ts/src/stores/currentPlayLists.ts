@@ -441,6 +441,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             }
           }
           this.incrementInternalCurrentActivePlayListItemIndex();
+          if (this.currentActivePlayList.index !== null) {
+            this.playLists[this.currentActivePlayList.index]!.currentItemIndex =
+              this.currentActivePlayList.itemIndex;
+          }
           this.playerActionPlay(true);
           this.syncActivePlayListItemIndex()
             .then(() => {})
