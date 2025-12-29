@@ -149,7 +149,7 @@ final class PlayList
         );
     }
 
-    public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId): void
+    public function add(\aportela\DatabaseWrapper\DB $dbh, string $userId, bool $isActived = true): void
     {
         if (mb_strlen($userId) !== 36) {
             throw new \Spieldose\Exception\InvalidParamsException("userId");
@@ -159,7 +159,7 @@ final class PlayList
             true, // isMine (i am the creator... so YES)
             false, // favorites playlist can not be created manually (favorites playlist id === userId)
             $this->createdAtTimestamp, // opened (new playlist is created & opened)
-            $this->createdAtTimestamp, // actived (new playlist is created & set to active)
+            $isActived ? $this->createdAtTimestamp : null, // actived (new playlist is created & set to active)
             null, // published (new playlist, created & opened, is always "temporal", until real save action)
             null, // shared (new playlist, not published, can not be shared)
         );
@@ -355,6 +355,12 @@ final class PlayList
                         new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
                     ]
                 );
+                $this->getPlayListUserData($dbh, $userId);
+                // associate playlist to user with flags (opened & active)
+                $this->getPlayListUserData($dbh, $userId);
+                $this->currentItemIndex = 0;
+                $this->currentItemPosition = null;
+                $this->associatePlayListFlagsToUser($dbh, $userId);
                 $dbh->commit();
             } catch (\aportela\DatabaseWrapper\Exception\DBException $e) {
                 $dbh->rollBack();
@@ -502,7 +508,8 @@ final class PlayList
                     P.id = :id
             ",
             [
-                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id)
+                new \aportela\DatabaseWrapper\Param\StringParam(":id", $this->id),
+                new \aportela\DatabaseWrapper\Param\StringParam(":user_id", $userId)
             ]
         );
         if (count($results) === 1) {
