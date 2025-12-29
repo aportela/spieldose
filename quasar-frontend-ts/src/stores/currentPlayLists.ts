@@ -415,7 +415,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             }
           }
           this.decrementInternalCurrentActivePlayListItemIndex();
-          this.playerActionPlay(true);
+          //this.playerActionPlay(true);
           this.syncActivePlayListItemIndex()
             .then(() => {})
             .catch((error) => {
@@ -445,7 +445,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             this.playLists[this.currentActivePlayList.index]!.currentItemIndex =
               this.currentActivePlayList.itemIndex;
           }
-          this.playerActionPlay(true);
+          //this.playerActionPlay(true);
           this.syncActivePlayListItemIndex()
             .then(() => {})
             .catch((error) => {
@@ -590,7 +590,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           playList.flags.isActive = false;
         });
         this.playLists[playListIndex]!.flags.isActive = true;
-        this.playerActionPlay(true);
+        //this.playerActionPlay(true);
         await api.playList.setCurrentPlayListItemIndex(
           this.currentActivePlayList.id,
           this.currentActivePlayList.itemIndex,
