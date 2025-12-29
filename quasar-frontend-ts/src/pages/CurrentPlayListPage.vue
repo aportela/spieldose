@@ -20,9 +20,11 @@
             title="Previous" icon="skip_previous"
             :disable="!currentPlayListsStore.allowSkipPreviousItemOnActivePlayList" @click="onSkipPrevious" />
           <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Play' : undefined"
-            title="Play" icon="play_arrow" :disable="currentPlayListsStore.playerIsPlaying" @click="onPlay" />
+            title="Play" icon="play_arrow"
+            :disable="currentPlayListsStore.playerIsPlaying || !currentPlayListsStore.hasPlayLists" @click="onPlay" />
           <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Pause' : undefined"
-            title="Pause" icon="pause" :disable="currentPlayListsStore.playerIsPaused" @click="onPause" />
+            title="Pause" icon="pause"
+            :disable="currentPlayListsStore.playerIsPaused || !currentPlayListsStore.hasPlayLists" @click="onPause" />
           <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Stop' : undefined"
             title="Stop" icon="stop" :disable="currentPlayListsStore.playerIsStopped" @click="onStop" />
           <q-btn size="md" no-caps outline color="dark" :label="showTopButtonBarLabels ? 'Next' : undefined"
