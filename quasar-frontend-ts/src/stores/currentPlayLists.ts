@@ -529,6 +529,8 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
           this.currentActivePlayList.id = this.currentSelectedPlayList.id;
           this.currentActivePlayList.index = this.currentSelectedPlayList.index;
           this.currentActivePlayList.itemIndex = 0;
+        } else if (this.currentActivePlayList.id == this.currentSelectedPlayList.id) {
+          this.currentActivePlayList.itemIndex = 0;
         }
       }
     },
