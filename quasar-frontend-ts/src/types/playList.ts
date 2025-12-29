@@ -135,4 +135,4 @@ class PlayListClass implements PlayList {
   }
 }
 
-export { type PlayListItem, PlayListItemClass, type PlayList, PlayListClass };
+export { type PlayListItem, PlayListItemClass, type PlayListFlags, type PlayList, PlayListClass };

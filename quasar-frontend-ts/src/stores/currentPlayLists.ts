@@ -490,12 +490,27 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       this.processing = false;
     },
     async add(id: string, name: string) {
-      const response: AddPlayListResponse = await api.playList.add(id, name);
+      const playList: PlayList = {
+        id: id,
+        name: name,
+        flags: {
+          isMine: true,
+          isFavorites: false,
+          isOpened: true,
+          isActive: !this.hasPlayLists,
+          isPublished: false,
+          isShared: false,
+        },
+        items: [],
+        currentItemIndex: null,
+        currentItemPosition: null,
+      };
+      const response: AddPlayListResponse = await api.playList.add(playList);
       this.playLists.push(response.data.playList);
-      this.setInternalSelectedPlayListIndex(this.playLists.length - 1);
-      if (!this.hasActivePlayList) {
+      if (!this.hasActivePlayList && response.data.playList.flags.isActive) {
         this.setInternalActivePlayListIndex(this.playLists.length - 1);
       }
+      this.setInternalSelectedPlayListIndex(this.playLists.length - 1);
     },
     savePlayListAtIndex(index: number) {
       console.log('savePlayListAtIndex', index);

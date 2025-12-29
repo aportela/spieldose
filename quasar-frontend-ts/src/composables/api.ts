@@ -1,4 +1,5 @@
 import { axiosInstance } from 'src/composables/axios';
+import { type PlayList } from 'src/types/playList';
 
 interface LoginParams {
   email: string;
@@ -150,8 +151,8 @@ const api = {
     },
   },
   playList: {
-    add(id: string, name: string) {
-      return axiosInstance.post(`/playlist/${id}`, { name: name });
+    add(playList: PlayList) {
+      return axiosInstance.post(`/playlist/${playList.id}`, playList);
     },
     remove(id: string) {
       return axiosInstance.delete(`/playlist/${id}`);
