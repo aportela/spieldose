@@ -34,6 +34,16 @@ interface State {
   activePlayListIndex: number;
   activePlayListItemIndex: number;
   playLists: PlayList[];
+  currentActivePlayList: {
+    id: string | null;
+    index: number | null;
+    itemIndex: number | null;
+  };
+  currentSelectedPlayList: {
+    id: string | null;
+    index: number | null;
+    itemIndex: number | null;
+  };
   processing: boolean;
 }
 
@@ -56,6 +66,16 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     activePlayListIndex: 0,
     activePlayListItemIndex: 0,
     playLists: [],
+    currentActivePlayList: {
+      id: null,
+      index: null,
+      itemIndex: null,
+    },
+    currentSelectedPlayList: {
+      id: null,
+      index: null,
+      itemIndex: null,
+    },
     processing: false,
   }),
   getters: {
@@ -80,29 +100,61 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     /* player */
 
     hasPlayLists: (state: State): boolean => state.playLists.length > 0,
+    hasActivePlayList: (state: State): boolean =>
+      state.currentActivePlayList.id !== null &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.itemIndex !== null,
     activePlayList: (state: State): PlayList | null =>
-      state.playLists.length > 0 ? state.playLists[state.activePlayListIndex]! : null,
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length
+        ? state.playLists[state.currentActivePlayList.index]!
+        : null,
     currentFileId: (state: State): string | null =>
-      state.processing === false
-        ? (state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
-            ?.id ?? null)
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
+        ? state.playLists[state.currentActivePlayList.index]!.items[
+            state.currentActivePlayList.itemIndex
+          ]!.file!.id
         : null,
     currentFileURL: (state: State): string | null =>
-      state.processing === false
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
         ? getFileURL(
-            state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex]?.file
-              ?.id ?? null,
+            state.playLists[state.currentActivePlayList.index]!.items[
+              state.currentActivePlayList.itemIndex
+            ]!.file!.id,
           )
         : null,
     currentActivePlayListItem: (state: State): PlayListItemClass | null =>
-      state.playLists[state.activePlayListIndex]?.items[state.activePlayListItemIndex] ?? null,
-    /*
-      active/current playlist property getters
-    */
-    allowSkipPreviousItemOnActivePlayList: (state: State) => state.activePlayListItemIndex > 0,
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
+        ? state.playLists[state.currentActivePlayList.index]!.items[
+            state.currentActivePlayList.itemIndex
+          ]!
+        : null,
+    allowSkipPreviousItemOnActivePlayList: (state: State) =>
+      state.currentActivePlayList.index !== null && state.currentActivePlayList.index > 0,
     allowSkipNextItemOnActivePlayList: (state: State) =>
-      state.activePlayListItemIndex <
-      (state.playLists[state.activePlayListIndex]?.items.length ?? 0) - 1,
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index <
+        (state.playLists[state.currentActivePlayList.index]?.items.length ?? 0) - 1,
   },
   actions: {
     // constructor / destructor
@@ -270,98 +322,129 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
     // player block
 
     // playlist block
-    async skipPreviousItemOnActivePlayList() {
-      if (this.activePlayListItemIndex > 0) {
-        if (!this.playerHasPreviousUserInteractions) {
-          this.playerInteract();
-        } else {
-          if (!this.playerIsStopped) {
-            this.playerActionStop();
-          }
-        }
-        this.activePlayListItemIndex--;
-        this.playerActionPlay(true);
-        try {
-          if (this.activePlayList?.id) {
-            await api.playList.setCurrentPlayListItemIndex(
-              this.activePlayList?.id,
-              this.activePlayListItemIndex,
-            );
-          } else {
-            console.error('No playlist active');
-          }
-        } catch (e) {
-          console.error(e);
-        }
+    setInternalCurrentActivePlayListItemIndex: function (index: number): void {
+      this.currentActivePlayList.itemIndex = index;
+    },
+    incrementInternalCurrentActivePlayListItemIndex: function (): boolean {
+      if (this.currentActivePlayList.itemIndex !== null) {
+        this.currentActivePlayList.itemIndex++;
+        return true;
       } else {
-        console.error(
-          'skipPreviousItemOnActivePlayList - invalid activePlayListItemIndex',
-          this.activePlayListItemIndex,
+        return false;
+      }
+    },
+    decrementInternalCurrentActivePlayListItemIndex: function (): boolean {
+      if (this.currentActivePlayList.itemIndex !== null) {
+        this.currentActivePlayList.itemIndex--;
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async syncActivePlayListItemIndex(): Promise<void> {
+      if (this.currentActivePlayList.id !== null && this.currentActivePlayList.itemIndex !== null) {
+        await api.playList.setCurrentPlayListItemIndex(
+          this.currentActivePlayList.id,
+          this.currentActivePlayList.itemIndex,
         );
       }
     },
-    async skipNextItemOnActivePlayList() {
-      if (
-        this.activePlayListItemIndex < (this.playLists[this.activePlayListIndex]?.items.length ?? 0)
-      ) {
-        if (!this.playerHasPreviousUserInteractions) {
-          this.playerInteract();
-        } else {
-          if (!this.playerIsStopped) {
-            this.playerActionStop();
-          }
-        }
-        this.activePlayListItemIndex++;
-        this.playerActionPlay(true);
-        try {
-          if (this.activePlayList?.id) {
-            await api.playList.setCurrentPlayListItemIndex(
-              this.activePlayList?.id,
-              this.activePlayListItemIndex,
-            );
+    skipPreviousItemOnActivePlayList(): boolean {
+      if (this.hasActivePlayList) {
+        if (this.allowSkipPreviousItemOnActivePlayList) {
+          if (!this.playerHasPreviousUserInteractions) {
+            this.playerInteract();
           } else {
-            console.error('No playlist active');
+            if (!this.playerIsStopped) {
+              this.playerActionStop();
+            }
           }
-        } catch (e) {
-          console.error(e);
+          this.decrementInternalCurrentActivePlayListItemIndex();
+          this.playerActionPlay(true);
+          this.syncActivePlayListItemIndex()
+            .then(() => {})
+            .catch(() => {})
+            .finally(() => {});
+          return true;
+        } else {
+          return false;
         }
       } else {
-        console.error(
-          'skipNextItemOnActivePlayList - invalid activePlayListItemIndex',
-          this.activePlayListItemIndex,
-        );
+        return false;
       }
     },
-    setActivePlayListIndex(index: number): boolean {
+    skipNextItemOnActivePlayList() {
+      if (this.hasActivePlayList) {
+        if (this.allowSkipNextItemOnActivePlayList) {
+          if (!this.playerHasPreviousUserInteractions) {
+            this.playerInteract();
+          } else {
+            if (!this.playerIsStopped) {
+              this.playerActionStop();
+            }
+          }
+          this.incrementInternalCurrentActivePlayListItemIndex();
+          this.playerActionPlay(true);
+          this.syncActivePlayListItemIndex()
+            .then(() => {})
+            .catch(() => {})
+            .finally(() => {});
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    },
+    setInternalActivePlayListIndex(index: number): boolean {
       if (index > 0 && index < this.playLists.length) {
-        this.activePlayListIndex = index;
+        this.currentActivePlayList.index = index;
+        this.currentActivePlayList.id = this.playLists[index]!.id;
         return true;
       } else {
         console.error('setActivePlayListIndex - invalid index', index);
         return false;
       }
     },
-    setSelectedPlayListId(id: string): boolean {
+    setInternalActivePlayListId(id: string): boolean {
       const index = this.playLists.findIndex((playList) => playList.id === id);
       if (index !== -1) {
-        this.selectedPlayListIndex = index;
-        //this.playLists[index]!.currentItemIndex = index;
-        return true;
-      } else {
-        console.error('setSelectedPlayListId - missing index for id', id);
-        return false;
-      }
-    },
-    setActivePlayListId(id: string): boolean {
-      const index = this.playLists.findIndex((playList) => playList.id === id);
-      if (index !== -1) {
-        this.activePlayListIndex = index;
+        this.currentActivePlayList.index = index;
+        this.currentActivePlayList.id = this.playLists[index]!.id;
         return true;
       } else {
         console.error('setActivePlayListId - missing index for id', id);
         return false;
       }
     },
+    unsetActivePlayList(): void {
+      this.currentActivePlayList.id = null;
+      this.currentActivePlayList.index = null;
+      this.currentActivePlayList.itemIndex = null;
+    },
+    setInternalSelectedPlayListIndex(index: number): boolean {
+      if (index > 0 && index < this.playLists.length) {
+        this.currentSelectedPlayList.index = index;
+        this.currentSelectedPlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        console.error('setActivePlayListIndex - invalid index', index);
+        return false;
+      }
+    },
+    setInternalSelectedPlayListId(id: string): boolean {
+      const index = this.playLists.findIndex((playList) => playList.id === id);
+      if (index !== -1) {
+        this.currentSelectedPlayList.index = index;
+        this.currentSelectedPlayList.id = this.playLists[index]!.id;
+        return true;
+      } else {
+        console.error('setActivePlayListId - missing index for id', id);
+        return false;
+      }
+    },
+
     async init() {
       this.processing = true;
       const response = await api.playList.getCurrentPlayLists();
@@ -378,9 +461,10 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       );
       response.data.playLists.forEach((playList: PlayList, index: number) => {
         if (playList.flags.isActive) {
-          this.selectedPlayListIndex = index;
+          this.currentActivePlayList.id = playList.id;
+          this.currentActivePlayList.index = index;
           if (playList.currentItemIndex !== null) {
-            this.activePlayListItemIndex = playList.currentItemIndex;
+            this.currentActivePlayList.itemIndex = playList.currentItemIndex;
           }
         }
       });
@@ -403,14 +487,19 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
         currentItemIndex: null,
         currentItemPosition: null,
       });
-      this.selectedPlayListIndex = this.playLists.length - 1;
+      this.setInternalSelectedPlayListIndex(this.playLists.length - 1);
+      if (!this.hasActivePlayList) {
+        this.setInternalActivePlayListIndex(this.playLists.length - 1);
+      }
     },
     async remove(playListId: string) {
       console.log('remove', playListId);
       await api.playList.remove(playListId);
+      if (this.currentActivePlayList.id === playListId) {
+        this.playerActionStop();
+        this.unsetActivePlayList();
+      }
       this.playLists = this.playLists.filter((playList) => playList.id !== playListId);
-      this.selectedPlayListIndex = 0;
-      // TODO: stop if remove active
     },
     async randomFill(playListId: string) {
       console.log('randomFill', playListId);
