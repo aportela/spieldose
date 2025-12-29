@@ -134,6 +134,7 @@
   const onDiscover = (): void => {
     console.log("onDiscover");
     if (tab.value) {
+      currentPlayListsStore.playerInteract();
       currentPlayListsStore.randomFillSelectedPlayList().then(() => { }).catch((error) => { console.error(error); }).finally(() => { });
     } else {
       console.error("Invalid tab", tab.value);
