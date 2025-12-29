@@ -776,7 +776,11 @@ return function (App $app): void {
                         $params["name"]
                     );
 
-                    $playlist->add($dbh, \Spieldose\UserSession::getUserId());
+                    $isActived = false;
+                    if (array_key_exists("flags", $params) && is_array($params["flags"]) && array_key_exists("isActive", $params["flags"]) && is_bool($params["flags"]["isActive"])) {
+                        $isActived = $params["flags"]["isActive"];
+                    }
+                    $playlist->add($dbh, \Spieldose\UserSession::getUserId(), $isActived);
                     $payload = \Spieldose\Utils::getJSONPayload(
                         [
                             "playList" => $playlist,
