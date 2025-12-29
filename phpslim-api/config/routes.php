@@ -886,7 +886,7 @@ return function (App $app): void {
                 if (empty($args['id'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('id');
                 }
-                if (empty($args['index'])) {
+                if (! is_numeric($args['index'])) {
                     throw new \Spieldose\Exception\InvalidParamsException('index');
                 }
 
