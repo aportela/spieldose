@@ -8,7 +8,7 @@ import {
   type RandomPlayListFillResponse,
 } from 'src/types/apiResponses';
 import { type Player, type PlayerStatus, type PlayerRepeatMode } from 'src/types/common';
-
+import { getDownloadFileURL, getStreamFileURL } from 'src/composables/url';
 const localStorageAudioVolume = createStorageEntry<number>('audio.volume', 1);
 const localStorageAudioMuted = createStorageEntry<boolean>('audio.muted', false);
 const localStoragePlayerRepeatMode = createStorageEntry<PlayerRepeatMode>(
@@ -16,30 +16,6 @@ const localStoragePlayerRepeatMode = createStorageEntry<PlayerRepeatMode>(
   'none',
 );
 const localStoragePlayerShuffle = createStorageEntry<boolean>('player.shuffle', false);
-
-const getDownloadFileURL = (fileId: string | null): string | null => {
-  if (fileId) {
-    return '/api2/file/' + fileId + '/download';
-  } else {
-    return null;
-  }
-};
-
-const getRawFileURL = (fileId: string | null): string | null => {
-  if (fileId) {
-    return '/api2/file/' + fileId + '/raw';
-  } else {
-    return null;
-  }
-};
-
-const getAxiosDownloadFileURL = (fileId: string | null): string | null => {
-  if (fileId) {
-    return '/file/' + fileId + '/download';
-  } else {
-    return null;
-  }
-};
 
 interface State {
   audio: {
@@ -155,7 +131,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       state.currentActivePlayList.index < state.playLists.length &&
       state.currentActivePlayList.itemIndex !== null &&
       state.currentActivePlayList.itemIndex >= 0
-        ? getRawFileURL(
+        ? getStreamFileURL(
             state.playLists[state.currentActivePlayList.index]!.items[
               state.currentActivePlayList.itemIndex
             ]!.file!.id,
@@ -173,6 +149,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             state.playLists[state.currentActivePlayList.index]!.items[
               state.currentActivePlayList.itemIndex
             ]!.file!.id,
+            true,
           )
         : null,
     currentAxiosDownloadFileURL: (state: State): string | null =>
@@ -183,10 +160,11 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       state.currentActivePlayList.index < state.playLists.length &&
       state.currentActivePlayList.itemIndex !== null &&
       state.currentActivePlayList.itemIndex >= 0
-        ? getAxiosDownloadFileURL(
+        ? getDownloadFileURL(
             state.playLists[state.currentActivePlayList.index]!.items[
               state.currentActivePlayList.itemIndex
             ]!.file!.id,
+            false,
           )
         : null,
     currentActivePlayListItem: (state: State): PlayListItemClass | null =>
