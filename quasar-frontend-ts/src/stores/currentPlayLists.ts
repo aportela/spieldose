@@ -17,9 +17,25 @@ const localStoragePlayerRepeatMode = createStorageEntry<PlayerRepeatMode>(
 );
 const localStoragePlayerShuffle = createStorageEntry<boolean>('player.shuffle', false);
 
-const getFileURL = (fileId: string | null): string | null => {
+const getDownloadFileURL = (fileId: string | null): string | null => {
+  if (fileId) {
+    return '/api2/file/' + fileId + '/download';
+  } else {
+    return null;
+  }
+};
+
+const getRawFileURL = (fileId: string | null): string | null => {
   if (fileId) {
     return '/api2/file/' + fileId + '/raw';
+  } else {
+    return null;
+  }
+};
+
+const getAxiosDownloadFileURL = (fileId: string | null): string | null => {
+  if (fileId) {
+    return '/file/' + fileId + '/download';
   } else {
     return null;
   }
@@ -119,7 +135,7 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
             state.currentActivePlayList.itemIndex
           ]!.file!.id
         : null,
-    currentFileURL: (state: State): string | null =>
+    currentFileName: (state: State): string | null =>
       state.processing === false &&
       state.playLists.length > 0 &&
       state.currentActivePlayList.index !== null &&
@@ -127,7 +143,47 @@ export const useCurrentPlayListsStore = defineStore('currentPlayListsStore', {
       state.currentActivePlayList.index < state.playLists.length &&
       state.currentActivePlayList.itemIndex !== null &&
       state.currentActivePlayList.itemIndex >= 0
-        ? getFileURL(
+        ? state.playLists[state.currentActivePlayList.index]!.items[
+            state.currentActivePlayList.itemIndex
+          ]!.file!.name
+        : null,
+    currentRAWFileURL: (state: State): string | null =>
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
+        ? getRawFileURL(
+            state.playLists[state.currentActivePlayList.index]!.items[
+              state.currentActivePlayList.itemIndex
+            ]!.file!.id,
+          )
+        : null,
+    currentDownloadFileURL: (state: State): string | null =>
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
+        ? getDownloadFileURL(
+            state.playLists[state.currentActivePlayList.index]!.items[
+              state.currentActivePlayList.itemIndex
+            ]!.file!.id,
+          )
+        : null,
+    currentAxiosDownloadFileURL: (state: State): string | null =>
+      state.processing === false &&
+      state.playLists.length > 0 &&
+      state.currentActivePlayList.index !== null &&
+      state.currentActivePlayList.index >= 0 &&
+      state.currentActivePlayList.index < state.playLists.length &&
+      state.currentActivePlayList.itemIndex !== null &&
+      state.currentActivePlayList.itemIndex >= 0
+        ? getAxiosDownloadFileURL(
             state.playLists[state.currentActivePlayList.index]!.items[
               state.currentActivePlayList.itemIndex
             ]!.file!.id,

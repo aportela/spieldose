@@ -5,7 +5,7 @@ import { useCurrentPlayListsStore } from 'src/stores/currentPlayLists';
 const currentPlayListsStore = useCurrentPlayListsStore();
 
 watch(
-  () => currentPlayListsStore.currentFileURL,
+  () => currentPlayListsStore.currentRAWFileURL,
   (newValue: string | null) => {
     if (newValue) {
       currentPlayListsStore.setAudioSource(newValue);

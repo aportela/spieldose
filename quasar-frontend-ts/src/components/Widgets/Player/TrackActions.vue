@@ -14,7 +14,9 @@
         @click="onToggleFavorite"><q-icon name="favorite"
           :color="currentPlayListsStore.currentActivePlayListItem?.file?.trackInfo.favorited ? 'pink' : ''"></q-icon></q-btn>
       <q-btn dense unelevated size="md" :disable="disabled" :title="t('Download track')"
-        v-if="currentPlayListsStore.currentFileId" :href="currentPlayListsStore.currentFileId"><q-icon
+        v-if="currentPlayListsStore.currentDownloadFileURL && currentPlayListsStore.currentAxiosDownloadFileURL && currentPlayListsStore.currentFileName"
+        :href="currentPlayListsStore.currentDownloadFileURL"
+        @click.prevent="bgDownload(currentPlayListsStore.currentAxiosDownloadFileURL, currentPlayListsStore.currentFileName)"><q-icon
           name="file_download"></q-icon></q-btn>
       <q-btn dense unelevated size="md" disable :title="t('Download track')" v-else><q-icon
           name="file_download"></q-icon></q-btn>
@@ -35,6 +37,8 @@
   import { useSidebarSpectrumAnalyzerSettingsStore } from "src/stores/sidebarSpectrumAnalyzerSettings";
 
   import { useCurrentPlayListsStore } from "src/stores/currentPlayLists";
+
+  import { bgDownload } from "src/composables/axios";
 
   const sidebarSpectrumAnalyzerSettingsStore = useSidebarSpectrumAnalyzerSettingsStore();
 
