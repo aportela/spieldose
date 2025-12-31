@@ -159,7 +159,7 @@ return function (App $app): void {
                         throw new \RuntimeException("Failed to create logger from container");
                     }
 
-                    \Spieldose\UserSession::clear();
+                    //\Spieldose\UserSession::clear();
 
                     $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
                     $decoded = null;
@@ -179,6 +179,7 @@ return function (App $app): void {
                         $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
                         $currentTimestamp = time();
                         $accessToken = $jwt->encode(strval($user->id), $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                        \Spieldose\UserSession::init($user->id, $user->email);
                         \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
                         $payload = \Spieldose\Utils::getJSONPayload(
                             [
