@@ -31,11 +31,14 @@
         <!-- TODO: stream combine columns with colspan ??? -->
         <td v-if="playListVisibleColumnsStore.isTrackTitleColumnVisible">{{ item.file?.trackInfo.title }}</td>
         <td v-if="playListVisibleColumnsStore.isTrackArtistColumnVisible">{{ item.file?.trackInfo.artist.name }}</td>
+        <td v-if="playListVisibleColumnsStore.isTrackDurationColumnVisible">{{
+          formatSecondsAsTime(item.file?.trackInfo.playTimeSeconds || 0) }}
+        </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTitleColumnVisible">{{ item.file?.trackInfo.album.title }}
         </td>
         <td v-if="playListVisibleColumnsStore.isAlbumTrackNumberColumnVisible">0</td>
         <td v-if="playListVisibleColumnsStore.isAlbumArtistColumnVisible">{{ item.file?.trackInfo.album.artist.name
-        }}
+          }}
         </td>
         <td v-if="playListVisibleColumnsStore.isYearColumnVisible">{{ item.file?.trackInfo.album.year || '' }}</td>
         <td v-if="playListVisibleColumnsStore.isActionsColumnVisible">
@@ -98,6 +101,7 @@
   //import { default as StaticAlbumCoverImage } from "src/components/Widgets/Visualizations/StaticAlbumCoverImage.vue";
   import { buildDownloadTrackURL } from "src/composables/common";
   import { usePlayListVisibleColumnsStore } from "src/stores/playListVisibleColumns";
+  import { formatSecondsAsTime } from "src/composables/format";
   import { useQuasar } from "quasar";
 
 
