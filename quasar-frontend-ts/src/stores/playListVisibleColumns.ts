@@ -6,6 +6,7 @@ export type PlayListTableColumnName =
   | 'image'
   | 'trackTitle'
   | 'trackArtist'
+  | 'trackDuration'
   | 'albumTitle'
   | 'albumArtist'
   | 'albumTrackNumber'
@@ -33,6 +34,10 @@ const availablePlayListTableColumns: PlayListTableColumn[] = [
   {
     name: 'trackArtist',
     label: 'Artist',
+  },
+  {
+    name: 'trackDuration',
+    label: 'Duration',
   },
   {
     name: 'albumTitle',
@@ -89,6 +94,8 @@ export const usePlayListVisibleColumnsStore = defineStore('playListVisibleColumn
     isImageColumnVisible: (state): boolean => state.columns.visible.includes('image'),
     isTrackTitleColumnVisible: (state): boolean => state.columns.visible.includes('trackTitle'),
     isTrackArtistColumnVisible: (state): boolean => state.columns.visible.includes('trackArtist'),
+    isTrackDurationColumnVisible: (state): boolean =>
+      state.columns.visible.includes('trackDuration'),
     isAlbumTitleColumnVisible: (state): boolean => state.columns.visible.includes('albumTitle'),
     isAlbumArtistColumnVisible: (state): boolean => state.columns.visible.includes('albumArtist'),
     isAlbumTrackNumberColumnVisible: (state): boolean =>
