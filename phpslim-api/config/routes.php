@@ -179,8 +179,10 @@ return function (App $app): void {
                         $jwt = new \Spieldose\JWT($logger, $settings->getJWTPassphrase());
                         $currentTimestamp = time();
                         $accessToken = $jwt->encode(strval($user->id), $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
-                        \Spieldose\UserSession::init($user->id, $user->email);
-                        \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                        if (! empty($user->id) && ! empty($user->email)) {
+                            \Spieldose\UserSession::init($user->id, $user->email);
+                            \Spieldose\UserSession::setAccessTokenData($accessToken, $currentTimestamp + $settings->getAccessTokenExpirationTimeInSeconds());
+                        }
                         $payload = \Spieldose\Utils::getJSONPayload(
                             [
                                 "accessToken" => [
