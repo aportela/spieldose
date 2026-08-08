@@ -291,19 +291,21 @@ return ([
                 FOREIGN KEY(user_id) REFERENCES USER(id) ON DELETE CASCADE,
                 FOREIGN KEY(playlist_id) REFERENCES PLAYLIST(id) ON DELETE CASCADE
             ) STRICT;
-
-            CREATE TABLE ARTIST_IMAGE (
-                name TEXT NOT NULL CHECK(length(name) <= 128),
-                image TEXT CHECK(length(image) <= 8192),
-                relation_type_id TEXT NOT NULL CHECK(length(relation_type_id) == 36),
-            ) STRICT;
-
         ',
     ]
 ]);
 /*
     12 => array(
-        '
+    '
+                CREATE TABLE ARTIST_IMAGE (
+                name TEXT NOT NULL CHECK(length(name) <= 128),
+                image TEXT CHECK(length(image) <= 8192),
+                relation_type_id TEXT NOT NULL CHECK(length(relation_type_id) == 36),
+            ) STRICT;
+
+    '
+
+    '
             CREATE TABLE `PLAYLIST` (
                 `id` VARCHAR(36) NOT NULL,
                 `name` VARCHAR(128) NOT NULL,
